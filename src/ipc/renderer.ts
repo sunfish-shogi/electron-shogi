@@ -63,8 +63,12 @@ export interface API {
   ): void;
 }
 
-function getWindowObject(): any {
-  return window;
+interface ExtendedWindow extends Window {
+  electronShogiAPI: API;
+}
+
+function getWindowObject(): ExtendedWindow {
+  return window as unknown as ExtendedWindow;
 }
 
 export function isNative(): boolean {

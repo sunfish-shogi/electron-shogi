@@ -33,6 +33,11 @@ div {
   height: 2.5rem;
 }
 
+.screenshot {
+  max-width: 600px;
+  width: 100%;
+}
+
 .page-contents {
   list-style: circle;
   padding: 0 0 0 2rem;

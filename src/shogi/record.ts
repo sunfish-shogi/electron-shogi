@@ -405,8 +405,29 @@ export default class Record {
   }
 
   removeAfter(): void {
-    this.goBack();
-    this._current.next = null;
+    const target = this._current;
+    if (!this.goBack()) {
+      this._current.next = null;
+      return;
+    }
+    if (this._current.next === target) {
+      this._current.next = target.branch;
+    } else {
+      for (let p = this._current.next; p; p = p.branch) {
+        if (p.branch === target) {
+          p.branch = target.branch;
+          break;
+        }
+      }
+    }
+    let branchIndex = 0;
+    for (let p = this._current.next; p; p = p.branch) {
+      p.branchIndex = branchIndex;
+      branchIndex += 1;
+    }
+    if (this._current.next) {
+      this._current.next.activeBranch = true;
+    }
   }
 
   get usi(): string {

@@ -1,0 +1,95 @@
+dialog {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--dialog-bg-color);
+  border: 8px solid var(--dialog-border-color);
+  padding: 15px;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-title {
+  text-align: center;
+  margin-bottom: 5px;
+  color: var(--dialog-title-color);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.dialog-form-areas-h {
+  display: flex;
+  flex-direction: row;
+}
+.dialog-form-areas-h > :nth-of-type(n+2) {
+  margin-left: 5px;
+}
+
+.dialog-form-area {
+  background-color: white;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.dialog-form-item {
+  display: flex;
+  flex-direction: row;
+}
+.dialog-form-item:nth-of-type(n+2) {
+  margin-top: 5px;
+}
+
+.dialog-form-item label {
+  font-size: 0.8rem;
+}
+
+.dialog-form-item-label {
+  text-align: left;
+  margin-right: 5px;
+  width: 70px;
+}
+
+.dialog-form-item-label-wide {
+  text-align: left;
+  margin-right: 5px;
+  width: 120px;
+}
+
+.dialog-form-item-unit {
+  text-align: left;
+  font-size: 0.8rem;
+  margin: 0px 5px 0px 5px;
+  padding-top: 0.2rem;
+  align-items: center;
+}
+
+.dialog-main-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dialog-button {
+  margin: 0px 5px 0px 5px;
+  padding: 3px 25px 3px 25px;
+}
+
+.dialog-wide-button {
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+  padding: 3px 0px 3px 0px;
+}
+
+dialog .content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+dialog .icon {
+  width: 36px;
+  margin-right: 15px;
+}

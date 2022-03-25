@@ -5,15 +5,21 @@
 
 [将棋所](http://shogidokoro.starfree.jp/)と同様に [USI プロトコル](http://shogidokoro.starfree.jp/usi.html) 対応の思考エンジンを利用できます。
 
-# コンセプト
+## コンセプト
 
 私達は既に将棋所や[ShogiGUI](http://shogigui.siganus.com/)などの洗練されたソフトウェアで将棋の対局や研究が可能です。
 しかし、その多くは個人がクローズドに開発しているものです。
-コンピューター将棋界の権威ある開発者からもオープンソースのGUIの必要性に[言及](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/)しています。
+コンピューター将棋界の権威ある開発者も[オープンソースのGUIの必要性に言及](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/)しています。
 Electron 将棋はオープンソースであり、そして低い制限のもとで自由に利用・改変が可能です。
 
 また、 Web の技術を使うことで幅広い活用を目指します。
 USI エンジンを呼び出す機能を除いて、ほぼ全ての機能がブラウザで利用できます。
+
+## Web サイト
+
+https://sunfish-shogi.github.io/electron-shogi/
+
+リンク先からブラウザ版アプリを試すことができます。
 
 ## スクリーンショット
 

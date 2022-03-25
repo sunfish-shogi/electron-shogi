@@ -290,6 +290,7 @@ export default defineComponent({
 
     const clickSquare = (event: Event, file: number, rank: number) => {
       event.stopPropagation();
+      event.preventDefault();
       const square = new Square(file, rank);
       const piece = props.position.board.at(square);
       const empty = !piece;
@@ -298,12 +299,14 @@ export default defineComponent({
 
     const clickHand = (event: Event, color: Color, type: PieceType) => {
       event.stopPropagation();
+      event.preventDefault();
       const empty = props.position.hand(color).count(type) === 0;
       updatePointer(new Piece(color, type), empty, color);
     };
 
     const clickSquareR = (event: Event, file: number, rank: number) => {
       event.stopPropagation();
+      event.preventDefault();
       resetState();
       const square = new Square(file, rank);
       if (props.allowEdit && props.position.board.at(square)) {
@@ -313,6 +316,7 @@ export default defineComponent({
 
     const clickPromote = (event: Event) => {
       event.stopPropagation();
+      event.preventDefault();
       const move = state.reservedMove;
       resetState();
       if (move && props.position.isValidMove(move.withPromote())) {
@@ -322,6 +326,7 @@ export default defineComponent({
 
     const clickNotPromote = (event: Event) => {
       event.stopPropagation();
+      event.preventDefault();
       const move = state.reservedMove;
       resetState();
       if (move && props.position.isValidMove(move)) {

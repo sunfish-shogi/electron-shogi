@@ -23,9 +23,9 @@ export function getUSIEngineOptionCurrentValue(
     return option.value;
   }
   if (option.default !== undefined) {
-    // FIXME
-    // USI で規定されている特殊な値 "<empty>" に対する正しい振る舞いがわからない。
-    // if (option.default === "<empty>") {}
+    if (option.type === "string" && option.default === "<empty>") {
+      return "";
+    }
     return option.default;
   }
   return;

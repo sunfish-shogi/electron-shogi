@@ -76,6 +76,13 @@ export default defineComponent({
         event.preventDefault();
       });
       document.addEventListener("keydown", (event: KeyboardEvent) => {
+        const activeElement = document.activeElement;
+        if (
+          activeElement instanceof HTMLTextAreaElement ||
+          activeElement instanceof HTMLInputElement
+        ) {
+          return;
+        }
         const moveNumber = store.state.record.current.number;
         switch (event.key) {
           default:

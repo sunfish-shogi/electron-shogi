@@ -18,6 +18,7 @@ protocol.registerSchemesAsPrivileged([
 
 async function createWindow() {
   let setting = loadWindowSetting();
+
   // Create the browser window.
   const win = new BrowserWindow({
     width: setting.width,
@@ -26,6 +27,7 @@ async function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
 
+      // TODO: electron12 からデフォルトで推奨設定通りになるのでコードの除去を検討する。
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env

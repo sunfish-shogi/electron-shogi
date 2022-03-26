@@ -37,7 +37,7 @@ export class RecordEntryCustomData {
         this.evaluation[USIInfoSender.WHITE_PLAYER] = -score;
         break;
       case USIInfoSender.RESEARCHER:
-        this.evaluation[USIInfoSender.RESEARCHER] = color ? score : -score;
+        this.evaluation[USIInfoSender.RESEARCHER] = color === Color.BLACK ? score : -score;
         break;
     }
   }

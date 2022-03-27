@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { RectSize } from "@/layout/types";
+import { RectSize } from "@/components/primitive/Types";
 import { Action, useStore } from "@/store";
 import { MAX_SCORE, MIN_SCORE, RecordEntryCustomData } from "@/store/record";
 import { defineComponent, onMounted, onUnmounted, ref, Ref, watch } from "vue";

@@ -7,8 +7,8 @@ import {
   reverseColor,
   Square,
 } from "@/shogi";
-import preloadImage from "./asset";
-import { RectSize } from "./types";
+import preloadImage from "@/assets/asset";
+import { RectSize } from "@/components/primitive/Types";
 
 export enum BoardLayoutType {
   HITOMOJI = "hitomoji",

@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { BoardLayoutType } from "@/layout/board";
+import { BoardLayoutType } from "@/components/primitive/BoardLayout";
 import { AppSettingUpdate } from "@/settings/app";
 import { Action, Mutation, useStore } from "@/store";
 import { ref, defineComponent, onMounted, Ref, computed } from "vue";

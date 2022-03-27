@@ -7,28 +7,28 @@
           @click="goBegin()"
           :disabled="!operational"
         >
-          <img class="icon" src="icon/first_page_white_24dp.svg" />
+          <Icon class="icon" icon="first" />
         </button>
         <button
           class="control-button"
           @click="goBack()"
           :disabled="!operational"
         >
-          <img class="icon" src="icon/chevron_left_white_24dp.svg" />
+          <Icon class="icon" icon="back" />
         </button>
         <button
           class="control-button"
           @click="goForward()"
           :disabled="!operational"
         >
-          <img class="icon" src="icon/chevron_right_white_24dp.svg" />
+          <Icon class="icon" icon="next" />
         </button>
         <button
           class="control-button"
           @click="goEnd()"
           :disabled="!operational"
         >
-          <img class="icon" src="icon/last_page_white_24dp.svg" />
+          <Icon class="icon" icon="last" />
         </button>
       </div>
       <select
@@ -71,9 +71,13 @@
 <script lang="ts">
 import { Record, RecordEntry } from "@/shogi";
 import { computed, ref, defineComponent, Ref } from "vue";
+import Icon from "@/components/primitive/Icon.vue";
 
 export default defineComponent({
   name: "Record",
+  components: {
+    Icon,
+  },
   props: {
     record: {
       type: Record,

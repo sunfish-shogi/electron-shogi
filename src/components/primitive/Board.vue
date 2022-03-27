@@ -129,9 +129,11 @@
 <script lang="ts">
 import { PieceType } from "@/shogi";
 import { computed, reactive, watch, defineComponent, PropType } from "vue";
-import LayoutBuilder, { BoardLayoutType } from "@/layout/board";
+import LayoutBuilder, {
+  BoardLayoutType,
+} from "@/components/primitive/BoardLayout";
 import { Square, Piece, Color, Move, ImmutablePosition } from "@/shogi";
-import { RectSize } from "@/layout/types";
+import { RectSize } from "./Types";
 import { secondsToHMMSS } from "@/helpers/time";
 
 type State = {

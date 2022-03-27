@@ -1,8 +1,8 @@
 import { shallowMount } from "@vue/test-utils";
 import BoardVue from "@/components/primitive/Board.vue";
 import { Position } from "@/shogi";
-import { RectSize } from "@/layout/types";
-import { BoardLayoutType } from "@/layout/board";
+import { RectSize } from "@/components/primitive/Types";
+import { BoardLayoutType } from "@/components/primitive/BoardLayout";
 
 describe("Board.vue", () => {
   it("renders props.msg when passed", () => {

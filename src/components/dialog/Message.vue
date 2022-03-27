@@ -2,7 +2,7 @@
   <div>
     <dialog class="messagebox" ref="dialog">
       <div class="content">
-        <img class="icon" src="icon/info_white_24dp.svg" />
+        <Icon src="info" />
         <div class="message">{{ message }}</div>
       </div>
       <div class="dialog-main-buttons">
@@ -16,9 +16,13 @@
 import { showModalDialog } from "@/helpers/dialog";
 import { Mutation, useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
+import Icon from "@/components/primitive/Icon.vue";
 
 export default defineComponent({
   name: "ErrorMessage",
+  components: {
+    Icon,
+  },
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);

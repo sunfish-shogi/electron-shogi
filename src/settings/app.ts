@@ -1,4 +1,4 @@
-import { BoardLayoutType } from "@/layout/board";
+import { BoardLayoutType } from "@/components/primitive/BoardLayout";
 
 export enum InformationTab {
   COMMENT = "comment",

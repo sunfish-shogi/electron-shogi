@@ -11,7 +11,7 @@
           :class="{ selected: activeTab === 'comment' }"
           @click="changeSelect('comment')"
         >
-          <img class="icon" src="icon/edit_note_white_24dp.svg" />
+          <Icon class="icon" icon="comment" />
           棋譜コメント
         </span>
         <span
@@ -19,7 +19,7 @@
           :class="{ selected: activeTab === 'search' }"
           @click="changeSelect('search')"
         >
-          <img class="icon" src="icon/psychology_white_24dp.svg" />
+          <Icon class="icon" icon="brain" />
           思考
         </span>
         <span
@@ -27,7 +27,7 @@
           :class="{ selected: activeTab === 'chart' }"
           @click="changeSelect('chart')"
         >
-          <img class="icon" src="icon/show_chart_white_24dp.svg" />
+          <Icon class="icon" icon="chart" />
           形勢グラフ
         </span>
         <span
@@ -35,7 +35,7 @@
           :class="{ selected: activeTab === 'invisible' }"
           @click="changeSelect('invisible')"
         >
-          <img class="icon" src="icon/arrow_drop_down_white_24dp.svg" />
+          <Icon class="icon" icon="arrowDrop" />
           最小化
         </span>
       </div>
@@ -66,7 +66,8 @@ import RecordComment from "@/components/analytics/RecordComment.vue";
 import EngineAnalytics from "@/components/analytics/EngineAnalytics.vue";
 import EvaluationChart from "@/components/analytics/EvaluationChart.vue";
 import { Action, useStore } from "@/store";
-import { RectSize } from "@/layout/types";
+import { RectSize } from "@/components/primitive/Types";
+import Icon from "@/components/primitive/Icon.vue";
 
 export const headerHeight = 30;
 
@@ -78,6 +79,7 @@ export default defineComponent({
     RecordComment,
     EngineAnalytics,
     EvaluationChart,
+    Icon,
   },
   props: {
     size: {

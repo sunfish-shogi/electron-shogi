@@ -26,7 +26,7 @@ import InformationPane, {
   headerHeight as informationHeaderHeight,
   minHeight as minInformationHeight,
 } from "./InformationPane.vue";
-import { RectSize } from "@/layout/types";
+import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
 import { InformationTab } from "@/settings/app";
 

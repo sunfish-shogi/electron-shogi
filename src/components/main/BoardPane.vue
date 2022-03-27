@@ -20,41 +20,41 @@
       <template v-slot:right-control>
         <div class="control top">
           <button @click="onGame" v-if="controlStates.game">
-            <img class="icon" src="icon/sports_esports_white_24dp.svg" />
+            <Icon class="icon" icon="game" />
             対局
           </button>
           <button @click="onStop" v-if="controlStates.stop">
-            <img class="icon" src="icon/block_white_24dp.svg" />
+            <Icon class="icon" icon="stop" />
             中断
           </button>
           <button @click="onResign" v-if="controlStates.resign">
-            <img class="icon" src="icon/flag_white_24dp.svg" />
+            <Icon class="icon" icon="resign" />
             投了
           </button>
           <button @click="onResearch" v-if="controlStates.research">
-            <img class="icon" src="icon/science_white_24dp.svg" />
+            <Icon class="icon" icon="research" />
             検討
           </button>
           <button @click="onEndResearch" v-if="controlStates.endResearch">
-            <img class="icon" src="icon/do_disturb_on_white_24dp.svg" />
+            <Icon class="icon" icon="end" />
             検討終了
           </button>
           <button
             @click="onStartEditPosition"
             v-if="controlStates.startEditPosition"
           >
-            <img class="icon" src="icon/app_registration_white_24dp.svg" />
+            <Icon class="icon" icon="edit" />
             局面編集
           </button>
           <button
             @click="onEndEditPosition"
             v-if="controlStates.endEditPosition"
           >
-            <img class="icon" src="icon/check_circle_white_24dp.svg" />
+            <Icon class="icon" icon="check" />
             局面編集終了
           </button>
           <button @click="onChangeTurn" v-if="controlStates.initPosition">
-            <img class="icon" src="icon/swap_vert_white_24dp.svg" />
+            <Icon class="icon" icon="swap" />
             手番変更
           </button>
           <button
@@ -77,33 +77,30 @@
             @click="onOpenAppSettings"
             :disabled="!controlStates.appSettings"
           >
-            <img class="icon" src="icon/settings_white_24dp.svg" />
+            <Icon class="icon" icon="settings" />
             アプリ設定
           </button>
           <button
             @click="onOpenEngineSettings"
             :disabled="!controlStates.engineSettings"
           >
-            <img
-              class="icon"
-              src="icon/settings_input_component_white_24dp.svg"
-            />
+            <Icon class="icon" icon="engineSettings" />
             エンジン設定
           </button>
           <button @click="onFlip">
-            <img class="icon" src="icon/flip_camera_android_white_24dp.svg" />
+            <Icon class="icon" icon="flip" />
             盤面反転
           </button>
           <button @click="onPaste" :disabled="!controlStates.paste">
-            <img class="icon" src="icon/content_paste_white_24dp.svg" />
+            <Icon class="icon" icon="paste" />
             棋譜貼り付け
           </button>
           <button @click="onCopy">
-            <img class="icon" src="icon/content_copy_white_24dp.svg" />
+            <Icon class="icon" icon="copy" />
             棋譜コピー
           </button>
           <button @click="onRemoveAfter">
-            <img class="icon" src="icon/backspace_white_24dp.svg" />
+            <Icon class="icon" icon="delete" />
             指し手削除
           </button>
         </div>
@@ -121,9 +118,10 @@ import {
   PositionChange,
   RecordMetadataKey,
 } from "@/shogi";
-import { RectSize } from "@/layout/types";
+import { RectSize } from "@/components/primitive/Types";
 import { Action, Mutation, useStore } from "@/store";
 import { Mode } from "@/store/state";
+import Icon from "@/components/primitive/Icon.vue";
 
 export default defineComponent({
   name: "BoardPane",
@@ -135,6 +133,7 @@ export default defineComponent({
   },
   components: {
     Board,
+    Icon,
   },
   setup() {
     const store = useStore();

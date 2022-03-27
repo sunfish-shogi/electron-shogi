@@ -2,7 +2,7 @@
   <div>
     <dialog class="error" ref="dialog">
       <div class="content">
-        <img class="icon" src="icon/error_outline_white_24dp.svg" />
+        <Icon class="icon" icon="error" />
         <div class="items">
           <div class="notice">
             {{ errors.length }} 件のエラーが発生しました。
@@ -24,9 +24,13 @@
 import { Mutation, useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import { showModalDialog } from "@/helpers/dialog";
+import Icon from "@/components/primitive/Icon.vue";
 
 export default defineComponent({
   name: "ErrorMessage",
+  components: {
+    Icon,
+  },
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);

@@ -24,6 +24,7 @@ export type GameSetting = {
   timeLimit: TimeLimitSetting;
   startPosition?: InitialPositionType;
   enableEngineTimeout: boolean;
+  humanIsFront: boolean;
 };
 
 export function defaultGameSetting(): GameSetting {
@@ -42,6 +43,7 @@ export function defaultGameSetting(): GameSetting {
       increment: 0,
     },
     enableEngineTimeout: false,
+    humanIsFront: true,
   };
 }
 

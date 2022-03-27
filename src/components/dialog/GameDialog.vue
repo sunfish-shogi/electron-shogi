@@ -117,9 +117,17 @@
             />
             <label for="disable-engine-timeout">エンジンの時間切れあり</label>
           </div>
+          <div class="dialog-form-item">
+            <input
+              ref="humanIsFront"
+              type="checkbox"
+              id="human-is-front"
+              :checked="defaultValues.humanIsFront"
+            />
+            <label for="human-is-front">人を手前に表示する</label>
+          </div>
         </div>
       </div>
-      <!-- TODO: 人を手前に表示する -->
       <!-- TODO: 連続対局 -->
       <div class="dialog-main-buttons">
         <button class="dialog-button" @click="onStart()">対局開始</button>
@@ -156,6 +164,7 @@ export default defineComponent({
     const increment: Ref = ref(null);
     const startPosition: Ref = ref(null);
     const enableEngineTimeout: Ref = ref(null);
+    const humanIsFront: Ref = ref(null);
     const gameSetting = ref(defaultGameSetting());
     const engineSetting = ref(new USIEngineSettings());
 
@@ -202,6 +211,7 @@ export default defineComponent({
             ? startPosition.value.value
             : undefined,
         enableEngineTimeout: enableEngineTimeout.value.checked,
+        humanIsFront: humanIsFront.value.checked,
       };
       const error = validateGameSetting(gameSetting);
       if (error) {
@@ -241,6 +251,7 @@ export default defineComponent({
             ? gameSetting.value.startPosition
             : "current",
         enableEngineTimeout: gameSetting.value.enableEngineTimeout,
+        humanIsFront: gameSetting.value.humanIsFront,
       };
     });
 
@@ -256,6 +267,7 @@ export default defineComponent({
       increment,
       startPosition,
       enableEngineTimeout,
+      humanIsFront,
       defaultValues,
       engines,
       onStart,

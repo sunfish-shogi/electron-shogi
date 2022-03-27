@@ -65,7 +65,6 @@ export enum Mutation {
   INITIALIZE_POSITION = "initializePosition",
   UPDATE_RECORD_COMMENT = "updateRecordComment",
   RECEIVE_USI_INFO = "receiveUsiInfo",
-  SETUP_GAME = "setupGame",
   CLEAR_GAME_TIMER = "clearGameTimer",
   FLIP_BOARD = "flipBoard",
   OPEN_APP_SETTING_DIALOG = "openAppSettingDialog",
@@ -239,21 +238,6 @@ export const store = createStore<State>({
         payload.info
       );
       state.record.current.customData = entryData.stringify();
-    },
-    [Mutation.SETUP_GAME](state, gameSetting: GameSetting) {
-      state.gameSetting = gameSetting;
-      state.gameState.setup(gameSetting);
-      state.mode = Mode.GAME;
-      if (gameSetting.startPosition) {
-        state.record.metadata.setStandardMetadata(
-          RecordMetadataKey.BLACK_NAME,
-          gameSetting.black.name
-        );
-        state.record.metadata.setStandardMetadata(
-          RecordMetadataKey.WHITE_NAME,
-          gameSetting.white.name
-        );
-      }
     },
     [Mutation.CLEAR_GAME_TIMER](state) {
       state.gameState.clearTimer();
@@ -524,7 +508,34 @@ export const store = createStore<State>({
         }
         state.usiSessionID += 1;
         await startGame(gameSetting, state.usiSessionID);
-        commit(Mutation.SETUP_GAME, gameSetting);
+        state.gameSetting = gameSetting;
+        state.gameState.setup(gameSetting);
+        state.mode = Mode.GAME;
+        state.record.metadata.setStandardMetadata(
+          RecordMetadataKey.BLACK_NAME,
+          gameSetting.black.name
+        );
+        state.record.metadata.setStandardMetadata(
+          RecordMetadataKey.WHITE_NAME,
+          gameSetting.white.name
+        );
+        if (gameSetting.humanIsFront) {
+          let flip = state.appSetting.boardFlipping;
+          if (
+            state.gameSetting.black.type === PlayerType.HUMAN &&
+            state.gameSetting.white.type !== PlayerType.HUMAN
+          ) {
+            flip = false;
+          } else if (
+            state.gameSetting.black.type !== PlayerType.HUMAN &&
+            state.gameSetting.white.type === PlayerType.HUMAN
+          ) {
+            flip = true;
+          }
+          if (flip !== state.appSetting.boardFlipping) {
+            commit(Mutation.FLIP_BOARD);
+          }
+        }
         await dispatch(Action.RESET_GAME_TIMER);
         commit(Mutation.UPDATE_USI_POSITION);
         return true;

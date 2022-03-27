@@ -64,10 +64,14 @@ npm run electron:serve
 npm run serve
 ```
 
-### リリースビルド
+### リリース
 
 ```
+# Electron アプリ
 npm run release
+
+# ブラウザアプリ
+npm run build
 ```
 
 ### ユニットテスト
@@ -79,7 +83,7 @@ npm run test:unit
 ### Lint
 
 ```
-npm run lint
+npm run lint -- --fix
 ```
 
 ## ライセンス

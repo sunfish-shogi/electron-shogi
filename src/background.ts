@@ -26,13 +26,6 @@ async function createWindow() {
     fullscreen: setting.fullscreen,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-
-      // TODO: electron12 からデフォルトで推奨設定通りになるのでコードの除去を検討する。
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env
-        .ELECTRON_NODE_INTEGRATION as unknown as boolean,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
     },
   });
   if (setting.maximized) {

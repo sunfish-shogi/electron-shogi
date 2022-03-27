@@ -267,7 +267,7 @@ export default defineComponent({
       return {
         game: store.state.mode === Mode.NORMAL,
         stop: store.state.mode === Mode.GAME,
-        resign: store.state.mode === Mode.GAME,
+        resign: store.state.mode === Mode.GAME && store.getters.isMovableByUser,
         research: store.state.mode === Mode.NORMAL,
         endResearch: store.state.mode === Mode.RESEARCH,
         startEditPosition: store.state.mode === Mode.NORMAL,

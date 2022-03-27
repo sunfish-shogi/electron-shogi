@@ -6,6 +6,6 @@ export default function preloadImage(path: string): void {
   }
   console.log("preload image:", path);
   const img = document.createElement("img");
-  img.src = "path";
+  img.src = path;
   preloadedImages[path] = img;
 }

@@ -1,4 +1,4 @@
-import preloadImage from "./asset";
+import preloadImage from "./preload";
 
 export enum Icon {
   BUSSY = "bussy",

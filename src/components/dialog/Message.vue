@@ -2,7 +2,7 @@
   <div>
     <dialog class="messagebox" ref="dialog">
       <div class="content">
-        <Icon src="info" />
+        <Icon class="icon" icon="info" />
         <div class="message">{{ message }}</div>
       </div>
       <div class="dialog-main-buttons">

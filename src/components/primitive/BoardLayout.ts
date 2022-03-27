@@ -7,7 +7,7 @@ import {
   reverseColor,
   Square,
 } from "@/shogi";
-import preloadImage from "@/assets/asset";
+import preloadImage from "@/assets/preload";
 import { RectSize } from "@/components/primitive/Types";
 
 export enum BoardLayoutType {

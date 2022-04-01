@@ -60,7 +60,7 @@ export function validateGameSetting(
     gameSetting.timeLimit.byoyomi !== 0 &&
     gameSetting.timeLimit.increment !== 0
   ) {
-    return new Error("秒読みとはフィッシャールールと併用できません。");
+    return new Error("秒読みとフィッシャールールは併用できません。");
   }
   return;
 }

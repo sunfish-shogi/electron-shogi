@@ -394,6 +394,6 @@ export class EngineProcess {
 
   private log(message: string): void {
     const pid = this.handle ? this.handle.pid : "nan";
-    console.log(`USI: PATH=${this.path} PID=${pid}: ${message}`);
+    console.log(`USI:${this.name}:${pid}: ${message}`);
   }
 }

@@ -22,7 +22,7 @@ import Bussy from "@/components/dialog/Bussy.vue";
 import Message from "@/components/dialog/Message.vue";
 import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
 import { Action, Mutation, useStore } from "@/store";
-import { Mode } from "@/store/state";
+import { Mode } from "@/store/mode";
 
 export default defineComponent({
   name: "App",
@@ -47,13 +47,13 @@ export default defineComponent({
         usiEngineSetting: store.state.mode === Mode.USI_ENGINE_SETTING_DIALOG,
         appSetting: store.state.mode === Mode.APP_SETTING_DIALOG,
         paste: store.state.mode === Mode.PASTE_DIALOG,
-        processing: store.state.bussyState.isBussy,
+        processing: store.getters.isBussy,
       };
     });
 
-    const hasMessage = computed(() => store.state.messages.length !== 0);
+    const hasMessage = computed(() => store.getters.hasMessage);
 
-    const hasErrors = computed(() => store.state.errors.length !== 0);
+    const hasErrors = computed(() => store.getters.hasError);
 
     onMounted(() => {
       const body = document.getElementsByTagName("body")[0];
@@ -88,16 +88,16 @@ export default defineComponent({
           default:
             return;
           case "ArrowUp":
-            store.dispatch(Action.CHANGE_MOVE_NUMBER, moveNumber - 1);
+            store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber - 1);
             break;
           case "ArrowDown":
-            store.dispatch(Action.CHANGE_MOVE_NUMBER, moveNumber + 1);
+            store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber + 1);
             break;
           case "ArrowLeft":
-            store.dispatch(Action.CHANGE_MOVE_NUMBER, 0);
+            store.commit(Mutation.CHANGE_MOVE_NUMBER, 0);
             break;
           case "ArrowRight":
-            store.dispatch(Action.CHANGE_MOVE_NUMBER, Number.MAX_SAFE_INTEGER);
+            store.commit(Mutation.CHANGE_MOVE_NUMBER, Number.MAX_SAFE_INTEGER);
             break;
         }
         event.preventDefault();

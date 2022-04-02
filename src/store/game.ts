@@ -19,7 +19,7 @@ export class GameState {
   private timerStart: Date;
   private lastTimeMs: number;
   private _elapsedMs: number;
-  private gameSetting: GameSetting;
+  private _setting: GameSetting;
 
   constructor() {
     this.black = { timeMs: 0, byoyomi: 0 };
@@ -28,7 +28,7 @@ export class GameState {
     this.timerStart = new Date();
     this.lastTimeMs = 0;
     this._elapsedMs = 0;
-    this.gameSetting = defaultGameSetting();
+    this._setting = defaultGameSetting();
   }
 
   get blackTimeMs(): number {
@@ -51,12 +51,16 @@ export class GameState {
     return this._elapsedMs;
   }
 
-  setup(gameSetting: GameSetting): void {
-    this.black.timeMs = gameSetting.timeLimit.timeSeconds * 1e3;
-    this.black.byoyomi = gameSetting.timeLimit.byoyomi;
-    this.white.timeMs = gameSetting.timeLimit.timeSeconds * 1e3;
-    this.white.byoyomi = gameSetting.timeLimit.byoyomi;
-    this.gameSetting = gameSetting;
+  get setting(): GameSetting {
+    return this._setting;
+  }
+
+  setup(setting: GameSetting): void {
+    this.black.timeMs = setting.timeLimit.timeSeconds * 1e3;
+    this.black.byoyomi = setting.timeLimit.byoyomi;
+    this.white.timeMs = setting.timeLimit.timeSeconds * 1e3;
+    this.white.byoyomi = setting.timeLimit.byoyomi;
+    this._setting = setting;
   }
 
   private getPlayerState(color: Color): PlayerState {
@@ -72,7 +76,7 @@ export class GameState {
     const playerState = this.getPlayerState(color);
     this.timerStart = new Date();
     this.lastTimeMs = playerState.timeMs;
-    playerState.byoyomi = this.gameSetting.timeLimit.byoyomi;
+    playerState.byoyomi = this.setting.timeLimit.byoyomi;
     this.timerHandle = window.setInterval(() => {
       const lastTimeMs = playerState.timeMs;
       const lastByoyomi = playerState.byoyomi;
@@ -84,7 +88,7 @@ export class GameState {
       } else {
         playerState.timeMs = 0;
         playerState.byoyomi = Math.max(
-          Math.ceil(this.gameSetting.timeLimit.byoyomi + timeMs / 1e3),
+          Math.ceil(this.setting.timeLimit.byoyomi + timeMs / 1e3),
           0
         );
       }
@@ -101,7 +105,7 @@ export class GameState {
         } else if (byoyomi <= 10 || byoyomi % 10 === 0) {
           handlers.onBeepShort();
         }
-      } else if (!this.gameSetting.timeLimit.byoyomi && time !== lastTime) {
+      } else if (!this.setting.timeLimit.byoyomi && time !== lastTime) {
         if (time <= 5) {
           handlers.onBeepUnlimited();
         } else if (time <= 10 || time === 20 || time === 30 || time === 60) {
@@ -112,8 +116,7 @@ export class GameState {
   }
 
   increment(color: Color): void {
-    this.getPlayerState(color).timeMs +=
-      this.gameSetting.timeLimit.increment * 1e3;
+    this.getPlayerState(color).timeMs += this.setting.timeLimit.increment * 1e3;
   }
 
   clearTimer(): void {

@@ -1,5 +1,4 @@
 import { BrowserWindow, dialog, ipcMain } from "electron";
-import { Mode } from "@/store/state";
 import { Background, Renderer } from "./channel";
 import fs from "fs";
 import {
@@ -28,6 +27,7 @@ import { updateState as updateMenuState } from "@/menu/menu";
 import { MenuEvent } from "@/menu/event";
 import { SpecialMove } from "@/shogi/record";
 import { InfoCommand, USIInfoSender } from "@/usi/info";
+import { Mode } from "@/store/mode";
 
 const isWindows = process.platform === "win32";
 
@@ -249,6 +249,7 @@ export function onUSIInfo(
   sessionID: number,
   usi: string,
   sender: USIInfoSender,
+  name: string,
   info: InfoCommand
 ): void {
   mainWindow.webContents.send(
@@ -256,6 +257,7 @@ export function onUSIInfo(
     sessionID,
     usi,
     sender,
+    name,
     JSON.stringify(info)
   );
 }

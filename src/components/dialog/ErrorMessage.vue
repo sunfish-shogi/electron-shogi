@@ -40,7 +40,7 @@ export default defineComponent({
     });
 
     const errors = computed(() => {
-      return store.state.errors.map((error, index) => {
+      return store.state.error.queue.map((error, index) => {
         return {
           message: error.message,
           index,

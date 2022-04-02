@@ -1,19 +1,26 @@
-export class BussyState {
-  private count: number;
+import { Module } from "vuex";
+import { State } from ".";
+import { Mutation } from "./mutation";
 
-  constructor() {
-    this.count = 0;
-  }
+export type BussyState = {
+  count: number;
+};
 
-  get isBussy(): boolean {
-    return this.count !== 0;
-  }
-
-  retain(): void {
-    this.count += 1;
-  }
-
-  release(): void {
-    this.count -= 1;
-  }
-}
+export const bussyState: Module<BussyState, State> = {
+  state: {
+    count: 0,
+  },
+  getters: {
+    isBussy(state): boolean {
+      return state.count !== 0;
+    },
+  },
+  mutations: {
+    [Mutation.RETAIN_BUSSY_STATE](state) {
+      state.count += 1;
+    },
+    [Mutation.RELEASE_BUSSY_STATE](state) {
+      state.count -= 1;
+    },
+  },
+};

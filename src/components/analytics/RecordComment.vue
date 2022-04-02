@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { Mutation, useStore } from "@/store";
-import { Mode } from "@/store/state";
+import { Mode } from "@/store/mode";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 
 export default defineComponent({

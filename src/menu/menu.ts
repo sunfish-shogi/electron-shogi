@@ -1,8 +1,8 @@
 import { app, Menu, MenuItem, MenuItemConstructorOptions } from "electron";
-import { Mode } from "@/store/state";
 import { openAppDirectory } from "@/settings/fs";
 import { onMenuEvent } from "@/ipc/background";
 import { MenuEvent } from "./event";
+import { Mode } from "@/store/mode";
 
 const isMac = process.platform === "darwin";
 

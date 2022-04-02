@@ -90,7 +90,7 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     const changeSelect = (id: string) => {
-      store.dispatch(Action.UPDATE_AND_SAVE_APP_SETTING_ON_BACKGROUND, {
+      store.dispatch(Action.UPDATE_APP_SETTING, {
         informationTab: id,
       });
     };

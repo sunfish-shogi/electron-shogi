@@ -120,8 +120,8 @@ import {
 } from "@/shogi";
 import { RectSize } from "@/components/primitive/Types";
 import { Action, Mutation, useStore } from "@/store";
-import { Mode } from "@/store/state";
 import Icon from "@/components/primitive/Icon.vue";
+import { Mode } from "@/store/mode";
 
 export default defineComponent({
   name: "BoardPane",
@@ -210,7 +210,7 @@ export default defineComponent({
     };
 
     const onRemoveAfter = () => {
-      store.dispatch(Action.REMOVE_RECORD_AFTER);
+      store.commit(Mutation.REMOVE_RECORD_AFTER);
     };
 
     const allowEdit = computed(
@@ -243,24 +243,16 @@ export default defineComponent({
     });
 
     const blackPlayerTimeMs = computed(() =>
-      store.state.mode === Mode.GAME
-        ? store.state.gameState.blackTimeMs
-        : undefined
+      store.state.mode === Mode.GAME ? store.state.game.blackTimeMs : undefined
     );
     const blackPlayerByoyomi = computed(() =>
-      store.state.mode === Mode.GAME
-        ? store.state.gameState.blackByoyomi
-        : undefined
+      store.state.mode === Mode.GAME ? store.state.game.blackByoyomi : undefined
     );
     const whitePlayerTimeMs = computed(() =>
-      store.state.mode === Mode.GAME
-        ? store.state.gameState.whiteTimeMs
-        : undefined
+      store.state.mode === Mode.GAME ? store.state.game.whiteTimeMs : undefined
     );
     const whitePlayerByoyomi = computed(() =>
-      store.state.mode === Mode.GAME
-        ? store.state.gameState.whiteByoyomi
-        : undefined
+      store.state.mode === Mode.GAME ? store.state.game.whiteByoyomi : undefined
     );
 
     const controlStates = computed(() => {

@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { RectSize } from "@/components/primitive/Types";
-import { Action, useStore } from "@/store";
+import { Mutation, useStore } from "@/store";
 import { MAX_SCORE, MIN_SCORE, RecordEntryCustomData } from "@/store/record";
 import { defineComponent, onMounted, onUnmounted, ref, Ref, watch } from "vue";
 import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
@@ -102,7 +102,7 @@ export default defineComponent({
         ((event.x - chart.scales.x.left) / displayWidth) * width +
         chart.scales.x.min;
       const number = Math.round(x);
-      store.dispatch(Action.CHANGE_MOVE_NUMBER, number);
+      store.commit(Mutation.CHANGE_MOVE_NUMBER, number);
     };
 
     onMounted(() => {

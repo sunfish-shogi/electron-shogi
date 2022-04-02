@@ -1,5 +1,8 @@
 import { ImmutablePosition, Move } from "@/shogi";
 import { InfoCommand as USIInfoCommand, USIInfoSender } from "@/usi/info";
+import { Module } from "vuex";
+import { State } from ".";
+import { Mutation } from "./mutation";
 
 export type USIIteration = {
   depth?: number;
@@ -38,7 +41,7 @@ export class USIPlayerMonitor {
   public currentMove?: string;
   public currentMoveText?: string;
 
-  constructor() {
+  constructor(public name: string) {
     this.iterates = [];
   }
 
@@ -97,7 +100,7 @@ export class USIPlayerMonitor {
   }
 }
 
-export class USIMonitor {
+export type USIState = {
   sessionID?: number;
   blackPlayer?: USIPlayerMonitor;
   blackPosition?: string;
@@ -105,42 +108,59 @@ export class USIMonitor {
   whitePosition?: string;
   researcher?: USIPlayerMonitor;
   researchPosition?: string;
+};
 
-  update(
-    sessionID: number,
-    position: ImmutablePosition,
-    sender: USIInfoSender,
-    update: USIInfoCommand
-  ): void {
-    if (this.sessionID != sessionID) {
-      this.blackPlayer = undefined;
-      this.whitePlayer = undefined;
-      this.researcher = undefined;
-      this.sessionID = sessionID;
-    }
+export const usiState: Module<USIState, State> = {
+  mutations: {
+    [Mutation.UPDATE_USI_INFO](
+      state,
+      payload: {
+        sessionID: number;
+        position: ImmutablePosition;
+        sender: USIInfoSender;
+        name: string;
+        info: USIInfoCommand;
+      }
+    ) {
+      if (state.sessionID != payload.sessionID) {
+        state.blackPlayer = undefined;
+        state.whitePlayer = undefined;
+        state.researcher = undefined;
+        state.sessionID = payload.sessionID;
+      }
 
-    switch (sender) {
-      case USIInfoSender.BLACK_PLAYER:
-        if (!this.blackPlayer || this.blackPosition !== position.sfen) {
-          this.blackPlayer = new USIPlayerMonitor();
-          this.blackPosition = position.sfen;
-        }
-        this.blackPlayer.update(position, update);
-        break;
-      case USIInfoSender.WHITE_PLAYER:
-        if (!this.whitePlayer || this.whitePosition !== position.sfen) {
-          this.whitePlayer = new USIPlayerMonitor();
-          this.whitePosition = position.sfen;
-        }
-        this.whitePlayer.update(position, update);
-        break;
-      case USIInfoSender.RESEARCHER:
-        if (!this.researcher || this.researchPosition !== position.sfen) {
-          this.researcher = new USIPlayerMonitor();
-          this.researchPosition = position.sfen;
-        }
-        this.researcher.update(position, update);
-        break;
-    }
-  }
-}
+      switch (payload.sender) {
+        case USIInfoSender.BLACK_PLAYER:
+          if (
+            !state.blackPlayer ||
+            state.blackPosition !== payload.position.sfen
+          ) {
+            state.blackPlayer = new USIPlayerMonitor(payload.name);
+            state.blackPosition = payload.position.sfen;
+          }
+          state.blackPlayer.update(payload.position, payload.info);
+          break;
+        case USIInfoSender.WHITE_PLAYER:
+          if (
+            !state.whitePlayer ||
+            state.whitePosition !== payload.position.sfen
+          ) {
+            state.whitePlayer = new USIPlayerMonitor(payload.name);
+            state.whitePosition = payload.position.sfen;
+          }
+          state.whitePlayer.update(payload.position, payload.info);
+          break;
+        case USIInfoSender.RESEARCHER:
+          if (
+            !state.researcher ||
+            state.researchPosition !== payload.position.sfen
+          ) {
+            state.researcher = new USIPlayerMonitor(payload.name);
+            state.researchPosition = payload.position.sfen;
+          }
+          state.researcher.update(payload.position, payload.info);
+          break;
+      }
+    },
+  },
+};

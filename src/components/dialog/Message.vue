@@ -31,7 +31,7 @@ export default defineComponent({
       showModalDialog(dialog.value);
     });
 
-    const message = computed(() => store.state.messages[0]);
+    const message = computed(() => store.getters.message);
 
     const onClose = () => {
       store.commit(Mutation.SHIFT_MESSAGE);

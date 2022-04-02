@@ -108,6 +108,7 @@ function setupPlayer(
         color == Color.BLACK
           ? USIInfoSender.BLACK_PLAYER
           : USIInfoSender.WHITE_PLAYER,
+        setting.name,
         info
       );
     });
@@ -198,7 +199,7 @@ function setupResearcher(
       resolve();
     });
     process.on("info", (info, usi) => {
-      onUSIInfo(sessionID, usi, USIInfoSender.RESEARCHER, info);
+      onUSIInfo(sessionID, usi, USIInfoSender.RESEARCHER, setting.name, info);
     });
     process.launch();
   });

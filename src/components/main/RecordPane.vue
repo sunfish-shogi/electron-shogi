@@ -17,8 +17,8 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import Record from "@/components/primitive/Record.vue";
-import { Action, useStore } from "@/store";
-import { Mode } from "@/store/state";
+import { Mutation, useStore } from "@/store";
+import { Mode } from "@/store/mode";
 
 export const minWidth = 200;
 
@@ -31,7 +31,7 @@ export default defineComponent({
     const store = useStore();
 
     const goto = (number: number) => {
-      store.dispatch(Action.CHANGE_MOVE_NUMBER, number);
+      store.commit(Mutation.CHANGE_MOVE_NUMBER, number);
     };
 
     const goBegin = () => {
@@ -55,7 +55,7 @@ export default defineComponent({
     };
 
     const selectBranch = (index: number) => {
-      store.dispatch(Action.CHANGE_BRANCH, index);
+      store.commit(Mutation.CHANGE_BRANCH, index);
     };
 
     const isRecordOperational = computed(() => {

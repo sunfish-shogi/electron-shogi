@@ -26,95 +26,94 @@ import {
   specialMoveToDisplayString,
 } from "@/shogi";
 import { exportKakinoki, importKakinoki } from "@/shogi";
-import { Mode, State } from "@/store/state";
-import { InjectionKey } from "vue";
-import { createStore, Store, useStore as baseUseStore } from "vuex";
-import iconv from "iconv-lite";
-import { defaultGameSetting, GameSetting, PlayerType } from "@/settings/game";
+import { InjectionKey, watch } from "vue";
 import {
+  CommitOptions,
+  createStore,
+  DispatchOptions,
+  useStore as baseUseStore,
+} from "vuex";
+import iconv from "iconv-lite";
+import { GameSetting, PlayerType } from "@/settings/game";
+import {
+  AppSetting,
   AppSettingUpdate,
   ClockSoundTarget,
   defaultAppSetting,
 } from "@/settings/app";
-import { beepShort, beepUnlimited, playPieceBeat } from "@/audio";
+import {
+  AudioEventHandler,
+  beepShort,
+  beepUnlimited,
+  playPieceBeat,
+} from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/usi/info";
-import { BussyState } from "./bussy";
 import { RecordEntryCustomData } from "./record";
-import { USIMonitor } from "./usi";
 import { GameState } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
-import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
+import { ResearchSetting } from "@/settings/research";
+import { Mutation } from "./mutation";
+import { Action } from "./action";
+import { BussyState, bussyState } from "./bussy";
+import { USIState, usiState } from "./usi";
+import { Mode } from "./mode";
+import { messageState, MessageState } from "./message";
+import { errorState, ErrorState } from "./error";
 
-export const key: InjectionKey<Store<State>> = Symbol();
+export { Mutation } from "./mutation";
+export { Action } from "./action";
 
-export function useStore(): Store<State> {
+export type State = {
+  appSetting: AppSetting;
+  recordFilePath?: string;
+  record: Record;
+  mode: Mode;
+  usiSessionID: number;
+  game: GameState;
+  beep5sHandler?: AudioEventHandler;
+};
+
+interface Store {
+  readonly state: State & {
+    readonly usi: USIState;
+    readonly message: MessageState;
+    readonly error: ErrorState;
+    readonly bussy: BussyState;
+  };
+  readonly getters: {
+    readonly isMovableByUser: boolean;
+    readonly hasMessage: boolean;
+    readonly message: string;
+    readonly hasError: boolean;
+    readonly isBussy: boolean;
+  };
+  dispatch(
+    type: Action,
+    payload?: any,
+    options?: DispatchOptions
+  ): Promise<any>;
+  commit(type: Mutation, payload?: any, options?: CommitOptions): void;
+}
+
+export const key: InjectionKey<Store> = Symbol();
+
+export function useStore(): Store {
   return baseUseStore(key);
-}
-
-export enum Mutation {
-  UPDATE_APP_SETTING = "updateAppSetting",
-  SHOW_PASTE_DIALOG = "showPasteDialog",
-  CLOSE_PASTE_DIALOG = "closePasteDialog",
-  SHOW_GAME_DIALOG = "showGameDialog",
-  SHOW_RESEARCH_DIALOG = "showResearchDialog",
-  UPDATE_USI_POSITION = "updateUSIPosition",
-  NEW_RECORD = "newRecord",
-  DO_MOVE = "move",
-  EDIT_POSITION = "editPosition",
-  CHANGE_TURN = "changeTurn",
-  INITIALIZE_POSITION = "initializePosition",
-  UPDATE_RECORD_COMMENT = "updateRecordComment",
-  RECEIVE_USI_INFO = "receiveUsiInfo",
-  CLEAR_GAME_TIMER = "clearGameTimer",
-  FLIP_BOARD = "flipBoard",
-  OPEN_APP_SETTING_DIALOG = "openAppSettingDialog",
-  OPEN_USI_ENGINE_MANAGEMENT_DIALOG = "openUSIEngineManagementDialog",
-  CLOSE_DIALOG = "closeDialog",
-  RETAIN_BUSSY_STATE = "retainBussyState",
-  RELEASE_BUSSY_STATE = "releaseBussyState",
-  PUSH_MESSAGE = "pushMessage",
-  SHIFT_MESSAGE = "shiftMessage",
-  PUSH_ERROR = "pushError",
-  CLEAR_ERRORS = "clearErrors",
-}
-
-export enum Action {
-  UPDATE_AND_SAVE_APP_SETTING = "updateAndSaveAppSetting",
-  UPDATE_AND_SAVE_APP_SETTING_ON_BACKGROUND = "updateAndSaveAppSettingOnBackground",
-  OPEN_RECORD = "openRecord",
-  SAVE_RECORD = "saveRecord",
-  COPY_RECORD = "copyRecord",
-  PASTE_RECORD = "pasteRecord",
-  CHANGE_MOVE_NUMBER = "changeMoveNumber",
-  CHANGE_BRANCH = "changeBranch",
-  REMOVE_RECORD_AFTER = "removeRecordAfter",
-  START_POSITION_EDITING = "startPositionEditing",
-  END_POSITION_EDITING = "endPositionEditing",
-  START_RESEARCH = "startResearch",
-  STOP_RESEARCH = "stopResearch",
-  START_GAME = "startGame",
-  STOP_GAME = "stopGame",
-  RESIGN_BY_USER = "resign",
-  DO_MOVE_BY_USER = "doMoveByUser",
-  DO_MOVE_BY_USI_ENGINE = "doMoveByUSIEngine",
-  RESET_GAME_TIMER = "resetGameTimer",
-  BEEP_UNLIMITED = "beepUnlimited",
-  BEEP_SHORT = "beepShort",
 }
 
 export const store = createStore<State>({
   state: {
+    appSetting: defaultAppSetting(),
     record: new Record(),
     mode: Mode.NORMAL,
-    bussyState: new BussyState(),
     usiSessionID: 0,
-    researchSetting: defaultResearchSetting(),
-    gameSetting: defaultGameSetting(),
-    gameState: new GameState(),
-    usiMonitor: new USIMonitor(),
-    appSetting: defaultAppSetting(),
-    messages: [],
-    errors: [],
+    game: new GameState(),
+  },
+  modules: {
+    usi: usiState,
+    message: messageState,
+    error: errorState,
+    bussy: bussyState,
   },
   getters: {
     isMovableByUser(state): boolean {
@@ -125,8 +124,8 @@ export const store = createStore<State>({
         case Mode.GAME:
           return (
             (state.record.position.color === Color.BLACK
-              ? state.gameSetting.black.type
-              : state.gameSetting.white.type) === PlayerType.HUMAN
+              ? state.game.setting.black.type
+              : state.game.setting.white.type) === PlayerType.HUMAN
           );
       }
       return false;
@@ -138,6 +137,10 @@ export const store = createStore<State>({
         ...state.appSetting,
         ...update,
       };
+    },
+    [Mutation.FLIP_BOARD](state) {
+      state.appSetting.boardFlipping = !state.appSetting.boardFlipping;
+      saveAppSetting(state.appSetting);
     },
     [Mutation.SHOW_PASTE_DIALOG](state) {
       if (state.mode === Mode.NORMAL) {
@@ -159,97 +162,6 @@ export const store = createStore<State>({
         state.mode = Mode.RESEARCH_DIALOG;
       }
     },
-    [Mutation.UPDATE_USI_POSITION](state) {
-      updateUSIPosition(
-        state.record.usi,
-        state.gameSetting,
-        state.gameState.blackTimeMs,
-        state.gameState.whiteTimeMs
-      );
-    },
-    [Mutation.NEW_RECORD](state) {
-      if (state.mode != Mode.NORMAL) {
-        return;
-      }
-      state.record.clear(new Position());
-      state.recordFilePath = undefined;
-    },
-    [Mutation.CHANGE_TURN](state) {
-      if (state.mode != Mode.POSITION_EDITING) {
-        return;
-      }
-      const position = state.record.position.clone();
-      position.setTurn(reverseColor(position.color));
-      state.record.clear(position);
-    },
-    [Mutation.INITIALIZE_POSITION](
-      state,
-      initialPositionType: InitialPositionType
-    ) {
-      if (state.mode != Mode.POSITION_EDITING) {
-        return;
-      }
-      const position = new Position();
-      position.reset(initialPositionType);
-      state.record.clear(position);
-    },
-    [Mutation.DO_MOVE](state, move: Move) {
-      state.record.append(move);
-      state.record.current.setElapsedMs(state.gameState.elapsedMs);
-      playPieceBeat(state.appSetting.pieceVolume);
-    },
-    [Mutation.EDIT_POSITION](state, change: PositionChange) {
-      if (store.state.mode === Mode.POSITION_EDITING) {
-        const position = state.record.position.clone();
-        position.edit(change);
-        state.record.clear(position);
-      }
-    },
-    [Mutation.UPDATE_RECORD_COMMENT](state, comment: string) {
-      state.record.current.comment = comment;
-    },
-    [Mutation.RECEIVE_USI_INFO](
-      state,
-      payload: {
-        sessionID: number;
-        usi: string;
-        sender: USIInfoSender;
-        info: InfoCommand;
-      }
-    ) {
-      if (
-        state.usiSessionID !== payload.sessionID ||
-        state.record.usi != payload.usi
-      ) {
-        return;
-      }
-      state.usiMonitor.update(
-        payload.sessionID,
-        state.record.position,
-        payload.sender,
-        payload.info
-      );
-      const entryData = new RecordEntryCustomData(
-        state.record.current.customData
-      );
-      entryData.updateUSIInfo(
-        state.record.position.color,
-        payload.sender,
-        payload.info
-      );
-      state.record.current.customData = entryData.stringify();
-    },
-    [Mutation.CLEAR_GAME_TIMER](state) {
-      state.gameState.clearTimer();
-      if (state.beep5sHandler) {
-        state.beep5sHandler.stop();
-        state.beep5sHandler = undefined;
-      }
-    },
-    [Mutation.FLIP_BOARD](state) {
-      state.appSetting.boardFlipping = !state.appSetting.boardFlipping;
-      saveAppSetting(state.appSetting);
-    },
     [Mutation.OPEN_APP_SETTING_DIALOG](state) {
       if (state.mode === Mode.NORMAL) {
         state.mode = Mode.APP_SETTING_DIALOG;
@@ -270,55 +182,86 @@ export const store = createStore<State>({
         state.mode = Mode.NORMAL;
       }
     },
-    [Mutation.RETAIN_BUSSY_STATE](state) {
-      state.bussyState.retain();
+    [Mutation.NEW_RECORD](state) {
+      if (state.mode != Mode.NORMAL) {
+        return;
+      }
+      state.record.clear(new Position());
+      state.recordFilePath = undefined;
     },
-    [Mutation.RELEASE_BUSSY_STATE](state) {
-      state.bussyState.release();
+    [Mutation.UPDATE_RECORD_COMMENT](state, comment: string) {
+      state.record.current.comment = comment;
     },
-    [Mutation.PUSH_MESSAGE](state, message: string) {
-      state.messages.push(message);
+    [Mutation.CHANGE_TURN](state) {
+      if (state.mode != Mode.POSITION_EDITING) {
+        return;
+      }
+      const position = state.record.position.clone();
+      position.setTurn(reverseColor(position.color));
+      state.record.clear(position);
     },
-    [Mutation.SHIFT_MESSAGE](state) {
-      state.messages.shift();
+    [Mutation.INITIALIZE_POSITION](
+      state,
+      initialPositionType: InitialPositionType
+    ) {
+      if (state.mode != Mode.POSITION_EDITING) {
+        return;
+      }
+      const position = new Position();
+      position.reset(initialPositionType);
+      state.record.clear(position);
     },
-    [Mutation.PUSH_ERROR](state, e) {
-      if (e instanceof Error) {
-        state.errors.push(e);
-      } else {
-        state.errors.push(new Error(e));
+    [Mutation.EDIT_POSITION](state, change: PositionChange) {
+      if (state.mode === Mode.POSITION_EDITING) {
+        const position = state.record.position.clone();
+        position.edit(change);
+        state.record.clear(position);
       }
     },
-    [Mutation.CLEAR_ERRORS](state) {
-      state.errors = [];
+    [Mutation.CHANGE_MOVE_NUMBER](state, number: number) {
+      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
+        return;
+      }
+      state.record.goto(number);
+    },
+    [Mutation.CHANGE_BRANCH](state, index: number) {
+      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
+        return;
+      }
+      if (state.record.current.branchIndex === index) {
+        return;
+      }
+      state.record.switchBranchByIndex(index);
+    },
+    [Mutation.REMOVE_RECORD_AFTER](state) {
+      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
+        return;
+      }
+      state.record.removeAfter();
+    },
+    [Mutation.DO_MOVE](state, move: Move) {
+      state.record.append(move);
+      state.record.current.setElapsedMs(state.game.elapsedMs);
+      playPieceBeat(state.appSetting.pieceVolume);
+    },
+    [Mutation.CLEAR_GAME_TIMER](state) {
+      state.game.clearTimer();
+      if (state.beep5sHandler) {
+        state.beep5sHandler.stop();
+        state.beep5sHandler = undefined;
+      }
     },
   },
   actions: {
-    async [Action.UPDATE_AND_SAVE_APP_SETTING](
+    async [Action.UPDATE_APP_SETTING](
       { commit, state },
       update: AppSettingUpdate
     ) {
-      commit(Mutation.RETAIN_BUSSY_STATE);
-      try {
-        await saveAppSetting({
-          ...state.appSetting,
-          ...update,
-        });
-        commit(Mutation.UPDATE_APP_SETTING, update);
-        return true;
-      } catch {
-        store.commit(Mutation.PUSH_ERROR);
-        return false;
-      } finally {
-        commit(Mutation.RELEASE_BUSSY_STATE);
-      }
-    },
-    async [Action.UPDATE_AND_SAVE_APP_SETTING_ON_BACKGROUND](
-      { commit, state },
-      update: AppSettingUpdate
-    ) {
+      await saveAppSetting({
+        ...state.appSetting,
+        ...update,
+      });
       commit(Mutation.UPDATE_APP_SETTING, update);
-      await saveAppSetting(state.appSetting);
     },
     async [Action.OPEN_RECORD]({ commit, state }, path) {
       if (state.mode !== Mode.NORMAL) {
@@ -402,7 +345,7 @@ export const store = createStore<State>({
       });
       navigator.clipboard.writeText(str);
     },
-    async [Action.PASTE_RECORD]({ state, commit }, data: string) {
+    [Action.PASTE_RECORD]({ state, commit }, data: string) {
       if (state.mode !== Mode.NORMAL) {
         return;
       }
@@ -413,30 +356,6 @@ export const store = createStore<State>({
       } else {
         commit(Mutation.PUSH_ERROR, recordOrError);
       }
-    },
-    [Action.CHANGE_MOVE_NUMBER]({ state, commit }, number: number) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      state.record.goto(number);
-      commit(Mutation.UPDATE_USI_POSITION);
-    },
-    [Action.CHANGE_BRANCH]({ state, commit }, index: number) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      if (state.record.current.branchIndex === index) {
-        return;
-      }
-      state.record.switchBranchByIndex(index);
-      commit(Mutation.UPDATE_USI_POSITION);
-    },
-    async [Action.REMOVE_RECORD_AFTER]({ state, commit }) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      state.record.removeAfter();
-      commit(Mutation.UPDATE_USI_POSITION);
     },
     [Action.START_POSITION_EDITING]({ state }) {
       if (state.mode === Mode.NORMAL) {
@@ -451,6 +370,39 @@ export const store = createStore<State>({
         state.mode = Mode.NORMAL;
       }
     },
+    [Action.UPDATE_USI_INFO](
+      { state, commit },
+      payload: {
+        sessionID: number;
+        usi: string;
+        sender: USIInfoSender;
+        name: string;
+        info: InfoCommand;
+      }
+    ) {
+      if (
+        state.usiSessionID !== payload.sessionID ||
+        state.record.usi != payload.usi
+      ) {
+        return;
+      }
+      commit(Mutation.UPDATE_USI_INFO, {
+        sessionID: payload.sessionID,
+        position: state.record.position,
+        sender: payload.sender,
+        name: payload.name,
+        info: payload.info,
+      });
+      const entryData = new RecordEntryCustomData(
+        state.record.current.customData
+      );
+      entryData.updateUSIInfo(
+        state.record.position.color,
+        payload.sender,
+        payload.info
+      );
+      state.record.current.customData = entryData.stringify();
+    },
     async [Action.START_RESEARCH](
       { commit, state },
       researchSetting: ResearchSetting
@@ -463,9 +415,7 @@ export const store = createStore<State>({
         await saveResearchSetting(researchSetting);
         state.usiSessionID += 1;
         await startResearch(researchSetting, state.usiSessionID);
-        state.researchSetting = researchSetting;
         state.mode = Mode.RESEARCH;
-        commit(Mutation.UPDATE_USI_POSITION);
         return true;
       } catch (e) {
         commit(Mutation.PUSH_ERROR, "検討の初期化中にエラーが出ました: " + e);
@@ -490,45 +440,41 @@ export const store = createStore<State>({
         commit(Mutation.RELEASE_BUSSY_STATE);
       }
     },
-    async [Action.START_GAME](
-      { commit, dispatch, state },
-      gameSetting: GameSetting
-    ) {
+    async [Action.START_GAME]({ commit, state }, setting: GameSetting) {
       if (state.mode !== Mode.GAME_DIALOG) {
         return false;
       }
       commit(Mutation.RETAIN_BUSSY_STATE);
       try {
-        await saveGameSetting(gameSetting);
-        if (gameSetting.startPosition) {
+        await saveGameSetting(setting);
+        if (setting.startPosition) {
           const position = new Position();
-          position.reset(gameSetting.startPosition);
+          position.reset(setting.startPosition);
           state.record.clear(position);
           state.recordFilePath = undefined;
         }
         state.usiSessionID += 1;
-        await startGame(gameSetting, state.usiSessionID);
-        state.gameSetting = gameSetting;
-        state.gameState.setup(gameSetting);
+        await startGame(setting, state.usiSessionID);
+        state.game.setup(setting);
         state.mode = Mode.GAME;
         state.record.metadata.setStandardMetadata(
           RecordMetadataKey.BLACK_NAME,
-          gameSetting.black.name
+          setting.black.name
         );
         state.record.metadata.setStandardMetadata(
           RecordMetadataKey.WHITE_NAME,
-          gameSetting.white.name
+          setting.white.name
         );
-        if (gameSetting.humanIsFront) {
+        if (setting.humanIsFront) {
           let flip = state.appSetting.boardFlipping;
           if (
-            state.gameSetting.black.type === PlayerType.HUMAN &&
-            state.gameSetting.white.type !== PlayerType.HUMAN
+            setting.black.type === PlayerType.HUMAN &&
+            setting.white.type !== PlayerType.HUMAN
           ) {
             flip = false;
           } else if (
-            state.gameSetting.black.type !== PlayerType.HUMAN &&
-            state.gameSetting.white.type === PlayerType.HUMAN
+            setting.black.type !== PlayerType.HUMAN &&
+            setting.white.type === PlayerType.HUMAN
           ) {
             flip = true;
           }
@@ -536,8 +482,6 @@ export const store = createStore<State>({
             commit(Mutation.FLIP_BOARD);
           }
         }
-        await dispatch(Action.RESET_GAME_TIMER);
-        commit(Mutation.UPDATE_USI_POSITION);
         return true;
       } catch (e) {
         commit(Mutation.PUSH_ERROR, "対局の初期化中にエラーが出ました: " + e);
@@ -560,8 +504,7 @@ export const store = createStore<State>({
       try {
         await endGame(state.record.usi, specialMove);
         state.record.append(specialMove || SpecialMove.INTERRUPT);
-        state.record.current.setElapsedMs(state.gameState.elapsedMs);
-        commit(Mutation.CLEAR_GAME_TIMER);
+        state.record.current.setElapsedMs(state.game.elapsedMs);
         state.mode = Mode.NORMAL;
         return true;
       } catch (e) {
@@ -580,24 +523,17 @@ export const store = createStore<State>({
       }
       return dispatch(Action.STOP_GAME, SpecialMove.RESIGN);
     },
-    async [Action.DO_MOVE_BY_USER](
-      { commit, dispatch, state, getters },
-      move: Move
-    ) {
+    [Action.DO_MOVE_BY_USER]({ commit, state, getters }, move: Move) {
       if (!getters.isMovableByUser) {
         return false;
       }
       if (state.mode === Mode.GAME) {
-        state.gameState.increment(state.record.position.color);
+        state.game.increment(state.record.position.color);
       }
       commit(Mutation.DO_MOVE, move);
-      if (state.mode === Mode.GAME) {
-        dispatch(Action.RESET_GAME_TIMER);
-      }
-      commit(Mutation.UPDATE_USI_POSITION);
       return true;
     },
-    async [Action.DO_MOVE_BY_USI_ENGINE](
+    [Action.DO_MOVE_BY_USI_ENGINE](
       { commit, dispatch, state },
       payload: {
         sessionID: number;
@@ -641,20 +577,17 @@ export const store = createStore<State>({
         dispatch(Action.STOP_GAME, SpecialMove.FOUL_LOSE);
         return false;
       }
-      state.gameState.increment(state.record.position.color);
+      state.game.increment(state.record.position.color);
       commit(Mutation.DO_MOVE, move);
-      dispatch(Action.RESET_GAME_TIMER);
-      commit(Mutation.UPDATE_USI_POSITION);
       return true;
     },
-    [Action.RESET_GAME_TIMER]({ commit, dispatch, getters, state }) {
-      commit(Mutation.CLEAR_GAME_TIMER);
+    [Action.RESET_GAME_TIMER]({ dispatch, getters, state }) {
       const color = state.record.position.color;
-      state.gameState.startTimer(color, {
+      state.game.startTimer(color, {
         timeout: () => {
           if (
             getters.isMovableByUser ||
-            state.gameSetting.enableEngineTimeout
+            state.game.setting.enableEngineTimeout
           ) {
             dispatch(Action.STOP_GAME, SpecialMove.TIMEOUT);
           } else {
@@ -701,3 +634,22 @@ export const store = createStore<State>({
     },
   },
 });
+
+watch(
+  [() => store.state.mode, () => store.state.record.position],
+  () => {
+    store.commit(Mutation.CLEAR_GAME_TIMER);
+    if (store.state.mode === Mode.GAME) {
+      store.dispatch(Action.RESET_GAME_TIMER);
+    }
+    if (store.state.mode === Mode.GAME || store.state.mode === Mode.RESEARCH) {
+      updateUSIPosition(
+        store.state.record.usi,
+        store.state.game.setting,
+        store.state.game.blackTimeMs,
+        store.state.game.whiteTimeMs
+      );
+    }
+  },
+  { deep: true }
+);

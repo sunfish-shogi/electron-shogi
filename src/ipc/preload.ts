@@ -1,7 +1,7 @@
 import { MenuEvent } from "@/menu/event";
 import { Color } from "@/shogi";
 import { SpecialMove } from "@/shogi/record";
-import { Mode } from "@/store/state";
+import { Mode } from "@/store/mode";
 import { USIInfoSender } from "@/usi/info";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "./channel";
@@ -125,12 +125,16 @@ const api: API = {
       sessionID: number,
       usi: string,
       sender: USIInfoSender,
+      name: string,
       json: string
     ) => void
   ): void {
-    ipcRenderer.on(Renderer.USI_INFO, (_, sessionID, usi, sender, json) => {
-      callback(sessionID, usi, sender, json);
-    });
+    ipcRenderer.on(
+      Renderer.USI_INFO,
+      (_, sessionID, usi, sender, name, json) => {
+        callback(sessionID, usi, sender, name, json);
+      }
+    );
   },
 };
 

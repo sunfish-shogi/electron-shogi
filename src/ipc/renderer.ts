@@ -1,9 +1,8 @@
 import { Color } from "@/shogi";
-import { Action, Mutation } from "@/store";
+import { Action, Mutation, State } from "@/store";
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { watch } from "vue";
 import { GameSetting } from "@/settings/game";
-import { Mode, State } from "@/store/state";
 import { AppSetting } from "@/settings/app";
 import { Store } from "vuex";
 import { MenuEvent } from "@/menu/event";
@@ -12,6 +11,7 @@ import { USIInfoSender } from "@/usi/info";
 import { InitialPositionType } from "@/shogi/board";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/settings/research";
+import { Mode } from "@/store/mode";
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
@@ -58,6 +58,7 @@ export interface API {
       sessionID: number,
       usi: string,
       sender: USIInfoSender,
+      name: string,
       json: string
     ) => void
   ): void;
@@ -202,13 +203,12 @@ export async function sendUSISetOption(
 }
 
 export function setup(store: Store<State>): void {
-  const state = store.state;
   const api = getAPI();
   api.onSendError((e: Error) => {
     store.commit(Mutation.PUSH_ERROR, e);
   });
   api.onMenuEvent((event: MenuEvent) => {
-    if (state.bussyState.isBussy) {
+    if (store.getters.isBussy) {
       return;
     }
     switch (event) {
@@ -231,7 +231,7 @@ export function setup(store: Store<State>): void {
         store.commit(Mutation.SHOW_PASTE_DIALOG);
         break;
       case MenuEvent.REMOVE_RECORD_AFTER:
-        store.dispatch(Action.REMOVE_RECORD_AFTER);
+        store.commit(Mutation.REMOVE_RECORD_AFTER);
         break;
       case MenuEvent.START_POSITION_EDITING:
         store.dispatch(Action.START_POSITION_EDITING);
@@ -345,20 +345,27 @@ export function setup(store: Store<State>): void {
     }
   );
   api.onUSIInfo(
-    (sessionID: number, usi: string, sender: USIInfoSender, json: string) => {
-      store.commit(Mutation.RECEIVE_USI_INFO, {
+    (
+      sessionID: number,
+      usi: string,
+      sender: USIInfoSender,
+      name: string,
+      json: string
+    ) => {
+      store.dispatch(Action.UPDATE_USI_INFO, {
         sessionID,
         usi,
         sender,
+        name,
         info: JSON.parse(json),
       });
     }
   );
   watch(
-    () => [state.mode, state.bussyState.isBussy],
+    () => [store.state.mode, store.getters.isBussy],
     ([mode, bussy]) => {
       api.updateMenuState(mode as Mode, bussy as boolean);
     }
   );
-  api.updateMenuState(state.mode, state.bussyState.isBussy);
+  api.updateMenuState(store.state.mode, store.getters.isBussy);
 }

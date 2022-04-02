@@ -89,7 +89,7 @@ export default defineComponent({
       showModalDialog(dialog.value);
     });
 
-    const saveAndClose = () => {
+    const saveAndClose = async () => {
       const update: AppSettingUpdate = {
         boardLayout: boardLayout.value.value,
         pieceVolume: readInputAsNumber(pieceVolume.value),
@@ -97,9 +97,15 @@ export default defineComponent({
         clockPitch: readInputAsNumber(clockPitch.value),
         clockSoundTarget: clockSoundTarget.value.value,
       };
-      store.dispatch(Action.UPDATE_AND_SAVE_APP_SETTING, update).then(() => {
+      store.commit(Mutation.RETAIN_BUSSY_STATE);
+      try {
+        await store.dispatch(Action.UPDATE_APP_SETTING, update);
         store.commit(Mutation.CLOSE_DIALOG);
-      });
+      } catch (e) {
+        store.commit(Mutation.PUSH_ERROR, e);
+      } finally {
+        store.commit(Mutation.RELEASE_BUSSY_STATE);
+      }
     };
 
     const cancel = () => {

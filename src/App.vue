@@ -23,6 +23,7 @@ import Message from "@/components/dialog/Message.vue";
 import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
 import { Action, Mutation, useStore } from "@/store";
 import { Mode } from "@/store/mode";
+import { handleKeyDownEvent } from "@/helpers/key";
 
 export default defineComponent({
   name: "App",
@@ -75,33 +76,21 @@ export default defineComponent({
         }
         event.preventDefault();
       });
-      document.addEventListener("keydown", (event: KeyboardEvent) => {
-        const activeElement = document.activeElement;
-        if (
-          activeElement instanceof HTMLTextAreaElement ||
-          activeElement instanceof HTMLInputElement
-        ) {
-          return;
-        }
-        const moveNumber = store.state.record.current.number;
-        switch (event.key) {
-          default:
-            return;
-          case "ArrowUp":
-            store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber - 1);
-            break;
-          case "ArrowDown":
-            store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber + 1);
-            break;
-          case "ArrowLeft":
-            store.commit(Mutation.CHANGE_MOVE_NUMBER, 0);
-            break;
-          case "ArrowRight":
-            store.commit(Mutation.CHANGE_MOVE_NUMBER, Number.MAX_SAFE_INTEGER);
-            break;
-        }
-        event.preventDefault();
-        event.stopPropagation();
+      handleKeyDownEvent({
+        onArrowUp(): void {
+          const moveNumber = store.state.record.current.number;
+          store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber - 1);
+        },
+        onArrowDown(): void {
+          const moveNumber = store.state.record.current.number;
+          store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber + 1);
+        },
+        onArrowLeft(): void {
+          store.commit(Mutation.CHANGE_MOVE_NUMBER, 0);
+        },
+        onArrowRight(): void {
+          store.commit(Mutation.CHANGE_MOVE_NUMBER, Number.MAX_SAFE_INTEGER);
+        },
       });
     });
 

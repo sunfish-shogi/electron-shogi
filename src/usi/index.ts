@@ -1,12 +1,13 @@
 import { onUSIBestMove, onUSIInfo } from "@/ipc/background";
-import { issueEngineURI, USIEngineSetting } from "@/settings/usi";
-import { GameSetting, PlayerType } from "@/settings/game";
+import { USIEngineSetting } from "@/settings/usi";
+import { GameSetting } from "@/settings/game";
 import { Color } from "@/shogi";
 import { getNextColorFromUSI } from "@/shogi";
 import { EngineProcess, GameResult, TimeState } from "./engine";
 import { SpecialMove } from "@/shogi/record";
 import { USIInfoSender } from "./info";
 import { ResearchSetting } from "@/settings/research";
+import * as uri from "@/uri";
 
 export async function getUSIEngineInfo(
   path: string
@@ -25,7 +26,7 @@ export async function getUSIEngineInfo(
     engine.on("usiok", () => {
       clearTimeout(t);
       resolve({
-        uri: issueEngineURI(),
+        uri: uri.issueEngineURI(),
         name: engine.name,
         defaultName: engine.name,
         author: engine.author,
@@ -122,11 +123,11 @@ export async function startGame(
 ): Promise<void> {
   endGame();
   const p: Promise<void>[] = [];
-  if (gameSetting.black.type === PlayerType.USI) {
+  if (uri.isUSIEngine(gameSetting.black.uri)) {
     const setting = gameSetting.black.usi as USIEngineSetting;
     p.push(setupPlayer(sessionID, Color.BLACK, setting));
   }
-  if (gameSetting.white.type === PlayerType.USI) {
+  if (uri.isUSIEngine(gameSetting.white.uri)) {
     const setting = gameSetting.white.usi as USIEngineSetting;
     p.push(setupPlayer(sessionID, Color.WHITE, setting));
   }

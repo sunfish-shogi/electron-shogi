@@ -111,9 +111,3 @@ export class USIEngineSettings {
     return JSON.stringify(this, undefined, 2);
   }
 }
-
-export function issueEngineURI(): string {
-  const now = Date.now();
-  const rand = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
-  return `es://usi-engine/${now}/${rand}`;
-}

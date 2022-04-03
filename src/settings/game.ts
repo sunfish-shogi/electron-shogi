@@ -1,14 +1,10 @@
 import { InitialPositionType } from "@/shogi/board";
 import { USIEngineSetting } from "./usi";
-
-export enum PlayerType {
-  HUMAN = "human",
-  USI = "usi",
-}
+import * as uri from "@/uri";
 
 export type PlayerSetting = {
   name: string;
-  type: PlayerType;
+  uri: string;
   usi?: USIEngineSetting;
 };
 
@@ -31,11 +27,11 @@ export function defaultGameSetting(): GameSetting {
   return {
     black: {
       name: "人",
-      type: PlayerType.HUMAN,
+      uri: uri.ES_HUMAN,
     },
     white: {
       name: "人",
-      type: PlayerType.HUMAN,
+      uri: uri.ES_HUMAN,
     },
     timeLimit: {
       timeSeconds: 0,

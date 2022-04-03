@@ -20,7 +20,7 @@
           <input
             class="option-value-text"
             type="text"
-            name="es://engine_name"
+            name="ElectronShogiEngineName"
             ref="engineNameInput"
           />
         </div>

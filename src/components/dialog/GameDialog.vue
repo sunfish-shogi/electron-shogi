@@ -11,13 +11,12 @@
             ref="blackPlayerSelect"
             :value="defaultValues.black.type"
           >
-            <option value="es://human">人</option>
             <option
-              v-for="engine in engines"
-              :key="engine.uri"
-              :value="engine.uri"
+              v-for="player in players"
+              :key="player.uri"
+              :value="player.uri"
             >
-              {{ engine.name }}
+              {{ player.name }}
             </option>
           </select>
         </div>
@@ -29,13 +28,12 @@
             ref="whitePlayerSelect"
             :value="defaultValues.white.type"
           >
-            <option value="es://human">人</option>
             <option
-              v-for="engine in engines"
-              :key="engine.uri"
-              :value="engine.uri"
+              v-for="player in players"
+              :key="player.uri"
+              :value="player.uri"
             >
-              {{ engine.name }}
+              {{ player.name }}
             </option>
           </select>
         </div>
@@ -146,10 +144,10 @@ import {
   defaultGameSetting,
   GameSetting,
   PlayerSetting,
-  PlayerType,
   validateGameSetting,
 } from "@/settings/game";
 import { showModalDialog } from "@/helpers/dialog";
+import * as uri from "@/uri";
 
 export default defineComponent({
   name: "GameDialog",
@@ -182,18 +180,18 @@ export default defineComponent({
       }
     });
 
-    const buildPlayerSetting = (uri: string): PlayerSetting => {
-      if (uri === "es://human") {
+    const buildPlayerSetting = (playerURI: string): PlayerSetting => {
+      if (uri.isUSIEngine(playerURI)) {
+        const engine = engineSetting.value.getEngine(playerURI);
         return {
-          name: "人",
-          type: PlayerType.HUMAN,
+          name: engine.name,
+          uri: playerURI,
+          usi: engine,
         };
       }
-      const engine = engineSetting.value.getEngine(uri);
       return {
-        name: engine.name,
-        type: PlayerType.USI,
-        usi: engine,
+        name: "人",
+        uri: uri.ES_HUMAN,
       };
     };
 
@@ -227,18 +225,8 @@ export default defineComponent({
 
     const defaultValues = computed(() => {
       return {
-        black: {
-          type:
-            gameSetting.value.black.type === PlayerType.HUMAN
-              ? "es://human"
-              : gameSetting.value.black.usi?.uri,
-        },
-        white: {
-          type:
-            gameSetting.value.white.type === PlayerType.HUMAN
-              ? "es://human"
-              : gameSetting.value.white.usi?.uri,
-        },
+        black: { type: gameSetting.value.black.uri },
+        white: { type: gameSetting.value.white.uri },
         timeLimit: {
           hours: Math.floor(gameSetting.value.timeLimit.timeSeconds / 3600),
           minutes:
@@ -255,7 +243,12 @@ export default defineComponent({
       };
     });
 
-    const engines = computed(() => engineSetting.value.engineList);
+    const players = computed(() => {
+      return [
+        { name: "人", uri: uri.ES_HUMAN },
+        ...engineSetting.value.engineList,
+      ];
+    });
 
     return {
       dialog,
@@ -269,7 +262,7 @@ export default defineComponent({
       enableEngineTimeout,
       humanIsFront,
       defaultValues,
-      engines,
+      players,
       onStart,
       onCancel,
     };

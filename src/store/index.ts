@@ -34,7 +34,7 @@ import {
   useStore as baseUseStore,
 } from "vuex";
 import iconv from "iconv-lite";
-import { GameSetting, PlayerType } from "@/settings/game";
+import { GameSetting } from "@/settings/game";
 import {
   AppSetting,
   AppSettingUpdate,
@@ -59,6 +59,7 @@ import { USIState, usiState } from "./usi";
 import { Mode } from "./mode";
 import { messageState, MessageState } from "./message";
 import { errorState, ErrorState } from "./error";
+import * as uri from "@/uri";
 
 export { Mutation } from "./mutation";
 export { Action } from "./action";
@@ -124,8 +125,8 @@ export const store = createStore<State>({
         case Mode.GAME:
           return (
             (state.record.position.color === Color.BLACK
-              ? state.game.setting.black.type
-              : state.game.setting.white.type) === PlayerType.HUMAN
+              ? state.game.setting.black.uri
+              : state.game.setting.white.uri) === uri.ES_HUMAN
           );
       }
       return false;
@@ -468,13 +469,13 @@ export const store = createStore<State>({
         if (setting.humanIsFront) {
           let flip = state.appSetting.boardFlipping;
           if (
-            setting.black.type === PlayerType.HUMAN &&
-            setting.white.type !== PlayerType.HUMAN
+            setting.black.uri === uri.ES_HUMAN &&
+            setting.white.uri !== uri.ES_HUMAN
           ) {
             flip = false;
           } else if (
-            setting.black.type !== PlayerType.HUMAN &&
-            setting.white.type === PlayerType.HUMAN
+            setting.black.uri !== uri.ES_HUMAN &&
+            setting.white.uri === uri.ES_HUMAN
           ) {
             flip = true;
           }

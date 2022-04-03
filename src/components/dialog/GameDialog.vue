@@ -2,40 +2,48 @@
   <div>
     <dialog ref="dialog">
       <div class="dialog-title">対局</div>
-      <div class="dialog-form-area players">
-        <div class="player">
-          <div class="top-label">先手（下手）</div>
-          <select
-            class="player-select"
-            size="1"
-            ref="blackPlayerSelect"
-            :value="defaultValues.black.type"
-          >
-            <option
-              v-for="player in players"
-              :key="player.uri"
-              :value="player.uri"
+      <div class="dialog-form-area">
+        <div class="players">
+          <div class="player">
+            <div class="top-label">先手（下手）</div>
+            <select
+              class="player-select"
+              size="1"
+              ref="blackPlayerSelect"
+              :value="defaultValues.black.type"
             >
-              {{ player.name }}
-            </option>
-          </select>
+              <option
+                v-for="player in players"
+                :key="player.uri"
+                :value="player.uri"
+              >
+                {{ player.name }}
+              </option>
+            </select>
+          </div>
+          <div class="player">
+            <div class="top-label">後手（上手）</div>
+            <select
+              class="player-select"
+              size="1"
+              ref="whitePlayerSelect"
+              :value="defaultValues.white.type"
+            >
+              <option
+                v-for="player in players"
+                :key="player.uri"
+                :value="player.uri"
+              >
+                {{ player.name }}
+              </option>
+            </select>
+          </div>
         </div>
-        <div class="player">
-          <div class="top-label">後手（上手）</div>
-          <select
-            class="player-select"
-            size="1"
-            ref="whitePlayerSelect"
-            :value="defaultValues.white.type"
-          >
-            <option
-              v-for="player in players"
-              :key="player.uri"
-              :value="player.uri"
-            >
-              {{ player.name }}
-            </option>
-          </select>
+        <div class="players-control">
+          <button @click="onSwapColor">
+            <Icon class="icon" icon="swap_h" />
+            先後入れ替え
+          </button>
         </div>
       </div>
       <div class="dialog-form-areas-h">
@@ -148,9 +156,13 @@ import {
 } from "@/settings/game";
 import { showModalDialog } from "@/helpers/dialog";
 import * as uri from "@/uri";
+import Icon from "@/components/primitive/Icon.vue";
 
 export default defineComponent({
   name: "GameDialog",
+  components: {
+    Icon,
+  },
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
@@ -223,6 +235,13 @@ export default defineComponent({
       store.commit(Mutation.CLOSE_DIALOG);
     };
 
+    const onSwapColor = () => {
+      [blackPlayerSelect.value.value, whitePlayerSelect.value.value] = [
+        whitePlayerSelect.value.value,
+        blackPlayerSelect.value.value,
+      ];
+    };
+
     const defaultValues = computed(() => {
       return {
         black: { type: gameSetting.value.black.uri },
@@ -265,6 +284,7 @@ export default defineComponent({
       players,
       onStart,
       onCancel,
+      onSwapColor,
     };
   },
 });
@@ -274,17 +294,28 @@ export default defineComponent({
 .top-label {
   text-align: center;
 }
-.dialog-form-area.players {
+.dialog-form-area {
+  width: 480px;
+  display: flex;
+  flex-direction: column;
+}
+.players {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  width: 480px;
+  width: 100%;
 }
 .player {
   width: 220px;
 }
 .player-select {
   width: 200px;
+}
+.players-control {
+  width: 100%;
+}
+.players-control > * {
+  margin-top: 5px;
 }
 .dialog-form-area.time-limit {
   width: 240px;

@@ -79,6 +79,8 @@ enum LineType {
   BLACK_HAND,
   WHITE_HAND,
   BOARD,
+  BLACK_TURN,
+  WHITE_TURN,
   MOVE,
   COMMENT,
   UNKNOWN,
@@ -107,6 +109,18 @@ const linePatterns = [
   {
     prefix: /^\|/,
     type: LineType.BOARD,
+    removePrefix: false,
+    isPosition: true,
+  },
+  {
+    prefix: /^先手番/,
+    type: LineType.BLACK_TURN,
+    removePrefix: false,
+    isPosition: true,
+  },
+  {
+    prefix: /^後手番/,
+    type: LineType.WHITE_TURN,
     removePrefix: false,
     isPosition: true,
   },
@@ -334,7 +348,7 @@ function readBoard(board: Board, data: string): Error | undefined {
 function readHand(hand: Hand, data: string): Error | undefined {
   const sections = data.split(/[ 　]/);
   for (const section of sections) {
-    if (!section) {
+    if (!section || section === "なし") {
       continue;
     }
     const pieceStr = section[0];
@@ -420,6 +434,9 @@ export function importKakinoki(data: string): Record | Error {
   const position = new Position();
   let inMoveSection = false;
   for (const line of lines) {
+    if (line === "") {
+      continue;
+    }
     const parsed = parseLine(line);
     if (inMoveSection && parsed.isPosition) {
       return new Error("不正なデータ: " + line);
@@ -446,6 +463,12 @@ export function importKakinoki(data: string): Record | Error {
         break;
       case LineType.BOARD:
         e = readBoard(position.board, parsed.data);
+        break;
+      case LineType.BLACK_TURN:
+        position.setColor(Color.BLACK);
+        break;
+      case LineType.WHITE_TURN:
+        position.setColor(Color.WHITE);
         break;
       case LineType.MOVE:
         if (!inMoveSection) {
@@ -595,6 +618,11 @@ function formatPosition(
   }
   ret += "+---------------------------+" + returnCode;
   ret += "先手の持駒：" + formatHand(position.blackHand) + returnCode;
+  if (position.color === Color.BLACK) {
+    ret += "先手番" + returnCode;
+  } else {
+    ret += "後手番" + returnCode;
+  }
   return ret;
 }
 

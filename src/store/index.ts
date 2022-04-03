@@ -198,7 +198,7 @@ export const store = createStore<State>({
         return;
       }
       const position = state.record.position.clone();
-      position.setTurn(reverseColor(position.color));
+      position.setColor(reverseColor(position.color));
       state.record.clear(position);
     },
     [Mutation.INITIALIZE_POSITION](

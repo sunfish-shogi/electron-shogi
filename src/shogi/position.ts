@@ -375,7 +375,7 @@ export default class Position {
     return true;
   }
 
-  setTurn(color: Color): void {
+  setColor(color: Color): void {
     this._color = color;
   }
 

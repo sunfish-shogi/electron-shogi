@@ -1,6 +1,5 @@
 import { MenuEvent } from "@/menu/event";
-import { Color } from "@/shogi";
-import { SpecialMove } from "@/shogi/record";
+import { Color, SpecialMove } from "@/shogi";
 import { Mode } from "@/store/mode";
 import { USIInfoSender } from "@/usi/info";
 import { contextBridge, ipcRenderer } from "electron";

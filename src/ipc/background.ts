@@ -22,10 +22,9 @@ import {
   endResearch as usiEndResearch,
   sendSetOptionCommand as usiSendSetOptionCommand,
 } from "@/usi";
-import { Color } from "@/shogi";
+import { Color, SpecialMove } from "@/shogi";
 import { updateState as updateMenuState } from "@/menu/menu";
 import { MenuEvent } from "@/menu/event";
-import { SpecialMove } from "@/shogi/record";
 import { InfoCommand, USIInfoSender } from "@/usi/info";
 import { Mode } from "@/store/mode";
 

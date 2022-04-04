@@ -1,4 +1,4 @@
-import { InitialPositionType } from "@/shogi/board";
+import { InitialPositionType } from "@/shogi";
 import { USIEngineSetting } from "./usi";
 import * as uri from "@/uri";
 

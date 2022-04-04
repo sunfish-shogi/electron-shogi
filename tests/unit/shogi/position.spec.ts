@@ -119,7 +119,7 @@ describe("shogi/position", () => {
 +---------------------------+
 先手の持駒：歩八　香二　桂二　銀二　金二　
 後手番
-`
+`;
       const position = (importKakinoki(data) as Record).position;
       const move = (ff: number, fr: number, tf: number, tr: number) =>
         position.createMove(new Square(ff, fr), new Square(tf, tr)) as Move;

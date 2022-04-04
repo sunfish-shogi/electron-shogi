@@ -1,10 +1,8 @@
 import { onUSIBestMove, onUSIInfo } from "@/ipc/background";
 import { USIEngineSetting } from "@/settings/usi";
 import { GameSetting } from "@/settings/game";
-import { Color } from "@/shogi";
-import { getNextColorFromUSI } from "@/shogi";
+import { Color, SpecialMove, getNextColorFromUSI } from "@/shogi";
 import { EngineProcess, GameResult, TimeState } from "./engine";
-import { SpecialMove } from "@/shogi/record";
 import { USIInfoSender } from "./info";
 import { ResearchSetting } from "@/settings/research";
 import * as uri from "@/uri";

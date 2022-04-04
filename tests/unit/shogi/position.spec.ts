@@ -94,6 +94,8 @@ describe("shogi/position", () => {
       // 味方の駒
       expect(position.isValidMove(move(6, 6, 5, 7))).toBeFalsy();
       expect(position.isValidMove(move(6, 6, 7, 7))).toBeFalsy();
+      // 打てないマス
+      expect(position.isValidMove(drop(PieceType.PAWN, 2, 6))).toBeFalsy();
       // 二歩
       expect(position.isValidMove(drop(PieceType.PAWN, 4, 6))).toBeFalsy();
       // 存在しない駒
@@ -141,6 +143,9 @@ describe("shogi/position", () => {
       expect(position.isValidMove(move(3, 5, 4, 6))).toBeTruthy();
       expect(position.isValidMove(move(6, 8, 5, 8).withPromote())).toBeTruthy();
       expect(position.isValidMove(move(6, 8, 1, 8).withPromote())).toBeTruthy();
+      expect(position.isValidMove(drop(PieceType.PAWN, 8, 8))).toBeTruthy();
+      expect(position.isValidMove(drop(PieceType.LANCE, 8, 8))).toBeTruthy();
+      expect(position.isValidMove(drop(PieceType.KNIGHT, 8, 7))).toBeTruthy();
       // 王手放置
       expect(position.isValidMove(move(2, 7, 3, 8))).toBeFalsy();
       expect(position.isValidMove(move(4, 7, 4, 8).withPromote())).toBeFalsy();
@@ -153,6 +158,10 @@ describe("shogi/position", () => {
       expect(position.isValidMove(move(9, 8, 9, 9))).toBeFalsy();
       expect(position.isValidMove(move(8, 5, 8, 9))).toBeFalsy();
       expect(position.isValidMove(move(9, 6, 8, 8))).toBeFalsy();
+      expect(position.isValidMove(drop(PieceType.PAWN, 8, 9))).toBeFalsy();
+      expect(position.isValidMove(drop(PieceType.LANCE, 8, 9))).toBeFalsy();
+      expect(position.isValidMove(drop(PieceType.KNIGHT, 8, 8))).toBeFalsy();
+      expect(position.isValidMove(drop(PieceType.KNIGHT, 8, 9))).toBeFalsy();
       // 成れない駒
       expect(position.isValidMove(move(3, 5, 2, 6).withPromote())).toBeFalsy();
       expect(position.isValidMove(move(7, 8, 7, 9).withPromote())).toBeFalsy();

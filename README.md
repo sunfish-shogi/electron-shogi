@@ -53,6 +53,8 @@ GitHub のアカウントをお持ちの方は GitHub Issue/PullRequest を活�
 ### セットアップ
 
 ```
+git clone https://github.com/sunfish-shogi/electron-shogi.git
+cd electron-shogi
 npm install
 ```
 
@@ -85,7 +87,7 @@ npm run test:unit
 ### Lint
 
 ```
-npm run lint -- --fix
+npm run lint
 ```
 
 ## ライセンス

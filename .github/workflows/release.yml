@@ -15,7 +15,7 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run electron:build -- --publish never
-    - run: node archive.js win
+    - run: node archive.mjs win
     - uses: actions/upload-artifact@v3
       with:
         name: windows-release

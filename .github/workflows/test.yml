@@ -17,3 +17,6 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run test:unit
+    - run: npm run lint
+    - run: npm run report:license
+    - run: git diff --exit-code

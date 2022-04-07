@@ -5,6 +5,7 @@ import {
   Piece,
   PieceType,
   Record,
+  RecordMetadataKey,
   SpecialMove,
   Square,
 } from "@/shogi";
@@ -115,6 +116,12 @@ describe("shogi/kakinoki", () => {
 `;
     const record = importKakinoki(data) as Record;
     expect(record).toBeInstanceOf(Record);
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+    ).toBe("奨励会員");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+    ).toBe("久保");
     expect(record.current.comment).toBe("");
     record.goto(64);
     expect(record.current.comment).toBe("4六桂の方が良かった。");
@@ -317,6 +324,12 @@ describe("shogi/kakinoki", () => {
 `;
     const record = importKakinoki(data) as Record;
     expect(record).toBeInstanceOf(Record);
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+    ).toBe("ZhangJingding");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+    ).toBe("Sota_FUJII");
     expect(record.position.board.at(new Square(2, 2))).toBeNull();
     expect(record.position.board.at(new Square(8, 2))).toStrictEqual(
       new Piece(Color.WHITE, PieceType.ROOK)

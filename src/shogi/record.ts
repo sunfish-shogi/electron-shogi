@@ -144,7 +144,8 @@ class RecordEntryImpl implements RecordEntry {
   }
 
   get displayMoveText(): string {
-    const prev = this.prev instanceof Move ? this.prev : null;
+    const prev =
+      this.prev && this.prev.move instanceof Move ? this.prev.move : null;
     return this.move instanceof Move
       ? this.move.getDisplayText(prev)
       : specialMoveToDisplayString(this.move);

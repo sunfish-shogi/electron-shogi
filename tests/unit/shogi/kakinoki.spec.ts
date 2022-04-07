@@ -324,8 +324,12 @@ describe("shogi/kakinoki", () => {
     record.goto(104);
     const move = record.current.move as Move;
     expect(move.getDisplayText()).toBe("▲９一角成 (64)");
+    expect(record.current.elapsedMs).toBe(21000);
+    expect(record.current.totalElapsedMs).toBe(670000);
     record.goto(999);
     expect(record.current.number).toBe(178);
     expect(record.current.move).toBe(SpecialMove.RESIGN);
+    expect(record.current.elapsedMs).toBe(11000);
+    expect(record.current.totalElapsedMs).toBe(1364000);
   });
 });

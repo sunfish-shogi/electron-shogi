@@ -319,7 +319,7 @@ const moveRegExp =
 const timeRegExp = /\( *([0-9]+):([0-9]+)\/[0-9: ]*\)/;
 
 const specialMoveRegExp =
-  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗)( |$)/;
+  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗) *(.*)$/;
 
 function readBoard(board: Board, data: string): Error | undefined {
   if (data.length < 21) {
@@ -363,13 +363,25 @@ function readHand(hand: Hand, data: string): Error | undefined {
   return;
 }
 
+function readMoveTime(record: Record, data: string): void {
+  const timeResult = timeRegExp.exec(data);
+  if (timeResult) {
+    const minutes = timeResult[1];
+    const seconds = timeResult[2];
+    const s = Number.parseInt(minutes) * 60 + Number.parseInt(seconds);
+    record.current.setElapsedMs(s * 1e3);
+  }
+}
+
 function readMove(record: Record, data: string): Error | undefined {
   let result = specialMoveRegExp.exec(data);
   if (result) {
     const num = Number(result[1]);
     const move = stringToSpecialMove[result[2]];
+    const time = result[3];
     record.goto(num - 1);
     record.append(move);
+    readMoveTime(record, time);
     return;
   }
 
@@ -417,14 +429,7 @@ function readMove(record: Record, data: string): Error | undefined {
   if (!record.append(move)) {
     return new Error("無効な指し手: " + data);
   }
-
-  const timeResult = timeRegExp.exec(time);
-  if (timeResult) {
-    const minutes = timeResult[1];
-    const seconds = timeResult[2];
-    const s = Number.parseInt(minutes) * 60 + Number.parseInt(seconds);
-    record.current.setElapsedMs(s * 1e3);
-  }
+  readMoveTime(record, time);
   return;
 }
 

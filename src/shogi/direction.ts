@@ -252,6 +252,12 @@ const movableDirectionMap: {
   },
 };
 
+export function movableDirections(piece: Piece): Direction[] {
+  return Object.keys(
+    movableDirectionMap[piece.color as string][piece.type]
+  ) as Direction[];
+}
+
 export function resolveMoveType(
   piece: Piece,
   direction: Direction

@@ -1,4 +1,5 @@
 import { Color } from ".";
+import { reverseColor } from "./color";
 import {
   directions,
   MoveType,
@@ -48,10 +49,20 @@ function sfenCharToNumber(sfen: string): number | null {
   }
 }
 
+type PowerDetectionOption = {
+  filled?: Square;
+  ignore?: Square;
+};
+
 export interface ImmutableBoard {
   at(square: Square): Piece | null;
   listNonEmptySquares(): Array<Square>;
-  isCheck(kingColor: Color, filled: Square, ignore: Square): boolean;
+  hasPower(
+    target: Square,
+    color: Color,
+    option?: PowerDetectionOption
+  ): boolean;
+  isCheck(kingColor: Color, option?: PowerDetectionOption): boolean;
   readonly sfen: string;
 }
 
@@ -90,6 +101,17 @@ export default class Board {
     const squares = new Array<Square>();
     Square.all.forEach((square) => {
       if (this.squares[square.index]) {
+        squares.push(square);
+      }
+    });
+    return squares;
+  }
+
+  listSquaresByColor(color: Color): Array<Square> {
+    const squares = new Array<Square>();
+    Square.all.forEach((square) => {
+      const piece = this.squares[square.index];
+      if (piece && piece.color === color) {
         squares.push(square);
       }
     });
@@ -385,33 +407,28 @@ export default class Board {
     });
   }
 
-  isCheck(
-    kingColor: Color,
-    filled?: Square,
-    ignore?: Square,
-    kingSquare?: Square
+  hasPower(
+    target: Square,
+    color: Color,
+    option?: PowerDetectionOption
   ): boolean {
-    const king = kingSquare || this.findKing(kingColor);
-    if (!king) {
-      return false;
-    }
     return !!directions.find((dir) => {
       let step = 0;
       for (
-        let square = king.neighbor(dir);
+        let square = target.neighbor(dir);
         square.valid;
         square = square.neighbor(dir)
       ) {
         step += 1;
-        if (filled && square.equals(filled)) {
+        if (option && option.filled && square.equals(option.filled)) {
           break;
         }
-        if (ignore && square.equals(ignore)) {
+        if (option && option.ignore && square.equals(option.ignore)) {
           continue;
         }
         const piece = this.at(square);
         if (piece) {
-          if (piece.color === kingColor) {
+          if (piece.color !== color) {
             return false;
           }
           const rdir = reverseDirection(dir);
@@ -422,6 +439,17 @@ export default class Board {
         }
       }
       return false;
+    });
+  }
+
+  isCheck(kingColor: Color, option?: PowerDetectionOption): boolean {
+    const square = this.findKing(kingColor);
+    if (!square) {
+      return false;
+    }
+    return this.hasPower(square, reverseColor(kingColor), {
+      filled: option && option.filled,
+      ignore: option && option.ignore,
     });
   }
 

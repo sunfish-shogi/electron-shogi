@@ -380,7 +380,9 @@ function readMove(record: Record, data: string): Error | undefined {
     const move = stringToSpecialMove[result[2]];
     const time = result[3];
     record.goto(num - 1);
-    record.append(move);
+    record.append(move, {
+      ignoreValidation: true,
+    });
     readMoveTime(record, time);
     return;
   }
@@ -426,9 +428,9 @@ function readMove(record: Record, data: string): Error | undefined {
   if (promStr === "成") {
     move = move.withPromote();
   }
-  if (!record.append(move)) {
-    return new Error("無効な指し手: " + data);
-  }
+  record.append(move, {
+    ignoreValidation: true,
+  });
   readMoveTime(record, time);
   return;
 }

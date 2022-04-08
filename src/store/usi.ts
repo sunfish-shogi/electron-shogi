@@ -26,7 +26,9 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
     if (!move) {
       break;
     }
-    p.doMove(move);
+    p.doMove(move, {
+      ignoreValidation: true,
+    });
     result += move.getDisplayText(prev);
     prev = move;
   }

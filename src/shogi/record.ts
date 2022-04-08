@@ -1,4 +1,4 @@
-import Position, { ImmutablePosition } from "./position";
+import Position, { DoMoveOption, ImmutablePosition } from "./position";
 import Move from "./move";
 import { Color } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/helpers/time";
@@ -306,7 +306,9 @@ export default class Record {
         this._current = this._current.branch as RecordEntryImpl;
       }
       if (this._current.move instanceof Move) {
-        this._position.doMove(this._current.move);
+        this._position.doMove(this._current.move, {
+          ignoreValidation: true,
+        });
       }
       return true;
     }
@@ -345,7 +347,9 @@ export default class Record {
         }
         this._current = p;
         if (this._current.move instanceof Move) {
-          this._position.doMove(this._current.move);
+          this._position.doMove(this._current.move, {
+            ignoreValidation: true,
+          });
         }
         ok = true;
       } else {
@@ -355,12 +359,11 @@ export default class Record {
     return ok;
   }
 
-  append(move: Move | SpecialMove): boolean {
+  append(move: Move | SpecialMove, opt?: DoMoveOption): boolean {
     if (move instanceof Move) {
-      if (!this.position.isValidMove(move)) {
+      if (!this._position.doMove(move, opt)) {
         return false;
       }
-      this._position.doMove(move);
     }
     if (this._current !== this.first && !(this._current.move instanceof Move)) {
       this.goBack();

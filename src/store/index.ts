@@ -241,7 +241,9 @@ export const store = createStore<State>({
       state.record.removeAfter();
     },
     [Mutation.DO_MOVE](state, move: Move) {
-      state.record.append(move);
+      state.record.append(move, {
+        ignoreValidation: true,
+      });
       state.record.current.setElapsedMs(state.game.elapsedMs);
       playPieceBeat(state.appSetting.pieceVolume);
     },

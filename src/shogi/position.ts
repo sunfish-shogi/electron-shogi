@@ -80,6 +80,10 @@ export interface ImmutablePosition {
   clone(): Position;
 }
 
+export type DoMoveOption = {
+  ignoreValidation?: boolean
+};
+
 export default class Position {
   private _board: Board;
   private _color: Color;
@@ -301,8 +305,8 @@ export default class Position {
     return true;
   }
 
-  doMove(move: Move): boolean {
-    if (!this.isValidMove(move)) {
+  doMove(move: Move, opt?: DoMoveOption): boolean {
+    if (!(opt && opt.ignoreValidation) && !this.isValidMove(move)) {
       return false;
     }
     if (move.from instanceof Square) {

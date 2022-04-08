@@ -81,7 +81,7 @@ export interface ImmutablePosition {
 }
 
 export type DoMoveOption = {
-  ignoreValidation?: boolean
+  ignoreValidation?: boolean;
 };
 
 export default class Position {

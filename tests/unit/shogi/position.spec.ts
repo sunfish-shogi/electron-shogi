@@ -49,9 +49,11 @@ describe("shogi/position", () => {
     move = position.createMove(new Square(2, 8), new Square(2, 6));
     expect(position.doMove(move as Move)).toBeFalsy();
     expect(position.color).toBe(Color.BLACK);
-    expect(position.doMove(move as Move, {
-      ignoreValidation: true,
-    })).toBeTruthy();
+    expect(
+      position.doMove(move as Move, {
+        ignoreValidation: true,
+      })
+    ).toBeTruthy();
     expect(position.color).toBe(Color.WHITE);
     expect(position.board.at(new Square(2, 8))).toBe(null);
     expect(position.board.at(new Square(2, 6))).toStrictEqual(

@@ -45,6 +45,9 @@ describe("shogi/position", () => {
     expect(position.board.at(new Square(3, 4))).toStrictEqual(
       new Piece(Color.WHITE, PieceType.PAWN)
     );
+    // Invalid
+    move = position.createMove(new Square(2, 8), new Square(2, 6));
+    expect(position.doMove(move as Move)).toBeFalsy();
   });
 
   describe("isValidMove", () => {
@@ -166,6 +169,162 @@ describe("shogi/position", () => {
       expect(position.isValidMove(move(3, 5, 2, 6).withPromote())).toBeFalsy();
       expect(position.isValidMove(move(7, 8, 7, 9).withPromote())).toBeFalsy();
     });
+
+    it("black/pawn_drop_mate", () => {
+      const data = `
+後手の持駒：なし
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・ ・ ・ ・ 角 ・|一
+| ・ ・ ・ 飛 ・ ・v桂 ・ ・|二
+| ・ ・ ・ ・ ・v玉v桂 ・ ・|三
+| ・ ・ ・ ・ 歩 ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ 金 ・ ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ 玉 ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：歩 
+`;
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(4, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeTruthy();
+      expect(position.isValidMove(move)).toBeFalsy();
+    });
+
+    it("black/no_pawn_drop_mate/capture", () => {
+      const data = `
+後手の持駒：なし
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|一
+| ・ ・ ・ 飛 ・ ・v桂 ・ ・|二
+| ・ ・ ・ ・ ・v玉v桂 ・ ・|三
+| ・ ・ ・ ・ 歩 ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ 金 ・ ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ 玉 ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：歩 
+`;
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(4, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeFalsy();
+      expect(position.isValidMove(move)).toBeTruthy();
+    });
+
+    it("black/no_pawn_drop_mate/king_movable", () => {
+      const data = `
+後手の持駒：なし
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・ ・ ・ ・ 角 ・|一
+| ・ ・ ・ 飛 ・ ・v桂 ・ ・|二
+| ・ ・ ・ ・ ・v玉v桂 ・ ・|三
+| ・ ・ ・ ・ 歩 ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ ・ 金 ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ 玉 ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：歩 
+`;
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(4, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeFalsy();
+      expect(position.isValidMove(move)).toBeTruthy();
+    });
+
+    it("white/pawn_drop_mate", () => {
+      const data = `
+後手の持駒：歩 
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・v玉 ・ ・ ・ ・|一
+| ・ ・v香 ・ ・ ・ ・ ・ ・|二
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|三
+| ・ ・ ・ ・ ・ ・v飛 ・ ・|四
+| ・ ・ ・ 玉 銀 ・ ・v飛 ・|五
+| ・ ・ ・ 歩 ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・vと ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：なし
+後手番
+`;
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(6, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeTruthy();
+      expect(position.isValidMove(move)).toBeFalsy();
+    });
+
+    it("white/no_pawn_drop_mate/capture", () => {
+      const data = `
+後手の持駒：歩 
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・v玉 ・ ・ ・ ・|一
+| ・ ・v香 ・ ・ ・ ・ ・ ・|二
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|三
+| ・ ・ ・ ・ ・ ・v飛 ・ ・|四
+| ・ ・ ・ 玉 銀 ・ ・ ・ ・|五
+| ・ ・ ・ 歩 ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・vと ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：なし
+後手番
+`;
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(6, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeFalsy();
+      expect(position.isValidMove(move)).toBeTruthy();
+    });
+  });
+
+  it("white/no_pawn_drop_mate/king_movable", () => {
+    const data = `
+後手の持駒：歩 
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・v玉 ・ ・ ・ ・|一
+| ・ ・v香 ・ ・ ・ ・ ・ ・|二
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|三
+| ・ ・ ・ ・ ・ ・v飛 ・ ・|四
+| ・ ・ ・ 玉 銀 ・ ・v飛 ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・vと ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：なし
+後手番
+`;
+    const position = (importKakinoki(data) as Record).position;
+    const move = position.createMove(PieceType.PAWN, new Square(6, 4)) as Move;
+    expect(position.isPawnDropMate(move)).toBeFalsy();
+    expect(position.isValidMove(move)).toBeTruthy();
   });
 
   it("sfen", () => {

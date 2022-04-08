@@ -11,7 +11,9 @@ import Square from "./square";
 import Hand, { ImmutableHand } from "./hand";
 import { Piece, PieceType } from "./piece";
 import {
+  Direction,
   directionToDeltaMap,
+  movableDirections,
   MoveType,
   resolveMoveType,
   vectorToDirectionAndDistance,
@@ -70,6 +72,7 @@ export interface ImmutablePosition {
   hand(color: Color): ImmutableHand;
   createMove(from: Square | PieceType, to: Square): Move | null;
   createMoveBySFEN(sfen: string): Move | null;
+  isPawnDropMate(move: Move): boolean;
   isValidMove(move: Move): boolean;
   isValidEditing(from: Square | Piece, to: Square | Color): boolean;
   readonly sfen: string;
@@ -187,6 +190,46 @@ export default class Position {
     return move;
   }
 
+  isPawnDropMate(move: Move): boolean {
+    if (move.from instanceof Square) {
+      return false;
+    }
+    if (move.pieceType !== PieceType.PAWN) {
+      return false;
+    }
+    const kingSquare = move.to.neighbor(
+      move.color === Color.BLACK ? Direction.UP : Direction.DOWN
+    );
+    const king = this.board.at(kingSquare);
+    if (!king || king.type !== PieceType.KING || king.color === move.color) {
+      return false;
+    }
+    const movable = movableDirections(king).find((dir) => {
+      const to = kingSquare.neighbor(dir);
+      if (!to.valid) {
+        return false;
+      }
+      const piece = this.board.at(to);
+      if (piece && piece.color == king.color) {
+        return false;
+      }
+      return !this.board.hasPower(to, move.color);
+    });
+    if (movable) {
+      return false;
+    }
+    return !this.board.listSquaresByColor(king.color).find((from) => {
+      return (
+        !from.equals(kingSquare) &&
+        this.isMovable(from, move.to) &&
+        !this.board.isCheck(king.color, {
+          filled: move.to,
+          ignore: from,
+        })
+      );
+    });
+  }
+
   isValidMove(move: Move): boolean {
     if (move.from instanceof Square) {
       const target = this._board.at(move.from);
@@ -215,8 +258,13 @@ export default class Position {
       }
       if (
         move.pieceType !== PieceType.KING
-          ? this._board.isCheck(this.color, move.to, move.from)
-          : this._board.isCheck(this.color, undefined, move.from, move.to)
+          ? this._board.isCheck(this.color, {
+              filled: move.to,
+              ignore: move.from,
+            })
+          : this._board.hasPower(move.to, reverseColor(this.color), {
+              ignore: move.from,
+            })
       ) {
         return false;
       }
@@ -242,7 +290,10 @@ export default class Position {
       ) {
         return false;
       }
-      if (this._board.isCheck(this.color, move.to)) {
+      if (this._board.isCheck(this.color, { filled: move.to })) {
+        return false;
+      }
+      if (this.isPawnDropMate(move)) {
         return false;
       }
     }

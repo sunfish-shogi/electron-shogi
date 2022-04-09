@@ -181,7 +181,7 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (): string => {
     throw "予期せぬエラーでダイアログを表示せきません。";
   }
   const results = dialog.showOpenDialogSync(win, {
-    properties: ["openFile"],
+    properties: ["openFile", "noResolveAliases"],
     filters: isWindows
       ? [{ name: "実行可能ファイル", extensions: ["exe"] }]
       : undefined,

@@ -74,6 +74,9 @@ app.on("web-contents-created", (_, contents) => {
   contents.on("will-navigate", (event) => {
     event.preventDefault();
   });
+  contents.setWindowOpenHandler(() => {
+    return { action: "deny" };
+  });
 });
 
 // This method will be called when Electron has finished

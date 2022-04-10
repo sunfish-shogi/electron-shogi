@@ -6,7 +6,14 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+        - os: windows
+          os_short: win
+        - os: macos
+          os_short: mac
+    runs-on: ${{ matrix.os }}-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -15,8 +22,8 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run electron:build -- --publish never
-    - run: node archive.mjs win
+    - run: node archive.mjs ${{ matrix.os_short }}
     - uses: actions/upload-artifact@v3
       with:
-        name: windows-release
-        path: dist_electron/release-win.zip
+        name: ${{ matrix.os}}-release
+        path: dist_electron/release-${{ matrix.os_short }}.zip

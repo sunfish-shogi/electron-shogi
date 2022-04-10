@@ -98,5 +98,5 @@ npm run lint
 
 ### アイコン画像のライセンス
 
-[Material Icons](https://google.github.io/material-design-icons/) を使用しています。
+[https://github.com/sunfish-shogi/electron-shogi/tree/main/public/icon](/public/icon)配下のアイコン画像は[Material Icons](https://google.github.io/material-design-icons/) を使用しています。
 これには[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)が適用されます。

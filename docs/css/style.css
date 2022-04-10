@@ -1,44 +1,122 @@
 body {
-  font-size: 16px;
+  font-size: 1.2em;
   font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", "Meiryo", "verdana", sans-serif;
+  color: white;
+  background-color: darkslategray;
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+}
+
+a {
+  color: lemonchiffon;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul {
+  padding: 0px;
+  list-style: none;
+}
+
+li {
+  margin: 0.5em;
+}
+
+.long-text {
+  margin-left: auto;
+  margin-right: auto;
+  width: min(90vw, 110vh);
+  text-align: left;
+}
+
+.images {
+  margin-left: auto;
+  margin-right: auto;
+  width: min(90vw, 110vh);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+img {
+  width: max(min(40vw, 50vh), min(80vw, 50vh));
+  margin: min(1.0vw, 1.0vh);
+  border: solid 1px darkslategray;
+}
+
+img.icon {
+  width: auto;
+  height: 1.2em;
+  vertical-align: -0.2em;
+  margin: 0px;
+}
+
+header {
+  padding: 1.0em 5% 1.0em 5%;
+}
+
+nav {
+  font-size: 2.0em;
+  margin: 1em 0px 0px 0px;
+}
+
+nav ul {
+  padding: 0px;
+  list-style: none;
+}
+
+nav li {
+  margin: 0px 0.5em 0px 0.5em;
+  display: inline-block;
+}
+
+article {
   color: darkslategray;
-  background-color: cornsilk;
-  margin-bottom: 80px;
+  background-color: white;
+  margin: 0px;
+  padding: 1.0em 5% 1.0em 5%;
 }
 
-h1 {
-  font-size: 2.5rem;
-  margin: 0.5rem 0 0.5rem 0;
-}
-
-h2 {
-  font-size: 1.4rem;
-  margin: 1.5rem 0 0.2rem 0;
-}
-
-h3 {
-  font-size: 1.1rem;
-  margin: 1.2rem 0 0.1rem 0;
+article a {
+  color: seagreen;
+  font-weight: bold;
 }
 
 section {
-  margin: 2.0rem 0 2.0rem 0;
+  margin: 1.5em 0 3.0em 0;
 }
 
-div {
-  margin: 0.5rem 0 0.5rem 0;
+section div {
+  margin: 0.5em 0px 0.5em 0px;
 }
 
-.icon {
-  height: 2.5rem;
+hr {
+  margin: auto;
+  padding: 0px;
+  border: solid 1px darkslategray;
+  width: min(100vw, 120vh);
 }
 
-.screenshot {
-  max-width: 600px;
-  width: 100%;
+h1 {
+  font-size: 3.5em;
+  margin: 0.5em 0 0.5em 0;
 }
 
-.page-contents {
-  list-style: circle;
-  padding: 0 0 0 2rem;
+h2 {
+  font-size: 2.0em;
+  margin: 2.0em 0 0.3em 0;
+}
+
+h3 {
+  font-size: 1.5em;
+  margin: 1.0em 0 0.2em 0;
+}
+
+h4 {
+  font-size: 1.2em;
+  margin: 1.0em 0 0.1em 0;
 }

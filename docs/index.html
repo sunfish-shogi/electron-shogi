@@ -1,36 +1,40 @@
 <html>
   <head>
     <title>Electron将棋</title>
-    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style.css?202204101923" rel="stylesheet">
     <link rel="icon" href="webapp/favicon.ico">
   </head>
   <body>
-    <h1>
-      <img class="icon" src="icon.png" />
-      Electron将棋
-    </h1>
     <header>
-      <div>
-        Electron将棋は将棋の対局や研究を行うためのアプリです。<br />
-        USIプロトコル対応のエンジンを同じPCにインストールすると対局や検討ができます。
-      </div>
-      <div>
-        Electron将棋はソースコードを公開しています。<br />
-        誰でも開発に参加したり、派生したバージョンを作ることができます。
-      </div>
+      <h1>
+        <img class="icon" src="icon.png" />
+        Electron将棋
+      </h1>
+      <div>将棋の対局や研究を行うためのアプリです。</div>
+      <div>USIプロトコル対応のエンジンを同じPCにインストールすると対局や検討ができます。</div>
+      <div>常に最新のソースコードが公開されています。</div>
+      <div>誰でも開発に参加したり、派生したバージョンを作ることができます。</div>
+      <nav>
+        <ul>
+          <li>
+            <a href="https://github.com/sunfish-shogi/electron-shogi"><img class="icon" src="./icons/github.png" /></a>
+          </li>
+        </ul>
+      </nav>
     </header>
     <article>
       <section>
-        <h2>クイックリンク</h2>
-        <ul>
-          <li><a href="webapp/index.html">ブラウザ版アプリを開く</a>（スマホの縦画面には対応していません。）</li>
-          <li>アプリをダウンロードする（準備中）</li>
-          <li><a href="https://github.com/sunfish-shogi/electron-shogi">GitHub</a>（開発者向け）</li>
-        </ul>
+        <div>
+          <a href="webapp/index.html">ブラウザ版アプリを開く</a><br />
+        </div>
+        <div>
+          ※スマホの縦画面には対応していません。
+        </div>
       </section>
+      <hr>
       <section>
         <h2>目次</h2>
-        <ul class="page-contents">
+        <ul>
           <li><a href="#screenshot">スクリーンショット</a></li>
           <li><a href="#environment">対応環境</a></li>
           <li><a href="#license">ライセンス</a></li>
@@ -40,38 +44,45 @@
           <li><a href="#images">駒や盤の画像について</a></li>
         </ul>
       </section>
+      <hr>
       <section id="screenshot">
         <h2>スクリーンショット</h2>
-        <div><a href="./screenshots/screenshot001.png"><img class="screenshot" src="./screenshots/screenshot001.png" /></a></div>
-        <div><a href="./screenshots/screenshot002.png"><img class="screenshot" src="./screenshots/screenshot002.png" /></a></div>
-        <div><a href="./screenshots/screenshot003.png"><img class="screenshot" src="./screenshots/screenshot003.png" /></a></div>
+        <div class="images">
+          <a href="./screenshots/screenshot001.png"><img src="./screenshots/screenshot001.png" /></a>
+          <a href="./screenshots/screenshot002.png"><img src="./screenshots/screenshot002.png" /></a>
+          <a href="./screenshots/screenshot003.png"><img src="./screenshots/screenshot003.png" /></a>
+        </div>
       </section>
+      <hr>
       <section id="environment">
         <h2>対応環境</h2>
         <div>
           <ul>
             <li>Windows</li>
             <li>MacOS</li>
-            <li>Linux（開発環境が必要）</li>
+            <li>Linux（要NodeJS）</li>
           </ul>
           その他の環境でもブラウザ版で一部の機能を利用可能です。
         </div>
       </section>
+      <hr>
       <section id="license">
         <h2>ライセンス</h2>
-        <div>
-          ElectronShogiの本体とソースコードについてはMIT Licenseです。<br />
+        <div class="long-text">
+          ElectronShogiの本体とソースコードについては<a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE">MIT License</a>です。<br />
           ただし、アイコン画像には<a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License 2.0</a>が適用されます。<br />
-          詳しくは<a href="https://github.com/sunfish-shogi/electron-shogi">GitHub</a>を参照してください。<br />
+          詳しくは<a href="https://github.com/sunfish-shogi/electron-shogi#%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9">GitHub</a>を参照してください。<br />
           依存ライブラリのライセンスは<a href="./third-party-licenses.html">THIRD PARTY LICENSES</a>を参照してください。
         </div>
       </section>
+      <hr>
       <section id="pcapp">
-        <h2>PCアプリ</h2>
+        <h2>PCアプリダウンロード</h2>
         <div>
           （準備中）
         </div>
       </section>
+      <hr>
       <section id="webapp">
         <h2>ブラウザアプリ</h2>
         <div>
@@ -80,12 +91,13 @@
         <div>
           <a href="webapp/index.html">ブラウザ版アプリを開く</a>
         </div>
-        <div>
+        <div class="long-text">
           ※現在、エンジンを使った対局はサポートしていません。<br />
           ※スマホ等の縦長の画面ではレイアウトが崩れます。（将来対応予定）<br />
-          ※Chrome以外の動作は確認していませんが（IE以外の）不具合報告は歓迎です。
+          ※Chrome以外の動作は確認していませんが不具合報告は歓迎です。（ただしIE等のレガシーブラウザは除きます）
         </div>
       </section>
+      <hr>
       <section id="fr">
         <h2>機能要望・提案・不具合報告</h2>
         <div>
@@ -96,6 +108,7 @@
           GitHubアカウントをお持ちでない方の連絡方法は準備中です。
         </div>
       </section>
+      <hr>
       <section id="images">
         <h2>駒や盤の画像について</h2>
         <div>

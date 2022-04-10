@@ -15,6 +15,8 @@ jobs:
           os_short: mac
     runs-on: ${{ matrix.os }}-latest
     steps:
+    - run: git config --global core.autocrlf false
+      if: matrix.os == 'windows'
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:

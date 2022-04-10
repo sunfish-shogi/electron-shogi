@@ -97,7 +97,9 @@ section div {
 hr {
   margin: auto;
   padding: 0px;
-  border: solid 1px darkslategray;
+  border: none;
+  border-top: solid;
+  border-color: darkslategray;
   width: min(100vw, 120vh);
 }
 

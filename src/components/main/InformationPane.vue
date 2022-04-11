@@ -11,7 +11,7 @@
           :class="{ selected: activeTab === 'comment' }"
           @click="changeSelect('comment')"
         >
-          <Icon class="icon" icon="comment" />
+          <ButtonIcon class="icon" icon="comment" />
           棋譜コメント
         </span>
         <span
@@ -19,7 +19,7 @@
           :class="{ selected: activeTab === 'search' }"
           @click="changeSelect('search')"
         >
-          <Icon class="icon" icon="brain" />
+          <ButtonIcon class="icon" icon="brain" />
           思考
         </span>
         <span
@@ -27,7 +27,7 @@
           :class="{ selected: activeTab === 'chart' }"
           @click="changeSelect('chart')"
         >
-          <Icon class="icon" icon="chart" />
+          <ButtonIcon class="icon" icon="chart" />
           形勢グラフ
         </span>
         <span
@@ -35,7 +35,7 @@
           :class="{ selected: activeTab === 'invisible' }"
           @click="changeSelect('invisible')"
         >
-          <Icon class="icon" icon="arrowDrop" />
+          <ButtonIcon class="icon" icon="arrowDrop" />
           最小化
         </span>
       </div>
@@ -67,7 +67,7 @@ import EngineAnalytics from "@/components/analytics/EngineAnalytics.vue";
 import EvaluationChart from "@/components/analytics/EvaluationChart.vue";
 import { Action, useStore } from "@/store";
 import { RectSize } from "@/components/primitive/Types";
-import Icon from "@/components/primitive/Icon.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
 export const headerHeight = 30;
 
@@ -79,7 +79,7 @@ export default defineComponent({
     RecordComment,
     EngineAnalytics,
     EvaluationChart,
-    Icon,
+    ButtonIcon,
   },
   props: {
     size: {

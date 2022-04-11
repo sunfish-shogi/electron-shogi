@@ -1,8 +1,8 @@
 <template>
   <div>
-    <dialog class="messagebox" ref="dialog">
+    <dialog ref="dialog" class="messagebox">
       <div class="content">
-        <Icon class="icon" icon="info" />
+        <ButtonIcon class="icon" icon="info" />
         <div class="message">{{ message }}</div>
       </div>
       <div class="dialog-main-buttons">
@@ -16,12 +16,12 @@
 import { showModalDialog } from "@/helpers/dialog";
 import { Mutation, useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
-import Icon from "@/components/primitive/Icon.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
 export default defineComponent({
-  name: "ErrorMessage",
+  name: "InfoMessage",
   components: {
-    Icon,
+    ButtonIcon,
   },
   setup() {
     const store = useStore();

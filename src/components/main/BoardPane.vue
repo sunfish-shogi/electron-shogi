@@ -1,117 +1,117 @@
 <template>
   <div>
-    <Board
-      :layoutType="layout"
-      :maxSize="maxSize"
+    <BoardView
+      :layout-type="layout"
+      :max-size="maxSize"
       :position="position"
-      :lastMove="lastMove"
+      :last-move="lastMove"
       :flip="flip"
-      :allowMove="allowMove"
-      :allowEdit="allowEdit"
-      :blackPlayerName="blackPlayerName"
-      :whitePlayerName="whitePlayerName"
-      :blackPlayerTimeMs="blackPlayerTimeMs"
-      :blackPlayerByoyomi="blackPlayerByoyomi"
-      :whitePlayerTimeMs="whitePlayerTimeMs"
-      :whitePlayerByoyomi="whitePlayerByoyomi"
+      :allow-move="allowMove"
+      :allow-edit="allowEdit"
+      :black-player-name="blackPlayerName"
+      :white-player-name="whitePlayerName"
+      :black-player-time-ms="blackPlayerTimeMs"
+      :black-player-byoyomi="blackPlayerByoyomi"
+      :white-player-time-ms="whitePlayerTimeMs"
+      :white-player-byoyomi="whitePlayerByoyomi"
       @move="onMove"
       @edit="onEdit"
     >
-      <template v-slot:right-control>
+      <template #right-control>
         <div class="control top">
-          <button @click="onGame" v-if="controlStates.game">
-            <Icon class="icon" icon="game" />
+          <button v-if="controlStates.game" @click="onGame">
+            <ButtonIcon class="icon" icon="game" />
             対局
           </button>
-          <button @click="onStop" v-if="controlStates.stop">
-            <Icon class="icon" icon="stop" />
+          <button v-if="controlStates.stop" @click="onStop">
+            <ButtonIcon class="icon" icon="stop" />
             中断
           </button>
-          <button @click="onResign" v-if="controlStates.resign">
-            <Icon class="icon" icon="resign" />
+          <button v-if="controlStates.resign" @click="onResign">
+            <ButtonIcon class="icon" icon="resign" />
             投了
           </button>
-          <button @click="onResearch" v-if="controlStates.research">
-            <Icon class="icon" icon="research" />
+          <button v-if="controlStates.research" @click="onResearch">
+            <ButtonIcon class="icon" icon="research" />
             検討
           </button>
-          <button @click="onEndResearch" v-if="controlStates.endResearch">
-            <Icon class="icon" icon="end" />
+          <button v-if="controlStates.endResearch" @click="onEndResearch">
+            <ButtonIcon class="icon" icon="end" />
             検討終了
           </button>
           <button
-            @click="onStartEditPosition"
             v-if="controlStates.startEditPosition"
+            @click="onStartEditPosition"
           >
-            <Icon class="icon" icon="edit" />
+            <ButtonIcon class="icon" icon="edit" />
             局面編集
           </button>
           <button
-            @click="onEndEditPosition"
             v-if="controlStates.endEditPosition"
+            @click="onEndEditPosition"
           >
-            <Icon class="icon" icon="check" />
+            <ButtonIcon class="icon" icon="check" />
             局面編集終了
           </button>
-          <button @click="onChangeTurn" v-if="controlStates.initPosition">
-            <Icon class="icon" icon="swap" />
+          <button v-if="controlStates.initPosition" @click="onChangeTurn">
+            <ButtonIcon class="icon" icon="swap" />
             手番変更
           </button>
           <button
-            @click="onInitPositionStandard"
             v-if="controlStates.initPosition"
+            @click="onInitPositionStandard"
           >
             平手
           </button>
           <button
-            @click="onInitPositionTsumeShogi"
             v-if="controlStates.initPosition"
+            @click="onInitPositionTsumeShogi"
           >
             詰将棋
           </button>
         </div>
       </template>
-      <template v-slot:left-control>
+      <template #left-control>
         <div class="control bottom">
           <button
-            @click="onOpenAppSettings"
             :disabled="!controlStates.appSettings"
+            @click="onOpenAppSettings"
           >
-            <Icon class="icon" icon="settings" />
+            <ButtonIcon class="icon" icon="settings" />
             アプリ設定
           </button>
           <button
-            @click="onOpenEngineSettings"
             :disabled="!controlStates.engineSettings"
+            @click="onOpenEngineSettings"
           >
-            <Icon class="icon" icon="engineSettings" />
+            <ButtonIcon class="icon" icon="engineSettings" />
             エンジン設定
           </button>
           <button @click="onFlip">
-            <Icon class="icon" icon="flip" />
+            <ButtonIcon class="icon" icon="flip" />
             盤面反転
           </button>
-          <button @click="onPaste" :disabled="!controlStates.paste">
-            <Icon class="icon" icon="paste" />
+          <button :disabled="!controlStates.paste" @click="onPaste">
+            <ButtonIcon class="icon" icon="paste" />
             棋譜貼り付け
           </button>
           <button @click="onCopy">
-            <Icon class="icon" icon="copy" />
+            <ButtonIcon class="icon" icon="copy" />
             棋譜コピー
           </button>
           <button @click="onRemoveAfter">
-            <Icon class="icon" icon="delete" />
+            <ButtonIcon class="icon" icon="delete" />
             指し手削除
           </button>
         </div>
       </template>
-    </Board>
+    </BoardView>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from "vue";
-import Board from "@/components/primitive/Board.vue";
+import BoardView from "@/components/primitive/BoardView.vue";
 import {
   InitialPositionType,
   Move,
@@ -120,20 +120,20 @@ import {
 } from "@/shogi";
 import { RectSize } from "@/components/primitive/Types";
 import { Action, Mutation, useStore } from "@/store";
-import Icon from "@/components/primitive/Icon.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Mode } from "@/store/mode";
 
 export default defineComponent({
   name: "BoardPane",
+  components: {
+    BoardView,
+    ButtonIcon,
+  },
   props: {
     maxSize: {
       type: RectSize,
       required: true,
     },
-  },
-  components: {
-    Board,
-    Icon,
   },
   setup() {
     const store = useStore();

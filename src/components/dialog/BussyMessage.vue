@@ -1,8 +1,8 @@
 <template>
   <div>
-    <dialog class="bussy" ref="dialog">
+    <dialog ref="dialog" class="bussy">
       <div class="content">
-        <Icon class="icon" icon="bussy" />
+        <ButtonIcon class="icon" icon="bussy" />
         <div class="message">処理中です。お待ち下さい。</div>
       </div>
     </dialog>
@@ -12,12 +12,12 @@
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
 import { defineComponent, onMounted, ref, Ref } from "vue";
-import Icon from "@/components/primitive/Icon.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
 export default defineComponent({
-  name: "Bussy",
+  name: "BussyMessage",
   components: {
-    Icon,
+    ButtonIcon,
   },
   setup() {
     const dialog: Ref = ref(null);

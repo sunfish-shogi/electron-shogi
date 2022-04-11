@@ -4,39 +4,39 @@
       <div class="controller">
         <button
           class="control-button"
+          :disabled="!operational"
           @click="goBegin()"
-          :disabled="!operational"
         >
-          <Icon class="icon" icon="first" />
+          <ButtonIcon class="icon" icon="first" />
         </button>
         <button
           class="control-button"
+          :disabled="!operational"
           @click="goBack()"
-          :disabled="!operational"
         >
-          <Icon class="icon" icon="back" />
+          <ButtonIcon class="icon" icon="back" />
         </button>
         <button
           class="control-button"
+          :disabled="!operational"
           @click="goForward()"
-          :disabled="!operational"
         >
-          <Icon class="icon" icon="next" />
+          <ButtonIcon class="icon" icon="next" />
         </button>
         <button
           class="control-button"
-          @click="goEnd()"
           :disabled="!operational"
+          @click="goEnd()"
         >
-          <Icon class="icon" icon="last" />
+          <ButtonIcon class="icon" icon="last" />
         </button>
       </div>
       <select
+        ref="moveList"
         class="move-list"
         size="2"
-        ref="moveList"
-        @change="changeNumber()"
         :disabled="!operational"
+        @change="changeNumber()"
       >
         <option
           v-for="move in moves"
@@ -49,11 +49,11 @@
         </option>
       </select>
       <select
+        ref="branchList"
         class="branch-list"
         size="2"
-        ref="branchList"
-        @change="changeBranch()"
         :disabled="!operational"
+        @change="changeBranch()"
       >
         <option
           v-for="branch in branches"
@@ -71,12 +71,12 @@
 <script lang="ts">
 import { Record, RecordEntry } from "@/shogi";
 import { computed, ref, defineComponent, Ref } from "vue";
-import Icon from "@/components/primitive/Icon.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
 export default defineComponent({
-  name: "Record",
+  name: "RecordView",
   components: {
-    Icon,
+    ButtonIcon,
   },
   props: {
     record: {

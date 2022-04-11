@@ -4,7 +4,7 @@
       <textarea
         ref="textarea"
         class="text"
-        v-bind:value="comment"
+        :value="comment"
         :readonly="!!readonly"
         @change="change"
       />

@@ -7,9 +7,9 @@
           <div class="player">
             <div class="top-label">先手（下手）</div>
             <select
+              ref="blackPlayerSelect"
               class="player-select"
               size="1"
-              ref="blackPlayerSelect"
               :value="defaultValues.black.type"
             >
               <option
@@ -24,9 +24,9 @@
           <div class="player">
             <div class="top-label">後手（上手）</div>
             <select
+              ref="whitePlayerSelect"
               class="player-select"
               size="1"
-              ref="whitePlayerSelect"
               :value="defaultValues.white.type"
             >
               <option
@@ -41,7 +41,7 @@
         </div>
         <div class="players-control">
           <button @click="onSwapColor">
-            <Icon class="icon" icon="swap_h" />
+            <ButtonIcon class="icon" icon="swap_h" />
             先後入れ替え
           </button>
         </div>
@@ -51,8 +51,8 @@
           <div class="dialog-form-item">
             <div class="dialog-form-item-label">持ち時間</div>
             <input
-              class="time-input"
               ref="hours"
+              class="time-input"
               type="number"
               min="0"
               max="99"
@@ -61,8 +61,8 @@
             />
             <div class="dialog-form-item-unit">時間</div>
             <input
-              class="time-input"
               ref="minutes"
+              class="time-input"
               type="number"
               min="0"
               max="59"
@@ -74,8 +74,8 @@
           <div class="dialog-form-item">
             <div class="dialog-form-item-label">秒読み</div>
             <input
-              class="time-input single"
               ref="byoyomi"
+              class="time-input single"
               type="number"
               min="0"
               max="60"
@@ -87,8 +87,8 @@
           <div class="dialog-form-item">
             <div class="dialog-form-item-label">増加</div>
             <input
-              class="time-input single"
               ref="increment"
+              class="time-input single"
               type="number"
               min="0"
               max="99"
@@ -116,18 +116,18 @@
           </div>
           <div class="dialog-form-item">
             <input
+              id="disable-engine-timeout"
               ref="enableEngineTimeout"
               type="checkbox"
-              id="disable-engine-timeout"
               :checked="defaultValues.enableEngineTimeout"
             />
             <label for="disable-engine-timeout">エンジンの時間切れあり</label>
           </div>
           <div class="dialog-form-item">
             <input
+              id="human-is-front"
               ref="humanIsFront"
               type="checkbox"
-              id="human-is-front"
               :checked="defaultValues.humanIsFront"
             />
             <label for="human-is-front">人を手前に表示する</label>
@@ -156,12 +156,12 @@ import {
 } from "@/settings/game";
 import { showModalDialog } from "@/helpers/dialog";
 import * as uri from "@/uri";
-import Icon from "@/components/primitive/Icon.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
 export default defineComponent({
   name: "GameDialog",
   components: {
-    Icon,
+    ButtonIcon,
   },
   setup() {
     const store = useStore();

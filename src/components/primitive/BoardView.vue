@@ -33,69 +33,69 @@
         <span class="clock-text">{{ whitePlayerTimeText }}</span>
       </div>
       <div
-        class="square"
         v-for="square in layout.square"
         :key="square.id"
+        class="square"
         :style="square.backgroundStyle"
       />
       <div
-        class="piece"
         v-for="piece in layout.piece"
         :key="piece.id"
+        class="piece"
         :style="piece.style"
       >
         <img class="piece-image" :src="piece.imagePath" />
       </div>
       <div
-        class="square"
         v-for="square in layout.square"
         :key="square.id"
+        class="square"
         :style="square.style"
         @click="clickSquare($event, square.file, square.rank)"
         @contextmenu="clickSquareR($event, square.file, square.rank)"
       />
       <div class="hand" :style="layout.blackHand.style">
         <div
-          class="hand-pointer"
           v-for="pointer in layout.blackHand.pointers"
           :key="pointer.id"
+          class="hand-pointer"
           :style="pointer.backgroundStyle"
         />
         <div
-          class="piece"
           v-for="piece in layout.blackHand.pieces"
           :key="piece.id"
+          class="piece"
           :style="piece.style"
         >
           <img class="piece-image" :src="piece.imagePath" />
         </div>
         <div
-          class="hand-pointer"
           v-for="pointer in layout.blackHand.pointers"
           :key="pointer.id"
+          class="hand-pointer"
           :style="pointer.style"
           @click="clickHand($event, 'black', pointer.type)"
         />
       </div>
       <div class="hand" :style="layout.whiteHand.style">
         <div
-          class="hand-pointer"
           v-for="pointer in layout.whiteHand.pointers"
           :key="pointer.id"
+          class="hand-pointer"
           :style="pointer.backgroundStyle"
         />
         <div
-          class="piece"
           v-for="piece in layout.whiteHand.pieces"
           :key="piece.id"
+          class="piece"
           :style="piece.style"
         >
           <img class="piece-image" :src="piece.imagePath" />
         </div>
         <div
-          class="hand-pointer"
           v-for="pointer in layout.whiteHand.pointers"
           :key="pointer.id"
+          class="hand-pointer"
           :style="pointer.style"
           @click="clickHand($event, 'white', pointer.type)"
         />
@@ -142,7 +142,7 @@ type State = {
 };
 
 export default defineComponent({
-  name: "Board",
+  name: "BoardView",
   props: {
     layoutType: {
       type: String as PropType<BoardLayoutType>,

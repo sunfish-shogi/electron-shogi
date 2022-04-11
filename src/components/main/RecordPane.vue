@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Record
+    <RecordView
       class="record"
       :record="record"
       :operational="isRecordOperational"
@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from "vue";
-import Record from "@/components/primitive/Record.vue";
+import RecordView from "@/components/primitive/RecordView.vue";
 import { Mutation, useStore } from "@/store";
 import { Mode } from "@/store/mode";
 
@@ -25,7 +25,7 @@ export const minWidth = 200;
 export default defineComponent({
   name: "RecordPane",
   components: {
-    Record,
+    RecordView,
   },
   setup() {
     const store = useStore();

@@ -4,7 +4,7 @@
       <div ref="content">
         <div class="dialog-form-area">
           <div class="message">以下の棋譜を取り込みます。</div>
-          <div class="message" v-if="!isNative">
+          <div v-if="!isNative" class="message">
             ※テキストエリアに棋譜を貼り付けてください。<br />
             ※インストールアプリ版では自動的に貼り付けられます。
           </div>

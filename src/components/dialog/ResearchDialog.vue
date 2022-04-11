@@ -7,9 +7,9 @@
           <div class="dialog-form-item-label">エンジン</div>
           <div class="dialog-form-item-unit">
             <select
+              ref="engineSelect"
               class="engine-select"
               size="1"
-              ref="engineSelect"
               :value="defaultValue"
             >
               <option

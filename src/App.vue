@@ -5,8 +5,8 @@
   <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
   <AppSettingDialog v-if="dialogVisibilities.appSetting" />
   <PasteDialog v-if="dialogVisibilities.paste" />
-  <Bussy v-if="dialogVisibilities.processing" />
-  <Message v-if="hasMessage" />
+  <BussyMessage v-if="dialogVisibilities.processing" />
+  <InfoMessage v-if="hasMessage" />
   <ErrorMessage v-if="hasErrors" />
 </template>
 
@@ -18,8 +18,8 @@ import ResearchDialog from "@/components/dialog/ResearchDialog.vue";
 import USIEngineManagementDialog from "@/components/dialog/USIEngineManagementDialog.vue";
 import AppSettingDialog from "@/components/dialog/AppSettingDialog.vue";
 import PasteDialog from "@/components/dialog/PasteDialog.vue";
-import Bussy from "@/components/dialog/Bussy.vue";
-import Message from "@/components/dialog/Message.vue";
+import BussyMessage from "@/components/dialog/BussyMessage.vue";
+import InfoMessage from "@/components/dialog/InfoMessage.vue";
 import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
 import { Action, Mutation, useStore } from "@/store";
 import { Mode } from "@/store/mode";
@@ -34,8 +34,8 @@ export default defineComponent({
     USIEngineManagementDialog,
     AppSettingDialog,
     PasteDialog,
-    Bussy,
-    Message,
+    BussyMessage,
+    InfoMessage,
     ErrorMessage,
   },
   setup() {

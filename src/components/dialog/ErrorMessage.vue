@@ -1,13 +1,13 @@
 <template>
   <div>
-    <dialog class="error" ref="dialog">
+    <dialog ref="dialog" class="error">
       <div class="content">
-        <Icon class="icon" icon="error" />
+        <ButtonIcon class="icon" icon="error" />
         <div class="items">
           <div class="notice">
             {{ errors.length }} 件のエラーが発生しました。
           </div>
-          <div class="item" v-for="error in errors" :key="error.index">
+          <div v-for="error in errors" :key="error.index" class="item">
             <p class="index">{{ error.index + 1 }} 件目</p>
             <p class="message">{{ error.message }}</p>
           </div>
@@ -24,12 +24,12 @@
 import { Mutation, useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import { showModalDialog } from "@/helpers/dialog";
-import Icon from "@/components/primitive/Icon.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
 export default defineComponent({
   name: "ErrorMessage",
   components: {
-    Icon,
+    ButtonIcon,
   },
   setup() {
     const store = useStore();

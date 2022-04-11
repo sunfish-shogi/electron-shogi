@@ -33,9 +33,9 @@
       </div>
       <div class="list" :style="`height:${height - 36}px`">
         <div
-          class="list-item"
           v-for="(iterate, index) in info.iterates"
           :key="index"
+          class="list-item"
         >
           <div class="list-column time">
             {{ iterate.timeMs ? (iterate.timeMs / 1e3).toFixed(1) + "s" : "" }}

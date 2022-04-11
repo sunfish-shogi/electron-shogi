@@ -5,7 +5,7 @@
       <div class="dialog-form-area settings">
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide">デザイン</div>
-          <select :value="appSetting.boardLayout" ref="boardLayout">
+          <select ref="boardLayout" :value="appSetting.boardLayout">
             <option
               v-for="layout of boardLayouts"
               :key="layout"
@@ -18,39 +18,39 @@
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide">駒音の大きさ</div>
           <input
+            ref="pieceVolume"
             :value="appSetting.pieceVolume"
             type="number"
             max="100"
             min="0"
-            ref="pieceVolume"
           />
           <div class="dialog-form-item-unit">%</div>
         </div>
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide">時計音の大きさ</div>
           <input
+            ref="clockVolume"
             :value="appSetting.clockVolume"
             type="number"
             max="100"
             min="0"
-            ref="clockVolume"
           />
           <div class="dialog-form-item-unit">%</div>
         </div>
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide">時計音の高さ</div>
           <input
+            ref="clockPitch"
             :value="appSetting.clockPitch"
             type="number"
             max="880"
             min="220"
-            ref="clockPitch"
           />
           <div class="dialog-form-item-unit">Hz (220 ~ 880)</div>
         </div>
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide">時計音の対象</div>
-          <select :value="appSetting.clockSoundTarget" ref="clockSoundTarget">
+          <select ref="clockSoundTarget" :value="appSetting.clockSoundTarget">
             <option value="all">全ての手番</option>
             <option value="onlyUser">人の手番のみ</option>
           </select>

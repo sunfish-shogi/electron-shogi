@@ -3,13 +3,13 @@
     <dialog ref="dialog">
       <div class="dialog-title">エンジン管理</div>
       <div class="dialog-form-area engine-list">
-        <div class="engine" v-if="engines.length === 0">
+        <div v-if="engines.length === 0" class="engine">
           エンジンが登録されていません。
         </div>
         <div
-          class="engine"
           v-for="engine in engines"
           :key="engine.uri"
+          class="engine"
           :value="engine.uri"
         >
           <span class="engine-name">{{ engine.name }}</span>
@@ -32,7 +32,7 @@
   </div>
   <USIEngineOptionDialog
     v-if="optionDialog"
-    :latestEngineSetting="optionDialog"
+    :latest-engine-setting="optionDialog"
     @ok="optionOk"
     @cancel="optionCancel"
   />

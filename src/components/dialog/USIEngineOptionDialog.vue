@@ -18,18 +18,18 @@
         <div class="option">
           <div class="option-name">表示名</div>
           <input
+            ref="engineNameInput"
             class="option-value-text"
             type="text"
             name="ElectronShogiEngineName"
-            ref="engineNameInput"
           />
         </div>
-        <div class="option" v-for="option in options" :key="option.name">
+        <div v-for="option in options" :key="option.name" class="option">
           <div class="option-name">{{ option.name }}</div>
           <input
+            v-if="option.type === 'spin'"
             :id="option.inputId"
             class="option-value-number"
-            v-if="option.type === 'spin'"
             type="number"
             :min="option.min"
             :max="option.max"
@@ -37,39 +37,39 @@
             :name="option.name"
           />
           <input
+            v-if="option.type === 'string'"
             :id="option.inputId"
             class="option-value-text"
-            v-if="option.type === 'string'"
             type="text"
             :name="option.name"
           />
           <input
+            v-if="option.type === 'filename'"
             :id="option.inputId"
             class="option-value-filename"
-            v-if="option.type === 'filename'"
             type="text"
             :name="option.name"
           />
           <button
-            class="dialog-button"
             v-if="option.type === 'filename'"
+            class="dialog-button"
             @click="selectFile(option.inputId)"
           >
             選択
           </button>
           <select
+            v-if="option.type === 'check'"
             :id="option.inputId"
             class="option-value-check"
-            v-if="option.type === 'check'"
           >
             <option value="">既定値</option>
             <option value="true">ON</option>
             <option value="false">OFF</option>
           </select>
           <select
+            v-if="option.type === 'combo'"
             :id="option.inputId"
             class="option-value-combo"
-            v-if="option.type === 'combo'"
           >
             <option value="">既定値</option>
             <option v-for="v in option.vars" :key="v" :value="v">
@@ -77,8 +77,8 @@
             </option>
           </select>
           <button
-            class="dialog-button"
             v-if="option.type === 'button'"
+            class="dialog-button"
             @click="sendOption(option.name)"
           >
             実行

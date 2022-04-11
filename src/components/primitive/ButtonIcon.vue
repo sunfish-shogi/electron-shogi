@@ -7,7 +7,7 @@ import { Icon, iconSourceMap } from "@/assets/icons";
 import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
-  name: "Icon",
+  name: "ButtonIcon",
   props: {
     icon: {
       type: String as PropType<Icon>,

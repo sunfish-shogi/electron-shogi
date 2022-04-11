@@ -1,13 +1,13 @@
 import { shallowMount } from "@vue/test-utils";
-import BoardVue from "@/components/primitive/Board.vue";
+import BoardView from "@/components/primitive/BoardView.vue";
 import { Position } from "@/shogi";
 import { RectSize } from "@/components/primitive/Types";
 import { BoardLayoutType } from "@/components/primitive/BoardLayout";
 
-describe("Board.vue", () => {
+describe("BoardView", () => {
   it("hitomoji", () => {
     const position = new Position();
-    const wrapper = shallowMount(BoardVue, {
+    const wrapper = shallowMount(BoardView, {
       props: {
         layoutType: BoardLayoutType.HITOMOJI,
         maxSize: new RectSize(800, 600),
@@ -30,7 +30,7 @@ describe("Board.vue", () => {
 
   it("hitomoji_gothic", () => {
     const position = new Position();
-    const wrapper = shallowMount(BoardVue, {
+    const wrapper = shallowMount(BoardView, {
       props: {
         layoutType: BoardLayoutType.HITOMOJI_GOTHIC,
         maxSize: new RectSize(800, 600),

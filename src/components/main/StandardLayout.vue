@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="main">
-      <div class="top-pane" ref="topPane">
-        <BoardPane class="top-left-pane" :maxSize="boardPaneMaxSize" />
+      <div ref="topPane" class="top-pane">
+        <BoardPane class="top-left-pane" :max-size="boardPaneMaxSize" />
         <RecordPane class="top-right-pane" />
       </div>
       <InformationPane class="bottom-pane" :size="bottomPaneSize" />

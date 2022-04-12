@@ -55,6 +55,14 @@
             <option value="onlyUser">人の手番のみ</option>
           </select>
         </div>
+        <div class="dialog-form-item">
+          <div class="dialog-form-item-label-wide">改行文字</div>
+          <select ref="returnCode" :value="appSetting.returnCode">
+            <option value="crlf">CR + LF (Windows)</option>
+            <option value="lf">LF (UNIX/Mac)</option>
+            <option value="cr">CR (90年代Mac)</option>
+          </select>
+        </div>
       </div>
       <div class="dialog-main-buttons">
         <button class="dialog-button" @click="saveAndClose()">
@@ -74,6 +82,18 @@ import { ref, defineComponent, onMounted, Ref, computed } from "vue";
 import { readInputAsNumber } from "@/helpers/form";
 import { showModalDialog } from "@/helpers/dialog";
 
+const returnCodeToName: { [name: string]: string } = {
+  "\r\n": "crlf",
+  "\n": "lf",
+  "\r": "cr",
+};
+
+const nameToReturnCode: { [name: string]: string } = {
+  crlf: "\r\n",
+  lf: "\n",
+  cr: "\r",
+};
+
 export default defineComponent({
   name: "AppSettingDialog",
   setup() {
@@ -84,6 +104,7 @@ export default defineComponent({
     const clockVolume: Ref = ref(null);
     const clockPitch: Ref = ref(null);
     const clockSoundTarget: Ref = ref(null);
+    const returnCode: Ref = ref(null);
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -96,6 +117,7 @@ export default defineComponent({
         clockVolume: readInputAsNumber(clockVolume.value),
         clockPitch: readInputAsNumber(clockPitch.value),
         clockSoundTarget: clockSoundTarget.value.value,
+        returnCode: nameToReturnCode[returnCode.value.value],
       };
       store.commit(Mutation.RETAIN_BUSSY_STATE);
       try {
@@ -112,7 +134,12 @@ export default defineComponent({
       store.commit(Mutation.CLOSE_DIALOG);
     };
 
-    const appSetting = computed(() => store.state.appSetting);
+    const appSetting = computed(() => {
+      return {
+        ...store.state.appSetting,
+        returnCode: returnCodeToName[store.state.appSetting.returnCode],
+      };
+    });
 
     const boardLayouts = [
       { name: "一文字駒", value: BoardLayoutType.HITOMOJI },
@@ -129,6 +156,7 @@ export default defineComponent({
       clockVolume,
       clockPitch,
       clockSoundTarget,
+      returnCode,
       appSetting,
       boardLayouts,
       saveAndClose,

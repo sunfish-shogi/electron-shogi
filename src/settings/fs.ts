@@ -64,11 +64,12 @@ export function saveAppSetting(setting: AppSetting): void {
 }
 
 export function loadAppSetting(): AppSetting {
+  const defautlReturnCode = process.platform === "win32" ? "\r\n" : "\n";
   if (!fs.existsSync(appSettingPath)) {
-    return defaultAppSetting();
+    return defaultAppSetting(defautlReturnCode);
   }
   return {
-    ...defaultAppSetting(),
+    ...defaultAppSetting(defautlReturnCode),
     ...JSON.parse(fs.readFileSync(appSettingPath, "utf8")),
   };
 }

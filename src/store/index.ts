@@ -323,7 +323,7 @@ export const store = createStore<State>({
         }
         if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
           const str = exportKakinoki(state.record, {
-            returnCode: "\r\n", // FIXME: OS の標準改行コードを検出する。
+            returnCode: state.appSetting.returnCode,
           });
           const data = path.match(/\.kif$/)
             ? iconv.encode(str, "Shift_JIS")
@@ -344,7 +344,7 @@ export const store = createStore<State>({
     },
     [Action.COPY_RECORD]({ state }) {
       const str = exportKakinoki(state.record, {
-        returnCode: "\r\n", // FIXME: OS の標準改行コードを検出する。
+        returnCode: state.appSetting.returnCode,
       });
       navigator.clipboard.writeText(str);
     },

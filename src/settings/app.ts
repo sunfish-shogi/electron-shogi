@@ -20,6 +20,7 @@ export type AppSetting = {
   clockSoundTarget: ClockSoundTarget;
   boardFlipping: boolean;
   informationTab: InformationTab;
+  returnCode: string;
 };
 
 export type AppSettingUpdate = {
@@ -30,9 +31,10 @@ export type AppSettingUpdate = {
   clockSoundTarget?: ClockSoundTarget;
   boardFlipping?: boolean;
   informationTab?: InformationTab;
+  returnCode?: string;
 };
 
-export function defaultAppSetting(): AppSetting {
+export function defaultAppSetting(returnCode?: string): AppSetting {
   return {
     boardLayout: BoardLayoutType.HITOMOJI,
     pieceVolume: 30,
@@ -41,5 +43,6 @@ export function defaultAppSetting(): AppSetting {
     clockSoundTarget: ClockSoundTarget.ONLY_USER,
     boardFlipping: false,
     informationTab: InformationTab.COMMENT,
+    returnCode: returnCode || "\r\n",
   };
 }

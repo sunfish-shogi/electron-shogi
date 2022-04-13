@@ -9,7 +9,7 @@
         :class="{ active: position.color == 'black' }"
         :style="layout.blackPlayerName.style"
       >
-        <span class="player-name-text">▲{{ blackPlayerName || "先手" }}</span>
+        <span class="player-name-text">▲{{ blackPlayerName }}</span>
       </div>
       <div
         class="clock"
@@ -23,7 +23,7 @@
         :class="{ active: position.color == 'white' }"
         :style="layout.whitePlayerName.style"
       >
-        <span class="player-name-text">△{{ whitePlayerName || "後手" }}</span>
+        <span class="player-name-text">△{{ whitePlayerName }}</span>
       </div>
       <div
         class="clock"
@@ -159,6 +159,7 @@ export default defineComponent({
     lastMove: {
       type: Move,
       required: false,
+      default: null,
     },
     flip: {
       type: Boolean,
@@ -175,26 +176,32 @@ export default defineComponent({
     blackPlayerName: {
       type: String,
       required: false,
+      default: "先手",
     },
     whitePlayerName: {
       type: String,
       required: false,
+      default: "後手",
     },
     blackPlayerTimeMs: {
       type: Number,
       required: false,
+      default: undefined,
     },
     blackPlayerByoyomi: {
       type: Number,
       required: false,
+      default: undefined,
     },
     whitePlayerTimeMs: {
       type: Number,
       required: false,
+      default: undefined,
     },
     whitePlayerByoyomi: {
       type: Number,
       required: false,
+      default: undefined,
     },
   },
   emits: ["move", "edit"],

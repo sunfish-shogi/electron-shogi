@@ -116,7 +116,7 @@ export default defineComponent({
   props: {
     latestEngineSetting: {
       type: Object as PropType<USIEngineSetting>,
-      rquired: true,
+      required: true,
     },
   },
   emits: ["ok", "cancel"],

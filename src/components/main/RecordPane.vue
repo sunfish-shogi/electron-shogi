@@ -4,12 +4,12 @@
       class="record"
       :record="record"
       :operational="isRecordOperational"
-      @goBegin="goBegin"
-      @goBack="goBack"
-      @goForward="goForward"
-      @goEnd="goEnd"
-      @selectMove="selectMove"
-      @selectBranch="selectBranch"
+      @go-begin="goBegin"
+      @go-back="goBack"
+      @go-forward="goForward"
+      @go-end="goEnd"
+      @select-move="selectMove"
+      @select-branch="selectBranch"
     />
   </div>
 </template>

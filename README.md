@@ -1,6 +1,6 @@
 # Electron 将棋
 
-![Test](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml/badge.svg)
+[![Test](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml)
 
 将棋の GUI アプリです。
 コンピューターとの対局や棋譜の編集・検討ができます。
@@ -18,6 +18,7 @@ Electron 将棋はオープンソースであり、そして低い制限のも�
 USI エンジンを呼び出す機能を除いて、ほぼ全ての機能がブラウザで利用できます。
 
 ## Web サイト
+![badge](https://user-images.githubusercontent.com/6257462/163171301-4628b27c-9f44-4624-b7cb-95e9e6e74497.svg)
 
 https://sunfish-shogi.github.io/electron-shogi/
 

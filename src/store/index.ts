@@ -90,10 +90,10 @@ interface Store {
   };
   dispatch(
     type: Action,
-    payload?: any,
+    payload?: unknown,
     options?: DispatchOptions
-  ): Promise<any>;
-  commit(type: Mutation, payload?: any, options?: CommitOptions): void;
+  ): Promise<unknown>;
+  commit(type: Mutation, payload?: unknown, options?: CommitOptions): void;
 }
 
 export const key: InjectionKey<Store> = Symbol();

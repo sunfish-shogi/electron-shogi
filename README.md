@@ -1,6 +1,9 @@
 # Electron 将棋
 
+<!--
+https://github.com/sunfish-shogi/electron-shogi/issues/46
 [![Test](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml)
+-->
 
 将棋の GUI アプリです。
 コンピューターとの対局や棋譜の編集・検討ができます。

@@ -2,6 +2,7 @@ import Position, { DoMoveOption, ImmutablePosition } from "./position";
 import Move from "./move";
 import { Color } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/helpers/time";
+import { reverseColor } from "./color";
 
 export enum RecordMetadataKey {
   // 柿木形式で規定されている項目
@@ -110,6 +111,7 @@ export interface RecordEntry {
   readonly branchIndex: number;
   readonly activeBranch: boolean;
   readonly move: Move | SpecialMove;
+  readonly isCheck: boolean;
   comment: string;
   customData: string | undefined;
   readonly displayMoveText: string;
@@ -134,7 +136,8 @@ class RecordEntryImpl implements RecordEntry {
     public prev: RecordEntryImpl | null,
     public branchIndex: number,
     public activeBranch: boolean,
-    public move: Move | SpecialMove
+    public move: Move | SpecialMove,
+    public isCheck: boolean
   ) {
     this.next = null;
     this.branch = null;
@@ -197,14 +200,12 @@ class RecordEntryImpl implements RecordEntry {
 
 export default class Record {
   private _metadata: RecordMetadata;
-
   private _initialPosition: ImmutablePosition;
-
   private _position: Position;
-
   private _first: RecordEntryImpl;
-
   private _current: RecordEntryImpl;
+  private repetitionCounts: { [sfen: string]: number };
+  private repetitionStart: { [sfen: string]: number };
 
   constructor(position?: ImmutablePosition) {
     this._metadata = new RecordMetadata();
@@ -215,9 +216,13 @@ export default class Record {
       null, // prev
       0, // branchIndex
       true, // activeBranch
-      SpecialMove.START // move
+      SpecialMove.START, // move
+      false // isCheck
     );
     this._current = this._first;
+    this.repetitionCounts = {};
+    this.repetitionStart = {};
+    this.incrementRepetition();
   }
 
   get metadata(): RecordMetadata {
@@ -275,8 +280,10 @@ export default class Record {
     return len;
   }
 
-  get branchBegin(): RecordEntry | null {
-    return this._current.prev ? this._current.prev.next : null;
+  get branchBegin(): RecordEntry {
+    return this._current.prev
+      ? (this._current.prev.next as RecordEntry)
+      : this._current;
   }
 
   clear(position?: ImmutablePosition): void {
@@ -284,6 +291,8 @@ export default class Record {
       this._initialPosition = position.clone();
     }
     this._position = this.initialPosition.clone();
+    this.repetitionCounts = {};
+    this.incrementRepetition();
     this._first.next = null;
     this._current = this._first;
   }
@@ -291,6 +300,7 @@ export default class Record {
   goBack(): boolean {
     if (this._current.prev) {
       if (this._current.move instanceof Move) {
+        this.decrementRepetition();
         this._position.undoMove(this._current.move);
       }
       this._current = this._current.prev;
@@ -309,6 +319,7 @@ export default class Record {
         this._position.doMove(this._current.move, {
           ignoreValidation: true,
         });
+        this.incrementRepetition();
       }
       return true;
     }
@@ -343,6 +354,7 @@ export default class Record {
       if (p.branchIndex === index) {
         p.activeBranch = true;
         if (this._current.move instanceof Move) {
+          this.decrementRepetition();
           this._position.undoMove(this._current.move);
         }
         this._current = p;
@@ -350,6 +362,7 @@ export default class Record {
           this._position.doMove(this._current.move, {
             ignoreValidation: true,
           });
+          this.incrementRepetition();
         }
         ok = true;
       } else {
@@ -360,10 +373,13 @@ export default class Record {
   }
 
   append(move: Move | SpecialMove, opt?: DoMoveOption): boolean {
+    let isCheck = false;
     if (move instanceof Move) {
       if (!this._position.doMove(move, opt)) {
         return false;
       }
+      this.incrementRepetition();
+      isCheck = this.position.checked;
     }
     if (this._current !== this.first && !(this._current.move instanceof Move)) {
       this.goBack();
@@ -374,7 +390,8 @@ export default class Record {
         this._current, // prev
         0, // branchIndex
         true, // activeBranch
-        move // move
+        move,
+        isCheck
       );
       this._current = this._current.next;
       return true;
@@ -402,7 +419,8 @@ export default class Record {
       this._current, // prev
       lastBranch.branchIndex + 1, // branchIndex
       true, // activeBranch
-      move // move
+      move,
+      isCheck
     );
     lastBranch.branch = this._current;
     return true;
@@ -432,6 +450,52 @@ export default class Record {
     if (this._current.next) {
       this._current.next.activeBranch = true;
     }
+  }
+
+  private incrementRepetition(): void {
+    const sfen = this.position.sfen;
+    if (this.repetitionCounts[sfen]) {
+      this.repetitionCounts[sfen] += 1;
+    } else {
+      this.repetitionCounts[sfen] = 1;
+      this.repetitionStart[sfen] = this.current.number;
+    }
+  }
+
+  private decrementRepetition(): void {
+    const sfen = this.position.sfen;
+    this.repetitionCounts[sfen] -= 1;
+    if (this.repetitionCounts[sfen] === 0) {
+      delete this.repetitionCounts[sfen];
+      delete this.repetitionStart[sfen];
+    }
+  }
+
+  get repetition(): boolean {
+    return this.repetitionCounts[this.position.sfen] >= 4;
+  }
+
+  get perpetualCheck(): Color | null {
+    if (!this.repetition) {
+      return null;
+    }
+    const sfen = this.position.sfen;
+    const since = this.repetitionStart[sfen];
+    let black = true;
+    let white = true;
+    let color = this.position.color;
+    for (let p = this.current; p.number >= since; p = p.prev as RecordEntry) {
+      color = reverseColor(color);
+      if (p.isCheck) {
+        continue;
+      }
+      if (color === Color.BLACK) {
+        black = false;
+      } else {
+        white = false;
+      }
+    }
+    return black ? Color.BLACK : white ? Color.WHITE : null;
   }
 
   get usi(): string {

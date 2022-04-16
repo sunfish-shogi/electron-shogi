@@ -145,7 +145,7 @@ export default defineComponent({
     });
 
     const branches = computed(() => {
-      if (!props.record.branchBegin?.branch) {
+      if (!props.record.branchBegin.branch) {
         return null;
       }
       const ret: {

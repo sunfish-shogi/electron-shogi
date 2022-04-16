@@ -62,7 +62,7 @@ export interface ImmutableBoard {
     color: Color,
     option?: PowerDetectionOption
   ): boolean;
-  isCheck(kingColor: Color, option?: PowerDetectionOption): boolean;
+  isChecked(kingColor: Color, option?: PowerDetectionOption): boolean;
   readonly sfen: string;
 }
 
@@ -442,7 +442,7 @@ export default class Board {
     });
   }
 
-  isCheck(kingColor: Color, option?: PowerDetectionOption): boolean {
+  isChecked(kingColor: Color, option?: PowerDetectionOption): boolean {
     const square = this.findKing(kingColor);
     if (!square) {
       return false;

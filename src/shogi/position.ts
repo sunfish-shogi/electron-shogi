@@ -70,6 +70,7 @@ export interface ImmutablePosition {
   readonly blackHand: ImmutableHand;
   readonly whiteHand: ImmutableHand;
   hand(color: Color): ImmutableHand;
+  readonly checked: boolean;
   createMove(from: Square | PieceType, to: Square): Move | null;
   createMoveBySFEN(sfen: string): Move | null;
   isPawnDropMate(move: Move): boolean;
@@ -157,6 +158,10 @@ export default class Position {
     return this._whiteHand;
   }
 
+  get checked(): boolean {
+    return this._board.isChecked(this.color);
+  }
+
   createMove(from: Square | PieceType, to: Square): Move | null {
     let pieceType: PieceType;
     if (from instanceof Square) {
@@ -226,7 +231,7 @@ export default class Position {
       return (
         !from.equals(kingSquare) &&
         this.isMovable(from, move.to) &&
-        !this.board.isCheck(king.color, {
+        !this.board.isChecked(king.color, {
           filled: move.to,
           ignore: from,
         })
@@ -262,7 +267,7 @@ export default class Position {
       }
       if (
         move.pieceType !== PieceType.KING
-          ? this._board.isCheck(this.color, {
+          ? this._board.isChecked(this.color, {
               filled: move.to,
               ignore: move.from,
             })
@@ -294,14 +299,13 @@ export default class Position {
       ) {
         return false;
       }
-      if (this._board.isCheck(this.color, { filled: move.to })) {
+      if (this._board.isChecked(this.color, { filled: move.to })) {
         return false;
       }
       if (this.isPawnDropMate(move)) {
         return false;
       }
     }
-    // FIXME: 連続王手の千日手チェック
     return true;
   }
 

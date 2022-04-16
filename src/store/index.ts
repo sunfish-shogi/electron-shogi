@@ -240,13 +240,6 @@ export const store = createStore<State>({
       }
       state.record.removeAfter();
     },
-    [Mutation.DO_MOVE](state, move: Move) {
-      state.record.append(move, {
-        ignoreValidation: true,
-      });
-      state.record.current.setElapsedMs(state.game.elapsedMs);
-      playPieceBeat(state.appSetting.pieceVolume);
-    },
     [Mutation.CLEAR_GAME_TIMER](state) {
       state.game.clearTimer();
       if (state.beep5sHandler) {
@@ -526,14 +519,14 @@ export const store = createStore<State>({
       }
       return dispatch(Action.STOP_GAME, SpecialMove.RESIGN);
     },
-    [Action.DO_MOVE_BY_USER]({ commit, state, getters }, move: Move) {
+    [Action.DO_MOVE_BY_USER]({ dispatch, state, getters }, move: Move) {
       if (!getters.isMovableByUser) {
         return false;
       }
       if (state.mode === Mode.GAME) {
         state.game.increment(state.record.position.color);
       }
-      commit(Mutation.DO_MOVE, move);
+      dispatch(Action.DO_MOVE, move);
       return true;
     },
     [Action.DO_MOVE_BY_USI_ENGINE](
@@ -581,8 +574,28 @@ export const store = createStore<State>({
         return false;
       }
       state.game.increment(state.record.position.color);
-      commit(Mutation.DO_MOVE, move);
+      dispatch(Action.DO_MOVE, move);
       return true;
+    },
+    [Action.DO_MOVE]({ state, dispatch }, move) {
+      state.record.append(move, {
+        ignoreValidation: true,
+      });
+      state.record.current.setElapsedMs(state.game.elapsedMs);
+      playPieceBeat(state.appSetting.pieceVolume);
+      if (state.mode !== Mode.GAME) {
+        return;
+      }
+      const color = state.record.perpetualCheck;
+      if (color) {
+        if (color === state.record.position.color) {
+          dispatch(Action.STOP_GAME, SpecialMove.FOUL_LOSE);
+        } else {
+          dispatch(Action.STOP_GAME, SpecialMove.FOUL_WIN);
+        }
+      } else if (state.record.repetition) {
+        dispatch(Action.STOP_GAME, SpecialMove.REPETITION_DRAW);
+      }
     },
     [Action.RESET_GAME_TIMER]({ dispatch, getters, state }) {
       const color = state.record.position.color;

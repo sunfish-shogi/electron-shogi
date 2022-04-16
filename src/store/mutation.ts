@@ -21,7 +21,6 @@ export enum Mutation {
   CHANGE_BRANCH = "changeBranch",
   REMOVE_RECORD_AFTER = "removeRecordAfter",
 
-  DO_MOVE = "move",
   CLEAR_GAME_TIMER = "clearGameTimer",
 
   // usi

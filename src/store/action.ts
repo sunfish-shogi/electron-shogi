@@ -17,6 +17,7 @@ export enum Action {
   RESIGN_BY_USER = "resign",
   DO_MOVE_BY_USER = "doMoveByUser",
   DO_MOVE_BY_USI_ENGINE = "doMoveByUSIEngine",
+  DO_MOVE = "doMove",
   RESET_GAME_TIMER = "resetGameTimer",
 
   BEEP_UNLIMITED = "beepUnlimited",

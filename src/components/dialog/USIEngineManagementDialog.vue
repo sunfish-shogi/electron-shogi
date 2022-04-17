@@ -12,7 +12,7 @@
           class="engine"
           :value="engine.uri"
         >
-          <span class="engine-name">{{ engine.name }}</span>
+          <div class="engine-name">{{ engine.name }}</div>
           <button class="dialog-button" @click="openOptions(engine.uri)">
             設定
           </button>
@@ -150,18 +150,16 @@ export default defineComponent({
   flex-direction: column;
 }
 .engine {
-  display: table;
-  margin: 5px 5px 0px 5px;
+  margin: 0px 5px 0px 5px;
   padding: 5px;
   border-bottom: 1px solid gray;
-}
-.engine > * {
-  display: table-cell;
-  vertical-align: middle;
+  display: flex;
+  flex-direction: row;
 }
 .engine-name {
   text-align: left;
-  width: 400px;
+  width: 380px;
+  margin-top: 5px;
   margin-right: 10px;
   white-space: nowrap;
   overflow: hidden;

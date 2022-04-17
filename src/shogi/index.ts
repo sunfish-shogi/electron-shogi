@@ -27,6 +27,7 @@ export {
   RecordEntry,
   RecordMetadataKey,
   RecordMetadata,
+  getStandardMetadataDisplayName,
   specialMoveToDisplayString,
   getNextColorFromUSI,
 } from "./record";

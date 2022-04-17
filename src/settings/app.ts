@@ -1,6 +1,7 @@
 import { BoardLayoutType } from "@/components/primitive/BoardLayout";
 
 export enum InformationTab {
+  RECORD_INFO = "recordInfo",
   COMMENT = "comment",
   SEARCH = "search",
   CHART = "chart",
@@ -42,7 +43,7 @@ export function defaultAppSetting(returnCode?: string): AppSetting {
     clockPitch: 500,
     clockSoundTarget: ClockSoundTarget.ONLY_USER,
     boardFlipping: false,
-    informationTab: InformationTab.COMMENT,
+    informationTab: InformationTab.RECORD_INFO,
     returnCode: returnCode || "\r\n",
   };
 }

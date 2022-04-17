@@ -6,7 +6,7 @@
         class="text"
         :value="comment"
         :readonly="!!readonly"
-        @change="change"
+        @input="change"
       />
     </div>
   </div>

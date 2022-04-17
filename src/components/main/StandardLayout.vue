@@ -25,7 +25,7 @@ import RecordPane, { minWidth as minRecordWidth } from "./RecordPane.vue";
 import InformationPane, {
   headerHeight as informationHeaderHeight,
   minHeight as minInformationHeight,
-} from "./InformationPane.vue";
+} from "./TabPane.vue";
 import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
 import { InformationTab } from "@/settings/app";

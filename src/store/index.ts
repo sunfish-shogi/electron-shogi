@@ -193,6 +193,12 @@ export const store = createStore<State>({
     [Mutation.UPDATE_RECORD_COMMENT](state, comment: string) {
       state.record.current.comment = comment;
     },
+    [Mutation.UPDATE_STANDARD_RECORD_METADATA](
+      state,
+      update: { key: RecordMetadataKey; value: string }
+    ) {
+      state.record.metadata.setStandardMetadata(update.key, update.value);
+    },
     [Mutation.CHANGE_TURN](state) {
       if (state.mode != Mode.POSITION_EDITING) {
         return;

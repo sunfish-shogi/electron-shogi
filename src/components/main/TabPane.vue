@@ -8,11 +8,19 @@
       <div class="tabs">
         <span
           class="tab"
+          :class="{ selected: activeTab === 'recordInfo' }"
+          @click="changeSelect('recordInfo')"
+        >
+          <ButtonIcon class="icon" icon="recordInfo" />
+          棋譜情報
+        </span>
+        <span
+          class="tab"
           :class="{ selected: activeTab === 'comment' }"
           @click="changeSelect('comment')"
         >
           <ButtonIcon class="icon" icon="comment" />
-          棋譜コメント
+          指し手コメント
         </span>
         <span
           class="tab"
@@ -41,6 +49,11 @@
       </div>
       <div class="tab-border" />
       <div class="tab-contents">
+        <RecordInfo
+          class="tab-content"
+          :class="{ selected: activeTab === 'recordInfo' }"
+          :size="contentSize"
+        />
         <RecordComment
           class="tab-content"
           :class="{ selected: activeTab === 'comment' }"
@@ -62,9 +75,10 @@
 
 <script lang="ts">
 import { computed, defineComponent } from "vue";
-import RecordComment from "@/components/analytics/RecordComment.vue";
-import EngineAnalytics from "@/components/analytics/EngineAnalytics.vue";
-import EvaluationChart from "@/components/analytics/EvaluationChart.vue";
+import RecordComment from "@/components/tab/RecordComment.vue";
+import EngineAnalytics from "@/components/tab/EngineAnalytics.vue";
+import EvaluationChart from "@/components/tab/EvaluationChart.vue";
+import RecordInfo from "@/components/tab/RecordInfo.vue";
 import { Action, useStore } from "@/store";
 import { RectSize } from "@/components/primitive/Types";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
@@ -79,6 +93,7 @@ export default defineComponent({
     RecordComment,
     EngineAnalytics,
     EvaluationChart,
+    RecordInfo,
     ButtonIcon,
   },
   props: {

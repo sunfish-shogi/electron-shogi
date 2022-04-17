@@ -93,19 +93,20 @@ export default defineComponent({
 .root {
   width: 100%;
   height: 100%;
+  padding-bottom: 2px;
   display: flex;
   flex-direction: column;
+  background-color: var(--active-tab-bg-color);
 }
 .headers {
   width: 100%;
-  height: 20px;
+  height: 18px;
   text-align: left;
   display: flex;
   flex-direction: row;
-  background-color: gray;
 }
 .header {
-  margin: 2px 4px 0px 0px;
+  margin: 0px 4px 0px 0px;
   padding: 0px 5px 0px 5px;
   background-color: white;
 }

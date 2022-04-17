@@ -26,7 +26,7 @@
 <script lang="ts">
 import { useStore } from "@/store";
 import { computed, defineComponent } from "vue";
-import EngineAnalyticsElement from "@/components/analytics/EngineAnalyticsElement.vue";
+import EngineAnalyticsElement from "@/components/tab/EngineAnalyticsElement.vue";
 import { RectSize } from "@/components/primitive/Types";
 
 export default defineComponent({

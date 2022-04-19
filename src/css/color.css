@@ -22,6 +22,8 @@
   --dialog-title-color: white;
   --dialog-bg-color: #558855;
   --dialog-border-color: #336633;
+  --dialog-form-color: black;
+  --dialog-form-bg-color: white;
   --error-dialog-color: white;
   --error-dialog-bg-color: #aa0000;
   --error-dialog-border-color: white;
@@ -31,10 +33,4 @@
   --bussy-dialog-color: white;
   --bussy-dialog-bg-color: dimgray;
   --bussy-dialog-border-color: white;
-  --messagebox-color: white;
-  --messagebox-bg-color: steelblue;
-  --messagebox-border-color: white;
-  --messagebox-button-color: white;
-  --messagebox-button-bg-color: deepskyblue;
-  --hovered-messagebox-button-bg-color: lightskyblue;
 }

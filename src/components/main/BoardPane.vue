@@ -1,7 +1,8 @@
 <template>
   <div>
     <BoardView
-      :layout-type="layout"
+      :piece-image-type="pieceImageType"
+      :board-image-type="boardImageType"
       :max-size="maxSize"
       :position="position"
       :last-move="lastMove"
@@ -226,7 +227,9 @@ export default defineComponent({
       return move instanceof Move ? move : null;
     });
 
-    const layout = computed(() => store.state.appSetting.boardLayout);
+    const pieceImageType = computed(() => store.state.appSetting.pieceImage);
+
+    const boardImageType = computed(() => store.state.appSetting.boardImage);
 
     const flip = computed(() => store.state.appSetting.boardFlipping);
 
@@ -272,7 +275,8 @@ export default defineComponent({
     });
 
     return {
-      layout,
+      pieceImageType,
+      boardImageType,
       position,
       lastMove,
       flip,

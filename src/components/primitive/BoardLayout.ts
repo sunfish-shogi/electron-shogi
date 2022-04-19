@@ -10,153 +10,60 @@ import {
 import preloadImage from "@/assets/preload";
 import { RectSize } from "@/components/primitive/Types";
 
-export enum BoardLayoutType {
+export enum PieceImageType {
   HITOMOJI = "hitomoji",
   HITOMOJI_GOTHIC = "hitomojiGothic",
 }
 
-type LayoutTemplate = {
-  images: {
-    board: string;
-    black: {
-      pawn: string;
-      lance: string;
-      knight: string;
-      silver: string;
-      gold: string;
-      bishop: string;
-      rook: string;
-      king: string;
-      king2: string;
-      promPawn: string;
-      promLance: string;
-      promKnight: string;
-      promSilver: string;
-      horse: string;
-      dragon: string;
-    };
-    white: {
-      pawn: string;
-      lance: string;
-      knight: string;
-      silver: string;
-      gold: string;
-      bishop: string;
-      rook: string;
-      king: string;
-      king2: string;
-      promPawn: string;
-      promLance: string;
-      promKnight: string;
-      promSilver: string;
-      horse: string;
-      dragon: string;
-    };
+export enum BoardImageType {
+  LIGHT = "light",
+  WARM = "warm",
+  RESIN = "resin",
+}
+
+type PieceImages = {
+  black: {
+    pawn: string;
+    lance: string;
+    knight: string;
+    silver: string;
+    gold: string;
+    bishop: string;
+    rook: string;
+    king: string;
+    king2: string;
+    promPawn: string;
+    promLance: string;
+    promKnight: string;
+    promSilver: string;
+    horse: string;
+    dragon: string;
   };
-  frame: {
-    width: number;
-    height: number;
-  };
-  board: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    squreWidth: number;
-    squreHeight: number;
-    leftSquarePadding: number;
-    topSquarePadding: number;
-    leftPiecePadding: number;
-    topPiecePadding: number;
-    highlight: {
-      selected: { [key: string]: string };
-      lastMove: { [key: string]: string };
-    };
-  };
-  piece: {
-    width: number;
-    height: number;
-  };
-  hand: {
-    color: string;
-    black: {
-      x: number;
-      y: number;
-    };
-    white: {
-      x: number;
-      y: number;
-    };
-    width: number;
-    height: number;
-    highlight: {
-      selected: { [key: string]: string };
-    };
-  };
-  turn: {
-    black: {
-      x: number;
-      y: number;
-    };
-    white: {
-      x: number;
-      y: number;
-    };
-    width: number;
-    height: number;
-    fontSize: number;
-  };
-  playerName: {
-    black: {
-      x: number;
-      y: number;
-    };
-    white: {
-      x: number;
-      y: number;
-    };
-    width: number;
-    height: number;
-    fontSize: number;
-  };
-  clock: {
-    black: {
-      x: number;
-      y: number;
-    };
-    white: {
-      x: number;
-      y: number;
-    };
-    width: number;
-    height: number;
-    fontSize: number;
-  };
-  control: {
-    left: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-      fontSize: number;
-    };
-    right: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-      fontSize: number;
-    };
+  white: {
+    pawn: string;
+    lance: string;
+    knight: string;
+    silver: string;
+    gold: string;
+    bishop: string;
+    rook: string;
+    king: string;
+    king2: string;
+    promPawn: string;
+    promLance: string;
+    promKnight: string;
+    promSilver: string;
+    horse: string;
+    dragon: string;
   };
 };
 
-const templateCommon = {
+const layoutTemplate = {
   frame: {
     width: 1471,
     height: 959,
   },
   board: {
-    // original image size: 878x960
     x: 296.5,
     y: 0,
     width: 878,
@@ -173,7 +80,6 @@ const templateCommon = {
     },
   },
   piece: {
-    // original image size: 88x93
     width: 88,
     height: 93,
   },
@@ -250,87 +156,85 @@ const templateCommon = {
   },
 };
 
-const templates: { [key: string]: LayoutTemplate } = {
-  hitomoji: {
-    ...templateCommon,
-    images: {
-      board: "./board/default.png",
-      black: {
-        pawn: "./piece/hitomoji/black_pawn.png",
-        lance: "./piece/hitomoji/black_lance.png",
-        knight: "./piece/hitomoji/black_knight.png",
-        silver: "./piece/hitomoji/black_silver.png",
-        gold: "./piece/hitomoji/black_gold.png",
-        bishop: "./piece/hitomoji/black_bishop.png",
-        rook: "./piece/hitomoji/black_rook.png",
-        king: "./piece/hitomoji/black_king.png",
-        king2: "./piece/hitomoji/black_king2.png",
-        promPawn: "./piece/hitomoji/black_prom_pawn.png",
-        promLance: "./piece/hitomoji/black_prom_lance.png",
-        promKnight: "./piece/hitomoji/black_prom_knight.png",
-        promSilver: "./piece/hitomoji/black_prom_silver.png",
-        horse: "./piece/hitomoji/black_horse.png",
-        dragon: "./piece/hitomoji/black_dragon.png",
-      },
-      white: {
-        pawn: "./piece/hitomoji/white_pawn.png",
-        lance: "./piece/hitomoji/white_lance.png",
-        knight: "./piece/hitomoji/white_knight.png",
-        silver: "./piece/hitomoji/white_silver.png",
-        gold: "./piece/hitomoji/white_gold.png",
-        bishop: "./piece/hitomoji/white_bishop.png",
-        rook: "./piece/hitomoji/white_rook.png",
-        king: "./piece/hitomoji/white_king.png",
-        king2: "./piece/hitomoji/white_king2.png",
-        promPawn: "./piece/hitomoji/white_prom_pawn.png",
-        promLance: "./piece/hitomoji/white_prom_lance.png",
-        promKnight: "./piece/hitomoji/white_prom_knight.png",
-        promSilver: "./piece/hitomoji/white_prom_silver.png",
-        horse: "./piece/hitomoji/white_horse.png",
-        dragon: "./piece/hitomoji/white_dragon.png",
-      },
+const pieceImageMap: { [key: string]: PieceImages } = {
+  [PieceImageType.HITOMOJI]: {
+    black: {
+      pawn: "./piece/hitomoji/black_pawn.png",
+      lance: "./piece/hitomoji/black_lance.png",
+      knight: "./piece/hitomoji/black_knight.png",
+      silver: "./piece/hitomoji/black_silver.png",
+      gold: "./piece/hitomoji/black_gold.png",
+      bishop: "./piece/hitomoji/black_bishop.png",
+      rook: "./piece/hitomoji/black_rook.png",
+      king: "./piece/hitomoji/black_king.png",
+      king2: "./piece/hitomoji/black_king2.png",
+      promPawn: "./piece/hitomoji/black_prom_pawn.png",
+      promLance: "./piece/hitomoji/black_prom_lance.png",
+      promKnight: "./piece/hitomoji/black_prom_knight.png",
+      promSilver: "./piece/hitomoji/black_prom_silver.png",
+      horse: "./piece/hitomoji/black_horse.png",
+      dragon: "./piece/hitomoji/black_dragon.png",
+    },
+    white: {
+      pawn: "./piece/hitomoji/white_pawn.png",
+      lance: "./piece/hitomoji/white_lance.png",
+      knight: "./piece/hitomoji/white_knight.png",
+      silver: "./piece/hitomoji/white_silver.png",
+      gold: "./piece/hitomoji/white_gold.png",
+      bishop: "./piece/hitomoji/white_bishop.png",
+      rook: "./piece/hitomoji/white_rook.png",
+      king: "./piece/hitomoji/white_king.png",
+      king2: "./piece/hitomoji/white_king2.png",
+      promPawn: "./piece/hitomoji/white_prom_pawn.png",
+      promLance: "./piece/hitomoji/white_prom_lance.png",
+      promKnight: "./piece/hitomoji/white_prom_knight.png",
+      promSilver: "./piece/hitomoji/white_prom_silver.png",
+      horse: "./piece/hitomoji/white_horse.png",
+      dragon: "./piece/hitomoji/white_dragon.png",
     },
   },
-  hitomojiGothic: {
-    ...templateCommon,
-    images: {
-      board: "./board/default.png",
-      black: {
-        pawn: "./piece/hitomoji_gothic/black_pawn.png",
-        lance: "./piece/hitomoji_gothic/black_lance.png",
-        knight: "./piece/hitomoji_gothic/black_knight.png",
-        silver: "./piece/hitomoji_gothic/black_silver.png",
-        gold: "./piece/hitomoji_gothic/black_gold.png",
-        bishop: "./piece/hitomoji_gothic/black_bishop.png",
-        rook: "./piece/hitomoji_gothic/black_rook.png",
-        king: "./piece/hitomoji_gothic/black_king.png",
-        king2: "./piece/hitomoji_gothic/black_king2.png",
-        promPawn: "./piece/hitomoji_gothic/black_prom_pawn.png",
-        promLance: "./piece/hitomoji_gothic/black_prom_lance.png",
-        promKnight: "./piece/hitomoji_gothic/black_prom_knight.png",
-        promSilver: "./piece/hitomoji_gothic/black_prom_silver.png",
-        horse: "./piece/hitomoji_gothic/black_horse.png",
-        dragon: "./piece/hitomoji_gothic/black_dragon.png",
-      },
-      white: {
-        pawn: "./piece/hitomoji_gothic/white_pawn.png",
-        lance: "./piece/hitomoji_gothic/white_lance.png",
-        knight: "./piece/hitomoji_gothic/white_knight.png",
-        silver: "./piece/hitomoji_gothic/white_silver.png",
-        gold: "./piece/hitomoji_gothic/white_gold.png",
-        bishop: "./piece/hitomoji_gothic/white_bishop.png",
-        rook: "./piece/hitomoji_gothic/white_rook.png",
-        king: "./piece/hitomoji_gothic/white_king.png",
-        king2: "./piece/hitomoji_gothic/white_king2.png",
-        promPawn: "./piece/hitomoji_gothic/white_prom_pawn.png",
-        promLance: "./piece/hitomoji_gothic/white_prom_lance.png",
-        promKnight: "./piece/hitomoji_gothic/white_prom_knight.png",
-        promSilver: "./piece/hitomoji_gothic/white_prom_silver.png",
-        horse: "./piece/hitomoji_gothic/white_horse.png",
-        dragon: "./piece/hitomoji_gothic/white_dragon.png",
-      },
+  [PieceImageType.HITOMOJI_GOTHIC]: {
+    black: {
+      pawn: "./piece/hitomoji_gothic/black_pawn.png",
+      lance: "./piece/hitomoji_gothic/black_lance.png",
+      knight: "./piece/hitomoji_gothic/black_knight.png",
+      silver: "./piece/hitomoji_gothic/black_silver.png",
+      gold: "./piece/hitomoji_gothic/black_gold.png",
+      bishop: "./piece/hitomoji_gothic/black_bishop.png",
+      rook: "./piece/hitomoji_gothic/black_rook.png",
+      king: "./piece/hitomoji_gothic/black_king.png",
+      king2: "./piece/hitomoji_gothic/black_king2.png",
+      promPawn: "./piece/hitomoji_gothic/black_prom_pawn.png",
+      promLance: "./piece/hitomoji_gothic/black_prom_lance.png",
+      promKnight: "./piece/hitomoji_gothic/black_prom_knight.png",
+      promSilver: "./piece/hitomoji_gothic/black_prom_silver.png",
+      horse: "./piece/hitomoji_gothic/black_horse.png",
+      dragon: "./piece/hitomoji_gothic/black_dragon.png",
+    },
+    white: {
+      pawn: "./piece/hitomoji_gothic/white_pawn.png",
+      lance: "./piece/hitomoji_gothic/white_lance.png",
+      knight: "./piece/hitomoji_gothic/white_knight.png",
+      silver: "./piece/hitomoji_gothic/white_silver.png",
+      gold: "./piece/hitomoji_gothic/white_gold.png",
+      bishop: "./piece/hitomoji_gothic/white_bishop.png",
+      rook: "./piece/hitomoji_gothic/white_rook.png",
+      king: "./piece/hitomoji_gothic/white_king.png",
+      king2: "./piece/hitomoji_gothic/white_king2.png",
+      promPawn: "./piece/hitomoji_gothic/white_prom_pawn.png",
+      promLance: "./piece/hitomoji_gothic/white_prom_lance.png",
+      promKnight: "./piece/hitomoji_gothic/white_prom_knight.png",
+      promSilver: "./piece/hitomoji_gothic/white_prom_silver.png",
+      horse: "./piece/hitomoji_gothic/white_horse.png",
+      dragon: "./piece/hitomoji_gothic/white_dragon.png",
     },
   },
+};
+
+const boardImageMap = {
+  [BoardImageType.LIGHT]: "./board/light.png",
+  [BoardImageType.WARM]: "./board/warm.png",
+  [BoardImageType.RESIN]: "./board/resin.png",
 };
 
 const handLaytoutRule = {
@@ -456,17 +360,19 @@ export type FullLayout = {
 };
 
 export default class LayoutBuilder {
-  private template: LayoutTemplate;
+  private pieceImages: PieceImages;
+  private boardImage: string;
 
-  constructor(layoutType: BoardLayoutType) {
-    this.template =
-      templates[layoutType] || templates[BoardLayoutType.HITOMOJI];
+  constructor(pieceImageType: PieceImageType, boardImageType: BoardImageType) {
+    this.pieceImages =
+      pieceImageMap[pieceImageType] || pieceImageMap[PieceImageType.HITOMOJI];
+    this.boardImage = boardImageMap[boardImageType];
   }
 
   preload(): void {
-    preloadImage(this.template.images.board);
-    Object.values(this.template.images.black).forEach(preloadImage);
-    Object.values(this.template.images.white).forEach(preloadImage);
+    preloadImage(this.boardImage);
+    Object.values(this.pieceImages.black).forEach(preloadImage);
+    Object.values(this.pieceImages.white).forEach(preloadImage);
   }
 
   build(
@@ -477,26 +383,26 @@ export default class LayoutBuilder {
     reservedMoveForPromotion: Move | null | undefined,
     flip?: boolean
   ): FullLayout {
-    let ratio = upperSizeLimit.width / this.template.frame.width;
-    if (this.template.frame.height * ratio > upperSizeLimit.height) {
-      ratio = upperSizeLimit.height / this.template.frame.height;
+    let ratio = upperSizeLimit.width / layoutTemplate.frame.width;
+    if (layoutTemplate.frame.height * ratio > upperSizeLimit.height) {
+      ratio = upperSizeLimit.height / layoutTemplate.frame.height;
     }
 
     const buildFrameLayout = (): FrameLayout => {
       return {
         style: {
-          height: this.template.frame.height * ratio + "px",
-          width: this.template.frame.width * ratio + "px",
+          height: layoutTemplate.frame.height * ratio + "px",
+          width: layoutTemplate.frame.width * ratio + "px",
         },
       };
     };
 
     const buildBoardLayout = (): BoardLayout => {
-      const imagePath = this.template.images.board;
-      const x = this.template.board.x * ratio;
-      const y = this.template.board.y * ratio;
-      const width = this.template.board.width * ratio;
-      const height = this.template.board.height * ratio;
+      const imagePath = this.boardImage;
+      const x = layoutTemplate.board.x * ratio;
+      const y = layoutTemplate.board.y * ratio;
+      const width = layoutTemplate.board.width * ratio;
+      const height = layoutTemplate.board.height * ratio;
       const style = {
         left: x + "px",
         top: y + "px",
@@ -521,21 +427,21 @@ export default class LayoutBuilder {
           piece.type == PieceType.KING && piece.color == Color.BLACK
             ? "king2"
             : piece.type;
-        const imagePath = this.template.images[displayColor][pieceType];
+        const imagePath = this.pieceImages[displayColor][pieceType];
         const x =
           boardLayout.x +
-          (this.template.board.leftPiecePadding +
-            this.template.board.squreWidth *
+          (layoutTemplate.board.leftPiecePadding +
+            layoutTemplate.board.squreWidth *
               (flip ? square.opposite : square).x) *
             ratio;
         const y =
           boardLayout.y +
-          (this.template.board.topPiecePadding +
-            this.template.board.squreHeight *
+          (layoutTemplate.board.topPiecePadding +
+            layoutTemplate.board.squreHeight *
               (flip ? square.opposite : square).y) *
             ratio;
-        const width = this.template.piece.width * ratio;
-        const height = this.template.piece.height * ratio;
+        const width = layoutTemplate.piece.width * ratio;
+        const height = layoutTemplate.piece.height * ratio;
         layouts.push({
           id,
           imagePath,
@@ -558,18 +464,18 @@ export default class LayoutBuilder {
         const { rank } = square;
         const x =
           boardLayout.x +
-          (this.template.board.leftSquarePadding +
-            this.template.board.squreWidth *
+          (layoutTemplate.board.leftSquarePadding +
+            layoutTemplate.board.squreWidth *
               (flip ? square.opposite : square).x) *
             ratio;
         const y =
           boardLayout.y +
-          (this.template.board.topSquarePadding +
-            this.template.board.squreHeight *
+          (layoutTemplate.board.topSquarePadding +
+            layoutTemplate.board.squreHeight *
               (flip ? square.opposite : square).y) *
             ratio;
-        const width = this.template.board.squreWidth * ratio;
-        const height = this.template.board.squreHeight * ratio;
+        const width = layoutTemplate.board.squreWidth * ratio;
+        const height = layoutTemplate.board.squreHeight * ratio;
         const style = {
           left: x + "px",
           top: y + "px",
@@ -580,13 +486,13 @@ export default class LayoutBuilder {
         if (lastMove && square.equals(lastMove.to)) {
           backgroundStyle = {
             ...backgroundStyle,
-            ...this.template.board.highlight.lastMove,
+            ...layoutTemplate.board.highlight.lastMove,
           };
         }
         if (pointer instanceof Square && pointer.equals(square)) {
           backgroundStyle = {
             ...backgroundStyle,
-            ...this.template.board.highlight.selected,
+            ...layoutTemplate.board.highlight.selected,
           };
         }
         layouts.push({
@@ -602,12 +508,12 @@ export default class LayoutBuilder {
 
     const buildHandLayout = (color: Color, hand: ImmutableHand): HandLayout => {
       const displayColor = flip ? reverseColor(color) : color;
-      const standX = this.template.hand[displayColor].x * ratio;
-      const standY = this.template.hand[displayColor].y * ratio;
-      const standWidth = this.template.hand.width * ratio;
-      const standHeight = this.template.hand.height * ratio;
+      const standX = layoutTemplate.hand[displayColor].x * ratio;
+      const standY = layoutTemplate.hand[displayColor].y * ratio;
+      const standWidth = layoutTemplate.hand.width * ratio;
+      const standHeight = layoutTemplate.hand.height * ratio;
       const standStyle = {
-        "background-color": this.template.hand.color,
+        "background-color": layoutTemplate.hand.color,
         left: standX + "px",
         top: standY + "px",
         width: standWidth + "px",
@@ -618,19 +524,19 @@ export default class LayoutBuilder {
       handPieceTypes.forEach((type) => {
         const count = hand.count(type);
         const rule = handLaytoutRule[displayColor][type];
-        const areaWidth = (this.template.hand.width / 2) * rule.width * ratio;
-        const areaHeight = (this.template.hand.height / 4) * ratio;
+        const areaWidth = (layoutTemplate.hand.width / 2) * rule.width * ratio;
+        const areaHeight = (layoutTemplate.hand.height / 4) * ratio;
         const areaX = areaWidth * rule.column;
         const areaY = areaHeight * rule.row;
-        const pieceWidth = this.template.piece.width * ratio;
-        const pieceHeight = this.template.piece.height * ratio;
+        const pieceWidth = layoutTemplate.piece.width * ratio;
+        const pieceHeight = layoutTemplate.piece.height * ratio;
         const padding =
           Math.max(areaWidth - pieceWidth * count, 0) / (count * 2);
         const dx =
           (areaWidth - pieceWidth - padding * 2) / Math.max(count - 1, 1);
         for (let i = count - 1; i >= 0; i -= 1) {
           const id = type + i;
-          const imagePath = this.template.images[displayColor][type];
+          const imagePath = this.pieceImages[displayColor][type];
           const x = areaX + padding + dx * i;
           const y = areaY;
           pieces.push({
@@ -660,7 +566,7 @@ export default class LayoutBuilder {
         ) {
           backgroundStyle = {
             ...backgroundStyle,
-            ...this.template.hand.highlight.selected,
+            ...layoutTemplate.hand.highlight.selected,
           };
         }
         pointers.push({
@@ -689,20 +595,20 @@ export default class LayoutBuilder {
       const piece = new Piece(color, move.pieceType);
       const promoted = piece.promoted();
       const notPromoted = piece.unpromoted();
-      const promoteImagePath = this.template.images[color][promoted.type];
-      const notPromoteImagePath = this.template.images[color][notPromoted.type];
+      const promoteImagePath = this.pieceImages[color][promoted.type];
+      const notPromoteImagePath = this.pieceImages[color][notPromoted.type];
       const x =
         boardLayout.x +
-        (this.template.board.leftSquarePadding +
-          this.template.board.squreWidth * (square.x - 0.5)) *
+        (layoutTemplate.board.leftSquarePadding +
+          layoutTemplate.board.squreWidth * (square.x - 0.5)) *
           ratio;
       const y =
         boardLayout.y +
-        (this.template.board.topSquarePadding +
-          this.template.board.squreHeight * square.y) *
+        (layoutTemplate.board.topSquarePadding +
+          layoutTemplate.board.squreHeight * square.y) *
           ratio;
-      const width = this.template.board.squreWidth * 2 * ratio;
-      const height = this.template.board.squreHeight * ratio;
+      const width = layoutTemplate.board.squreWidth * 2 * ratio;
+      const height = layoutTemplate.board.squreHeight * ratio;
       const style = {
         left: x + "px",
         top: y + "px",
@@ -723,12 +629,13 @@ export default class LayoutBuilder {
       const borderWidth = 2;
       return {
         style: {
-          left: this.template.turn[displayColor].x * ratio - borderWidth + "px",
-          top: this.template.turn[displayColor].y * ratio - borderWidth + "px",
-          width: this.template.turn.width * ratio - borderWidth + "px",
-          height: this.template.turn.height * ratio - borderWidth + "px",
-          "font-size": this.template.turn.fontSize * ratio + "px",
-          "border-radius": this.template.turn.height * ratio * 0.4 + "px",
+          left:
+            layoutTemplate.turn[displayColor].x * ratio - borderWidth + "px",
+          top: layoutTemplate.turn[displayColor].y * ratio - borderWidth + "px",
+          width: layoutTemplate.turn.width * ratio - borderWidth + "px",
+          height: layoutTemplate.turn.height * ratio - borderWidth + "px",
+          "font-size": layoutTemplate.turn.fontSize * ratio + "px",
+          "border-radius": layoutTemplate.turn.height * ratio * 0.4 + "px",
           "border-width": borderWidth + "px",
           "border-style": "solid",
         },
@@ -739,11 +646,11 @@ export default class LayoutBuilder {
       const displayColor = flip ? reverseColor(color) : color;
       return {
         style: {
-          left: this.template.playerName[displayColor].x * ratio + "px",
-          top: this.template.playerName[displayColor].y * ratio + "px",
-          width: this.template.playerName.width * ratio + "px",
-          height: this.template.playerName.height * ratio + "px",
-          "font-size": this.template.playerName.fontSize * ratio + "px",
+          left: layoutTemplate.playerName[displayColor].x * ratio + "px",
+          top: layoutTemplate.playerName[displayColor].y * ratio + "px",
+          width: layoutTemplate.playerName.width * ratio + "px",
+          height: layoutTemplate.playerName.height * ratio + "px",
+          "font-size": layoutTemplate.playerName.fontSize * ratio + "px",
         },
       };
     };
@@ -752,11 +659,11 @@ export default class LayoutBuilder {
       const displayColor = flip ? reverseColor(color) : color;
       return {
         style: {
-          left: this.template.clock[displayColor].x * ratio + "px",
-          top: this.template.clock[displayColor].y * ratio + "px",
-          width: this.template.clock.width * ratio + "px",
-          height: this.template.clock.height * ratio + "px",
-          "font-size": this.template.clock.fontSize * ratio + "px",
+          left: layoutTemplate.clock[displayColor].x * ratio + "px",
+          top: layoutTemplate.clock[displayColor].y * ratio + "px",
+          width: layoutTemplate.clock.width * ratio + "px",
+          height: layoutTemplate.clock.height * ratio + "px",
+          "font-size": layoutTemplate.clock.fontSize * ratio + "px",
         },
       };
     };
@@ -765,20 +672,20 @@ export default class LayoutBuilder {
       return {
         left: {
           style: {
-            left: this.template.control.left.x * ratio + "px",
-            top: this.template.control.left.y * ratio + "px",
-            width: this.template.control.left.width * ratio + "px",
-            height: this.template.control.left.height * ratio + "px",
-            "font-size": this.template.control.left.fontSize * ratio + "px",
+            left: layoutTemplate.control.left.x * ratio + "px",
+            top: layoutTemplate.control.left.y * ratio + "px",
+            width: layoutTemplate.control.left.width * ratio + "px",
+            height: layoutTemplate.control.left.height * ratio + "px",
+            "font-size": layoutTemplate.control.left.fontSize * ratio + "px",
           },
         },
         right: {
           style: {
-            left: this.template.control.right.x * ratio + "px",
-            top: this.template.control.right.y * ratio + "px",
-            width: this.template.control.right.width * ratio + "px",
-            height: this.template.control.right.height * ratio + "px",
-            "font-size": this.template.control.right.fontSize * ratio + "px",
+            left: layoutTemplate.control.right.x * ratio + "px",
+            top: layoutTemplate.control.right.y * ratio + "px",
+            width: layoutTemplate.control.right.width * ratio + "px",
+            height: layoutTemplate.control.right.height * ratio + "px",
+            "font-size": layoutTemplate.control.right.fontSize * ratio + "px",
           },
         },
       };

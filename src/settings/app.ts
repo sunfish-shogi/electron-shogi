@@ -1,4 +1,7 @@
-import { BoardLayoutType } from "@/components/primitive/BoardLayout";
+import {
+  PieceImageType,
+  BoardImageType,
+} from "@/components/primitive/BoardLayout";
 
 export enum InformationTab {
   RECORD_INFO = "recordInfo",
@@ -14,7 +17,8 @@ export enum ClockSoundTarget {
 }
 
 export type AppSetting = {
-  boardLayout: BoardLayoutType;
+  pieceImage: PieceImageType;
+  boardImage: BoardImageType;
   pieceVolume: number;
   clockVolume: number;
   clockPitch: number;
@@ -25,7 +29,8 @@ export type AppSetting = {
 };
 
 export type AppSettingUpdate = {
-  boardLayout?: BoardLayoutType;
+  pieceImage?: PieceImageType;
+  boardImage?: BoardImageType;
   pieceVolume?: number;
   clockVolume?: number;
   clockPitch?: number;
@@ -37,7 +42,8 @@ export type AppSettingUpdate = {
 
 export function defaultAppSetting(returnCode?: string): AppSetting {
   return {
-    boardLayout: BoardLayoutType.HITOMOJI,
+    pieceImage: PieceImageType.HITOMOJI,
+    boardImage: BoardImageType.LIGHT,
     pieceVolume: 30,
     clockVolume: 30,
     clockPitch: 500,

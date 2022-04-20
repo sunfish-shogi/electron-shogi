@@ -130,7 +130,8 @@
 import { PieceType } from "@/shogi";
 import { computed, reactive, watch, defineComponent, PropType } from "vue";
 import LayoutBuilder, {
-  BoardLayoutType,
+  BoardImageType,
+  PieceImageType,
 } from "@/components/primitive/BoardLayout";
 import { Square, Piece, Color, Move, ImmutablePosition } from "@/shogi";
 import { RectSize } from "./Types";
@@ -144,8 +145,12 @@ type State = {
 export default defineComponent({
   name: "BoardView",
   props: {
-    layoutType: {
-      type: String as PropType<BoardLayoutType>,
+    pieceImageType: {
+      type: String as PropType<PieceImageType>,
+      required: true,
+    },
+    boardImageType: {
+      type: String as PropType<BoardImageType>,
       required: true,
     },
     maxSize: {
@@ -344,7 +349,10 @@ export default defineComponent({
     };
 
     const layoutBuilder = computed(() => {
-      const builder = new LayoutBuilder(props.layoutType);
+      const builder = new LayoutBuilder(
+        props.pieceImageType,
+        props.boardImageType
+      );
       builder.preload();
       return builder;
     });

@@ -4,14 +4,26 @@
       <div class="dialog-title">アプリ設定</div>
       <div class="dialog-form-area settings">
         <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">デザイン</div>
-          <select ref="boardLayout" :value="appSetting.boardLayout">
+          <div class="dialog-form-item-label-wide">駒画像</div>
+          <select ref="pieceImage" :value="appSetting.pieceImage">
             <option
-              v-for="layout of boardLayouts"
-              :key="layout"
-              :value="layout.value"
+              v-for="pieceImageType of pieceImageTypes"
+              :key="pieceImageType"
+              :value="pieceImageType.value"
             >
-              {{ layout.name }}
+              {{ pieceImageType.name }}
+            </option>
+          </select>
+        </div>
+        <div class="dialog-form-item">
+          <div class="dialog-form-item-label-wide">盤画像</div>
+          <select ref="boardImage" :value="appSetting.boardImage">
+            <option
+              v-for="boardImageType of boardImageTypes"
+              :key="boardImageType"
+              :value="boardImageType.value"
+            >
+              {{ boardImageType.name }}
             </option>
           </select>
         </div>
@@ -75,7 +87,10 @@
 </template>
 
 <script lang="ts">
-import { BoardLayoutType } from "@/components/primitive/BoardLayout";
+import {
+  PieceImageType,
+  BoardImageType,
+} from "@/components/primitive/BoardLayout";
 import { AppSettingUpdate } from "@/settings/app";
 import { Action, Mutation, useStore } from "@/store";
 import { ref, defineComponent, onMounted, Ref, computed } from "vue";
@@ -99,7 +114,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
-    const boardLayout: Ref = ref(null);
+    const pieceImage: Ref = ref(null);
+    const boardImage: Ref = ref(null);
     const pieceVolume: Ref = ref(null);
     const clockVolume: Ref = ref(null);
     const clockPitch: Ref = ref(null);
@@ -112,7 +128,8 @@ export default defineComponent({
 
     const saveAndClose = async () => {
       const update: AppSettingUpdate = {
-        boardLayout: boardLayout.value.value,
+        pieceImage: pieceImage.value.value,
+        boardImage: boardImage.value.value,
         pieceVolume: readInputAsNumber(pieceVolume.value),
         clockVolume: readInputAsNumber(clockVolume.value),
         clockPitch: readInputAsNumber(clockPitch.value),
@@ -141,24 +158,44 @@ export default defineComponent({
       };
     });
 
-    const boardLayouts = [
-      { name: "一文字駒", value: BoardLayoutType.HITOMOJI },
+    const pieceImageTypes = [
+      {
+        name: "一文字駒",
+        value: PieceImageType.HITOMOJI,
+      },
       {
         name: "一文字駒（ゴシック体）",
-        value: BoardLayoutType.HITOMOJI_GOTHIC,
+        value: PieceImageType.HITOMOJI_GOTHIC,
+      },
+    ];
+
+    const boardImageTypes = [
+      {
+        name: "木目（明るい）",
+        value: BoardImageType.LIGHT,
+      },
+      {
+        name: "木目（暖かい）",
+        value: BoardImageType.WARM,
+      },
+      {
+        name: "塩化ビニル",
+        value: BoardImageType.RESIN,
       },
     ];
 
     return {
       dialog,
-      boardLayout,
+      pieceImage,
+      boardImage,
       pieceVolume,
       clockVolume,
       clockPitch,
       clockSoundTarget,
       returnCode,
       appSetting,
-      boardLayouts,
+      pieceImageTypes,
+      boardImageTypes,
       saveAndClose,
       cancel,
     };

@@ -100,7 +100,7 @@
             <ButtonIcon class="icon" icon="copy" />
             棋譜コピー
           </button>
-          <button @click="onRemoveAfter">
+          <button :disabled="!controlStates.removeAfter" @click="onRemoveAfter">
             <ButtonIcon class="icon" icon="delete" />
             指し手削除
           </button>
@@ -176,12 +176,12 @@ export default defineComponent({
     };
 
     const onInitPositionStandard = () => {
-      store.commit(Mutation.INITIALIZE_POSITION, InitialPositionType.STANDARD);
+      store.dispatch(Action.INITIALIZE_POSITION, InitialPositionType.STANDARD);
     };
 
     const onInitPositionTsumeShogi = () => {
-      store.commit(
-        Mutation.INITIALIZE_POSITION,
+      store.dispatch(
+        Action.INITIALIZE_POSITION,
         InitialPositionType.TSUME_SHOGI
       );
     };
@@ -211,7 +211,7 @@ export default defineComponent({
     };
 
     const onRemoveAfter = () => {
-      store.commit(Mutation.REMOVE_RECORD_AFTER);
+      store.dispatch(Action.REMOVE_RECORD_AFTER);
     };
 
     const allowEdit = computed(
@@ -268,6 +268,7 @@ export default defineComponent({
         startEditPosition: store.state.mode === Mode.NORMAL,
         endEditPosition: store.state.mode === Mode.POSITION_EDITING,
         initPosition: store.state.mode === Mode.POSITION_EDITING,
+        removeAfter: store.state.mode === Mode.NORMAL,
         paste: store.state.mode === Mode.NORMAL,
         appSettings: store.state.mode === Mode.NORMAL,
         engineSettings: store.state.mode === Mode.NORMAL,

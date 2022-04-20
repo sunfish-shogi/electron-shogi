@@ -5,7 +5,8 @@
   <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
   <AppSettingDialog v-if="dialogVisibilities.appSetting" />
   <PasteDialog v-if="dialogVisibilities.paste" />
-  <BussyMessage v-if="dialogVisibilities.processing" />
+  <BussyMessage v-if="dialogVisibilities.bussy" />
+  <ConfirmDialog v-if="dialogVisibilities.confirm" />
   <InfoMessage v-if="hasMessage" />
   <ErrorMessage v-if="hasErrors" />
 </template>
@@ -19,6 +20,7 @@ import USIEngineManagementDialog from "@/components/dialog/USIEngineManagementDi
 import AppSettingDialog from "@/components/dialog/AppSettingDialog.vue";
 import PasteDialog from "@/components/dialog/PasteDialog.vue";
 import BussyMessage from "@/components/dialog/BussyMessage.vue";
+import ConfirmDialog from "@/components/dialog/ConfirmDialog.vue";
 import InfoMessage from "@/components/dialog/InfoMessage.vue";
 import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
 import { Action, Mutation, useStore } from "@/store";
@@ -35,6 +37,7 @@ export default defineComponent({
     AppSettingDialog,
     PasteDialog,
     BussyMessage,
+    ConfirmDialog,
     InfoMessage,
     ErrorMessage,
   },
@@ -48,7 +51,8 @@ export default defineComponent({
         usiEngineSetting: store.state.mode === Mode.USI_ENGINE_SETTING_DIALOG,
         appSetting: store.state.mode === Mode.APP_SETTING_DIALOG,
         paste: store.state.mode === Mode.PASTE_DIALOG,
-        processing: store.getters.isBussy,
+        bussy: store.getters.isBussy,
+        confirm: store.state.confirmation.confirmation,
       };
     });
 

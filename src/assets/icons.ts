@@ -27,6 +27,7 @@ export enum Icon {
   BACK = "back",
   NEXT = "next",
   LAST = "last",
+  QUESTION = "question",
 }
 
 export const iconSourceMap = {
@@ -56,6 +57,7 @@ export const iconSourceMap = {
   [Icon.BACK]: "icon/chevron_left_white_24dp.svg",
   [Icon.NEXT]: "icon/chevron_right_white_24dp.svg",
   [Icon.LAST]: "icon/last_page_white_24dp.svg",
+  [Icon.QUESTION]: "icon/help_white_24dp.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

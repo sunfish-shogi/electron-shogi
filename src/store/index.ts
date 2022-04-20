@@ -60,6 +60,7 @@ import { Mode } from "./mode";
 import { messageState, MessageState } from "./message";
 import { errorState, ErrorState } from "./error";
 import * as uri from "@/uri";
+import { ConfirmationState, confirmationState } from "./confirm";
 
 export { Mutation } from "./mutation";
 export { Action } from "./action";
@@ -80,6 +81,7 @@ interface Store {
     readonly message: MessageState;
     readonly error: ErrorState;
     readonly bussy: BussyState;
+    readonly confirmation: ConfirmationState;
   };
   readonly getters: {
     readonly isMovableByUser: boolean;
@@ -115,6 +117,7 @@ export const store = createStore<State>({
     message: messageState,
     error: errorState,
     bussy: bussyState,
+    confirmation: confirmationState,
   },
   getters: {
     isMovableByUser(state): boolean {
@@ -207,17 +210,6 @@ export const store = createStore<State>({
       position.setColor(reverseColor(position.color));
       state.record.clear(position);
     },
-    [Mutation.INITIALIZE_POSITION](
-      state,
-      initialPositionType: InitialPositionType
-    ) {
-      if (state.mode != Mode.POSITION_EDITING) {
-        return;
-      }
-      const position = new Position();
-      position.reset(initialPositionType);
-      state.record.clear(position);
-    },
     [Mutation.EDIT_POSITION](state, change: PositionChange) {
       if (state.mode === Mode.POSITION_EDITING) {
         const position = state.record.position.clone();
@@ -239,12 +231,6 @@ export const store = createStore<State>({
         return;
       }
       state.record.switchBranchByIndex(index);
-    },
-    [Mutation.REMOVE_RECORD_AFTER](state) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      state.record.removeAfter();
     },
     [Mutation.CLEAR_GAME_TIMER](state) {
       state.game.clearTimer();
@@ -359,18 +345,56 @@ export const store = createStore<State>({
         commit(Mutation.PUSH_ERROR, recordOrError);
       }
     },
-    [Action.START_POSITION_EDITING]({ state }) {
-      if (state.mode === Mode.NORMAL) {
-        state.mode = Mode.POSITION_EDITING;
-        state.record.clear(state.record.position);
-        state.recordFilePath = undefined;
+    [Action.REMOVE_RECORD_AFTER]({ state, dispatch }) {
+      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
+        return;
       }
+      const next = state.record.current.next;
+      if (!next || !(next.move instanceof Move)) {
+        state.record.removeAfter();
+        return;
+      }
+      dispatch(Action.SHOW_CONFIRMATION, {
+        message: `${state.record.current.number}手目以降を削除します。よろしいですか？`,
+        onOk: () => {
+          state.record.removeAfter();
+        },
+      });
+    },
+    [Action.START_POSITION_EDITING]({ state, dispatch }) {
+      if (state.mode !== Mode.NORMAL) {
+        return;
+      }
+      dispatch(Action.SHOW_CONFIRMATION, {
+        message: "現在の棋譜は削除されます。よろしいですか？",
+        onOk: () => {
+          state.mode = Mode.POSITION_EDITING;
+          state.record.clear(state.record.position);
+          state.recordFilePath = undefined;
+        },
+      });
     },
     [Action.END_POSITION_EDITING]({ state }) {
       // FIXME: 局面整合性チェック
       if (state.mode === Mode.POSITION_EDITING) {
         state.mode = Mode.NORMAL;
       }
+    },
+    [Action.INITIALIZE_POSITION](
+      { state, dispatch },
+      initialPositionType: InitialPositionType
+    ) {
+      if (state.mode != Mode.POSITION_EDITING) {
+        return;
+      }
+      dispatch(Action.SHOW_CONFIRMATION, {
+        message: "現在の局面は破棄されます。よろしいですか？",
+        onOk: () => {
+          const position = new Position();
+          position.reset(initialPositionType);
+          state.record.clear(position);
+        },
+      });
     },
     [Action.UPDATE_USI_INFO](
       { state, commit },

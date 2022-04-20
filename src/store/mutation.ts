@@ -15,12 +15,10 @@ export enum Mutation {
   UPDATE_STANDARD_RECORD_METADATA = "updateStandardRecordMetadata",
 
   CHANGE_TURN = "changeTurn",
-  INITIALIZE_POSITION = "initializePosition",
   EDIT_POSITION = "editPosition",
 
   CHANGE_MOVE_NUMBER = "changeMoveNumber",
   CHANGE_BRANCH = "changeBranch",
-  REMOVE_RECORD_AFTER = "removeRecordAfter",
 
   CLEAR_GAME_TIMER = "clearGameTimer",
 

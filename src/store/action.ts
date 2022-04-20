@@ -5,9 +5,11 @@ export enum Action {
   SAVE_RECORD = "saveRecord",
   COPY_RECORD = "copyRecord",
   PASTE_RECORD = "pasteRecord",
+  REMOVE_RECORD_AFTER = "removeRecordAfter",
 
   START_POSITION_EDITING = "startPositionEditing",
   END_POSITION_EDITING = "endPositionEditing",
+  INITIALIZE_POSITION = "initializePosition",
 
   UPDATE_USI_INFO = "updateUsiInfo",
   START_RESEARCH = "startResearch",
@@ -22,4 +24,9 @@ export enum Action {
 
   BEEP_UNLIMITED = "beepUnlimited",
   BEEP_SHORT = "beepShort",
+
+  // confirmation
+  SHOW_CONFIRMATION = "showConfirmation",
+  CONFIRMATION_OK = "confirmationOk",
+  CONFIRMATION_CANCEL = "confirmationCancel",
 }

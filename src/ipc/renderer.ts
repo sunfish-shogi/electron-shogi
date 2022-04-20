@@ -230,7 +230,7 @@ export function setup(store: Store<State>): void {
         store.commit(Mutation.SHOW_PASTE_DIALOG);
         break;
       case MenuEvent.REMOVE_RECORD_AFTER:
-        store.commit(Mutation.REMOVE_RECORD_AFTER);
+        store.dispatch(Action.REMOVE_RECORD_AFTER);
         break;
       case MenuEvent.START_POSITION_EDITING:
         store.dispatch(Action.START_POSITION_EDITING);
@@ -242,68 +242,68 @@ export function setup(store: Store<State>): void {
         store.commit(Mutation.CHANGE_TURN);
         break;
       case MenuEvent.INIT_POSITION_STANDARD:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.STANDARD
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_LANCE:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_LANCE
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_RIGHT_LANCE:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_RIGHT_LANCE
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_BISHOP:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_BISHOP
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_ROOK:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_ROOK
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_ROOK_LANCE:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_ROOK_LANCE
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_2PIECES:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_2PIECES
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_4PIECES:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_4PIECES
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_6PIECES:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_6PIECES
         );
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_8PIECES:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.HANDICAP_8PIECES
         );
         break;
       case MenuEvent.INIT_POSITION_TSUME_SHOGI:
-        store.commit(
-          Mutation.INITIALIZE_POSITION,
+        store.dispatch(
+          Action.INITIALIZE_POSITION,
           InitialPositionType.TSUME_SHOGI
         );
         break;

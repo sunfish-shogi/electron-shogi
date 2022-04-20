@@ -2,11 +2,12 @@
   <div>
     <dialog ref="dialog">
       <div class="content">
-        <ButtonIcon class="icon" icon="info" />
-        <div class="message">{{ message }}</div>
+        <ButtonIcon class="icon" icon="question" />
+        <div class="message">{{ confirmation.message }}</div>
       </div>
       <div class="dialog-main-buttons">
-        <button @click="onClose()">閉じる</button>
+        <button class="dialog-button" @click="onOk()">OK</button>
+        <button class="dialog-button" @click="onClose()">キャンセル</button>
       </div>
     </dialog>
   </div>
@@ -14,7 +15,7 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
-import { Mutation, useStore } from "@/store";
+import { Action, useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
@@ -26,20 +27,24 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
+    const confirmation = computed(() => store.state.confirmation.confirmation);
 
     onMounted(() => {
       showModalDialog(dialog.value);
     });
 
-    const message = computed(() => store.getters.message);
+    const onOk = () => {
+      store.dispatch(Action.CONFIRMATION_OK);
+    };
 
     const onClose = () => {
-      store.commit(Mutation.SHIFT_MESSAGE);
+      store.dispatch(Action.CONFIRMATION_CANCEL);
     };
 
     return {
       dialog,
-      message,
+      confirmation,
+      onOk,
       onClose,
     };
   },

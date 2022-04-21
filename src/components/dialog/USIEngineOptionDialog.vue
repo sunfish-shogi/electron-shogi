@@ -98,6 +98,7 @@
 
 <script lang="ts">
 import { getFormItemByID, showModalDialog } from "@/helpers/dialog";
+import { readInputAsNumber } from "@/helpers/form";
 import {
   getUSIEngineInfo,
   sendUSISetOption,
@@ -214,7 +215,7 @@ export default defineComponent({
           engine.value.options[option.name].value = !elem.value
             ? undefined
             : option.type === "spin"
-            ? Number(elem.value)
+            ? readInputAsNumber(elem as HTMLInputElement)
             : elem.value;
         }
       }

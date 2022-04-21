@@ -157,6 +157,7 @@ import {
 import { showModalDialog } from "@/helpers/dialog";
 import * as uri from "@/uri";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import { readInputAsNumber } from "@/helpers/form";
 
 export default defineComponent({
   name: "GameDialog",
@@ -212,9 +213,12 @@ export default defineComponent({
         black: buildPlayerSetting(blackPlayerSelect.value.value),
         white: buildPlayerSetting(whitePlayerSelect.value.value),
         timeLimit: {
-          timeSeconds: (hours.value.value * 60 + minutes.value.value) * 60,
-          byoyomi: Number(byoyomi.value.value),
-          increment: Number(increment.value.value),
+          timeSeconds:
+            (readInputAsNumber(hours.value) * 60 +
+              readInputAsNumber(minutes.value)) *
+            60,
+          byoyomi: readInputAsNumber(byoyomi.value),
+          increment: readInputAsNumber(increment.value),
         },
         startPosition:
           startPosition.value.value !== "current"

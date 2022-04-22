@@ -31,7 +31,7 @@
         <div class="list-column depth">深さ</div>
         <div class="list-column score">評価値</div>
       </div>
-      <div class="list" :style="`height:${height - 36}px`">
+      <div class="list" :style="`height:${height - 37}px`">
         <div
           v-for="(iterate, index) in info.iterates"
           :key="index"

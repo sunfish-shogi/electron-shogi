@@ -5,7 +5,7 @@
         <BoardPane class="top-left-pane" :max-size="boardPaneMaxSize" />
         <RecordPane class="top-right-pane" />
       </div>
-      <InformationPane class="bottom-pane" :size="bottomPaneSize" />
+      <TabPane class="bottom-pane" :size="bottomPaneSize" />
     </div>
   </div>
 </template>
@@ -22,20 +22,20 @@ import {
 } from "vue";
 import BoardPane from "./BoardPane.vue";
 import RecordPane, { minWidth as minRecordWidth } from "./RecordPane.vue";
-import InformationPane, {
+import TabPane, {
   headerHeight as informationHeaderHeight,
-  minHeight as minInformationHeight,
+  minHeight as minTabHeight,
 } from "./TabPane.vue";
 import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
-import { InformationTab } from "@/settings/app";
+import { Tab } from "@/settings/app";
 
 export default defineComponent({
   name: "StandardLayout",
   components: {
     BoardPane,
     RecordPane,
-    InformationPane,
+    TabPane,
   },
   setup() {
     const store = useStore();
@@ -64,13 +64,13 @@ export default defineComponent({
     });
 
     const boardPaneMaxSize = computed(() => {
-      const minInformationPaneHeight =
-        store.state.appSetting.informationTab !== InformationTab.INVISIBLE
-          ? minInformationHeight
+      const minTabPaneHeight =
+        store.state.appSetting.tab !== Tab.INVISIBLE
+          ? minTabHeight
           : informationHeaderHeight;
       return new RectSize(
         windowSize.width - minRecordWidth,
-        windowSize.height - minInformationPaneHeight
+        windowSize.height - minTabPaneHeight
       );
     });
 

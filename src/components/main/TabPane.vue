@@ -2,8 +2,8 @@
   <div>
     <div class="root">
       <div
-        class="minimize-padding"
-        :class="{ enabled: activeTab === 'invisible' }"
+        v-if="activeTab === 'invisible'"
+        :style="`height: calc(100% - ${headerHeight}px);`"
       />
       <div class="tabs">
         <span
@@ -116,6 +116,7 @@ export default defineComponent({
     return {
       activeTab,
       contentSize,
+      headerHeight,
       changeSelect,
     };
   },
@@ -133,9 +134,6 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   user-select: none;
-}
-.minimize-padding.enabled {
-  height: calc(100% - 28px);
 }
 .tab {
   height: 24px;

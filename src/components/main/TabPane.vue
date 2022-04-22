@@ -88,7 +88,7 @@ export const headerHeight = 30;
 export const minHeight = 240 + headerHeight;
 
 export default defineComponent({
-  name: "InformationPane",
+  name: "TabPane",
   components: {
     RecordComment,
     EngineAnalytics,
@@ -106,10 +106,10 @@ export default defineComponent({
     const store = useStore();
     const changeSelect = (id: string) => {
       store.dispatch(Action.UPDATE_APP_SETTING, {
-        informationTab: id,
+        tab: id,
       });
     };
-    const activeTab = computed(() => store.state.appSetting.informationTab);
+    const activeTab = computed(() => store.state.appSetting.tab);
     const contentSize = computed(() =>
       props.size.reduce(new RectSize(0, headerHeight))
     );

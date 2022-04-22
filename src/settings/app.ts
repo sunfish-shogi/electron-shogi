@@ -3,7 +3,7 @@ import {
   BoardImageType,
 } from "@/components/primitive/BoardLayout";
 
-export enum InformationTab {
+export enum Tab {
   RECORD_INFO = "recordInfo",
   COMMENT = "comment",
   SEARCH = "search",
@@ -24,7 +24,7 @@ export type AppSetting = {
   clockPitch: number;
   clockSoundTarget: ClockSoundTarget;
   boardFlipping: boolean;
-  informationTab: InformationTab;
+  tab: Tab;
   returnCode: string;
 };
 
@@ -36,7 +36,7 @@ export type AppSettingUpdate = {
   clockPitch?: number;
   clockSoundTarget?: ClockSoundTarget;
   boardFlipping?: boolean;
-  informationTab?: InformationTab;
+  tab?: Tab;
   returnCode?: string;
 };
 
@@ -49,7 +49,7 @@ export function defaultAppSetting(returnCode?: string): AppSetting {
     clockPitch: 500,
     clockSoundTarget: ClockSoundTarget.ONLY_USER,
     boardFlipping: false,
-    informationTab: InformationTab.RECORD_INFO,
+    tab: Tab.RECORD_INFO,
     returnCode: returnCode || "\r\n",
   };
 }

@@ -262,7 +262,7 @@ class RecordEntryImpl implements RecordEntry {
 }
 
 export default class Record {
-  private _metadata: RecordMetadata;
+  public metadata: RecordMetadata;
   private _initialPosition: ImmutablePosition;
   private _position: Position;
   private _first: RecordEntryImpl;
@@ -271,7 +271,7 @@ export default class Record {
   private repetitionStart: { [sfen: string]: number };
 
   constructor(position?: ImmutablePosition) {
-    this._metadata = new RecordMetadata();
+    this.metadata = new RecordMetadata();
     this._initialPosition = position ? position.clone() : new Position();
     this._position = this.initialPosition.clone();
     this._first = new RecordEntryImpl(
@@ -286,10 +286,6 @@ export default class Record {
     this.repetitionCounts = {};
     this.repetitionStart = {};
     this.incrementRepetition();
-  }
-
-  get metadata(): RecordMetadata {
-    return this._metadata;
   }
 
   get initialPosition(): ImmutablePosition {
@@ -350,14 +346,16 @@ export default class Record {
   }
 
   clear(position?: ImmutablePosition): void {
+    this.metadata = new RecordMetadata();
     if (position) {
       this._initialPosition = position.clone();
     }
     this._position = this.initialPosition.clone();
-    this.repetitionCounts = {};
-    this.incrementRepetition();
     this._first.next = null;
     this._current = this._first;
+    this.repetitionCounts = {};
+    this.repetitionStart = {};
+    this.incrementRepetition();
   }
 
   goBack(): boolean {

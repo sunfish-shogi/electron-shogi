@@ -436,6 +436,7 @@ function readMove(record: Record, data: string): Error | undefined {
 }
 
 export function importKakinoki(data: string): Record | Error {
+  const metadata = new RecordMetadata();
   const record = new Record();
   const lines = data.split(/\r?\n/);
   const position = new Position();
@@ -453,9 +454,9 @@ export function importKakinoki(data: string): Record | Error {
       case LineType.METADATA: {
         const standardKey = metadataKeyMap[parsed.metadataKey];
         if (standardKey) {
-          record.metadata.setStandardMetadata(standardKey, parsed.data);
+          metadata.setStandardMetadata(standardKey, parsed.data);
         } else {
-          record.metadata.setCustomMetadata(parsed.metadataKey, parsed.data);
+          metadata.setCustomMetadata(parsed.metadataKey, parsed.data);
         }
         break;
       }
@@ -501,6 +502,7 @@ export function importKakinoki(data: string): Record | Error {
   }
   record.goto(0);
   record.resetAllBranchSelection();
+  record.metadata = metadata;
   return record;
 }
 

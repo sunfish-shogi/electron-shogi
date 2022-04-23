@@ -209,12 +209,14 @@ export const store = createStore<State>({
       const position = state.record.position.clone();
       position.setColor(reverseColor(position.color));
       state.record.clear(position);
+      state.recordFilePath = undefined;
     },
     [Mutation.EDIT_POSITION](state, change: PositionChange) {
       if (state.mode === Mode.POSITION_EDITING) {
         const position = state.record.position.clone();
         position.edit(change);
         state.record.clear(position);
+        state.recordFilePath = undefined;
       }
     },
     [Mutation.CHANGE_MOVE_NUMBER](state, number: number) {
@@ -393,6 +395,7 @@ export const store = createStore<State>({
           const position = new Position();
           position.reset(initialPositionType);
           state.record.clear(position);
+          state.recordFilePath = undefined;
         },
       });
     },

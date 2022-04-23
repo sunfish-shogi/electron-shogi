@@ -268,7 +268,9 @@ export default defineComponent({
         startEditPosition: store.state.mode === Mode.NORMAL,
         endEditPosition: store.state.mode === Mode.POSITION_EDITING,
         initPosition: store.state.mode === Mode.POSITION_EDITING,
-        removeAfter: store.state.mode === Mode.NORMAL,
+        removeAfter:
+          store.state.mode === Mode.NORMAL ||
+          store.state.mode === Mode.RESEARCH,
         paste: store.state.mode === Mode.NORMAL,
         appSettings: store.state.mode === Mode.NORMAL,
         engineSettings: store.state.mode === Mode.NORMAL,

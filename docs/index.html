@@ -14,14 +14,16 @@
         <ul>
           <li><a href="#whatis">Electron将棋とは</a></li>
           <li><a href="#screenshot">スクリーンショット</a></li>
-          <li><a href="#environment">対応環境</a></li>
           <li><a href="#license">ライセンス</a></li>
           <li><a href="#pcapp">PCアプリ</a></li>
           <li><a href="#webapp">ブラウザアプリ</a></li>
-          <li><a href="#fr">サポート</a></li>
+          <li><a href="./how-to-use.html">使い方</a></li>
+          <li><a href="#support">サポート</a></li>
           <li><a href="#images">盤駒画像</a></li>
           <li>
-            <a href="https://github.com/sunfish-shogi/electron-shogi"><img class="icon" src="./icons/github.png" alt="GitHub" /></a>
+            <a href="https://github.com/sunfish-shogi/electron-shogi">
+              <img class="icon" src="./icons/github.png" alt="GitHub" />
+            </a>
           </li>
         </ul>
       </nav>
@@ -30,7 +32,8 @@
       <section id="whatis">
         <h2>Electron将棋とは</h2>
         <div class="long-text">
-          <a href="https://www.electronjs.org/">Electron</a>を使って作られたオープンソースの将棋アプリです。
+          <a href="https://www.electronjs.org/" target="_blank">Electron<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+          を使って作られたオープンソースの将棋アプリです。
           Windows や MacOS など複数のプラットフォームで動作します。
           誰でも開発に参加したり独自のバージョンを作成して配布することが可能です。
         </div>
@@ -50,35 +53,39 @@
         </div>
       </section>
       <hr>
-      <section id="environment">
-        <h2>対応環境</h2>
-        <div>
-          <ul>
-            <li>Windows</li>
-            <li>MacOS</li>
-            <li>Linux</li>
-          </ul>
-        </div>
-        <div class="long-text note">
-          ※Linuxのバイナリは用意していないためNodeJSの開発環境をセットアップしてください。<br />
-          ※その他の環境でもブラウザ版で一部の機能を利用可能です。
-        </div>
-      </section>
-      <hr>
       <section id="license">
         <h2>ライセンス</h2>
         <div class="long-text">
-          ElectronShogiの本体とソースコードについては<a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE">MIT License</a>です。<br />
-          ただし、アイコン画像には<a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License 2.0</a>が適用されます。<br />
-          詳しくは<a href="https://github.com/sunfish-shogi/electron-shogi#%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9">GitHub</a>を参照してください。<br />
-          依存ライブラリのライセンスは<a href="./third-party-licenses.html">THIRD PARTY LICENSES</a>を参照してください。
+          ElectronShogiの本体とソースコードについては
+          <a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE">MIT License</a>
+          です。<br />
+          ただし、アイコン画像には
+          <a href="https://www.apache.org/licenses/LICENSE-2.0.txt" target="_blank">Apache License 2.0<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+          が適用されます。<br />
+          詳しくは
+          <a href="https://github.com/sunfish-shogi/electron-shogi#%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9">GitHub</a>
+          を参照してください。<br />
+          依存ライブラリのライセンスは
+          <a href="./third-party-licenses.html">THIRD PARTY LICENSES</a>
+          を参照してください。
         </div>
       </section>
       <hr>
       <section id="pcapp">
         <h2>PCアプリ</h2>
-        <div>
-          （準備中）
+        <ul>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v0.1.0-beta1">最新ベータ版（Version 0.1.0 Beta1）</a></li>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases">過去のバージョン一覧</a></li>
+        </ul>
+        <div class="long-text">
+          Windowsは末尾 <b>-win.zip</b> 、MacOSは末尾 <b>-mac.zip</b> のファイルをダウンロードしてください。<br />
+        </div>
+        <div class="long-text">
+          バージョン 0.1.0 では、MacOS 版の複数起動をサポートしていません。<br />
+          また、Ponder（相手番先読み）機能は実装されておらず、エンジン設定で有効化しても先読みは行われません。<br />
+          今後のバージョンで予定している機能は
+          <a href="https://github.com/sunfish-shogi/electron-shogi/milestones">マイルストーン</a>
+          を参照してください。
         </div>
       </section>
       <hr>
@@ -87,30 +94,43 @@
         <div>
           <a href="webapp/index.html">ブラウザ版アプリを開く</a>
         </div>
-        <div class="long-text note">
-          ※エンジンを使った対局やファイルの読み書きなど一部の機能は利用できません。<br />
-          ※スマホ等の縦長の画面ではレイアウトが崩れます。（将来対応予定）<br />
-          ※Chrome以外の動作は確認していませんが不具合報告は歓迎です。（ただしIE等のレガシーブラウザは除きます）
+        <div class="long-text">
+          エンジンを使った対局やファイルの読み書きなど一部の機能は利用できません。<br />
+          現在、スマホやタブレット等の縦長の画面はサポートしていません。（対応を検討中）<br />
+          Chrome以外の動作は確認していませんが不具合報告は歓迎です。
         </div>
       </section>
       <hr>
-      <section id="fr">
+      <section id="howtouse">
+        <h2>使い方</h2>
+        <div>
+          <a href="./how-to-use.html">使い方を見る</a>
+        </div>
+      </section>
+      <hr>
+      <section id="support">
         <h2>サポート</h2>
         <div class="long-text">
-          GitHubアカウントをお持ちの方は<a href="https://github.com/sunfish-shogi/electron-shogi/issues">GitHub Issues</a>へお願いします。
-          設計に関する提案やPull Requestも歓迎です。<br />
+          GitHubアカウントをお持ちの方は
+          <a href="https://github.com/sunfish-shogi/electron-shogi/issues">GitHub Issues</a>
+          へお願いします。
+          設計に関する提案や
+          <a href="https://github.com/sunfish-shogi/electron-shogi/pulls">Pull Request</a>
+          も歓迎です。<br />
           GitHubアカウントをお持ちでない方の連絡方法は準備中です。
         </div>
-        <div class="long-text note">
-          ※軽微ではないPRを作成する場合は必ず実装前にIssueでご相談ください。作業が競合したり設計方針を合意できないと、せっかく実装いただいた内容を取り込めない場合があります。
+        <div class="long-text">
+          軽微ではない Pull Request を作成する場合は必ず実装前にIssueでご相談ください。作業が競合したり設計方針を合意できないと、せっかく実装いただいた内容を取り込めない場合があります。
         </div>
       </section>
       <hr>
       <section id="images">
         <h2>盤駒画像</h2>
-        <div class="long-text">
+        <div>
           Electron将棋で使用している駒や盤の画像は、より制限の少ないライセンスで公開しています。<br />
-          <a href="https://sunfish-shogi.github.io/shogi-images/">https://sunfish-shogi.github.io/shogi-images/</a>
+        </div>
+        <div>
+          <a href="https://sunfish-shogi.github.io/shogi-images/" target="_blank">Shogi Images<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
         </div>
       </section>
     </article>

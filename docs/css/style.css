@@ -75,13 +75,14 @@ img.small-icon {
 }
 
 header {
-  font-size: 0.9em;
+  font-size: 1.0em;
   padding: 1.0em 5% 1.0em 5%;
 }
 
 nav {
   font-size: 1.1em;
   margin: 1em 0px 0px 0px;
+  line-height: 2.0em;
 }
 
 nav ul {

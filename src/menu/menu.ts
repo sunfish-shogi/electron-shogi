@@ -79,6 +79,52 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
         "CmdOrCtrl+V"
       ),
       { type: "separator" },
+      {
+        label: "特殊な指し手",
+        submenu: [
+          menuItem("中断", MenuEvent.INSERT_INTERRUPT, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("投了", MenuEvent.INSERT_RESIGN, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("持将棋", MenuEvent.INSERT_DRAW, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("千日手", MenuEvent.INSERT_REPETITION_DRAW, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("詰み", MenuEvent.INSERT_MATE, [Mode.NORMAL, Mode.RESEARCH]),
+          menuItem("時間切れ", MenuEvent.INSERT_TIMEOUT, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("反則勝ち", MenuEvent.INSERT_FOUL_WIN, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("反則負け", MenuEvent.INSERT_FOUL_LOSE, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("入玉勝ち", MenuEvent.INSERT_ENTERING_OF_KING, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("不戦勝", MenuEvent.INSERT_WIN_BY_DEFAULT, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+          menuItem("不戦敗", MenuEvent.INSERT_LOSS_BY_DEFAULT, [
+            Mode.NORMAL,
+            Mode.RESEARCH,
+          ]),
+        ],
+      },
       menuItem(
         "現在の位置から棋譜を削除",
         MenuEvent.REMOVE_RECORD_AFTER,

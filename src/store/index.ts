@@ -202,6 +202,12 @@ export const store = createStore<State>({
     ) {
       state.record.metadata.setStandardMetadata(update.key, update.value);
     },
+    [Mutation.INSERT_SPECIAL_MOVE](state, specialMove: SpecialMove) {
+      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
+        return;
+      }
+      state.record.append(specialMove);
+    },
     [Mutation.CHANGE_TURN](state) {
       if (state.mode != Mode.POSITION_EDITING) {
         return;

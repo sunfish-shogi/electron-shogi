@@ -33,6 +33,10 @@ li {
   text-align: left;
 }
 
+.note {
+  font-size: 0.8em;
+}
+
 .images {
   margin-left: auto;
   margin-right: auto;
@@ -56,11 +60,12 @@ img.icon {
 }
 
 header {
+  font-size: 0.9em;
   padding: 1.0em 5% 1.0em 5%;
 }
 
 nav {
-  font-size: 2.0em;
+  font-size: 1.1em;
   margin: 1em 0px 0px 0px;
 }
 
@@ -109,7 +114,7 @@ h1 {
 }
 
 h2 {
-  font-size: 2.0em;
+  font-size: 1.8em;
   margin: 2.0em 0 0.3em 0;
 }
 

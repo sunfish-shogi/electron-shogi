@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Electron将棋</title>
-    <link href="css/style.css?202204102053" rel="stylesheet">
+    <link href="css/style.css?202204241607" rel="stylesheet">
     <link rel="icon" href="webapp/favicon.ico">
   </head>
   <body>
@@ -10,12 +10,16 @@
         <img class="icon" src="icon.png" />
         Electron将棋
       </h1>
-      <div>将棋の対局や研究を行うためのアプリです。</div>
-      <div>USIプロトコル対応のエンジンを同じPCにインストールすると対局や検討ができます。</div>
-      <div>常に最新のソースコードが公開されています。</div>
-      <div>誰でも開発に参加したり、派生したバージョンを作ることができます。</div>
       <nav>
         <ul>
+          <li><a href="#whatis">Electron将棋とは</a></li>
+          <li><a href="#screenshot">スクリーンショット</a></li>
+          <li><a href="#environment">対応環境</a></li>
+          <li><a href="#license">ライセンス</a></li>
+          <li><a href="#pcapp">PCアプリ</a></li>
+          <li><a href="#webapp">ブラウザアプリ</a></li>
+          <li><a href="#fr">サポート</a></li>
+          <li><a href="#images">盤駒画像</a></li>
           <li>
             <a href="https://github.com/sunfish-shogi/electron-shogi"><img class="icon" src="./icons/github.png" /></a>
           </li>
@@ -23,26 +27,17 @@
       </nav>
     </header>
     <article>
-      <section>
-        <div>
-          <a href="webapp/index.html">ブラウザ版アプリを開く</a><br />
+      <section id="whatis">
+        <h2>Electron将棋とは</h2>
+        <div class="long-text">
+          <a href="https://www.electronjs.org/">Electron</a>を使って作られたオープンソースの将棋アプリです。
+          Windows や MacOS など複数のプラットフォームで動作します。
+          誰でも開発に参加したり独自のバージョンを作成して配布することが可能です。
         </div>
-        <div>
-          ※スマホの縦画面には対応していません。
+        <div class="long-text">
+          USIプロトコルに対応したエンジンを登録して対局や検討ができます。
+          同じエンジンを異なる設定でいくつでも登録でき、「水匠 対局用」「水匠 検討用」など用途に合わせた名前を付けることが可能です。
         </div>
-      </section>
-      <hr>
-      <section>
-        <h2>目次</h2>
-        <ul>
-          <li><a href="#screenshot">スクリーンショット</a></li>
-          <li><a href="#environment">対応環境</a></li>
-          <li><a href="#license">ライセンス</a></li>
-          <li><a href="#pcapp">PCアプリダウンロード</a></li>
-          <li><a href="#webapp">ブラウザアプリ</a></li>
-          <li><a href="#fr">機能要望・提案・不具合報告</a></li>
-          <li><a href="#images">駒や盤の画像について</a></li>
-        </ul>
       </section>
       <hr>
       <section id="screenshot">
@@ -60,9 +55,12 @@
           <ul>
             <li>Windows</li>
             <li>MacOS</li>
-            <li>Linux（要NodeJS）</li>
+            <li>Linux</li>
           </ul>
-          その他の環境でもブラウザ版で一部の機能を利用可能です。
+        </div>
+        <div class="long-text note">
+          ※Linuxのバイナリは用意していないためNodeJSの開発環境をセットアップしてください。<br />
+          ※その他の環境でもブラウザ版で一部の機能を利用可能です。
         </div>
       </section>
       <hr>
@@ -77,7 +75,7 @@
       </section>
       <hr>
       <section id="pcapp">
-        <h2>PCアプリダウンロード</h2>
+        <h2>PCアプリ</h2>
         <div>
           （準備中）
         </div>
@@ -88,7 +86,7 @@
         <div>
           <a href="webapp/index.html">ブラウザ版アプリを開く</a>
         </div>
-        <div class="long-text">
+        <div class="long-text note">
           ※エンジンを使った対局やファイルの読み書きなど一部の機能は利用できません。<br />
           ※スマホ等の縦長の画面ではレイアウトが崩れます。（将来対応予定）<br />
           ※Chrome以外の動作は確認していませんが不具合報告は歓迎です。（ただしIE等のレガシーブラウザは除きます）
@@ -96,18 +94,22 @@
       </section>
       <hr>
       <section id="fr">
-        <h2>機能要望・提案・不具合報告</h2>
+        <h2>サポート</h2>
         <div class="long-text">
-          機能要望や不具合報告は<a href="https://github.com/sunfish-shogi/electron-shogi">GitHub</a>へお願いします。
-          設計に関する提案や Pull Request も歓迎です。<br />
+          GitHubアカウントをお持ちの方は<a href="https://github.com/sunfish-shogi/electron-shogi/issues">GitHub Issues</a>へお願いします。
+          設計に関する提案やPull Requestも歓迎です。<br />
           GitHubアカウントをお持ちでない方の連絡方法は準備中です。
+        </div>
+        <div class="long-text note">
+          ※軽微ではないPRを作成する場合は必ず実装前にIssueでご相談ください。作業が競合したり設計方針を合意できないと、せっかく実装いただいた内容を取り込めない場合があります。
         </div>
       </section>
       <hr>
       <section id="images">
-        <h2>駒や盤の画像について</h2>
+        <h2>盤駒画像</h2>
         <div class="long-text">
-          駒や盤の画像は制限のより少ないライセンスで<a href="https://sunfish-shogi.github.io/shogi-images/">公開</a>しています。
+          Electron将棋で使用している駒や盤の画像は、より制限の少ないライセンスで公開しています。<br />
+          <a href="https://sunfish-shogi.github.io/shogi-images/">https://sunfish-shogi.github.io/shogi-images/</a>
         </div>
       </section>
     </article>

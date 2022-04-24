@@ -229,6 +229,42 @@ export function setup(store: Store<State>): void {
       case MenuEvent.PASTE_RECORD:
         store.commit(Mutation.SHOW_PASTE_DIALOG);
         break;
+      case MenuEvent.INSERT_INTERRUPT:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.INTERRUPT);
+        break;
+      case MenuEvent.INSERT_RESIGN:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.RESIGN);
+        break;
+      case MenuEvent.INSERT_DRAW:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.DRAW);
+        break;
+      case MenuEvent.INSERT_REPETITION_DRAW:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.REPETITION_DRAW);
+        break;
+      case MenuEvent.INSERT_MATE:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.MATE);
+        break;
+      case MenuEvent.INSERT_TIMEOUT:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.TIMEOUT);
+        break;
+      case MenuEvent.INSERT_FOUL_WIN:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.FOUL_WIN);
+        break;
+      case MenuEvent.INSERT_FOUL_LOSE:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.FOUL_LOSE);
+        break;
+      case MenuEvent.INSERT_ENTERING_OF_KING:
+        store.commit(
+          Mutation.INSERT_SPECIAL_MOVE,
+          SpecialMove.ENTERING_OF_KING
+        );
+        break;
+      case MenuEvent.INSERT_WIN_BY_DEFAULT:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.WIN_BY_DEFAULT);
+        break;
+      case MenuEvent.INSERT_LOSS_BY_DEFAULT:
+        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.LOSS_BY_DEFAULT);
+        break;
       case MenuEvent.REMOVE_RECORD_AFTER:
         store.dispatch(Action.REMOVE_RECORD_AFTER);
         break;

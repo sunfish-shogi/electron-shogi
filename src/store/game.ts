@@ -115,7 +115,7 @@ export class GameState {
     }, 100);
   }
 
-  increment(color: Color): void {
+  incrementTime(color: Color): void {
     this.getPlayerState(color).timeMs += this.setting.timeLimit.increment * 1e3;
   }
 

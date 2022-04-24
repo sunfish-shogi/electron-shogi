@@ -202,6 +202,12 @@ export const store = createStore<State>({
     ) {
       state.record.metadata.setStandardMetadata(update.key, update.value);
     },
+    [Mutation.INSERT_SPECIAL_MOVE](state, specialMove: SpecialMove) {
+      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
+        return;
+      }
+      state.record.append(specialMove);
+    },
     [Mutation.CHANGE_TURN](state) {
       if (state.mode != Mode.POSITION_EDITING) {
         return;
@@ -557,7 +563,7 @@ export const store = createStore<State>({
         return false;
       }
       if (state.mode === Mode.GAME) {
-        state.game.increment(state.record.position.color);
+        state.game.incrementTime(state.record.position.color);
       }
       dispatch(Action.DO_MOVE, move);
       return true;
@@ -606,7 +612,7 @@ export const store = createStore<State>({
         dispatch(Action.STOP_GAME, SpecialMove.FOUL_LOSE);
         return false;
       }
-      state.game.increment(state.record.position.color);
+      state.game.incrementTime(state.record.position.color);
       dispatch(Action.DO_MOVE, move);
       return true;
     },

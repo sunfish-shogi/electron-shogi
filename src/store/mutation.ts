@@ -13,6 +13,7 @@ export enum Mutation {
   NEW_RECORD = "newRecord",
   UPDATE_RECORD_COMMENT = "updateRecordComment",
   UPDATE_STANDARD_RECORD_METADATA = "updateStandardRecordMetadata",
+  INSERT_SPECIAL_MOVE = "insertSpecialMove",
 
   CHANGE_TURN = "changeTurn",
   EDIT_POSITION = "editPosition",

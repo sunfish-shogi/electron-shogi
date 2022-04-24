@@ -34,6 +34,8 @@ https://sunfish-shogi.github.io/electron-shogi/
 
 ![スクリーンショット3](docs/screenshots/screenshot003.png)
 
+![スクリーンショット4](docs/screenshots/screenshot004.png)
+
 ## ダウンロード
 
 開発者の方は後述のコマンドを使用してビルドください。

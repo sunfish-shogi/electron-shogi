@@ -24,7 +24,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run electron:build -- --publish never
-    - run: node archive.mjs ${{ matrix.os_short }}
+    - run: node archive.mjs ${{ matrix.os_short }} $GITHUB_REF_NAME
     - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os}}-release

@@ -563,7 +563,7 @@ export const store = createStore<State>({
         return false;
       }
       if (state.mode === Mode.GAME) {
-        state.game.increment(state.record.position.color);
+        state.game.incrementTime(state.record.position.color);
       }
       dispatch(Action.DO_MOVE, move);
       return true;
@@ -612,7 +612,7 @@ export const store = createStore<State>({
         dispatch(Action.STOP_GAME, SpecialMove.FOUL_LOSE);
         return false;
       }
-      state.game.increment(state.record.position.color);
+      state.game.incrementTime(state.record.position.color);
       dispatch(Action.DO_MOVE, move);
       return true;
     },

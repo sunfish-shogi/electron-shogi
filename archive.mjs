@@ -4,7 +4,7 @@ import archiver from "archiver";
 import fs from "fs";
 
 const platform = process.argv[2];
-const outputPath = `dist_electron/release-${platform}.zip`;
+const outputPath = `dist_electron/release-${platform}-${process.env.npm_package_version}.zip`;
 
 const output = fs.createWriteStream(outputPath).on("error", function () {
   throw err;

@@ -28,4 +28,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os}}-release
-        path: dist_electron/release-${{ matrix.os_short }}.zip
+        path: dist_electron/release-*.zip

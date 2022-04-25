@@ -38,16 +38,15 @@ https://sunfish-shogi.github.io/electron-shogi/
 
 ## ダウンロード
 
-開発者の方は後述のコマンドを使用してビルドください。
-
-一般の方向けのファイルは準備中です。
+[Releases](https://github.com/sunfish-shogi/electron-shogi/releases) から Windows 版、Mac 版をダウンロードできます。
+Linux 版のバイナリはありませんので、後述のコマンドでビルドしてください。
 
 ## 要望・提案・不具合報告
 
-GitHub のアカウントをお持ちの方は GitHub Issue/PullRequest を活用してください。
+GitHub のアカウントをお持ちの方は Issue/PullRequest を活用してください。
 設計に関する意見も歓迎です。
 
-それ以外の方の連絡方法は準備中です。（Twitter で連絡頂いても構いません。）
+GitHub アカウントをお持ちでない場合は [送信フォーム](https://form.run/@sunfish-shogi-1650819491) でご連絡ください。
 
 ## 開発
 
@@ -105,3 +104,9 @@ npm run lint
 
 [/public/icon](https://github.com/sunfish-shogi/electron-shogi/tree/main/public/icon) 配下のアイコン画像は[Material Icons](https://google.github.io/material-design-icons/) を使用しています。
 これには[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)が適用されます。
+
+### 依存モジュールのライセンス
+
+レンダラープロセスで使用しているライブラリは [THIRD PARTY LICENSES](https://sunfish-shogi.github.io/electron-shogi/third-party-licenses.html) を参照してください。
+
+Electron と Chromium については Electron Builder によって成果物にバンドルされます。

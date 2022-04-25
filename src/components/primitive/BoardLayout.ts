@@ -75,8 +75,9 @@ const layoutTemplate = {
     leftPiecePadding: 17.5,
     topPiecePadding: 18.5,
     highlight: {
-      selected: { "background-color": "#ff4800", opacity: "0.7" },
-      lastMove: { "background-color": "#00ddff", opacity: "0.5" },
+      selected: { "background-color": "#0088ff", opacity: "0.8" },
+      lastMoveTo: { "background-color": "#44cc44", opacity: "0.8" },
+      lastMoveFrom: { "background-color": "#44cc44", opacity: "0.4" },
     },
   },
   piece: {
@@ -486,7 +487,17 @@ export default class LayoutBuilder {
         if (lastMove && square.equals(lastMove.to)) {
           backgroundStyle = {
             ...backgroundStyle,
-            ...layoutTemplate.board.highlight.lastMove,
+            ...layoutTemplate.board.highlight.lastMoveTo,
+          };
+        }
+        if (
+          lastMove &&
+          lastMove.from instanceof Square &&
+          square.equals(lastMove.from)
+        ) {
+          backgroundStyle = {
+            ...backgroundStyle,
+            ...layoutTemplate.board.highlight.lastMoveFrom,
           };
         }
         if (pointer instanceof Square && pointer.equals(square)) {

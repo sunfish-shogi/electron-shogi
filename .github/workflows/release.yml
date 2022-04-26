@@ -5,7 +5,17 @@ on:
     types: [published]
 
 jobs:
+  check-package-version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+        cache: 'npm'
+    - run: test $(npm ls -l | head -n 1 | sed 's/.*@/v/') = {{ github.ref_name }}
   build:
+    needs: check-package-version
     strategy:
       matrix:
         include:

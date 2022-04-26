@@ -13,7 +13,7 @@ jobs:
       with:
         node-version: 16.x
         cache: 'npm'
-    - run: test $(npm ls -l | head -n 1 | sed 's/.*@/v/') = {{ github.ref_name }}
+    - run: test $(npm ls -l | head -n 1 | sed 's/.*@/v/') = ${{ github.ref_name }}
   build:
     needs: check-package-version
     strategy:

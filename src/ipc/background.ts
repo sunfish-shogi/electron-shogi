@@ -183,7 +183,7 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (): string => {
   const results = dialog.showOpenDialogSync(win, {
     properties: ["openFile", "noResolveAliases"],
     filters: isWindows
-      ? [{ name: "実行可能ファイル", extensions: ["exe"] }]
+      ? [{ name: "実行可能ファイル", extensions: ["exe", "cmd", "bat"] }]
       : undefined,
   });
   return results && results.length === 1 ? results[0] : "";

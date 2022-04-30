@@ -74,6 +74,11 @@ dialog::backdrop {
   margin-right: auto;
 }
 
+.dialog-narrow-button {
+  margin: 0px 5px 0px 5px;
+  padding: 3px 10px 3px 10px;
+}
+
 .dialog-button {
   margin: 0px 5px 0px 5px;
   padding: 3px 25px 3px 25px;

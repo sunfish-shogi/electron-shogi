@@ -36,6 +36,7 @@
           v-for="(iterate, index) in info.iterates"
           :key="index"
           class="list-item"
+          :class="{ best: iterate.multiPV === 1 }"
         >
           <div class="list-column time">
             {{ iterate.timeMs ? (iterate.timeMs / 1e3).toFixed(1) + "s" : "" }}
@@ -134,6 +135,10 @@ export default defineComponent({
   font-size: 12px;
   display: flex;
   flex-direction: row;
+}
+.list-item.best {
+  background: #ffff88;
+  border-bottom: dashed dimgray 1px;
 }
 .list-column.multipv-index {
   height: 100%;

@@ -1,3 +1,5 @@
+import { issueEngineURI } from "@/uri";
+
 export type USIEngineOptionType =
   | "check"
   | "spin"
@@ -41,6 +43,15 @@ export type USIEngineSetting = {
   path: string;
   options: { [name: string]: USIEngineOption };
 };
+
+export function duplicateEngineSetting(
+  src: USIEngineSetting
+): USIEngineSetting {
+  const engine: USIEngineSetting = JSON.parse(JSON.stringify(src));
+  engine.uri = issueEngineURI();
+  engine.name += " のコピー";
+  return engine;
+}
 
 export function mergeUSIEngineSetting(
   engine: USIEngineSetting,
@@ -99,7 +110,13 @@ export class USIEngineSettings {
 
   get engineList(): USIEngineSetting[] {
     return Object.values(this.engines).sort((a, b): number => {
-      return a.name > b.name ? 1 : -1;
+      if (a.name !== b.name) {
+        return a.name > b.name ? 1 : -1;
+      }
+      if (a.defaultName !== b.defaultName) {
+        return a.defaultName > b.defaultName ? 1 : -1;
+      }
+      return a.uri > b.uri ? 1 : -1;
     });
   }
 

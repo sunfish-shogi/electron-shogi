@@ -13,10 +13,13 @@
           :value="engine.uri"
         >
           <div class="engine-name">{{ engine.name }}</div>
-          <button class="dialog-button" @click="openOptions(engine.uri)">
+          <button class="dialog-narrow-button" @click="openOptions(engine.uri)">
             設定
           </button>
-          <button class="dialog-button" @click="remove(engine.uri)">
+          <button class="dialog-narrow-button" @click="duplicate(engine.uri)">
+            複製
+          </button>
+          <button class="dialog-narrow-button" @click="remove(engine.uri)">
             削除
           </button>
         </div>
@@ -45,7 +48,11 @@ import {
   saveUSIEngineSetting,
   showSelectUSIEngineDialog,
 } from "@/ipc/renderer";
-import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
+import {
+  duplicateEngineSetting,
+  USIEngineSetting,
+  USIEngineSettings,
+} from "@/settings/usi";
 import { Mutation, useStore } from "@/store";
 import { ref, onMounted, defineComponent, Ref, computed } from "vue";
 import USIEngineOptionDialog from "@/components/dialog/USIEngineOptionDialog.vue";
@@ -98,6 +105,12 @@ export default defineComponent({
       optionDialog.value = setting.value.getEngine(uri);
     };
 
+    const duplicate = (uri: string) => {
+      const src = setting.value.getEngine(uri);
+      const engine = duplicateEngineSetting(src);
+      setting.value.addEngine(engine);
+    };
+
     const saveAndClose = async () => {
       try {
         store.commit(Mutation.RETAIN_BUSSY_STATE);
@@ -132,6 +145,7 @@ export default defineComponent({
       add,
       remove,
       openOptions,
+      duplicate,
       saveAndClose,
       cancel,
       optionOk,
@@ -143,7 +157,7 @@ export default defineComponent({
 
 <style scoped>
 .engine-list {
-  width: 600px;
+  width: 620px;
   height: 400px;
   overflow: auto;
   display: flex;

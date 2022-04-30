@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { getStandardMetadataDisplayName, RecordMetadataKey } from "@/shogi";
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { computed, defineComponent } from "vue";
 import { RectSize } from "../primitive/Types";
 
@@ -31,7 +31,7 @@ export default defineComponent({
     const store = useStore();
     const list = computed(() => {
       return Object.values(RecordMetadataKey).map((key) => {
-        const metadata = store.state.record.metadata;
+        const metadata = store.record.metadata;
         return {
           key: key,
           displayName: getStandardMetadataDisplayName(key),
@@ -40,9 +40,9 @@ export default defineComponent({
       });
     });
 
-    const change = (event: Event, key: string) => {
+    const change = (event: Event, key: RecordMetadataKey) => {
       const input = event.target as HTMLInputElement;
-      store.commit(Mutation.UPDATE_STANDARD_RECORD_METADATA, {
+      store.updateStandardRecordMetadata({
         key,
         value: input.value,
       });

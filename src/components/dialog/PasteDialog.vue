@@ -22,7 +22,7 @@
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
 import { isNative } from "@/ipc/renderer";
-import { Action, Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { defineComponent, onMounted, ref, Ref } from "vue";
 
 export default defineComponent({
@@ -32,7 +32,7 @@ export default defineComponent({
     const dialog: Ref = ref(null);
     const textarea: Ref = ref(null);
 
-    store.commit(Mutation.RETAIN_BUSSY_STATE);
+    store.retainBussyState();
     onMounted(async () => {
       try {
         showModalDialog(dialog.value);
@@ -40,20 +40,20 @@ export default defineComponent({
           textarea.value.value = await navigator.clipboard.readText();
         }
       } finally {
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       }
     });
 
     const onOk = () => {
       const data = textarea.value.value;
-      store.commit(Mutation.CLOSE_PASTE_DIALOG);
+      store.closePasteDialog();
       if (data) {
-        store.dispatch(Action.PASTE_RECORD, data);
+        store.pasteRecord(data);
       }
     };
 
     const onCancel = () => {
-      store.commit(Mutation.CLOSE_PASTE_DIALOG);
+      store.closePasteDialog();
     };
 
     return {

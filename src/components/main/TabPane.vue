@@ -79,9 +79,10 @@ import RecordComment from "@/components/tab/RecordComment.vue";
 import EngineAnalytics from "@/components/tab/EngineAnalytics.vue";
 import EvaluationChart from "@/components/tab/EvaluationChart.vue";
 import RecordInfo from "@/components/tab/RecordInfo.vue";
-import { Action, useStore } from "@/store";
+import { useStore } from "@/store";
 import { RectSize } from "@/components/primitive/Types";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import { Tab } from "@/settings/app";
 
 export const headerHeight = 30;
 
@@ -104,12 +105,12 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const changeSelect = (id: string) => {
-      store.dispatch(Action.UPDATE_APP_SETTING, {
+    const changeSelect = (id: Tab) => {
+      store.updateAppSetting({
         tab: id,
       });
     };
-    const activeTab = computed(() => store.state.appSetting.tab);
+    const activeTab = computed(() => store.appSetting.tab);
     const contentSize = computed(() =>
       props.size.reduce(new RectSize(0, headerHeight))
     );

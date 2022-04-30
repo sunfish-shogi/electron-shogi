@@ -1,16 +1,15 @@
 import { Color } from "@/shogi";
-import { Action, Mutation, State } from "@/store";
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { watch } from "vue";
 import { GameSetting } from "@/settings/game";
 import { AppSetting } from "@/settings/app";
-import { Store } from "vuex";
 import { MenuEvent } from "@/menu/event";
 import { SpecialMove, InitialPositionType } from "@/shogi";
 import { USIInfoSender } from "@/usi/info";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/settings/research";
 import { Mode } from "@/store/mode";
+import { useStore } from "@/store";
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
@@ -201,182 +200,142 @@ export async function sendUSISetOption(
   await getAPI().sendUSISetOption(path, name);
 }
 
-export function setup(store: Store<State>): void {
+export function setup(): void {
+  const store = useStore();
   const api = getAPI();
   api.onSendError((e: Error) => {
-    store.commit(Mutation.PUSH_ERROR, e);
+    store.pushError(e);
   });
   api.onMenuEvent((event: MenuEvent) => {
-    if (store.getters.isBussy) {
+    if (store.isBussy) {
       return;
     }
     switch (event) {
       case MenuEvent.NEW_RECORD:
-        store.commit(Mutation.NEW_RECORD);
+        store.newRecord();
         break;
       case MenuEvent.OPEN_RECORD:
-        store.dispatch(Action.OPEN_RECORD);
+        store.openRecord();
         break;
       case MenuEvent.SAVE_RECORD:
-        store.dispatch(Action.SAVE_RECORD, { overwrite: true });
+        store.saveRecord({ overwrite: true });
         break;
       case MenuEvent.SAVE_RECORD_AS:
-        store.dispatch(Action.SAVE_RECORD);
+        store.saveRecord();
         break;
       case MenuEvent.COPY_RECORD:
-        store.dispatch(Action.COPY_RECORD);
+        store.copyRecord();
         break;
       case MenuEvent.PASTE_RECORD:
-        store.commit(Mutation.SHOW_PASTE_DIALOG);
+        store.showPasteDialog();
         break;
       case MenuEvent.INSERT_INTERRUPT:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.INTERRUPT);
+        store.insertSpecialMove(SpecialMove.INTERRUPT);
         break;
       case MenuEvent.INSERT_RESIGN:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.RESIGN);
+        store.insertSpecialMove(SpecialMove.RESIGN);
         break;
       case MenuEvent.INSERT_DRAW:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.DRAW);
+        store.insertSpecialMove(SpecialMove.DRAW);
         break;
       case MenuEvent.INSERT_REPETITION_DRAW:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.REPETITION_DRAW);
+        store.insertSpecialMove(SpecialMove.REPETITION_DRAW);
         break;
       case MenuEvent.INSERT_MATE:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.MATE);
+        store.insertSpecialMove(SpecialMove.MATE);
         break;
       case MenuEvent.INSERT_TIMEOUT:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.TIMEOUT);
+        store.insertSpecialMove(SpecialMove.TIMEOUT);
         break;
       case MenuEvent.INSERT_FOUL_WIN:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.FOUL_WIN);
+        store.insertSpecialMove(SpecialMove.FOUL_WIN);
         break;
       case MenuEvent.INSERT_FOUL_LOSE:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.FOUL_LOSE);
+        store.insertSpecialMove(SpecialMove.FOUL_LOSE);
         break;
       case MenuEvent.INSERT_ENTERING_OF_KING:
-        store.commit(
-          Mutation.INSERT_SPECIAL_MOVE,
-          SpecialMove.ENTERING_OF_KING
-        );
+        store.insertSpecialMove(SpecialMove.ENTERING_OF_KING);
         break;
       case MenuEvent.INSERT_WIN_BY_DEFAULT:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.WIN_BY_DEFAULT);
+        store.insertSpecialMove(SpecialMove.WIN_BY_DEFAULT);
         break;
       case MenuEvent.INSERT_LOSS_BY_DEFAULT:
-        store.commit(Mutation.INSERT_SPECIAL_MOVE, SpecialMove.LOSS_BY_DEFAULT);
+        store.insertSpecialMove(SpecialMove.LOSS_BY_DEFAULT);
         break;
       case MenuEvent.REMOVE_RECORD_AFTER:
-        store.dispatch(Action.REMOVE_RECORD_AFTER);
+        store.removeRecordAfter();
         break;
       case MenuEvent.START_POSITION_EDITING:
-        store.dispatch(Action.START_POSITION_EDITING);
+        store.startPositionEditing();
         break;
       case MenuEvent.END_POSITION_EDITING:
-        store.dispatch(Action.END_POSITION_EDITING);
+        store.endPositionEditing();
         break;
       case MenuEvent.CHANGE_TURN:
-        store.commit(Mutation.CHANGE_TURN);
+        store.changeTurn();
         break;
       case MenuEvent.INIT_POSITION_STANDARD:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.STANDARD
-        );
+        store.initializePosition(InitialPositionType.STANDARD);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_LANCE:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_LANCE
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_LANCE);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_RIGHT_LANCE:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_RIGHT_LANCE
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_RIGHT_LANCE);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_BISHOP:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_BISHOP
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_BISHOP);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_ROOK:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_ROOK
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_ROOK);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_ROOK_LANCE:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_ROOK_LANCE
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_ROOK_LANCE);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_2PIECES:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_2PIECES
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_2PIECES);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_4PIECES:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_4PIECES
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_4PIECES);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_6PIECES:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_6PIECES
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_6PIECES);
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_8PIECES:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.HANDICAP_8PIECES
-        );
+        store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
         break;
       case MenuEvent.INIT_POSITION_TSUME_SHOGI:
-        store.dispatch(
-          Action.INITIALIZE_POSITION,
-          InitialPositionType.TSUME_SHOGI
-        );
+        store.initializePosition(InitialPositionType.TSUME_SHOGI);
         break;
       case MenuEvent.START_GAME:
-        store.commit(Mutation.SHOW_GAME_DIALOG);
+        store.showGameDialog();
         break;
       case MenuEvent.STOP_GAME:
-        store.dispatch(Action.STOP_GAME);
+        store.stopGame();
         break;
       case MenuEvent.RESIGN:
-        store.dispatch(Action.RESIGN_BY_USER);
+        store.resignByUser();
         break;
       case MenuEvent.START_RESEARCH:
-        store.commit(Mutation.SHOW_RESEARCH_DIALOG);
+        store.showResearchDialog();
         break;
       case MenuEvent.STOP_RESEARCH:
-        store.dispatch(Action.STOP_RESEARCH);
+        store.stopResearch();
         break;
       case MenuEvent.FLIP_BOARD:
-        store.commit(Mutation.FLIP_BOARD);
+        store.flipBoard();
         break;
       case MenuEvent.APP_SETTING_DIALOG:
-        store.commit(Mutation.OPEN_APP_SETTING_DIALOG);
+        store.openAppSettingDialog();
         break;
       case MenuEvent.USI_ENGINE_SETTING_DIALOG:
-        store.commit(Mutation.OPEN_USI_ENGINE_MANAGEMENT_DIALOG);
+        store.openUsiEngineManagementDialog();
         break;
     }
   });
   api.onUSIBestMove(
     (sessionID: number, usi: string, color: Color, sfen: string) => {
-      store.dispatch(Action.DO_MOVE_BY_USI_ENGINE, {
-        sessionID,
-        usi,
-        color,
-        sfen,
-      });
+      store.doMoveByUsiEngine(sessionID, usi, color, sfen);
     }
   );
   api.onUSIInfo(
@@ -387,20 +346,14 @@ export function setup(store: Store<State>): void {
       name: string,
       json: string
     ) => {
-      store.dispatch(Action.UPDATE_USI_INFO, {
-        sessionID,
-        usi,
-        sender,
-        name,
-        info: JSON.parse(json),
-      });
+      store.updateUSIInfo(sessionID, usi, sender, name, JSON.parse(json));
     }
   );
   watch(
-    () => [store.state.mode, store.getters.isBussy],
+    () => [store.mode, store.isBussy],
     ([mode, bussy]) => {
       api.updateMenuState(mode as Mode, bussy as boolean);
     }
   );
-  api.updateMenuState(store.state.mode, store.getters.isBussy);
+  api.updateMenuState(store.mode, store.isBussy);
 }

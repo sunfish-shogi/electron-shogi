@@ -147,7 +147,7 @@
 import { USIEngineSettings } from "@/settings/usi";
 import { ref, onMounted, defineComponent, Ref, computed } from "vue";
 import { loadGameSetting, loadUSIEngineSetting } from "@/ipc/renderer";
-import { Action, Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import {
   defaultGameSetting,
   GameSetting,
@@ -179,17 +179,17 @@ export default defineComponent({
     const gameSetting = ref(defaultGameSetting());
     const engineSetting = ref(new USIEngineSettings());
 
-    store.commit(Mutation.RETAIN_BUSSY_STATE);
+    store.retainBussyState();
 
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
         gameSetting.value = await loadGameSetting();
         engineSetting.value = await loadUSIEngineSetting();
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
-        store.commit(Mutation.CLOSE_DIALOG);
+        store.pushError(e);
+        store.closeDialog();
       }
     });
 
@@ -229,14 +229,14 @@ export default defineComponent({
       };
       const error = validateGameSetting(gameSetting);
       if (error) {
-        store.commit(Mutation.PUSH_ERROR, error);
+        store.pushError(error);
       } else {
-        store.dispatch(Action.START_GAME, gameSetting);
+        store.startGame(gameSetting);
       }
     };
 
     const onCancel = () => {
-      store.commit(Mutation.CLOSE_DIALOG);
+      store.closeDialog();
     };
 
     const onSwapColor = () => {

@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import { showModalDialog } from "@/helpers/dialog";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
@@ -40,7 +40,7 @@ export default defineComponent({
     });
 
     const errors = computed(() => {
-      return store.state.error.queue.map((error, index) => {
+      return store.errors.map((error, index) => {
         return {
           message: error.message,
           index,
@@ -49,7 +49,7 @@ export default defineComponent({
     });
 
     const onClose = () => {
-      store.commit(Mutation.CLEAR_ERRORS);
+      store.clearErrors();
     };
 
     return {

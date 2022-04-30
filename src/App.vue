@@ -23,7 +23,7 @@ import BussyMessage from "@/components/dialog/BussyMessage.vue";
 import ConfirmDialog from "@/components/dialog/ConfirmDialog.vue";
 import InfoMessage from "@/components/dialog/InfoMessage.vue";
 import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
-import { Action, Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { Mode } from "@/store/mode";
 import { handleKeyDownEvent } from "@/helpers/key";
 
@@ -46,28 +46,28 @@ export default defineComponent({
 
     const dialogVisibilities = computed(() => {
       return {
-        game: store.state.mode === Mode.GAME_DIALOG,
-        research: store.state.mode === Mode.RESEARCH_DIALOG,
-        usiEngineSetting: store.state.mode === Mode.USI_ENGINE_SETTING_DIALOG,
-        appSetting: store.state.mode === Mode.APP_SETTING_DIALOG,
-        paste: store.state.mode === Mode.PASTE_DIALOG,
-        bussy: store.getters.isBussy,
-        confirm: store.state.confirmation.confirmation,
+        game: store.mode === Mode.GAME_DIALOG,
+        research: store.mode === Mode.RESEARCH_DIALOG,
+        usiEngineSetting: store.mode === Mode.USI_ENGINE_SETTING_DIALOG,
+        appSetting: store.mode === Mode.APP_SETTING_DIALOG,
+        paste: store.mode === Mode.PASTE_DIALOG,
+        bussy: store.isBussy,
+        confirm: store.confirmation !== undefined,
       };
     });
 
-    const hasMessage = computed(() => store.getters.hasMessage);
+    const hasMessage = computed(() => store.hasMessage);
 
-    const hasErrors = computed(() => store.getters.hasError);
+    const hasErrors = computed(() => store.hasError);
 
     onMounted(() => {
       const body = document.getElementsByTagName("body")[0];
       body.addEventListener("copy", (event) => {
-        store.dispatch(Action.COPY_RECORD);
+        store.copyRecord();
         event.preventDefault();
       });
       body.addEventListener("paste", (event) => {
-        store.commit(Mutation.SHOW_PASTE_DIALOG);
+        store.showPasteDialog();
         event.preventDefault();
       });
       body.addEventListener("dragover", (event: DragEvent) => {
@@ -76,24 +76,24 @@ export default defineComponent({
       body.addEventListener("drop", (event: DragEvent) => {
         if (event.dataTransfer && event.dataTransfer.files[0]) {
           const path = event.dataTransfer.files[0].path;
-          store.dispatch(Action.OPEN_RECORD, path);
+          store.openRecord(path);
         }
         event.preventDefault();
       });
       handleKeyDownEvent({
         onArrowUp(): void {
-          const moveNumber = store.state.record.current.number;
-          store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber - 1);
+          const moveNumber = store.record.current.number;
+          store.changeMoveNumber(moveNumber - 1);
         },
         onArrowDown(): void {
-          const moveNumber = store.state.record.current.number;
-          store.commit(Mutation.CHANGE_MOVE_NUMBER, moveNumber + 1);
+          const moveNumber = store.record.current.number;
+          store.changeMoveNumber(moveNumber + 1);
         },
         onArrowLeft(): void {
-          store.commit(Mutation.CHANGE_MOVE_NUMBER, 0);
+          store.changeMoveNumber(0);
         },
         onArrowRight(): void {
-          store.commit(Mutation.CHANGE_MOVE_NUMBER, Number.MAX_SAFE_INTEGER);
+          store.changeMoveNumber(Number.MAX_SAFE_INTEGER);
         },
       });
     });

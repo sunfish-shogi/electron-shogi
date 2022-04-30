@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 
@@ -31,10 +31,10 @@ export default defineComponent({
       showModalDialog(dialog.value);
     });
 
-    const message = computed(() => store.getters.message);
+    const message = computed(() => store.message);
 
     const onClose = () => {
-      store.commit(Mutation.SHIFT_MESSAGE);
+      store.dequeueMessage();
     };
 
     return {

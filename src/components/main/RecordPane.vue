@@ -17,7 +17,7 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import RecordView from "@/components/primitive/RecordView.vue";
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { Mode } from "@/store/mode";
 
 export const minWidth = 200;
@@ -31,7 +31,7 @@ export default defineComponent({
     const store = useStore();
 
     const goto = (number: number) => {
-      store.commit(Mutation.CHANGE_MOVE_NUMBER, number);
+      store.changeMoveNumber(number);
     };
 
     const goBegin = () => {
@@ -39,11 +39,11 @@ export default defineComponent({
     };
 
     const goBack = () => {
-      goto(store.state.record.current.number - 1);
+      goto(store.record.current.number - 1);
     };
 
     const goForward = () => {
-      goto(store.state.record.current.number + 1);
+      goto(store.record.current.number + 1);
     };
 
     const goEnd = () => {
@@ -55,16 +55,14 @@ export default defineComponent({
     };
 
     const selectBranch = (index: number) => {
-      store.commit(Mutation.CHANGE_BRANCH, index);
+      store.changeBranch(index);
     };
 
     const isRecordOperational = computed(() => {
-      return (
-        store.state.mode === Mode.NORMAL || store.state.mode === Mode.RESEARCH
-      );
+      return store.mode === Mode.NORMAL || store.mode === Mode.RESEARCH;
     });
 
-    const record = computed(() => store.state.record);
+    const record = computed(() => store.record);
 
     return {
       isRecordOperational,

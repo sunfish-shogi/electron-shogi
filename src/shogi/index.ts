@@ -23,6 +23,7 @@ export {
 } from "./position";
 export {
   default as Record,
+  ImmutableRecord,
   SpecialMove,
   RecordEntry,
   RecordMetadataKey,

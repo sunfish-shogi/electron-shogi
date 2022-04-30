@@ -90,44 +90,51 @@ export function getStandardMetadataDisplayName(key: RecordMetadataKey): string {
   }
 }
 
+export interface ImmutableRecordMetadata {
+  get standardMetadataKeys(): IterableIterator<RecordMetadataKey>;
+  getStandardMetadata(key: RecordMetadataKey): string | undefined;
+  get customMetadataKeys(): IterableIterator<string>;
+  getCustomMetadata(key: string): string | undefined;
+}
+
 export class RecordMetadata {
-  private metadata: Map<RecordMetadataKey, string>;
-  private customMetadata: Map<string, string>;
+  private standard: Map<RecordMetadataKey, string>;
+  private custom: Map<string, string>;
 
   constructor() {
-    this.metadata = new Map<RecordMetadataKey, string>();
-    this.customMetadata = new Map<string, string>();
+    this.standard = new Map<RecordMetadataKey, string>();
+    this.custom = new Map<string, string>();
   }
 
   get standardMetadataKeys(): IterableIterator<RecordMetadataKey> {
-    return this.metadata.keys();
+    return this.standard.keys();
   }
 
   getStandardMetadata(key: RecordMetadataKey): string | undefined {
-    return this.metadata.get(key);
+    return this.standard.get(key);
   }
 
   setStandardMetadata(key: RecordMetadataKey, value: string): void {
     if (value) {
-      this.metadata.set(key, value);
+      this.standard.set(key, value);
     } else {
-      this.metadata.delete(key);
+      this.standard.delete(key);
     }
   }
 
   get customMetadataKeys(): IterableIterator<string> {
-    return this.customMetadata.keys();
+    return this.custom.keys();
   }
 
   getCustomMetadata(key: string): string | undefined {
-    return this.customMetadata.get(key);
+    return this.custom.get(key);
   }
 
   setCustomMetadata(key: string, value: string): void {
     if (value) {
-      this.customMetadata.set(key, value);
+      this.custom.set(key, value);
     } else {
-      this.customMetadata.delete(key);
+      this.custom.delete(key);
     }
   }
 }
@@ -259,6 +266,22 @@ class RecordEntryImpl implements RecordEntry {
       }
     }
   }
+}
+
+export interface ImmutableRecord {
+  readonly metadata: ImmutableRecordMetadata;
+  readonly initialPosition: ImmutablePosition;
+  readonly position: ImmutablePosition;
+  readonly first: RecordEntry;
+  readonly current: RecordEntry;
+  readonly moves: Array<RecordEntry>;
+  readonly movesBefore: Array<RecordEntry>;
+  readonly length: number;
+  readonly branchBegin: RecordEntry;
+  readonly repetition: boolean;
+  readonly perpetualCheck: Color | null;
+  readonly usi: string;
+  readonly sfen: string;
 }
 
 export default class Record {

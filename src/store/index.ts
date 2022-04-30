@@ -26,13 +26,7 @@ import {
   specialMoveToDisplayString,
 } from "@/shogi";
 import { exportKakinoki, importKakinoki } from "@/shogi";
-import { InjectionKey, watch } from "vue";
-import {
-  CommitOptions,
-  createStore,
-  DispatchOptions,
-  useStore as baseUseStore,
-} from "vuex";
+import { reactive, UnwrapNestedRefs, watch } from "vue";
 import iconv from "iconv-lite";
 import { GameSetting } from "@/settings/game";
 import {
@@ -49,660 +43,768 @@ import {
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/usi/info";
 import { RecordEntryCustomData } from "./record";
-import { GameState } from "./game";
+import { GameStore } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
-import { Mutation } from "./mutation";
-import { Action } from "./action";
-import { BussyState, bussyState } from "./bussy";
-import { USIState, usiState } from "./usi";
+import { BussyStore } from "./bussy";
+import { USIPlayerMonitor, USIStore } from "./usi";
 import { Mode } from "./mode";
-import { messageState, MessageState } from "./message";
-import { errorState, ErrorState } from "./error";
+import { MessageStore } from "./message";
+import { ErrorStore } from "./error";
 import * as uri from "@/uri";
-import { ConfirmationState, confirmationState } from "./confirm";
+import { Confirmation } from "./confirm";
 
-export { Mutation } from "./mutation";
-export { Action } from "./action";
+class Store {
+  private _bussy: BussyStore;
+  private _message: MessageStore;
+  private _error: ErrorStore;
+  private _appSetting: AppSetting;
+  private _mode: Mode;
+  private lastMode?: Mode;
+  private _confirmation?: Confirmation;
+  private _usi: USIStore;
+  private usiSessionID: number;
+  private _game: GameStore;
+  private unlimitedBeepHandler?: AudioEventHandler;
+  private _recordFilePath?: string;
+  private _record: Record;
 
-export type State = {
-  appSetting: AppSetting;
-  recordFilePath?: string;
-  record: Record;
-  mode: Mode;
-  usiSessionID: number;
-  game: GameState;
-  beep5sHandler?: AudioEventHandler;
-};
+  constructor() {
+    this._bussy = new BussyStore();
+    this._message = new MessageStore();
+    this._error = new ErrorStore();
+    this._appSetting = defaultAppSetting();
+    this._mode = Mode.NORMAL;
+    this._usi = new USIStore();
+    this.usiSessionID = 0;
+    this._game = new GameStore();
+    this._record = new Record();
+  }
 
-interface Store {
-  readonly state: State & {
-    readonly usi: USIState;
-    readonly message: MessageState;
-    readonly error: ErrorState;
-    readonly bussy: BussyState;
-    readonly confirmation: ConfirmationState;
-  };
-  readonly getters: {
-    readonly isMovableByUser: boolean;
-    readonly hasMessage: boolean;
-    readonly message: string;
-    readonly hasError: boolean;
-    readonly isBussy: boolean;
-  };
-  dispatch(
-    type: Action,
-    payload?: unknown,
-    options?: DispatchOptions
-  ): Promise<unknown>;
-  commit(type: Mutation, payload?: unknown, options?: CommitOptions): void;
-}
+  get isBussy(): boolean {
+    return this._bussy.isBussy;
+  }
 
-export const key: InjectionKey<Store> = Symbol();
+  retainBussyState(): void {
+    return this._bussy.retain();
+  }
 
-export function useStore(): Store {
-  return baseUseStore(key);
-}
+  releaseBussyState(): void {
+    return this._bussy.release();
+  }
 
-export const store = createStore<State>({
-  state: {
-    appSetting: defaultAppSetting(),
-    record: new Record(),
-    mode: Mode.NORMAL,
-    usiSessionID: 0,
-    game: new GameState(),
-  },
-  modules: {
-    usi: usiState,
-    message: messageState,
-    error: errorState,
-    bussy: bussyState,
-    confirmation: confirmationState,
-  },
-  getters: {
-    isMovableByUser(state): boolean {
-      switch (state.mode) {
-        case Mode.NORMAL:
-        case Mode.RESEARCH:
-          return true;
-        case Mode.GAME:
-          return (
-            (state.record.position.color === Color.BLACK
-              ? state.game.setting.black.uri
-              : state.game.setting.white.uri) === uri.ES_HUMAN
-          );
-      }
+  get message(): string {
+    return this._message.message;
+  }
+
+  get hasMessage(): boolean {
+    return this._message.hasMessage;
+  }
+
+  enqueueMessage(message: string): void {
+    this._message.enqueue(message);
+  }
+
+  dequeueMessage(): void {
+    this._message.dequeue();
+  }
+
+  get errors(): Error[] {
+    return this._error.errors;
+  }
+
+  get hasError(): boolean {
+    return this._error.hasError;
+  }
+
+  pushError(e: unknown): void {
+    this._error.push(e);
+  }
+
+  clearErrors(): void {
+    this._error.clear();
+  }
+
+  get appSetting(): AppSetting {
+    return this._appSetting;
+  }
+
+  async updateAppSetting(update: AppSettingUpdate): Promise<void> {
+    await saveAppSetting({
+      ...this.appSetting,
+      ...update,
+    });
+    this._appSetting = {
+      ...this.appSetting,
+      ...update,
+    };
+  }
+
+  flipBoard(): void {
+    this._appSetting.boardFlipping = !this.appSetting.boardFlipping;
+    saveAppSetting(this.appSetting);
+  }
+
+  get mode(): Mode {
+    return this._mode;
+  }
+
+  get confirmation(): string | undefined {
+    return this._confirmation?.message;
+  }
+
+  showConfirmation(confirmation: Confirmation): void {
+    this._confirmation = confirmation;
+    this.lastMode = this.mode;
+    this._mode = Mode.TEMPORARY;
+  }
+
+  confirmationOk(): void {
+    const onOk = this._confirmation?.onOk;
+    this._confirmation = undefined;
+    if (this.lastMode) {
+      this._mode = this.lastMode;
+      this.lastMode = undefined;
+    }
+    if (onOk) {
+      onOk();
+    }
+  }
+
+  confirmationCancel(): void {
+    const onCancel = this._confirmation?.onCancel;
+    this._confirmation = undefined;
+    if (this.lastMode) {
+      this._mode = this.lastMode;
+      this.lastMode = undefined;
+    }
+    if (onCancel) {
+      onCancel();
+    }
+  }
+
+  showPasteDialog(): void {
+    if (this.mode === Mode.NORMAL) {
+      this._mode = Mode.PASTE_DIALOG;
+    }
+  }
+
+  closePasteDialog(): void {
+    if (this.mode === Mode.PASTE_DIALOG) {
+      this._mode = Mode.NORMAL;
+    }
+  }
+
+  showGameDialog(): void {
+    if (this.mode === Mode.NORMAL) {
+      this._mode = Mode.GAME_DIALOG;
+    }
+  }
+
+  showResearchDialog(): void {
+    if (this.mode === Mode.NORMAL) {
+      this._mode = Mode.RESEARCH_DIALOG;
+    }
+  }
+
+  openAppSettingDialog(): void {
+    if (this.mode === Mode.NORMAL) {
+      this._mode = Mode.APP_SETTING_DIALOG;
+    }
+  }
+
+  openUsiEngineManagementDialog(): void {
+    if (this.mode === Mode.NORMAL) {
+      this._mode = Mode.USI_ENGINE_SETTING_DIALOG;
+    }
+  }
+
+  closeDialog(): void {
+    if (
+      this.mode === Mode.USI_ENGINE_SETTING_DIALOG ||
+      this.mode === Mode.APP_SETTING_DIALOG ||
+      this.mode === Mode.GAME_DIALOG ||
+      this.mode === Mode.RESEARCH_DIALOG
+    ) {
+      this._mode = Mode.NORMAL;
+    }
+  }
+
+  get usiBlackPlayerMonitor(): USIPlayerMonitor | undefined {
+    return this._usi.blackPlayer;
+  }
+
+  get usiWhitePlayerMonitor(): USIPlayerMonitor | undefined {
+    return this._usi.whitePlayer;
+  }
+
+  get usiResearcherMonitor(): USIPlayerMonitor | undefined {
+    return this._usi.researcher;
+  }
+
+  updateUSIInfo(
+    sessionID: number,
+    usi: string,
+    sender: USIInfoSender,
+    name: string,
+    info: InfoCommand
+  ): void {
+    if (this.usiSessionID !== sessionID || this.record.usi != usi) {
+      return;
+    }
+    this._usi.update(sessionID, this.record.position, sender, name, info);
+    const entryData = new RecordEntryCustomData(this.record.current.customData);
+    entryData.updateUSIInfo(this.record.position.color, sender, info);
+    this.record.current.customData = entryData.stringify();
+  }
+
+  private issueUSISessionID(): void {
+    this.usiSessionID += 1;
+  }
+
+  get gameSetting(): GameSetting {
+    return this._game.setting;
+  }
+
+  get blackTimeMs(): number {
+    return this._game.blackTimeMs;
+  }
+
+  get blackByoyomi(): number {
+    return this._game.blackByoyomi;
+  }
+
+  get whiteTimeMs(): number {
+    return this._game.whiteTimeMs;
+  }
+
+  get whiteByoyomi(): number {
+    return this._game.whiteByoyomi;
+  }
+
+  get elapsedMs(): number {
+    return this._game.elapsedMs;
+  }
+
+  async startGame(setting: GameSetting): Promise<boolean> {
+    if (this.mode !== Mode.GAME_DIALOG) {
       return false;
-    },
-  },
-  mutations: {
-    [Mutation.UPDATE_APP_SETTING](state, update: AppSettingUpdate) {
-      state.appSetting = {
-        ...state.appSetting,
-        ...update,
-      };
-    },
-    [Mutation.FLIP_BOARD](state) {
-      state.appSetting.boardFlipping = !state.appSetting.boardFlipping;
-      saveAppSetting(state.appSetting);
-    },
-    [Mutation.SHOW_PASTE_DIALOG](state) {
-      if (state.mode === Mode.NORMAL) {
-        state.mode = Mode.PASTE_DIALOG;
+    }
+    this.retainBussyState();
+    try {
+      await saveGameSetting(setting);
+      if (setting.startPosition) {
+        const position = new Position();
+        position.reset(setting.startPosition);
+        this.record.clear(position);
+        this.clearRecordFilePath();
       }
-    },
-    [Mutation.CLOSE_PASTE_DIALOG](state) {
-      if (state.mode === Mode.PASTE_DIALOG) {
-        state.mode = Mode.NORMAL;
-      }
-    },
-    [Mutation.SHOW_GAME_DIALOG](state) {
-      if (state.mode === Mode.NORMAL) {
-        state.mode = Mode.GAME_DIALOG;
-      }
-    },
-    [Mutation.SHOW_RESEARCH_DIALOG](state) {
-      if (state.mode === Mode.NORMAL) {
-        state.mode = Mode.RESEARCH_DIALOG;
-      }
-    },
-    [Mutation.OPEN_APP_SETTING_DIALOG](state) {
-      if (state.mode === Mode.NORMAL) {
-        state.mode = Mode.APP_SETTING_DIALOG;
-      }
-    },
-    [Mutation.OPEN_USI_ENGINE_MANAGEMENT_DIALOG](state) {
-      if (state.mode === Mode.NORMAL) {
-        state.mode = Mode.USI_ENGINE_SETTING_DIALOG;
-      }
-    },
-    [Mutation.CLOSE_DIALOG](state) {
-      if (
-        state.mode === Mode.USI_ENGINE_SETTING_DIALOG ||
-        state.mode === Mode.APP_SETTING_DIALOG ||
-        state.mode === Mode.GAME_DIALOG ||
-        state.mode === Mode.RESEARCH_DIALOG
-      ) {
-        state.mode = Mode.NORMAL;
-      }
-    },
-    [Mutation.NEW_RECORD](state) {
-      if (state.mode != Mode.NORMAL) {
-        return;
-      }
-      state.record.clear(new Position());
-      state.recordFilePath = undefined;
-    },
-    [Mutation.UPDATE_RECORD_COMMENT](state, comment: string) {
-      state.record.current.comment = comment;
-    },
-    [Mutation.UPDATE_STANDARD_RECORD_METADATA](
-      state,
-      update: { key: RecordMetadataKey; value: string }
-    ) {
-      state.record.metadata.setStandardMetadata(update.key, update.value);
-    },
-    [Mutation.INSERT_SPECIAL_MOVE](state, specialMove: SpecialMove) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      state.record.append(specialMove);
-    },
-    [Mutation.CHANGE_TURN](state) {
-      if (state.mode != Mode.POSITION_EDITING) {
-        return;
-      }
-      const position = state.record.position.clone();
-      position.setColor(reverseColor(position.color));
-      state.record.clear(position);
-      state.recordFilePath = undefined;
-    },
-    [Mutation.EDIT_POSITION](state, change: PositionChange) {
-      if (state.mode === Mode.POSITION_EDITING) {
-        const position = state.record.position.clone();
-        position.edit(change);
-        state.record.clear(position);
-        state.recordFilePath = undefined;
-      }
-    },
-    [Mutation.CHANGE_MOVE_NUMBER](state, number: number) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      state.record.goto(number);
-    },
-    [Mutation.CHANGE_BRANCH](state, index: number) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      if (state.record.current.branchIndex === index) {
-        return;
-      }
-      state.record.switchBranchByIndex(index);
-    },
-    [Mutation.CLEAR_GAME_TIMER](state) {
-      state.game.clearTimer();
-      if (state.beep5sHandler) {
-        state.beep5sHandler.stop();
-        state.beep5sHandler = undefined;
-      }
-    },
-  },
-  actions: {
-    async [Action.UPDATE_APP_SETTING](
-      { commit, state },
-      update: AppSettingUpdate
-    ) {
-      await saveAppSetting({
-        ...state.appSetting,
-        ...update,
-      });
-      commit(Mutation.UPDATE_APP_SETTING, update);
-    },
-    async [Action.OPEN_RECORD]({ commit, state }, path) {
-      if (state.mode !== Mode.NORMAL) {
-        return false;
-      }
-      commit(Mutation.RETAIN_BUSSY_STATE);
-      try {
-        if (!path) {
-          path = await showOpenRecordDialog();
-          if (!path) {
-            return false;
-          }
+      this.issueUSISessionID();
+      await startGame(setting, this.usiSessionID);
+      this._game.setup(setting);
+      this._mode = Mode.GAME;
+      this.record.metadata.setStandardMetadata(
+        RecordMetadataKey.BLACK_NAME,
+        setting.black.name
+      );
+      this.record.metadata.setStandardMetadata(
+        RecordMetadataKey.WHITE_NAME,
+        setting.white.name
+      );
+      if (setting.humanIsFront) {
+        let flip = this.appSetting.boardFlipping;
+        if (
+          setting.black.uri === uri.ES_HUMAN &&
+          setting.white.uri !== uri.ES_HUMAN
+        ) {
+          flip = false;
+        } else if (
+          setting.black.uri !== uri.ES_HUMAN &&
+          setting.white.uri === uri.ES_HUMAN
+        ) {
+          flip = true;
         }
-        const data = await openRecord(path);
-        if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-          const str = path.match(/\.kif$/)
-            ? iconv.decode(data, "Shift_JIS")
-            : data.toString();
-          const recordOrError = importKakinoki(str);
-          if (recordOrError instanceof Record) {
-            state.recordFilePath = path;
-            state.record = recordOrError;
-          } else {
-            commit(Mutation.PUSH_ERROR, recordOrError);
-          }
-          return true;
+        if (flip !== this.appSetting.boardFlipping) {
+          this.flipBoard();
+        }
+      }
+      return true;
+    } catch (e) {
+      this.pushError("対局の初期化中にエラーが出ました: " + e);
+      return false;
+    } finally {
+      this.releaseBussyState();
+    }
+  }
+
+  async stopGame(specialMove?: SpecialMove): Promise<boolean> {
+    if (this.mode !== Mode.GAME) {
+      return false;
+    }
+    if (specialMove) {
+      this.enqueueMessage(
+        `対局終了（${specialMoveToDisplayString(specialMove)})`
+      );
+    }
+    this.retainBussyState();
+    try {
+      await endGame(this.record.usi, specialMove);
+      this.record.append(specialMove || SpecialMove.INTERRUPT);
+      this.record.current.setElapsedMs(this.elapsedMs);
+      this._mode = Mode.NORMAL;
+      return true;
+    } catch (e) {
+      this.pushError("対局の終了中にエラーが出ました: " + e);
+      return false;
+    } finally {
+      this.releaseBussyState();
+    }
+  }
+
+  resetGameTimer(): void {
+    const color = this.record.position.color;
+    this._game.startTimer(color, {
+      timeout: () => {
+        if (this.isMovableByUser || this._game.setting.enableEngineTimeout) {
+          this.stopGame(SpecialMove.TIMEOUT);
         } else {
-          commit(Mutation.PUSH_ERROR, "不明なファイル形式: " + path);
-          return false;
+          stopUSI(color);
         }
-      } catch (e) {
-        commit(Mutation.PUSH_ERROR, "棋譜の読み込み中にエラーが出ました: " + e);
-        return false;
-      } finally {
-        commit(Mutation.RELEASE_BUSSY_STATE);
-      }
-    },
-    async [Action.SAVE_RECORD](
-      { commit, state },
-      options: {
-        overwrite: boolean;
-      }
-    ) {
-      if (state.mode !== Mode.NORMAL) {
-        return false;
-      }
-      commit(Mutation.RETAIN_BUSSY_STATE);
-      try {
-        let path = state.recordFilePath;
-        if (!options?.overwrite || !path) {
-          const defaultPath = defaultRecordFileName(state.record);
-          path = await showSaveRecordDialog(defaultPath);
-          if (!path) {
-            return false;
-          }
-        }
-        if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-          const str = exportKakinoki(state.record, {
-            returnCode: state.appSetting.returnCode,
-          });
-          const data = path.match(/\.kif$/)
-            ? iconv.encode(str, "Shift_JIS")
-            : Buffer.from(str);
-          await saveRecord(path, data);
-          state.recordFilePath = path;
-          return true;
-        } else {
-          commit(Mutation.PUSH_ERROR, "不明なファイル形式: " + path);
-          return false;
-        }
-      } catch (e) {
-        commit(Mutation.PUSH_ERROR, "棋譜の保存中にエラーが出ました: " + e);
-        return false;
-      } finally {
-        commit(Mutation.RELEASE_BUSSY_STATE);
-      }
-    },
-    [Action.COPY_RECORD]({ state }) {
-      const str = exportKakinoki(state.record, {
-        returnCode: state.appSetting.returnCode,
-      });
-      navigator.clipboard.writeText(str);
-    },
-    [Action.PASTE_RECORD]({ state, commit }, data: string) {
-      if (state.mode !== Mode.NORMAL) {
-        return;
-      }
-      const recordOrError = importKakinoki(data);
-      if (recordOrError instanceof Record) {
-        state.recordFilePath = undefined;
-        state.record = recordOrError;
+      },
+      onBeepShort: () => {
+        this.beepShort();
+      },
+      onBeepUnlimited: () => {
+        this.beepUnlimited();
+      },
+    });
+  }
+
+  async resignByUser(): Promise<boolean> {
+    if (this.mode !== Mode.GAME) {
+      return false;
+    }
+    if (!this.isMovableByUser) {
+      return false;
+    }
+    return this.stopGame(SpecialMove.RESIGN);
+  }
+
+  doMoveByUser(move: Move): boolean {
+    if (!this.isMovableByUser) {
+      return false;
+    }
+    if (this.mode === Mode.GAME) {
+      this.incrementTime();
+    }
+    this.doMove(move);
+    return true;
+  }
+
+  doMoveByUsiEngine(
+    sessionID: number,
+    usi: string,
+    color: Color,
+    sfen: string
+  ): boolean {
+    if (this.mode !== Mode.GAME) {
+      return false;
+    }
+    if (this.usiSessionID !== sessionID) {
+      return false;
+    }
+    if (this.record.usi !== usi) {
+      return false;
+    }
+    if (color !== this.record.position.color) {
+      this.pushError("手番ではないエンジンから指し手を受信しました:" + sfen);
+      this.stopGame(SpecialMove.FOUL_LOSE);
+      return false;
+    }
+    if (sfen === "resign") {
+      this.stopGame(SpecialMove.RESIGN);
+      return true;
+    }
+    if (sfen === "win") {
+      // TODO: 勝ち宣言が正当かどうかをチェックする。
+      this.stopGame(SpecialMove.ENTERING_OF_KING);
+      return true;
+    }
+    const move = this.record.position.createMoveBySFEN(sfen);
+    if (!move || !this.record.position.isValidMove(move)) {
+      this.pushError("エンジンから不明な指し手を受信しました:" + sfen);
+      this.stopGame(SpecialMove.FOUL_LOSE);
+      return false;
+    }
+    this.incrementTime();
+    this.doMove(move);
+    return true;
+  }
+
+  doMove(move: Move): void {
+    this.record.append(move, {
+      ignoreValidation: true,
+    });
+    this.record.current.setElapsedMs(this.elapsedMs);
+    playPieceBeat(this.appSetting.pieceVolume);
+    if (this.mode !== Mode.GAME) {
+      return;
+    }
+    const color = this.record.perpetualCheck;
+    if (color) {
+      if (color === this.record.position.color) {
+        this.stopGame(SpecialMove.FOUL_LOSE);
       } else {
-        commit(Mutation.PUSH_ERROR, recordOrError);
+        this.stopGame(SpecialMove.FOUL_WIN);
       }
-    },
-    [Action.REMOVE_RECORD_AFTER]({ state, dispatch }) {
-      if (state.mode !== Mode.NORMAL && state.mode !== Mode.RESEARCH) {
-        return;
-      }
-      const next = state.record.current.next;
-      if (!next || !(next.move instanceof Move)) {
-        state.record.removeAfter();
-        return;
-      }
-      dispatch(Action.SHOW_CONFIRMATION, {
-        message: `${state.record.current.number}手目以降を削除します。よろしいですか？`,
-        onOk: () => {
-          state.record.removeAfter();
-        },
-      });
-    },
-    [Action.START_POSITION_EDITING]({ state, dispatch }) {
-      if (state.mode !== Mode.NORMAL) {
-        return;
-      }
-      dispatch(Action.SHOW_CONFIRMATION, {
-        message: "現在の棋譜は削除されます。よろしいですか？",
-        onOk: () => {
-          state.mode = Mode.POSITION_EDITING;
-          state.record.clear(state.record.position);
-          state.recordFilePath = undefined;
-        },
-      });
-    },
-    [Action.END_POSITION_EDITING]({ state }) {
-      // FIXME: 局面整合性チェック
-      if (state.mode === Mode.POSITION_EDITING) {
-        state.mode = Mode.NORMAL;
-      }
-    },
-    [Action.INITIALIZE_POSITION](
-      { state, dispatch },
-      initialPositionType: InitialPositionType
+    } else if (this.record.repetition) {
+      this.stopGame(SpecialMove.REPETITION_DRAW);
+    }
+  }
+
+  private incrementTime(): void {
+    this._game.incrementTime(this.record.position.color);
+  }
+
+  clearGameTimer(): void {
+    this._game.clearTimer();
+    this.stopBeep();
+  }
+
+  private beepUnlimited(): void {
+    if (
+      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      !this.isMovableByUser
     ) {
-      if (state.mode != Mode.POSITION_EDITING) {
-        return;
-      }
-      dispatch(Action.SHOW_CONFIRMATION, {
-        message: "現在の局面は破棄されます。よろしいですか？",
-        onOk: () => {
-          const position = new Position();
-          position.reset(initialPositionType);
-          state.record.clear(position);
-          state.recordFilePath = undefined;
-        },
-      });
-    },
-    [Action.UPDATE_USI_INFO](
-      { state, commit },
-      payload: {
-        sessionID: number;
-        usi: string;
-        sender: USIInfoSender;
-        name: string;
-        info: InfoCommand;
-      }
+      return;
+    }
+    if (this.unlimitedBeepHandler) {
+      return;
+    }
+    this.unlimitedBeepHandler = beepUnlimited({
+      frequency: this.appSetting.clockPitch,
+      volume: this.appSetting.clockVolume,
+    });
+  }
+
+  private beepShort(): void {
+    if (
+      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      !this.isMovableByUser
     ) {
-      if (
-        state.usiSessionID !== payload.sessionID ||
-        state.record.usi != payload.usi
-      ) {
-        return;
-      }
-      commit(Mutation.UPDATE_USI_INFO, {
-        sessionID: payload.sessionID,
-        position: state.record.position,
-        sender: payload.sender,
-        name: payload.name,
-        info: payload.info,
-      });
-      const entryData = new RecordEntryCustomData(
-        state.record.current.customData
-      );
-      entryData.updateUSIInfo(
-        state.record.position.color,
-        payload.sender,
-        payload.info
-      );
-      state.record.current.customData = entryData.stringify();
-    },
-    async [Action.START_RESEARCH](
-      { commit, state },
-      researchSetting: ResearchSetting
-    ) {
-      if (state.mode !== Mode.RESEARCH_DIALOG) {
-        return false;
-      }
-      commit(Mutation.RETAIN_BUSSY_STATE);
-      try {
-        await saveResearchSetting(researchSetting);
-        state.usiSessionID += 1;
-        await startResearch(researchSetting, state.usiSessionID);
-        state.mode = Mode.RESEARCH;
-        return true;
-      } catch (e) {
-        commit(Mutation.PUSH_ERROR, "検討の初期化中にエラーが出ました: " + e);
-        return false;
-      } finally {
-        commit(Mutation.RELEASE_BUSSY_STATE);
-      }
-    },
-    async [Action.STOP_RESEARCH]({ commit, state }) {
-      if (state.mode !== Mode.RESEARCH) {
-        return false;
-      }
-      commit(Mutation.RETAIN_BUSSY_STATE);
-      try {
-        await endResearch();
-        state.mode = Mode.NORMAL;
-        return true;
-      } catch (e) {
-        commit(Mutation.PUSH_ERROR, "検討の終了中にエラーが出ました: " + e);
-        return false;
-      } finally {
-        commit(Mutation.RELEASE_BUSSY_STATE);
-      }
-    },
-    async [Action.START_GAME]({ commit, state }, setting: GameSetting) {
-      if (state.mode !== Mode.GAME_DIALOG) {
-        return false;
-      }
-      commit(Mutation.RETAIN_BUSSY_STATE);
-      try {
-        await saveGameSetting(setting);
-        if (setting.startPosition) {
-          const position = new Position();
-          position.reset(setting.startPosition);
-          state.record.clear(position);
-          state.recordFilePath = undefined;
-        }
-        state.usiSessionID += 1;
-        await startGame(setting, state.usiSessionID);
-        state.game.setup(setting);
-        state.mode = Mode.GAME;
-        state.record.metadata.setStandardMetadata(
-          RecordMetadataKey.BLACK_NAME,
-          setting.black.name
-        );
-        state.record.metadata.setStandardMetadata(
-          RecordMetadataKey.WHITE_NAME,
-          setting.white.name
-        );
-        if (setting.humanIsFront) {
-          let flip = state.appSetting.boardFlipping;
-          if (
-            setting.black.uri === uri.ES_HUMAN &&
-            setting.white.uri !== uri.ES_HUMAN
-          ) {
-            flip = false;
-          } else if (
-            setting.black.uri !== uri.ES_HUMAN &&
-            setting.white.uri === uri.ES_HUMAN
-          ) {
-            flip = true;
-          }
-          if (flip !== state.appSetting.boardFlipping) {
-            commit(Mutation.FLIP_BOARD);
-          }
-        }
-        return true;
-      } catch (e) {
-        commit(Mutation.PUSH_ERROR, "対局の初期化中にエラーが出ました: " + e);
-        return false;
-      } finally {
-        commit(Mutation.RELEASE_BUSSY_STATE);
-      }
-    },
-    async [Action.STOP_GAME]({ commit, state }, specialMove?: SpecialMove) {
-      if (state.mode !== Mode.GAME) {
-        return false;
-      }
-      if (specialMove) {
-        commit(
-          Mutation.PUSH_MESSAGE,
-          `対局終了（${specialMoveToDisplayString(specialMove)})`
-        );
-      }
-      commit(Mutation.RETAIN_BUSSY_STATE);
-      try {
-        await endGame(state.record.usi, specialMove);
-        state.record.append(specialMove || SpecialMove.INTERRUPT);
-        state.record.current.setElapsedMs(state.game.elapsedMs);
-        state.mode = Mode.NORMAL;
-        return true;
-      } catch (e) {
-        commit(Mutation.PUSH_ERROR, "対局の終了中にエラーが出ました: " + e);
-        return false;
-      } finally {
-        commit(Mutation.RELEASE_BUSSY_STATE);
-      }
-    },
-    [Action.RESIGN_BY_USER]({ state, getters, dispatch }) {
-      if (state.mode !== Mode.GAME) {
-        return false;
-      }
-      if (!getters.isMovableByUser) {
-        return;
-      }
-      return dispatch(Action.STOP_GAME, SpecialMove.RESIGN);
-    },
-    [Action.DO_MOVE_BY_USER]({ dispatch, state, getters }, move: Move) {
-      if (!getters.isMovableByUser) {
-        return false;
-      }
-      if (state.mode === Mode.GAME) {
-        state.game.incrementTime(state.record.position.color);
-      }
-      dispatch(Action.DO_MOVE, move);
+      return;
+    }
+    if (this.unlimitedBeepHandler) {
+      return;
+    }
+    beepShort({
+      frequency: this.appSetting.clockPitch,
+      volume: this.appSetting.clockVolume,
+    });
+  }
+
+  async startResearch(researchSetting: ResearchSetting): Promise<boolean> {
+    if (this.mode !== Mode.RESEARCH_DIALOG) {
+      return false;
+    }
+    this.retainBussyState();
+    try {
+      await saveResearchSetting(researchSetting);
+      this.issueUSISessionID();
+      await startResearch(researchSetting, this.usiSessionID);
+      this._mode = Mode.RESEARCH;
       return true;
-    },
-    [Action.DO_MOVE_BY_USI_ENGINE](
-      { commit, dispatch, state },
-      payload: {
-        sessionID: number;
-        usi: string;
-        color: Color;
-        sfen: string;
-      }
-    ) {
-      if (state.mode !== Mode.GAME) {
-        return false;
-      }
-      if (state.usiSessionID !== payload.sessionID) {
-        return false;
-      }
-      if (state.record.usi !== payload.usi) {
-        return false;
-      }
-      if (payload.color !== state.record.position.color) {
-        commit(
-          Mutation.PUSH_ERROR,
-          "手番ではないエンジンから指し手を受信しました:" + payload.sfen
-        );
-        dispatch(Action.STOP_GAME, SpecialMove.FOUL_LOSE);
-        return false;
-      }
-      if (payload.sfen === "resign") {
-        dispatch(Action.STOP_GAME, SpecialMove.RESIGN);
-        return true;
-      }
-      if (payload.sfen === "win") {
-        // TODO: 勝ち宣言が正当かどうかをチェックする。
-        dispatch(Action.STOP_GAME, SpecialMove.ENTERING_OF_KING);
-        return true;
-      }
-      const move = state.record.position.createMoveBySFEN(payload.sfen);
-      if (!move || !state.record.position.isValidMove(move)) {
-        commit(
-          Mutation.PUSH_ERROR,
-          "エンジンから不明な指し手を受信しました:" + payload.sfen
-        );
-        dispatch(Action.STOP_GAME, SpecialMove.FOUL_LOSE);
-        return false;
-      }
-      state.game.incrementTime(state.record.position.color);
-      dispatch(Action.DO_MOVE, move);
+    } catch (e) {
+      this.pushError("検討の初期化中にエラーが出ました: " + e);
+      return false;
+    } finally {
+      this.releaseBussyState();
+    }
+  }
+
+  async stopResearch(): Promise<boolean> {
+    if (this.mode !== Mode.RESEARCH) {
+      return false;
+    }
+    this.retainBussyState();
+    try {
+      await endResearch();
+      this._mode = Mode.NORMAL;
       return true;
-    },
-    [Action.DO_MOVE]({ state, dispatch }, move) {
-      state.record.append(move, {
-        ignoreValidation: true,
-      });
-      state.record.current.setElapsedMs(state.game.elapsedMs);
-      playPieceBeat(state.appSetting.pieceVolume);
-      if (state.mode !== Mode.GAME) {
-        return;
+    } catch (e) {
+      this.pushError("検討の終了中にエラーが出ました: " + e);
+      return false;
+    } finally {
+      this.releaseBussyState();
+    }
+  }
+
+  get recordFilePath(): string | undefined {
+    return this._recordFilePath;
+  }
+
+  private updateRecordFilePath(recordFilePath: string): void {
+    this._recordFilePath = recordFilePath;
+  }
+
+  private clearRecordFilePath(): void {
+    this._recordFilePath = undefined;
+  }
+
+  private stopBeep(): void {
+    if (this.unlimitedBeepHandler) {
+      this.unlimitedBeepHandler.stop();
+      this.unlimitedBeepHandler = undefined;
+    }
+  }
+
+  get record(): Record {
+    return this._record;
+  }
+
+  newRecord(): void {
+    if (this.mode != Mode.NORMAL) {
+      return;
+    }
+    this.record.clear(new Position());
+    this.clearRecordFilePath();
+  }
+
+  updateRecordComment(comment: string): void {
+    this.record.current.comment = comment;
+  }
+
+  updateStandardRecordMetadata(update: {
+    key: RecordMetadataKey;
+    value: string;
+  }): void {
+    this.record.metadata.setStandardMetadata(update.key, update.value);
+  }
+
+  insertSpecialMove(specialMove: SpecialMove): void {
+    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+      return;
+    }
+    this.record.append(specialMove);
+  }
+
+  startPositionEditing(): void {
+    if (this.mode !== Mode.NORMAL) {
+      return;
+    }
+    this.showConfirmation({
+      message: "現在の棋譜は削除されます。よろしいですか？",
+      onOk: () => {
+        this._mode = Mode.POSITION_EDITING;
+        this.record.clear(this.record.position);
+        this.clearRecordFilePath();
+      },
+    });
+  }
+
+  endPositionEditing(): void {
+    // FIXME: 局面整合性チェック
+    if (this.mode === Mode.POSITION_EDITING) {
+      this._mode = Mode.NORMAL;
+    }
+  }
+
+  initializePosition(initialPositionType: InitialPositionType): void {
+    if (this.mode != Mode.POSITION_EDITING) {
+      return;
+    }
+    this.showConfirmation({
+      message: "現在の局面は破棄されます。よろしいですか？",
+      onOk: () => {
+        const position = new Position();
+        position.reset(initialPositionType);
+        this.record.clear(position);
+        this.clearRecordFilePath();
+      },
+    });
+  }
+
+  changeTurn(): void {
+    if (this.mode != Mode.POSITION_EDITING) {
+      return;
+    }
+    const position = this.record.position.clone();
+    position.setColor(reverseColor(position.color));
+    this.record.clear(position);
+    this.clearRecordFilePath();
+  }
+
+  editPosition(change: PositionChange): void {
+    if (this.mode === Mode.POSITION_EDITING) {
+      const position = this.record.position.clone();
+      position.edit(change);
+      this.record.clear(position);
+      this.clearRecordFilePath();
+    }
+  }
+
+  changeMoveNumber(number: number): void {
+    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+      return;
+    }
+    this.record.goto(number);
+  }
+
+  changeBranch(index: number): void {
+    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+      return;
+    }
+    if (this.record.current.branchIndex === index) {
+      return;
+    }
+    this.record.switchBranchByIndex(index);
+  }
+
+  removeRecordAfter(): void {
+    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+      return;
+    }
+    const next = this.record.current.next;
+    if (!next || !(next.move instanceof Move)) {
+      this.record.removeAfter();
+      return;
+    }
+    this.showConfirmation({
+      message: `${this.record.current.number}手目以降を削除します。よろしいですか？`,
+      onOk: () => {
+        this.record.removeAfter();
+      },
+    });
+  }
+
+  copyRecord(): void {
+    const str = exportKakinoki(this.record, {
+      returnCode: this.appSetting.returnCode,
+    });
+    navigator.clipboard.writeText(str);
+  }
+
+  pasteRecord(data: string): void {
+    if (this.mode !== Mode.NORMAL) {
+      return;
+    }
+    const recordOrError = importKakinoki(data);
+    if (recordOrError instanceof Record) {
+      this.clearRecordFilePath();
+      this._record = recordOrError;
+    } else {
+      this.pushError(recordOrError);
+    }
+  }
+
+  async openRecord(path?: string): Promise<boolean> {
+    if (this.mode !== Mode.NORMAL) {
+      return false;
+    }
+    this.retainBussyState();
+    try {
+      if (!path) {
+        path = await showOpenRecordDialog();
+        if (!path) {
+          return false;
+        }
       }
-      const color = state.record.perpetualCheck;
-      if (color) {
-        if (color === state.record.position.color) {
-          dispatch(Action.STOP_GAME, SpecialMove.FOUL_LOSE);
+      const data = await openRecord(path);
+      if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
+        const str = path.match(/\.kif$/)
+          ? iconv.decode(data, "Shift_JIS")
+          : data.toString();
+        const recordOrError = importKakinoki(str);
+        if (recordOrError instanceof Record) {
+          this.updateRecordFilePath(path);
+          this._record = recordOrError;
         } else {
-          dispatch(Action.STOP_GAME, SpecialMove.FOUL_WIN);
+          this.pushError(recordOrError);
         }
-      } else if (state.record.repetition) {
-        dispatch(Action.STOP_GAME, SpecialMove.REPETITION_DRAW);
+        return true;
+      } else {
+        this.pushError("不明なファイル形式: " + path);
+        return false;
       }
-    },
-    [Action.RESET_GAME_TIMER]({ dispatch, getters, state }) {
-      const color = state.record.position.color;
-      state.game.startTimer(color, {
-        timeout: () => {
-          if (
-            getters.isMovableByUser ||
-            state.game.setting.enableEngineTimeout
-          ) {
-            dispatch(Action.STOP_GAME, SpecialMove.TIMEOUT);
-          } else {
-            stopUSI(color);
-          }
-        },
-        onBeepShort: () => {
-          dispatch(Action.BEEP_SHORT);
-        },
-        onBeepUnlimited: () => {
-          dispatch(Action.BEEP_UNLIMITED);
-        },
-      });
-    },
-    [Action.BEEP_UNLIMITED]({ state, getters }) {
-      if (
-        state.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
-        !getters.isMovableByUser
-      ) {
-        return;
+    } catch (e) {
+      this.pushError("棋譜の読み込み中にエラーが出ました: " + e);
+      return false;
+    } finally {
+      this.releaseBussyState();
+    }
+  }
+
+  async saveRecord(options?: { overwrite: boolean }): Promise<boolean> {
+    if (this.mode !== Mode.NORMAL) {
+      return false;
+    }
+    this.retainBussyState();
+    try {
+      let path = this.recordFilePath;
+      if (!options?.overwrite || !path) {
+        const defaultPath = defaultRecordFileName(this.record.metadata);
+        path = await showSaveRecordDialog(defaultPath);
+        if (!path) {
+          return false;
+        }
       }
-      if (state.beep5sHandler) {
-        return;
+      if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
+        const str = exportKakinoki(this.record, {
+          returnCode: this.appSetting.returnCode,
+        });
+        const data = path.match(/\.kif$/)
+          ? iconv.encode(str, "Shift_JIS")
+          : Buffer.from(str);
+        await saveRecord(path, data);
+        this.updateRecordFilePath(path);
+        return true;
+      } else {
+        this.pushError("不明なファイル形式: " + path);
+        return false;
       }
-      state.beep5sHandler = beepUnlimited({
-        frequency: state.appSetting.clockPitch,
-        volume: state.appSetting.clockVolume,
-      });
-    },
-    [Action.BEEP_SHORT]({ state, getters }) {
-      if (
-        state.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
-        !getters.isMovableByUser
-      ) {
-        return;
-      }
-      if (state.beep5sHandler) {
-        return;
-      }
-      beepShort({
-        frequency: state.appSetting.clockPitch,
-        volume: state.appSetting.clockVolume,
-      });
-    },
-  },
-});
+    } catch (e) {
+      this.pushError("棋譜の保存中にエラーが出ました: " + e);
+      return false;
+    } finally {
+      this.releaseBussyState();
+    }
+  }
+
+  get isMovableByUser() {
+    switch (this.mode) {
+      case Mode.NORMAL:
+      case Mode.RESEARCH:
+        return true;
+      case Mode.GAME:
+        return (
+          (this.record.position.color === Color.BLACK
+            ? this.gameSetting.black.uri
+            : this.gameSetting.white.uri) === uri.ES_HUMAN
+        );
+    }
+    return false;
+  }
+}
+
+const storeV2 = reactive<Store>(new Store());
+
+export function useStore(): UnwrapNestedRefs<Store> {
+  return storeV2;
+}
 
 watch(
-  [() => store.state.mode, () => store.state.record.position],
+  [() => storeV2.mode, () => storeV2.record.position],
   () => {
-    store.commit(Mutation.CLEAR_GAME_TIMER);
-    if (store.state.mode === Mode.GAME) {
-      store.dispatch(Action.RESET_GAME_TIMER);
+    storeV2.clearGameTimer();
+    if (storeV2.mode === Mode.GAME) {
+      storeV2.resetGameTimer();
     }
-    if (store.state.mode === Mode.GAME || store.state.mode === Mode.RESEARCH) {
+    if (storeV2.mode === Mode.GAME || storeV2.mode === Mode.RESEARCH) {
       updateUSIPosition(
-        store.state.record.usi,
-        store.state.game.setting,
-        store.state.game.blackTimeMs,
-        store.state.game.whiteTimeMs
+        storeV2.record.usi,
+        storeV2.gameSetting,
+        storeV2.blackTimeMs,
+        storeV2.whiteTimeMs
       );
     }
   },

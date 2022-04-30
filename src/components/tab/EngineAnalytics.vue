@@ -2,21 +2,21 @@
   <div>
     <div class="root">
       <EngineAnalyticsElement
-        v-if="infos.blackPlayer"
-        :name="infos.blackPlayer.name"
-        :info="infos.blackPlayer"
+        v-if="blackPlayer"
+        :name="blackPlayer.name"
+        :info="blackPlayer"
         :height="elementHeight"
       />
       <EngineAnalyticsElement
-        v-if="infos.whitePlayer"
-        :name="infos.whitePlayer.name"
-        :info="infos.whitePlayer"
+        v-if="whitePlayer"
+        :name="whitePlayer.name"
+        :info="whitePlayer"
         :height="elementHeight"
       />
       <EngineAnalyticsElement
-        v-if="infos.researcher"
-        :name="infos.researcher.name"
-        :info="infos.researcher"
+        v-if="researcher"
+        :name="researcher.name"
+        :info="researcher"
         :height="elementHeight"
       />
     </div>
@@ -42,16 +42,20 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const infos = computed(() => store.state.usi);
+    const blackPlayer = computed(() => store.usiBlackPlayerMonitor);
+    const whitePlayer = computed(() => store.usiWhitePlayerMonitor);
+    const researcher = computed(() => store.usiResearcherMonitor);
     const elementHeight = computed(() => {
       const n =
-        (store.state.usi.blackPlayer ? 1 : 0) +
-        (store.state.usi.whitePlayer ? 1 : 0) +
-        (store.state.usi.researcher ? 1 : 0);
+        (store.usiBlackPlayerMonitor ? 1 : 0) +
+        (store.usiWhitePlayerMonitor ? 1 : 0) +
+        (store.usiResearcherMonitor ? 1 : 0);
       return n !== 0 ? props.size.height / n : 0;
     });
     return {
-      infos,
+      blackPlayer,
+      whitePlayer,
+      researcher,
       elementHeight,
     };
   },

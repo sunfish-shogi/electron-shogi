@@ -1,5 +1,5 @@
 import { BrowserWindow, dialog, ipcMain } from "electron";
-import { Background, Renderer } from "./channel";
+import { Background, Renderer } from "@/ipc/channel";
 import fs from "fs";
 import {
   loadAppSetting,
@@ -11,29 +11,30 @@ import {
   saveResearchSetting,
   saveUSIEngineSetting,
 } from "@/settings/fs";
-import { USIEngineSettings } from "@/settings/usi";
-import {
-  getUSIEngineInfo,
-  startGame as usiStartGame,
-  endGame as usiEndGame,
-  updatePosition as updateUSIPosition,
-  stop as stopUSI,
-  startResearch as usiStartResearch,
-  endResearch as usiEndResearch,
-  sendSetOptionCommand as usiSendSetOptionCommand,
-} from "@/usi";
-import { Color, SpecialMove } from "@/shogi";
-import { updateState as updateMenuState } from "@/menu/menu";
-import { MenuEvent } from "@/menu/event";
-import { InfoCommand, USIInfoSender } from "@/usi/info";
+import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
+import { setupMenu, updateMenuState } from "@/ipc/background/menu";
+import { MenuEvent } from "@/ipc/menu";
+import { InfoCommand, USIInfoSender } from "@/store/usi";
 import { Mode } from "@/store/mode";
+import {
+  gameover as usiGameover,
+  getUSIEngineInfo as usiGetUSIEngineInfo,
+  go as usiGo,
+  goInfinite as usiGoInfinite,
+  quit as usiQuit,
+  sendSetOptionCommand as usiSendSetOptionCommand,
+  setupPlayer as usiSetupPlayer,
+  stop as usiStop,
+} from "@/ipc/background/usi";
+import { GameResult } from "@/players/player";
 
 const isWindows = process.platform === "win32";
 
 let mainWindow: BrowserWindow;
 
-export default function setup(win: BrowserWindow): void {
+export function setup(win: BrowserWindow): void {
   mainWindow = win;
+  setupMenu();
 }
 
 ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, () => {
@@ -46,30 +47,6 @@ ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, () => {
 ipcMain.on(Background.UPDATE_MENU_STATE, (_, mode: Mode, bussy: boolean) => {
   updateMenuState(mode, bussy);
 });
-
-ipcMain.handle(
-  Background.UPDATE_USI_POSITION,
-  (
-    _,
-    usi: string,
-    gameSetting: string,
-    blackTimeMs: number,
-    whiteTimeMs: number
-  ) => {
-    updateUSIPosition(usi, JSON.parse(gameSetting), blackTimeMs, whiteTimeMs);
-  }
-);
-
-ipcMain.handle(Background.STOP_USI, (_, color: Color) => {
-  stopUSI(color);
-});
-
-ipcMain.handle(
-  Background.SEND_USI_SET_OPTION,
-  async (_, path: string, name: string) => {
-    await usiSendSetOptionCommand(path, name);
-  }
-);
 
 function isValidRecordFilePath(path: string) {
   return path.endsWith(".kif") || path.endsWith(".kifu");
@@ -192,34 +169,58 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (): string => {
 ipcMain.handle(
   Background.GET_USI_ENGINE_INFO,
   async (_, path: string): Promise<string> => {
-    return JSON.stringify(await getUSIEngineInfo(path));
+    return JSON.stringify(await usiGetUSIEngineInfo(path));
   }
 );
 
 ipcMain.handle(
-  Background.START_RESEARCH,
-  async (_, json: string, sessionID: number) => {
-    await usiStartResearch(sessionID, JSON.parse(json));
+  Background.SEND_USI_SET_OPTION,
+  async (_, path: string, name: string) => {
+    await usiSendSetOptionCommand(path, name);
   }
 );
 
-ipcMain.handle(Background.END_RESEARCH, async () => {
-  usiEndResearch();
+ipcMain.handle(Background.LAUNCH_USI, async (_, json: string) => {
+  const setting = JSON.parse(json) as USIEngineSetting;
+  return await usiSetupPlayer(setting);
 });
 
 ipcMain.handle(
-  Background.START_GAME,
-  async (_, json: string, sessionID: number) => {
-    await usiStartGame(sessionID, JSON.parse(json));
+  Background.USI_GO,
+  (
+    _,
+    sessionID: number,
+    usi: string,
+    json: string,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ) => {
+    const gameSetting = JSON.parse(json);
+    usiGo(sessionID, usi, gameSetting, blackTimeMs, whiteTimeMs);
   }
 );
 
 ipcMain.handle(
-  Background.END_GAME,
-  (_, usi: string, specialMove?: SpecialMove) => {
-    usiEndGame(usi, specialMove);
+  Background.USI_GO_INFINITE,
+  (_, sessionID: number, usi: string) => {
+    usiGoInfinite(sessionID, usi);
   }
 );
+
+ipcMain.handle(Background.USI_STOP, (_, sessionID: number) => {
+  usiStop(sessionID);
+});
+
+ipcMain.handle(
+  Background.USI_GAMEOVER,
+  (_, sessionID: number, result: GameResult) => {
+    usiGameover(sessionID, result);
+  }
+);
+
+ipcMain.handle(Background.USI_QUIT, (_, sessionID: number) => {
+  usiQuit(sessionID);
+});
 
 export function sendError(e: Error): void {
   mainWindow.webContents.send(Renderer.SEND_ERROR, e);
@@ -232,16 +233,9 @@ export function onMenuEvent(event: MenuEvent): void {
 export function onUSIBestMove(
   sessionID: number,
   usi: string,
-  color: Color,
   sfen: string
 ): void {
-  mainWindow.webContents.send(
-    Renderer.USI_BEST_MOVE,
-    sessionID,
-    usi,
-    color,
-    sfen
-  );
+  mainWindow.webContents.send(Renderer.USI_BEST_MOVE, sessionID, usi, sfen);
 }
 
 export function onUSIInfo(

@@ -4,8 +4,7 @@ import path from "path";
 import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
-import setupIpc from "@/ipc/background";
-import setupMenu from "@/menu/menu";
+import { setup } from "@/ipc/background";
 import { loadWindowSetting, saveWindowSetting } from "./settings/fs";
 import { buildWindowSetting } from "./settings/window";
 
@@ -39,8 +38,7 @@ async function createWindow() {
     saveWindowSetting(setting);
   });
 
-  setupIpc(win);
-  setupMenu();
+  setup(win);
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

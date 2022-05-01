@@ -1,15 +1,17 @@
-import { Color } from "@/shogi";
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { watch } from "vue";
 import { GameSetting } from "@/settings/game";
 import { AppSetting } from "@/settings/app";
-import { MenuEvent } from "@/menu/event";
+import { MenuEvent } from "@/ipc/menu";
 import { SpecialMove, InitialPositionType } from "@/shogi";
-import { USIInfoSender } from "@/usi/info";
+import { USIInfoSender } from "@/store/usi";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/settings/research";
 import { Mode } from "@/store/mode";
 import { useStore } from "@/store";
+import { GameResult } from "@/players/player";
+import { usiBestMove } from "@/players/usi";
+import { humanPlayer } from "@/players/human";
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
@@ -29,27 +31,23 @@ export interface API {
   saveUSIEngineSetting(setting: string): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
   getUSIEngineInfo(path: string): Promise<string>;
-  startResearch(json: string, sessionID: number): Promise<void>;
-  endResearch(): Promise<void>;
-  startGame(json: string, sessionID: number): Promise<void>;
-  endGame(usi: string, specialMove?: SpecialMove): Promise<void>;
-  updateUSIPosition(
+  sendUSISetOption(path: string, name: string): Promise<void>;
+  usiLaunch(json: string): Promise<number>;
+  usiGo(
+    sessionID: number,
     usi: string,
-    gameSetting: string,
+    json: string,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void>;
-  stopUSI(color: Color): Promise<void>;
-  sendUSISetOption(path: string, name: string): Promise<void>;
+  usiGoInfinite(sessionID: number, usi: string): Promise<void>;
+  usiStop(sessionID: number): Promise<void>;
+  usiGameover(sessionID: number, result: GameResult): Promise<void>;
+  usiQuit(sessionID: number): Promise<void>;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
   onUSIBestMove(
-    callback: (
-      sessionID: number,
-      usi: string,
-      color: Color,
-      sfen: string
-    ) => void
+    callback: (sessionID: number, usi: string, sfen: string) => void
   ): void;
   onUSIInfo(
     callback: (
@@ -150,38 +148,26 @@ export async function getUSIEngineInfo(
   return JSON.parse(await getAPI().getUSIEngineInfo(path));
 }
 
-export async function startResearch(
-  researchSetting: ResearchSetting,
-  sessionID: number
+export async function sendUSISetOption(
+  path: string,
+  name: string
 ): Promise<void> {
-  await getAPI().startResearch(JSON.stringify(researchSetting), sessionID);
+  await getAPI().sendUSISetOption(path, name);
 }
 
-export async function endResearch(): Promise<void> {
-  await getAPI().endResearch();
+export async function usiLaunch(setting: USIEngineSetting): Promise<number> {
+  return await getAPI().usiLaunch(JSON.stringify(setting));
 }
 
-export async function startGame(
-  gameSetting: GameSetting,
-  sessionID: number
-): Promise<void> {
-  await getAPI().startGame(JSON.stringify(gameSetting), sessionID);
-}
-
-export async function endGame(
-  usi: string,
-  specialMove?: SpecialMove
-): Promise<void> {
-  await getAPI().endGame(usi, specialMove);
-}
-
-export async function updateUSIPosition(
+export async function usiGo(
+  sessionID: number,
   usi: string,
   gameSetting: GameSetting,
   blackTimeMs: number,
   whiteTimeMs: number
 ): Promise<void> {
-  await getAPI().updateUSIPosition(
+  await getAPI().usiGo(
+    sessionID,
     usi,
     JSON.stringify(gameSetting),
     blackTimeMs,
@@ -189,15 +175,26 @@ export async function updateUSIPosition(
   );
 }
 
-export async function stopUSI(color: Color): Promise<void> {
-  await getAPI().stopUSI(color);
+export async function usiGoInfinite(
+  sessionID: number,
+  usi: string
+): Promise<void> {
+  await getAPI().usiGoInfinite(sessionID, usi);
 }
 
-export async function sendUSISetOption(
-  path: string,
-  name: string
+export async function usiStop(sessionID: number): Promise<void> {
+  await getAPI().usiStop(sessionID);
+}
+
+export async function usiGameover(
+  sessionID: number,
+  result: GameResult
 ): Promise<void> {
-  await getAPI().sendUSISetOption(path, name);
+  await getAPI().usiGameover(sessionID, result);
+}
+
+export async function usiQuit(sessionID: number): Promise<void> {
+  await getAPI().usiQuit(sessionID);
 }
 
 export function setup(): void {
@@ -314,7 +311,7 @@ export function setup(): void {
         store.stopGame();
         break;
       case MenuEvent.RESIGN:
-        store.resignByUser();
+        humanPlayer.resign();
         break;
       case MenuEvent.START_RESEARCH:
         store.showResearchDialog();
@@ -333,11 +330,9 @@ export function setup(): void {
         break;
     }
   });
-  api.onUSIBestMove(
-    (sessionID: number, usi: string, color: Color, sfen: string) => {
-      store.doMoveByUsiEngine(sessionID, usi, color, sfen);
-    }
-  );
+  api.onUSIBestMove((sessionID: number, usi: string, sfen: string) => {
+    usiBestMove(sessionID, usi, sfen);
+  });
   api.onUSIInfo(
     (
       sessionID: number,

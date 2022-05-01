@@ -1,7 +1,7 @@
-import { MenuEvent } from "@/menu/event";
-import { Color, SpecialMove } from "@/shogi";
+import { MenuEvent } from "@/ipc/menu";
 import { Mode } from "@/store/mode";
-import { USIInfoSender } from "@/usi/info";
+import { GameResult } from "@/players/player";
+import { USIInfoSender } from "@/store/usi";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "./channel";
 import { API } from "./renderer";
@@ -67,37 +67,39 @@ const api: API = {
   async getUSIEngineInfo(path: string): Promise<string> {
     return await ipcRenderer.invoke(Background.GET_USI_ENGINE_INFO, path);
   },
-  async startResearch(json: string, sessionID: number): Promise<void> {
-    await ipcRenderer.invoke(Background.START_RESEARCH, json, sessionID);
+  async sendUSISetOption(path: string, name: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SEND_USI_SET_OPTION, path, name);
   },
-  async endResearch(): Promise<void> {
-    await ipcRenderer.invoke(Background.END_RESEARCH);
+  async usiLaunch(json: string): Promise<number> {
+    return await ipcRenderer.invoke(Background.LAUNCH_USI, json);
   },
-  async startGame(json: string, sessionID: number): Promise<void> {
-    await ipcRenderer.invoke(Background.START_GAME, json, sessionID);
-  },
-  async endGame(usi: string, specialMove?: SpecialMove): Promise<void> {
-    await ipcRenderer.invoke(Background.END_GAME, usi, specialMove);
-  },
-  async updateUSIPosition(
+  async usiGo(
+    sessionID: number,
     usi: string,
-    gameSetting: string,
+    json: string,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void> {
     await ipcRenderer.invoke(
-      Background.UPDATE_USI_POSITION,
+      Background.USI_GO,
+      sessionID,
       usi,
-      gameSetting,
+      json,
       blackTimeMs,
       whiteTimeMs
     );
   },
-  async stopUSI(color: Color): Promise<void> {
-    await ipcRenderer.invoke(Background.STOP_USI, color);
+  async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_GO_INFINITE, sessionID, usi);
   },
-  async sendUSISetOption(path: string, name: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SEND_USI_SET_OPTION, path, name);
+  async usiStop(sessionID: number): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_STOP, sessionID);
+  },
+  async usiGameover(sessionID: number, result: GameResult): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_GAMEOVER, sessionID, result);
+  },
+  async usiQuit(sessionID: number): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_QUIT, sessionID);
   },
   onSendError(callback: (e: Error) => void): void {
     ipcRenderer.on(Renderer.SEND_ERROR, (_, e) => {
@@ -108,15 +110,10 @@ const api: API = {
     ipcRenderer.on(Renderer.MENU_EVENT, (_, event) => callback(event));
   },
   onUSIBestMove(
-    callback: (
-      sessionID: number,
-      usi: string,
-      color: Color,
-      sfen: string
-    ) => void
+    callback: (sessionID: number, usi: string, sfen: string) => void
   ): void {
-    ipcRenderer.on(Renderer.USI_BEST_MOVE, (_, sessionID, usi, color, sfen) => {
-      callback(sessionID, usi, color, sfen);
+    ipcRenderer.on(Renderer.USI_BEST_MOVE, (_, sessionID, usi, sfen) => {
+      callback(sessionID, usi, sfen);
     });
   },
   onUSIInfo(

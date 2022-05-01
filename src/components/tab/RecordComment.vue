@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { Mode } from "@/store/mode";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 
@@ -21,13 +21,13 @@ export default defineComponent({
   name: "RecordComment",
   setup() {
     const store = useStore();
-    const comment = computed(() => store.state.record.current.comment);
-    const readonly = computed(() => store.state.mode != Mode.NORMAL);
+    const comment = computed(() => store.record.current.comment);
+    const readonly = computed(() => store.mode != Mode.NORMAL);
     const textarea: Ref = ref(null);
 
     const change = (event: Event) => {
       const comment = (event.target as HTMLTextAreaElement).value;
-      store.commit(Mutation.UPDATE_RECORD_COMMENT, comment);
+      store.updateRecordComment(comment);
     };
 
     onMounted(() => {

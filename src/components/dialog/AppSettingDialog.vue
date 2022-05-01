@@ -92,7 +92,7 @@ import {
   BoardImageType,
 } from "@/components/primitive/BoardLayout";
 import { AppSettingUpdate } from "@/settings/app";
-import { Action, Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { ref, defineComponent, onMounted, Ref, computed } from "vue";
 import { readInputAsNumber } from "@/helpers/form";
 import { showModalDialog } from "@/helpers/dialog";
@@ -136,25 +136,25 @@ export default defineComponent({
         clockSoundTarget: clockSoundTarget.value.value,
         returnCode: nameToReturnCode[returnCode.value.value],
       };
-      store.commit(Mutation.RETAIN_BUSSY_STATE);
+      store.retainBussyState();
       try {
-        await store.dispatch(Action.UPDATE_APP_SETTING, update);
-        store.commit(Mutation.CLOSE_DIALOG);
+        await store.updateAppSetting(update);
+        store.closeDialog();
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
+        store.pushError(e);
       } finally {
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       }
     };
 
     const cancel = () => {
-      store.commit(Mutation.CLOSE_DIALOG);
+      store.closeDialog();
     };
 
     const appSetting = computed(() => {
       return {
-        ...store.state.appSetting,
-        returnCode: returnCodeToName[store.state.appSetting.returnCode],
+        ...store.appSetting,
+        returnCode: returnCodeToName[store.appSetting.returnCode],
       };
     });
 

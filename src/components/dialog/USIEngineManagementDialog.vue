@@ -53,7 +53,7 @@ import {
   USIEngineSetting,
   USIEngineSettings,
 } from "@/settings/usi";
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { ref, onMounted, defineComponent, Ref, computed } from "vue";
 import USIEngineOptionDialog from "@/components/dialog/USIEngineOptionDialog.vue";
 import { showModalDialog } from "@/helpers/dialog";
@@ -64,36 +64,36 @@ export default defineComponent({
     USIEngineOptionDialog,
   },
   setup() {
+    const store = useStore();
     const dialog: Ref = ref(null);
     const optionDialog: Ref<USIEngineSetting | null> = ref(null);
     const setting = ref(new USIEngineSettings());
-    const store = useStore();
 
-    store.commit(Mutation.RETAIN_BUSSY_STATE);
+    store.retainBussyState();
 
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
         setting.value = await loadUSIEngineSetting();
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
-        store.commit(Mutation.CLOSE_DIALOG);
+        store.pushError(e);
+        store.closeDialog();
       }
     });
 
     const add = async () => {
       try {
-        store.commit(Mutation.RETAIN_BUSSY_STATE);
+        store.retainBussyState();
         const path = await showSelectUSIEngineDialog();
         if (!path) {
           return;
         }
         setting.value.addEngine(await getUSIEngineInfo(path));
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
+        store.pushError(e);
       } finally {
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       }
     };
 
@@ -113,18 +113,18 @@ export default defineComponent({
 
     const saveAndClose = async () => {
       try {
-        store.commit(Mutation.RETAIN_BUSSY_STATE);
+        store.retainBussyState();
         await saveUSIEngineSetting(setting.value as USIEngineSettings);
-        store.commit(Mutation.CLOSE_DIALOG);
+        store.closeDialog();
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
+        store.pushError(e);
       } finally {
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       }
     };
 
     const cancel = () => {
-      store.commit(Mutation.CLOSE_DIALOG);
+      store.closeDialog();
     };
 
     const optionOk = (engine: USIEngineSetting) => {

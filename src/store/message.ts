@@ -1,29 +1,27 @@
-import { Module } from "vuex";
-import { State } from ".";
-import { Mutation } from "./mutation";
+export class MessageStore {
+  private _queue: string[];
+
+  constructor() {
+    this._queue = [];
+  }
+
+  get message(): string {
+    return this._queue[0];
+  }
+
+  get hasMessage(): boolean {
+    return this._queue.length !== 0;
+  }
+
+  enqueue(message: string): void {
+    this._queue.push(message);
+  }
+
+  dequeue(): void {
+    this._queue.shift();
+  }
+}
 
 export type MessageState = {
   queue: string[];
-};
-
-export const messageState: Module<MessageState, State> = {
-  state: {
-    queue: [],
-  },
-  getters: {
-    hasMessage(state): boolean {
-      return state.queue.length !== 0;
-    },
-    message(state): string {
-      return state.queue[0];
-    },
-  },
-  mutations: {
-    [Mutation.PUSH_MESSAGE](state, message: string) {
-      state.queue.push(message);
-    },
-    [Mutation.SHIFT_MESSAGE](state) {
-      state.queue.shift();
-    },
-  },
 };

@@ -12,12 +12,12 @@
 
 <script lang="ts">
 import { RectSize } from "@/components/primitive/Types";
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { MAX_SCORE, MIN_SCORE, RecordEntryCustomData } from "@/store/record";
 import { defineComponent, onMounted, onUnmounted, ref, Ref, watch } from "vue";
 import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
 import { stringifyUSIInfoSender, USIInfoSender } from "@/usi/info";
-import { Record } from "@/shogi";
+import { ImmutableRecord } from "@/shogi";
 
 export default defineComponent({
   name: "EvaluationChart",
@@ -35,7 +35,7 @@ export default defineComponent({
     const buildDataset = (
       borderColor: Color,
       sender: USIInfoSender,
-      record: Record
+      record: ImmutableRecord
     ) => {
       const dataPoints: { x: number; y: number }[] = [];
       record.moves.forEach((entry) => {
@@ -56,7 +56,7 @@ export default defineComponent({
       };
     };
 
-    const verticalLine = (record: Record) => {
+    const verticalLine = (record: ImmutableRecord) => {
       return {
         label: "現在の局面",
         borderColor: "red",
@@ -70,7 +70,7 @@ export default defineComponent({
       };
     };
 
-    const buildDatasets = (record: Record) => {
+    const buildDatasets = (record: ImmutableRecord) => {
       return [
         verticalLine(record),
         buildDataset("royalblue", USIInfoSender.BLACK_PLAYER, record),
@@ -79,7 +79,7 @@ export default defineComponent({
       ];
     };
 
-    const buildScalesOption = (record: Record) => {
+    const buildScalesOption = (record: ImmutableRecord) => {
       return {
         x: {
           min: 0,
@@ -102,16 +102,17 @@ export default defineComponent({
         ((event.x - chart.scales.x.left) / displayWidth) * width +
         chart.scales.x.min;
       const number = Math.round(x);
-      store.commit(Mutation.CHANGE_MOVE_NUMBER, number);
+      store.changeMoveNumber(number);
     };
 
     onMounted(() => {
       const canvas = canvasRef.value as HTMLCanvasElement;
       const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+      const record = store.record;
       chart = new Chart(context, {
         type: "scatter",
         data: {
-          datasets: buildDatasets(store.state.record),
+          datasets: buildDatasets(record),
         },
         options: {
           color: "black",
@@ -131,7 +132,7 @@ export default defineComponent({
     });
 
     watch(
-      () => [store.state.record],
+      () => [store.record],
       ([record]) => {
         chart.data.datasets = buildDatasets(record);
         chart.options.scales = buildScalesOption(record);

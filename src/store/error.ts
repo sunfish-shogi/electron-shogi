@@ -1,30 +1,27 @@
-import { Module } from "vuex";
-import { State } from ".";
-import { Mutation } from "./mutation";
+export class ErrorStore {
+  private _queue: Error[];
 
-export type ErrorState = {
-  queue: Error[];
-};
+  constructor() {
+    this._queue = [];
+  }
 
-export const errorState: Module<ErrorState, State> = {
-  state: {
-    queue: [],
-  },
-  getters: {
-    hasError(state): boolean {
-      return state.queue.length !== 0;
-    },
-  },
-  mutations: {
-    [Mutation.PUSH_ERROR](state, e) {
-      if (e instanceof Error) {
-        state.queue.push(e);
-      } else {
-        state.queue.push(new Error(e));
-      }
-    },
-    [Mutation.CLEAR_ERRORS](state) {
-      state.queue = [];
-    },
-  },
-};
+  get errors(): Error[] {
+    return this._queue;
+  }
+
+  get hasError(): boolean {
+    return this._queue.length !== 0;
+  }
+
+  push(e: unknown): void {
+    if (e instanceof Error) {
+      this._queue.push(e);
+    } else {
+      this._queue.push(new Error("" + e));
+    }
+  }
+
+  clear(): void {
+    this._queue = [];
+  }
+}

@@ -120,7 +120,7 @@ import {
   RecordMetadataKey,
 } from "@/shogi";
 import { RectSize } from "@/components/primitive/Types";
-import { Action, Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Mode } from "@/store/mode";
 
@@ -140,140 +140,133 @@ export default defineComponent({
     const store = useStore();
 
     const onMove = (move: Move) => {
-      store.dispatch(Action.DO_MOVE_BY_USER, move);
+      store.doMoveByUser(move);
     };
 
     const onEdit = (change: PositionChange) => {
-      store.commit(Mutation.EDIT_POSITION, change);
+      store.editPosition(change);
     };
 
     const onGame = () => {
-      store.commit(Mutation.SHOW_GAME_DIALOG);
+      store.showGameDialog();
     };
 
     const onStop = () => {
-      store.dispatch(Action.STOP_GAME);
+      store.stopGame();
     };
 
     const onResign = () => {
-      store.dispatch(Action.RESIGN_BY_USER);
+      store.resignByUser();
     };
 
     const onResearch = () => {
-      store.commit(Mutation.SHOW_RESEARCH_DIALOG);
+      store.showResearchDialog();
     };
 
     const onEndResearch = () => {
-      store.dispatch(Action.STOP_RESEARCH);
+      store.stopResearch();
     };
 
     const onStartEditPosition = () => {
-      store.dispatch(Action.START_POSITION_EDITING);
+      store.startPositionEditing();
     };
 
     const onEndEditPosition = () => {
-      store.dispatch(Action.END_POSITION_EDITING);
+      store.endPositionEditing();
     };
 
     const onInitPositionStandard = () => {
-      store.dispatch(Action.INITIALIZE_POSITION, InitialPositionType.STANDARD);
+      store.initializePosition(InitialPositionType.STANDARD);
     };
 
     const onInitPositionTsumeShogi = () => {
-      store.dispatch(
-        Action.INITIALIZE_POSITION,
-        InitialPositionType.TSUME_SHOGI
-      );
+      store.initializePosition(InitialPositionType.TSUME_SHOGI);
     };
 
     const onChangeTurn = () => {
-      store.commit(Mutation.CHANGE_TURN);
+      store.changeTurn();
     };
 
     const onOpenAppSettings = () => {
-      store.commit(Mutation.OPEN_APP_SETTING_DIALOG);
+      store.openAppSettingDialog();
     };
 
     const onOpenEngineSettings = () => {
-      store.commit(Mutation.OPEN_USI_ENGINE_MANAGEMENT_DIALOG);
+      store.openUsiEngineManagementDialog();
     };
 
     const onFlip = () => {
-      store.commit(Mutation.FLIP_BOARD);
+      useStore().flipBoard();
     };
 
     const onPaste = () => {
-      store.commit(Mutation.SHOW_PASTE_DIALOG);
+      store.showPasteDialog();
     };
 
     const onCopy = () => {
-      store.dispatch(Action.COPY_RECORD);
+      store.copyRecord();
     };
 
     const onRemoveAfter = () => {
-      store.dispatch(Action.REMOVE_RECORD_AFTER);
+      store.removeRecordAfter();
     };
 
-    const allowEdit = computed(
-      () => store.state.mode === Mode.POSITION_EDITING
-    );
+    const allowEdit = computed(() => store.mode === Mode.POSITION_EDITING);
 
-    const allowMove = computed(() => store.getters.isMovableByUser);
+    const allowMove = computed(() => store.isMovableByUser);
 
-    const position = computed(() => store.state.record.position);
+    const position = computed(() => store.record.position);
 
     const lastMove = computed(() => {
-      const move = store.state.record.current.move;
+      const move = store.record.current.move;
       return move instanceof Move ? move : null;
     });
 
-    const pieceImageType = computed(() => store.state.appSetting.pieceImage);
+    const pieceImageType = computed(() => store.appSetting.pieceImage);
 
-    const boardImageType = computed(() => store.state.appSetting.boardImage);
+    const boardImageType = computed(() => store.appSetting.boardImage);
 
-    const flip = computed(() => store.state.appSetting.boardFlipping);
+    const flip = computed(() => store.appSetting.boardFlipping);
 
     const blackPlayerName = computed(() => {
-      return store.state.record.metadata.getStandardMetadata(
+      return store.record.metadata.getStandardMetadata(
         RecordMetadataKey.BLACK_NAME
       );
     });
 
     const whitePlayerName = computed(() => {
-      return store.state.record.metadata.getStandardMetadata(
+      return store.record.metadata.getStandardMetadata(
         RecordMetadataKey.WHITE_NAME
       );
     });
 
     const blackPlayerTimeMs = computed(() =>
-      store.state.mode === Mode.GAME ? store.state.game.blackTimeMs : undefined
+      store.mode === Mode.GAME ? store.blackTimeMs : undefined
     );
     const blackPlayerByoyomi = computed(() =>
-      store.state.mode === Mode.GAME ? store.state.game.blackByoyomi : undefined
+      store.mode === Mode.GAME ? store.blackByoyomi : undefined
     );
     const whitePlayerTimeMs = computed(() =>
-      store.state.mode === Mode.GAME ? store.state.game.whiteTimeMs : undefined
+      store.mode === Mode.GAME ? store.whiteTimeMs : undefined
     );
     const whitePlayerByoyomi = computed(() =>
-      store.state.mode === Mode.GAME ? store.state.game.whiteByoyomi : undefined
+      store.mode === Mode.GAME ? store.whiteByoyomi : undefined
     );
 
     const controlStates = computed(() => {
       return {
-        game: store.state.mode === Mode.NORMAL,
-        stop: store.state.mode === Mode.GAME,
-        resign: store.state.mode === Mode.GAME && store.getters.isMovableByUser,
-        research: store.state.mode === Mode.NORMAL,
-        endResearch: store.state.mode === Mode.RESEARCH,
-        startEditPosition: store.state.mode === Mode.NORMAL,
-        endEditPosition: store.state.mode === Mode.POSITION_EDITING,
-        initPosition: store.state.mode === Mode.POSITION_EDITING,
-        removeAfter:
-          store.state.mode === Mode.NORMAL ||
-          store.state.mode === Mode.RESEARCH,
-        paste: store.state.mode === Mode.NORMAL,
-        appSettings: store.state.mode === Mode.NORMAL,
-        engineSettings: store.state.mode === Mode.NORMAL,
+        game: store.mode === Mode.NORMAL,
+        stop: store.mode === Mode.GAME,
+        resign: store.mode === Mode.GAME && store.isMovableByUser,
+        research: store.mode === Mode.NORMAL,
+        endResearch: store.mode === Mode.RESEARCH,
+        startEditPosition: store.mode === Mode.NORMAL,
+        endEditPosition: store.mode === Mode.POSITION_EDITING,
+        initPosition: store.mode === Mode.POSITION_EDITING,
+        removeAfter: store.mode === Mode.NORMAL || store.mode === Mode.RESEARCH,
+        paste: store.mode === Mode.NORMAL,
+        appSettings: store.mode === Mode.NORMAL,
+        engineSettings: store.mode === Mode.NORMAL,
       };
     });
 

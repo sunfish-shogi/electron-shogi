@@ -36,7 +36,7 @@ import { showModalDialog } from "@/helpers/dialog";
 import { loadResearchSetting, loadUSIEngineSetting } from "@/ipc/renderer";
 import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
 import { USIEngineSettings } from "@/settings/usi";
-import { Action, Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 
 export default defineComponent({
@@ -48,35 +48,35 @@ export default defineComponent({
     const researchSetting = ref(defaultResearchSetting());
     const engineSetting = ref(new USIEngineSettings());
 
-    store.commit(Mutation.RETAIN_BUSSY_STATE);
+    store.retainBussyState();
 
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
         researchSetting.value = await loadResearchSetting();
         engineSetting.value = await loadUSIEngineSetting();
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
-        store.commit(Mutation.CLOSE_DIALOG);
+        store.pushError(e);
+        store.closeDialog();
       }
     });
 
     const onStart = () => {
       const uri = engineSelect.value.value;
       if (!engineSetting.value.hasEngine(uri)) {
-        store.commit(Mutation.PUSH_ERROR, "エンジンを選択してください。");
+        store.pushError("エンジンを選択してください。");
         return;
       }
       const engine = engineSetting.value.getEngine(uri);
       const researchSetting: ResearchSetting = {
         usi: engine,
       };
-      store.dispatch(Action.START_RESEARCH, researchSetting);
+      store.startResearch(researchSetting);
     };
 
     const onCancel = () => {
-      store.commit(Mutation.CLOSE_DIALOG);
+      store.closeDialog();
     };
 
     const engines = computed(() => engineSetting.value.engineList);

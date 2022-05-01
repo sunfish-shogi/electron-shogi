@@ -3,7 +3,7 @@
     <dialog ref="dialog">
       <div class="content">
         <ButtonIcon class="icon" icon="question" />
-        <div class="message">{{ confirmation.message }}</div>
+        <div class="message">{{ message }}</div>
       </div>
       <div class="dialog-main-buttons">
         <button class="dialog-button" @click="onOk()">OK</button>
@@ -15,9 +15,9 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
-import { Action, useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import { useStore } from "@/store";
 
 export default defineComponent({
   name: "InfoMessage",
@@ -27,23 +27,23 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
-    const confirmation = computed(() => store.state.confirmation.confirmation);
+    const message = computed(() => store.confirmation);
 
     onMounted(() => {
       showModalDialog(dialog.value);
     });
 
     const onOk = () => {
-      store.dispatch(Action.CONFIRMATION_OK);
+      store.confirmationOk();
     };
 
     const onClose = () => {
-      store.dispatch(Action.CONFIRMATION_CANCEL);
+      store.confirmationCancel();
     };
 
     return {
       dialog,
-      confirmation,
+      message,
       onOk,
       onClose,
     };

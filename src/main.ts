@@ -5,30 +5,30 @@ import {
   loadAppSetting,
   setup as setupIPC,
 } from "./ipc/renderer";
-import { store, key, Mutation, Action } from "./store";
+import { useStore } from "./store";
 import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);
 
-setupIPC(store);
+setupIPC();
 
+const store = useStore();
 Promise.allSettled([
   loadAppSetting()
     .then((setting) => {
-      store.commit(Mutation.UPDATE_APP_SETTING, setting);
+      store.updateAppSetting(setting);
     })
     .catch((e) => {
-      store.commit(
-        Mutation.PUSH_ERROR,
+      store.pushError(
         new Error("アプリ設定の読み込み中にエラーが発生しました :" + e)
       );
     }),
   (async function (): Promise<void> {
     const path = await getRecordPathFromProcArg();
     if (path) {
-      await store.dispatch(Action.OPEN_RECORD, path);
+      await store.openRecord(path);
     }
   })(),
 ]).finally(() => {
-  createApp(App).use(store, key).mount("#app");
+  createApp(App).mount("#app");
 });

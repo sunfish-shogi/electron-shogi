@@ -12,7 +12,7 @@ type TimerHandlers = {
   onBeepUnlimited: () => void;
 };
 
-export class GameState {
+export class GameStore {
   private black: PlayerState;
   private white: PlayerState;
   private timerHandle: number;

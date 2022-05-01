@@ -109,7 +109,7 @@ import {
   mergeUSIEngineSetting,
   USIEngineSetting,
 } from "@/settings/usi";
-import { Mutation, useStore } from "@/store";
+import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, PropType, ref, Ref } from "vue";
 
 export default defineComponent({
@@ -122,9 +122,9 @@ export default defineComponent({
   },
   emits: ["ok", "cancel"],
   setup(props, context) {
+    const store = useStore();
     const dialog: Ref = ref(null);
     const engineNameInput: Ref = ref(null);
-    const store = useStore();
     const latest = props.latestEngineSetting as USIEngineSetting;
     let engine = ref(latest);
 
@@ -147,7 +147,7 @@ export default defineComponent({
         });
     });
 
-    store.commit(Mutation.RETAIN_BUSSY_STATE);
+    store.retainBussyState();
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
@@ -161,14 +161,14 @@ export default defineComponent({
           }
         }
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
+        store.pushError(e);
       } finally {
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       }
     });
 
     const selectFile = async (id: string) => {
-      store.commit(Mutation.RETAIN_BUSSY_STATE);
+      store.retainBussyState();
       try {
         const path = await showSelectFileDialog();
         const elem = getFormItemByID(id);
@@ -176,20 +176,20 @@ export default defineComponent({
           elem.value = path;
         }
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
+        store.pushError(e);
       } finally {
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       }
     };
 
     const sendOption = async (name: string) => {
-      store.commit(Mutation.RETAIN_BUSSY_STATE);
+      store.retainBussyState();
       try {
         await sendUSISetOption(engine.value.path, name);
       } catch (e) {
-        store.commit(Mutation.PUSH_ERROR, e);
+        store.pushError(e);
       } finally {
-        store.commit(Mutation.RELEASE_BUSSY_STATE);
+        store.releaseBussyState();
       }
     };
 

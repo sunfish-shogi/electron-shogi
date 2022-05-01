@@ -38,7 +38,6 @@ export default defineComponent({
     TabPane,
   },
   setup() {
-    const store = useStore();
     const windowSize = reactive(new RectSize(0, 0));
     const topPaneHeight = ref(0);
     const topPane: Ref = ref(null);
@@ -65,7 +64,7 @@ export default defineComponent({
 
     const boardPaneMaxSize = computed(() => {
       const minTabPaneHeight =
-        store.state.appSetting.tab !== Tab.INVISIBLE
+        useStore().appSetting.tab !== Tab.INVISIBLE
           ? minTabHeight
           : informationHeaderHeight;
       return new RectSize(

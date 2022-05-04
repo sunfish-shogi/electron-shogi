@@ -1,9 +1,6 @@
 export enum Background {
   GET_RECORD_PATH_FROM_PROC_ARG = "getRecordPathFromProcArg",
   UPDATE_MENU_STATE = "updateMenuState",
-  UPDATE_USI_POSITION = "updatePosition",
-  STOP_USI = "stopUSI",
-  SEND_USI_SET_OPTION = "sendUSISetOption",
   SHOW_OPEN_RECORD_DIALOG = "showOpenRecordDialog",
   OPEN_RECORD = "openRecord",
   SHOW_SAVE_RECORD_DIALOG = "showSaveRecordDialog",
@@ -19,10 +16,13 @@ export enum Background {
   SAVE_USI_ENGINE_SETTING = "saveUSIEngineSetting",
   SHOW_SELECT_USI_ENGINE_DIALOG = "showSelectUSIEngineDialog",
   GET_USI_ENGINE_INFO = "getUSIEngineInfo",
-  START_RESEARCH = "startResearch",
-  END_RESEARCH = "endResearch",
-  START_GAME = "startGame",
-  END_GAME = "endGame",
+  SEND_USI_SET_OPTION = "sendUSISetOption",
+  LAUNCH_USI = "usiLaunch",
+  USI_GO = "usiGo",
+  USI_GO_INFINITE = "usiGoInfinite",
+  USI_STOP = "usiStop",
+  USI_GAMEOVER = "usiGameover",
+  USI_QUIT = "usiQuit",
 }
 
 export enum Renderer {

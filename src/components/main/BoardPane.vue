@@ -123,6 +123,7 @@ import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Mode } from "@/store/mode";
+import { humanPlayer } from "@/players/human";
 
 export default defineComponent({
   name: "BoardPane",
@@ -140,7 +141,11 @@ export default defineComponent({
     const store = useStore();
 
     const onMove = (move: Move) => {
-      store.doMoveByUser(move);
+      if (store.mode === Mode.GAME) {
+        humanPlayer.doMove(move);
+      } else {
+        store.doMove(move);
+      }
     };
 
     const onEdit = (change: PositionChange) => {
@@ -156,7 +161,7 @@ export default defineComponent({
     };
 
     const onResign = () => {
-      store.resignByUser();
+      humanPlayer.resign();
     };
 
     const onResearch = () => {

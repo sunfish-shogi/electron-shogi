@@ -7,7 +7,7 @@ import {
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import path from "path";
 import { createInterface as readline, Interface as Readline } from "readline";
-import { InfoCommand } from "./info";
+import { InfoCommand } from "@/store/usi";
 
 export type EngineProcessOption = {
   setupOnly?: boolean;

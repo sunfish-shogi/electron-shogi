@@ -106,9 +106,13 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     const changeSelect = (id: Tab) => {
-      store.updateAppSetting({
-        tab: id,
-      });
+      store
+        .updateAppSetting({
+          tab: id,
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     };
     const activeTab = computed(() => store.appSetting.tab);
     const contentSize = computed(() =>

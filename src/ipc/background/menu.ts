@@ -1,7 +1,7 @@
 import { app, Menu, MenuItem, MenuItemConstructorOptions } from "electron";
 import { openAppDirectory } from "@/settings/fs";
 import { onMenuEvent } from "@/ipc/background";
-import { MenuEvent } from "./event";
+import { MenuEvent } from "@/ipc/menu";
 import { Mode } from "@/store/mode";
 
 const isMac = process.platform === "darwin";
@@ -229,11 +229,11 @@ if (isMac) {
   });
 }
 
-export default function setupMenu(): void {
+export function setupMenu(): void {
   const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
 }
 
-export function updateState(mode: Mode, bussy: boolean): void {
+export function updateMenuState(mode: Mode, bussy: boolean): void {
   Array.from(stateChangeCallbacks).forEach((callback) => callback(mode, bussy));
 }

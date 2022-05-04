@@ -1,6 +1,4 @@
 import {
-  endGame,
-  endResearch,
   openRecord,
   saveAppSetting,
   saveGameSetting,
@@ -8,13 +6,10 @@ import {
   saveResearchSetting,
   showOpenRecordDialog,
   showSaveRecordDialog,
-  startGame,
-  startResearch,
-  stopUSI,
-  updateUSIPosition,
 } from "@/ipc/renderer";
 import {
   Color,
+  ImmutableRecord,
   InitialPositionType,
   Move,
   Position,
@@ -26,7 +21,7 @@ import {
   specialMoveToDisplayString,
 } from "@/shogi";
 import { exportKakinoki, importKakinoki } from "@/shogi";
-import { reactive, UnwrapNestedRefs, watch } from "vue";
+import { reactive, UnwrapNestedRefs } from "vue";
 import iconv from "iconv-lite";
 import { GameSetting } from "@/settings/game";
 import {
@@ -41,18 +36,19 @@ import {
   beepUnlimited,
   playPieceBeat,
 } from "@/audio";
-import { InfoCommand, USIInfoSender } from "@/usi/info";
+import { InfoCommand, USIInfoSender } from "@/store/usi";
 import { RecordEntryCustomData } from "./record";
-import { GameStore } from "./game";
+import { GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
 import { BussyStore } from "./bussy";
-import { USIPlayerMonitor, USIStore } from "./usi";
+import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { Mode } from "./mode";
 import { MessageStore } from "./message";
 import { ErrorStore } from "./error";
 import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
+import { USIPlayer } from "@/players/usi";
 
 class Store {
   private _bussy: BussyStore;
@@ -62,9 +58,9 @@ class Store {
   private _mode: Mode;
   private lastMode?: Mode;
   private _confirmation?: Confirmation;
-  private _usi: USIStore;
-  private usiSessionID: number;
-  private _game: GameStore;
+  private _usi: USIMonitor;
+  private game: GameManager;
+  private researcher?: USIPlayer;
   private unlimitedBeepHandler?: AudioEventHandler;
   private _recordFilePath?: string;
   private _record: Record;
@@ -75,9 +71,8 @@ class Store {
     this._error = new ErrorStore();
     this._appSetting = defaultAppSetting();
     this._mode = Mode.NORMAL;
-    this._usi = new USIStore();
-    this.usiSessionID = 0;
-    this._game = new GameStore();
+    this._usi = new USIMonitor();
+    this.game = new GameManager(this);
     this._record = new Record();
   }
 
@@ -249,7 +244,7 @@ class Store {
     name: string,
     info: InfoCommand
   ): void {
-    if (this.usiSessionID !== sessionID || this.record.usi != usi) {
+    if (this.record.usi != usi) {
       return;
     }
     this._usi.update(sessionID, this.record.position, sender, name, info);
@@ -258,236 +253,124 @@ class Store {
     this.record.current.customData = entryData.stringify();
   }
 
-  private issueUSISessionID(): void {
-    this.usiSessionID += 1;
-  }
-
   get gameSetting(): GameSetting {
-    return this._game.setting;
+    return this.game.setting;
   }
 
   get blackTimeMs(): number {
-    return this._game.blackTimeMs;
+    return this.game.blackTimeMs;
   }
 
   get blackByoyomi(): number {
-    return this._game.blackByoyomi;
+    return this.game.blackByoyomi;
   }
 
   get whiteTimeMs(): number {
-    return this._game.whiteTimeMs;
+    return this.game.whiteTimeMs;
   }
 
   get whiteByoyomi(): number {
-    return this._game.whiteByoyomi;
+    return this.game.whiteByoyomi;
   }
 
   get elapsedMs(): number {
-    return this._game.elapsedMs;
+    return this.game.elapsedMs;
   }
 
-  async startGame(setting: GameSetting): Promise<boolean> {
+  startGame(setting: GameSetting): void {
+    this.startGameAsync(setting).catch((e) => {
+      this.pushError("対局の初期化中にエラーが出ました: " + e);
+    });
+  }
+
+  private async startGameAsync(setting: GameSetting): Promise<void> {
     if (this.mode !== Mode.GAME_DIALOG) {
-      return false;
+      return;
     }
     this.retainBussyState();
     try {
       await saveGameSetting(setting);
-      if (setting.startPosition) {
-        const position = new Position();
-        position.reset(setting.startPosition);
-        this.record.clear(position);
-        this.clearRecordFilePath();
-      }
-      this.issueUSISessionID();
-      await startGame(setting, this.usiSessionID);
-      this._game.setup(setting);
+      this.initializeRecordForGame(setting);
+      this.initializeDisplaySettingForGame(setting);
+      await this.game.startGame(setting);
       this._mode = Mode.GAME;
-      this.record.metadata.setStandardMetadata(
-        RecordMetadataKey.BLACK_NAME,
-        setting.black.name
-      );
-      this.record.metadata.setStandardMetadata(
-        RecordMetadataKey.WHITE_NAME,
-        setting.white.name
-      );
-      if (setting.humanIsFront) {
-        let flip = this.appSetting.boardFlipping;
-        if (
-          setting.black.uri === uri.ES_HUMAN &&
-          setting.white.uri !== uri.ES_HUMAN
-        ) {
-          flip = false;
-        } else if (
-          setting.black.uri !== uri.ES_HUMAN &&
-          setting.white.uri === uri.ES_HUMAN
-        ) {
-          flip = true;
-        }
-        if (flip !== this.appSetting.boardFlipping) {
-          this.flipBoard();
-        }
-      }
-      return true;
-    } catch (e) {
-      this.pushError("対局の初期化中にエラーが出ました: " + e);
-      return false;
     } finally {
       this.releaseBussyState();
     }
   }
 
-  async stopGame(specialMove?: SpecialMove): Promise<boolean> {
+  private initializeRecordForGame(setting: GameSetting): void {
+    if (setting.startPosition) {
+      const position = new Position();
+      position.reset(setting.startPosition);
+      this._record.clear(position);
+      this.onUpdatePosition();
+      this.clearRecordFilePath();
+    }
+    this._record.metadata.setStandardMetadata(
+      RecordMetadataKey.BLACK_NAME,
+      setting.black.name
+    );
+    this._record.metadata.setStandardMetadata(
+      RecordMetadataKey.WHITE_NAME,
+      setting.white.name
+    );
+  }
+
+  private initializeDisplaySettingForGame(setting: GameSetting): void {
+    if (setting.humanIsFront) {
+      let flip = this.appSetting.boardFlipping;
+      if (
+        setting.black.uri === uri.ES_HUMAN &&
+        setting.white.uri !== uri.ES_HUMAN
+      ) {
+        flip = false;
+      } else if (
+        setting.black.uri !== uri.ES_HUMAN &&
+        setting.white.uri === uri.ES_HUMAN
+      ) {
+        flip = true;
+      }
+      if (flip !== this.appSetting.boardFlipping) {
+        this.flipBoard();
+      }
+    }
+  }
+
+  stopGame(): void {
+    if (this.mode === Mode.GAME) {
+      this.game.endGame(SpecialMove.INTERRUPT);
+    }
+  }
+
+  onMove(move: Move): void {
     if (this.mode !== Mode.GAME) {
-      return false;
+      return;
+    }
+    this._record.append(move, {
+      ignoreValidation: true,
+    });
+    this.onUpdatePosition();
+    this.record.current.setElapsedMs(this.elapsedMs);
+    playPieceBeat(this.appSetting.pieceVolume);
+  }
+
+  onEndGame(specialMove?: SpecialMove): void {
+    if (this.mode !== Mode.GAME) {
+      return;
     }
     if (specialMove) {
       this.enqueueMessage(
         `対局終了（${specialMoveToDisplayString(specialMove)})`
       );
     }
-    this.retainBussyState();
-    try {
-      await endGame(this.record.usi, specialMove);
-      this.record.append(specialMove || SpecialMove.INTERRUPT);
-      this.record.current.setElapsedMs(this.elapsedMs);
-      this._mode = Mode.NORMAL;
-      return true;
-    } catch (e) {
-      this.pushError("対局の終了中にエラーが出ました: " + e);
-      return false;
-    } finally {
-      this.releaseBussyState();
-    }
-  }
-
-  resetGameTimer(): void {
-    const color = this.record.position.color;
-    this._game.startTimer(color, {
-      timeout: () => {
-        if (this.isMovableByUser || this._game.setting.enableEngineTimeout) {
-          this.stopGame(SpecialMove.TIMEOUT);
-        } else {
-          stopUSI(color);
-        }
-      },
-      onBeepShort: () => {
-        this.beepShort();
-      },
-      onBeepUnlimited: () => {
-        this.beepUnlimited();
-      },
-    });
-  }
-
-  async resignByUser(): Promise<boolean> {
-    if (this.mode !== Mode.GAME) {
-      return false;
-    }
-    if (!this.isMovableByUser) {
-      return false;
-    }
-    return this.stopGame(SpecialMove.RESIGN);
-  }
-
-  doMoveByUser(move: Move): boolean {
-    if (!this.isMovableByUser) {
-      return false;
-    }
-    if (this.mode === Mode.GAME) {
-      this.incrementTime();
-    }
-    this.doMove(move);
-    return true;
-  }
-
-  doMoveByUsiEngine(
-    sessionID: number,
-    usi: string,
-    color: Color,
-    sfen: string
-  ): boolean {
-    if (this.mode !== Mode.GAME) {
-      return false;
-    }
-    if (this.usiSessionID !== sessionID) {
-      return false;
-    }
-    if (this.record.usi !== usi) {
-      return false;
-    }
-    if (color !== this.record.position.color) {
-      this.pushError("手番ではないエンジンから指し手を受信しました:" + sfen);
-      this.stopGame(SpecialMove.FOUL_LOSE);
-      return false;
-    }
-    if (sfen === "resign") {
-      this.stopGame(SpecialMove.RESIGN);
-      return true;
-    }
-    if (sfen === "win") {
-      // TODO: 勝ち宣言が正当かどうかをチェックする。
-      this.stopGame(SpecialMove.ENTERING_OF_KING);
-      return true;
-    }
-    const move = this.record.position.createMoveBySFEN(sfen);
-    if (!move || !this.record.position.isValidMove(move)) {
-      this.pushError("エンジンから不明な指し手を受信しました:" + sfen);
-      this.stopGame(SpecialMove.FOUL_LOSE);
-      return false;
-    }
-    this.incrementTime();
-    this.doMove(move);
-    return true;
-  }
-
-  doMove(move: Move): void {
-    this.record.append(move, {
-      ignoreValidation: true,
-    });
+    this._record.append(specialMove || SpecialMove.INTERRUPT);
+    this.onUpdatePosition();
     this.record.current.setElapsedMs(this.elapsedMs);
-    playPieceBeat(this.appSetting.pieceVolume);
-    if (this.mode !== Mode.GAME) {
-      return;
-    }
-    const color = this.record.perpetualCheck;
-    if (color) {
-      if (color === this.record.position.color) {
-        this.stopGame(SpecialMove.FOUL_LOSE);
-      } else {
-        this.stopGame(SpecialMove.FOUL_WIN);
-      }
-    } else if (this.record.repetition) {
-      this.stopGame(SpecialMove.REPETITION_DRAW);
-    }
+    this._mode = Mode.NORMAL;
   }
 
-  private incrementTime(): void {
-    this._game.incrementTime(this.record.position.color);
-  }
-
-  clearGameTimer(): void {
-    this._game.clearTimer();
-    this.stopBeep();
-  }
-
-  private beepUnlimited(): void {
-    if (
-      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
-      !this.isMovableByUser
-    ) {
-      return;
-    }
-    if (this.unlimitedBeepHandler) {
-      return;
-    }
-    this.unlimitedBeepHandler = beepUnlimited({
-      frequency: this.appSetting.clockPitch,
-      volume: this.appSetting.clockVolume,
-    });
-  }
-
-  private beepShort(): void {
+  onBeepShort(): void {
     if (
       this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
@@ -503,39 +386,101 @@ class Store {
     });
   }
 
-  async startResearch(researchSetting: ResearchSetting): Promise<boolean> {
+  onBeepUnlimited(): void {
+    if (
+      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      !this.isMovableByUser
+    ) {
+      return;
+    }
+    if (this.unlimitedBeepHandler) {
+      return;
+    }
+    this.unlimitedBeepHandler = beepUnlimited({
+      frequency: this.appSetting.clockPitch,
+      volume: this.appSetting.clockVolume,
+    });
+  }
+
+  onStopBeep(): void {
+    if (this.unlimitedBeepHandler) {
+      this.unlimitedBeepHandler.stop();
+      this.unlimitedBeepHandler = undefined;
+    }
+  }
+
+  onError(e: unknown): void {
+    this.pushError(e);
+  }
+
+  doMove(move: Move): void {
+    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+      return;
+    }
+    this._record.append(move);
+    this.onUpdatePosition();
+    playPieceBeat(this.appSetting.pieceVolume);
+  }
+
+  startResearch(researchSetting: ResearchSetting): void {
+    this.startResearchAsync(researchSetting)
+      .then(() => {
+        this.onUpdatePosition();
+      })
+      .catch((e) => {
+        this.pushError("検討の初期化中にエラーが出ました: " + e);
+      });
+  }
+
+  private async startResearchAsync(
+    researchSetting: ResearchSetting
+  ): Promise<void> {
     if (this.mode !== Mode.RESEARCH_DIALOG) {
-      return false;
+      return;
+    }
+    if (!researchSetting.usi) {
+      this.pushError("検討に使用するエンジンの設定が取得できませんでした。");
+      return;
     }
     this.retainBussyState();
     try {
       await saveResearchSetting(researchSetting);
-      this.issueUSISessionID();
-      await startResearch(researchSetting, this.usiSessionID);
+      const researcher = new USIPlayer(researchSetting.usi);
+      await researcher.launch();
+      this.researcher = researcher;
       this._mode = Mode.RESEARCH;
-      return true;
-    } catch (e) {
-      this.pushError("検討の初期化中にエラーが出ました: " + e);
-      return false;
     } finally {
       this.releaseBussyState();
     }
   }
 
-  async stopResearch(): Promise<boolean> {
+  stopResearch(): void {
+    this.stopResearchAsync().catch((e) => {
+      this.pushError("検討の終了中にエラーが出ました: " + e);
+    });
+  }
+
+  private async stopResearchAsync(): Promise<void> {
     if (this.mode !== Mode.RESEARCH) {
-      return false;
+      return;
     }
     this.retainBussyState();
     try {
-      await endResearch();
+      if (this.researcher) {
+        await this.researcher.close();
+        this.researcher = undefined;
+      }
       this._mode = Mode.NORMAL;
-      return true;
-    } catch (e) {
-      this.pushError("検討の終了中にエラーが出ました: " + e);
-      return false;
     } finally {
       this.releaseBussyState();
+    }
+  }
+
+  private onUpdatePosition(): void {
+    if (this.researcher) {
+      this.researcher.startResearch(this.record).catch((e) => {
+        this.pushError("エンジンとの通信でエラーが出ました: " + e);
+      });
     }
   }
 
@@ -551,14 +496,7 @@ class Store {
     this._recordFilePath = undefined;
   }
 
-  private stopBeep(): void {
-    if (this.unlimitedBeepHandler) {
-      this.unlimitedBeepHandler.stop();
-      this.unlimitedBeepHandler = undefined;
-    }
-  }
-
-  get record(): Record {
+  get record(): ImmutableRecord {
     return this._record;
   }
 
@@ -566,7 +504,8 @@ class Store {
     if (this.mode != Mode.NORMAL) {
       return;
     }
-    this.record.clear(new Position());
+    this._record.clear(new Position());
+    this.onUpdatePosition();
     this.clearRecordFilePath();
   }
 
@@ -578,14 +517,15 @@ class Store {
     key: RecordMetadataKey;
     value: string;
   }): void {
-    this.record.metadata.setStandardMetadata(update.key, update.value);
+    this._record.metadata.setStandardMetadata(update.key, update.value);
   }
 
   insertSpecialMove(specialMove: SpecialMove): void {
     if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
       return;
     }
-    this.record.append(specialMove);
+    this._record.append(specialMove);
+    this.onUpdatePosition();
   }
 
   startPositionEditing(): void {
@@ -596,7 +536,8 @@ class Store {
       message: "現在の棋譜は削除されます。よろしいですか？",
       onOk: () => {
         this._mode = Mode.POSITION_EDITING;
-        this.record.clear(this.record.position);
+        this._record.clear(this.record.position);
+        this.onUpdatePosition();
         this.clearRecordFilePath();
       },
     });
@@ -618,7 +559,8 @@ class Store {
       onOk: () => {
         const position = new Position();
         position.reset(initialPositionType);
-        this.record.clear(position);
+        this._record.clear(position);
+        this.onUpdatePosition();
         this.clearRecordFilePath();
       },
     });
@@ -630,7 +572,8 @@ class Store {
     }
     const position = this.record.position.clone();
     position.setColor(reverseColor(position.color));
-    this.record.clear(position);
+    this._record.clear(position);
+    this.onUpdatePosition();
     this.clearRecordFilePath();
   }
 
@@ -638,7 +581,8 @@ class Store {
     if (this.mode === Mode.POSITION_EDITING) {
       const position = this.record.position.clone();
       position.edit(change);
-      this.record.clear(position);
+      this._record.clear(position);
+      this.onUpdatePosition();
       this.clearRecordFilePath();
     }
   }
@@ -647,7 +591,8 @@ class Store {
     if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
       return;
     }
-    this.record.goto(number);
+    this._record.goto(number);
+    this.onUpdatePosition();
   }
 
   changeBranch(index: number): void {
@@ -657,7 +602,8 @@ class Store {
     if (this.record.current.branchIndex === index) {
       return;
     }
-    this.record.switchBranchByIndex(index);
+    this._record.switchBranchByIndex(index);
+    this.onUpdatePosition();
   }
 
   removeRecordAfter(): void {
@@ -666,19 +612,21 @@ class Store {
     }
     const next = this.record.current.next;
     if (!next || !(next.move instanceof Move)) {
-      this.record.removeAfter();
+      this._record.removeAfter();
+      this.onUpdatePosition();
       return;
     }
     this.showConfirmation({
       message: `${this.record.current.number}手目以降を削除します。よろしいですか？`,
       onOk: () => {
-        this.record.removeAfter();
+        this._record.removeAfter();
+        this.onUpdatePosition();
       },
     });
   }
 
   copyRecord(): void {
-    const str = exportKakinoki(this.record, {
+    const str = exportKakinoki(this._record, {
       returnCode: this.appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
@@ -692,6 +640,7 @@ class Store {
     if (recordOrError instanceof Record) {
       this.clearRecordFilePath();
       this._record = recordOrError;
+      this.onUpdatePosition();
     } else {
       this.pushError(recordOrError);
     }
@@ -718,6 +667,7 @@ class Store {
         if (recordOrError instanceof Record) {
           this.updateRecordFilePath(path);
           this._record = recordOrError;
+          this.onUpdatePosition();
         } else {
           this.pushError(recordOrError);
         }
@@ -742,14 +692,14 @@ class Store {
     try {
       let path = this.recordFilePath;
       if (!options?.overwrite || !path) {
-        const defaultPath = defaultRecordFileName(this.record.metadata);
+        const defaultPath = defaultRecordFileName(this._record.metadata);
         path = await showSaveRecordDialog(defaultPath);
         if (!path) {
           return false;
         }
       }
       if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-        const str = exportKakinoki(this.record, {
+        const str = exportKakinoki(this._record, {
           returnCode: this.appSetting.returnCode,
         });
         const data = path.match(/\.kif$/)
@@ -786,27 +736,8 @@ class Store {
   }
 }
 
-const storeV2 = reactive<Store>(new Store());
+const store = reactive<Store>(new Store());
 
 export function useStore(): UnwrapNestedRefs<Store> {
-  return storeV2;
+  return store;
 }
-
-watch(
-  [() => storeV2.mode, () => storeV2.record.position],
-  () => {
-    storeV2.clearGameTimer();
-    if (storeV2.mode === Mode.GAME) {
-      storeV2.resetGameTimer();
-    }
-    if (storeV2.mode === Mode.GAME || storeV2.mode === Mode.RESEARCH) {
-      updateUSIPosition(
-        storeV2.record.usi,
-        storeV2.gameSetting,
-        storeV2.blackTimeMs,
-        storeV2.whiteTimeMs
-      );
-    }
-  },
-  { deep: true }
-);

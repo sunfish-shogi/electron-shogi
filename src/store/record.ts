@@ -1,5 +1,5 @@
 import { Color } from "@/shogi";
-import { InfoCommand as USIInfoCommand, USIInfoSender } from "@/usi/info";
+import { InfoCommand as USIInfoCommand, USIInfoSender } from "@/store/usi";
 
 type Evaluation = {
   blackPlayer?: number;

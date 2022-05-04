@@ -5,7 +5,8 @@
         ref="canvas"
         :width="size.width.toFixed(0)"
         :height="size.height.toFixed(0)"
-      />
+      >
+      </canvas>
     </div>
   </div>
 </template>
@@ -16,7 +17,7 @@ import { useStore } from "@/store";
 import { MAX_SCORE, MIN_SCORE, RecordEntryCustomData } from "@/store/record";
 import { defineComponent, onMounted, onUnmounted, ref, Ref, watch } from "vue";
 import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
-import { stringifyUSIInfoSender, USIInfoSender } from "@/usi/info";
+import { stringifyUSIInfoSender, USIInfoSender } from "@/store/usi";
 import { ImmutableRecord } from "@/shogi";
 
 export default defineComponent({

@@ -43,6 +43,7 @@ export class GameManager {
   private _setting: GameSetting;
   private blackPlayer?: Player;
   private whitePlayer?: Player;
+  private lastEventID: number;
 
   constructor(handlers: GameHandlers) {
     this.state = GameState.IDLE;
@@ -54,6 +55,7 @@ export class GameManager {
     this.lastTimeMs = 0;
     this._elapsedMs = 0;
     this._setting = defaultGameSetting();
+    this.lastEventID = 0;
   }
 
   private get record(): ImmutableRecord {
@@ -120,32 +122,39 @@ export class GameManager {
     const color = this.record.position.color;
     this.startTimer(color);
     const player = this.getPlayer(color);
-    if (player) {
-      player
-        .startSearch(
-          this.record,
-          this.setting,
-          this.blackTimeMs,
-          this.whiteTimeMs,
-          {
-            onMove: (move: Move): void => this.onMove(move),
-            onResign: (): void => this.onResign(),
-            onWin: (): void => this.onWin(),
-          }
-        )
-        .catch((e) => {
-          this.handlers.onError(
-            new Error("プレイヤーにコマンドを送信できませんでした: " + e)
-          );
-        });
+    if (!player) {
+      this.handlers.onError(
+        "致命的なエラーが発生しました: GameManager.next(): player is undefined"
+      );
+      return;
     }
+    const eventID = this.issueEventID();
+    player
+      .startSearch(
+        this.record,
+        this.setting,
+        this.blackTimeMs,
+        this.whiteTimeMs,
+        {
+          onMove: (move: Move): void => this.onMove(eventID, move),
+          onResign: (): void => this.onResign(eventID),
+          onWin: (): void => this.onWin(eventID),
+        }
+      )
+      .catch((e) => {
+        this.handlers.onError(
+          new Error("プレイヤーにコマンドを送信できませんでした: " + e)
+        );
+      });
   }
 
-  private onMove(move: Move): void {
+  private onMove(eventID: number, move: Move): void {
+    if (eventID !== this.lastEventID) {
+      console.log("指し手を受信しましたが既にイベントは無効です。");
+      return;
+    }
     if (this.state !== GameState.ACTIVE) {
-      this.handlers.onError(
-        "予期せぬステータスです: GameManager.onMove(): " + this.state
-      );
+      console.log("指し手を受信しましたが既に対局中ではありません。");
       return;
     }
     if (!this.record.position.isValidMove(move)) {
@@ -171,21 +180,25 @@ export class GameManager {
     this.next();
   }
 
-  private onResign(): void {
+  private onResign(eventID: number): void {
+    if (eventID !== this.lastEventID) {
+      console.log("投了を受信しましたが既にイベントは無効です。");
+      return;
+    }
     if (this.state !== GameState.ACTIVE) {
-      this.handlers.onError(
-        "予期せぬステータスです: GameManager.onResign(): " + this.state
-      );
+      console.log("投了を受信しましたが既に対局中ではありません。");
       return;
     }
     this.endGame(SpecialMove.RESIGN);
   }
 
-  private onWin(): void {
+  private onWin(eventID: number): void {
+    if (eventID !== this.lastEventID) {
+      console.log("勝ち宣言を受信しましたが既にイベントは無効です。");
+      return;
+    }
     if (this.state !== GameState.ACTIVE) {
-      this.handlers.onError(
-        "予期せぬステータスです: GameManager.onWin(): " + this.state
-      );
+      console.log("勝ち宣言を受信しましたが既に対局中ではありません。");
       return;
     }
     this.endGame(SpecialMove.ENTERING_OF_KING);
@@ -378,5 +391,10 @@ export class GameManager {
       case Color.WHITE:
         return this.whiteState;
     }
+  }
+
+  private issueEventID(): number {
+    this.lastEventID += 1;
+    return this.lastEventID;
   }
 }

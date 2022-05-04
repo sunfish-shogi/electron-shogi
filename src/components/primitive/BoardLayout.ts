@@ -611,7 +611,8 @@ export default class LayoutBuilder {
       const x =
         boardLayout.x +
         (layoutTemplate.board.leftSquarePadding +
-          layoutTemplate.board.squreWidth * (square.x - 0.5)) *
+          layoutTemplate.board.squreWidth *
+            (square.x === 0 ? 0 : square.x === 8 ? 7 : square.x - 0.5)) *
           ratio;
       const y =
         boardLayout.y +

@@ -45,8 +45,11 @@ Linux 版のバイナリはありませんので、後述のコマンドでビ�
 
 GitHub のアカウントをお持ちの方は Issue/PullRequest を活用してください。
 設計に関する意見も歓迎です。
+軽微ではない Pull Request を作成する場合は必ず実装前にIssueでご相談ください。作業が競合したり設計方針を合意できないと、せっかく実装いただいた内容を取り込めない場合があります。
 
 GitHub アカウントをお持ちでない場合は [送信フォーム](https://form.run/@sunfish-shogi-1650819491) でご連絡ください。
+
+開発の進捗状況は [プロジェクトボード](https://github.com/users/sunfish-shogi/projects/1/views/1?layout=board) を参照してください。
 
 ## 開発
 

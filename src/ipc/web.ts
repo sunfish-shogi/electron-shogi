@@ -21,7 +21,7 @@ export const webAPI: API = {
   async showOpenRecordDialog(): Promise<string> {
     throw "Web版では利用できない機能です。";
   },
-  async openRecord(): Promise<Buffer> {
+  async openRecord(): Promise<Uint8Array> {
     throw "Web版では利用できない機能です。";
   },
   async showSaveRecordDialog(): Promise<string> {

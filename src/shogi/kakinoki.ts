@@ -15,7 +15,11 @@ import {
 import Board, { InitialPositionType } from "./board";
 import Hand, { ImmutableHand } from "./hand";
 import { Piece, PieceType } from "./piece";
-import { SpecialMove } from "./record";
+import {
+  ImmutableRecord,
+  ImmutableRecordMetadata,
+  SpecialMove,
+} from "./record";
 
 const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
   先手: RecordMetadataKey.BLACK_NAME,
@@ -490,7 +494,6 @@ export function importKakinoki(data: string): Record | Error {
           (record.current.comment.length !== 0 ? "\n" : "") + parsed.data;
         break;
       case LineType.UNKNOWN:
-        console.log("skip", line);
         break;
     }
     if (e) {
@@ -583,7 +586,7 @@ type KakinokiExportOptions = {
 };
 
 function formatMetadata(
-  metadata: RecordMetadata,
+  metadata: ImmutableRecordMetadata,
   options: KakinokiExportOptions
 ): string {
   let ret = "";
@@ -666,7 +669,7 @@ function formatHand(hand: ImmutableHand): string {
 }
 
 export function exportKakinoki(
-  record: Record,
+  record: ImmutableRecord,
   options: KakinokiExportOptions
 ): string {
   let ret = "";

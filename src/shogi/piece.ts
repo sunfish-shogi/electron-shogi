@@ -92,6 +92,10 @@ const promoteMap: { [pieceType: string]: PieceType } = {
   rook: PieceType.DRAGON,
 };
 
+export function promotedPieceType(pieceType: PieceType): PieceType {
+  return promoteMap[pieceType] || pieceType;
+}
+
 const unpromoteMap: { [pieceType: string]: PieceType } = {
   promPawn: PieceType.PAWN,
   promLance: PieceType.LANCE,
@@ -100,6 +104,10 @@ const unpromoteMap: { [pieceType: string]: PieceType } = {
   horse: PieceType.BISHOP,
   dragon: PieceType.ROOK,
 };
+
+export function unpromotedPieceType(pieceType: PieceType): PieceType {
+  return unpromoteMap[pieceType] || pieceType;
+}
 
 const toSFENCharBlack: { [pieceType: string]: string } = {
   pawn: "P",

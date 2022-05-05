@@ -22,7 +22,7 @@ const api: API = {
   async showOpenRecordDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);
   },
-  async openRecord(path: string): Promise<Buffer> {
+  async openRecord(path: string): Promise<Uint8Array> {
     return await ipcRenderer.invoke(Background.OPEN_RECORD, path);
   },
   async showSaveRecordDialog(defaultPath: string): Promise<string> {
@@ -31,7 +31,7 @@ const api: API = {
       defaultPath
     );
   },
-  async saveRecord(path: string, data: Buffer): Promise<void> {
+  async saveRecord(path: string, data: Uint8Array): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_RECORD, path, data);
   },
   async showSelectFileDialog(): Promise<string> {

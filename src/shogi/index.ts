@@ -4,6 +4,8 @@ export {
   handPieceTypes,
   pieceTypeToSFEN,
   standardPieceName,
+  promotedPieceType,
+  unpromotedPieceType,
 } from "./piece";
 export {
   Color,
@@ -20,6 +22,8 @@ export {
   default as Position,
   ImmutablePosition,
   PositionChange,
+  countExistingPieces,
+  countNotExistingPieces,
 } from "./position";
 export {
   default as Record,
@@ -33,3 +37,4 @@ export {
   getNextColorFromUSI,
 } from "./record";
 export { exportKakinoki, importKakinoki } from "./kakinoki";
+export { exportCSA, importCSA } from "./csa";

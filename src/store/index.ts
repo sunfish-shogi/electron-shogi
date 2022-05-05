@@ -274,8 +274,8 @@ export const store = createStore<State>({
         const data = await openRecord(path);
         if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
           const str = path.match(/\.kif$/)
-            ? iconv.decode(data, "Shift_JIS")
-            : data.toString();
+            ? iconv.decode(data as Buffer, "Shift_JIS")
+            : new TextDecoder().decode(data);
           const recordOrError = importKakinoki(str);
           if (recordOrError instanceof Record) {
             state.recordFilePath = path;
@@ -320,7 +320,7 @@ export const store = createStore<State>({
           });
           const data = path.match(/\.kif$/)
             ? iconv.encode(str, "Shift_JIS")
-            : Buffer.from(str);
+            : new TextEncoder().encode(str);
           await saveRecord(path, data);
           state.recordFilePath = path;
           return true;

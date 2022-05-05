@@ -92,7 +92,7 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.OPEN_RECORD,
-  async (_, path: string): Promise<Buffer> => {
+  async (_, path: string): Promise<Uint8Array> => {
     if (!isValidRecordFilePath(path)) {
       throw new Error(`取り扱いできないファイル拡張子です`);
     }
@@ -121,7 +121,7 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.SAVE_RECORD,
-  async (_, path: string, data: Buffer): Promise<void> => {
+  async (_, path: string, data: Uint8Array): Promise<void> => {
     if (!isValidRecordFilePath(path)) {
       throw new Error(`取り扱いできないファイル拡張子です`);
     }

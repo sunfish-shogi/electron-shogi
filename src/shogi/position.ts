@@ -511,3 +511,74 @@ export default class Position {
     return position;
   }
 }
+
+type PieceCounts = {
+  pawn: number;
+  lance: number;
+  knight: number;
+  silver: number;
+  gold: number;
+  bishop: number;
+  rook: number;
+  king: number;
+  promPawn: number;
+  promLance: number;
+  promKnight: number;
+  promSilver: number;
+  horse: number;
+  dragon: number;
+};
+
+export function countExistingPieces(position: ImmutablePosition): PieceCounts {
+  const result: PieceCounts = {
+    pawn: 0,
+    lance: 0,
+    knight: 0,
+    silver: 0,
+    gold: 0,
+    bishop: 0,
+    rook: 0,
+    king: 0,
+    promPawn: 0,
+    promLance: 0,
+    promKnight: 0,
+    promSilver: 0,
+    horse: 0,
+    dragon: 0,
+  };
+  Square.all.forEach((square) => {
+    const piece = position.board.at(square);
+    if (piece) {
+      result[piece.type] += 1;
+    }
+  });
+  position.blackHand.forEach((pieceType, n) => {
+    result[pieceType] += n;
+  });
+  position.whiteHand.forEach((pieceType, n) => {
+    result[pieceType] += n;
+  });
+  return result;
+}
+
+export function countNotExistingPieces(
+  position: ImmutablePosition
+): PieceCounts {
+  const existed = countExistingPieces(position);
+  return {
+    pawn: 18 - existed.pawn - existed.promPawn,
+    lance: 4 - existed.lance - existed.promLance,
+    knight: 4 - existed.knight - existed.promKnight,
+    silver: 4 - existed.silver - existed.promSilver,
+    gold: 4 - existed.gold,
+    bishop: 2 - existed.bishop - existed.horse,
+    rook: 2 - existed.rook - existed.dragon,
+    king: 2 - existed.king,
+    promPawn: 0,
+    promLance: 0,
+    promKnight: 0,
+    promSilver: 0,
+    horse: 0,
+    dragon: 0,
+  };
+}

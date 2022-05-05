@@ -9,7 +9,9 @@ import {
 } from "@/ipc/renderer";
 import {
   Color,
+  exportCSA,
   ImmutableRecord,
+  importCSA,
   InitialPositionType,
   Move,
   Position,
@@ -315,6 +317,9 @@ class Store {
       RecordMetadataKey.WHITE_NAME,
       setting.white.name
     );
+    // TODO: タイトルを棋譜情報に入れる。
+    // TODO: 対局日時を棋譜情報に入れる。
+    // TODO: 持ち時間を棋譜情報に入れる。
   }
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
@@ -646,47 +651,58 @@ class Store {
     }
   }
 
-  async openRecord(path?: string): Promise<boolean> {
+  openRecord(path?: string): void {
+    this.openRecordAsync(path).catch((e) => {
+      this.pushError("棋譜の読み込み中にエラーが出ました: " + e);
+    });
+  }
+
+  private async openRecordAsync(path?: string): Promise<void> {
     if (this.mode !== Mode.NORMAL) {
-      return false;
+      return;
     }
     this.retainBussyState();
     try {
       if (!path) {
         path = await showOpenRecordDialog();
         if (!path) {
-          return false;
+          return;
         }
       }
       const data = await openRecord(path);
+      let recordOrError: Record | Error;
       if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
         const str = path.match(/\.kif$/)
-          ? iconv.decode(data, "Shift_JIS")
-          : data.toString();
-        const recordOrError = importKakinoki(str);
-        if (recordOrError instanceof Record) {
-          this.updateRecordFilePath(path);
-          this._record = recordOrError;
-          this.onUpdatePosition();
-        } else {
-          this.pushError(recordOrError);
-        }
-        return true;
+          ? iconv.decode(data as Buffer, "Shift_JIS")
+          : new TextDecoder().decode(data);
+        recordOrError = importKakinoki(str);
+      } else if (path.match(/\.csa$/)) {
+        recordOrError = importCSA(new TextDecoder().decode(data));
       } else {
-        this.pushError("不明なファイル形式: " + path);
-        return false;
+        recordOrError = new Error("不明なファイル形式: " + path);
       }
-    } catch (e) {
-      this.pushError("棋譜の読み込み中にエラーが出ました: " + e);
-      return false;
+      if (recordOrError instanceof Error) {
+        throw recordOrError;
+      }
+      this.updateRecordFilePath(path);
+      this._record = recordOrError;
+      this.onUpdatePosition();
     } finally {
       this.releaseBussyState();
     }
   }
 
-  async saveRecord(options?: { overwrite: boolean }): Promise<boolean> {
+  saveRecord(options?: { overwrite: boolean }): void {
+    this.saveRecordAsync(options).catch((e) => {
+      this.pushError("棋譜の保存中にエラーが出ました: " + e);
+    });
+  }
+
+  private async saveRecordAsync(options?: {
+    overwrite: boolean;
+  }): Promise<void> {
     if (this.mode !== Mode.NORMAL) {
-      return false;
+      return;
     }
     this.retainBussyState();
     try {
@@ -695,26 +711,28 @@ class Store {
         const defaultPath = defaultRecordFileName(this._record.metadata);
         path = await showSaveRecordDialog(defaultPath);
         if (!path) {
-          return false;
+          return;
         }
       }
+      let data: Uint8Array;
       if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-        const str = exportKakinoki(this._record, {
+        const str = exportKakinoki(this.record, {
           returnCode: this.appSetting.returnCode,
         });
-        const data = path.match(/\.kif$/)
+        data = path.match(/\.kif$/)
           ? iconv.encode(str, "Shift_JIS")
-          : Buffer.from(str);
-        await saveRecord(path, data);
-        this.updateRecordFilePath(path);
-        return true;
+          : new TextEncoder().encode(str);
+      } else if (path.match(/\.csa$/)) {
+        data = new TextEncoder().encode(
+          exportCSA(this.record, {
+            returnCode: this.appSetting.returnCode,
+          })
+        );
       } else {
-        this.pushError("不明なファイル形式: " + path);
-        return false;
+        throw new Error("不明なファイル形式: " + path);
       }
-    } catch (e) {
-      this.pushError("棋譜の保存中にエラーが出ました: " + e);
-      return false;
+      await saveRecord(path, data);
+      this.updateRecordFilePath(path);
     } finally {
       this.releaseBussyState();
     }

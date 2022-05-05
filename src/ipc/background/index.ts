@@ -49,7 +49,9 @@ ipcMain.on(Background.UPDATE_MENU_STATE, (_, mode: Mode, bussy: boolean) => {
 });
 
 function isValidRecordFilePath(path: string) {
-  return path.endsWith(".kif") || path.endsWith(".kifu");
+  return (
+    path.endsWith(".kif") || path.endsWith(".kifu") || path.endsWith(".csa")
+  );
 }
 
 ipcMain.handle(
@@ -61,7 +63,7 @@ ipcMain.handle(
     }
     const results = dialog.showOpenDialogSync(win, {
       properties: ["openFile"],
-      filters: [{ name: "棋譜ファイル", extensions: ["kif", "kifu"] }],
+      filters: [{ name: "棋譜ファイル", extensions: ["kif", "kifu", "csa"] }],
     });
     return results && results.length === 1 ? results[0] : "";
   }
@@ -69,7 +71,7 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.OPEN_RECORD,
-  async (_, path: string): Promise<Buffer> => {
+  async (_, path: string): Promise<Uint8Array> => {
     if (!isValidRecordFilePath(path)) {
       throw new Error(`取り扱いできないファイル拡張子です`);
     }
@@ -90,6 +92,7 @@ ipcMain.handle(
       filters: [
         { name: "KIF形式 (Shift-JIS)", extensions: ["kif"] },
         { name: "KIF形式 (UTF-8)", extensions: ["kifu"] },
+        { name: "CSA形式", extensions: ["csa"] },
       ],
     });
     return result ? result : "";
@@ -98,7 +101,7 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.SAVE_RECORD,
-  async (_, path: string, data: Buffer): Promise<void> => {
+  async (_, path: string, data: Uint8Array): Promise<void> => {
     if (!isValidRecordFilePath(path)) {
       throw new Error(`取り扱いできないファイル拡張子です`);
     }

@@ -17,9 +17,9 @@ export interface API {
   getRecordPathFromProcArg(): Promise<string>;
   updateMenuState(mode: Mode, bussy: boolean): void;
   showOpenRecordDialog(): Promise<string>;
-  openRecord(path: string): Promise<Buffer>;
+  openRecord(path: string): Promise<Uint8Array>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;
-  saveRecord(path: string, data: Buffer): Promise<void>;
+  saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
   loadAppSetting(): Promise<string>;
   saveAppSetting(setting: string): Promise<void>;
@@ -84,7 +84,7 @@ export async function showOpenRecordDialog(): Promise<string> {
   return await getAPI().showOpenRecordDialog();
 }
 
-export async function openRecord(path: string): Promise<Buffer> {
+export async function openRecord(path: string): Promise<Uint8Array> {
   return await getAPI().openRecord(path);
 }
 
@@ -94,7 +94,10 @@ export async function showSaveRecordDialog(
   return await getAPI().showSaveRecordDialog(defaultPath);
 }
 
-export async function saveRecord(path: string, data: Buffer): Promise<void> {
+export async function saveRecord(
+  path: string,
+  data: Uint8Array
+): Promise<void> {
   await getAPI().saveRecord(path, data);
 }
 

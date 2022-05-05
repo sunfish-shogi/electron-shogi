@@ -26,7 +26,7 @@ Promise.allSettled([
   (async function (): Promise<void> {
     const path = await getRecordPathFromProcArg();
     if (path) {
-      await store.openRecord(path);
+      store.openRecord(path);
     }
   })(),
 ]).finally(() => {

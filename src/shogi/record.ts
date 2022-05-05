@@ -173,7 +173,7 @@ export function specialMoveToDisplayString(move: SpecialMove): string {
   return specialMoveToDisplayStringMap[move];
 }
 
-export interface RecordEntry {
+export interface ImmutableRecordEntry {
   readonly number: number;
   readonly prev: RecordEntry | null;
   readonly next: RecordEntry | null;
@@ -182,14 +182,19 @@ export interface RecordEntry {
   readonly activeBranch: boolean;
   readonly move: Move | SpecialMove;
   readonly isCheck: boolean;
-  comment: string;
-  customData: string | undefined;
+  readonly comment: string;
+  readonly customData: string | undefined;
   readonly displayMoveText: string;
   readonly displayText: string;
   readonly hasBranch: boolean;
   readonly isFirstBranch: boolean;
   readonly elapsedMs: number;
   readonly totalElapsedMs: number;
+}
+
+export interface RecordEntry extends ImmutableRecordEntry {
+  comment: string;
+  customData: string | undefined;
   setElapsedMs(elapsedMs: number): void;
 }
 
@@ -274,7 +279,7 @@ export interface ImmutableRecord {
   readonly position: ImmutablePosition;
   readonly first: RecordEntry;
   readonly current: RecordEntry;
-  readonly moves: Array<RecordEntry>;
+  readonly moves: Array<RecordEntry>; // TODO: forEach に統合したい。
   readonly movesBefore: Array<RecordEntry>;
   readonly length: number;
   readonly branchBegin: RecordEntry;
@@ -282,6 +287,7 @@ export interface ImmutableRecord {
   readonly perpetualCheck: Color | null;
   readonly usi: string;
   readonly sfen: string;
+  forEach(handler: (entry: ImmutableRecordEntry) => void): void;
 }
 
 export default class Record {

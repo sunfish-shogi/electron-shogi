@@ -49,7 +49,7 @@ GitHub のアカウントをお持ちの方は Issue/PullRequest を活用して
 
 GitHub アカウントをお持ちでない場合は [送信フォーム](https://form.run/@sunfish-shogi-1650819491) でご連絡ください。
 
-開発の進捗状況は [プロジェクトボード](https://github.com/users/sunfish-shogi/projects/1/views/1?layout=board) を参照してください。
+開発の進捗状況は [プロジェクトボード](https://github.com/users/sunfish-shogi/projects/1/views/1) を参照してください。
 
 ## 開発
 

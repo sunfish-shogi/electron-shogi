@@ -9,6 +9,7 @@ import {
 } from "@/ipc/renderer";
 import {
   Color,
+  detectRecordFormat,
   exportCSA,
   ImmutableRecord,
   importCSA,
@@ -51,6 +52,7 @@ import { ErrorStore } from "./error";
 import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
 import { USIPlayer } from "@/players/usi";
+import { RecordFormatType } from "@/shogi/detect";
 
 class Store {
   private _bussy: BussyStore;
@@ -630,10 +632,32 @@ class Store {
     });
   }
 
-  copyRecord(): void {
+  copyRecordKIF(): void {
     const str = exportKakinoki(this._record, {
       returnCode: this.appSetting.returnCode,
     });
+    navigator.clipboard.writeText(str);
+  }
+
+  copyRecordCSA(): void {
+    const str = exportCSA(this._record, {
+      returnCode: this.appSetting.returnCode,
+    });
+    navigator.clipboard.writeText(str);
+  }
+
+  copyRecordUSIBefore(): void {
+    const str = this._record.usi;
+    navigator.clipboard.writeText(str);
+  }
+
+  copyRecordUSIAll(): void {
+    const str = this._record.usiAll;
+    navigator.clipboard.writeText(str);
+  }
+
+  copyBoardSFEN(): void {
+    const str = this._record.sfen;
     navigator.clipboard.writeText(str);
   }
 
@@ -641,14 +665,36 @@ class Store {
     if (this.mode !== Mode.NORMAL) {
       return;
     }
-    const recordOrError = importKakinoki(data);
-    if (recordOrError instanceof Record) {
-      this.clearRecordFilePath();
-      this._record = recordOrError;
-      this.onUpdatePosition();
-    } else {
-      this.pushError(recordOrError);
+    let recordOrError: Record | Error;
+    switch (detectRecordFormat(data)) {
+      case RecordFormatType.SFEN: {
+        const position = Position.newBySFEN(data);
+        recordOrError = position
+          ? new Record(position)
+          : new Error("局面を読み込めませんでした。");
+        break;
+      }
+      case RecordFormatType.USI:
+        recordOrError =
+          Record.newByUSI(data) || new Error("棋譜を読み込めませんでした。");
+        break;
+      case RecordFormatType.KIF:
+        recordOrError = importKakinoki(data);
+        break;
+      case RecordFormatType.CSA:
+        recordOrError = importCSA(data);
+        break;
+      default:
+        recordOrError = new Error("棋譜フォーマットの検出ができませんでした。");
+        break;
     }
+    if (recordOrError instanceof Error) {
+      this.pushError(recordOrError);
+      return;
+    }
+    this.clearRecordFilePath();
+    this._record = recordOrError;
+    this.onUpdatePosition();
   }
 
   openRecord(path?: string): void {

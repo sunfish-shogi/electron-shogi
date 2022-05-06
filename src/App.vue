@@ -63,7 +63,7 @@ export default defineComponent({
     onMounted(() => {
       const body = document.getElementsByTagName("body")[0];
       body.addEventListener("copy", (event) => {
-        store.copyRecord();
+        store.copyRecordKIF();
         event.preventDefault();
       });
       body.addEventListener("paste", (event) => {

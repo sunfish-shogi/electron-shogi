@@ -426,9 +426,12 @@ export default class Position {
       return false;
     }
     const sections = sfen.split(" ");
-    this._board.resetBySFEN(sections[1]);
-    this._color = parseSFENColor(sections[2]);
-    const hands = Hand.parseSFEN(sections[3]) as { black: Hand; white: Hand };
+    if (sections[0] === "sfen") {
+      sections.shift();
+    }
+    this._board.resetBySFEN(sections[0]);
+    this._color = parseSFENColor(sections[1]);
+    const hands = Hand.parseSFEN(sections[2]) as { black: Hand; white: Hand };
     this._blackHand = hands.black;
     this._whiteHand = hands.white;
     return true;
@@ -440,19 +443,22 @@ export default class Position {
 
   static isValidSFEN(sfen: string): boolean {
     const sections = sfen.split(" ");
-    if (sections.length < 5) {
+    if (sections.length === 5 && sections[0] === "sfen") {
+      sections.shift();
+    }
+    if (sections.length !== 4) {
       return false;
     }
-    if (sections[0] !== "sfen") {
+    if (!Board.isValidSFEN(sections[0])) {
       return false;
     }
-    if (!Board.isValidSFEN(sections[1])) {
+    if (!isValidSFENColor(sections[1])) {
       return false;
     }
-    if (!isValidSFENColor(sections[2])) {
+    if (!Hand.isValidSFEN(sections[2])) {
       return false;
     }
-    if (!Hand.isValidSFEN(sections[3])) {
+    if (!sections[3].match(/[0-9]+/)) {
       return false;
     }
     return true;

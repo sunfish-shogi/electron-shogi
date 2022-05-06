@@ -3,7 +3,8 @@
     <dialog ref="dialog">
       <div ref="content">
         <div class="dialog-form-area">
-          <div class="message">以下の棋譜を取り込みます。</div>
+          <div class="message">以下の棋譜(または局面)を取り込みます。</div>
+          <div class="message">※KIF形式/CSA形式/SFENに対応しています。</div>
           <div v-if="!isNative" class="message">
             ※テキストエリアに棋譜を貼り付けてください。<br />
             ※インストールアプリ版では自動的に貼り付けられます。

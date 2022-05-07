@@ -186,6 +186,9 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
           menuItem("詰め将棋", MenuEvent.INIT_POSITION_TSUME_SHOGI, [
             Mode.POSITION_EDITING,
           ]),
+          menuItem("双玉詰め将棋", MenuEvent.INIT_POSITION_TSUME_SHOGI_2KINGS, [
+            Mode.POSITION_EDITING,
+          ]),
         ],
       },
     ],

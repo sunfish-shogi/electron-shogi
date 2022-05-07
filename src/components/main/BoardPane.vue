@@ -58,18 +58,21 @@
             <ButtonIcon class="icon" icon="swap" />
             手番変更
           </button>
-          <button
-            v-if="controlStates.initPosition"
-            @click="onInitPositionStandard"
-          >
-            平手
-          </button>
-          <button
-            v-if="controlStates.initPosition"
-            @click="onInitPositionTsumeShogi"
-          >
-            詰将棋
-          </button>
+          <select v-if="controlStates.initPosition" @change="onInitPosition">
+            <option>局面の初期化</option>
+            <option value="standard">平手</option>
+            <option value="handicapLance">香落ち</option>
+            <option value="handicapRightLance">右香落ち</option>
+            <option value="handicapBishop">角落ち</option>
+            <option value="handicapRook">飛車落ち</option>
+            <option value="handicapRookLance">飛車香落ち</option>
+            <option value="handicap2Pieces">2枚落ち</option>
+            <option value="handicap4Pieces">4枚落ち</option>
+            <option value="handicap6Pieces">6枚落ち</option>
+            <option value="handicap8Pieces">8枚落ち</option>
+            <option value="tsumeShogi">詰め将棋</option>
+            <option value="tsumeShogi2Kings">双玉詰め将棋</option>
+          </select>
         </div>
       </template>
       <template #left-control>
@@ -180,12 +183,11 @@ export default defineComponent({
       store.endPositionEditing();
     };
 
-    const onInitPositionStandard = () => {
-      store.initializePosition(InitialPositionType.STANDARD);
-    };
-
-    const onInitPositionTsumeShogi = () => {
-      store.initializePosition(InitialPositionType.TSUME_SHOGI);
+    const onInitPosition = (event: Event) => {
+      const select = event.target as HTMLSelectElement;
+      if (select.value) {
+        store.initializePosition(select.value as InitialPositionType);
+      }
     };
 
     const onChangeTurn = () => {
@@ -297,8 +299,7 @@ export default defineComponent({
       onEndResearch,
       onStartEditPosition,
       onEndEditPosition,
-      onInitPositionStandard,
-      onInitPositionTsumeShogi,
+      onInitPosition,
       onChangeTurn,
       onOpenAppSettings,
       onOpenEngineSettings,
@@ -357,5 +358,11 @@ export default defineComponent({
 .control button .icon {
   height: 80%;
   vertical-align: top;
+}
+.control select {
+  width: 100%;
+  height: 15%;
+  color: var(--control-button-color);
+  background-color: var(--control-button-bg-color);
 }
 </style>

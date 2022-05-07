@@ -319,6 +319,9 @@ export function setup(): void {
       case MenuEvent.INIT_POSITION_TSUME_SHOGI:
         store.initializePosition(InitialPositionType.TSUME_SHOGI);
         break;
+      case MenuEvent.INIT_POSITION_TSUME_SHOGI_2KINGS:
+        store.initializePosition(InitialPositionType.TSUME_SHOGI_2KINGS);
+        break;
       case MenuEvent.START_GAME:
         store.showGameDialog();
         break;

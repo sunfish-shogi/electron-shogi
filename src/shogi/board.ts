@@ -22,6 +22,7 @@ export enum InitialPositionType {
   HANDICAP_6PIECES = "handicap6Pieces",
   HANDICAP_8PIECES = "handicap8Pieces",
   TSUME_SHOGI = "tsumeShogi",
+  TSUME_SHOGI_2KINGS = "tsumeShogi2Kings",
 }
 
 function sfenCharToNumber(sfen: string): number | null {
@@ -140,6 +141,9 @@ export default class Board {
       Color.BLACK,
       PieceType.KING
     );
+    if (type === InitialPositionType.TSUME_SHOGI_2KINGS) {
+      return;
+    }
     this.squares[new Square(2, 8).index] = new Piece(
       Color.BLACK,
       PieceType.ROOK

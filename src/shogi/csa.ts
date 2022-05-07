@@ -520,7 +520,7 @@ export function exportCSA(
     }
     if (move) {
       ret += move + returnCode;
-      ret += "T" + Math.floor(entry.elapsedMs * 1e3) + returnCode;
+      ret += "T" + Math.floor(entry.elapsedMs / 1e3) + returnCode;
     }
   });
   return ret;

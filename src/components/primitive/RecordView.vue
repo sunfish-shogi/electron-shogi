@@ -45,7 +45,9 @@
           :value="move.number"
         >
           {{ move.number !== 0 ? move.number + " " : "" }}
-          {{ move.text }} {{ move.hasBranch ? " 分岐" : "" }}
+          {{ move.text }}
+          {{ move.hasBranch ? "<分岐>" : "" }}
+          {{ move.comment ? "- " + move.comment : "" }}
         </option>
       </select>
       <select
@@ -62,6 +64,7 @@
           :value="branch.index"
         >
           {{ branch.text }}
+          {{ branch.comment ? "- " + branch.comment : "" }}
         </option>
       </select>
     </div>
@@ -131,6 +134,7 @@ export default defineComponent({
         text: string;
         number: number;
         hasBranch: boolean;
+        comment: string;
         selected: boolean;
       }[] = [];
       props.record.moves.forEach((elem) => {
@@ -138,6 +142,7 @@ export default defineComponent({
           number: elem.number,
           text: elem.displayText,
           hasBranch: elem.hasBranch,
+          comment: elem.comment,
           selected: elem === props.record.current,
         });
       });
@@ -151,6 +156,7 @@ export default defineComponent({
       const ret: {
         index: number;
         text: string;
+        comment: string;
         selected: boolean;
       }[] = [];
       let p: RecordEntry | null;
@@ -158,6 +164,7 @@ export default defineComponent({
         ret.push({
           index: ret.length,
           text: p.displayMoveText,
+          comment: p.comment,
           selected: p.activeBranch,
         });
       }

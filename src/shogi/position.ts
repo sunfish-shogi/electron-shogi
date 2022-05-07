@@ -122,6 +122,7 @@ export default class Position {
       case InitialPositionType.STANDARD:
       case InitialPositionType.EMPTY:
       case InitialPositionType.TSUME_SHOGI:
+      case InitialPositionType.TSUME_SHOGI_2KINGS:
         this._color = Color.BLACK;
         break;
       case InitialPositionType.HANDICAP_LANCE:
@@ -136,7 +137,10 @@ export default class Position {
         this._color = Color.WHITE;
         break;
     }
-    if (type === InitialPositionType.TSUME_SHOGI) {
+    if (
+      type === InitialPositionType.TSUME_SHOGI ||
+      type === InitialPositionType.TSUME_SHOGI_2KINGS
+    ) {
       this._whiteHand.set(PieceType.PAWN, 18);
       this._whiteHand.set(PieceType.LANCE, 4);
       this._whiteHand.set(PieceType.KNIGHT, 4);

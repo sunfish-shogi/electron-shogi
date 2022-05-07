@@ -1,6 +1,7 @@
 import {
   Color,
   importKakinoki,
+  InitialPositionType,
   Move,
   Piece,
   Position,
@@ -23,6 +24,58 @@ describe("shogi/position", () => {
     position.whiteHand.add(PieceType.PAWN, 2);
     expect(position.hand(Color.BLACK).count(PieceType.PAWN)).toBe(1);
     expect(position.hand(Color.WHITE).count(PieceType.PAWN)).toBe(2);
+  });
+
+  it("reset", () => {
+    const position = new Position();
+    position.reset(InitialPositionType.EMPTY);
+    expect(position.sfen).toBe("sfen 9/9/9/9/9/9/9/9/9 b - 1");
+    position.reset(InitialPositionType.STANDARD);
+    expect(position.sfen).toBe(
+      "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_LANCE);
+    expect(position.sfen).toBe(
+      "sfen lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_RIGHT_LANCE);
+    expect(position.sfen).toBe(
+      "sfen 1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_BISHOP);
+    expect(position.sfen).toBe(
+      "sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_ROOK);
+    expect(position.sfen).toBe(
+      "sfen lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_ROOK_LANCE);
+    expect(position.sfen).toBe(
+      "sfen lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_2PIECES);
+    expect(position.sfen).toBe(
+      "sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_4PIECES);
+    expect(position.sfen).toBe(
+      "sfen 1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_6PIECES);
+    expect(position.sfen).toBe(
+      "sfen 2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.HANDICAP_8PIECES);
+    expect(position.sfen).toBe(
+      "sfen 3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    position.reset(InitialPositionType.TSUME_SHOGI);
+    expect(position.sfen).toBe("sfen 4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1");
+    position.reset(InitialPositionType.TSUME_SHOGI_2KINGS);
+    expect(position.sfen).toBe(
+      "sfen 4k4/9/9/9/9/9/9/9/4K4 b 2r2b4g4s4n4l18p 1"
+    );
   });
 
   it("doMove", () => {
@@ -312,10 +365,9 @@ describe("shogi/position", () => {
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
     });
-  });
 
-  it("white/no_pawn_drop_mate/king_movable", () => {
-    const data = `
+    it("white/no_pawn_drop_mate/king_movable", () => {
+      const data = `
 後手の持駒：歩 
   ９ ８ ７ ６ ５ ４ ３ ２ １
 +---------------------------+
@@ -332,10 +384,14 @@ describe("shogi/position", () => {
 先手の持駒：なし
 後手番
 `;
-    const position = (importKakinoki(data) as Record).position;
-    const move = position.createMove(PieceType.PAWN, new Square(6, 4)) as Move;
-    expect(position.isPawnDropMate(move)).toBeFalsy();
-    expect(position.isValidMove(move)).toBeTruthy();
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(6, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeFalsy();
+      expect(position.isValidMove(move)).toBeTruthy();
+    });
   });
 
   it("sfen", () => {

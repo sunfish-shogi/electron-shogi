@@ -35,6 +35,7 @@ export enum MenuEvent {
   INIT_POSITION_HANDICAP_6PIECES = "initPositionHandicap6Pieces",
   INIT_POSITION_HANDICAP_8PIECES = "initPositionHandicap8Pieces",
   INIT_POSITION_TSUME_SHOGI = "initPositionTsumeShogi",
+  INIT_POSITION_TSUME_SHOGI_2KINGS = "initPositionTsumeShogi2Kings",
   START_RESEARCH = "startResearch",
   STOP_RESEARCH = "stopResearch",
   START_GAME = "startGame",

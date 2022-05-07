@@ -15,13 +15,14 @@ export {
   parseSFENColor,
 } from "./color";
 export { default as Square } from "./square";
-export { default as Move } from "./move";
+export { default as Move, parseSFENMove } from "./move";
 export { default as Board, InitialPositionType } from "./board";
 export { default as Hand, ImmutableHand } from "./hand";
 export {
   default as Position,
   ImmutablePosition,
   PositionChange,
+  DoMoveOption,
   countExistingPieces,
   countNotExistingPieces,
 } from "./position";
@@ -38,3 +39,4 @@ export {
 } from "./record";
 export { exportKakinoki, importKakinoki } from "./kakinoki";
 export { exportCSA, importCSA } from "./csa";
+export { detectRecordFormat } from "./detect";

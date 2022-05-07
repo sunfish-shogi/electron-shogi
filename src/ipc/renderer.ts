@@ -224,7 +224,19 @@ export function setup(): void {
         store.saveRecord();
         break;
       case MenuEvent.COPY_RECORD:
-        store.copyRecord();
+        store.copyRecordKIF();
+        break;
+      case MenuEvent.COPY_RECORD_CSA:
+        store.copyRecordCSA();
+        break;
+      case MenuEvent.COPY_RECORD_USI_BEFORE:
+        store.copyRecordUSIBefore();
+        break;
+      case MenuEvent.COPY_RECORD_USI_ALL:
+        store.copyRecordUSIAll();
+        break;
+      case MenuEvent.COPY_BOARD_SFEN:
+        store.copyBoardSFEN();
         break;
       case MenuEvent.PASTE_RECORD:
         store.showPasteDialog();

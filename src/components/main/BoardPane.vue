@@ -209,7 +209,7 @@ export default defineComponent({
     };
 
     const onCopy = () => {
-      store.copyRecord();
+      store.copyRecordKIF();
     };
 
     const onRemoveAfter = () => {

@@ -1,8 +1,13 @@
-import Position, { DoMoveOption, ImmutablePosition } from "./position";
-import Move from "./move";
-import { Color } from ".";
+import {
+  Position,
+  DoMoveOption,
+  ImmutablePosition,
+  Move,
+  Color,
+  reverseColor,
+  parseSFENMove,
+} from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/helpers/time";
-import { reverseColor } from "./color";
 
 export enum RecordMetadataKey {
   // 柿木形式で規定されている項目
@@ -590,7 +595,7 @@ export default class Record {
 
   get usi(): string {
     let ret = "position " + this.initialPosition.sfen + " moves";
-    this._movesBefore.forEach((entry) => {
+    this.movesBefore.forEach((entry) => {
       if (entry.move instanceof Move) {
         ret += " " + entry.move.sfen;
       }
@@ -598,8 +603,21 @@ export default class Record {
     return ret;
   }
 
+  get usiAll(): string {
+    let ret = this.usi;
+    for (let p = this._current.next; p; p = p.next) {
+      while (!p.activeBranch) {
+        p = p.branch as RecordEntryImpl;
+      }
+      if (p.move instanceof Move) {
+        ret += " " + p.move.sfen;
+      }
+    }
+    return ret;
+  }
+
   get sfen(): string {
-    return "position " + this.position.getSfen(this._current.number + 1);
+    return this.position.getSfen(this._current.number + 1);
   }
 
   forEach(handler: (entry: RecordEntry) => void): void {
@@ -620,6 +638,76 @@ export default class Record {
         p = stack.pop() || null;
       }
     }
+  }
+
+  static newByUSI(data: string): Record | Error {
+    const prefixPositionStartpos = "position startpos ";
+    const prefixPositionSfen = "position sfen ";
+    const prefixStartpos = "startpos ";
+    const prefixSfen = "sfen ";
+    const prefixMoves = "moves ";
+    if (data.startsWith(prefixPositionStartpos)) {
+      return Record.newByUSIFromMoves(
+        new Position(),
+        data.slice(prefixPositionStartpos.length)
+      );
+    } else if (data.startsWith(prefixPositionSfen)) {
+      return Record.newByUSIFromSFENPosition(
+        data.slice(prefixPositionSfen.length)
+      );
+    } else if (data.startsWith(prefixStartpos)) {
+      return Record.newByUSIFromMoves(
+        new Position(),
+        data.slice(prefixStartpos.length)
+      );
+    } else if (data.startsWith(prefixSfen)) {
+      return Record.newByUSIFromSFENPosition(data.slice(prefixSfen.length));
+    } else if (data.startsWith(prefixMoves)) {
+      return Record.newByUSIFromMoves(new Position(), data);
+    } else {
+      return new Error("不正なUSI(1): " + data);
+    }
+  }
+
+  private static newByUSIFromSFENPosition(data: string): Record | Error {
+    const sections = data.split(" ");
+    if (sections.length < 4) {
+      return new Error("不正なUSI(2): " + data);
+    }
+    const position = Position.newBySFEN(sections.slice(0, 4).join(" "));
+    if (!position) {
+      return new Error("不正なUSI(3): " + data);
+    }
+    return Record.newByUSIFromMoves(position, sections.slice(4).join(" "));
+  }
+
+  private static newByUSIFromMoves(
+    position: ImmutablePosition,
+    data: string
+  ): Record | Error {
+    const record = new Record(position);
+    if (data.length === 0) {
+      return record;
+    }
+    const sections = data.split(" ");
+    if (sections[0] !== "moves") {
+      return new Error("不正なUSI(4): " + data);
+    }
+    for (let i = 1; i < sections.length; i++) {
+      const parsed = parseSFENMove(sections[i]);
+      if (!parsed) {
+        break;
+      }
+      let move = record.position.createMove(parsed.from, parsed.to);
+      if (!move) {
+        return new Error("不正な指し手: " + sections[i]);
+      }
+      if (parsed.promote) {
+        move = move.withPromote();
+      }
+      record.append(move, { ignoreValidation: true });
+    }
+    return record;
   }
 }
 

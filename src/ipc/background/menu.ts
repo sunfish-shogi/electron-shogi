@@ -71,9 +71,22 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
   {
     label: "編集",
     submenu: [
-      menuItem("棋譜コピー", MenuEvent.COPY_RECORD, null, "CmdOrCtrl+C"),
+      {
+        label: "棋譜コピー",
+        submenu: [
+          menuItem("KIF形式", MenuEvent.COPY_RECORD, null, "CmdOrCtrl+C"),
+          menuItem("CSA形式", MenuEvent.COPY_RECORD_CSA, null),
+          menuItem(
+            "USI形式(現在の指し手まで)",
+            MenuEvent.COPY_RECORD_USI_BEFORE,
+            null
+          ),
+          menuItem("USI形式(全て)", MenuEvent.COPY_RECORD_USI_ALL, null),
+        ],
+      },
+      menuItem("局面コピー(SFEN形式)", MenuEvent.COPY_BOARD_SFEN, null),
       menuItem(
-        "棋譜貼り付け",
+        "棋譜・局面貼り付け",
         MenuEvent.PASTE_RECORD,
         [Mode.NORMAL],
         "CmdOrCtrl+V"

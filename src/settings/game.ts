@@ -1,6 +1,7 @@
 import { InitialPositionType } from "@/shogi";
 import { USIEngineSetting } from "./usi";
 import * as uri from "@/uri";
+import { secondsToMSS } from "@/helpers/time";
 
 export type PlayerSetting = {
   name: string;
@@ -13,6 +14,14 @@ export type TimeLimitSetting = {
   byoyomi: number;
   increment: number;
 };
+
+export function formatTimeLimitCSA(setting: TimeLimitSetting): string {
+  return (
+    secondsToMSS(setting.timeSeconds) +
+    "+" +
+    String(setting.byoyomi).padStart(2, "0")
+  );
+}
 
 export type GameSetting = {
   black: PlayerSetting;

@@ -26,7 +26,7 @@ import {
 import { exportKakinoki, importKakinoki } from "@/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import iconv from "iconv-lite";
-import { GameSetting } from "@/settings/game";
+import { formatTimeLimitCSA, GameSetting } from "@/settings/game";
 import {
   AppSetting,
   AppSettingUpdate,
@@ -53,6 +53,7 @@ import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
 import { USIPlayer } from "@/players/usi";
 import { RecordFormatType } from "@/shogi/detect";
+import { getDateString, getDateTimeString } from "@/helpers/datetime";
 
 class Store {
   private _bussy: BussyStore;
@@ -319,9 +320,18 @@ class Store {
       RecordMetadataKey.WHITE_NAME,
       setting.white.name
     );
-    // TODO: タイトルを棋譜情報に入れる。
-    // TODO: 対局日時を棋譜情報に入れる。
-    // TODO: 持ち時間を棋譜情報に入れる。
+    this._record.metadata.setStandardMetadata(
+      RecordMetadataKey.DATE,
+      getDateString()
+    );
+    this._record.metadata.setStandardMetadata(
+      RecordMetadataKey.START_DATETIME,
+      getDateTimeString()
+    );
+    this._record.metadata.setStandardMetadata(
+      RecordMetadataKey.TIME_LIMIT,
+      formatTimeLimitCSA(setting.timeLimit)
+    );
   }
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
@@ -373,7 +383,11 @@ class Store {
     }
     this._record.append(specialMove || SpecialMove.INTERRUPT);
     this.onUpdatePosition();
-    this.record.current.setElapsedMs(this.elapsedMs);
+    this._record.current.setElapsedMs(this.elapsedMs);
+    this._record.metadata.setStandardMetadata(
+      RecordMetadataKey.END_DATETIME,
+      getDateTimeString()
+    );
     this._mode = Mode.NORMAL;
   }
 

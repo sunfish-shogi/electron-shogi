@@ -48,6 +48,9 @@ export class RecordEntryCustomData {
     sender: USIInfoSender,
     command: USIInfoCommand
   ): void {
+    if (command.multipv !== undefined && command.multipv !== 1) {
+      return;
+    }
     if (command.scoreCP) {
       this.updateScore(
         color,

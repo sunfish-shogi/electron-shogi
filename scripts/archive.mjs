@@ -7,6 +7,11 @@ const platform = process.argv[2];
 const version = process.argv[3];
 const outputPath = `dist_electron/release-${version}-${platform}.zip`;
 
+const packageJson = JSON.parse(fs.readFileSync('./package.json'));
+if (`v${packageJson.version}` !== version) {
+  throw new Error("invalid release version");
+}
+
 const output = fs.createWriteStream(outputPath).on("error", function () {
   throw err;
 });

@@ -7,6 +7,5 @@ export enum Mode {
   RESEARCH = "research",
   RESEARCH_DIALOG = "researchDialog",
   USI_ENGINE_SETTING_DIALOG = "usiEngineSettingDialog",
-  APP_SETTING_DIALOG = "appSettingDialog",
   TEMPORARY = "temporary",
 }

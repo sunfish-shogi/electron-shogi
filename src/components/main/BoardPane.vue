@@ -77,10 +77,7 @@
       </template>
       <template #left-control>
         <div class="control bottom">
-          <button
-            :disabled="!controlStates.appSettings"
-            @click="onOpenAppSettings"
-          >
+          <button @click="onOpenAppSettings">
             <ButtonIcon class="icon" icon="settings" />
             アプリ設定
           </button>
@@ -272,7 +269,6 @@ export default defineComponent({
         initPosition: store.mode === Mode.POSITION_EDITING,
         removeAfter: store.mode === Mode.NORMAL || store.mode === Mode.RESEARCH,
         paste: store.mode === Mode.NORMAL,
-        appSettings: store.mode === Mode.NORMAL,
         engineSettings: store.mode === Mode.NORMAL,
       };
     });

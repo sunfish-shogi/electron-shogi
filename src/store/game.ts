@@ -150,11 +150,11 @@ export class GameManager {
 
   private onMove(eventID: number, move: Move): void {
     if (eventID !== this.lastEventID) {
-      console.log("指し手を受信しましたが既にイベントは無効です。");
+      console.warn("指し手を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      console.log("指し手を受信しましたが既に対局中ではありません。");
+      console.warn("指し手を受信しましたが既に対局中ではありません。");
       return;
     }
     if (!this.record.position.isValidMove(move)) {
@@ -182,11 +182,11 @@ export class GameManager {
 
   private onResign(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      console.log("投了を受信しましたが既にイベントは無効です。");
+      console.warn("投了を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      console.log("投了を受信しましたが既に対局中ではありません。");
+      console.warn("投了を受信しましたが既に対局中ではありません。");
       return;
     }
     this.endGame(SpecialMove.RESIGN);
@@ -194,11 +194,11 @@ export class GameManager {
 
   private onWin(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      console.log("勝ち宣言を受信しましたが既にイベントは無効です。");
+      console.warn("勝ち宣言を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      console.log("勝ち宣言を受信しましたが既に対局中ではありません。");
+      console.warn("勝ち宣言を受信しましたが既に対局中ではありません。");
       return;
     }
     this.endGame(SpecialMove.ENTERING_OF_KING);

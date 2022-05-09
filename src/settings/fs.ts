@@ -21,7 +21,7 @@ export function saveWindowSetting(setting: WindowSetting): void {
       "utf8"
     );
   } catch (e) {
-    console.log("failed to read window setting:", e);
+    console.warn("failed to write window setting:", e);
   }
 }
 
@@ -32,7 +32,7 @@ export function loadWindowSetting(): WindowSetting {
       ...JSON.parse(fs.readFileSync(windowSettingPath, "utf8")),
     };
   } catch (e) {
-    console.log("failed to read window setting:", e);
+    console.warn("failed to read window setting:", e);
     return defaultWindowSetting();
   }
 }

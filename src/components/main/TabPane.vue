@@ -111,7 +111,7 @@ export default defineComponent({
           tab: id,
         })
         .catch((e) => {
-          console.log(e);
+          console.warn(e);
         });
     };
     const activeTab = computed(() => store.appSetting.tab);

@@ -62,6 +62,7 @@ class Store {
   private _appSetting: AppSetting;
   private _mode: Mode;
   private lastMode?: Mode;
+  private _displayAppSetting: boolean;
   private _confirmation?: Confirmation;
   private _usi: USIMonitor;
   private game: GameManager;
@@ -76,6 +77,7 @@ class Store {
     this._error = new ErrorStore();
     this._appSetting = defaultAppSetting();
     this._mode = Mode.NORMAL;
+    this._displayAppSetting = false;
     this._usi = new USIMonitor();
     this.game = new GameManager(this);
     this._record = new Record();
@@ -207,10 +209,16 @@ class Store {
     }
   }
 
+  get displayAppSetting(): boolean {
+    return this._displayAppSetting;
+  }
+
   openAppSettingDialog(): void {
-    if (this.mode === Mode.NORMAL) {
-      this._mode = Mode.APP_SETTING_DIALOG;
-    }
+    this._displayAppSetting = true;
+  }
+
+  closeAppSettingDialog(): void {
+    this._displayAppSetting = false;
   }
 
   openUsiEngineManagementDialog(): void {
@@ -222,7 +230,6 @@ class Store {
   closeDialog(): void {
     if (
       this.mode === Mode.USI_ENGINE_SETTING_DIALOG ||
-      this.mode === Mode.APP_SETTING_DIALOG ||
       this.mode === Mode.GAME_DIALOG ||
       this.mode === Mode.RESEARCH_DIALOG
     ) {

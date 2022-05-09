@@ -139,7 +139,7 @@ export default defineComponent({
       store.retainBussyState();
       try {
         await store.updateAppSetting(update);
-        store.closeDialog();
+        store.closeAppSettingDialog();
       } catch (e) {
         store.pushError(e);
       } finally {
@@ -148,7 +148,7 @@ export default defineComponent({
     };
 
     const cancel = () => {
-      store.closeDialog();
+      store.closeAppSettingDialog();
     };
 
     const appSetting = computed(() => {

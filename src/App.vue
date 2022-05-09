@@ -49,7 +49,7 @@ export default defineComponent({
         game: store.mode === Mode.GAME_DIALOG,
         research: store.mode === Mode.RESEARCH_DIALOG,
         usiEngineSetting: store.mode === Mode.USI_ENGINE_SETTING_DIALOG,
-        appSetting: store.mode === Mode.APP_SETTING_DIALOG,
+        appSetting: store.displayAppSetting,
         paste: store.mode === Mode.PASTE_DIALOG,
         bussy: store.isBussy,
         confirm: store.confirmation !== undefined,

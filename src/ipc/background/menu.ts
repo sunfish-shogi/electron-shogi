@@ -226,7 +226,7 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
   {
     label: "設定",
     submenu: [
-      menuItem("アプリ設定", MenuEvent.APP_SETTING_DIALOG, [Mode.NORMAL]),
+      menuItem("アプリ設定", MenuEvent.APP_SETTING_DIALOG, null),
       menuItem("エンジン設定", MenuEvent.USI_ENGINE_SETTING_DIALOG, [
         Mode.NORMAL,
       ]),

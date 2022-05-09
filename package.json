@@ -14,7 +14,7 @@
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "report:license": "node report-license.mjs"
+    "report:license": "node scripts/report-license.mjs"
   },
   "main": "index.js",
   "dependencies": {

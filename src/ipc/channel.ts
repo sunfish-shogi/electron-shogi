@@ -10,6 +10,8 @@ export enum Background {
   SAVE_APP_SETTING = "saveAppSetting",
   LOAD_RESEARCH_SETTING = "loadResearchSetting",
   SAVE_RESEARCH_SETTING = "saveResearchSetting",
+  LOAD_ANALYSIS_SETTING = "loadAnalysisSetting",
+  SAVE_ANALYSIS_SETTING = "saveAnalysisSetting",
   LOAD_GAME_SETTING = "loadGameSetting",
   SAVE_GAME_SETTING = "saveGameSetting",
   LOAD_USI_ENGINE_SETTING = "loadUSIEngineSetting",

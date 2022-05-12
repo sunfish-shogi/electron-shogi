@@ -2,6 +2,7 @@
   <StandardLayout class="main" />
   <GameDialog v-if="dialogVisibilities.game" />
   <ResearchDialog v-if="dialogVisibilities.research" />
+  <AnalysisDialog v-if="dialogVisibilities.analysis" />
   <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
   <AppSettingDialog v-if="dialogVisibilities.appSetting" />
   <PasteDialog v-if="dialogVisibilities.paste" />
@@ -26,6 +27,7 @@ import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
 import { useStore } from "@/store";
 import { Mode } from "@/store/mode";
 import { handleKeyDownEvent } from "@/helpers/key";
+import AnalysisDialog from "./components/dialog/AnalysisDialog.vue";
 
 export default defineComponent({
   name: "App",
@@ -40,6 +42,7 @@ export default defineComponent({
     ConfirmDialog,
     InfoMessage,
     ErrorMessage,
+    AnalysisDialog,
   },
   setup() {
     const store = useStore();
@@ -48,6 +51,7 @@ export default defineComponent({
       return {
         game: store.mode === Mode.GAME_DIALOG,
         research: store.mode === Mode.RESEARCH_DIALOG,
+        analysis: store.mode === Mode.ANALYSIS_DIALOG,
         usiEngineSetting: store.mode === Mode.USI_ENGINE_SETTING_DIALOG,
         appSetting: store.displayAppSetting,
         paste: store.mode === Mode.PASTE_DIALOG,

@@ -1,5 +1,6 @@
 import {
   openRecord,
+  saveAnalysisSetting,
   saveAppSetting,
   saveGameSetting,
   saveRecord,
@@ -51,9 +52,15 @@ import { MessageStore } from "./message";
 import { ErrorStore } from "./error";
 import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
-import { USIPlayer } from "@/players/usi";
 import { RecordFormatType } from "@/shogi/detect";
 import { getDateString, getDateTimeString } from "@/helpers/datetime";
+import {
+  AnalysisManager,
+  AnalysisResult,
+  buildRecordComment,
+} from "./analysis";
+import { AnalysisSetting, appendAnalysisComment } from "@/settings/analysis";
+import { USIPlayer } from "@/players/usi";
 
 class Store {
   private _bussy: BussyStore;
@@ -67,6 +74,7 @@ class Store {
   private _usi: USIMonitor;
   private game: GameManager;
   private researcher?: USIPlayer;
+  private analysis?: AnalysisManager;
   private unlimitedBeepHandler?: AudioEventHandler;
   private _recordFilePath?: string;
   private _record: Record;
@@ -209,6 +217,12 @@ class Store {
     }
   }
 
+  showAnalysisDialog(): void {
+    if (this.mode === Mode.NORMAL) {
+      this._mode = Mode.ANALYSIS_DIALOG;
+    }
+  }
+
   get displayAppSetting(): boolean {
     return this._displayAppSetting;
   }
@@ -231,7 +245,8 @@ class Store {
     if (
       this.mode === Mode.USI_ENGINE_SETTING_DIALOG ||
       this.mode === Mode.GAME_DIALOG ||
-      this.mode === Mode.RESEARCH_DIALOG
+      this.mode === Mode.RESEARCH_DIALOG ||
+      this.mode === Mode.ANALYSIS_DIALOG
     ) {
       this._mode = Mode.NORMAL;
     }
@@ -263,6 +278,9 @@ class Store {
     const entryData = new RecordEntryCustomData(this.record.current.customData);
     entryData.updateUSIInfo(this.record.position.color, sender, info);
     this.record.current.customData = entryData.stringify();
+    if (this.analysis) {
+      this.analysis.updateUSIInfo(this.record.position, info);
+    }
   }
 
   get gameSetting(): GameSetting {
@@ -367,16 +385,16 @@ class Store {
     }
   }
 
-  onMove(move: Move): void {
-    if (this.mode !== Mode.GAME) {
-      return;
+  onMove(move: Move): ImmutableRecord {
+    if (this.mode === Mode.GAME) {
+      this._record.append(move, {
+        ignoreValidation: true,
+      });
+      this.onUpdatePosition();
+      this.record.current.setElapsedMs(this.elapsedMs);
+      playPieceBeat(this.appSetting.pieceVolume);
     }
-    this._record.append(move, {
-      ignoreValidation: true,
-    });
-    this.onUpdatePosition();
-    this.record.current.setElapsedMs(this.elapsedMs);
-    playPieceBeat(this.appSetting.pieceVolume);
+    return this.record;
   }
 
   onEndGame(specialMove?: SpecialMove): void {
@@ -437,10 +455,6 @@ class Store {
     }
   }
 
-  onError(e: unknown): void {
-    this.pushError(e);
-  }
-
   doMove(move: Move): void {
     if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
       return;
@@ -448,6 +462,38 @@ class Store {
     this._record.append(move);
     this.onUpdatePosition();
     playPieceBeat(this.appSetting.pieceVolume);
+  }
+
+  onNext(number: number): ImmutableRecord | null {
+    if (this.mode === Mode.ANALYSIS) {
+      this._record.goto(number);
+      return this.record.current.number === number ? this.record : null;
+    }
+    return null;
+  }
+
+  onResult(result: AnalysisResult): void {
+    if (this.mode === Mode.ANALYSIS && this.analysis) {
+      const comment = buildRecordComment(result);
+      if (comment) {
+        this._record.current.comment = appendAnalysisComment(
+          this._record.current.comment,
+          comment,
+          this.analysis.setting.commentBehavior
+        );
+      }
+    }
+  }
+
+  onFinish(): void {
+    if (this.mode === Mode.ANALYSIS) {
+      this._message.enqueue("棋譜解析が終了しました。");
+      this._mode = Mode.NORMAL;
+    }
+  }
+
+  onError(e: unknown): void {
+    this.pushError(e);
   }
 
   startResearch(researchSetting: ResearchSetting): void {
@@ -466,13 +512,12 @@ class Store {
     if (this.mode !== Mode.RESEARCH_DIALOG) {
       return;
     }
-    if (!researchSetting.usi) {
-      this.pushError("検討に使用するエンジンの設定が取得できませんでした。");
-      return;
-    }
     this.retainBussyState();
     try {
       await saveResearchSetting(researchSetting);
+      if (!researchSetting.usi) {
+        throw new Error("エンジンが設定されていません。");
+      }
       const researcher = new USIPlayer(researchSetting.usi);
       await researcher.launch();
       this.researcher = researcher;
@@ -483,32 +528,52 @@ class Store {
   }
 
   stopResearch(): void {
-    this.stopResearchAsync().catch((e) => {
-      this.pushError("検討の終了中にエラーが出ました: " + e);
+    if (this.mode !== Mode.RESEARCH) {
+      return;
+    }
+    if (this.researcher) {
+      this.researcher.close();
+      this.researcher = undefined;
+    }
+    this._mode = Mode.NORMAL;
+  }
+
+  startAnalysis(analysisSetting: AnalysisSetting): void {
+    this.startAnalysisAsync(analysisSetting).catch((e) => {
+      this.pushError("検討の初期化中にエラーが出ました: " + e);
     });
   }
 
-  private async stopResearchAsync(): Promise<void> {
-    if (this.mode !== Mode.RESEARCH) {
+  private async startAnalysisAsync(analysisSetting: AnalysisSetting) {
+    if (this.mode !== Mode.ANALYSIS_DIALOG) {
       return;
     }
     this.retainBussyState();
     try {
-      if (this.researcher) {
-        await this.researcher.close();
-        this.researcher = undefined;
-      }
-      this._mode = Mode.NORMAL;
+      await saveAnalysisSetting(analysisSetting);
+      const analysis = new AnalysisManager(analysisSetting, this);
+      await analysis.start();
+      this.analysis = analysis;
+      this._mode = Mode.ANALYSIS;
     } finally {
       this.releaseBussyState();
     }
   }
 
+  stopAnalysis(): void {
+    if (this.mode !== Mode.ANALYSIS) {
+      return;
+    }
+    if (this.analysis) {
+      this.analysis.close();
+      this.analysis = undefined;
+    }
+    this._mode = Mode.NORMAL;
+  }
+
   private onUpdatePosition(): void {
     if (this.researcher) {
-      this.researcher.startResearch(this.record).catch((e) => {
-        this.pushError("エンジンとの通信でエラーが出ました: " + e);
-      });
+      this.researcher.startResearch(this.record);
     }
   }
 

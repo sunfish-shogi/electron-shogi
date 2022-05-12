@@ -5,22 +5,20 @@
       <div class="dialog-form-area">
         <div class="dialog-form-item">
           <div class="dialog-form-item-label">エンジン</div>
-          <div class="dialog-form-item-unit">
-            <select
-              ref="engineSelect"
-              class="engine-select"
-              size="1"
-              :value="defaultValue"
+          <select
+            ref="engineSelect"
+            class="engine-select"
+            size="1"
+            :value="defaultValue"
+          >
+            <option
+              v-for="engine in engines"
+              :key="engine.uri"
+              :value="engine.uri"
             >
-              <option
-                v-for="engine in engines"
-                :key="engine.uri"
-                :value="engine.uri"
-              >
-                {{ engine.name }}
-              </option>
-            </select>
-          </div>
+              {{ engine.name }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="dialog-main-buttons">
@@ -102,6 +100,6 @@ export default defineComponent({
 
 <style scoped>
 .engine-select {
-  width: 200px;
+  width: 250px;
 }
 </style>

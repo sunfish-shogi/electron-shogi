@@ -12,6 +12,7 @@ import { useStore } from "@/store";
 import { GameResult } from "@/players/player";
 import { usiBestMove } from "@/players/usi";
 import { humanPlayer } from "@/players/human";
+import { AnalysisSetting } from "@/settings/analysis";
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
@@ -25,6 +26,8 @@ export interface API {
   saveAppSetting(setting: string): Promise<void>;
   loadResearchSetting(): Promise<string>;
   saveResearchSetting(setting: string): Promise<void>;
+  loadAnalysisSetting(): Promise<string>;
+  saveAnalysisSetting(setting: string): Promise<void>;
   loadGameSetting(): Promise<string>;
   saveGameSetting(setting: string): Promise<void>;
   loadUSIEngineSetting(): Promise<string>;
@@ -121,6 +124,16 @@ export async function saveResearchSetting(
   setting: ResearchSetting
 ): Promise<void> {
   await getAPI().saveResearchSetting(JSON.stringify(setting));
+}
+
+export async function loadAnalysisSetting(): Promise<AnalysisSetting> {
+  return JSON.parse(await getAPI().loadAnalysisSetting());
+}
+
+export async function saveAnalysisSetting(
+  setting: AnalysisSetting
+): Promise<void> {
+  await getAPI().saveAnalysisSetting(JSON.stringify(setting));
 }
 
 export async function loadGameSetting(): Promise<GameSetting> {
@@ -336,6 +349,12 @@ export function setup(): void {
         break;
       case MenuEvent.STOP_RESEARCH:
         store.stopResearch();
+        break;
+      case MenuEvent.START_ANALYSIS:
+        store.showAnalysisDialog();
+        break;
+      case MenuEvent.STOP_ANALYSIS:
+        store.stopAnalysis();
         break;
       case MenuEvent.FLIP_BOARD:
         store.flipBoard();

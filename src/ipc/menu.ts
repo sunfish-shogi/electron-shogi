@@ -38,6 +38,8 @@ export enum MenuEvent {
   INIT_POSITION_TSUME_SHOGI_2KINGS = "initPositionTsumeShogi2Kings",
   START_RESEARCH = "startResearch",
   STOP_RESEARCH = "stopResearch",
+  START_ANALYSIS = "startAnalysis",
+  STOP_ANALYSIS = "stopAnalysis",
   START_GAME = "startGame",
   STOP_GAME = "stopGame",
   RESIGN = "resign",

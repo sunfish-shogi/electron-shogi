@@ -6,6 +6,7 @@ import { AppSetting, defaultAppSetting } from "./app";
 import { defaultWindowSetting, WindowSetting } from "./window";
 import { defaultGameSetting, GameSetting } from "./game";
 import { defaultResearchSetting, ResearchSetting } from "./research";
+import { AnalysisSetting, defaultAnalysisSetting } from "./analysis";
 
 export function openAppDirectory(): void {
   shell.openPath(app.getPath("userData"));
@@ -114,5 +115,28 @@ export function loadResearchSetting(): ResearchSetting {
   return {
     ...defaultResearchSetting(),
     ...JSON.parse(fs.readFileSync(researchSettingPath, "utf8")),
+  };
+}
+
+const analysisSettingPath = path.join(
+  app.getPath("userData"),
+  "analysis_setting.json"
+);
+
+export function saveAnalysisSetting(setting: AnalysisSetting): void {
+  fs.writeFileSync(
+    analysisSettingPath,
+    JSON.stringify(setting, undefined, 2),
+    "utf8"
+  );
+}
+
+export function loadAnalysisSetting(): AnalysisSetting {
+  if (!fs.existsSync(analysisSettingPath)) {
+    return defaultAnalysisSetting();
+  }
+  return {
+    ...defaultAnalysisSetting(),
+    ...JSON.parse(fs.readFileSync(analysisSettingPath, "utf8")),
   };
 }

@@ -2,10 +2,12 @@ import { BrowserWindow, dialog, ipcMain } from "electron";
 import { Background, Renderer } from "@/ipc/channel";
 import fs from "fs";
 import {
+  loadAnalysisSetting,
   loadAppSetting,
   loadGameSetting,
   loadResearchSetting,
   loadUSIEngineSetting,
+  saveAnalysisSetting,
   saveAppSetting,
   saveGameSetting,
   saveResearchSetting,
@@ -137,6 +139,14 @@ ipcMain.handle(Background.LOAD_RESEARCH_SETTING, (): string => {
 
 ipcMain.handle(Background.SAVE_RESEARCH_SETTING, (_, json: string): void => {
   saveResearchSetting(JSON.parse(json));
+});
+
+ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, (): string => {
+  return JSON.stringify(loadAnalysisSetting());
+});
+
+ipcMain.handle(Background.SAVE_ANALYSIS_SETTING, (_, json: string): void => {
+  saveAnalysisSetting(JSON.parse(json));
 });
 
 ipcMain.handle(Background.LOAD_GAME_SETTING, (): string => {

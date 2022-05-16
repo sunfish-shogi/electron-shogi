@@ -1,3 +1,4 @@
+import { defaultAnalysisSetting } from "@/settings/analysis";
 import { defaultAppSetting } from "@/settings/app";
 import { defaultGameSetting } from "@/settings/game";
 import { defaultResearchSetting } from "@/settings/research";
@@ -7,6 +8,7 @@ import { API } from "./renderer";
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
   RESEARCH_SETTING = "researchSetting",
+  ANALYSIS_SETTING = "analysisSetting",
   GAME_SETTING = "gameSetting",
 }
 
@@ -58,6 +60,19 @@ export const webAPI: API = {
   },
   async saveResearchSetting(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.RESEARCH_SETTING, json);
+  },
+  async loadAnalysisSetting(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.ANALYSIS_SETTING);
+    if (!json) {
+      return JSON.stringify(defaultAnalysisSetting());
+    }
+    return JSON.stringify({
+      ...defaultAnalysisSetting(),
+      ...JSON.parse(json),
+    });
+  },
+  async saveAnalysisSetting(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.ANALYSIS_SETTING, json);
   },
   async loadGameSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.GAME_SETTING);

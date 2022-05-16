@@ -5,7 +5,7 @@ import {
   GameSetting,
   PlayerSetting,
 } from "@/settings/game";
-import { Color, ImmutableRecord, Move, SpecialMove } from "@/shogi";
+import { Color, ImmutableRecord, Move, Record, SpecialMove } from "@/shogi";
 import * as uri from "@/uri";
 import { GameResult, Player } from "../players/player";
 
@@ -15,13 +15,12 @@ export type PlayerState = {
 };
 
 export interface GameHandlers {
-  readonly record: ImmutableRecord;
-  onMove: (move: Move) => void;
-  onEndGame: (specialMove?: SpecialMove) => void;
-  onBeepShort: () => void;
-  onBeepUnlimited: () => void;
-  onStopBeep: () => void;
-  onError: (e: unknown) => void;
+  onMove(move: Move): ImmutableRecord;
+  onEndGame(specialMove?: SpecialMove): void;
+  onBeepShort(): void;
+  onBeepUnlimited(): void;
+  onStopBeep(): void;
+  onError(e: unknown): void;
 }
 
 enum GameState {
@@ -44,6 +43,7 @@ export class GameManager {
   private blackPlayer?: Player;
   private whitePlayer?: Player;
   private lastEventID: number;
+  private record: ImmutableRecord;
 
   constructor(handlers: GameHandlers) {
     this.state = GameState.IDLE;
@@ -56,10 +56,7 @@ export class GameManager {
     this._elapsedMs = 0;
     this._setting = defaultGameSetting();
     this.lastEventID = 0;
-  }
-
-  private get record(): ImmutableRecord {
-    return this.handlers.record;
+    this.record = new Record();
   }
 
   get blackTimeMs(): number {
@@ -163,7 +160,7 @@ export class GameManager {
       return;
     }
     this.incrementTime(this.record.position.color);
-    this.handlers.onMove(move);
+    this.record = this.handlers.onMove(move);
     const faulColor = this.record.perpetualCheck;
     if (faulColor) {
       if (faulColor === this.record.position.color) {
@@ -215,11 +212,12 @@ export class GameManager {
   }
 
   private startTimer(color: Color): void {
-    this.clearTimer();
+    this.stopTimer();
     const playerState = this.getPlayerState(color);
     this.timerStart = new Date();
     this.lastTimeMs = playerState.timeMs;
     playerState.byoyomi = this.setting.timeLimit.byoyomi;
+    this._elapsedMs = 0;
     this.timerHandle = window.setInterval(() => {
       const lastTimeMs = playerState.timeMs;
       const lastByoyomi = playerState.byoyomi;
@@ -342,11 +340,6 @@ export class GameManager {
       window.clearInterval(this.timerHandle);
       this.timerHandle = 0;
     }
-  }
-
-  private clearTimer(): void {
-    this.stopTimer();
-    this._elapsedMs = 0;
   }
 
   private incrementTime(color: Color): void {

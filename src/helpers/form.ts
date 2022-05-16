@@ -1,6 +1,10 @@
 export function readInputAsNumber(input: HTMLInputElement): number {
-  const value = Number(input.value);
-  const max = Number(input.max);
-  const min = Number(input.min);
-  return Math.min(Math.max(value, min), max);
+  let value = Number(input.value);
+  if (input.max) {
+    value = Math.min(value, Number(input.max));
+  }
+  if (input.min) {
+    value = Math.max(value, Number(input.min));
+  }
+  return value;
 }

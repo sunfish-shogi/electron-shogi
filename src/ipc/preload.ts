@@ -49,6 +49,12 @@ const api: API = {
   async saveResearchSetting(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_RESEARCH_SETTING, json);
   },
+  async loadAnalysisSetting(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_ANALYSIS_SETTING);
+  },
+  async saveAnalysisSetting(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_ANALYSIS_SETTING, json);
+  },
   async loadGameSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_GAME_SETTING);
   },

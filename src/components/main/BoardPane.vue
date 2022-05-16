@@ -26,7 +26,7 @@
           </button>
           <button v-if="controlStates.stop" @click="onStop">
             <ButtonIcon class="icon" icon="stop" />
-            中断
+            対局中断
           </button>
           <button v-if="controlStates.resign" @click="onResign">
             <ButtonIcon class="icon" icon="resign" />
@@ -39,6 +39,14 @@
           <button v-if="controlStates.endResearch" @click="onEndResearch">
             <ButtonIcon class="icon" icon="end" />
             検討終了
+          </button>
+          <button v-if="controlStates.analysis" @click="onAnalysis">
+            <ButtonIcon class="icon" icon="analysis" />
+            解析
+          </button>
+          <button v-if="controlStates.endAnalysis" @click="onEndAnalysis">
+            <ButtonIcon class="icon" icon="stop" />
+            解析中断
           </button>
           <button
             v-if="controlStates.startEditPosition"
@@ -172,6 +180,14 @@ export default defineComponent({
       store.stopResearch();
     };
 
+    const onAnalysis = () => {
+      store.showAnalysisDialog();
+    };
+
+    const onEndAnalysis = () => {
+      store.stopAnalysis();
+    };
+
     const onStartEditPosition = () => {
       store.startPositionEditing();
     };
@@ -264,6 +280,8 @@ export default defineComponent({
         resign: store.mode === Mode.GAME && store.isMovableByUser,
         research: store.mode === Mode.NORMAL,
         endResearch: store.mode === Mode.RESEARCH,
+        analysis: store.mode === Mode.NORMAL,
+        endAnalysis: store.mode === Mode.ANALYSIS,
         startEditPosition: store.mode === Mode.NORMAL,
         endEditPosition: store.mode === Mode.POSITION_EDITING,
         initPosition: store.mode === Mode.POSITION_EDITING,
@@ -293,6 +311,8 @@ export default defineComponent({
       onResign,
       onResearch,
       onEndResearch,
+      onAnalysis,
+      onEndAnalysis,
       onStartEditPosition,
       onEndEditPosition,
       onInitPosition,

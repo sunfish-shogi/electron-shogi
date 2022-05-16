@@ -206,6 +206,9 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
     submenu: [
       menuItem("検討開始", MenuEvent.START_RESEARCH, [Mode.NORMAL]),
       menuItem("検討終了", MenuEvent.STOP_RESEARCH, [Mode.RESEARCH]),
+      { type: "separator" },
+      menuItem("解析開始", MenuEvent.START_ANALYSIS, [Mode.NORMAL]),
+      menuItem("解析終了", MenuEvent.STOP_ANALYSIS, [Mode.ANALYSIS]),
     ],
   },
   {

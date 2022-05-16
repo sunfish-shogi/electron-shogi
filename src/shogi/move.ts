@@ -79,7 +79,7 @@ export default class Move {
     }
     if (this.from instanceof Square) {
       const square = this.from;
-      text += ` (${square.file}${square.rank})`;
+      text += `(${square.file}${square.rank})`;
     } else {
       text += "打";
     }

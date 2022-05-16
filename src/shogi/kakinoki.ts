@@ -78,6 +78,7 @@ const metadataNameMap = {
 };
 
 enum LineType {
+  PROGRAM_COMMENT,
   METADATA,
   HANDICAP,
   BLACK_HAND,
@@ -92,6 +93,12 @@ enum LineType {
 
 // & で始まる行はしおりを意味するらしいが用途がよくわらず実際の使用例を見たことがない。
 const linePatterns = [
+  {
+    prefix: /^#/,
+    type: LineType.PROGRAM_COMMENT,
+    removePrefix: false,
+    isPosition: false,
+  },
   {
     prefix: /^手合割：/,
     type: LineType.HANDICAP,
@@ -150,10 +157,6 @@ type Line = {
 };
 
 function parseLine(line: string): Line {
-  let end = line.indexOf("#");
-  if (end === -1) {
-    end = line.length;
-  }
   for (let i = 0; i < linePatterns.length; i++) {
     const pattern = linePatterns[i];
     const matched = line.match(pattern.prefix);
@@ -161,7 +164,7 @@ function parseLine(line: string): Line {
       const begin = pattern.removePrefix ? matched[0].length : 0;
       return {
         type: pattern.type,
-        data: line.substring(begin, end),
+        data: line.substring(begin),
         isPosition: pattern.isPosition,
         metadataKey: "",
       };
@@ -172,14 +175,14 @@ function parseLine(line: string): Line {
     const prefix = metadataPrefix[0];
     return {
       type: LineType.METADATA,
-      data: line.substring(prefix.length, end),
+      data: line.substring(prefix.length),
       isPosition: false,
       metadataKey: prefix.substring(0, prefix.length - 1),
     };
   }
   return {
     type: LineType.UNKNOWN,
-    data: line.substring(0, end),
+    data: line,
     isPosition: false,
     metadataKey: "",
   };
@@ -318,7 +321,7 @@ const stringToSpecialMove: { [move: string]: SpecialMove } = {
 };
 
 const moveRegExp =
-  /^ *([0-9]+) +[▲△]?([１２３４５６７８９][一二三四五六七八九]|同\u3000)(玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)(成?)(打|\([1-9][1-9]\)) *(.*)$/;
+  /^ *([0-9]+) +[▲△]?([１２３４５６７８９][一二三四五六七八九]|同\u3000)(王|玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)(成?)(打|\([1-9][1-9]\)) *(.*)$/;
 
 const timeRegExp = /\( *([0-9]+):([0-9]+)\/[0-9: ]*\)/;
 
@@ -492,6 +495,8 @@ export function importKakinoki(data: string): Record | Error {
       case LineType.COMMENT:
         record.current.comment +=
           (record.current.comment.length !== 0 ? "\n" : "") + parsed.data;
+        break;
+      case LineType.PROGRAM_COMMENT:
         break;
       case LineType.UNKNOWN:
         break;

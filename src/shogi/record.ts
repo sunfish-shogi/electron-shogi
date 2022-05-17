@@ -276,6 +276,17 @@ class RecordEntryImpl implements RecordEntry {
       }
     }
   }
+
+  static newRootEntry(): RecordEntryImpl {
+    return new RecordEntryImpl(
+      0, // number
+      null, // prev
+      0, // branchIndex
+      true, // activeBranch
+      SpecialMove.START, // move
+      false // isCheck
+    );
+  }
 }
 
 export interface ImmutableRecord {
@@ -308,14 +319,7 @@ export default class Record {
     this.metadata = new RecordMetadata();
     this._initialPosition = position ? position.clone() : new Position();
     this._position = this.initialPosition.clone();
-    this._first = new RecordEntryImpl(
-      0, // number
-      null, // prev
-      0, // branchIndex
-      true, // activeBranch
-      SpecialMove.START, // move
-      false // isCheck
-    );
+    this._first = RecordEntryImpl.newRootEntry();
     this._current = this._first;
     this.repetitionCounts = {};
     this.repetitionStart = {};
@@ -385,7 +389,7 @@ export default class Record {
       this._initialPosition = position.clone();
     }
     this._position = this.initialPosition.clone();
-    this._first.next = null;
+    this._first = RecordEntryImpl.newRootEntry();
     this._current = this._first;
     this.repetitionCounts = {};
     this.repetitionStart = {};

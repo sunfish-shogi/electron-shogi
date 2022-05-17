@@ -10,6 +10,31 @@ import {
 } from "@/shogi";
 
 describe("shogi/record", () => {
+  it("constructor", () => {
+    const record = new Record();
+    expect(record.first.move).toBe(SpecialMove.START);
+    expect(record.first.next).toBeNull();
+    expect(record.first.comment).toBe("");
+    expect(record.first.customData).toBeUndefined();
+    expect(record.current).toBe(record.first);
+  });
+
+  it("clear", () => {
+    const record = new Record();
+    record.first.comment = "abc";
+    record.first.customData = "foo bar baz";
+    record.append(SpecialMove.INTERRUPT);
+    expect(record.first.next).toBe(record.current);
+    expect(record.first.comment).toBe("abc");
+    expect(record.first.customData).toBe("foo bar baz");
+    record.clear();
+    expect(record.first.move).toBe(SpecialMove.START);
+    expect(record.first.next).toBeNull();
+    expect(record.first.comment).toBe("");
+    expect(record.first.customData).toBeUndefined();
+    expect(record.current).toBe(record.first);
+  });
+
   it("displayString", () => {
     expect(specialMoveToDisplayString(SpecialMove.RESIGN)).toBe("投了");
     expect(specialMoveToDisplayString(SpecialMove.TIMEOUT)).toBe("切れ負け");

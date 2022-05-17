@@ -597,7 +597,7 @@ class Store {
     if (this.mode != Mode.NORMAL) {
       return;
     }
-    this._record.clear(new Position());
+    this._record.clear();
     this.onUpdatePosition();
     this.clearRecordFilePath();
   }

@@ -68,7 +68,7 @@ export default class Move {
     let text = "";
     text += this.color === Color.BLACK ? "▲" : "△";
     if (prev && prev.to.equals(this.to)) {
-      text += "同";
+      text += "同　";
     } else {
       text += fileDisplayTexts[this.to.file - 1];
       text += rankDisplayTexts[this.to.rank - 1];

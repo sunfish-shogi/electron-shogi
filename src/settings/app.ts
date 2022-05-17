@@ -27,6 +27,8 @@ export type AppSetting = {
   boardFlipping: boolean;
   tab: Tab;
   returnCode: string;
+  showElapsedTimeInRecordView: boolean;
+  showCommentInRecordView: boolean;
 };
 
 export type AppSettingUpdate = {
@@ -39,6 +41,8 @@ export type AppSettingUpdate = {
   boardFlipping?: boolean;
   tab?: Tab;
   returnCode?: string;
+  showElapsedTimeInRecordView?: boolean;
+  showCommentInRecordView?: boolean;
 };
 
 export function defaultAppSetting(returnCode?: string): AppSetting {
@@ -52,5 +56,7 @@ export function defaultAppSetting(returnCode?: string): AppSetting {
     boardFlipping: false,
     tab: Tab.RECORD_INFO,
     returnCode: returnCode || "\r\n",
+    showElapsedTimeInRecordView: true,
+    showCommentInRecordView: true,
   };
 }

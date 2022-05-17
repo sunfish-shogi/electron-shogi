@@ -11,7 +11,7 @@
           :class="{ selected: activeTab === 'recordInfo' }"
           @click="changeSelect('recordInfo')"
         >
-          <ButtonIcon class="icon" icon="recordInfo" />
+          <ButtonIcon class="icon" icon="description" />
           棋譜情報
         </span>
         <span
@@ -20,7 +20,7 @@
           @click="changeSelect('comment')"
         >
           <ButtonIcon class="icon" icon="comment" />
-          指し手コメント
+          コメント
         </span>
         <span
           class="tab"
@@ -36,7 +36,15 @@
           @click="changeSelect('chart')"
         >
           <ButtonIcon class="icon" icon="chart" />
-          形勢グラフ
+          評価値
+        </span>
+        <span
+          class="tab"
+          :class="{ selected: activeTab === 'percentageChart' }"
+          @click="changeSelect('percentageChart')"
+        >
+          <ButtonIcon class="icon" icon="percent" />
+          期待勝率
         </span>
         <span
           class="tab"
@@ -67,6 +75,13 @@
           class="tab-content"
           :class="{ selected: activeTab === 'chart' }"
           :size="contentSize"
+          type="raw"
+        />
+        <EvaluationChart
+          class="tab-content"
+          :class="{ selected: activeTab === 'percentageChart' }"
+          :size="contentSize"
+          type="winRate"
         />
       </div>
     </div>

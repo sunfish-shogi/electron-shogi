@@ -22,6 +22,7 @@ export enum Icon {
   COMMENT = "comment",
   BRAIN = "brain",
   CHART = "chart",
+  PERCENT = "percent",
   ARROW_DROP = "arrowDrop",
   FIRST = "first",
   BACK = "back",
@@ -29,6 +30,7 @@ export enum Icon {
   LAST = "last",
   QUESTION = "question",
   ANALYSIS = "analysis",
+  DESCRIPTION = "description",
 }
 
 export const iconSourceMap = {
@@ -53,6 +55,7 @@ export const iconSourceMap = {
   [Icon.COMMENT]: "icon/edit_note_white_24dp.svg",
   [Icon.BRAIN]: "icon/psychology_white_24dp.svg",
   [Icon.CHART]: "icon/show_chart_white_24dp.svg",
+  [Icon.PERCENT]: "icon/percent_white_24dp.svg",
   [Icon.ARROW_DROP]: "icon/arrow_drop_down_white_24dp.svg",
   [Icon.FIRST]: "icon/first_page_white_24dp.svg",
   [Icon.BACK]: "icon/chevron_left_white_24dp.svg",
@@ -60,6 +63,7 @@ export const iconSourceMap = {
   [Icon.LAST]: "icon/last_page_white_24dp.svg",
   [Icon.QUESTION]: "icon/help_white_24dp.svg",
   [Icon.ANALYSIS]: "icon/query_stats_white_24dp.svg",
+  [Icon.DESCRIPTION]: "icon/description_white_24dp.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

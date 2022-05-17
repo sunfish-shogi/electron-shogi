@@ -14,11 +14,28 @@
 <script lang="ts">
 import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
-import { MAX_SCORE, MIN_SCORE, RecordEntryCustomData } from "@/store/record";
-import { defineComponent, onMounted, onUnmounted, ref, Ref, watch } from "vue";
+import { RecordEntryCustomData } from "@/store/record";
+import {
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  PropType,
+  ref,
+  Ref,
+  watch,
+} from "vue";
 import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
 import { stringifyUSIInfoSender, USIInfoSender } from "@/store/usi";
 import { ImmutableRecord } from "@/shogi";
+import { scoreToPercentage } from "@/store/score";
+
+const MAX_SCORE = 2000;
+const MIN_SCORE = -MAX_SCORE;
+
+export enum EvaluationChartType {
+  RAW = "raw",
+  WIN_RATE = "winRate",
+}
 
 export default defineComponent({
   name: "EvaluationChart",
@@ -27,11 +44,21 @@ export default defineComponent({
       type: RectSize,
       required: true,
     },
+    type: {
+      type: String as PropType<EvaluationChartType>,
+      required: true,
+    },
   },
   setup(props) {
     const canvasRef: Ref = ref(null);
     const store = useStore();
     let chart: Chart;
+    let maxScore = MAX_SCORE;
+    let minScore = MIN_SCORE;
+    if (props.type === EvaluationChartType.WIN_RATE) {
+      maxScore = 100;
+      minScore = 0;
+    }
 
     const buildDataset = (
       borderColor: Color,
@@ -41,8 +68,16 @@ export default defineComponent({
       const dataPoints: { x: number; y: number }[] = [];
       record.moves.forEach((entry) => {
         const data = new RecordEntryCustomData(entry.customData);
-        const value = data.evaluation && data.evaluation[sender];
-        if (value) {
+        let value = data.evaluation && data.evaluation[sender];
+        if (value !== undefined) {
+          switch (props.type) {
+            case EvaluationChartType.RAW:
+              value = Math.min(Math.max(value, MIN_SCORE), MAX_SCORE);
+              break;
+            case EvaluationChartType.WIN_RATE:
+              value = scoreToPercentage(value);
+              break;
+          }
           dataPoints.push({
             x: entry.number,
             y: value,
@@ -62,8 +97,8 @@ export default defineComponent({
         label: "現在の局面",
         borderColor: "red",
         data: [
-          { x: record.current.number, y: MAX_SCORE },
-          { x: record.current.number, y: MIN_SCORE },
+          { x: record.current.number, y: maxScore },
+          { x: record.current.number, y: minScore },
         ],
         showLine: true,
         pointBorderWidth: 0,
@@ -87,8 +122,8 @@ export default defineComponent({
           max: record.length + 10,
         },
         y: {
-          min: MIN_SCORE,
-          max: MAX_SCORE,
+          min: minScore,
+          max: maxScore,
         },
       };
     };

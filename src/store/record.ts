@@ -7,9 +7,7 @@ type Evaluation = {
   researcher?: number;
 };
 
-export const MAX_SCORE = 2000;
-
-export const MIN_SCORE = -MAX_SCORE;
+export const MATE_SCORE = 30000;
 
 export class RecordEntryCustomData {
   evaluation?: Evaluation;
@@ -52,16 +50,12 @@ export class RecordEntryCustomData {
       return;
     }
     if (command.scoreCP) {
-      this.updateScore(
-        color,
-        sender,
-        Math.min(Math.max(command.scoreCP, MIN_SCORE), MAX_SCORE)
-      );
+      this.updateScore(color, sender, command.scoreCP);
     } else if (command.scoreMate) {
       this.updateScore(
         color,
         sender,
-        command.scoreMate >= 0 ? MAX_SCORE : MIN_SCORE
+        command.scoreMate >= 0 ? MATE_SCORE : -MATE_SCORE
       );
     }
   }

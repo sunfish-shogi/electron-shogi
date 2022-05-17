@@ -1,3 +1,5 @@
+import { AppSetting } from "@/settings/app";
+
 export function getSituationText(score: number): string {
   if (score >= 1500) {
     return "先手勝勢";
@@ -20,23 +22,28 @@ export function getSituationText(score: number): string {
   }
 }
 
-export function scoreToPercentage(score: number): number {
-  const scale = 600;
-  return 100 / (1 + Math.exp(-score / scale));
+export function scoreToPercentage(
+  score: number,
+  appSetting: AppSetting
+): number {
+  return 100 / (1 + Math.exp(-score / appSetting.coefficientInSigmoid));
 }
 
 export function getMoveAccuracyText(
   before: number,
-  after: number
+  after: number,
+  appSetting: AppSetting
 ): string | null {
-  const loss = scoreToPercentage(before) - scoreToPercentage(after);
-  if (loss >= 50) {
+  const loss =
+    scoreToPercentage(before, appSetting) -
+    scoreToPercentage(after, appSetting);
+  if (loss >= appSetting.badMoveLevelThreshold4) {
     return "大悪手";
-  } else if (loss >= 20) {
+  } else if (loss >= appSetting.badMoveLevelThreshold3) {
     return "悪手";
-  } else if (loss >= 10) {
+  } else if (loss >= appSetting.badMoveLevelThreshold2) {
     return "疑問手";
-  } else if (loss >= 5) {
+  } else if (loss >= appSetting.badMoveLevelThreshold1) {
     return "緩手";
   }
   return null;

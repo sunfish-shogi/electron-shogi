@@ -3,77 +3,144 @@
     <dialog ref="dialog">
       <div class="dialog-title">アプリ設定</div>
       <div class="dialog-form-area settings">
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">駒画像</div>
-          <select ref="pieceImage" :value="appSetting.pieceImage">
-            <option
-              v-for="pieceImageType of pieceImageTypes"
-              :key="pieceImageType"
-              :value="pieceImageType.value"
-            >
-              {{ pieceImageType.name }}
-            </option>
-          </select>
+        <div class="section">
+          <div class="section-title">画像</div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">駒画像</div>
+            <select ref="pieceImage" :value="appSetting.pieceImage">
+              <option
+                v-for="pieceImageType of pieceImageTypes"
+                :key="pieceImageType.value"
+                :value="pieceImageType.value"
+              >
+                {{ pieceImageType.name }}
+              </option>
+            </select>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">盤画像</div>
+            <select ref="boardImage" :value="appSetting.boardImage">
+              <option
+                v-for="boardImageType of boardImageTypes"
+                :key="boardImageType.value"
+                :value="boardImageType.value"
+              >
+                {{ boardImageType.name }}
+              </option>
+            </select>
+          </div>
         </div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">盤画像</div>
-          <select ref="boardImage" :value="appSetting.boardImage">
-            <option
-              v-for="boardImageType of boardImageTypes"
-              :key="boardImageType"
-              :value="boardImageType.value"
-            >
-              {{ boardImageType.name }}
-            </option>
-          </select>
+        <div class="section">
+          <div class="section-title">音</div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">駒音の大きさ</div>
+            <input
+              ref="pieceVolume"
+              :value="appSetting.pieceVolume"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="dialog-form-item-unit">%</div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">時計音の大きさ</div>
+            <input
+              ref="clockVolume"
+              :value="appSetting.clockVolume"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="dialog-form-item-unit">%</div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">時計音の高さ</div>
+            <input
+              ref="clockPitch"
+              :value="appSetting.clockPitch"
+              type="number"
+              max="880"
+              min="220"
+            />
+            <div class="dialog-form-item-unit">Hz (220 ~ 880)</div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">時計音の対象</div>
+            <select ref="clockSoundTarget" :value="appSetting.clockSoundTarget">
+              <option value="all">全ての手番</option>
+              <option value="onlyUser">人の手番のみ</option>
+            </select>
+          </div>
         </div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">駒音の大きさ</div>
-          <input
-            ref="pieceVolume"
-            :value="appSetting.pieceVolume"
-            type="number"
-            max="100"
-            min="0"
-          />
-          <div class="dialog-form-item-unit">%</div>
+        <div class="section">
+          <div class="section-title">ファイル</div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">改行文字</div>
+            <select ref="returnCode" :value="appSetting.returnCode">
+              <option value="crlf">CR + LF (Windows)</option>
+              <option value="lf">LF (UNIX/Mac)</option>
+              <option value="cr">CR (90年代Mac)</option>
+            </select>
+          </div>
         </div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">時計音の大きさ</div>
-          <input
-            ref="clockVolume"
-            :value="appSetting.clockVolume"
-            type="number"
-            max="100"
-            min="0"
-          />
-          <div class="dialog-form-item-unit">%</div>
-        </div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">時計音の高さ</div>
-          <input
-            ref="clockPitch"
-            :value="appSetting.clockPitch"
-            type="number"
-            max="880"
-            min="220"
-          />
-          <div class="dialog-form-item-unit">Hz (220 ~ 880)</div>
-        </div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">時計音の対象</div>
-          <select ref="clockSoundTarget" :value="appSetting.clockSoundTarget">
-            <option value="all">全ての手番</option>
-            <option value="onlyUser">人の手番のみ</option>
-          </select>
-        </div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">改行文字</div>
-          <select ref="returnCode" :value="appSetting.returnCode">
-            <option value="crlf">CR + LF (Windows)</option>
-            <option value="lf">LF (UNIX/Mac)</option>
-            <option value="cr">CR (90年代Mac)</option>
-          </select>
+        <div class="section">
+          <div class="section-title">評価値・期待勝率</div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">勝率換算係数</div>
+            <input
+              ref="coefficientInSigmoid"
+              :value="appSetting.coefficientInSigmoid"
+              type="number"
+              max="10000"
+              min="1"
+            />
+            <div class="dialog-form-item-unit">(推奨: 600 から 1500 まで)</div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">緩手の閾値</div>
+            <input
+              ref="badMoveLevelThreshold1"
+              :value="appSetting.badMoveLevelThreshold1"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="dialog-form-item-unit">%</div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">疑問手の閾値</div>
+            <input
+              ref="badMoveLevelThreshold2"
+              :value="appSetting.badMoveLevelThreshold2"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="dialog-form-item-unit">%</div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">悪手の閾値</div>
+            <input
+              ref="badMoveLevelThreshold3"
+              :value="appSetting.badMoveLevelThreshold3"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="dialog-form-item-unit">%</div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">大悪手の閾値</div>
+            <input
+              ref="badMoveLevelThreshold4"
+              :value="appSetting.badMoveLevelThreshold4"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="dialog-form-item-unit">%</div>
+          </div>
         </div>
       </div>
       <div class="dialog-main-buttons">
@@ -121,6 +188,11 @@ export default defineComponent({
     const clockPitch: Ref = ref(null);
     const clockSoundTarget: Ref = ref(null);
     const returnCode: Ref = ref(null);
+    const coefficientInSigmoid: Ref = ref(null);
+    const badMoveLevelThreshold1: Ref = ref(null);
+    const badMoveLevelThreshold2: Ref = ref(null);
+    const badMoveLevelThreshold3: Ref = ref(null);
+    const badMoveLevelThreshold4: Ref = ref(null);
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -135,6 +207,11 @@ export default defineComponent({
         clockPitch: readInputAsNumber(clockPitch.value),
         clockSoundTarget: clockSoundTarget.value.value,
         returnCode: nameToReturnCode[returnCode.value.value],
+        coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
+        badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
+        badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
+        badMoveLevelThreshold3: readInputAsNumber(badMoveLevelThreshold3.value),
+        badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
       };
       store.retainBussyState();
       try {
@@ -193,6 +270,11 @@ export default defineComponent({
       clockPitch,
       clockSoundTarget,
       returnCode,
+      coefficientInSigmoid,
+      badMoveLevelThreshold1,
+      badMoveLevelThreshold2,
+      badMoveLevelThreshold3,
+      badMoveLevelThreshold4,
       appSetting,
       pieceImageTypes,
       boardImageTypes,
@@ -205,8 +287,17 @@ export default defineComponent({
 
 <style scoped>
 .settings {
+  width: 450px;
+  height: 540px;
+  padding: 10px;
+  overflow: auto;
   display: flex;
   flex-direction: column;
-  width: 540px;
+}
+.section {
+  margin: 0px 0px 20px 0px;
+}
+.section-title {
+  font-size: 1.1em;
 }
 </style>

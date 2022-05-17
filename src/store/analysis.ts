@@ -1,5 +1,6 @@
 import { USIPlayer } from "@/players/usi";
 import { AnalysisSetting } from "@/settings/analysis";
+import { AppSetting } from "@/settings/app";
 import { USIEngineSetting } from "@/settings/usi";
 import {
   Color,
@@ -199,7 +200,10 @@ export class AnalysisManager {
   }
 }
 
-export function buildRecordComment(result: AnalysisResult): string {
+export function buildRecordComment(
+  result: AnalysisResult,
+  appSetting: AppSetting
+): string {
   let comment = "";
   if (result.mate) {
     comment += `${result.mate}手詰\n`;
@@ -211,7 +215,8 @@ export function buildRecordComment(result: AnalysisResult): string {
   ) {
     const text = getMoveAccuracyText(
       result.negaScore - result.scoreDelta,
-      result.negaScore
+      result.negaScore,
+      appSetting
     );
     if (text) {
       comment += `【${text}】\n`;

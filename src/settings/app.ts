@@ -8,6 +8,7 @@ export enum Tab {
   COMMENT = "comment",
   SEARCH = "search",
   CHART = "chart",
+  PERCENTAGE_CHART = "percentageChart",
   INVISIBLE = "invisible",
 }
 

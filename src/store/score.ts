@@ -21,7 +21,7 @@ export function getSituationText(score: number): string {
 }
 
 export function scoreToPercentage(score: number): number {
-  const scale = 800;
+  const scale = 600;
   return 100 / (1 + Math.exp(-score / scale));
 }
 

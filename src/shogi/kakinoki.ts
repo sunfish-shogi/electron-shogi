@@ -1,6 +1,7 @@
 // KIF file format (.kif or .kifu)
 // See http://kakinoki.o.oo7.jp/kif_format.html
 
+import { appendLine } from "@/helpers/string";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/helpers/time";
 import {
   Color,
@@ -447,6 +448,7 @@ export function importKakinoki(data: string): Record | Error {
   const record = new Record();
   const lines = data.split(/\r?\n/);
   const position = new Position();
+  let preMoveComment = "";
   let inMoveSection = false;
   for (const line of lines) {
     if (line === "") {
@@ -488,13 +490,20 @@ export function importKakinoki(data: string): Record | Error {
       case LineType.MOVE:
         if (!inMoveSection) {
           record.clear(position);
+          record.first.comment = preMoveComment;
           inMoveSection = true;
         }
         e = readMove(record, parsed.data);
         break;
       case LineType.COMMENT:
-        record.current.comment +=
-          (record.current.comment.length !== 0 ? "\n" : "") + parsed.data;
+        if (inMoveSection) {
+          record.current.comment = appendLine(
+            record.current.comment,
+            parsed.data
+          );
+        } else {
+          preMoveComment = appendLine(preMoveComment, parsed.data);
+        }
         break;
       case LineType.PROGRAM_COMMENT:
         break;
@@ -507,6 +516,7 @@ export function importKakinoki(data: string): Record | Error {
   }
   if (!inMoveSection) {
     record.clear(position);
+    record.first.comment = preMoveComment;
   }
   record.goto(0);
   record.resetAllBranchSelection();

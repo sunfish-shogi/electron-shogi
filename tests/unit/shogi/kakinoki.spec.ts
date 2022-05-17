@@ -647,8 +647,14 @@ describe("shogi/kakinoki", () => {
 `;
     const record = importKakinoki(data) as Record;
     expect(record).toBeInstanceOf(Record);
+    expect(record.current.move).toBe(SpecialMove.START);
+    expect(record.current.comment).toHaveLength(234);
+    record.goto(97);
+    expect(record.current.move).toBeInstanceOf(Move);
+    expect(record.current.comment).toHaveLength(100);
     record.goto(114);
     expect(record.current.move).toBe(SpecialMove.RESIGN);
+    expect(record.current.comment).toBe("");
     expect(record.sfen).toBe(
       "sfen lnkg2b+Rl/6r2/p2p1G2p/5pp2/1SpNp2NP/1P1P1PP2/P1G1P4/4G4/L2KB3L w S4P2sn 115"
     );

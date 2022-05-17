@@ -41,13 +41,14 @@
         <option
           v-for="move in moves"
           :key="move.number"
+          :class="{ 'has-branch': move.hasBranch, selected: move.selected }"
           :selected="move.selected"
           :value="move.number"
         >
-          {{ move.number !== 0 ? move.number + " " : "" }}
+          {{ move.number !== 0 ? move.number : "" }}
+          {{ move.number !== 0 ? " " : "" }}
           {{ move.text }}
-          {{ move.hasBranch ? "<分岐>" : "" }}
-          {{ move.comment ? "- " + move.comment : "" }}
+          {{ showComment && move.comment ? "-- " + move.comment : "" }}
         </option>
       </select>
       <select
@@ -64,7 +65,7 @@
           :value="branch.index"
         >
           {{ branch.text }}
-          {{ branch.comment ? "- " + branch.comment : "" }}
+          {{ showComment && branch.comment ? "-- " + branch.comment : "" }}
         </option>
       </select>
     </div>
@@ -87,6 +88,14 @@ export default defineComponent({
       required: true,
     },
     operational: {
+      type: Boolean,
+      required: false,
+    },
+    showElapsedTime: {
+      type: Boolean,
+      required: false,
+    },
+    showComment: {
       type: Boolean,
       required: false,
     },
@@ -140,7 +149,7 @@ export default defineComponent({
       props.record.moves.forEach((elem) => {
         ret.push({
           number: elem.number,
-          text: elem.displayText,
+          text: props.showElapsedTime ? elem.displayText : elem.displayMoveText,
           hasBranch: elem.hasBranch,
           comment: elem.comment,
           selected: elem === props.record.current,
@@ -190,11 +199,9 @@ export default defineComponent({
 
 <style scoped>
 .frame {
-  box-sizing: border-box;
-  max-width: 400px;
+  max-width: 600px;
   width: 100%;
   height: 100%;
-  padding: 10px;
   display: flex;
   flex-direction: column;
 }
@@ -212,9 +219,12 @@ export default defineComponent({
   width: 100%;
   height: 70%;
 }
+.move-list .has-branch:not(.selected) {
+  background-color: yellow;
+}
 .branch-list {
   flex: auto;
-  margin-top: 5px;
+  margin-top: 2px;
   width: 100%;
 }
 </style>

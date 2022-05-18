@@ -28,6 +28,7 @@ import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
 import { stringifyUSIInfoSender, USIInfoSender } from "@/store/usi";
 import { ImmutableRecord } from "@/shogi";
 import { scoreToPercentage } from "@/store/score";
+import { AppSetting } from "@/settings/app";
 
 const MAX_SCORE = 2000;
 const MIN_SCORE = -MAX_SCORE;
@@ -63,7 +64,8 @@ export default defineComponent({
     const buildDataset = (
       borderColor: Color,
       sender: USIInfoSender,
-      record: ImmutableRecord
+      record: ImmutableRecord,
+      appSetting: AppSetting
     ) => {
       const dataPoints: { x: number; y: number }[] = [];
       record.moves.forEach((entry) => {
@@ -75,7 +77,7 @@ export default defineComponent({
               value = Math.min(Math.max(value, MIN_SCORE), MAX_SCORE);
               break;
             case EvaluationChartType.WIN_RATE:
-              value = scoreToPercentage(value);
+              value = scoreToPercentage(value, appSetting);
               break;
           }
           dataPoints.push({
@@ -106,12 +108,22 @@ export default defineComponent({
       };
     };
 
-    const buildDatasets = (record: ImmutableRecord) => {
+    const buildDatasets = (record: ImmutableRecord, appSetting: AppSetting) => {
       return [
         verticalLine(record),
-        buildDataset("royalblue", USIInfoSender.BLACK_PLAYER, record),
-        buildDataset("darkorange", USIInfoSender.WHITE_PLAYER, record),
-        buildDataset("darkgreen", USIInfoSender.RESEARCHER, record),
+        buildDataset(
+          "royalblue",
+          USIInfoSender.BLACK_PLAYER,
+          record,
+          appSetting
+        ),
+        buildDataset(
+          "darkorange",
+          USIInfoSender.WHITE_PLAYER,
+          record,
+          appSetting
+        ),
+        buildDataset("darkgreen", USIInfoSender.RESEARCHER, record, appSetting),
       ];
     };
 
@@ -148,7 +160,7 @@ export default defineComponent({
       chart = new Chart(context, {
         type: "scatter",
         data: {
-          datasets: buildDatasets(record),
+          datasets: buildDatasets(record, store.appSetting),
         },
         options: {
           color: "black",
@@ -168,10 +180,13 @@ export default defineComponent({
     });
 
     watch(
-      () => [store.record],
-      ([record]) => {
-        chart.data.datasets = buildDatasets(record);
-        chart.options.scales = buildScalesOption(record);
+      () => [store.record, store.appSetting],
+      ([record, appSetting]) => {
+        chart.data.datasets = buildDatasets(
+          record as ImmutableRecord,
+          appSetting as AppSetting
+        );
+        chart.options.scales = buildScalesOption(record as ImmutableRecord);
         chart.update();
       },
       { deep: true }

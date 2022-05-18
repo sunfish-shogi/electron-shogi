@@ -33,6 +33,7 @@ import {
   AppSettingUpdate,
   ClockSoundTarget,
   defaultAppSetting,
+  validateAppSetting,
 } from "@/settings/app";
 import {
   AudioEventHandler,
@@ -140,14 +141,16 @@ class Store {
   }
 
   async updateAppSetting(update: AppSettingUpdate): Promise<void> {
-    await saveAppSetting({
-      ...this.appSetting,
-      ...update,
-    });
-    this._appSetting = {
+    const newAppSetting = {
       ...this.appSetting,
       ...update,
     };
+    const error = validateAppSetting(newAppSetting);
+    if (error) {
+      throw error;
+    }
+    await saveAppSetting(newAppSetting);
+    this._appSetting = newAppSetting;
   }
 
   flipBoard(): void {
@@ -474,7 +477,7 @@ class Store {
 
   onResult(result: AnalysisResult): void {
     if (this.mode === Mode.ANALYSIS && this.analysis) {
-      const comment = buildRecordComment(result);
+      const comment = buildRecordComment(result, this.appSetting);
       if (comment) {
         this._record.current.comment = appendAnalysisComment(
           this._record.current.comment,

@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog">
       <div class="content">
-        <ButtonIcon class="icon" icon="info" />
+        <ButtonIcon class="icon" :icon="Icon.INFO" />
         <div class="message">{{ message }}</div>
       </div>
       <div class="dialog-main-buttons">
@@ -17,6 +17,7 @@ import { showModalDialog } from "@/helpers/dialog";
 import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import { Icon } from "@/assets/icons";
 
 export default defineComponent({
   name: "InfoMessage",
@@ -41,6 +42,7 @@ export default defineComponent({
       dialog,
       message,
       onClose,
+      Icon,
     };
   },
 });

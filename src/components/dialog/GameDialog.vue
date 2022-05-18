@@ -41,7 +41,7 @@
         </div>
         <div class="players-control">
           <button @click="onSwapColor">
-            <ButtonIcon class="icon" icon="swap_h" />
+            <ButtonIcon class="icon" :icon="Icon.SWAP_H" />
             先後入れ替え
           </button>
         </div>
@@ -158,6 +158,7 @@ import { showModalDialog } from "@/helpers/dialog";
 import * as uri from "@/uri";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { readInputAsNumber } from "@/helpers/form";
+import { Icon } from "@/assets/icons";
 
 export default defineComponent({
   name: "GameDialog",
@@ -289,6 +290,7 @@ export default defineComponent({
       onStart,
       onCancel,
       onSwapColor,
+      Icon,
     };
   },
 });

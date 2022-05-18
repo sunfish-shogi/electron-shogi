@@ -21,49 +21,49 @@
       <template #right-control>
         <div class="control top">
           <button v-if="controlStates.game" @click="onGame">
-            <ButtonIcon class="icon" icon="game" />
+            <ButtonIcon class="icon" :icon="Icon.GAME" />
             対局
           </button>
           <button v-if="controlStates.stop" @click="onStop">
-            <ButtonIcon class="icon" icon="stop" />
+            <ButtonIcon class="icon" :icon="Icon.STOP" />
             対局中断
           </button>
           <button v-if="controlStates.resign" @click="onResign">
-            <ButtonIcon class="icon" icon="resign" />
+            <ButtonIcon class="icon" :icon="Icon.RESIGN" />
             投了
           </button>
           <button v-if="controlStates.research" @click="onResearch">
-            <ButtonIcon class="icon" icon="research" />
+            <ButtonIcon class="icon" :icon="Icon.RESEARCH" />
             検討
           </button>
           <button v-if="controlStates.endResearch" @click="onEndResearch">
-            <ButtonIcon class="icon" icon="end" />
+            <ButtonIcon class="icon" :icon="Icon.END" />
             検討終了
           </button>
           <button v-if="controlStates.analysis" @click="onAnalysis">
-            <ButtonIcon class="icon" icon="analysis" />
+            <ButtonIcon class="icon" :icon="Icon.ANALYSIS" />
             解析
           </button>
           <button v-if="controlStates.endAnalysis" @click="onEndAnalysis">
-            <ButtonIcon class="icon" icon="stop" />
+            <ButtonIcon class="icon" :icon="Icon.STOP" />
             解析中断
           </button>
           <button
             v-if="controlStates.startEditPosition"
             @click="onStartEditPosition"
           >
-            <ButtonIcon class="icon" icon="edit" />
+            <ButtonIcon class="icon" :icon="Icon.EDIT" />
             局面編集
           </button>
           <button
             v-if="controlStates.endEditPosition"
             @click="onEndEditPosition"
           >
-            <ButtonIcon class="icon" icon="check" />
+            <ButtonIcon class="icon" :icon="Icon.CHECK" />
             局面編集終了
           </button>
           <button v-if="controlStates.initPosition" @click="onChangeTurn">
-            <ButtonIcon class="icon" icon="swap" />
+            <ButtonIcon class="icon" :icon="Icon.SWAP" />
             手番変更
           </button>
           <select v-if="controlStates.initPosition" @change="onInitPosition">
@@ -86,30 +86,30 @@
       <template #left-control>
         <div class="control bottom">
           <button @click="onOpenAppSettings">
-            <ButtonIcon class="icon" icon="settings" />
+            <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
             アプリ設定
           </button>
           <button
             :disabled="!controlStates.engineSettings"
             @click="onOpenEngineSettings"
           >
-            <ButtonIcon class="icon" icon="engineSettings" />
+            <ButtonIcon class="icon" :icon="Icon.ENGINE_SETTINGS" />
             エンジン設定
           </button>
           <button @click="onFlip">
-            <ButtonIcon class="icon" icon="flip" />
+            <ButtonIcon class="icon" :icon="Icon.FLIP" />
             盤面反転
           </button>
           <button :disabled="!controlStates.paste" @click="onPaste">
-            <ButtonIcon class="icon" icon="paste" />
+            <ButtonIcon class="icon" :icon="Icon.PASTE" />
             棋譜貼り付け
           </button>
           <button @click="onCopy">
-            <ButtonIcon class="icon" icon="copy" />
+            <ButtonIcon class="icon" :icon="Icon.COPY" />
             棋譜コピー
           </button>
           <button :disabled="!controlStates.removeAfter" @click="onRemoveAfter">
-            <ButtonIcon class="icon" icon="delete" />
+            <ButtonIcon class="icon" :icon="Icon.DELETE" />
             指し手削除
           </button>
         </div>
@@ -132,6 +132,7 @@ import { useStore } from "@/store";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Mode } from "@/store/mode";
 import { humanPlayer } from "@/players/human";
+import { Icon } from "@/assets/icons";
 
 export default defineComponent({
   name: "BoardPane",
@@ -239,7 +240,7 @@ export default defineComponent({
 
     const lastMove = computed(() => {
       const move = store.record.current.move;
-      return move instanceof Move ? move : null;
+      return move instanceof Move ? move : undefined;
     });
 
     const pieceImageType = computed(() => store.appSetting.pieceImage);
@@ -325,6 +326,7 @@ export default defineComponent({
       onRemoveAfter,
       allowEdit,
       allowMove,
+      Icon,
     };
   },
 });

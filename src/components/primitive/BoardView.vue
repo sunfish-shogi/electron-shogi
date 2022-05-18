@@ -74,7 +74,7 @@
           :key="pointer.id"
           class="hand-pointer"
           :style="pointer.style"
-          @click="clickHand($event, 'black', pointer.type)"
+          @click="clickHand($event, Color.BLACK, pointer.type)"
         />
       </div>
       <div class="hand" :style="layout.whiteHand.style">
@@ -97,7 +97,7 @@
           :key="pointer.id"
           class="hand-pointer"
           :style="pointer.style"
-          @click="clickHand($event, 'white', pointer.type)"
+          @click="clickHand($event, Color.WHITE, pointer.type)"
         />
       </div>
       <div
@@ -162,7 +162,7 @@ export default defineComponent({
       required: true,
     },
     lastMove: {
-      type: Move,
+      type: Object as PropType<Move>,
       required: false,
       default: null,
     },
@@ -418,6 +418,7 @@ export default defineComponent({
       blackPlayerTimeSeverity,
       whitePlayerTimeText,
       whitePlayerTimeSeverity,
+      Color,
     };
   },
 });

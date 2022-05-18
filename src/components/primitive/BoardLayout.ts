@@ -306,7 +306,7 @@ type HandPieceLayout = {
 
 type HandPointerLayout = {
   id: string;
-  type: string;
+  type: PieceType;
   style: { [key: string]: string };
   backgroundStyle: { [key: string]: string };
 };

@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog" class="error">
       <div class="content">
-        <ButtonIcon class="icon" icon="error" />
+        <ButtonIcon class="icon" :icon="Icon.ERROR" />
         <div class="items">
           <div class="notice">
             {{ errors.length }} 件のエラーが発生しました。
@@ -25,6 +25,7 @@ import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import { showModalDialog } from "@/helpers/dialog";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import { Icon } from "@/assets/icons";
 
 export default defineComponent({
   name: "ErrorMessage",
@@ -56,6 +57,7 @@ export default defineComponent({
       dialog,
       errors,
       onClose,
+      Icon,
     };
   },
 });

@@ -16,7 +16,8 @@
 Electron 将棋はオープンソースであり、そして低い制限のもとで自由に利用・改変が可能です。
 
 また、 Web の技術を使うことで幅広い活用を目指します。
-USI エンジンを呼び出す機能を除いて、ほぼ全ての機能がブラウザで利用できます。
+USI エンジンを呼び出す機能やファイル操作を除いて、多くの機能がブラウザで利用できます。
+将来は[Tauri](https://github.com/tauri-apps/tauri)版の制作やスマホ対応を行うことも視野に入れています。
 
 ## Web サイト
 
@@ -35,6 +36,10 @@ https://sunfish-shogi.github.io/electron-shogi/
 ![スクリーンショット4](docs/screenshots/screenshot004.png)
 
 ![スクリーンショット5](docs/screenshots/screenshot005.png)
+
+![スクリーンショット6](docs/screenshots/screenshot006.png)
+
+![スクリーンショット7](docs/screenshots/screenshot007.png)
 
 ## ダウンロード
 

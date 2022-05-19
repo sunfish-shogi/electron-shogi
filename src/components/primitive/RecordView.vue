@@ -7,28 +7,28 @@
           :disabled="!operational"
           @click="goBegin()"
         >
-          <ButtonIcon class="icon" icon="first" />
+          <ButtonIcon class="icon" :icon="Icon.FIRST" />
         </button>
         <button
           class="control-button"
           :disabled="!operational"
           @click="goBack()"
         >
-          <ButtonIcon class="icon" icon="back" />
+          <ButtonIcon class="icon" :icon="Icon.BACK" />
         </button>
         <button
           class="control-button"
           :disabled="!operational"
           @click="goForward()"
         >
-          <ButtonIcon class="icon" icon="next" />
+          <ButtonIcon class="icon" :icon="Icon.NEXT" />
         </button>
         <button
           class="control-button"
           :disabled="!operational"
           @click="goEnd()"
         >
-          <ButtonIcon class="icon" icon="last" />
+          <ButtonIcon class="icon" :icon="Icon.LAST" />
         </button>
       </div>
       <select
@@ -73,9 +73,10 @@
 </template>
 
 <script lang="ts">
-import { Record, RecordEntry } from "@/shogi";
-import { computed, ref, defineComponent, Ref } from "vue";
+import { ImmutableRecord, RecordEntry } from "@/shogi";
+import { computed, ref, defineComponent, Ref, PropType } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import { Icon } from "@/assets/icons";
 
 export default defineComponent({
   name: "RecordView",
@@ -84,7 +85,7 @@ export default defineComponent({
   },
   props: {
     record: {
-      type: Record,
+      type: Object as PropType<ImmutableRecord>,
       required: true,
     },
     operational: {
@@ -192,6 +193,7 @@ export default defineComponent({
       goEnd,
       changeNumber,
       changeBranch,
+      Icon,
     };
   },
 });

@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog" class="bussy">
       <div class="content">
-        <ButtonIcon class="icon" icon="bussy" />
+        <ButtonIcon class="icon" :icon="Icon.BUSSY" />
         <div class="message">処理中です。お待ち下さい。</div>
       </div>
     </dialog>
@@ -13,6 +13,7 @@
 import { showModalDialog } from "@/helpers/dialog";
 import { defineComponent, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import { Icon } from "@/assets/icons";
 
 export default defineComponent({
   name: "BussyMessage",
@@ -26,6 +27,7 @@ export default defineComponent({
     });
     return {
       dialog,
+      Icon,
     };
   },
 });

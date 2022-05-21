@@ -26,6 +26,7 @@ enum LineType {
   BLACK_NAME,
   WHITE_NAME,
   METADATA,
+  POSITION,
   RANK,
   PIECES,
   FIRST_TURN,
@@ -64,6 +65,11 @@ const linePatterns = [
   {
     pattern: /^\$([^:]+):(.+)$/,
     type: LineType.METADATA,
+    sectionType: SectionType.HEADER,
+  },
+  {
+    pattern: /^PI([1-9]{2}[A-Z]{2})*$/,
+    type: LineType.POSITION,
     sectionType: SectionType.HEADER,
   },
   {
@@ -149,6 +155,15 @@ const csaNameToPieceType: { [name: string]: PieceType } = {
   UM: PieceType.HORSE,
   RY: PieceType.DRAGON,
 };
+
+function parsePosition(line: string, position: Position): void {
+  position.reset(InitialPositionType.STANDARD);
+  for (let i = 2; i + 4 <= line.length; i += 4) {
+    const file = Number(line[i]);
+    const rank = Number(line[i + 1]);
+    position.board.remove(new Square(file, rank));
+  }
+}
 
 function parseRank(line: string, position: Position): Error | undefined {
   const rank = Number(line[1]);
@@ -303,6 +318,9 @@ export function importCSA(data: string): Record | Error {
           }
           break;
         }
+        case LineType.POSITION:
+          parsePosition(parsed.line, position);
+          break;
         case LineType.RANK: {
           const error = parseRank(parsed.line, position);
           if (error) {

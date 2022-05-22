@@ -20,36 +20,65 @@
     >
       <template #right-control>
         <div class="control top">
-          <button v-if="controlStates.game" @click="onGame">
+          <button
+            v-if="controlStates.game"
+            class="control-item"
+            @click="onGame"
+          >
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             対局
           </button>
-          <button v-if="controlStates.stop" @click="onStop">
+          <button
+            v-if="controlStates.stop"
+            class="control-item"
+            @click="onStop"
+          >
             <ButtonIcon class="icon" :icon="Icon.STOP" />
             対局中断
           </button>
-          <button v-if="controlStates.resign" @click="onResign">
+          <button
+            v-if="controlStates.resign"
+            class="control-item"
+            @click="onResign"
+          >
             <ButtonIcon class="icon" :icon="Icon.RESIGN" />
             投了
           </button>
-          <button v-if="controlStates.research" @click="onResearch">
+          <button
+            v-if="controlStates.research"
+            class="control-item"
+            @click="onResearch"
+          >
             <ButtonIcon class="icon" :icon="Icon.RESEARCH" />
             検討
           </button>
-          <button v-if="controlStates.endResearch" @click="onEndResearch">
+          <button
+            v-if="controlStates.endResearch"
+            class="control-item"
+            @click="onEndResearch"
+          >
             <ButtonIcon class="icon" :icon="Icon.END" />
             検討終了
           </button>
-          <button v-if="controlStates.analysis" @click="onAnalysis">
+          <button
+            v-if="controlStates.analysis"
+            class="control-item"
+            @click="onAnalysis"
+          >
             <ButtonIcon class="icon" :icon="Icon.ANALYSIS" />
             解析
           </button>
-          <button v-if="controlStates.endAnalysis" @click="onEndAnalysis">
+          <button
+            v-if="controlStates.endAnalysis"
+            class="control-item"
+            @click="onEndAnalysis"
+          >
             <ButtonIcon class="icon" :icon="Icon.STOP" />
             解析中断
           </button>
           <button
             v-if="controlStates.startEditPosition"
+            class="control-item"
             @click="onStartEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.EDIT" />
@@ -57,16 +86,25 @@
           </button>
           <button
             v-if="controlStates.endEditPosition"
+            class="control-item"
             @click="onEndEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.CHECK" />
             局面編集終了
           </button>
-          <button v-if="controlStates.initPosition" @click="onChangeTurn">
+          <button
+            v-if="controlStates.initPosition"
+            class="control-item"
+            @click="onChangeTurn"
+          >
             <ButtonIcon class="icon" :icon="Icon.SWAP" />
             手番変更
           </button>
-          <select v-if="controlStates.initPosition" @change="onInitPosition">
+          <select
+            v-if="controlStates.initPosition"
+            class="control-item"
+            @change="onInitPosition"
+          >
             <option>局面の初期化</option>
             <option value="standard">平手</option>
             <option value="handicapLance">香落ち</option>
@@ -85,30 +123,39 @@
       </template>
       <template #left-control>
         <div class="control bottom">
-          <button @click="onOpenAppSettings">
+          <button class="control-item" @click="onOpenAppSettings">
             <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
             アプリ設定
           </button>
           <button
+            class="control-item"
             :disabled="!controlStates.engineSettings"
             @click="onOpenEngineSettings"
           >
             <ButtonIcon class="icon" :icon="Icon.ENGINE_SETTINGS" />
             エンジン設定
           </button>
-          <button @click="onFlip">
+          <button class="control-item" @click="onFlip">
             <ButtonIcon class="icon" :icon="Icon.FLIP" />
             盤面反転
           </button>
-          <button :disabled="!controlStates.paste" @click="onPaste">
+          <button
+            class="control-item"
+            :disabled="!controlStates.paste"
+            @click="onPaste"
+          >
             <ButtonIcon class="icon" :icon="Icon.PASTE" />
             棋譜貼り付け
           </button>
-          <button @click="onCopy">
+          <button class="control-item" @click="onCopy">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
             棋譜コピー
           </button>
-          <button :disabled="!controlStates.removeAfter" @click="onRemoveAfter">
+          <button
+            class="control-item"
+            :disabled="!controlStates.removeAfter"
+            @click="onRemoveAfter"
+          >
             <ButtonIcon class="icon" :icon="Icon.DELETE" />
             指し手削除
           </button>
@@ -359,7 +406,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column-reverse;
 }
-.control button {
+.control .control-item {
   width: 100%;
   height: 15%;
   font-size: 100%;
@@ -367,13 +414,13 @@ export default defineComponent({
   line-height: 200%;
   padding: 0 5% 0 5%;
 }
-.control.top button:not(:last-child) {
+.control.top .control-item:not(:last-child) {
   margin-bottom: 2%;
 }
-.control.bottom button:not(:last-child) {
+.control.bottom .control-item:not(:last-child) {
   margin-top: 2%;
 }
-.control button .icon {
+.control .control-item .icon {
   height: 80%;
   vertical-align: top;
 }

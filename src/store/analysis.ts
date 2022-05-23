@@ -39,6 +39,7 @@ export class AnalysisManager {
   private lastScore?: number;
   private score?: number;
   private mate?: number;
+  private lastPV?: Move[];
   private pv?: Move[];
   private timerHandle?: NodeJS.Timeout;
 
@@ -87,6 +88,7 @@ export class AnalysisManager {
     this.lastScore = this.score;
     this.score = undefined;
     this.mate = undefined;
+    this.lastPV = this.pv;
     this.pv = undefined;
     this.number =
       this.number !== undefined
@@ -151,8 +153,8 @@ export class AnalysisManager {
       mate: this.mate,
       pv: this.pv,
       isBestMove:
-        this.actualMove && this.pv
-          ? this.actualMove.equals(this.pv[0])
+        this.actualMove && this.lastPV
+          ? this.actualMove.equals(this.lastPV[0])
           : undefined,
     });
   }

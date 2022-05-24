@@ -1,5 +1,5 @@
 import { MenuEvent } from "@/ipc/menu";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 import { GameResult } from "@/players/player";
 import { USIInfoSender } from "@/store/usi";
 import { contextBridge, ipcRenderer } from "electron";
@@ -16,8 +16,8 @@ const api: API = {
   async getRecordPathFromProcArg(): Promise<string> {
     return await ipcRenderer.invoke(Background.GET_RECORD_PATH_FROM_PROC_ARG);
   },
-  updateMenuState(mode: Mode, bussy: boolean): void {
-    ipcRenderer.send(Background.UPDATE_MENU_STATE, mode, bussy);
+  updateMenuState(appState: AppState, bussy: boolean): void {
+    ipcRenderer.send(Background.UPDATE_MENU_STATE, appState, bussy);
   },
   async showOpenRecordDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);

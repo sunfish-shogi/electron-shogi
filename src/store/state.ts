@@ -1,4 +1,4 @@
-export enum Mode {
+export enum AppState {
   NORMAL = "normal",
   PASTE_DIALOG = "pasteDialog",
   POSITION_EDITING = "positionEditing",

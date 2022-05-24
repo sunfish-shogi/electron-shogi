@@ -7,7 +7,7 @@ import { SpecialMove, InitialPositionType } from "@/shogi";
 import { USIInfoSender } from "@/store/usi";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/settings/research";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 import { useStore } from "@/store";
 import { GameResult } from "@/players/player";
 import { usiBestMove } from "@/players/usi";
@@ -16,7 +16,7 @@ import { AnalysisSetting } from "@/settings/analysis";
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
-  updateMenuState(mode: Mode, bussy: boolean): void;
+  updateMenuState(appState: AppState, bussy: boolean): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;
@@ -382,10 +382,10 @@ export function setup(): void {
     }
   );
   watch(
-    () => [store.mode, store.isBussy],
-    ([mode, bussy]) => {
-      api.updateMenuState(mode as Mode, bussy as boolean);
+    () => [store.appState, store.isBussy],
+    ([appState, bussy]) => {
+      api.updateMenuState(appState as AppState, bussy as boolean);
     }
   );
-  api.updateMenuState(store.mode, store.isBussy);
+  api.updateMenuState(store.appState, store.isBussy);
 }

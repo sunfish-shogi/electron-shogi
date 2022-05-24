@@ -12,7 +12,7 @@ import {
   saveGameSetting,
   saveResearchSetting,
   saveUSIEngineSetting,
-} from "@/settings/fs";
+} from "@/ipc/background/settings";
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { setupMenu, updateMenuState } from "@/ipc/background/menu";
 import { MenuEvent } from "@/ipc/menu";

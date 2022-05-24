@@ -1,5 +1,5 @@
 import { app, Menu, MenuItem, MenuItemConstructorOptions } from "electron";
-import { openAppDirectory } from "@/settings/fs";
+import { openSettingsDirectory } from "@/ipc/background/settings";
 import { onMenuEvent } from "@/ipc/background";
 import { MenuEvent } from "@/ipc/menu";
 import { Mode } from "@/store/mode";
@@ -235,7 +235,7 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
       ]),
       {
         label: "設定ファイルのフォルダを開く",
-        click: openAppDirectory,
+        click: openSettingsDirectory,
       },
     ],
   },

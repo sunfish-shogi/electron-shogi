@@ -1,14 +1,14 @@
 import fs from "fs";
 import { app, shell } from "electron";
 import path from "path";
-import { USIEngineSettings } from "./usi";
-import { AppSetting, defaultAppSetting } from "./app";
-import { defaultWindowSetting, WindowSetting } from "./window";
-import { defaultGameSetting, GameSetting } from "./game";
-import { defaultResearchSetting, ResearchSetting } from "./research";
-import { AnalysisSetting, defaultAnalysisSetting } from "./analysis";
+import { USIEngineSettings } from "@/settings/usi";
+import { AppSetting, defaultAppSetting } from "@/settings/app";
+import { defaultWindowSetting, WindowSetting } from "@/settings/window";
+import { defaultGameSetting, GameSetting } from "@/settings/game";
+import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
+import { AnalysisSetting, defaultAnalysisSetting } from "@/settings/analysis";
 
-export function openAppDirectory(): void {
+export function openSettingsDirectory(): void {
   shell.openPath(app.getPath("userData"));
 }
 

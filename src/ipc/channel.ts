@@ -25,6 +25,7 @@ export enum Background {
   USI_STOP = "usiStop",
   USI_GAMEOVER = "usiGameover",
   USI_QUIT = "usiQuit",
+  LOG = "log",
 }
 
 export enum Renderer {

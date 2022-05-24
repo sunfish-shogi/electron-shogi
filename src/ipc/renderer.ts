@@ -13,6 +13,7 @@ import { GameResult } from "@/players/player";
 import { usiBestMove } from "@/players/usi";
 import { humanPlayer } from "@/players/human";
 import { AnalysisSetting } from "@/settings/analysis";
+import { LogLevel } from "./log";
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
@@ -47,6 +48,7 @@ export interface API {
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;
+  log(level: LogLevel, message: string): void;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
   onUSIBestMove(
@@ -211,6 +213,10 @@ export async function usiGameover(
 
 export async function usiQuit(sessionID: number): Promise<void> {
   await getAPI().usiQuit(sessionID);
+}
+
+export function log(level: LogLevel, message: string): void {
+  getAPI().log(level, message);
 }
 
 export function setup(): void {

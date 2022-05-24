@@ -1,3 +1,5 @@
+import { LogLevel } from "@/ipc/log";
+import { log } from "@/ipc/renderer";
 import { humanPlayer } from "@/players/human";
 import { USIPlayer } from "@/players/usi";
 import {
@@ -151,11 +153,11 @@ export class GameManager {
 
   private onMove(eventID: number, move: Move): void {
     if (eventID !== this.lastEventID) {
-      console.warn("指し手を受信しましたが既にイベントは無効です。");
+      log(LogLevel.WARN, "指し手を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      console.warn("指し手を受信しましたが既に対局中ではありません。");
+      log(LogLevel.WARN, "指し手を受信しましたが既に対局中ではありません。");
       return;
     }
     if (!this.record.position.isValidMove(move)) {
@@ -183,11 +185,11 @@ export class GameManager {
 
   private onResign(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      console.warn("投了を受信しましたが既にイベントは無効です。");
+      log(LogLevel.WARN, "投了を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      console.warn("投了を受信しましたが既に対局中ではありません。");
+      log(LogLevel.WARN, "投了を受信しましたが既に対局中ではありません。");
       return;
     }
     this.endGame(SpecialMove.RESIGN);
@@ -195,11 +197,11 @@ export class GameManager {
 
   private onWin(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      console.warn("勝ち宣言を受信しましたが既にイベントは無効です。");
+      log(LogLevel.WARN, "勝ち宣言を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      console.warn("勝ち宣言を受信しましたが既に対局中ではありません。");
+      log(LogLevel.WARN, "勝ち宣言を受信しましたが既に対局中ではありません。");
       return;
     }
     this.endGame(SpecialMove.ENTERING_OF_KING);

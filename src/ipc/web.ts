@@ -3,6 +3,7 @@ import { defaultAppSetting } from "@/settings/app";
 import { defaultGameSetting } from "@/settings/game";
 import { defaultResearchSetting } from "@/settings/research";
 import { USIEngineSettings } from "@/settings/usi";
+import { LogLevel } from "./log";
 import { API } from "./renderer";
 
 enum STORAGE_KEY {
@@ -119,6 +120,19 @@ export const webAPI: API = {
   },
   async usiQuit(): Promise<void> {
     // Do Nothing
+  },
+  log(level: LogLevel, message: string): void {
+    switch (level) {
+      case LogLevel.INFO:
+        console.log(message);
+        break;
+      case LogLevel.WARN:
+        console.warn(message);
+        break;
+      case LogLevel.ERROR:
+        console.error(message);
+        break;
+    }
   },
   onSendError(): void {
     // Do Nothing

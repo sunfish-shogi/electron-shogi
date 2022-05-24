@@ -7,6 +7,7 @@ import { defaultWindowSetting, WindowSetting } from "@/settings/window";
 import { defaultGameSetting, GameSetting } from "@/settings/game";
 import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
 import { AnalysisSetting, defaultAnalysisSetting } from "@/settings/analysis";
+import { getAppLogger } from "@/ipc/background/log";
 
 const rootDir = app.getPath("userData");
 
@@ -24,7 +25,7 @@ export function saveWindowSetting(setting: WindowSetting): void {
       "utf8"
     );
   } catch (e) {
-    console.warn("failed to write window setting:", e);
+    getAppLogger().error("failed to write window setting: %s", e);
   }
 }
 
@@ -35,7 +36,7 @@ export function loadWindowSetting(): WindowSetting {
       ...JSON.parse(fs.readFileSync(windowSettingPath, "utf8")),
     };
   } catch (e) {
-    console.warn("failed to read window setting:", e);
+    getAppLogger().error("failed to read window setting: %s", e);
     return defaultWindowSetting();
   }
 }

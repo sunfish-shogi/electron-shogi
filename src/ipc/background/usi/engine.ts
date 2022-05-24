@@ -8,6 +8,7 @@ import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import path from "path";
 import { createInterface as readline, Interface as Readline } from "readline";
 import { InfoCommand } from "@/store/usi";
+import { getUSILogger } from "@/ipc/background/log";
 
 export type EngineProcessOption = {
   setupOnly?: boolean;
@@ -129,12 +130,13 @@ export class EngineProcess {
   private currentPosition: string;
   private reservedGoCommand?: ReservedGoCommand;
   private readline: Readline | null;
+  private sessionID: number;
   usiOkCallback?: USIOKCallback;
   readyCallback?: ReadyCallback;
   bestMoveCallback?: BestmoveCallback;
   infoCallback?: InfoCallback;
 
-  constructor(path: string, option: EngineProcessOption) {
+  constructor(path: string, sessionID: number, option: EngineProcessOption) {
     this._path = path;
     this.option = option;
     this.handle = null;
@@ -145,6 +147,7 @@ export class EngineProcess {
     this.waitingForBestMove = false;
     this.currentPosition = "";
     this.readline = null;
+    this.sessionID = sessionID;
   }
 
   get path(): string {
@@ -188,7 +191,11 @@ export class EngineProcess {
   }
 
   launch(): void {
-    console.log("launch: " + path.dirname(this.path));
+    getUSILogger().info(
+      "sid=%d: launch: %s",
+      this.sessionID,
+      path.dirname(this.path)
+    );
     this.handle = spawn(this.path, {
       cwd: path.dirname(this.path),
     });
@@ -198,7 +205,7 @@ export class EngineProcess {
   }
 
   quit(): void {
-    this.log("quit USI engine");
+    getUSILogger().info("sid=%d: quit USI engine", this.sessionID);
     if (!this.handle) {
       return;
     }
@@ -274,11 +281,11 @@ export class EngineProcess {
       return;
     }
     this.handle.stdin.write(`${command}\n`);
-    this.log(`> ${command}`);
+    getUSILogger().info("sid=%d: > %s", this.sessionID, command);
   }
 
   private onReceive(command: string): void {
-    this.log(`< ${command}`);
+    getUSILogger().info("sid=%d: < %s", this.sessionID, command);
     if (command.startsWith("id name ")) {
       this.onIDName(command.substring(8));
     } else if (command.startsWith("id author ")) {
@@ -307,7 +314,7 @@ export class EngineProcess {
   private onOption(command: string): void {
     const args = command.split(" ");
     if (args.length < 4 || args[0] !== "name" || args[2] !== "type") {
-      this.log("invalid option command");
+      getUSILogger().error("sid=%d: invalid option command", this.sessionID);
       return;
     }
     const option: USIEngineOption = {
@@ -390,10 +397,5 @@ export class EngineProcess {
     if (this.infoCallback) {
       this.infoCallback(parseInfoCommand(args), this.currentPosition);
     }
-  }
-
-  private log(message: string): void {
-    const pid = this.handle ? this.handle.pid : "nan";
-    console.log(`USI:${this.name}:${pid}: ${message}`);
   }
 }

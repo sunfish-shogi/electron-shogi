@@ -3,10 +3,14 @@ import App from "./App.vue";
 import {
   getRecordPathFromProcArg,
   loadAppSetting,
+  log,
   setup as setupIPC,
 } from "./ipc/renderer";
 import { useStore } from "./store";
 import { Chart, registerables } from "chart.js";
+import { LogLevel } from "./ipc/log";
+
+log(LogLevel.INFO, "start renderer process");
 
 Chart.register(...registerables);
 
@@ -30,5 +34,6 @@ Promise.allSettled([
     }
   })(),
 ]).finally(() => {
+  log(LogLevel.INFO, "mount app");
   createApp(App).mount("#app");
 });

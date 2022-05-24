@@ -5,6 +5,7 @@ import { USIInfoSender } from "@/store/usi";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "./channel";
 import { API } from "./renderer";
+import { LogLevel } from "./log";
 
 const api: API = {
   // NOTICE:
@@ -106,6 +107,9 @@ const api: API = {
   },
   async usiQuit(sessionID: number): Promise<void> {
     await ipcRenderer.invoke(Background.USI_QUIT, sessionID);
+  },
+  log(level: LogLevel, message: string): void {
+    ipcRenderer.invoke(Background.LOG, level, message);
   },
   onSendError(callback: (e: Error) => void): void {
     ipcRenderer.on(Renderer.SEND_ERROR, (_, e) => {

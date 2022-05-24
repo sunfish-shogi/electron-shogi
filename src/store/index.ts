@@ -1,4 +1,5 @@
 import {
+  log,
   openRecord,
   saveAnalysisSetting,
   saveAppSetting,
@@ -62,6 +63,8 @@ import {
 } from "./analysis";
 import { AnalysisSetting, appendAnalysisComment } from "@/settings/analysis";
 import { USIPlayer } from "@/players/usi";
+import { LogLevel } from "@/ipc/log";
+import { toString } from "@/helpers/string";
 
 class Store {
   private _bussy: BussyStore;
@@ -129,6 +132,7 @@ class Store {
   }
 
   pushError(e: unknown): void {
+    log(LogLevel.ERROR, toString(e));
     this._error.push(e);
   }
 

@@ -14,8 +14,9 @@ import { GameResult } from "@/players/player";
 export async function getUSIEngineInfo(
   path: string
 ): Promise<USIEngineSetting> {
+  const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
-    const engine = new EngineProcess(path, { setupOnly: true });
+    const engine = new EngineProcess(path, sessionID, { setupOnly: true });
     const timeoutSeconds = 10;
     const t = setTimeout(() => {
       reject(
@@ -45,8 +46,9 @@ export function sendSetOptionCommand(
   path: string,
   name: string
 ): Promise<void> {
+  const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
-    const engine = new EngineProcess(path, { setupOnly: true });
+    const engine = new EngineProcess(path, sessionID, { setupOnly: true });
     const timeoutSeconds = 10;
     const t = setTimeout(() => {
       reject(
@@ -100,7 +102,7 @@ function getPlayer(sessionID: number): Player {
 export function setupPlayer(setting: USIEngineSetting): Promise<number> {
   const sessionID = issueSessionID();
   return new Promise<number>((resolve, reject) => {
-    const process = new EngineProcess(setting.path, {
+    const process = new EngineProcess(setting.path, sessionID, {
       engineOptions: Object.values(setting.options),
     });
     const timeoutSeconds = 10;

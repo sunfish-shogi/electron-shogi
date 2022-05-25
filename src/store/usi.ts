@@ -132,13 +132,27 @@ export class USIPlayerMonitor {
   }
 }
 
+type USIUpdate = {
+  sessionID: number;
+  position: ImmutablePosition;
+  sender: USIInfoSender;
+  name: string;
+  info: InfoCommand;
+};
+
 export class USIMonitor {
   private _blackPlayer?: USIPlayerMonitor;
-  private _blackPosition?: string;
+  private blackPosition?: string;
   private _whitePlayer?: USIPlayerMonitor;
-  private _whitePosition?: string;
+  private whitePosition?: string;
   private _researcher?: USIPlayerMonitor;
-  private _researchPosition?: string;
+  private researchPosition?: string;
+  private updateQueue: USIUpdate[];
+  private timeoutHandle?: NodeJS.Timeout;
+
+  constructor() {
+    this.updateQueue = [];
+  }
 
   get blackPlayer(): USIPlayerMonitor | undefined {
     return this._blackPlayer;
@@ -159,41 +173,73 @@ export class USIMonitor {
     name: string,
     info: InfoCommand
   ): void {
-    switch (sender) {
+    this.updateQueue.push({
+      sessionID: sessionID,
+      position: position,
+      sender: sender,
+      name: name,
+      info: info,
+    });
+    if (!this.timeoutHandle) {
+      this.timeoutHandle = setTimeout(() => {
+        this.dequeue();
+      }, 100);
+    }
+  }
+
+  private dequeue() {
+    for (const update of this.updateQueue) {
+      this._update(update);
+    }
+    this.updateQueue = [];
+    this.timeoutHandle = undefined;
+  }
+
+  private _update(update: USIUpdate) {
+    switch (update.sender) {
       case USIInfoSender.BLACK_PLAYER:
         if (
           !this._blackPlayer ||
-          this._blackPlayer.sessionID !== sessionID ||
-          this._blackPosition !== position.sfen
+          this._blackPlayer.sessionID !== update.sessionID ||
+          this.blackPosition !== update.position.sfen
         ) {
-          this._blackPlayer = new USIPlayerMonitor(sessionID, name);
-          this._blackPosition = position.sfen;
+          this._blackPlayer = new USIPlayerMonitor(
+            update.sessionID,
+            update.name
+          );
+          this.blackPosition = update.position.sfen;
         }
-        this._blackPlayer.update(position, info);
+        this._blackPlayer.update(update.position, update.info);
         this._researcher = undefined;
         break;
       case USIInfoSender.WHITE_PLAYER:
         if (
           !this._whitePlayer ||
-          this._whitePlayer.sessionID !== sessionID ||
-          this._whitePosition !== position.sfen
+          this._whitePlayer.sessionID !== update.sessionID ||
+          this.whitePosition !== update.position.sfen
         ) {
-          this._whitePlayer = new USIPlayerMonitor(sessionID, name);
-          this._whitePosition = position.sfen;
+          this._whitePlayer = new USIPlayerMonitor(
+            update.sessionID,
+            update.name
+          );
+          this.whitePosition = update.position.sfen;
         }
-        this._whitePlayer.update(position, info);
+        this._whitePlayer.update(update.position, update.info);
         this._researcher = undefined;
         break;
       case USIInfoSender.RESEARCHER:
         if (
           !this._researcher ||
-          this._researcher.sessionID !== sessionID ||
-          this._researchPosition !== position.sfen
+          this._researcher.sessionID !== update.sessionID ||
+          this.researchPosition !== update.position.sfen
         ) {
-          this._researcher = new USIPlayerMonitor(sessionID, name);
-          this._researchPosition = position.sfen;
+          this._researcher = new USIPlayerMonitor(
+            update.sessionID,
+            update.name
+          );
+          this.researchPosition = update.position.sfen;
         }
-        this._researcher.update(position, info);
+        this._researcher.update(update.position, update.info);
         this._blackPlayer = undefined;
         this._whitePlayer = undefined;
         break;

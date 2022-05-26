@@ -48,7 +48,7 @@ import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
-import { Mode } from "./mode";
+import { AppState } from "./state";
 import { MessageStore } from "./message";
 import { ErrorStore } from "./error";
 import * as uri from "@/uri";
@@ -68,8 +68,8 @@ class Store {
   private _message: MessageStore;
   private _error: ErrorStore;
   private _appSetting: AppSetting;
-  private _mode: Mode;
-  private lastMode?: Mode;
+  private _appState: AppState;
+  private lastAppState?: AppState;
   private _displayAppSetting: boolean;
   private _confirmation?: Confirmation;
   private _usi: USIMonitor;
@@ -85,7 +85,7 @@ class Store {
     this._message = new MessageStore();
     this._error = new ErrorStore();
     this._appSetting = defaultAppSetting();
-    this._mode = Mode.NORMAL;
+    this._appState = AppState.NORMAL;
     this._displayAppSetting = false;
     this._usi = new USIMonitor();
     this.game = new GameManager(this);
@@ -158,8 +158,8 @@ class Store {
     saveAppSetting(this.appSetting);
   }
 
-  get mode(): Mode {
-    return this._mode;
+  get appState(): AppState {
+    return this._appState;
   }
 
   get confirmation(): string | undefined {
@@ -168,16 +168,16 @@ class Store {
 
   showConfirmation(confirmation: Confirmation): void {
     this._confirmation = confirmation;
-    this.lastMode = this.mode;
-    this._mode = Mode.TEMPORARY;
+    this.lastAppState = this.appState;
+    this._appState = AppState.TEMPORARY;
   }
 
   confirmationOk(): void {
     const onOk = this._confirmation?.onOk;
     this._confirmation = undefined;
-    if (this.lastMode) {
-      this._mode = this.lastMode;
-      this.lastMode = undefined;
+    if (this.lastAppState) {
+      this._appState = this.lastAppState;
+      this.lastAppState = undefined;
     }
     if (onOk) {
       onOk();
@@ -187,9 +187,9 @@ class Store {
   confirmationCancel(): void {
     const onCancel = this._confirmation?.onCancel;
     this._confirmation = undefined;
-    if (this.lastMode) {
-      this._mode = this.lastMode;
-      this.lastMode = undefined;
+    if (this.lastAppState) {
+      this._appState = this.lastAppState;
+      this.lastAppState = undefined;
     }
     if (onCancel) {
       onCancel();
@@ -197,32 +197,32 @@ class Store {
   }
 
   showPasteDialog(): void {
-    if (this.mode === Mode.NORMAL) {
-      this._mode = Mode.PASTE_DIALOG;
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.PASTE_DIALOG;
     }
   }
 
   closePasteDialog(): void {
-    if (this.mode === Mode.PASTE_DIALOG) {
-      this._mode = Mode.NORMAL;
+    if (this.appState === AppState.PASTE_DIALOG) {
+      this._appState = AppState.NORMAL;
     }
   }
 
   showGameDialog(): void {
-    if (this.mode === Mode.NORMAL) {
-      this._mode = Mode.GAME_DIALOG;
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.GAME_DIALOG;
     }
   }
 
   showResearchDialog(): void {
-    if (this.mode === Mode.NORMAL) {
-      this._mode = Mode.RESEARCH_DIALOG;
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.RESEARCH_DIALOG;
     }
   }
 
   showAnalysisDialog(): void {
-    if (this.mode === Mode.NORMAL) {
-      this._mode = Mode.ANALYSIS_DIALOG;
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.ANALYSIS_DIALOG;
     }
   }
 
@@ -239,19 +239,19 @@ class Store {
   }
 
   openUsiEngineManagementDialog(): void {
-    if (this.mode === Mode.NORMAL) {
-      this._mode = Mode.USI_ENGINE_SETTING_DIALOG;
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.USI_ENGINE_SETTING_DIALOG;
     }
   }
 
   closeDialog(): void {
     if (
-      this.mode === Mode.USI_ENGINE_SETTING_DIALOG ||
-      this.mode === Mode.GAME_DIALOG ||
-      this.mode === Mode.RESEARCH_DIALOG ||
-      this.mode === Mode.ANALYSIS_DIALOG
+      this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
+      this.appState === AppState.GAME_DIALOG ||
+      this.appState === AppState.RESEARCH_DIALOG ||
+      this.appState === AppState.ANALYSIS_DIALOG
     ) {
-      this._mode = Mode.NORMAL;
+      this._appState = AppState.NORMAL;
     }
   }
 
@@ -317,7 +317,7 @@ class Store {
   }
 
   private async startGameAsync(setting: GameSetting): Promise<void> {
-    if (this.mode !== Mode.GAME_DIALOG) {
+    if (this.appState !== AppState.GAME_DIALOG) {
       return;
     }
     this.retainBussyState();
@@ -326,7 +326,7 @@ class Store {
       this.initializeRecordForGame(setting);
       this.initializeDisplaySettingForGame(setting);
       await this.game.startGame(setting, this.record);
-      this._mode = Mode.GAME;
+      this._appState = AppState.GAME;
     } finally {
       this.releaseBussyState();
     }
@@ -383,13 +383,13 @@ class Store {
   }
 
   stopGame(): void {
-    if (this.mode === Mode.GAME) {
+    if (this.appState === AppState.GAME) {
       this.game.endGame(SpecialMove.INTERRUPT);
     }
   }
 
   onMove(move: Move): ImmutableRecord {
-    if (this.mode === Mode.GAME) {
+    if (this.appState === AppState.GAME) {
       this._record.append(move, {
         ignoreValidation: true,
       });
@@ -401,7 +401,7 @@ class Store {
   }
 
   onEndGame(specialMove?: SpecialMove): void {
-    if (this.mode !== Mode.GAME) {
+    if (this.appState !== AppState.GAME) {
       return;
     }
     if (specialMove) {
@@ -416,7 +416,7 @@ class Store {
       RecordMetadataKey.END_DATETIME,
       getDateTimeString()
     );
-    this._mode = Mode.NORMAL;
+    this._appState = AppState.NORMAL;
   }
 
   onBeepShort(): void {
@@ -459,7 +459,10 @@ class Store {
   }
 
   doMove(move: Move): void {
-    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+    if (
+      this.appState !== AppState.NORMAL &&
+      this.appState !== AppState.RESEARCH
+    ) {
       return;
     }
     this._record.append(move);
@@ -468,7 +471,7 @@ class Store {
   }
 
   onNext(number: number): ImmutableRecord | null {
-    if (this.mode === Mode.ANALYSIS) {
+    if (this.appState === AppState.ANALYSIS) {
       this._record.goto(number);
       return this.record.current.number === number ? this.record : null;
     }
@@ -476,7 +479,7 @@ class Store {
   }
 
   onResult(result: AnalysisResult): void {
-    if (this.mode === Mode.ANALYSIS && this.analysis) {
+    if (this.appState === AppState.ANALYSIS && this.analysis) {
       const comment = buildRecordComment(result, this.appSetting);
       if (comment) {
         this._record.current.comment = appendAnalysisComment(
@@ -489,9 +492,9 @@ class Store {
   }
 
   onFinish(): void {
-    if (this.mode === Mode.ANALYSIS) {
+    if (this.appState === AppState.ANALYSIS) {
       this._message.enqueue("棋譜解析が終了しました。");
-      this._mode = Mode.NORMAL;
+      this._appState = AppState.NORMAL;
     }
   }
 
@@ -512,7 +515,7 @@ class Store {
   private async startResearchAsync(
     researchSetting: ResearchSetting
   ): Promise<void> {
-    if (this.mode !== Mode.RESEARCH_DIALOG) {
+    if (this.appState !== AppState.RESEARCH_DIALOG) {
       return;
     }
     this.retainBussyState();
@@ -524,21 +527,21 @@ class Store {
       const researcher = new USIPlayer(researchSetting.usi);
       await researcher.launch();
       this.researcher = researcher;
-      this._mode = Mode.RESEARCH;
+      this._appState = AppState.RESEARCH;
     } finally {
       this.releaseBussyState();
     }
   }
 
   stopResearch(): void {
-    if (this.mode !== Mode.RESEARCH) {
+    if (this.appState !== AppState.RESEARCH) {
       return;
     }
     if (this.researcher) {
       this.researcher.close();
       this.researcher = undefined;
     }
-    this._mode = Mode.NORMAL;
+    this._appState = AppState.NORMAL;
   }
 
   startAnalysis(analysisSetting: AnalysisSetting): void {
@@ -548,7 +551,7 @@ class Store {
   }
 
   private async startAnalysisAsync(analysisSetting: AnalysisSetting) {
-    if (this.mode !== Mode.ANALYSIS_DIALOG) {
+    if (this.appState !== AppState.ANALYSIS_DIALOG) {
       return;
     }
     this.retainBussyState();
@@ -557,21 +560,21 @@ class Store {
       const analysis = new AnalysisManager(analysisSetting, this);
       await analysis.start();
       this.analysis = analysis;
-      this._mode = Mode.ANALYSIS;
+      this._appState = AppState.ANALYSIS;
     } finally {
       this.releaseBussyState();
     }
   }
 
   stopAnalysis(): void {
-    if (this.mode !== Mode.ANALYSIS) {
+    if (this.appState !== AppState.ANALYSIS) {
       return;
     }
     if (this.analysis) {
       this.analysis.close();
       this.analysis = undefined;
     }
-    this._mode = Mode.NORMAL;
+    this._appState = AppState.NORMAL;
   }
 
   private onUpdatePosition(): void {
@@ -597,7 +600,7 @@ class Store {
   }
 
   newRecord(): void {
-    if (this.mode != Mode.NORMAL) {
+    if (this.appState != AppState.NORMAL) {
       return;
     }
     this._record.clear();
@@ -617,7 +620,10 @@ class Store {
   }
 
   insertSpecialMove(specialMove: SpecialMove): void {
-    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+    if (
+      this.appState !== AppState.NORMAL &&
+      this.appState !== AppState.RESEARCH
+    ) {
       return;
     }
     this._record.append(specialMove);
@@ -625,13 +631,13 @@ class Store {
   }
 
   startPositionEditing(): void {
-    if (this.mode !== Mode.NORMAL) {
+    if (this.appState !== AppState.NORMAL) {
       return;
     }
     this.showConfirmation({
       message: "現在の棋譜は削除されます。よろしいですか？",
       onOk: () => {
-        this._mode = Mode.POSITION_EDITING;
+        this._appState = AppState.POSITION_EDITING;
         this._record.clear(this.record.position);
         this.onUpdatePosition();
         this.clearRecordFilePath();
@@ -641,13 +647,13 @@ class Store {
 
   endPositionEditing(): void {
     // FIXME: 局面整合性チェック
-    if (this.mode === Mode.POSITION_EDITING) {
-      this._mode = Mode.NORMAL;
+    if (this.appState === AppState.POSITION_EDITING) {
+      this._appState = AppState.NORMAL;
     }
   }
 
   initializePosition(initialPositionType: InitialPositionType): void {
-    if (this.mode != Mode.POSITION_EDITING) {
+    if (this.appState != AppState.POSITION_EDITING) {
       return;
     }
     this.showConfirmation({
@@ -663,7 +669,7 @@ class Store {
   }
 
   changeTurn(): void {
-    if (this.mode != Mode.POSITION_EDITING) {
+    if (this.appState != AppState.POSITION_EDITING) {
       return;
     }
     const position = this.record.position.clone();
@@ -674,7 +680,7 @@ class Store {
   }
 
   editPosition(change: PositionChange): void {
-    if (this.mode === Mode.POSITION_EDITING) {
+    if (this.appState === AppState.POSITION_EDITING) {
       const position = this.record.position.clone();
       position.edit(change);
       this._record.clear(position);
@@ -684,7 +690,10 @@ class Store {
   }
 
   changeMoveNumber(number: number): void {
-    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+    if (
+      this.appState !== AppState.NORMAL &&
+      this.appState !== AppState.RESEARCH
+    ) {
       return;
     }
     this._record.goto(number);
@@ -692,7 +701,10 @@ class Store {
   }
 
   changeBranch(index: number): void {
-    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+    if (
+      this.appState !== AppState.NORMAL &&
+      this.appState !== AppState.RESEARCH
+    ) {
       return;
     }
     if (this.record.current.branchIndex === index) {
@@ -703,7 +715,10 @@ class Store {
   }
 
   removeRecordAfter(): void {
-    if (this.mode !== Mode.NORMAL && this.mode !== Mode.RESEARCH) {
+    if (
+      this.appState !== AppState.NORMAL &&
+      this.appState !== AppState.RESEARCH
+    ) {
       return;
     }
     const next = this.record.current.next;
@@ -751,7 +766,7 @@ class Store {
   }
 
   pasteRecord(data: string): void {
-    if (this.mode !== Mode.NORMAL) {
+    if (this.appState !== AppState.NORMAL) {
       return;
     }
     let recordOrError: Record | Error;
@@ -793,7 +808,7 @@ class Store {
   }
 
   private async openRecordAsync(path?: string): Promise<void> {
-    if (this.mode !== Mode.NORMAL) {
+    if (this.appState !== AppState.NORMAL) {
       return;
     }
     this.retainBussyState();
@@ -836,7 +851,7 @@ class Store {
   private async saveRecordAsync(options?: {
     overwrite: boolean;
   }): Promise<void> {
-    if (this.mode !== Mode.NORMAL) {
+    if (this.appState !== AppState.NORMAL) {
       return;
     }
     this.retainBussyState();
@@ -874,11 +889,11 @@ class Store {
   }
 
   get isMovableByUser() {
-    switch (this.mode) {
-      case Mode.NORMAL:
-      case Mode.RESEARCH:
+    switch (this.appState) {
+      case AppState.NORMAL:
+      case AppState.RESEARCH:
         return true;
-      case Mode.GAME:
+      case AppState.GAME:
         return (
           (this.record.position.color === Color.BLACK
             ? this.gameSetting.black.uri

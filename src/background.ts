@@ -5,8 +5,11 @@ import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 import { setup } from "@/ipc/background";
-import { loadWindowSetting, saveWindowSetting } from "./settings/fs";
-import { buildWindowSetting } from "./settings/window";
+import {
+  loadWindowSetting,
+  saveWindowSetting,
+} from "@/ipc/background/settings";
+import { buildWindowSetting } from "@/settings/window";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 

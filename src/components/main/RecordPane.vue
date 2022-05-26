@@ -42,7 +42,7 @@
 import { computed, defineComponent } from "vue";
 import RecordView from "@/components/primitive/RecordView.vue";
 import { useStore } from "@/store";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 
 export const minWidth = 230;
 
@@ -97,7 +97,10 @@ export default defineComponent({
     };
 
     const isRecordOperational = computed(() => {
-      return store.mode === Mode.NORMAL || store.mode === Mode.RESEARCH;
+      return (
+        store.appState === AppState.NORMAL ||
+        store.appState === AppState.RESEARCH
+      );
     });
     const showComment = computed(
       () => store.appSetting.showCommentInRecordView

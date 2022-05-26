@@ -12,12 +12,12 @@ import {
   saveGameSetting,
   saveResearchSetting,
   saveUSIEngineSetting,
-} from "@/settings/fs";
+} from "@/ipc/background/settings";
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { setupMenu, updateMenuState } from "@/ipc/background/menu";
 import { MenuEvent } from "@/ipc/menu";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 import {
   gameover as usiGameover,
   getUSIEngineInfo as usiGetUSIEngineInfo,
@@ -46,9 +46,12 @@ ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, () => {
   }
 });
 
-ipcMain.on(Background.UPDATE_MENU_STATE, (_, mode: Mode, bussy: boolean) => {
-  updateMenuState(mode, bussy);
-});
+ipcMain.on(
+  Background.UPDATE_MENU_STATE,
+  (_, appState: AppState, bussy: boolean) => {
+    updateMenuState(appState, bussy);
+  }
+);
 
 function isValidRecordFilePath(path: string) {
   return (

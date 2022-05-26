@@ -1,22 +1,23 @@
 import { app, Menu, MenuItem, MenuItemConstructorOptions } from "electron";
-import { openAppDirectory } from "@/settings/fs";
+import { openSettingsDirectory } from "@/ipc/background/settings";
 import { onMenuEvent } from "@/ipc/background";
 import { MenuEvent } from "@/ipc/menu";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 
 const isMac = process.platform === "darwin";
 
-const stateChangeCallbacks: ((mode: Mode, bussy: boolean) => void)[] = [];
+const stateChangeCallbacks: ((appState: AppState, bussy: boolean) => void)[] =
+  [];
 
 function menuItem(
   label: string,
   event: MenuEvent,
-  modes: Mode[] | null,
+  appStates: AppState[] | null,
   accelerator?: string
 ): MenuItemConstructorOptions {
   const index = stateChangeCallbacks.length;
   const id = "menuItem" + index;
-  stateChangeCallbacks.push((mode: Mode, bussy: boolean) => {
+  stateChangeCallbacks.push((appState: AppState, bussy: boolean) => {
     const menu = Menu.getApplicationMenu();
     if (!menu) {
       return;
@@ -27,9 +28,9 @@ function menuItem(
     }
     item.enabled = bussy
       ? false
-      : !modes || modes.length === 0
+      : !appStates || appStates.length === 0
       ? true
-      : !!modes.find((value) => value === mode);
+      : !!appStates.find((value) => value === appState);
   });
   return {
     id,
@@ -43,23 +44,23 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
   {
     label: "ファイル",
     submenu: [
-      menuItem("新規棋譜", MenuEvent.NEW_RECORD, [Mode.NORMAL]),
+      menuItem("新規棋譜", MenuEvent.NEW_RECORD, [AppState.NORMAL]),
       menuItem(
         "棋譜を開く",
         MenuEvent.OPEN_RECORD,
-        [Mode.NORMAL],
+        [AppState.NORMAL],
         "CmdOrCtrl+O"
       ),
       menuItem(
         "棋譜を上書き保存",
         MenuEvent.SAVE_RECORD,
-        [Mode.NORMAL],
+        [AppState.NORMAL],
         "CmdOrCtrl+S"
       ),
       menuItem(
         "棋譜に名前を付けて保存",
         MenuEvent.SAVE_RECORD_AS,
-        [Mode.NORMAL],
+        [AppState.NORMAL],
         "CmdOrCtrl+Shift+S"
       ),
       { type: "separator" },
@@ -88,7 +89,7 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
       menuItem(
         "棋譜・局面貼り付け",
         MenuEvent.PASTE_RECORD,
-        [Mode.NORMAL],
+        [AppState.NORMAL],
         "CmdOrCtrl+V"
       ),
       { type: "separator" },
@@ -96,98 +97,105 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
         label: "特殊な指し手",
         submenu: [
           menuItem("中断", MenuEvent.INSERT_INTERRUPT, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("投了", MenuEvent.INSERT_RESIGN, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("持将棋", MenuEvent.INSERT_DRAW, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("千日手", MenuEvent.INSERT_REPETITION_DRAW, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
-          menuItem("詰み", MenuEvent.INSERT_MATE, [Mode.NORMAL, Mode.RESEARCH]),
+          menuItem("詰み", MenuEvent.INSERT_MATE, [
+            AppState.NORMAL,
+            AppState.RESEARCH,
+          ]),
           menuItem("時間切れ", MenuEvent.INSERT_TIMEOUT, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("反則勝ち", MenuEvent.INSERT_FOUL_WIN, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("反則負け", MenuEvent.INSERT_FOUL_LOSE, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("入玉勝ち", MenuEvent.INSERT_ENTERING_OF_KING, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("不戦勝", MenuEvent.INSERT_WIN_BY_DEFAULT, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
           menuItem("不戦敗", MenuEvent.INSERT_LOSS_BY_DEFAULT, [
-            Mode.NORMAL,
-            Mode.RESEARCH,
+            AppState.NORMAL,
+            AppState.RESEARCH,
           ]),
         ],
       },
       menuItem(
         "現在の位置から棋譜を削除",
         MenuEvent.REMOVE_RECORD_AFTER,
-        [Mode.NORMAL, Mode.RESEARCH],
+        [AppState.NORMAL, AppState.RESEARCH],
         "CmdOrCtrl+D"
       ),
       { type: "separator" },
-      menuItem("局面編集開始", MenuEvent.START_POSITION_EDITING, [Mode.NORMAL]),
-      menuItem("局面編集終了", MenuEvent.END_POSITION_EDITING, [
-        Mode.POSITION_EDITING,
+      menuItem("局面編集開始", MenuEvent.START_POSITION_EDITING, [
+        AppState.NORMAL,
       ]),
-      menuItem("手番入れ替え", MenuEvent.CHANGE_TURN, [Mode.POSITION_EDITING]),
+      menuItem("局面編集終了", MenuEvent.END_POSITION_EDITING, [
+        AppState.POSITION_EDITING,
+      ]),
+      menuItem("手番入れ替え", MenuEvent.CHANGE_TURN, [
+        AppState.POSITION_EDITING,
+      ]),
       {
         label: "局面初期化",
         submenu: [
           menuItem("平手", MenuEvent.INIT_POSITION_STANDARD, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("香落ち", MenuEvent.INIT_POSITION_HANDICAP_LANCE, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("右香落ち", MenuEvent.INIT_POSITION_HANDICAP_RIGHT_LANCE, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("角落ち", MenuEvent.INIT_POSITION_HANDICAP_BISHOP, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("飛車落ち", MenuEvent.INIT_POSITION_HANDICAP_ROOK, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("飛車香落ち", MenuEvent.INIT_POSITION_HANDICAP_ROOK_LANCE, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("2枚落ち", MenuEvent.INIT_POSITION_HANDICAP_2PIECES, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("4枚落ち", MenuEvent.INIT_POSITION_HANDICAP_4PIECES, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("6枚落ち", MenuEvent.INIT_POSITION_HANDICAP_6PIECES, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("8枚落ち", MenuEvent.INIT_POSITION_HANDICAP_8PIECES, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("詰め将棋", MenuEvent.INIT_POSITION_TSUME_SHOGI, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
           menuItem("双玉詰め将棋", MenuEvent.INIT_POSITION_TSUME_SHOGI_2KINGS, [
-            Mode.POSITION_EDITING,
+            AppState.POSITION_EDITING,
           ]),
         ],
       },
@@ -196,19 +204,19 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
   {
     label: "対局",
     submenu: [
-      menuItem("対局", MenuEvent.START_GAME, [Mode.NORMAL]),
-      menuItem("中断", MenuEvent.STOP_GAME, [Mode.GAME]),
-      menuItem("投了", MenuEvent.RESIGN, [Mode.GAME]),
+      menuItem("対局", MenuEvent.START_GAME, [AppState.NORMAL]),
+      menuItem("中断", MenuEvent.STOP_GAME, [AppState.GAME]),
+      menuItem("投了", MenuEvent.RESIGN, [AppState.GAME]),
     ],
   },
   {
     label: "検討",
     submenu: [
-      menuItem("検討開始", MenuEvent.START_RESEARCH, [Mode.NORMAL]),
-      menuItem("検討終了", MenuEvent.STOP_RESEARCH, [Mode.RESEARCH]),
+      menuItem("検討開始", MenuEvent.START_RESEARCH, [AppState.NORMAL]),
+      menuItem("検討終了", MenuEvent.STOP_RESEARCH, [AppState.RESEARCH]),
       { type: "separator" },
-      menuItem("解析開始", MenuEvent.START_ANALYSIS, [Mode.NORMAL]),
-      menuItem("解析終了", MenuEvent.STOP_ANALYSIS, [Mode.ANALYSIS]),
+      menuItem("解析開始", MenuEvent.START_ANALYSIS, [AppState.NORMAL]),
+      menuItem("解析終了", MenuEvent.STOP_ANALYSIS, [AppState.ANALYSIS]),
     ],
   },
   {
@@ -231,11 +239,11 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
     submenu: [
       menuItem("アプリ設定", MenuEvent.APP_SETTING_DIALOG, null),
       menuItem("エンジン設定", MenuEvent.USI_ENGINE_SETTING_DIALOG, [
-        Mode.NORMAL,
+        AppState.NORMAL,
       ]),
       {
         label: "設定ファイルのフォルダを開く",
-        click: openAppDirectory,
+        click: openSettingsDirectory,
       },
     ],
   },
@@ -253,6 +261,8 @@ export function setupMenu(): void {
   Menu.setApplicationMenu(menu);
 }
 
-export function updateMenuState(mode: Mode, bussy: boolean): void {
-  Array.from(stateChangeCallbacks).forEach((callback) => callback(mode, bussy));
+export function updateMenuState(appState: AppState, bussy: boolean): void {
+  Array.from(stateChangeCallbacks).forEach((callback) =>
+    callback(appState, bussy)
+  );
 }

@@ -83,7 +83,10 @@ export class GameManager {
     return this._setting;
   }
 
-  async startGame(setting: GameSetting): Promise<void> {
+  async startGame(
+    setting: GameSetting,
+    record: ImmutableRecord
+  ): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
         "前回の対局が正常に終了できていません。アプリを再起動してください。"
@@ -94,6 +97,7 @@ export class GameManager {
     this.whiteState.timeMs = setting.timeLimit.timeSeconds * 1e3;
     this.whiteState.byoyomi = setting.timeLimit.byoyomi;
     this._setting = setting;
+    this.record = record;
     try {
       this.blackPlayer = await this.buildPlayer(setting.black);
       this.whitePlayer = await this.buildPlayer(setting.white);

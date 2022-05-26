@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { useStore } from "@/store";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 
 export default defineComponent({
@@ -22,7 +22,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const comment = computed(() => store.record.current.comment);
-    const readonly = computed(() => store.mode != Mode.NORMAL);
+    const readonly = computed(() => store.appState != AppState.NORMAL);
     const textarea: Ref = ref(null);
 
     const change = (event: Event) => {

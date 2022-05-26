@@ -1,18 +1,20 @@
 import fs from "fs";
 import { app, shell } from "electron";
 import path from "path";
-import { USIEngineSettings } from "./usi";
-import { AppSetting, defaultAppSetting } from "./app";
-import { defaultWindowSetting, WindowSetting } from "./window";
-import { defaultGameSetting, GameSetting } from "./game";
-import { defaultResearchSetting, ResearchSetting } from "./research";
-import { AnalysisSetting, defaultAnalysisSetting } from "./analysis";
+import { USIEngineSettings } from "@/settings/usi";
+import { AppSetting, defaultAppSetting } from "@/settings/app";
+import { defaultWindowSetting, WindowSetting } from "@/settings/window";
+import { defaultGameSetting, GameSetting } from "@/settings/game";
+import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
+import { AnalysisSetting, defaultAnalysisSetting } from "@/settings/analysis";
 
-export function openAppDirectory(): void {
-  shell.openPath(app.getPath("userData"));
+const rootDir = app.getPath("userData");
+
+export function openSettingsDirectory(): void {
+  shell.openPath(rootDir);
 }
 
-const windowSettingPath = path.join(app.getPath("userData"), "window.json");
+const windowSettingPath = path.join(rootDir, "window.json");
 
 export function saveWindowSetting(setting: WindowSetting): void {
   try {
@@ -38,10 +40,7 @@ export function loadWindowSetting(): WindowSetting {
   }
 }
 
-const usiEngineSettingPath = path.join(
-  app.getPath("userData"),
-  "usi_engine.json"
-);
+const usiEngineSettingPath = path.join(rootDir, "usi_engine.json");
 
 export function saveUSIEngineSetting(setting: USIEngineSettings): void {
   fs.writeFileSync(usiEngineSettingPath, setting.jsonWithIndent, "utf8");
@@ -54,7 +53,7 @@ export function loadUSIEngineSetting(): USIEngineSettings {
   return new USIEngineSettings(fs.readFileSync(usiEngineSettingPath, "utf8"));
 }
 
-const appSettingPath = path.join(app.getPath("userData"), "app_setting.json");
+const appSettingPath = path.join(rootDir, "app_setting.json");
 
 export function saveAppSetting(setting: AppSetting): void {
   fs.writeFileSync(
@@ -75,7 +74,7 @@ export function loadAppSetting(): AppSetting {
   };
 }
 
-const gameSettingPath = path.join(app.getPath("userData"), "game_setting.json");
+const gameSettingPath = path.join(rootDir, "game_setting.json");
 
 export function saveGameSetting(setting: GameSetting): void {
   fs.writeFileSync(
@@ -95,10 +94,7 @@ export function loadGameSetting(): GameSetting {
   };
 }
 
-const researchSettingPath = path.join(
-  app.getPath("userData"),
-  "research_setting.json"
-);
+const researchSettingPath = path.join(rootDir, "research_setting.json");
 
 export function saveResearchSetting(setting: ResearchSetting): void {
   fs.writeFileSync(
@@ -118,10 +114,7 @@ export function loadResearchSetting(): ResearchSetting {
   };
 }
 
-const analysisSettingPath = path.join(
-  app.getPath("userData"),
-  "analysis_setting.json"
-);
+const analysisSettingPath = path.join(rootDir, "analysis_setting.json");
 
 export function saveAnalysisSetting(setting: AnalysisSetting): void {
   fs.writeFileSync(

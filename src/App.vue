@@ -25,7 +25,7 @@ import ConfirmDialog from "@/components/dialog/ConfirmDialog.vue";
 import InfoMessage from "@/components/dialog/InfoMessage.vue";
 import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
 import { useStore } from "@/store";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 import { handleKeyDownEvent } from "@/helpers/key";
 import AnalysisDialog from "./components/dialog/AnalysisDialog.vue";
 
@@ -49,12 +49,12 @@ export default defineComponent({
 
     const dialogVisibilities = computed(() => {
       return {
-        game: store.mode === Mode.GAME_DIALOG,
-        research: store.mode === Mode.RESEARCH_DIALOG,
-        analysis: store.mode === Mode.ANALYSIS_DIALOG,
-        usiEngineSetting: store.mode === Mode.USI_ENGINE_SETTING_DIALOG,
+        game: store.appState === AppState.GAME_DIALOG,
+        research: store.appState === AppState.RESEARCH_DIALOG,
+        analysis: store.appState === AppState.ANALYSIS_DIALOG,
+        usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
         appSetting: store.displayAppSetting,
-        paste: store.mode === Mode.PASTE_DIALOG,
+        paste: store.appState === AppState.PASTE_DIALOG,
         bussy: store.isBussy,
         confirm: store.confirmation !== undefined,
       };

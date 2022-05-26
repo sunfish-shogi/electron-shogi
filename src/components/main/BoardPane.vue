@@ -177,7 +177,7 @@ import {
 import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
-import { Mode } from "@/store/mode";
+import { AppState } from "@/store/state";
 import { humanPlayer } from "@/players/human";
 import { Icon } from "@/assets/icons";
 
@@ -197,7 +197,7 @@ export default defineComponent({
     const store = useStore();
 
     const onMove = (move: Move) => {
-      if (store.mode === Mode.GAME) {
+      if (store.appState === AppState.GAME) {
         humanPlayer.doMove(move);
       } else {
         store.doMove(move);
@@ -279,7 +279,9 @@ export default defineComponent({
       store.removeRecordAfter();
     };
 
-    const allowEdit = computed(() => store.mode === Mode.POSITION_EDITING);
+    const allowEdit = computed(
+      () => store.appState === AppState.POSITION_EDITING
+    );
 
     const allowMove = computed(() => store.isMovableByUser);
 
@@ -309,33 +311,35 @@ export default defineComponent({
     });
 
     const blackPlayerTimeMs = computed(() =>
-      store.mode === Mode.GAME ? store.blackTimeMs : undefined
+      store.appState === AppState.GAME ? store.blackTimeMs : undefined
     );
     const blackPlayerByoyomi = computed(() =>
-      store.mode === Mode.GAME ? store.blackByoyomi : undefined
+      store.appState === AppState.GAME ? store.blackByoyomi : undefined
     );
     const whitePlayerTimeMs = computed(() =>
-      store.mode === Mode.GAME ? store.whiteTimeMs : undefined
+      store.appState === AppState.GAME ? store.whiteTimeMs : undefined
     );
     const whitePlayerByoyomi = computed(() =>
-      store.mode === Mode.GAME ? store.whiteByoyomi : undefined
+      store.appState === AppState.GAME ? store.whiteByoyomi : undefined
     );
 
     const controlStates = computed(() => {
       return {
-        game: store.mode === Mode.NORMAL,
-        stop: store.mode === Mode.GAME,
-        resign: store.mode === Mode.GAME && store.isMovableByUser,
-        research: store.mode === Mode.NORMAL,
-        endResearch: store.mode === Mode.RESEARCH,
-        analysis: store.mode === Mode.NORMAL,
-        endAnalysis: store.mode === Mode.ANALYSIS,
-        startEditPosition: store.mode === Mode.NORMAL,
-        endEditPosition: store.mode === Mode.POSITION_EDITING,
-        initPosition: store.mode === Mode.POSITION_EDITING,
-        removeAfter: store.mode === Mode.NORMAL || store.mode === Mode.RESEARCH,
-        paste: store.mode === Mode.NORMAL,
-        engineSettings: store.mode === Mode.NORMAL,
+        game: store.appState === AppState.NORMAL,
+        stop: store.appState === AppState.GAME,
+        resign: store.appState === AppState.GAME && store.isMovableByUser,
+        research: store.appState === AppState.NORMAL,
+        endResearch: store.appState === AppState.RESEARCH,
+        analysis: store.appState === AppState.NORMAL,
+        endAnalysis: store.appState === AppState.ANALYSIS,
+        startEditPosition: store.appState === AppState.NORMAL,
+        endEditPosition: store.appState === AppState.POSITION_EDITING,
+        initPosition: store.appState === AppState.POSITION_EDITING,
+        removeAfter:
+          store.appState === AppState.NORMAL ||
+          store.appState === AppState.RESEARCH,
+        paste: store.appState === AppState.NORMAL,
+        engineSettings: store.appState === AppState.NORMAL,
       };
     });
 

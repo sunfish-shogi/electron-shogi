@@ -325,7 +325,7 @@ class Store {
       await saveGameSetting(setting);
       this.initializeRecordForGame(setting);
       this.initializeDisplaySettingForGame(setting);
-      await this.game.startGame(setting);
+      await this.game.startGame(setting, this.record);
       this._appState = AppState.GAME;
     } finally {
       this.releaseBussyState();

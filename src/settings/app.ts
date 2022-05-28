@@ -34,6 +34,8 @@ export type AppSetting = {
   badMoveLevelThreshold4: number;
   showElapsedTimeInRecordView: boolean;
   showCommentInRecordView: boolean;
+  enableAppLog: boolean;
+  enableUSILog: boolean;
 };
 
 export type AppSettingUpdate = {
@@ -53,6 +55,8 @@ export type AppSettingUpdate = {
   badMoveLevelThreshold4?: number;
   showElapsedTimeInRecordView?: boolean;
   showCommentInRecordView?: boolean;
+  enableAppLog?: boolean;
+  enableUSILog?: boolean;
 };
 
 export function defaultAppSetting(returnCode?: string): AppSetting {
@@ -73,6 +77,8 @@ export function defaultAppSetting(returnCode?: string): AppSetting {
     badMoveLevelThreshold4: 50,
     showElapsedTimeInRecordView: true,
     showCommentInRecordView: true,
+    enableAppLog: false,
+    enableUSILog: false,
   };
 }
 

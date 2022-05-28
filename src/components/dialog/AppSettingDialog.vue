@@ -142,6 +142,39 @@
             <div class="dialog-form-item-unit">%</div>
           </div>
         </div>
+        <div class="section">
+          <div class="section-title">開発者向け</div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">アプリログを出力</div>
+            <input
+              ref="enableAppLog"
+              class="toggle"
+              :checked="appSetting.enableAppLog"
+              type="checkbox"
+            />
+            <div v-if="isNative" class="dialog-form-item-unit">
+              （再起動後に反映）
+            </div>
+            <div v-if="!isNative" class="dialog-form-item-unit">
+              （ブラウザ版では機能しません）
+            </div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">USI通信ログを出力</div>
+            <input
+              ref="enableUSILog"
+              class="toggle"
+              :checked="appSetting.enableUSILog"
+              type="checkbox"
+            />
+            <div v-if="isNative" class="dialog-form-item-unit">
+              （再起動後に反映）
+            </div>
+            <div v-if="!isNative" class="dialog-form-item-unit">
+              （ブラウザ版では機能しません）
+            </div>
+          </div>
+        </div>
       </div>
       <div class="dialog-main-buttons">
         <button class="dialog-button" @click="saveAndClose()">
@@ -163,6 +196,7 @@ import { useStore } from "@/store";
 import { ref, defineComponent, onMounted, Ref, computed } from "vue";
 import { readInputAsNumber } from "@/helpers/form";
 import { showModalDialog } from "@/helpers/dialog";
+import { isNative } from "@/ipc/renderer";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -193,6 +227,8 @@ export default defineComponent({
     const badMoveLevelThreshold2: Ref = ref(null);
     const badMoveLevelThreshold3: Ref = ref(null);
     const badMoveLevelThreshold4: Ref = ref(null);
+    const enableAppLog: Ref = ref(null);
+    const enableUSILog: Ref = ref(null);
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -212,6 +248,8 @@ export default defineComponent({
         badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
         badMoveLevelThreshold3: readInputAsNumber(badMoveLevelThreshold3.value),
         badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
+        enableAppLog: enableAppLog.value.checked,
+        enableUSILog: enableUSILog.value.checked,
       };
       store.retainBussyState();
       try {
@@ -275,9 +313,12 @@ export default defineComponent({
       badMoveLevelThreshold2,
       badMoveLevelThreshold3,
       badMoveLevelThreshold4,
+      enableAppLog,
+      enableUSILog,
       appSetting,
       pieceImageTypes,
       boardImageTypes,
+      isNative: isNative(),
       saveAndClose,
       cancel,
     };
@@ -299,5 +340,10 @@ export default defineComponent({
 }
 .section-title {
   font-size: 1.1em;
+}
+input.toggle {
+  height: 1rem;
+  width: 1rem;
+  margin-right: 10px;
 }
 </style>

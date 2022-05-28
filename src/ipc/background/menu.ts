@@ -1,5 +1,6 @@
 import { app, Menu, MenuItem, MenuItemConstructorOptions } from "electron";
 import { openSettingsDirectory } from "@/ipc/background/settings";
+import { openLogsDirectory } from "@/ipc/background/log";
 import { onMenuEvent } from "@/ipc/background";
 import { MenuEvent } from "@/ipc/menu";
 import { AppState } from "@/store/state";
@@ -228,10 +229,6 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
       },
       menuItem("盤面反転", MenuEvent.FLIP_BOARD, null, "CmdOrCtrl+T"),
       { type: "separator" },
-      {
-        label: "開発者ツール表示切り替え",
-        role: "toggleDevTools",
-      },
     ],
   },
   {
@@ -241,9 +238,23 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
       menuItem("エンジン設定", MenuEvent.USI_ENGINE_SETTING_DIALOG, [
         AppState.NORMAL,
       ]),
+    ],
+  },
+  {
+    label: "デバッグ",
+    submenu: [
+      {
+        label: "開発者ツール表示切り替え",
+        role: "toggleDevTools",
+      },
+      { type: "separator" },
       {
         label: "設定ファイルのフォルダを開く",
         click: openSettingsDirectory,
+      },
+      {
+        label: "ログファイルのフォルダを開く",
+        click: openLogsDirectory,
       },
     ],
   },

@@ -29,6 +29,8 @@ import {
   stop as usiStop,
 } from "@/ipc/background/usi";
 import { GameResult } from "@/players/player";
+import { LogLevel } from "../log";
+import { getAppLogger } from "./log";
 
 const isWindows = process.platform === "win32";
 
@@ -236,6 +238,20 @@ ipcMain.handle(
 
 ipcMain.handle(Background.USI_QUIT, (_, sessionID: number) => {
   usiQuit(sessionID);
+});
+
+ipcMain.handle(Background.LOG, (_, level: LogLevel, message: string) => {
+  switch (level) {
+    case LogLevel.INFO:
+      getAppLogger().info("%s", message);
+      break;
+    case LogLevel.WARN:
+      getAppLogger().warn("%s", message);
+      break;
+    case LogLevel.ERROR:
+      getAppLogger().error("%s", message);
+      break;
+  }
 });
 
 export function sendError(e: Error): void {

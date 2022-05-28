@@ -101,6 +101,9 @@ import { RectSize } from "@/components/primitive/Types";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Tab } from "@/settings/app";
 import { Icon } from "@/assets/icons";
+import { log } from "@/ipc/renderer";
+import { LogLevel } from "@/ipc/log";
+import { toString } from "@/helpers/string";
 
 export const headerHeight = 30;
 
@@ -129,7 +132,7 @@ export default defineComponent({
           tab: id,
         })
         .catch((e) => {
-          console.warn(e);
+          log(LogLevel.WARN, toString(e));
         });
     };
     const activeTab = computed(() => store.appSetting.tab);

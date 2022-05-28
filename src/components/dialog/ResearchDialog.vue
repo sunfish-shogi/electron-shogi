@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
-import { loadResearchSetting, loadUSIEngineSetting } from "@/ipc/renderer";
+import api from "@/ipc/api";
 import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
 import { USIEngineSettings } from "@/settings/usi";
 import { useStore } from "@/store";
@@ -51,8 +51,8 @@ export default defineComponent({
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
-        researchSetting.value = await loadResearchSetting();
-        engineSetting.value = await loadUSIEngineSetting();
+        researchSetting.value = await api.loadResearchSetting();
+        engineSetting.value = await api.loadUSIEngineSetting();
         store.releaseBussyState();
       } catch (e) {
         store.pushError(e);

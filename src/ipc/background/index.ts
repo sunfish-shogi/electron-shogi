@@ -29,7 +29,7 @@ import {
   stop as usiStop,
 } from "@/ipc/background/usi";
 import { GameResult } from "@/players/player";
-import { LogLevel } from "../log";
+import { LogLevel } from "@/ipc/log";
 import { getAppLogger } from "./log";
 
 const isWindows = process.platform === "win32";

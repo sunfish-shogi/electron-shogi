@@ -1,14 +1,4 @@
-import {
-  log,
-  openRecord,
-  saveAnalysisSetting,
-  saveAppSetting,
-  saveGameSetting,
-  saveRecord,
-  saveResearchSetting,
-  showOpenRecordDialog,
-  showSaveRecordDialog,
-} from "@/ipc/renderer";
+import api from "@/ipc/api";
 import {
   Color,
   detectRecordFormat,
@@ -24,8 +14,9 @@ import {
   reverseColor,
   SpecialMove,
   specialMoveToDisplayString,
+  exportKakinoki,
+  importKakinoki,
 } from "@/shogi";
-import { exportKakinoki, importKakinoki } from "@/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import iconv from "iconv-lite";
 import { formatTimeLimitCSA, GameSetting } from "@/settings/game";
@@ -44,7 +35,7 @@ import {
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
 import { RecordEntryCustomData } from "./record";
-import { GameManager } from "./game";
+import { defaultPlayerBuilder, GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
 import { BussyStore } from "./bussy";
@@ -91,7 +82,7 @@ class Store {
     this._appState = AppState.NORMAL;
     this._displayAppSetting = false;
     this._usi = new USIMonitor();
-    this.game = new GameManager(this);
+    this.game = new GameManager(defaultPlayerBuilder, this);
     this._record = new Record();
   }
 
@@ -132,7 +123,7 @@ class Store {
   }
 
   pushError(e: unknown): void {
-    log(LogLevel.ERROR, toString(e));
+    api.log(LogLevel.ERROR, toString(e));
     this._error.push(e);
   }
 
@@ -153,13 +144,13 @@ class Store {
     if (error) {
       throw error;
     }
-    await saveAppSetting(newAppSetting);
+    await api.saveAppSetting(newAppSetting);
     this._appSetting = newAppSetting;
   }
 
   flipBoard(): void {
     this._appSetting.boardFlipping = !this.appSetting.boardFlipping;
-    saveAppSetting(this.appSetting);
+    api.saveAppSetting(this.appSetting);
   }
 
   get appState(): AppState {
@@ -326,7 +317,7 @@ class Store {
     }
     this.retainBussyState();
     try {
-      await saveGameSetting(setting);
+      await api.saveGameSetting(setting);
       this.initializeRecordForGame(setting);
       this.initializeDisplaySettingForGame(setting);
       await this.game.startGame(setting, this.record);
@@ -524,7 +515,7 @@ class Store {
     }
     this.retainBussyState();
     try {
-      await saveResearchSetting(researchSetting);
+      await api.saveResearchSetting(researchSetting);
       if (!researchSetting.usi) {
         throw new Error("エンジンが設定されていません。");
       }
@@ -560,7 +551,7 @@ class Store {
     }
     this.retainBussyState();
     try {
-      await saveAnalysisSetting(analysisSetting);
+      await api.saveAnalysisSetting(analysisSetting);
       const analysis = new AnalysisManager(analysisSetting, this);
       await analysis.start();
       this.analysis = analysis;
@@ -818,12 +809,12 @@ class Store {
     this.retainBussyState();
     try {
       if (!path) {
-        path = await showOpenRecordDialog();
+        path = await api.showOpenRecordDialog();
         if (!path) {
           return;
         }
       }
-      const data = await openRecord(path);
+      const data = await api.openRecord(path);
       let recordOrError: Record | Error;
       if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
         const str = path.match(/\.kif$/)
@@ -863,7 +854,7 @@ class Store {
       let path = this.recordFilePath;
       if (!options?.overwrite || !path) {
         const defaultPath = defaultRecordFileName(this._record.metadata);
-        path = await showSaveRecordDialog(defaultPath);
+        path = await api.showSaveRecordDialog(defaultPath);
         if (!path) {
           return;
         }
@@ -885,7 +876,7 @@ class Store {
       } else {
         throw new Error("不明なファイル形式: " + path);
       }
-      await saveRecord(path, data);
+      await api.saveRecord(path, data);
       this.updateRecordFilePath(path);
     } finally {
       this.releaseBussyState();

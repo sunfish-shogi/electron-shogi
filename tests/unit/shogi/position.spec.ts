@@ -7,8 +7,8 @@ import {
   Position,
   Record,
   Square,
+  PieceType,
 } from "@/shogi";
-import { PieceType } from "@/shogi";
 
 describe("shogi/position", () => {
   it("getters", () => {

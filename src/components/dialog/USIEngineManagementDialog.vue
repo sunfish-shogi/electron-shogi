@@ -42,12 +42,7 @@
 </template>
 
 <script lang="ts">
-import {
-  getUSIEngineInfo,
-  loadUSIEngineSetting,
-  saveUSIEngineSetting,
-  showSelectUSIEngineDialog,
-} from "@/ipc/renderer";
+import api from "@/ipc/api";
 import {
   duplicateEngineSetting,
   USIEngineSetting,
@@ -74,7 +69,7 @@ export default defineComponent({
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
-        setting.value = await loadUSIEngineSetting();
+        setting.value = await api.loadUSIEngineSetting();
         store.releaseBussyState();
       } catch (e) {
         store.pushError(e);
@@ -85,11 +80,11 @@ export default defineComponent({
     const add = async () => {
       try {
         store.retainBussyState();
-        const path = await showSelectUSIEngineDialog();
+        const path = await api.showSelectUSIEngineDialog();
         if (!path) {
           return;
         }
-        setting.value.addEngine(await getUSIEngineInfo(path));
+        setting.value.addEngine(await api.getUSIEngineInfo(path));
       } catch (e) {
         store.pushError(e);
       } finally {
@@ -114,7 +109,7 @@ export default defineComponent({
     const saveAndClose = async () => {
       try {
         store.retainBussyState();
-        await saveUSIEngineSetting(setting.value as USIEngineSettings);
+        await api.saveUSIEngineSetting(setting.value as USIEngineSettings);
         store.closeDialog();
       } catch (e) {
         store.pushError(e);

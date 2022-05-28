@@ -1,16 +1,12 @@
 import { createApp } from "vue";
-import App from "./App.vue";
-import {
-  getRecordPathFromProcArg,
-  loadAppSetting,
-  log,
-  setup as setupIPC,
-} from "./ipc/renderer";
-import { useStore } from "./store";
+import App from "@/App.vue";
+import api from "@/ipc/api";
+import { setup as setupIPC } from "@/ipc/setup";
+import { useStore } from "@/store";
 import { Chart, registerables } from "chart.js";
-import { LogLevel } from "./ipc/log";
+import { LogLevel } from "@/ipc/log";
 
-log(LogLevel.INFO, "start renderer process");
+api.log(LogLevel.INFO, "start renderer process");
 
 Chart.register(...registerables);
 
@@ -18,7 +14,8 @@ setupIPC();
 
 const store = useStore();
 Promise.allSettled([
-  loadAppSetting()
+  api
+    .loadAppSetting()
     .then((setting) => {
       store.updateAppSetting(setting);
     })
@@ -28,12 +25,12 @@ Promise.allSettled([
       );
     }),
   (async function (): Promise<void> {
-    const path = await getRecordPathFromProcArg();
+    const path = await api.getRecordPathFromProcArg();
     if (path) {
       store.openRecord(path);
     }
   })(),
 ]).finally(() => {
-  log(LogLevel.INFO, "mount app");
+  api.log(LogLevel.INFO, "mount app");
   createApp(App).mount("#app");
 });

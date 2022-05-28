@@ -99,11 +99,7 @@
 <script lang="ts">
 import { getFormItemByID, showModalDialog } from "@/helpers/dialog";
 import { readInputAsNumber } from "@/helpers/form";
-import {
-  getUSIEngineInfo,
-  sendUSISetOption,
-  showSelectFileDialog,
-} from "@/ipc/renderer";
+import api from "@/ipc/api";
 import {
   getUSIEngineOptionCurrentValue,
   mergeUSIEngineSetting,
@@ -151,7 +147,7 @@ export default defineComponent({
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
-        engine.value = await getUSIEngineInfo(latest.path);
+        engine.value = await api.getUSIEngineInfo(latest.path);
         mergeUSIEngineSetting(engine.value, latest);
         engineNameInput.value.value = engine.value.name;
         for (const option of options.value) {
@@ -170,7 +166,7 @@ export default defineComponent({
     const selectFile = async (id: string) => {
       store.retainBussyState();
       try {
-        const path = await showSelectFileDialog();
+        const path = await api.showSelectFileDialog();
         const elem = getFormItemByID(id);
         if (path && elem) {
           elem.value = path;
@@ -185,7 +181,7 @@ export default defineComponent({
     const sendOption = async (name: string) => {
       store.retainBussyState();
       try {
-        await sendUSISetOption(engine.value.path, name);
+        await api.sendUSISetOption(engine.value.path, name);
       } catch (e) {
         store.pushError(e);
       } finally {

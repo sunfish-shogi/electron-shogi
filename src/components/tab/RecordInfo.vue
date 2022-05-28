@@ -17,7 +17,7 @@
 import { getStandardMetadataDisplayName, RecordMetadataKey } from "@/shogi";
 import { useStore } from "@/store";
 import { computed, defineComponent } from "vue";
-import { RectSize } from "../primitive/Types";
+import { RectSize } from "@/components/primitive/Types";
 
 export default defineComponent({
   name: "RecordComment",

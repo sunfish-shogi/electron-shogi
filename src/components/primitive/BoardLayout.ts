@@ -1,5 +1,7 @@
-import { handPieceTypes, ImmutableHand, PieceType } from "@/shogi";
 import {
+  handPieceTypes,
+  ImmutableHand,
+  PieceType,
   Color,
   Move,
   Piece,

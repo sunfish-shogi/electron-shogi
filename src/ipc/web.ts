@@ -4,7 +4,7 @@ import { defaultGameSetting } from "@/settings/game";
 import { defaultResearchSetting } from "@/settings/research";
 import { USIEngineSettings } from "@/settings/usi";
 import { LogLevel } from "./log";
-import { API } from "./renderer";
+import { Bridge } from "./api";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
@@ -14,7 +14,7 @@ enum STORAGE_KEY {
 }
 
 // Electron を使わずにシンプルな Web アプリケーションとして実行した場合に使用します。
-export const webAPI: API = {
+export const webAPI: Bridge = {
   async getRecordPathFromProcArg(): Promise<string> {
     return "";
   },

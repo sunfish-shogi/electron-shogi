@@ -11,6 +11,7 @@ export interface SearchHandler {
   onMove: (move: Move) => void;
   onResign: () => void;
   onWin: () => void;
+  onError: (e: unknown) => void;
 }
 
 export interface Player {

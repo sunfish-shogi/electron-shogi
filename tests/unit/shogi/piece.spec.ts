@@ -1,5 +1,10 @@
-import { Color, Piece } from "@/shogi";
-import { PieceType, pieceTypeToSFEN, standardPieceName } from "@/shogi";
+import {
+  Color,
+  Piece,
+  PieceType,
+  pieceTypeToSFEN,
+  standardPieceName,
+} from "@/shogi";
 
 describe("shogi/piece", () => {
   it("PieceType", () => {

@@ -106,7 +106,7 @@
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
 import { readInputAsNumber } from "@/helpers/form";
-import { loadAnalysisSetting, loadUSIEngineSetting } from "@/ipc/renderer";
+import api from "@/ipc/api";
 import { AnalysisSetting, defaultAnalysisSetting } from "@/settings/analysis";
 import { USIEngineSettings } from "@/settings/usi";
 import { useStore } from "@/store";
@@ -132,8 +132,8 @@ export default defineComponent({
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
-        analysisSetting.value = await loadAnalysisSetting();
-        engineSetting.value = await loadUSIEngineSetting();
+        analysisSetting.value = await api.loadAnalysisSetting();
+        engineSetting.value = await api.loadUSIEngineSetting();
         store.releaseBussyState();
       } catch (e) {
         store.pushError(e);

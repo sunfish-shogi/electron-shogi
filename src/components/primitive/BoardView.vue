@@ -127,13 +127,19 @@
 </template>
 
 <script lang="ts">
-import { PieceType } from "@/shogi";
+import {
+  PieceType,
+  Square,
+  Piece,
+  Color,
+  Move,
+  ImmutablePosition,
+} from "@/shogi";
 import { computed, reactive, watch, defineComponent, PropType } from "vue";
 import LayoutBuilder, {
   BoardImageType,
   PieceImageType,
 } from "@/components/primitive/BoardLayout";
-import { Square, Piece, Color, Move, ImmutablePosition } from "@/shogi";
 import { RectSize } from "./Types";
 import { secondsToHMMSS } from "@/helpers/time";
 

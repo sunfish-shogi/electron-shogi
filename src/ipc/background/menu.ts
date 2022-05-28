@@ -1,4 +1,11 @@
-import { app, Menu, MenuItem, MenuItemConstructorOptions } from "electron";
+import path from "path";
+import {
+  app,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  shell,
+} from "electron";
 import { openSettingsDirectory } from "@/ipc/background/settings";
 import { openLogsDirectory } from "@/ipc/background/log";
 import { onMenuEvent } from "@/ipc/background";
@@ -248,6 +255,12 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
         role: "toggleDevTools",
       },
       { type: "separator" },
+      {
+        label: "アプリのフォルダを開く",
+        click: () => {
+          shell.openPath(path.dirname(app.getPath("exe")));
+        },
+      },
       {
         label: "設定ファイルのフォルダを開く",
         click: openSettingsDirectory,

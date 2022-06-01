@@ -148,7 +148,7 @@ export class USIMonitor {
   private _researcher?: USIPlayerMonitor;
   private researchPosition?: string;
   private updateQueue: USIUpdate[];
-  private timeoutHandle?: NodeJS.Timeout;
+  private timeoutHandle?: number;
 
   constructor() {
     this.updateQueue = [];
@@ -181,7 +181,7 @@ export class USIMonitor {
       info: info,
     });
     if (!this.timeoutHandle) {
-      this.timeoutHandle = setTimeout(() => {
+      this.timeoutHandle = window.setTimeout(() => {
         this.dequeue();
       }, 100);
     }

@@ -146,7 +146,7 @@
 <script lang="ts">
 import { USIEngineSettings } from "@/settings/usi";
 import { ref, onMounted, defineComponent, Ref, computed } from "vue";
-import { loadGameSetting, loadUSIEngineSetting } from "@/ipc/renderer";
+import api from "@/ipc/api";
 import { useStore } from "@/store";
 import {
   defaultGameSetting,
@@ -185,8 +185,8 @@ export default defineComponent({
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
-        gameSetting.value = await loadGameSetting();
-        engineSetting.value = await loadUSIEngineSetting();
+        gameSetting.value = await api.loadGameSetting();
+        engineSetting.value = await api.loadUSIEngineSetting();
         store.releaseBussyState();
       } catch (e) {
         store.pushError(e);

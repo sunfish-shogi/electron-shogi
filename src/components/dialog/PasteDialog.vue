@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
-import { isNative } from "@/ipc/renderer";
+import { isNative } from "@/ipc/api";
 import { useStore } from "@/store";
 import { defineComponent, onMounted, ref, Ref } from "vue";
 

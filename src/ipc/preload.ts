@@ -4,10 +4,10 @@ import { GameResult } from "@/players/player";
 import { USIInfoSender } from "@/store/usi";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "./channel";
-import { API } from "./renderer";
+import { Bridge } from "./api";
 import { LogLevel } from "./log";
 
-const api: API = {
+const api: Bridge = {
   // NOTICE:
   //   Do NOT publish any libraries or any references to scure objects.
   //   Must create wrapper function and publish only minimum required references.

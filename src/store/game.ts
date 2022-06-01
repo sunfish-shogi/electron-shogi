@@ -1,5 +1,6 @@
 import { LogLevel } from "@/ipc/log";
-import { log } from "@/ipc/renderer";
+import api from "@/ipc/api";
+import { GameResult, Player } from "@/players/player";
 import { humanPlayer } from "@/players/human";
 import { USIPlayer } from "@/players/usi";
 import {
@@ -9,9 +10,25 @@ import {
 } from "@/settings/game";
 import { Color, ImmutableRecord, Move, Record, SpecialMove } from "@/shogi";
 import * as uri from "@/uri";
-import { GameResult, Player } from "../players/player";
 
-export type PlayerState = {
+export interface PlayerBuilder {
+  build(playerSetting: PlayerSetting): Promise<Player>;
+}
+
+export const defaultPlayerBuilder: PlayerBuilder = {
+  async build(playerSetting: PlayerSetting): Promise<Player> {
+    if (playerSetting.uri === uri.ES_HUMAN) {
+      return humanPlayer;
+    } else if (uri.isUSIEngine(playerSetting.uri) && playerSetting.usi) {
+      const player = new USIPlayer(playerSetting.usi);
+      await player.launch();
+      return player;
+    }
+    throw new Error("予期せぬプレイヤーURIです: " + playerSetting.uri);
+  },
+};
+
+type PlayerState = {
   timeMs: number;
   byoyomi: number;
 };
@@ -35,6 +52,7 @@ enum GameState {
 export class GameManager {
   private state: GameState;
   private handlers: GameHandlers;
+  private playerBuilder: PlayerBuilder;
   private blackState: PlayerState;
   private whiteState: PlayerState;
   private timerHandle: number;
@@ -47,9 +65,10 @@ export class GameManager {
   private lastEventID: number;
   private record: ImmutableRecord;
 
-  constructor(handlers: GameHandlers) {
+  constructor(playerBuilder: PlayerBuilder, handlers: GameHandlers) {
     this.state = GameState.IDLE;
     this.handlers = handlers;
+    this.playerBuilder = playerBuilder;
     this.blackState = { timeMs: 0, byoyomi: 0 };
     this.whiteState = { timeMs: 0, byoyomi: 0 };
     this.timerHandle = 0;
@@ -101,8 +120,8 @@ export class GameManager {
     this._setting = setting;
     this.record = record;
     try {
-      this.blackPlayer = await this.buildPlayer(setting.black);
-      this.whitePlayer = await this.buildPlayer(setting.white);
+      this.blackPlayer = await this.playerBuilder.build(setting.black);
+      this.whitePlayer = await this.playerBuilder.build(setting.white);
     } catch (e) {
       try {
         await this.closePlayers();
@@ -112,7 +131,7 @@ export class GameManager {
       throw e;
     }
     this.state = GameState.ACTIVE;
-    this.next();
+    setTimeout(() => this.next());
   }
 
   private next(): void {
@@ -139,9 +158,10 @@ export class GameManager {
         this.blackTimeMs,
         this.whiteTimeMs,
         {
-          onMove: (move: Move): void => this.onMove(eventID, move),
-          onResign: (): void => this.onResign(eventID),
-          onWin: (): void => this.onWin(eventID),
+          onMove: (move: Move) => this.onMove(eventID, move),
+          onResign: () => this.onResign(eventID),
+          onWin: () => this.onWin(eventID),
+          onError: (e) => this.handlers.onError(e),
         }
       )
       .catch((e) => {
@@ -153,11 +173,14 @@ export class GameManager {
 
   private onMove(eventID: number, move: Move): void {
     if (eventID !== this.lastEventID) {
-      log(LogLevel.WARN, "指し手を受信しましたが既にイベントは無効です。");
+      api.log(LogLevel.WARN, "指し手を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      log(LogLevel.WARN, "指し手を受信しましたが既に対局中ではありません。");
+      api.log(
+        LogLevel.WARN,
+        "指し手を受信しましたが既に対局中ではありません。"
+      );
       return;
     }
     if (!this.record.position.isValidMove(move)) {
@@ -185,11 +208,11 @@ export class GameManager {
 
   private onResign(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      log(LogLevel.WARN, "投了を受信しましたが既にイベントは無効です。");
+      api.log(LogLevel.WARN, "投了を受信しましたが既にイベントは無効です。");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      log(LogLevel.WARN, "投了を受信しましたが既に対局中ではありません。");
+      api.log(LogLevel.WARN, "投了を受信しましたが既に対局中ではありません。");
       return;
     }
     this.endGame(SpecialMove.RESIGN);
@@ -197,11 +220,17 @@ export class GameManager {
 
   private onWin(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      log(LogLevel.WARN, "勝ち宣言を受信しましたが既にイベントは無効です。");
+      api.log(
+        LogLevel.WARN,
+        "勝ち宣言を受信しましたが既にイベントは無効です。"
+      );
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      log(LogLevel.WARN, "勝ち宣言を受信しましたが既に対局中ではありません。");
+      api.log(
+        LogLevel.WARN,
+        "勝ち宣言を受信しましたが既に対局中ではありません。"
+      );
       return;
     }
     this.endGame(SpecialMove.ENTERING_OF_KING);
@@ -350,17 +379,6 @@ export class GameManager {
 
   private incrementTime(color: Color): void {
     this.getPlayerState(color).timeMs += this.setting.timeLimit.increment * 1e3;
-  }
-
-  private async buildPlayer(playerSetting: PlayerSetting): Promise<Player> {
-    if (playerSetting.uri === uri.ES_HUMAN) {
-      return humanPlayer;
-    } else if (uri.isUSIEngine(playerSetting.uri) && playerSetting.usi) {
-      const player = new USIPlayer(playerSetting.usi);
-      await player.launch();
-      return player;
-    }
-    throw new Error("予期せぬプレイヤーURIです: " + playerSetting.uri);
   }
 
   private async closePlayers(): Promise<void> {

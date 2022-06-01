@@ -41,7 +41,7 @@ export class AnalysisManager {
   private mate?: number;
   private lastPV?: Move[];
   private pv?: Move[];
-  private timerHandle?: NodeJS.Timeout;
+  private timerHandle?: number;
 
   constructor(setting: AnalysisSetting, handler: AnalysisHandler) {
     if (!setting.usi) {
@@ -116,7 +116,7 @@ export class AnalysisManager {
     this.actualMove =
       record.current.move instanceof Move ? record.current.move : undefined;
     this.color = reverseColor(record.position.color);
-    this.timerHandle = setTimeout(
+    this.timerHandle = window.setTimeout(
       () => this.next(),
       this.setting.perMoveCriteria.maxSeconds * 1e3
     );

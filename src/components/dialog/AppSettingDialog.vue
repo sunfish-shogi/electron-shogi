@@ -196,7 +196,7 @@ import { useStore } from "@/store";
 import { ref, defineComponent, onMounted, Ref, computed } from "vue";
 import { readInputAsNumber } from "@/helpers/form";
 import { showModalDialog } from "@/helpers/dialog";
-import { isNative } from "@/ipc/renderer";
+import { isNative } from "@/ipc/api";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",

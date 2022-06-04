@@ -1,10 +1,14 @@
 <template>
   <div>
-    <div class="root" :style="`height:${size.height}px`">
+    <div ref="root" class="root" :style="`height:${size.height}px`">
+      <div class="element">
+        <div class="key">ファイル</div>
+        <div class="value">{{ filePath || "（新規棋譜）" }}</div>
+      </div>
       <div v-for="element of list" :key="element.key" class="element">
         <div class="key">{{ element.displayName }}</div>
         <input
-          class="value-input"
+          class="value"
           :value="element.value"
           @input="change($event, element.key)"
         />
@@ -16,7 +20,7 @@
 <script lang="ts">
 import { getStandardMetadataDisplayName, RecordMetadataKey } from "@/shogi";
 import { useStore } from "@/store";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref } from "vue";
 import { RectSize } from "@/components/primitive/Types";
 
 export default defineComponent({
@@ -28,7 +32,9 @@ export default defineComponent({
     },
   },
   setup() {
+    const root: Ref = ref(null);
     const store = useStore();
+    const filePath = computed(() => store.recordFilePath);
     const list = computed(() => {
       return Object.values(RecordMetadataKey).map((key) => {
         const metadata = store.record.metadata;
@@ -37,6 +43,15 @@ export default defineComponent({
           displayName: getStandardMetadataDisplayName(key),
           value: metadata.getStandardMetadata(key) || "",
         };
+      });
+    });
+
+    onMounted(() => {
+      root.value.addEventListener("copy", (event: ClipboardEvent) => {
+        event.stopPropagation();
+      });
+      root.value.addEventListener("paste", (event: ClipboardEvent) => {
+        event.stopPropagation();
       });
     });
 
@@ -49,6 +64,8 @@ export default defineComponent({
     };
 
     return {
+      root,
+      filePath,
       list,
       change,
     };
@@ -74,7 +91,10 @@ export default defineComponent({
 .key {
   width: 100px;
 }
-.value-input {
+div.value {
+  width: calc(100% - 100px);
+}
+input.value {
   width: min(500px, calc(100% - 150px));
 }
 </style>

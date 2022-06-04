@@ -162,6 +162,18 @@ class Store {
   }
 
   showConfirmation(confirmation: Confirmation): void {
+    if (this.appState == AppState.TEMPORARY) {
+      api.log(
+        LogLevel.ERROR,
+        "確認ダイアログを多重に表示しようとしました。" +
+          ` lastAppState=${this.lastAppState}` +
+          (this._confirmation
+            ? ` currentMessage=${this._confirmation.message}`
+            : "") +
+          ` newMessage=${confirmation.message}`
+      );
+      return;
+    }
     this._confirmation = confirmation;
     this.lastAppState = this.appState;
     this._appState = AppState.TEMPORARY;

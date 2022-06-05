@@ -250,12 +250,12 @@ export default defineComponent({
   padding: 5px;
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid var(--text-separator-color);
 }
 .option-name {
   width: 240px;
   text-align: left;
-  border-right: 1px solid gray;
+  border-right: 1px solid var(--text-separator-color);
   margin-right: 10px;
 }
 .option-unchangeable {

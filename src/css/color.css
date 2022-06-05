@@ -1,19 +1,24 @@
 :root {
-  --main-color: black;
+  --main-color: white;
   --main-bg-color: #669966;
   --active-tab-color: white;
   --active-tab-bg-color: darkgreen;
   --inactive-tab-color: lightgray;
   --inactive-tab-bg-color: dimgray;
   --inactive-tab-border-color: lightgray;
+  --tab-content-bg-color: lightgray;
   --text-color-danger: white;
+  --text-color: black;
   --text-bg-color: white;
-  --text-bg-color-warning: gold;
+  --text-bg-color-warning: #ffff88;
   --text-bg-color-danger: red;
+  --text-separator-color: gray;
+  --text-dashed-separator-color: dimgray;
+  --chart-bg-color: white;
   --promote-bg-color: white;
   --not-promote-bg-color: gray;
   --turn-label-color: lightyellow;
-  --turn-label-bg-color: blue;
+  --turn-label-bg-color: #2424e6;
   --turn-label-border-color: midnightblue;
   --control-button-color: white;
   --control-button-bg-color: darkgreen;

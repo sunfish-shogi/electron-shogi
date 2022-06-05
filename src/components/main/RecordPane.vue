@@ -151,6 +151,5 @@ export default defineComponent({
 }
 .option {
   padding: 0 10px 0 10px;
-  color: white;
 }
 </style>

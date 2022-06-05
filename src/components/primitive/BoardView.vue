@@ -47,6 +47,14 @@
         <img class="piece-image" :src="piece.imagePath" />
       </div>
       <div
+        v-for="label in layout.labels"
+        :key="label.id"
+        class="label"
+        :style="label.style"
+      >
+        {{ label.character }}
+      </div>
+      <div
         v-for="square in layout.square"
         :key="square.id"
         class="square"
@@ -138,6 +146,7 @@ import {
 import { computed, reactive, watch, defineComponent, PropType } from "vue";
 import LayoutBuilder, {
   BoardImageType,
+  BoardLabelType,
   PieceImageType,
 } from "@/components/primitive/BoardLayout";
 import { RectSize } from "./Types";
@@ -157,6 +166,10 @@ export default defineComponent({
     },
     boardImageType: {
       type: String as PropType<BoardImageType>,
+      required: true,
+    },
+    boardLabelType: {
+      type: String as PropType<BoardLabelType>,
       required: true,
     },
     maxSize: {
@@ -357,7 +370,8 @@ export default defineComponent({
     const layoutBuilder = computed(() => {
       const builder = new LayoutBuilder(
         props.pieceImageType,
-        props.boardImageType
+        props.boardImageType,
+        props.boardLabelType
       );
       builder.preload();
       return builder;

@@ -4,6 +4,7 @@ import { Position } from "@/shogi";
 import { RectSize } from "@/components/primitive/Types";
 import {
   BoardImageType,
+  BoardLabelType,
   PieceImageType,
 } from "@/components/primitive/BoardLayout";
 
@@ -14,6 +15,7 @@ describe("BoardView", () => {
       props: {
         pieceImageType: PieceImageType.HITOMOJI,
         boardImageType: BoardImageType.LIGHT,
+        boardLabelType: BoardLabelType.STANDARD,
         maxSize: new RectSize(800, 600),
         position,
       },
@@ -38,6 +40,7 @@ describe("BoardView", () => {
       props: {
         pieceImageType: PieceImageType.HITOMOJI_GOTHIC,
         boardImageType: BoardImageType.WARM,
+        boardLabelType: BoardLabelType.STANDARD,
         maxSize: new RectSize(800, 600),
         position,
       },

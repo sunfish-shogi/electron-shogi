@@ -4,7 +4,7 @@
       <div class="dialog-title">アプリ設定</div>
       <div class="dialog-form-area settings">
         <div class="section">
-          <div class="section-title">画像</div>
+          <div class="section-title">盤面</div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">駒画像</div>
             <select ref="pieceImage" :value="appSetting.pieceImage">
@@ -28,6 +28,15 @@
                 {{ boardImageType.name }}
               </option>
             </select>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">段・筋を表示</div>
+            <input
+              ref="displayBoardLabels"
+              class="toggle"
+              :checked="appSetting.boardLabelType != BoardLabelType.NONE"
+              type="checkbox"
+            />
           </div>
         </div>
         <div class="section">
@@ -190,6 +199,7 @@
 import {
   PieceImageType,
   BoardImageType,
+  BoardLabelType,
 } from "@/components/primitive/BoardLayout";
 import { AppSettingUpdate } from "@/settings/app";
 import { useStore } from "@/store";
@@ -217,6 +227,7 @@ export default defineComponent({
     const dialog: Ref = ref(null);
     const pieceImage: Ref = ref(null);
     const boardImage: Ref = ref(null);
+    const displayBoardLabels: Ref = ref(null);
     const pieceVolume: Ref = ref(null);
     const clockVolume: Ref = ref(null);
     const clockPitch: Ref = ref(null);
@@ -238,6 +249,9 @@ export default defineComponent({
       const update: AppSettingUpdate = {
         pieceImage: pieceImage.value.value,
         boardImage: boardImage.value.value,
+        boardLabelType: displayBoardLabels.value.checked
+          ? BoardLabelType.STANDARD
+          : BoardLabelType.NONE,
         pieceVolume: readInputAsNumber(pieceVolume.value),
         clockVolume: readInputAsNumber(clockVolume.value),
         clockPitch: readInputAsNumber(clockPitch.value),
@@ -300,9 +314,11 @@ export default defineComponent({
     ];
 
     return {
+      BoardLabelType,
       dialog,
       pieceImage,
       boardImage,
+      displayBoardLabels,
       pieceVolume,
       clockVolume,
       clockPitch,

@@ -1,6 +1,7 @@
 import {
   PieceImageType,
   BoardImageType,
+  BoardLabelType,
 } from "@/components/primitive/BoardLayout";
 
 export enum Tab {
@@ -20,6 +21,7 @@ export enum ClockSoundTarget {
 export type AppSetting = {
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
+  boardLabelType: BoardLabelType;
   pieceVolume: number;
   clockVolume: number;
   clockPitch: number;
@@ -41,6 +43,7 @@ export type AppSetting = {
 export type AppSettingUpdate = {
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
+  boardLabelType?: BoardLabelType;
   pieceVolume?: number;
   clockVolume?: number;
   clockPitch?: number;
@@ -63,6 +66,7 @@ export function defaultAppSetting(returnCode?: string): AppSetting {
   return {
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.LIGHT,
+    boardLabelType: BoardLabelType.STANDARD,
     pieceVolume: 30,
     clockVolume: 30,
     clockPitch: 500,

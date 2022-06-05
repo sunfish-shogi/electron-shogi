@@ -23,6 +23,11 @@ export enum BoardImageType {
   RESIN = "resin",
 }
 
+export enum BoardLabelType {
+  NONE = "none",
+  STANDARD = "standard",
+}
+
 type PieceImages = {
   black: {
     pawn: string;
@@ -81,6 +86,9 @@ const layoutTemplate = {
       lastMoveTo: { "background-color": "#44cc44", opacity: "0.8" },
       lastMoveFrom: { "background-color": "#44cc44", opacity: "0.4" },
     },
+  },
+  label: {
+    fontSize: 24,
   },
   piece: {
     width: 88,
@@ -286,6 +294,12 @@ type BoardLayout = {
   style: { [key: string]: string };
 };
 
+type LabelLayout = {
+  id: string;
+  character: string;
+  style: { [key: string]: string };
+};
+
 type PieceLayout = {
   id: string;
   imagePath: string;
@@ -349,6 +363,7 @@ type ControlLayout = {
 export type FullLayout = {
   frame: FrameLayout;
   board: BoardLayout;
+  labels: LabelLayout[];
   piece: PieceLayout[];
   square: SquareLayout[];
   blackHand: HandLayout;
@@ -362,14 +377,32 @@ export type FullLayout = {
   control: ControlLayout;
 };
 
+const rankCharMap: { [n: number]: string } = {
+  1: "一",
+  2: "二",
+  3: "三",
+  4: "四",
+  5: "五",
+  6: "六",
+  7: "七",
+  8: "八",
+  9: "九",
+};
+
 export default class LayoutBuilder {
   private pieceImages: PieceImages;
   private boardImage: string;
+  private boardLabelType: BoardLabelType;
 
-  constructor(pieceImageType: PieceImageType, boardImageType: BoardImageType) {
+  constructor(
+    pieceImageType: PieceImageType,
+    boardImageType: BoardImageType,
+    boardLabelType: BoardLabelType
+  ) {
     this.pieceImages =
       pieceImageMap[pieceImageType] || pieceImageMap[PieceImageType.HITOMOJI];
     this.boardImage = boardImageMap[boardImageType];
+    this.boardLabelType = boardLabelType;
   }
 
   preload(): void {
@@ -418,6 +451,68 @@ export default class LayoutBuilder {
         y,
         style,
       };
+    };
+
+    const buildLabelLayout = (boardLayout: BoardLayout): LabelLayout[] => {
+      const layouts: LabelLayout[] = [];
+      if (this.boardLabelType == BoardLabelType.NONE) {
+        return layouts;
+      }
+      const fontSize = layoutTemplate.label.fontSize * ratio;
+      const shadow = fontSize * 0.1;
+      const commonStyle = {
+        color: "black",
+        "font-size": fontSize + "px",
+        "font-weight": "bold",
+        "text-shadow": `${shadow}px ${shadow}px  ${shadow}px white`,
+      };
+      for (let rank = 1; rank <= 9; rank++) {
+        const x =
+          boardLayout.x -
+          fontSize * 0.5 +
+          (flip ? 0 : layoutTemplate.board.width) * ratio +
+          layoutTemplate.board.leftPiecePadding * 0.5 * ratio * (flip ? 1 : -1);
+        const y =
+          boardLayout.y -
+          fontSize * 0.5 +
+          (layoutTemplate.board.topSquarePadding +
+            ((flip ? 10 - rank : rank) - 0.5) *
+              layoutTemplate.board.squreHeight) *
+            ratio;
+        layouts.push({
+          id: "rank" + rank,
+          character: rankCharMap[rank],
+          style: {
+            left: x + "px",
+            top: y + "px",
+            ...commonStyle,
+          },
+        });
+      }
+      for (let file = 1; file <= 9; file++) {
+        const x =
+          boardLayout.x -
+          fontSize * 0.5 +
+          (layoutTemplate.board.leftPiecePadding +
+            (9.5 - (flip ? 10 - file : file)) *
+              layoutTemplate.board.squreWidth) *
+            ratio;
+        const y =
+          boardLayout.y -
+          fontSize * 0.5 +
+          (flip ? layoutTemplate.board.height : 0) * ratio +
+          layoutTemplate.board.topSquarePadding * 0.5 * ratio * (flip ? -1 : 1);
+        layouts.push({
+          id: "file" + file,
+          character: String(file),
+          style: {
+            left: x + "px",
+            top: y + "px",
+            ...commonStyle,
+          },
+        });
+      }
+      return layouts;
     };
 
     const buildPieceLayout = (boardLayout: BoardLayout): PieceLayout[] => {
@@ -707,6 +802,7 @@ export default class LayoutBuilder {
 
     const frameLayout = buildFrameLayout();
     const boardLayout = buildBoardLayout();
+    const labelLayout = buildLabelLayout(boardLayout);
     const pieceLayout = buildPieceLayout(boardLayout);
     const squareLayout = buildSquareLayout(boardLayout);
     const blackHandLayout = buildHandLayout(
@@ -730,6 +826,7 @@ export default class LayoutBuilder {
     return {
       frame: frameLayout,
       board: boardLayout,
+      labels: labelLayout,
       piece: pieceLayout,
       square: squareLayout,
       blackHand: blackHandLayout,

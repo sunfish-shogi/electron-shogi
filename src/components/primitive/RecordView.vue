@@ -222,7 +222,7 @@ export default defineComponent({
   height: 70%;
 }
 .move-list .has-branch:not(.selected) {
-  background-color: yellow;
+  background-color: var(--text-bg-color-warning);
 }
 .branch-list {
   flex: auto;

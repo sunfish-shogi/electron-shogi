@@ -432,6 +432,7 @@ export default defineComponent({
 
 <style scoped>
 .frame {
+  color: var(--text-color);
   margin: 10px;
   user-select: none;
   position: relative;

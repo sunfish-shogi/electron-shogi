@@ -109,7 +109,7 @@ export default defineComponent({
 .header {
   margin: 0px 4px 0px 0px;
   padding: 0px 5px 0px 5px;
-  background-color: white;
+  background-color: var(--text-bg-color);
 }
 .label {
   font-size: 13px;
@@ -121,14 +121,14 @@ export default defineComponent({
   height: 16px;
   width: 100%;
   font-size: 12px;
-  background-color: white;
+  background-color: var(--text-bg-color);
   display: flex;
   flex-direction: row;
 }
 .list {
   width: 100%;
   overflow-y: scroll;
-  background-color: white;
+  background-color: var(--text-bg-color);
 }
 .list-item {
   height: 16px;
@@ -137,8 +137,8 @@ export default defineComponent({
   flex-direction: row;
 }
 .list-item.best {
-  background: #ffff88;
-  border-bottom: dashed dimgray 1px;
+  background: var(--text-bg-color-warning);
+  border-bottom: dashed var(--text-separator-color) 1px;
 }
 .list-column.multipv-index {
   height: 100%;

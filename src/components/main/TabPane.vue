@@ -194,6 +194,8 @@ export default defineComponent({
 }
 .tab-contents .tab-content {
   display: none;
+  color: var(--text-color);
+  background-color: var(--tab-content-bg-color);
   width: 100%;
   height: 100%;
 }

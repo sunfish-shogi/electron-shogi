@@ -77,7 +77,7 @@ export default defineComponent({
 .root {
   width: 100%;
   height: 100%;
-  background-color: white;
+  background-color: var(--text-bg-color);
   overflow: auto;
   display: flex;
   flex-direction: column;

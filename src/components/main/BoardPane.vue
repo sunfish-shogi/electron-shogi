@@ -1,12 +1,13 @@
 <template>
   <div>
     <BoardView
-      :piece-image-type="pieceImageType"
-      :board-image-type="boardImageType"
+      :piece-image-type="appSetting.pieceImage"
+      :board-image-type="appSetting.boardImage"
+      :board-label-type="appSetting.boardLabelType"
       :max-size="maxSize"
       :position="position"
       :last-move="lastMove"
-      :flip="flip"
+      :flip="appSetting.boardFlipping"
       :allow-move="allowMove"
       :allow-edit="allowEdit"
       :black-player-name="blackPlayerName"
@@ -285,18 +286,14 @@ export default defineComponent({
 
     const allowMove = computed(() => store.isMovableByUser);
 
+    const appSetting = computed(() => store.appSetting);
+
     const position = computed(() => store.record.position);
 
     const lastMove = computed(() => {
       const move = store.record.current.move;
       return move instanceof Move ? move : undefined;
     });
-
-    const pieceImageType = computed(() => store.appSetting.pieceImage);
-
-    const boardImageType = computed(() => store.appSetting.boardImage);
-
-    const flip = computed(() => store.appSetting.boardFlipping);
 
     const blackPlayerName = computed(() => {
       return store.record.metadata.getStandardMetadata(
@@ -344,11 +341,9 @@ export default defineComponent({
     });
 
     return {
-      pieceImageType,
-      boardImageType,
+      appSetting,
       position,
       lastMove,
-      flip,
       blackPlayerName,
       whitePlayerName,
       blackPlayerTimeMs,

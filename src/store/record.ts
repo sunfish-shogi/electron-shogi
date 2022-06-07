@@ -19,11 +19,7 @@ export class RecordCustomData {
     }
   }
 
-  private updateScore(
-    color: Color,
-    sender: USIInfoSender,
-    score: number
-  ): void {
+  updateScore(color: Color, sender: USIInfoSender, score: number): void {
     if (!this.evaluation) {
       this.evaluation = {};
     }

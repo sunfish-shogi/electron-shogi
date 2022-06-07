@@ -51,6 +51,7 @@ import {
   AnalysisManager,
   AnalysisResult,
   buildRecordComment,
+  loadScoreFromRecordComment,
 } from "./analysis";
 import { AnalysisSetting, appendAnalysisComment } from "@/settings/analysis";
 import { USIPlayer } from "@/players/usi";
@@ -843,10 +844,22 @@ class Store {
       }
       this.updateRecordFilePath(path);
       this._record = recordOrError;
+      this.restoreCustomData();
       this.onUpdatePosition();
     } finally {
       this.releaseBussyState();
     }
+  }
+
+  private restoreCustomData(): void {
+    this._record.forEach((node) => {
+      const score = loadScoreFromRecordComment(node.comment);
+      if (score !== undefined) {
+        const data = new RecordCustomData(node.customData);
+        data.updateScore(Color.BLACK, USIInfoSender.RESEARCHER, score);
+        node.customData = data.stringify();
+      }
+    });
   }
 
   saveRecord(options?: { overwrite: boolean }): void {

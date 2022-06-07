@@ -178,11 +178,11 @@ export function specialMoveToDisplayString(move: SpecialMove): string {
   return specialMoveToDisplayStringMap[move];
 }
 
-export interface ImmutableRecordEntry {
+export interface ImmutableNode {
   readonly number: number;
-  readonly prev: RecordEntry | null;
-  readonly next: RecordEntry | null;
-  readonly branch: RecordEntry | null;
+  readonly prev: Node | null;
+  readonly next: Node | null;
+  readonly branch: Node | null;
   readonly branchIndex: number;
   readonly activeBranch: boolean;
   readonly move: Move | SpecialMove;
@@ -197,15 +197,15 @@ export interface ImmutableRecordEntry {
   readonly totalElapsedMs: number;
 }
 
-export interface RecordEntry extends ImmutableRecordEntry {
+export interface Node extends ImmutableNode {
   comment: string;
   customData: string | undefined;
   setElapsedMs(elapsedMs: number): void;
 }
 
-class RecordEntryImpl implements RecordEntry {
-  public next: RecordEntryImpl | null;
-  public branch: RecordEntryImpl | null;
+class NodeImpl implements Node {
+  public next: NodeImpl | null;
+  public branch: NodeImpl | null;
   public comment: string;
   public customData: string | undefined;
   public elapsedMs: number;
@@ -213,7 +213,7 @@ class RecordEntryImpl implements RecordEntry {
 
   constructor(
     public number: number,
-    public prev: RecordEntryImpl | null,
+    public prev: NodeImpl | null,
     public branchIndex: number,
     public activeBranch: boolean,
     public move: Move | SpecialMove,
@@ -263,7 +263,7 @@ class RecordEntryImpl implements RecordEntry {
     this.elapsedMs = elapsedMs;
     this.updateTotalElapsedMs();
     let p = this.next;
-    const stack: RecordEntryImpl[] = [];
+    const stack: NodeImpl[] = [];
     while (p) {
       p.updateTotalElapsedMs();
       if (p.branch) {
@@ -277,8 +277,8 @@ class RecordEntryImpl implements RecordEntry {
     }
   }
 
-  static newRootEntry(): RecordEntryImpl {
-    return new RecordEntryImpl(
+  static newRootEntry(): NodeImpl {
+    return new NodeImpl(
       0, // number
       null, // prev
       0, // branchIndex
@@ -293,25 +293,25 @@ export interface ImmutableRecord {
   readonly metadata: ImmutableRecordMetadata;
   readonly initialPosition: ImmutablePosition;
   readonly position: ImmutablePosition;
-  readonly first: RecordEntry;
-  readonly current: RecordEntry;
-  readonly moves: Array<RecordEntry>; // TODO: forEach に統合したい。
-  readonly movesBefore: Array<RecordEntry>;
+  readonly first: Node;
+  readonly current: Node;
+  readonly moves: Array<Node>; // TODO: forEach に統合したい。
+  readonly movesBefore: Array<Node>;
   readonly length: number;
-  readonly branchBegin: RecordEntry;
+  readonly branchBegin: Node;
   readonly repetition: boolean;
   readonly perpetualCheck: Color | null;
   readonly usi: string;
   readonly sfen: string;
-  forEach(handler: (entry: ImmutableRecordEntry) => void): void;
+  forEach(handler: (node: ImmutableNode) => void): void;
 }
 
 export default class Record {
   public metadata: RecordMetadata;
   private _initialPosition: ImmutablePosition;
   private _position: Position;
-  private _first: RecordEntryImpl;
-  private _current: RecordEntryImpl;
+  private _first: NodeImpl;
+  private _current: NodeImpl;
   private repetitionCounts: { [sfen: string]: number };
   private repetitionStart: { [sfen: string]: number };
 
@@ -319,7 +319,7 @@ export default class Record {
     this.metadata = new RecordMetadata();
     this._initialPosition = position ? position.clone() : new Position();
     this._position = this.initialPosition.clone();
-    this._first = RecordEntryImpl.newRootEntry();
+    this._first = NodeImpl.newRootEntry();
     this._current = this._first;
     this.repetitionCounts = {};
     this.repetitionStart = {};
@@ -334,31 +334,31 @@ export default class Record {
     return this._position;
   }
 
-  get first(): RecordEntry {
+  get first(): Node {
     return this._first;
   }
 
-  get current(): RecordEntry {
+  get current(): Node {
     return this._current;
   }
 
-  get moves(): Array<RecordEntry> {
+  get moves(): Array<Node> {
     const moves = this.movesBefore;
     for (let p = this._current.next; p; p = p.next) {
       while (!p.activeBranch) {
-        p = p.branch as RecordEntryImpl;
+        p = p.branch as NodeImpl;
       }
       moves.push(p);
     }
     return moves;
   }
 
-  get movesBefore(): Array<RecordEntry> {
+  get movesBefore(): Array<Node> {
     return this._movesBefore;
   }
 
-  private get _movesBefore(): Array<RecordEntryImpl> {
-    const moves = new Array<RecordEntryImpl>();
+  private get _movesBefore(): Array<NodeImpl> {
+    const moves = new Array<NodeImpl>();
     moves.unshift(this._current);
     for (let p = this._current.prev; p; p = p.prev) {
       moves.unshift(p);
@@ -370,16 +370,16 @@ export default class Record {
     let len = this._current.number;
     for (let p = this._current.next; p; p = p.next) {
       while (!p.activeBranch) {
-        p = p.branch as RecordEntryImpl;
+        p = p.branch as NodeImpl;
       }
       len = p.number;
     }
     return len;
   }
 
-  get branchBegin(): RecordEntry {
+  get branchBegin(): Node {
     return this._current.prev
-      ? (this._current.prev.next as RecordEntry)
+      ? (this._current.prev.next as Node)
       : this._current;
   }
 
@@ -389,7 +389,7 @@ export default class Record {
       this._initialPosition = position.clone();
     }
     this._position = this.initialPosition.clone();
-    this._first = RecordEntryImpl.newRootEntry();
+    this._first = NodeImpl.newRootEntry();
     this._current = this._first;
     this.repetitionCounts = {};
     this.repetitionStart = {};
@@ -412,7 +412,7 @@ export default class Record {
     if (this._current.next) {
       this._current = this._current.next;
       while (!this._current.activeBranch) {
-        this._current = this._current.branch as RecordEntryImpl;
+        this._current = this._current.branch as NodeImpl;
       }
       if (this._current.move instanceof Move) {
         this._position.doMove(this._current.move, {
@@ -439,8 +439,8 @@ export default class Record {
   }
 
   resetAllBranchSelection(): void {
-    this._forEach((entry) => {
-      entry.activeBranch = entry.isFirstBranch;
+    this._forEach((node) => {
+      node.activeBranch = node.isFirstBranch;
     });
   }
 
@@ -484,7 +484,7 @@ export default class Record {
       this.goBack();
     }
     if (!this._current.next) {
-      this._current.next = new RecordEntryImpl(
+      this._current.next = new NodeImpl(
         this._current.number + 1, // number
         this._current, // prev
         0, // branchIndex
@@ -495,7 +495,7 @@ export default class Record {
       this._current = this._current.next;
       return true;
     }
-    let p: RecordEntryImpl | null;
+    let p: NodeImpl | null;
     for (p = this._current.next; p; p = p.branch) {
       p.activeBranch = false;
     }
@@ -513,7 +513,7 @@ export default class Record {
       }
       lastBranch = p;
     }
-    this._current = new RecordEntryImpl(
+    this._current = new NodeImpl(
       this._current.number + 1, // number
       this._current, // prev
       lastBranch.branchIndex + 1, // branchIndex
@@ -583,7 +583,7 @@ export default class Record {
     let black = true;
     let white = true;
     let color = this.position.color;
-    for (let p = this.current; p.number >= since; p = p.prev as RecordEntry) {
+    for (let p = this.current; p.number >= since; p = p.prev as Node) {
       color = reverseColor(color);
       if (p.isCheck) {
         continue;
@@ -599,9 +599,9 @@ export default class Record {
 
   get usi(): string {
     let ret = "position " + this.initialPosition.sfen + " moves";
-    this.movesBefore.forEach((entry) => {
-      if (entry.move instanceof Move) {
-        ret += " " + entry.move.sfen;
+    this.movesBefore.forEach((node) => {
+      if (node.move instanceof Move) {
+        ret += " " + node.move.sfen;
       }
     });
     return ret;
@@ -611,7 +611,7 @@ export default class Record {
     let ret = this.usi;
     for (let p = this._current.next; p; p = p.next) {
       while (!p.activeBranch) {
-        p = p.branch as RecordEntryImpl;
+        p = p.branch as NodeImpl;
       }
       if (p.move instanceof Move) {
         ret += " " + p.move.sfen;
@@ -624,13 +624,13 @@ export default class Record {
     return this.position.getSfen(this._current.number + 1);
   }
 
-  forEach(handler: (entry: RecordEntry) => void): void {
+  forEach(handler: (node: Node) => void): void {
     this._forEach(handler);
   }
 
-  private _forEach(handler: (entry: RecordEntryImpl) => void): void {
-    let p: RecordEntryImpl | null = this._first;
-    const stack: RecordEntryImpl[] = [];
+  private _forEach(handler: (node: NodeImpl) => void): void {
+    let p: NodeImpl | null = this._first;
+    const stack: NodeImpl[] = [];
     while (p) {
       handler(p);
       if (p.branch) {

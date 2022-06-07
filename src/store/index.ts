@@ -34,7 +34,7 @@ import {
   playPieceBeat,
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
-import { RecordEntryCustomData } from "./record";
+import { RecordCustomData } from "./record";
 import { defaultPlayerBuilder, GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
@@ -285,9 +285,9 @@ class Store {
       return;
     }
     this._usi.update(sessionID, this.record.position, sender, name, info);
-    const entryData = new RecordEntryCustomData(this.record.current.customData);
-    entryData.updateUSIInfo(this.record.position.color, sender, info);
-    this.record.current.customData = entryData.stringify();
+    const data = new RecordCustomData(this.record.current.customData);
+    data.updateUSIInfo(this.record.position.color, sender, info);
+    this.record.current.customData = data.stringify();
     if (this.analysis) {
       this.analysis.updateUSIInfo(this.record.position, info);
     }

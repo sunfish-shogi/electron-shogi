@@ -30,7 +30,7 @@ export {
   default as Record,
   ImmutableRecord,
   SpecialMove,
-  RecordEntry,
+  Node,
   RecordMetadataKey,
   RecordMetadata,
   getStandardMetadataDisplayName,

@@ -526,19 +526,19 @@ export function exportCSA(
   ret += "V2.2" + returnCode;
   ret += formatMetadata(record.metadata, options);
   ret += formatPosition(record.initialPosition, options);
-  record.moves.forEach((entry) => {
-    if (entry.number === 0) {
+  record.moves.forEach((node) => {
+    if (node.number === 0) {
       return;
     }
     let move: string | undefined;
-    if (entry.move instanceof Move) {
-      move = formatMove(entry.move);
+    if (node.move instanceof Move) {
+      move = formatMove(node.move);
     } else {
-      move = formatSpecialMove(entry.move);
+      move = formatSpecialMove(node.move);
     }
     if (move) {
       ret += move + returnCode;
-      ret += "T" + Math.floor(entry.elapsedMs / 1e3) + returnCode;
+      ret += "T" + Math.floor(node.elapsedMs / 1e3) + returnCode;
     }
   });
   return ret;

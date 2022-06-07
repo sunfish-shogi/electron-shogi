@@ -693,29 +693,28 @@ export function exportKakinoki(
   ret += formatMetadata(record.metadata, options);
   ret += formatPosition(record.initialPosition, options);
   ret += "手数----指手---------消費時間--" + returnCode;
-  record.forEach((entry) => {
-    if (entry.number !== 0) {
-      if (!entry.isFirstBranch) {
+  record.forEach((node) => {
+    if (node.number !== 0) {
+      if (!node.isFirstBranch) {
         ret += returnCode;
-        ret += "変化：" + entry.number + "手" + returnCode;
+        ret += "変化：" + node.number + "手" + returnCode;
       }
-      ret += entry.number + " ";
-      if (entry.move instanceof Move) {
-        ret += formatMove(entry.move);
+      ret += node.number + " ";
+      if (node.move instanceof Move) {
+        ret += formatMove(node.move);
       } else {
-        ret += specialMoveToString[entry.move];
+        ret += specialMoveToString[node.move];
       }
-      const elapsed = millisecondsToMSS(entry.elapsedMs);
-      const totalElapsed = millisecondsToHMMSS(entry.totalElapsedMs);
+      const elapsed = millisecondsToMSS(node.elapsedMs);
+      const totalElapsed = millisecondsToHMMSS(node.totalElapsedMs);
       ret += ` (${elapsed}/${totalElapsed})`;
-      if (entry.isFirstBranch && entry.hasBranch) {
+      if (node.isFirstBranch && node.hasBranch) {
         ret += "+";
       }
       ret += returnCode;
     }
-    if (entry.comment.length !== 0) {
-      ret +=
-        "*" + entry.comment.replaceAll("\n", returnCode + "*") + returnCode;
+    if (node.comment.length !== 0) {
+      ret += "*" + node.comment.replaceAll("\n", returnCode + "*") + returnCode;
     }
   });
   return ret;

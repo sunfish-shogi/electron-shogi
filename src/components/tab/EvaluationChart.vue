@@ -14,7 +14,7 @@
 <script lang="ts">
 import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
-import { RecordEntryCustomData } from "@/store/record";
+import { RecordCustomData } from "@/store/record";
 import {
   defineComponent,
   onMounted,
@@ -68,8 +68,8 @@ export default defineComponent({
       appSetting: AppSetting
     ) => {
       const dataPoints: { x: number; y: number }[] = [];
-      record.moves.forEach((entry) => {
-        const data = new RecordEntryCustomData(entry.customData);
+      record.moves.forEach((node) => {
+        const data = new RecordCustomData(node.customData);
         let value = data.evaluation && data.evaluation[sender];
         if (value !== undefined) {
           switch (props.type) {
@@ -81,7 +81,7 @@ export default defineComponent({
               break;
           }
           dataPoints.push({
-            x: entry.number,
+            x: node.number,
             y: value,
           });
         }

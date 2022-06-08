@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import { ImmutableRecord, RecordEntry } from "@/shogi";
+import { ImmutableRecord, Node } from "@/shogi";
 import { computed, ref, defineComponent, Ref, PropType } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Icon } from "@/assets/icons";
@@ -169,7 +169,7 @@ export default defineComponent({
         comment: string;
         selected: boolean;
       }[] = [];
-      let p: RecordEntry | null;
+      let p: Node | null;
       for (p = props.record.branchBegin; p && p.move; p = p.branch) {
         ret.push({
           index: ret.length,

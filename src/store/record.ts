@@ -9,7 +9,7 @@ type Evaluation = {
 
 export const MATE_SCORE = 30000;
 
-export class RecordEntryCustomData {
+export class RecordCustomData {
   evaluation?: Evaluation;
 
   constructor(json?: string) {
@@ -19,11 +19,7 @@ export class RecordEntryCustomData {
     }
   }
 
-  private updateScore(
-    color: Color,
-    sender: USIInfoSender,
-    score: number
-  ): void {
+  updateScore(color: Color, sender: USIInfoSender, score: number): void {
     if (!this.evaluation) {
       this.evaluation = {};
     }

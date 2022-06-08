@@ -34,7 +34,7 @@ import {
   playPieceBeat,
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
-import { RecordEntryCustomData } from "./record";
+import { RecordCustomData } from "./record";
 import { defaultPlayerBuilder, GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
@@ -51,6 +51,7 @@ import {
   AnalysisManager,
   AnalysisResult,
   buildRecordComment,
+  loadScoreFromRecordComment,
 } from "./analysis";
 import { AnalysisSetting, appendAnalysisComment } from "@/settings/analysis";
 import { USIPlayer } from "@/players/usi";
@@ -285,9 +286,9 @@ class Store {
       return;
     }
     this._usi.update(sessionID, this.record.position, sender, name, info);
-    const entryData = new RecordEntryCustomData(this.record.current.customData);
-    entryData.updateUSIInfo(this.record.position.color, sender, info);
-    this.record.current.customData = entryData.stringify();
+    const data = new RecordCustomData(this.record.current.customData);
+    data.updateUSIInfo(this.record.position.color, sender, info);
+    this.record.current.customData = data.stringify();
     if (this.analysis) {
       this.analysis.updateUSIInfo(this.record.position, info);
     }
@@ -843,10 +844,22 @@ class Store {
       }
       this.updateRecordFilePath(path);
       this._record = recordOrError;
+      this.restoreCustomData();
       this.onUpdatePosition();
     } finally {
       this.releaseBussyState();
     }
+  }
+
+  private restoreCustomData(): void {
+    this._record.forEach((node) => {
+      const score = loadScoreFromRecordComment(node.comment);
+      if (score !== undefined) {
+        const data = new RecordCustomData(node.customData);
+        data.updateScore(Color.BLACK, USIInfoSender.RESEARCHER, score);
+        node.customData = data.stringify();
+      }
+    });
   }
 
   saveRecord(options?: { overwrite: boolean }): void {

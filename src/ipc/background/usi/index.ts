@@ -191,3 +191,10 @@ export function quit(sessionID: number): void {
   player.process.quit();
   players.delete(sessionID);
 }
+
+export function quitAll(): void {
+  players.forEach((player) => {
+    player.process.quit();
+  });
+  players.clear();
+}

@@ -181,7 +181,7 @@ export default defineComponent({
       required: true,
     },
     lastMove: {
-      type: Object as PropType<Move>,
+      type: Object as PropType<Move | null>,
       required: false,
       default: null,
     },

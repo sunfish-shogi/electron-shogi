@@ -2,6 +2,7 @@
   <div>
     <dialog ref="dialog">
       <BoardView
+        class="board"
         :piece-image-type="appSetting.pieceImage"
         :board-image-type="appSetting.boardImage"
         :board-label-type="appSetting.boardLabelType"
@@ -39,6 +40,11 @@
           </div>
         </template>
       </BoardView>
+      <div class="informations">
+        <div v-for="info in infos" :key="info" class="information">
+          {{ info }}
+        </div>
+      </div>
     </dialog>
   </div>
 </template>
@@ -75,6 +81,11 @@ export default defineComponent({
       type: Object as PropType<string[]>,
       required: true,
     },
+    infos: {
+      type: Object as PropType<string[]>,
+      default: [] as string[],
+      required: false,
+    },
   },
   emits: ["close"],
   setup(props, context) {
@@ -86,7 +97,7 @@ export default defineComponent({
 
     const updateSize = () => {
       maxSize.width = window.innerWidth * 0.8;
-      maxSize.height = window.innerHeight * 0.8;
+      maxSize.height = window.innerHeight * 0.8 - 80;
     };
 
     const updateRecord = () => {
@@ -170,6 +181,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.board {
+  margin-left: auto;
+  margin-right: auto;
+}
 .control {
   width: 100%;
   height: 100%;
@@ -198,5 +213,19 @@ export default defineComponent({
   height: 80%;
   width: auto;
   vertical-align: top;
+}
+.informations {
+  height: 80px;
+  width: 80vw;
+  overflow-y: scroll;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--text-color);
+  background-color: var(--text-bg-color);
+}
+.information {
+  font-size: 14px;
+  margin: 2px;
+  text-align: left;
 }
 </style>

@@ -35,6 +35,7 @@ export type InfoCommand = {
 };
 
 export type USIIteration = {
+  position: string;
   depth?: number;
   selectiveDepth?: number;
   timeMs?: number;
@@ -78,7 +79,9 @@ export class USIPlayerMonitor {
   }
 
   update(position: ImmutablePosition, update: InfoCommand): void {
-    const iterate: USIIteration = {};
+    const iterate: USIIteration = {
+      position: position.sfen,
+    };
     if (update.depth !== undefined) {
       iterate.depth = update.depth;
     }

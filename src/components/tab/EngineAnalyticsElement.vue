@@ -59,20 +59,40 @@
             {{ iterate.scoreMate ? "詰" : "" }}
           </div>
           <div class="list-column text">
+            <button
+              v-if="iterate.pv && iterate.pv.length !== 0 && iterate.text"
+              @click="showPreview(iterate)"
+            >
+              <ButtonIcon class="icon" :icon="Icon.PLAY" />
+              再現
+            </button>
             {{ iterate.text }}
           </div>
         </div>
       </div>
+      <PVPreviewDialog
+        v-if="preview && preview.pv"
+        :position="preview.position"
+        :pv="preview.pv"
+        @close="closePreview"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { USIPlayerMonitor } from "@/store/usi";
-import { defineComponent } from "vue";
+import { USIIteration, USIPlayerMonitor } from "@/store/usi";
+import { defineComponent, ref } from "vue";
+import { Icon } from "@/assets/icons";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import PVPreviewDialog from "@/components/dialog/PVPreviewDialog.vue";
 
 export default defineComponent({
   name: "EngineAnalyticsElement",
+  components: {
+    ButtonIcon,
+    PVPreviewDialog,
+  },
   props: {
     name: {
       type: String,
@@ -86,6 +106,21 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+  },
+  setup: () => {
+    const preview = ref<USIIteration | null>(null);
+    const showPreview = (ite: USIIteration) => {
+      preview.value = ite;
+    };
+    const closePreview = () => {
+      preview.value = null;
+    };
+    return {
+      Icon,
+      preview,
+      showPreview,
+      closePreview,
+    };
   },
 });
 </script>
@@ -131,7 +166,7 @@ export default defineComponent({
   background-color: var(--text-bg-color);
 }
 .list-item {
-  height: 16px;
+  height: 24px;
   font-size: 12px;
   display: flex;
   flex-direction: row;
@@ -140,47 +175,44 @@ export default defineComponent({
   background: var(--text-bg-color-warning);
   border-bottom: dashed var(--text-separator-color) 1px;
 }
-.list-column.multipv-index {
+.list-column {
   height: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 22px;
+}
+.list-column.multipv-index {
   width: 30px;
   text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .list-column.depth {
-  height: 100%;
   width: 44px;
   text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .list-column.time {
-  height: 100%;
   width: 52px;
   text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .list-column.score {
-  height: 100%;
   width: 52px;
   text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .list-column.score-flag {
-  height: 100%;
   width: 20px;
   text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .list-column.text {
-  height: 100%;
   flex: 1;
   text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
+}
+.list-column button {
+  margin: 0px 0px 1px 0px;
+  padding: 1px 5px 1px 2px;
+  height: 22px;
+}
+.list-column .icon {
+  height: 18px;
+  vertical-align: top;
 }
 </style>

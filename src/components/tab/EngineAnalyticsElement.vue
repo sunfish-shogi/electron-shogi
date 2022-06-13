@@ -71,9 +71,10 @@
         </div>
       </div>
       <PVPreviewDialog
-        v-if="preview && preview.pv"
+        v-if="preview"
         :position="preview.position"
         :pv="preview.pv"
+        :infos="preview.infos"
         @close="closePreview"
       />
     </div>
@@ -86,6 +87,12 @@ import { defineComponent, ref } from "vue";
 import { Icon } from "@/assets/icons";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import PVPreviewDialog from "@/components/dialog/PVPreviewDialog.vue";
+
+type Preview = {
+  position: string;
+  pv: string[];
+  infos: string[];
+};
 
 export default defineComponent({
   name: "EngineAnalyticsElement",
@@ -108,9 +115,35 @@ export default defineComponent({
     },
   },
   setup: () => {
-    const preview = ref<USIIteration | null>(null);
+    const preview = ref<Preview | null>(null);
     const showPreview = (ite: USIIteration) => {
-      preview.value = ite;
+      const infos = [];
+      if (ite.depth !== undefined) {
+        infos.push(`深さ=${ite.depth}`);
+      }
+      if (ite.selectiveDepth !== undefined) {
+        infos.push(`選択的深さ=${ite.selectiveDepth}`);
+      }
+      if (ite.score) {
+        infos.push(`評価値=${ite.score}`);
+        if (ite.lowerBound) {
+          infos.push("（下界値）");
+        }
+        if (ite.upperBound) {
+          infos.push("（上界値）");
+        }
+      }
+      if (ite.scoreMate) {
+        infos.push(`詰み手数=${ite.scoreMate}`);
+      }
+      if (ite.multiPV) {
+        infos.push(`順位=${ite.multiPV}`);
+      }
+      preview.value = {
+        position: ite.position,
+        pv: ite.pv || [],
+        infos: [infos.join(" / "), ite.text || ""],
+      };
     };
     const closePreview = () => {
       preview.value = null;

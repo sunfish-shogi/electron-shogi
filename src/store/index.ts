@@ -282,7 +282,7 @@ class Store {
     name: string,
     info: InfoCommand
   ): void {
-    if (this.record.usi != usi) {
+    if (this.record.usi !== usi) {
       return;
     }
     this._usi.update(sessionID, this.record.position, sender, name, info);
@@ -292,6 +292,31 @@ class Store {
     if (this.analysis) {
       this.analysis.updateUSIInfo(this.record.position, info);
     }
+  }
+
+  updateUSIPonderInfo(
+    sessionID: number,
+    usi: string,
+    sender: USIInfoSender,
+    name: string,
+    info: InfoCommand
+  ): void {
+    const record = Record.newByUSI(usi);
+    if (record instanceof Error) {
+      return;
+    }
+    const ponderMove = record.current.move;
+    if (!(ponderMove instanceof Move)) {
+      return;
+    }
+    this._usi.update(
+      sessionID,
+      record.position,
+      sender,
+      name,
+      info,
+      ponderMove
+    );
   }
 
   get gameSetting(): GameSetting {

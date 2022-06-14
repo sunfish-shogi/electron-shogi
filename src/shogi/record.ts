@@ -597,6 +597,9 @@ export default class Record {
     return black ? Color.BLACK : white ? Color.WHITE : null;
   }
 
+  // USI プロトコルの position コマンドを返却します。
+  // USI プロトコルでは平手の場合に "position startpos" を使用することができるとされていますが、
+  // 一貫性を持たせるために "position sfen" のみを使用します。
   get usi(): string {
     let ret = "position sfen " + this.initialPosition.sfen + " moves";
     this.movesBefore.forEach((node) => {

@@ -39,6 +39,14 @@ export interface Bridge {
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void>;
+  usiGoPonder(
+    sessionID: number,
+    usi: string,
+    json: string,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ): Promise<void>;
+  usiPonderHit(sessionID: number): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
@@ -47,9 +55,23 @@ export interface Bridge {
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
   onUSIBestMove(
-    callback: (sessionID: number, usi: string, sfen: string) => void
+    callback: (
+      sessionID: number,
+      usi: string,
+      sfen: string,
+      ponder?: string
+    ) => void
   ): void;
   onUSIInfo(
+    callback: (
+      sessionID: number,
+      usi: string,
+      sender: USIInfoSender,
+      name: string,
+      json: string
+    ) => void
+  ): void;
+  onUSIPonderInfo(
     callback: (
       sessionID: number,
       usi: string,
@@ -89,6 +111,14 @@ export interface API {
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void>;
+  usiGoPonder(
+    sessionID: number,
+    usi: string,
+    gameSetting: GameSetting,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ): Promise<void>;
+  usiPonderHit(sessionID: number): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
@@ -152,6 +182,21 @@ const api: API = {
     whiteTimeMs: number
   ): Promise<void> {
     return bridge.usiGo(
+      sessionID,
+      usi,
+      JSON.stringify(gameSetting),
+      blackTimeMs,
+      whiteTimeMs
+    );
+  },
+  usiGoPonder(
+    sessionID: number,
+    usi: string,
+    gameSetting: GameSetting,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ): Promise<void> {
+    return bridge.usiGoPonder(
       sessionID,
       usi,
       JSON.stringify(gameSetting),

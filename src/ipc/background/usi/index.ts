@@ -5,7 +5,7 @@ import {
   TimeState,
 } from "./engine";
 import * as uri from "@/uri";
-import { onUSIBestMove, onUSIInfo } from "@/ipc/background";
+import { onUSIBestMove, onUSIInfo, onUSIPonderInfo } from "@/ipc/background";
 import { Color, getNextColorFromUSI } from "@/shogi";
 import { USIInfoSender } from "@/store/usi";
 import { GameSetting } from "@/settings/game";
@@ -120,8 +120,8 @@ export function setupPlayer(setting: USIEngineSetting): Promise<number> {
       setting,
       sessionType: SessionType.GAME,
     });
-    process.on("bestmove", (sfen, usi) => {
-      onUSIBestMove(sessionID, usi, sfen);
+    process.on("bestmove", (usi, sfen, ponder) => {
+      onUSIBestMove(sessionID, usi, sfen, ponder);
     });
     process.on("ready", () => {
       clearTimeout(t);
@@ -131,6 +131,22 @@ export function setupPlayer(setting: USIEngineSetting): Promise<number> {
   });
 }
 
+function buildTimeState(
+  gameSetting: GameSetting,
+  blackTimeMs: number,
+  whiteTimeMs: number
+): TimeState {
+  // USI では btime + binc (または wtime + winc) が今回利用可能な時間を表すとしている。
+  // Electron Shogi では既に加算した後の値を保持しているため、ここで減算する。
+  return {
+    btime: blackTimeMs - gameSetting.timeLimit.increment * 1e3,
+    wtime: whiteTimeMs - gameSetting.timeLimit.increment * 1e3,
+    byoyomi: gameSetting.timeLimit.byoyomi * 1e3,
+    binc: gameSetting.timeLimit.increment * 1e3,
+    winc: gameSetting.timeLimit.increment * 1e3,
+  };
+}
+
 export function go(
   sessionID: number,
   usi: string,
@@ -138,18 +154,9 @@ export function go(
   blackTimeMs: number,
   whiteTimeMs: number
 ): void {
-  // USI では btime + binc (または wtime + winc) が今回利用可能な時間を表すとしている。
-  // Electron Shogi では既に加算した後の値を保持しているため、ここで減算する。
-  const timeState: TimeState = {
-    btime: blackTimeMs - gameSetting.timeLimit.increment * 1e3,
-    wtime: whiteTimeMs - gameSetting.timeLimit.increment * 1e3,
-    byoyomi: gameSetting.timeLimit.byoyomi * 1e3,
-    binc: gameSetting.timeLimit.increment * 1e3,
-    winc: gameSetting.timeLimit.increment * 1e3,
-  };
   const player = getPlayer(sessionID);
-  player.process.go(usi, timeState);
-  player.process.on("info", (info, usi) => {
+  player.process.go(usi, buildTimeState(gameSetting, blackTimeMs, whiteTimeMs));
+  player.process.on("info", (usi, info) => {
     const sender =
       getNextColorFromUSI(usi) === Color.BLACK
         ? USIInfoSender.BLACK_PLAYER
@@ -158,12 +165,38 @@ export function go(
   });
 }
 
+export function goPonder(
+  sessionID: number,
+  usi: string,
+  gameSetting: GameSetting,
+  blackTimeMs: number,
+  whiteTimeMs: number
+): void {
+  const player = getPlayer(sessionID);
+  player.process.goPonder(
+    usi,
+    buildTimeState(gameSetting, blackTimeMs, whiteTimeMs)
+  );
+  player.process.on("ponderInfo", (usi, info) => {
+    const sender =
+      getNextColorFromUSI(usi) === Color.BLACK
+        ? USIInfoSender.BLACK_PLAYER
+        : USIInfoSender.WHITE_PLAYER;
+    onUSIPonderInfo(sessionID, usi, sender, player.name, info);
+  });
+}
+
 export function goInfinite(sessionID: number, usi: string): void {
   const player = getPlayer(sessionID);
   player.process.go(usi);
-  player.process.on("info", (info, usi) => {
+  player.process.on("info", (usi, info) => {
     onUSIInfo(sessionID, usi, USIInfoSender.RESEARCHER, player.name, info);
   });
+}
+
+export function ponderHit(sessionID: number): void {
+  const player = getPlayer(sessionID);
+  player.process.ponderHit();
 }
 
 export function stop(sessionID: number): void {

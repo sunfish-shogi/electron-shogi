@@ -76,6 +76,7 @@ function createMockPlayer(moves: { [usi: string]: string }) {
         return Promise.resolve();
       }
     ),
+    startPonder: jest.fn(() => Promise.resolve()),
     stop: jest.fn(() => Promise.resolve()),
     gameover: jest.fn(() => Promise.resolve()),
     close: jest.fn(() => Promise.resolve()),
@@ -135,10 +136,12 @@ describe("store/game", () => {
       .next(() => manager.startGame(gameSetting10m30s, record))
       .next(() => {
         expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
         expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
         expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
         expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
         expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
         expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
@@ -180,10 +183,12 @@ describe("store/game", () => {
       .next(() => manager.startGame(gameSetting10m30s, record))
       .next(() => {
         expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
         expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
         expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
         expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
         expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
         expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
@@ -224,10 +229,12 @@ describe("store/game", () => {
       .next(() => manager.endGame(SpecialMove.INTERRUPT))
       .next(() => {
         expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
         expect(mockBlackPlayer.gameover.mock.calls.length).toBe(0);
         expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
         expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
         expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
         expect(mockWhitePlayer.gameover.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);

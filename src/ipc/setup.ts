@@ -161,9 +161,11 @@ export function setup(): void {
         break;
     }
   });
-  bridge.onUSIBestMove((sessionID: number, usi: string, sfen: string) => {
-    usiBestMove(sessionID, usi, sfen);
-  });
+  bridge.onUSIBestMove(
+    (sessionID: number, usi: string, sfen: string, ponder?: string) => {
+      usiBestMove(sessionID, usi, sfen, ponder);
+    }
+  );
   bridge.onUSIInfo(
     (
       sessionID: number,
@@ -173,6 +175,17 @@ export function setup(): void {
       json: string
     ) => {
       store.updateUSIInfo(sessionID, usi, sender, name, JSON.parse(json));
+    }
+  );
+  bridge.onUSIPonderInfo(
+    (
+      sessionID: number,
+      usi: string,
+      sender: USIInfoSender,
+      name: string,
+      json: string
+    ) => {
+      store.updateUSIPonderInfo(sessionID, usi, sender, name, JSON.parse(json));
     }
   );
   watch(

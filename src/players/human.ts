@@ -19,6 +19,10 @@ export class HumanPlayer implements Player {
     this.searchHandler = handler;
   }
 
+  async startPonder(): Promise<void> {
+    // do nothing
+  }
+
   async stop(): Promise<void> {
     // do nothing
   }

@@ -1,5 +1,9 @@
 import { issueEngineURI } from "@/uri";
 
+// reserved option names
+export const USIPonder = "USI_Ponder";
+export const USIHash = "USI_Hash";
+
 export type USIEngineOptionType =
   | "check"
   | "spin"

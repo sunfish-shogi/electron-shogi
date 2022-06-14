@@ -21,6 +21,8 @@ export enum Background {
   SEND_USI_SET_OPTION = "sendUSISetOption",
   LAUNCH_USI = "usiLaunch",
   USI_GO = "usiGo",
+  USI_GO_PONDER = "usiGoPonder",
+  USI_GO_PONDER_HIT = "usiGoPonderHit",
   USI_GO_INFINITE = "usiGoInfinite",
   USI_STOP = "usiStop",
   USI_GAMEOVER = "usiGameover",
@@ -33,4 +35,5 @@ export enum Renderer {
   MENU_EVENT = "menuEvent",
   USI_BEST_MOVE = "usiBestMove",
   USI_INFO = "usiInfo",
+  USI_PONDER_INFO = "usiPonderInfo",
 }

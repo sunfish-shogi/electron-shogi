@@ -3,6 +3,8 @@ import {
   USIEngineOption,
   USIEngineOptions,
   USIEngineOptionType,
+  USIHash,
+  USIPonder,
 } from "@/settings/usi";
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import path from "path";
@@ -110,13 +112,38 @@ function parseInfoCommand(args: string): InfoCommand {
 
 type USIOKCallback = () => void;
 type ReadyCallback = () => void;
-type BestmoveCallback = (sfen: string, position: string) => void;
-type InfoCallback = (info: InfoCommand, position: string) => void;
+type BestmoveCallback = (
+  position: string,
+  sfen: string,
+  ponder?: string
+) => void;
+type InfoCallback = (position: string, info: InfoCommand) => void;
 
 type ReservedGoCommand = {
   position: string;
-  go: string;
+  timeState?: TimeState;
+  ponder: boolean;
 };
+
+function buildTimeOptions(timeState?: TimeState): string {
+  if (!timeState) {
+    return "infinite";
+  }
+  return (
+    `btime ${timeState.btime} wtime ${timeState.wtime} ` +
+    (timeState.binc !== 0 || timeState.winc !== 0
+      ? `binc ${timeState.binc} winc ${timeState.winc}`
+      : `byoyomi ${timeState.byoyomi}`)
+  );
+}
+
+enum State {
+  WaitingForReadyOK,
+  Ready,
+  WaitingForBestMove,
+  Ponder,
+  WaitingForPonderBestMove,
+}
 
 export class EngineProcess {
   private _path: string;
@@ -125,8 +152,7 @@ export class EngineProcess {
   private _name: string;
   private _author: string;
   private _options: USIEngineOptions;
-  private readyOk: boolean;
-  private waitingForBestMove: boolean;
+  private state: State;
   private currentPosition: string;
   private reservedGoCommand?: ReservedGoCommand;
   private readline: Readline | null;
@@ -135,6 +161,7 @@ export class EngineProcess {
   readyCallback?: ReadyCallback;
   bestMoveCallback?: BestmoveCallback;
   infoCallback?: InfoCallback;
+  ponderInfoCallback?: InfoCallback;
 
   constructor(path: string, sessionID: number, option: EngineProcessOption) {
     this._path = path;
@@ -143,8 +170,7 @@ export class EngineProcess {
     this._name = "NO NAME";
     this._author = "";
     this._options = {};
-    this.readyOk = false;
-    this.waitingForBestMove = false;
+    this.state = State.WaitingForReadyOK;
     this.currentPosition = "";
     this.readline = null;
     this.sessionID = sessionID;
@@ -170,6 +196,7 @@ export class EngineProcess {
   on(event: "ready", callback: ReadyCallback): void;
   on(event: "bestmove", callback: BestmoveCallback): void;
   on(event: "info", callback: InfoCallback): void;
+  on(event: "ponderInfo", callback: InfoCallback): void;
   on(
     event: string,
     callback: USIOKCallback | ReadyCallback | BestmoveCallback | InfoCallback
@@ -186,6 +213,9 @@ export class EngineProcess {
         break;
       case "info":
         this.infoCallback = callback as InfoCallback;
+        break;
+      case "ponderInfo":
+        this.ponderInfoCallback = callback as InfoCallback;
         break;
     }
   }
@@ -235,34 +265,63 @@ export class EngineProcess {
   }
 
   go(position: string, timeState?: TimeState): void {
-    if (position === this.currentPosition) {
+    if (
+      position === this.currentPosition &&
+      this.state === State.WaitingForBestMove
+    ) {
       return;
     }
-    let time = "infinite";
-    if (timeState) {
-      time =
-        `btime ${timeState.btime} wtime ${timeState.wtime} ` +
-        (timeState.binc !== 0 || timeState.winc !== 0
-          ? `binc ${timeState.binc} winc ${timeState.winc}`
-          : `byoyomi ${timeState.byoyomi}`);
+    this.reservedGoCommand = {
+      position,
+      timeState,
+      ponder: false,
+    };
+    switch (this.state) {
+      case State.Ready:
+        this.sendReservedGoCommands();
+        break;
+      case State.WaitingForBestMove:
+      case State.Ponder:
+        this.stop();
+        break;
+    }
+  }
+
+  goPonder(position: string, timeState?: TimeState): void {
+    if (position === this.currentPosition && this.state === State.Ponder) {
+      return;
     }
     this.reservedGoCommand = {
-      position: `${position}`,
-      go: `go ${time}`,
+      position,
+      timeState,
+      ponder: true,
     };
-    if (this.waitingForBestMove) {
-      this.stop();
-    } else if (this.readyOk) {
-      this.sendReservedGoCommands();
+    switch (this.state) {
+      case State.Ready:
+        this.sendReservedGoCommands();
+        break;
+      case State.WaitingForBestMove:
+      case State.Ponder:
+        this.stop();
+        break;
     }
+  }
+
+  ponderHit(): void {
+    this.send("ponderhit");
+    this.state = State.WaitingForBestMove;
   }
 
   stop(): void {
     this.send("stop");
+    if (this.state === State.Ponder) {
+      this.state = State.WaitingForPonderBestMove;
+    }
   }
 
   gameover(gameResult: GameResult): void {
     this.send("gameover " + gameResult);
+    this.state = State.Ready;
   }
 
   private sendReservedGoCommands(): void {
@@ -270,10 +329,16 @@ export class EngineProcess {
       return;
     }
     this.send(this.reservedGoCommand.position);
-    this.send(this.reservedGoCommand.go);
+    this.send(
+      "go " +
+        (this.reservedGoCommand.ponder ? "ponder " : "") +
+        buildTimeOptions(this.reservedGoCommand.timeState)
+    );
     this.currentPosition = this.reservedGoCommand.position;
+    this.state = this.reservedGoCommand.ponder
+      ? State.Ponder
+      : State.WaitingForBestMove;
     this.reservedGoCommand = undefined;
-    this.waitingForBestMove = true;
   }
 
   private send(command: string): void {
@@ -343,17 +408,17 @@ export class EngineProcess {
   }
 
   private onUSIOk(): void {
-    if (!this.engineOptions["USI_Hash"]) {
-      this.engineOptions["USI_Hash"] = {
-        name: "USI_Hash",
+    if (!this.engineOptions[USIHash]) {
+      this.engineOptions[USIHash] = {
+        name: USIHash,
         type: "spin",
         default: 32,
         vars: [],
       };
     }
-    if (!this.engineOptions["USI_Ponder"]) {
-      this.engineOptions["USI_Ponder"] = {
-        name: "USI_Ponder",
+    if (!this.engineOptions[USIPonder]) {
+      this.engineOptions[USIPonder] = {
+        name: USIPonder,
         type: "check",
         default: "true",
         vars: [],
@@ -376,7 +441,7 @@ export class EngineProcess {
   }
 
   private onReadyOk(): void {
-    this.readyOk = true;
+    this.state = State.Ready;
     if (this.readyCallback) {
       this.readyCallback();
     }
@@ -385,17 +450,30 @@ export class EngineProcess {
   }
 
   private onBestMove(args: string): void {
-    this.waitingForBestMove = false;
-    if (this.bestMoveCallback) {
-      this.bestMoveCallback(args.split(" ")[0], this.currentPosition);
+    if (this.bestMoveCallback && this.state === State.WaitingForBestMove) {
+      const a = args.split(" ");
+      const move = a[0];
+      const ponder = (a.length >= 3 && a[1] === "ponder" && a[2]) || undefined;
+      this.bestMoveCallback(this.currentPosition, move, ponder);
     }
+    this.state = State.Ready;
     this.currentPosition = "";
     this.sendReservedGoCommands();
   }
 
   private onInfo(args: string): void {
-    if (this.infoCallback) {
-      this.infoCallback(parseInfoCommand(args), this.currentPosition);
+    switch (this.state) {
+      case State.WaitingForBestMove:
+        if (this.infoCallback) {
+          this.infoCallback(this.currentPosition, parseInfoCommand(args));
+        }
+        break;
+      case State.Ponder:
+      case State.WaitingForPonderBestMove:
+        if (this.ponderInfoCallback) {
+          this.ponderInfoCallback(this.currentPosition, parseInfoCommand(args));
+        }
+        break;
     }
   }
 }

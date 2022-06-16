@@ -134,10 +134,11 @@ export default defineComponent({
       try {
         analysisSetting.value = await api.loadAnalysisSetting();
         engineSetting.value = await api.loadUSIEngineSetting();
-        store.releaseBussyState();
       } catch (e) {
         store.pushError(e);
         store.closeDialog();
+      } finally {
+        store.releaseBussyState();
       }
     });
 

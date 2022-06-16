@@ -187,10 +187,11 @@ export default defineComponent({
       try {
         gameSetting.value = await api.loadGameSetting();
         engineSetting.value = await api.loadUSIEngineSetting();
-        store.releaseBussyState();
       } catch (e) {
         store.pushError(e);
         store.closeDialog();
+      } finally {
+        store.releaseBussyState();
       }
     });
 

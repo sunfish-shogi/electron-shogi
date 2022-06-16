@@ -53,10 +53,11 @@ export default defineComponent({
       try {
         researchSetting.value = await api.loadResearchSetting();
         engineSetting.value = await api.loadUSIEngineSetting();
-        store.releaseBussyState();
       } catch (e) {
         store.pushError(e);
         store.closeDialog();
+      } finally {
+        store.releaseBussyState();
       }
     });
 

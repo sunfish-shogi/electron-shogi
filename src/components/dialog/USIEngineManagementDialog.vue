@@ -70,10 +70,11 @@ export default defineComponent({
       showModalDialog(dialog.value);
       try {
         setting.value = await api.loadUSIEngineSetting();
-        store.releaseBussyState();
       } catch (e) {
         store.pushError(e);
         store.closeDialog();
+      } finally {
+        store.releaseBussyState();
       }
     });
 

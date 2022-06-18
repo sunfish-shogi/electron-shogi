@@ -598,7 +598,7 @@ export default class Record {
   }
 
   get usi(): string {
-    let ret = "position " + this.initialPosition.sfen + " moves";
+    let ret = "position sfen " + this.initialPosition.sfen + " moves";
     this.movesBefore.forEach((node) => {
       if (node.move instanceof Move) {
         ret += " " + node.move.sfen;
@@ -621,7 +621,7 @@ export default class Record {
   }
 
   get sfen(): string {
-    return this.position.getSfen(this._current.number + 1);
+    return this.position.getSFEN(this._current.number + 1);
   }
 
   forEach(handler: (node: Node) => void): void {

@@ -52,7 +52,7 @@ T40
       record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
     ).toBe("Mr.Vue");
     expect(record.initialPosition.sfen).toBe(
-      "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
     );
     expect(record.current.number).toBe(0);
     expect(record.current.move).toBe(SpecialMove.START);
@@ -107,7 +107,7 @@ P-00AL
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(record.initialPosition.sfen).toBe(
-      "sfen 7n1/6gk1/6gpN/9/9/6b1P/9/9/9 b 2R2Gb4s2n4l16p 1"
+      "7n1/6gk1/6gpN/9/9/6b1P/9/9/9 b 2R2Gb4s2n4l16p 1"
     );
     expect(record.current.number).toBe(0);
     expect(record.current.move).toBe(SpecialMove.START);
@@ -495,12 +495,12 @@ T16
       record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
     ).toBe("dlshogi with HEROZ");
     expect(record.initialPosition.sfen).toBe(
-      "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
     );
     record.goto(177);
     expect(record.current.move).toBe(SpecialMove.RESIGN);
     expect(record.position.sfen).toBe(
-      "sfen k1gl4l/9/3+P2+Rp1/p1p2N2p/1P1pG4/PNPg1P1PP/K1L1P4/2B2+n3/LNrP1b3 b S4Pg3s 1"
+      "k1gl4l/9/3+P2+Rp1/p1p2N2p/1P1pG4/PNPg1P1PP/K1L1P4/2B2+n3/LNrP1b3 b S4Pg3s 1"
     );
   });
 
@@ -512,7 +512,7 @@ PI82HI
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(record.initialPosition.sfen).toBe(
-      "sfen lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
   });
 
@@ -580,7 +580,7 @@ T56
 
   it("export/custom-position", () => {
     const position = Position.newBySFEN(
-      "sfen 7n1/6gk1/6gpN/9/9/6b1P/9/9/9 b 2R2Gb4s2n4l16p 1"
+      "7n1/6gk1/6gpN/9/9/6b1P/9/9/9 b 2R2Gb4s2n4l16p 1"
     ) as Position;
     const record = new Record(position) as Record;
     const move = (ff: number, fr: number, tf: number, tr: number): Move => {

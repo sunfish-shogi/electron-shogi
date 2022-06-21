@@ -1,4 +1,4 @@
-import { ImmutablePosition, Move } from "@/shogi";
+import { ImmutablePosition, Move, Position } from "@/shogi";
 
 export enum USIInfoSender {
   BLACK_PLAYER = "blackPlayer",
@@ -74,13 +74,18 @@ export class USIPlayerMonitor {
   public currentMove?: string;
   public currentMoveText?: string;
 
-  constructor(public sessionID: number, public name: string) {
+  constructor(
+    public sessionID: number,
+    public name: string,
+    public sfen: string
+  ) {
     this.iterates = [];
   }
 
-  update(position: ImmutablePosition, update: InfoCommand): void {
+  update(sfen: string, update: InfoCommand): void {
+    const position = Position.newBySFEN(sfen);
     const iterate: USIIteration = {
-      position: position.sfen,
+      position: sfen,
     };
     if (update.depth !== undefined) {
       iterate.depth = update.depth;
@@ -96,7 +101,7 @@ export class USIPlayerMonitor {
     }
     if (update.pv) {
       iterate.pv = update.pv;
-      iterate.text = formatPV(position, update.pv);
+      iterate.text = position ? formatPV(position, update.pv) : "";
     }
     if (update.multipv !== undefined) {
       iterate.multiPV = update.multipv;
@@ -115,7 +120,7 @@ export class USIPlayerMonitor {
     }
     if (update.currmove !== undefined) {
       this.currentMove = update.currmove;
-      const move = position.createMoveBySFEN(update.currmove);
+      const move = position && position.createMoveBySFEN(update.currmove);
       if (move) {
         this.currentMoveText = move.getDisplayText();
       }
@@ -137,7 +142,7 @@ export class USIPlayerMonitor {
 
 type USIUpdate = {
   sessionID: number;
-  position: ImmutablePosition;
+  sfen: string;
   sender: USIInfoSender;
   name: string;
   info: InfoCommand;
@@ -145,11 +150,8 @@ type USIUpdate = {
 
 export class USIMonitor {
   private _blackPlayer?: USIPlayerMonitor;
-  private blackPosition?: string;
   private _whitePlayer?: USIPlayerMonitor;
-  private whitePosition?: string;
   private _researcher?: USIPlayerMonitor;
-  private researchPosition?: string;
   private updateQueue: USIUpdate[];
   private timeoutHandle?: number;
 
@@ -178,7 +180,7 @@ export class USIMonitor {
   ): void {
     this.updateQueue.push({
       sessionID: sessionID,
-      position: position,
+      sfen: position.sfen,
       sender: sender,
       name: name,
       info: info,
@@ -204,45 +206,45 @@ export class USIMonitor {
         if (
           !this._blackPlayer ||
           this._blackPlayer.sessionID !== update.sessionID ||
-          this.blackPosition !== update.position.sfen
+          this._blackPlayer.sfen !== update.sfen
         ) {
           this._blackPlayer = new USIPlayerMonitor(
             update.sessionID,
-            update.name
+            update.name,
+            update.sfen
           );
-          this.blackPosition = update.position.sfen;
         }
-        this._blackPlayer.update(update.position, update.info);
+        this._blackPlayer.update(update.sfen, update.info);
         this._researcher = undefined;
         break;
       case USIInfoSender.WHITE_PLAYER:
         if (
           !this._whitePlayer ||
           this._whitePlayer.sessionID !== update.sessionID ||
-          this.whitePosition !== update.position.sfen
+          this._whitePlayer.sfen !== update.sfen
         ) {
           this._whitePlayer = new USIPlayerMonitor(
             update.sessionID,
-            update.name
+            update.name,
+            update.sfen
           );
-          this.whitePosition = update.position.sfen;
         }
-        this._whitePlayer.update(update.position, update.info);
+        this._whitePlayer.update(update.sfen, update.info);
         this._researcher = undefined;
         break;
       case USIInfoSender.RESEARCHER:
         if (
           !this._researcher ||
           this._researcher.sessionID !== update.sessionID ||
-          this.researchPosition !== update.position.sfen
+          this._researcher.sfen !== update.sfen
         ) {
           this._researcher = new USIPlayerMonitor(
             update.sessionID,
-            update.name
+            update.name,
+            update.sfen
           );
-          this.researchPosition = update.position.sfen;
         }
-        this._researcher.update(update.position, update.info);
+        this._researcher.update(update.sfen, update.info);
         this._blackPlayer = undefined;
         this._whitePlayer = undefined;
         break;

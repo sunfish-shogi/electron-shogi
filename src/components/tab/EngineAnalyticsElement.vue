@@ -29,6 +29,7 @@
         <div class="list-column time">経過時間</div>
         <div class="list-column multipv-index">順位</div>
         <div class="list-column depth">深さ</div>
+        <div class="list-column nodes">探索局面数</div>
         <div class="list-column score">評価値</div>
       </div>
       <div class="list" :style="`height:${height - 37}px`">
@@ -48,6 +49,9 @@
             {{ iterate.depth
             }}{{ iterate.selectiveDepth && iterate.depth ? "/" : ""
             }}{{ iterate.selectiveDepth }}
+          </div>
+          <div class="list-column nodes">
+            {{ iterate.nodes }}
           </div>
           <div class="list-column score">
             {{ iterate.score }}
@@ -220,6 +224,10 @@ export default defineComponent({
 }
 .list-column.depth {
   width: 44px;
+  text-align: right;
+}
+.list-column.nodes {
+  width: 78px;
   text-align: right;
 }
 .list-column.time {

@@ -39,6 +39,7 @@ export type USIIteration = {
   depth?: number;
   selectiveDepth?: number;
   timeMs?: number;
+  nodes?: number;
   score?: number;
   scoreMate?: number;
   lowerBound?: boolean;
@@ -135,6 +136,11 @@ export class USIPlayerMonitor {
       iterate.text = update.string;
     }
     if (Object.keys(iterate).length !== 0) {
+      // USI プロトコルにおいて nodes は読み筋と関係なく定期的に送る事ができるとされている。
+      // ただ、多くのエンジンが読み筋と一緒に送ってくるため読み筋等がある場合にはそちらにも記録する。
+      if (update.nodes !== undefined) {
+        iterate.nodes = update.nodes;
+      }
       this.iterates.unshift(iterate);
     }
   }

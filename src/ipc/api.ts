@@ -94,20 +94,6 @@ export interface API {
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;
   log(level: LogLevel, message: string): void;
-  onSendError(callback: (e: Error) => void): void;
-  onMenuEvent(callback: (event: MenuEvent) => void): void;
-  onUSIBestMove(
-    callback: (sessionID: number, usi: string, sfen: string) => void
-  ): void;
-  onUSIInfo(
-    callback: (
-      sessionID: number,
-      usi: string,
-      sender: USIInfoSender,
-      name: string,
-      json: string
-    ) => void
-  ): void;
 }
 
 interface ExtendedWindow extends Window {

@@ -126,7 +126,7 @@ describe("shogi/kakinoki", () => {
     record.goto(64);
     expect(record.current.comment).toBe("4六桂の方が良かった。");
     expect(record.sfen).toBe(
-      "sfen l+B5nl/4g1gk1/2b1p2p1/p1p2pp2/3s1P2p/P1P3PP1/1P2PSN1P/2G2GK2/L7L b RSNPrsn2p 65"
+      "l+B5nl/4g1gk1/2b1p2p1/p1p2pp2/3s1P2p/P1P3PP1/1P2PSN1P/2G2GK2/L7L b RSNPrsn2p 65"
     );
     record.goto(999);
     expect(record.current.number).toBe(94);
@@ -656,7 +656,7 @@ describe("shogi/kakinoki", () => {
     expect(record.current.move).toBe(SpecialMove.RESIGN);
     expect(record.current.comment).toBe("");
     expect(record.sfen).toBe(
-      "sfen lnkg2b+Rl/6r2/p2p1G2p/5pp2/1SpNp2NP/1P1P1PP2/P1G1P4/4G4/L2KB3L w S4P2sn 115"
+      "lnkg2b+Rl/6r2/p2p1G2p/5pp2/1SpNp2NP/1P1P1PP2/P1G1P4/4G4/L2KB3L w S4P2sn 115"
     );
   });
 });

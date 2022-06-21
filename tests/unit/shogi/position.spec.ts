@@ -29,53 +29,51 @@ describe("shogi/position", () => {
   it("reset", () => {
     const position = new Position();
     position.reset(InitialPositionType.EMPTY);
-    expect(position.sfen).toBe("sfen 9/9/9/9/9/9/9/9/9 b - 1");
+    expect(position.sfen).toBe("9/9/9/9/9/9/9/9/9 b - 1");
     position.reset(InitialPositionType.STANDARD);
     expect(position.sfen).toBe(
-      "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
     );
     position.reset(InitialPositionType.HANDICAP_LANCE);
     expect(position.sfen).toBe(
-      "sfen lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_RIGHT_LANCE);
     expect(position.sfen).toBe(
-      "sfen 1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_BISHOP);
     expect(position.sfen).toBe(
-      "sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_ROOK);
     expect(position.sfen).toBe(
-      "sfen lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_ROOK_LANCE);
     expect(position.sfen).toBe(
-      "sfen lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_2PIECES);
     expect(position.sfen).toBe(
-      "sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_4PIECES);
     expect(position.sfen).toBe(
-      "sfen 1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_6PIECES);
     expect(position.sfen).toBe(
-      "sfen 2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.HANDICAP_8PIECES);
     expect(position.sfen).toBe(
-      "sfen 3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
     position.reset(InitialPositionType.TSUME_SHOGI);
-    expect(position.sfen).toBe("sfen 4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1");
+    expect(position.sfen).toBe("4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1");
     position.reset(InitialPositionType.TSUME_SHOGI_2KINGS);
-    expect(position.sfen).toBe(
-      "sfen 4k4/9/9/9/9/9/9/9/4K4 b 2r2b4g4s4n4l18p 1"
-    );
+    expect(position.sfen).toBe("4k4/9/9/9/9/9/9/9/4K4 b 2r2b4g4s4n4l18p 1");
   });
 
   it("doMove", () => {
@@ -396,7 +394,7 @@ describe("shogi/position", () => {
 
   it("sfen", () => {
     const sfen =
-      "sfen l2R2s1+P/4gg1k1/p1+P2lPp1/4p1p+b1/1p3G3/3pP1nS1/PP3KSP1/R8/L4G2+b b NL4Ps2np 1";
+      "l2R2s1+P/4gg1k1/p1+P2lPp1/4p1p+b1/1p3G3/3pP1nS1/PP3KSP1/R8/L4G2+b b NL4Ps2np 1";
     const position = Position.newBySFEN(sfen);
     expect(position).toBeInstanceOf(Position);
     expect(position?.color).toBe(Color.BLACK);

@@ -1,6 +1,10 @@
 import api from "@/ipc/api";
 import { GameSetting } from "@/settings/game";
-import { USIEngineSetting } from "@/settings/usi";
+import {
+  getUSIEngineOptionCurrentValue,
+  USIEngineSetting,
+  USIPonder,
+} from "@/settings/usi";
 import { ImmutableRecord, Position } from "@/shogi";
 import { GameResult, Player, SearchHandler } from "./player";
 
@@ -10,10 +14,13 @@ export class USIPlayer implements Player {
   private usi?: string;
   private position?: Position;
   private searchHandler?: SearchHandler;
+  private ponder?: string;
+  private inPonder: boolean;
 
   constructor(setting: USIEngineSetting) {
     this.setting = setting;
     this.sessionID = 0;
+    this.inPonder = false;
   }
 
   async launch(): Promise<void> {
@@ -35,11 +42,44 @@ export class USIPlayer implements Player {
     this.searchHandler = handler;
     this.usi = record.usi;
     this.position = record.position.clone();
-    api
-      .usiGo(this.sessionID, this.usi, gameSetting, blackTimeMs, whiteTimeMs)
-      .catch((e) => {
-        handler.onError(e);
-      });
+    if (this.inPonder && this.ponder === this.usi) {
+      api.usiPonderHit(this.sessionID);
+    } else {
+      await api.usiGo(
+        this.sessionID,
+        this.usi,
+        gameSetting,
+        blackTimeMs,
+        whiteTimeMs
+      );
+    }
+    this.inPonder = false;
+    this.ponder = undefined;
+  }
+
+  async startPonder(
+    record: ImmutableRecord,
+    gameSetting: GameSetting,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ): Promise<void> {
+    if (!this.ponder || !this.ponder.startsWith(record.usi)) {
+      return;
+    }
+    const ponderSetting = getUSIEngineOptionCurrentValue(
+      this.setting.options[USIPonder]
+    );
+    if (ponderSetting !== "true") {
+      return;
+    }
+    this.inPonder = true;
+    await api.usiGoPonder(
+      this.sessionID,
+      this.ponder,
+      gameSetting,
+      blackTimeMs,
+      whiteTimeMs
+    );
   }
 
   async startResearch(record: ImmutableRecord): Promise<void> {
@@ -62,7 +102,7 @@ export class USIPlayer implements Player {
     delete usiPlayers[this.sessionID];
   }
 
-  onBestMove(usi: string, sfen: string): void {
+  onBestMove(usi: string, sfen: string, ponder?: string): void {
     const searchHandler = this.searchHandler;
     this.searchHandler = undefined;
     if (!searchHandler || !this.position) {
@@ -85,16 +125,22 @@ export class USIPlayer implements Player {
       searchHandler.onResign();
       return;
     }
+    this.ponder = ponder && `${usi} ${sfen} ${ponder}`;
     searchHandler.onMove(move);
   }
 }
 
 export const usiPlayers: { [sessionID: number]: USIPlayer } = {};
 
-export function usiBestMove(sessionID: number, usi: string, sfen: string) {
+export function usiBestMove(
+  sessionID: number,
+  usi: string,
+  sfen: string,
+  ponder?: string
+) {
   const player = usiPlayers[sessionID];
   if (!player) {
     return;
   }
-  player.onBestMove(usi, sfen);
+  player.onBestMove(usi, sfen, ponder);
 }

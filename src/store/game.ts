@@ -8,7 +8,14 @@ import {
   GameSetting,
   PlayerSetting,
 } from "@/settings/game";
-import { Color, ImmutableRecord, Move, Record, SpecialMove } from "@/shogi";
+import {
+  Color,
+  ImmutableRecord,
+  Move,
+  Record,
+  reverseColor,
+  SpecialMove,
+} from "@/shogi";
 import * as uri from "@/uri";
 
 export interface PlayerBuilder {
@@ -144,7 +151,8 @@ export class GameManager {
     const color = this.record.position.color;
     this.startTimer(color);
     const player = this.getPlayer(color);
-    if (!player) {
+    const ponderPlayer = this.getPlayer(reverseColor(color));
+    if (!player || !ponderPlayer) {
       this.handlers.onError(
         "致命的なエラーが発生しました: GameManager.next(): player is undefined"
       );
@@ -167,6 +175,18 @@ export class GameManager {
       .catch((e) => {
         this.handlers.onError(
           new Error("プレイヤーにコマンドを送信できませんでした: " + e)
+        );
+      });
+    ponderPlayer
+      .startPonder(
+        this.record,
+        this.setting,
+        this.blackTimeMs,
+        this.whiteTimeMs
+      )
+      .catch((e) => {
+        this.handlers.onError(
+          new Error("プレイヤーにPonderコマンドを送信できませんでした: " + e)
         );
       });
   }

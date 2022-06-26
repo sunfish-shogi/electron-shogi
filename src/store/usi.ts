@@ -74,6 +74,7 @@ export class USIPlayerMonitor {
   public hashfull?: number;
   public currentMove?: string;
   public currentMoveText?: string;
+  public ponderMove?: string;
 
   constructor(
     public sessionID: number,
@@ -83,7 +84,7 @@ export class USIPlayerMonitor {
     this.iterates = [];
   }
 
-  update(sfen: string, update: InfoCommand): void {
+  update(sfen: string, update: InfoCommand, ponderMove?: Move): void {
     const position = Position.newBySFEN(sfen);
     const iterate: USIIteration = {
       position: sfen,
@@ -143,6 +144,7 @@ export class USIPlayerMonitor {
       }
       this.iterates.unshift(iterate);
     }
+    this.ponderMove = ponderMove?.getDisplayText();
   }
 }
 
@@ -152,6 +154,7 @@ type USIUpdate = {
   sender: USIInfoSender;
   name: string;
   info: InfoCommand;
+  ponderMove?: Move;
 };
 
 export class USIMonitor {
@@ -182,14 +185,16 @@ export class USIMonitor {
     position: ImmutablePosition,
     sender: USIInfoSender,
     name: string,
-    info: InfoCommand
+    info: InfoCommand,
+    ponderMove?: Move
   ): void {
     this.updateQueue.push({
-      sessionID: sessionID,
+      sessionID,
       sfen: position.sfen,
-      sender: sender,
-      name: name,
-      info: info,
+      sender,
+      name,
+      info,
+      ponderMove,
     });
     if (!this.timeoutHandle) {
       this.timeoutHandle = window.setTimeout(() => {
@@ -220,7 +225,7 @@ export class USIMonitor {
             update.sfen
           );
         }
-        this._blackPlayer.update(update.sfen, update.info);
+        this._blackPlayer.update(update.sfen, update.info, update.ponderMove);
         this._researcher = undefined;
         break;
       case USIInfoSender.WHITE_PLAYER:
@@ -235,7 +240,7 @@ export class USIMonitor {
             update.sfen
           );
         }
-        this._whitePlayer.update(update.sfen, update.info);
+        this._whitePlayer.update(update.sfen, update.info, update.ponderMove);
         this._researcher = undefined;
         break;
       case USIInfoSender.RESEARCHER:

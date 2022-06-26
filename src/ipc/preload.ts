@@ -96,6 +96,25 @@ const api: Bridge = {
       whiteTimeMs
     );
   },
+  async usiGoPonder(
+    sessionID: number,
+    usi: string,
+    json: string,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ): Promise<void> {
+    await ipcRenderer.invoke(
+      Background.USI_GO_PONDER,
+      sessionID,
+      usi,
+      json,
+      blackTimeMs,
+      whiteTimeMs
+    );
+  },
+  async usiPonderHit(sessionID: number): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_GO_PONDER_HIT, sessionID);
+  },
   async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
     await ipcRenderer.invoke(Background.USI_GO_INFINITE, sessionID, usi);
   },
@@ -120,11 +139,19 @@ const api: Bridge = {
     ipcRenderer.on(Renderer.MENU_EVENT, (_, event) => callback(event));
   },
   onUSIBestMove(
-    callback: (sessionID: number, usi: string, sfen: string) => void
+    callback: (
+      sessionID: number,
+      usi: string,
+      sfen: string,
+      ponder?: string
+    ) => void
   ): void {
-    ipcRenderer.on(Renderer.USI_BEST_MOVE, (_, sessionID, usi, sfen) => {
-      callback(sessionID, usi, sfen);
-    });
+    ipcRenderer.on(
+      Renderer.USI_BEST_MOVE,
+      (_, sessionID, usi, sfen, ponder) => {
+        callback(sessionID, usi, sfen, ponder);
+      }
+    );
   },
   onUSIInfo(
     callback: (
@@ -137,6 +164,22 @@ const api: Bridge = {
   ): void {
     ipcRenderer.on(
       Renderer.USI_INFO,
+      (_, sessionID, usi, sender, name, json) => {
+        callback(sessionID, usi, sender, name, json);
+      }
+    );
+  },
+  onUSIPonderInfo(
+    callback: (
+      sessionID: number,
+      usi: string,
+      sender: USIInfoSender,
+      name: string,
+      json: string
+    ) => void
+  ): void {
+    ipcRenderer.on(
+      Renderer.USI_PONDER_INFO,
       (_, sessionID, usi, sender, name, json) => {
         callback(sessionID, usi, sender, name, json);
       }

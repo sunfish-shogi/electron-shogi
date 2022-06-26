@@ -22,7 +22,9 @@ import {
   gameover as usiGameover,
   getUSIEngineInfo as usiGetUSIEngineInfo,
   go as usiGo,
+  goPonder as usiGoPonder,
   goInfinite as usiGoInfinite,
+  ponderHit as usiPonderHit,
   quit as usiQuit,
   sendSetOptionCommand as usiSendSetOptionCommand,
   setupPlayer as usiSetupPlayer,
@@ -219,6 +221,25 @@ ipcMain.handle(
 );
 
 ipcMain.handle(
+  Background.USI_GO_PONDER,
+  (
+    _,
+    sessionID: number,
+    usi: string,
+    json: string,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ) => {
+    const gameSetting = JSON.parse(json);
+    usiGoPonder(sessionID, usi, gameSetting, blackTimeMs, whiteTimeMs);
+  }
+);
+
+ipcMain.handle(Background.USI_GO_PONDER_HIT, (_, sessionID: number) => {
+  usiPonderHit(sessionID);
+});
+
+ipcMain.handle(
   Background.USI_GO_INFINITE,
   (_, sessionID: number, usi: string) => {
     usiGoInfinite(sessionID, usi);
@@ -265,9 +286,16 @@ export function onMenuEvent(event: MenuEvent): void {
 export function onUSIBestMove(
   sessionID: number,
   usi: string,
-  sfen: string
+  sfen: string,
+  ponder?: string
 ): void {
-  mainWindow.webContents.send(Renderer.USI_BEST_MOVE, sessionID, usi, sfen);
+  mainWindow.webContents.send(
+    Renderer.USI_BEST_MOVE,
+    sessionID,
+    usi,
+    sfen,
+    ponder
+  );
 }
 
 export function onUSIInfo(
@@ -279,6 +307,23 @@ export function onUSIInfo(
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_INFO,
+    sessionID,
+    usi,
+    sender,
+    name,
+    JSON.stringify(info)
+  );
+}
+
+export function onUSIPonderInfo(
+  sessionID: number,
+  usi: string,
+  sender: USIInfoSender,
+  name: string,
+  info: InfoCommand
+): void {
+  mainWindow.webContents.send(
+    Renderer.USI_PONDER_INFO,
     sessionID,
     usi,
     sender,

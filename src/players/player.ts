@@ -23,6 +23,12 @@ export interface Player {
     whiteTimeMs: number,
     handler: SearchHandler
   ): Promise<void>;
+  startPonder(
+    record: ImmutableRecord,
+    gameSetting: GameSetting,
+    blackTimeMs: number,
+    whiteTimeMs: number
+  ): Promise<void>;
   stop(): Promise<void>;
   gameover(result: GameResult): Promise<void>;
   close(): Promise<void>;

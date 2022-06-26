@@ -7,6 +7,12 @@
           <span class="value">{{ name }}</span>
         </div>
         <div class="header">
+          <span class="label">予想手: </span>
+          <span class="value">
+            {{ info.ponderMove ? info.ponderMove : "---" }}
+          </span>
+        </div>
+        <div class="header">
           <span class="label">最善手: </span>
           <span class="value">{{ info.currentMoveText || "---" }}</span>
         </div>

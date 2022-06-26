@@ -109,6 +109,12 @@ export const webAPI: Bridge = {
   async usiGo(): Promise<void> {
     // Do Nothing
   },
+  async usiGoPonder(): Promise<void> {
+    // Do Nothing
+  },
+  async usiPonderHit(): Promise<void> {
+    // Do Nothing
+  },
   async usiGoInfinite(): Promise<void> {
     // Do Nothing
   },
@@ -144,6 +150,9 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   onUSIInfo(): void {
+    // Do Nothing
+  },
+  onUSIPonderInfo(): void {
     // Do Nothing
   },
 };

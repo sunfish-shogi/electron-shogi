@@ -14,6 +14,7 @@ import { getUSILogger } from "@/ipc/background/log";
 
 export type EngineProcessOption = {
   setupOnly?: boolean;
+  timeout?: number;
   engineOptions?: USIEngineOption[];
 };
 
@@ -110,6 +111,8 @@ function parseInfoCommand(args: string): InfoCommand {
   return result;
 }
 
+type ErrorCallback = (e: Error) => void;
+type TimeoutCallback = () => void;
 type USIOKCallback = () => void;
 type ReadyCallback = () => void;
 type BestmoveCallback = (
@@ -143,7 +146,10 @@ enum State {
   WaitingForBestMove,
   Ponder,
   WaitingForPonderBestMove,
+  WillQuit,
 }
+
+const DefaultTimeout = 10 * 1e3;
 
 export class EngineProcess {
   private _path: string;
@@ -157,6 +163,9 @@ export class EngineProcess {
   private reservedGoCommand?: ReservedGoCommand;
   private readline: Readline | null;
   private sessionID: number;
+  private timeout?: NodeJS.Timeout;
+  timeoutCallback?: TimeoutCallback;
+  errorCallback?: ErrorCallback;
   usiOkCallback?: USIOKCallback;
   readyCallback?: ReadyCallback;
   bestMoveCallback?: BestmoveCallback;
@@ -192,6 +201,8 @@ export class EngineProcess {
     return this._options;
   }
 
+  on(event: "timeout", callback: TimeoutCallback): void;
+  on(event: "error", callback: ErrorCallback): void;
   on(event: "usiok", callback: USIOKCallback): void;
   on(event: "ready", callback: ReadyCallback): void;
   on(event: "bestmove", callback: BestmoveCallback): void;
@@ -199,9 +210,21 @@ export class EngineProcess {
   on(event: "ponderInfo", callback: InfoCallback): void;
   on(
     event: string,
-    callback: USIOKCallback | ReadyCallback | BestmoveCallback | InfoCallback
+    callback:
+      | TimeoutCallback
+      | ErrorCallback
+      | USIOKCallback
+      | ReadyCallback
+      | BestmoveCallback
+      | InfoCallback
   ): void {
     switch (event) {
+      case "timeout":
+        this.timeoutCallback = callback as TimeoutCallback;
+        break;
+      case "error":
+        this.errorCallback = callback as ErrorCallback;
+        break;
       case "usiok":
         this.usiOkCallback = callback as USIOKCallback;
         break;
@@ -226,8 +249,20 @@ export class EngineProcess {
       this.sessionID,
       path.dirname(this.path)
     );
+    this.timeout = setTimeout(() => {
+      if (this.timeoutCallback) {
+        this.timeoutCallback();
+      }
+      this.quit();
+    }, this.option.timeout || DefaultTimeout);
     this.handle = spawn(this.path, {
       cwd: path.dirname(this.path),
+    });
+    this.handle.on("error", (e) => {
+      if (this.errorCallback) {
+        this.errorCallback(e);
+      }
+      this.quit();
     });
     this.readline = readline(this.handle.stdout);
     this.readline.on("line", this.onReceive.bind(this));
@@ -235,6 +270,14 @@ export class EngineProcess {
   }
 
   quit(): void {
+    if (this.state === State.WillQuit) {
+      return;
+    }
+    this.state = State.WillQuit;
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = undefined;
+    }
     getUSILogger().info("sid=%d: quit USI engine", this.sessionID);
     if (!this.handle) {
       return;
@@ -351,6 +394,9 @@ export class EngineProcess {
 
   private onReceive(command: string): void {
     getUSILogger().info("sid=%d: < %s", this.sessionID, command);
+    if (this.state === State.WillQuit) {
+      return;
+    }
     if (command.startsWith("id name ")) {
       this.onIDName(command.substring(8));
     } else if (command.startsWith("id author ")) {
@@ -434,6 +480,9 @@ export class EngineProcess {
     }
     if (!this.option.setupOnly) {
       this.send("isready");
+    } else if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = undefined;
     }
     if (this.usiOkCallback) {
       this.usiOkCallback();
@@ -442,6 +491,10 @@ export class EngineProcess {
 
   private onReadyOk(): void {
     this.state = State.Ready;
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = undefined;
+    }
     if (this.readyCallback) {
       this.readyCallback();
     }

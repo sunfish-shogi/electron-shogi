@@ -158,6 +158,7 @@ export default defineComponent({
         }
       } catch (e) {
         store.pushError(e);
+        context.emit("cancel");
       } finally {
         store.releaseBussyState();
       }

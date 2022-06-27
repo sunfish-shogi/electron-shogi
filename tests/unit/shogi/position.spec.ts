@@ -310,6 +310,32 @@ describe("shogi/position", () => {
       expect(position.isValidMove(move)).toBeTruthy();
     });
 
+    it("black/no_pawn_drop_mate/block_dragon_effect", () => {
+      const data = `
+後手の持駒：なし
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・ ・ ・ ・ 角 ・|一
+| ・ ・ ・ 飛 ・ ・v桂 ・ ・|二
+| ・ ・ ・ ・ ・v玉v桂 ・ ・|三
+| ・ ・ ・ 竜 ・ ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ 玉 ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：歩 
+`;
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(4, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeFalsy();
+      expect(position.isValidMove(move)).toBeTruthy();
+    });
+
     it("white/pawn_drop_mate", () => {
       const data = `
 後手の持駒：歩 
@@ -375,6 +401,33 @@ describe("shogi/position", () => {
 | ・ ・ ・ ・ ・ ・v飛 ・ ・|四
 | ・ ・ ・ 玉 銀 ・ ・v飛 ・|五
 | ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| ・ ・ ・ ・vと ・ ・ ・ ・|七
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|八
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|九
++---------------------------+
+先手の持駒：なし
+後手番
+`;
+      const position = (importKakinoki(data) as Record).position;
+      const move = position.createMove(
+        PieceType.PAWN,
+        new Square(6, 4)
+      ) as Move;
+      expect(position.isPawnDropMate(move)).toBeFalsy();
+      expect(position.isValidMove(move)).toBeTruthy();
+    });
+
+    it("white/no_pawn_drop_mate/block_bishop_effect", () => {
+      const data = `
+後手の持駒：歩 
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+| ・ ・ ・ ・v玉 ・ ・ ・ ・|一
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|二
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|三
+| ・ ・ ・ ・ ・ ・v飛 ・ ・|四
+| ・v金 ・ 玉 銀 ・ ・v飛 ・|五
+| ・ ・ ・ 歩 ・ ・ ・ ・ ・|六
 | ・ ・ ・ ・vと ・ ・ ・ ・|七
 | ・ ・ ・ ・ ・ ・ ・ ・ ・|八
 | ・ ・ ・ ・ ・ ・ ・ ・ ・|九

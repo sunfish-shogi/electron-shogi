@@ -222,7 +222,7 @@ export default class Position {
       if (piece && piece.color == king.color) {
         return false;
       }
-      return !this.board.hasPower(to, move.color);
+      return !this.board.hasPower(to, move.color, { filled: move.to });
     });
     if (movable) {
       return false;

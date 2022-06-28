@@ -15,6 +15,7 @@
         <ul>
           <li><a href="./index.html">トップページへ戻る</a></li>
           <li><a href="#install">インストール</a></li>
+          <li><a href="#version-number">バージョン番号の見方</a></li>
           <li><a href="#engine-setup">エンジン登録</a></li>
         </ul>
       </nav>
@@ -23,29 +24,31 @@
       <section id="install">
         <h2>インストール</h2>
         <h3>Windowsの場合</h3>
-        <div>
-          <a href="https://github.com/sunfish-shogi/electron-shogi/releases">リリース一覧</a>の最新バージョンから「～-win.zip」をダウンロードします。
+        <div class="long-text">
+          <a href="https://github.com/sunfish-shogi/electron-shogi/releases">Releases</a> から「～-win.zip」をダウンロードします。
+          バージョンを選ぶ際は<a href="#version-number">「バージョン番号の見方」</a>を参考にしてください。
         </div>
         <div class="images">
           <a href="./how-to-use/install-win01.png"><img class="border wide" src="./how-to-use/install-win01.png" alt="※画像の表示に失敗しました。" /></a>
         </div>
-        <div>
+        <div class="long-text">
           「ElectronShogi Setup ～.exe」を開きます。
         </div>
         <div class="images">
           <a href="./how-to-use/install-win02.png"><img class="border wide" src="./how-to-use/install-win02.png" alt="※画像の表示に失敗しました。" /></a>
         </div>
-        <div>
+        <div class="long-text">
           インストールが成功するとElectron将棋が起動します。
         </div>
         <h3>Macの場合</h3>
-        <div>
-          <a href="https://github.com/sunfish-shogi/electron-shogi/releases">リリース一覧</a>の最新バージョンから「～-mac.zip」をダウンロードします。
+        <div class="long-text">
+          <a href="https://github.com/sunfish-shogi/electron-shogi/releases">Releases</a> から「～-mac.zip」をダウンロードします。
+          バージョンを選ぶ際は<a href="#version-number">「バージョン番号の見方」</a>を参考にしてください。
         </div>
         <div class="images">
           <a href="./how-to-use/install-mac01.png"><img class="border wide" src="./how-to-use/install-mac01.png" alt="※画像の表示に失敗しました。" /></a>
         </div>
-        <div>
+        <div class="long-text">
           「ElectronShogi-～.dmg」を開き、Electron将棋のアイコンをApplicationsへドラッグ&amp;ドロップしてください。
         </div>
         <div class="images">
@@ -54,28 +57,41 @@
         </div>
       </section>
       <hr>
+      <section id="version-number">
+        <h2>バージョン番号の見方</h2>
+        <div class="long-text">
+          Electron将棋のバージョン番号は<a href="https://semver.org/lang/ja/" target="_blank">セマンティックバージョニング<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>に従っています。
+          不具合修正が入ると<b>パッチバージョン</b>（3番目の数）が上がります。その場合はできるだけ早くアップデートをしてください。
+          新機能が入ると<b>マイナーバージョン</b>（2番目の数）が上がります。新しい機能を使用したい方はアップデートをしてください。
+          大型アップデートの際は<b>メジャーバージョン</b>（1番目の数）が上がる場合があります。
+        </div>
+        <div class="images">
+          <a href="./how-to-use/version-number-01.png"><img class="border wide" src="./how-to-use/version-number-01.png" alt="※画像の表示に失敗しました。" /></a>
+        </div>
+      </section>
+      <hr>
       <section id="engine-setup">
         <h2>エンジン登録</h2>
-        <div>
+        <div class="long-text">
           「エンジン設定」を開きます。
         </div>
         <div class="images">
           <a href="./how-to-use/engine-setup01.png"><img class="border wide" src="./how-to-use/engine-setup01.png" alt="※画像の表示に失敗しました。" /></a>
         </div>
-        <div>
+        <div class="long-text">
           「追加」を押してエンジンの実行可能ファイルを選択します。
         </div>
         <div class="images">
           <a href="./how-to-use/engine-setup02.png"><img class="border" src="./how-to-use/engine-setup02.png" alt="※画像の表示に失敗しました。" /></a>
           <a href="./how-to-use/engine-setup03.png"><img class="border" src="./how-to-use/engine-setup03.png" alt="※画像の表示に失敗しました。" /></a>
         </div>
-        <div>
+        <div class="long-text">
           「設定」を押してエンジンの設定項目を表示します。
         </div>
         <div class="images">
           <a href="./how-to-use/engine-setup04.png"><img class="border wide" src="./how-to-use/engine-setup04.png" alt="※画像の表示に失敗しました。" /></a>
         </div>
-        <div>
+        <div class="long-text">
           各項目を設定します。
         </div>
         <div class="images">
@@ -84,7 +100,7 @@
         <div class="long-text note">
           ※同じエンジンを複数追加した場合、それぞれに異なる値を設定できます。その場合は表示名に「検討用」「対局用」などを入れると判別しやすくなります。
         </div>
-        <div>
+        <div class="long-text">
           最後に「保存して閉じる」を押します。（このボタンを押すまで各エンジンの設定は保存されません。）
         </div>
         <div class="images">

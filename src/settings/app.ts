@@ -4,6 +4,11 @@ import {
   BoardLabelType,
 } from "@/components/primitive/BoardLayout";
 
+export enum Thema {
+  STANDARD = "standard",
+  DARK = "dark",
+}
+
 export enum Tab {
   RECORD_INFO = "recordInfo",
   COMMENT = "comment",
@@ -19,6 +24,7 @@ export enum ClockSoundTarget {
 }
 
 export type AppSetting = {
+  thema: Thema;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
   boardLabelType: BoardLabelType;
@@ -41,6 +47,7 @@ export type AppSetting = {
 };
 
 export type AppSettingUpdate = {
+  thema?: Thema;
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
   boardLabelType?: BoardLabelType;
@@ -64,6 +71,7 @@ export type AppSettingUpdate = {
 
 export function defaultAppSetting(returnCode?: string): AppSetting {
   return {
+    thema: Thema.STANDARD,
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.LIGHT,
     boardLabelType: BoardLabelType.STANDARD,

@@ -1,15 +1,17 @@
 <template>
-  <StandardLayout class="main" />
-  <GameDialog v-if="dialogVisibilities.game" />
-  <ResearchDialog v-if="dialogVisibilities.research" />
-  <AnalysisDialog v-if="dialogVisibilities.analysis" />
-  <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
-  <AppSettingDialog v-if="dialogVisibilities.appSetting" />
-  <PasteDialog v-if="dialogVisibilities.paste" />
-  <BussyMessage v-if="dialogVisibilities.bussy" />
-  <ConfirmDialog v-if="dialogVisibilities.confirm" />
-  <InfoMessage v-if="hasMessage" />
-  <ErrorMessage v-if="hasErrors" />
+  <div class="root" :class="thema">
+    <StandardLayout class="main" />
+    <GameDialog v-if="dialogVisibilities.game" />
+    <ResearchDialog v-if="dialogVisibilities.research" />
+    <AnalysisDialog v-if="dialogVisibilities.analysis" />
+    <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
+    <AppSettingDialog v-if="dialogVisibilities.appSetting" />
+    <PasteDialog v-if="dialogVisibilities.paste" />
+    <BussyMessage v-if="dialogVisibilities.bussy" />
+    <ConfirmDialog v-if="dialogVisibilities.confirm" />
+    <InfoMessage v-if="hasMessage" />
+    <ErrorMessage v-if="hasErrors" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -46,6 +48,8 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+
+    const thema = computed(() => store.appSetting.thema);
 
     const dialogVisibilities = computed(() => {
       return {
@@ -103,6 +107,7 @@ export default defineComponent({
     });
 
     return {
+      thema,
       dialogVisibilities,
       hasMessage,
       hasErrors,
@@ -125,9 +130,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  height: 100vh;
+  width: 100vw;
+}
+</style>
+
+<style scoped>
+.root {
   color: var(--main-color);
   background-color: var(--main-bg-color);
-  height: 100vh;
+  height: 100%;
+  width: 100%;
 }
 .main {
   height: 100%;

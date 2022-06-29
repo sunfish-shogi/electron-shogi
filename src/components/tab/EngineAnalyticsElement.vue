@@ -257,6 +257,7 @@ export default defineComponent({
   margin: 0px 0px 1px 0px;
   padding: 1px 5px 1px 2px;
   height: 22px;
+  vertical-align: middle;
 }
 .list-column .icon {
   height: 18px;

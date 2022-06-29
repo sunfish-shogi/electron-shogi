@@ -14,13 +14,16 @@ import { RectSize } from "@/components/primitive/Types";
 
 export enum PieceImageType {
   HITOMOJI = "hitomoji",
+  HITOMOJI_DARK = "hitomojiDark",
   HITOMOJI_GOTHIC = "hitomojiGothic",
+  HITOMOJI_GOTHIC_DARK = "hitomojiGothicDark",
 }
 
 export enum BoardImageType {
   LIGHT = "light",
   WARM = "warm",
   RESIN = "resin",
+  DARK = "dark",
 }
 
 export enum BoardLabelType {
@@ -95,7 +98,6 @@ const layoutTemplate = {
     height: 93,
   },
   hand: {
-    color: "#8b4513",
     black: {
       x: 1184,
       y: 600,
@@ -204,6 +206,42 @@ const pieceImageMap: { [key: string]: PieceImages } = {
       dragon: "./piece/hitomoji/white_dragon.png",
     },
   },
+  [PieceImageType.HITOMOJI_DARK]: {
+    black: {
+      pawn: "./piece/hitomoji_dark/black_pawn.png",
+      lance: "./piece/hitomoji_dark/black_lance.png",
+      knight: "./piece/hitomoji_dark/black_knight.png",
+      silver: "./piece/hitomoji_dark/black_silver.png",
+      gold: "./piece/hitomoji_dark/black_gold.png",
+      bishop: "./piece/hitomoji_dark/black_bishop.png",
+      rook: "./piece/hitomoji_dark/black_rook.png",
+      king: "./piece/hitomoji_dark/black_king.png",
+      king2: "./piece/hitomoji_dark/black_king2.png",
+      promPawn: "./piece/hitomoji_dark/black_prom_pawn.png",
+      promLance: "./piece/hitomoji_dark/black_prom_lance.png",
+      promKnight: "./piece/hitomoji_dark/black_prom_knight.png",
+      promSilver: "./piece/hitomoji_dark/black_prom_silver.png",
+      horse: "./piece/hitomoji_dark/black_horse.png",
+      dragon: "./piece/hitomoji_dark/black_dragon.png",
+    },
+    white: {
+      pawn: "./piece/hitomoji_dark/white_pawn.png",
+      lance: "./piece/hitomoji_dark/white_lance.png",
+      knight: "./piece/hitomoji_dark/white_knight.png",
+      silver: "./piece/hitomoji_dark/white_silver.png",
+      gold: "./piece/hitomoji_dark/white_gold.png",
+      bishop: "./piece/hitomoji_dark/white_bishop.png",
+      rook: "./piece/hitomoji_dark/white_rook.png",
+      king: "./piece/hitomoji_dark/white_king.png",
+      king2: "./piece/hitomoji_dark/white_king2.png",
+      promPawn: "./piece/hitomoji_dark/white_prom_pawn.png",
+      promLance: "./piece/hitomoji_dark/white_prom_lance.png",
+      promKnight: "./piece/hitomoji_dark/white_prom_knight.png",
+      promSilver: "./piece/hitomoji_dark/white_prom_silver.png",
+      horse: "./piece/hitomoji_dark/white_horse.png",
+      dragon: "./piece/hitomoji_dark/white_dragon.png",
+    },
+  },
   [PieceImageType.HITOMOJI_GOTHIC]: {
     black: {
       pawn: "./piece/hitomoji_gothic/black_pawn.png",
@@ -240,12 +278,56 @@ const pieceImageMap: { [key: string]: PieceImages } = {
       dragon: "./piece/hitomoji_gothic/white_dragon.png",
     },
   },
+  [PieceImageType.HITOMOJI_GOTHIC_DARK]: {
+    black: {
+      pawn: "./piece/hitomoji_gothic_dark/black_pawn.png",
+      lance: "./piece/hitomoji_gothic_dark/black_lance.png",
+      knight: "./piece/hitomoji_gothic_dark/black_knight.png",
+      silver: "./piece/hitomoji_gothic_dark/black_silver.png",
+      gold: "./piece/hitomoji_gothic_dark/black_gold.png",
+      bishop: "./piece/hitomoji_gothic_dark/black_bishop.png",
+      rook: "./piece/hitomoji_gothic_dark/black_rook.png",
+      king: "./piece/hitomoji_gothic_dark/black_king.png",
+      king2: "./piece/hitomoji_gothic_dark/black_king2.png",
+      promPawn: "./piece/hitomoji_gothic_dark/black_prom_pawn.png",
+      promLance: "./piece/hitomoji_gothic_dark/black_prom_lance.png",
+      promKnight: "./piece/hitomoji_gothic_dark/black_prom_knight.png",
+      promSilver: "./piece/hitomoji_gothic_dark/black_prom_silver.png",
+      horse: "./piece/hitomoji_gothic_dark/black_horse.png",
+      dragon: "./piece/hitomoji_gothic_dark/black_dragon.png",
+    },
+    white: {
+      pawn: "./piece/hitomoji_gothic_dark/white_pawn.png",
+      lance: "./piece/hitomoji_gothic_dark/white_lance.png",
+      knight: "./piece/hitomoji_gothic_dark/white_knight.png",
+      silver: "./piece/hitomoji_gothic_dark/white_silver.png",
+      gold: "./piece/hitomoji_gothic_dark/white_gold.png",
+      bishop: "./piece/hitomoji_gothic_dark/white_bishop.png",
+      rook: "./piece/hitomoji_gothic_dark/white_rook.png",
+      king: "./piece/hitomoji_gothic_dark/white_king.png",
+      king2: "./piece/hitomoji_gothic_dark/white_king2.png",
+      promPawn: "./piece/hitomoji_gothic_dark/white_prom_pawn.png",
+      promLance: "./piece/hitomoji_gothic_dark/white_prom_lance.png",
+      promKnight: "./piece/hitomoji_gothic_dark/white_prom_knight.png",
+      promSilver: "./piece/hitomoji_gothic_dark/white_prom_silver.png",
+      horse: "./piece/hitomoji_gothic_dark/white_horse.png",
+      dragon: "./piece/hitomoji_gothic_dark/white_dragon.png",
+    },
+  },
 };
 
 const boardImageMap = {
   [BoardImageType.LIGHT]: "./board/light.png",
   [BoardImageType.WARM]: "./board/warm.png",
   [BoardImageType.RESIN]: "./board/resin.png",
+  [BoardImageType.DARK]: "./board/dark.png",
+};
+
+const handColorMap = {
+  [BoardImageType.LIGHT]: "#8b4513",
+  [BoardImageType.WARM]: "#8b4513",
+  [BoardImageType.RESIN]: "#8b4513",
+  [BoardImageType.DARK]: "#333333",
 };
 
 const handLaytoutRule = {
@@ -392,6 +474,7 @@ const rankCharMap: { [n: number]: string } = {
 export default class LayoutBuilder {
   private pieceImages: PieceImages;
   private boardImage: string;
+  private handColor: string;
   private boardLabelType: BoardLabelType;
 
   constructor(
@@ -402,6 +485,7 @@ export default class LayoutBuilder {
     this.pieceImages =
       pieceImageMap[pieceImageType] || pieceImageMap[PieceImageType.HITOMOJI];
     this.boardImage = boardImageMap[boardImageType];
+    this.handColor = handColorMap[boardImageType];
     this.boardLabelType = boardLabelType;
   }
 
@@ -621,7 +705,7 @@ export default class LayoutBuilder {
       const standWidth = layoutTemplate.hand.width * ratio;
       const standHeight = layoutTemplate.hand.height * ratio;
       const standStyle = {
-        "background-color": layoutTemplate.hand.color,
+        "background-color": this.handColor,
         left: standX + "px",
         top: standY + "px",
         width: standWidth + "px",

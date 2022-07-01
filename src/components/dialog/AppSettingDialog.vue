@@ -307,6 +307,10 @@ export default defineComponent({
         value: Thema.STANDARD,
       },
       {
+        name: "桜",
+        value: Thema.CHERRY_BLOSSOM,
+      },
+      {
         name: "ダーク",
         value: Thema.DARK,
       },

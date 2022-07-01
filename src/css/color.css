@@ -40,6 +40,48 @@
   --bussy-dialog-border-color: white;
 }
 
+.cherry-blossom {
+  --main-color: black;
+  --main-bg-color: #efc4c4;
+  --active-tab-color: white;
+  --active-tab-bg-color: #d06868;
+  --inactive-tab-color: lightgray;
+  --inactive-tab-bg-color: dimgray;
+  --inactive-tab-border-color: lightgray;
+  --tab-content-bg-color: lightgray;
+  --text-color-danger: white;
+  --text-color: black;
+  --text-bg-color: #fdeeed;
+  --text-bg-color-warning: #ffff88;
+  --text-bg-color-danger: red;
+  --text-separator-color: gray;
+  --text-dashed-separator-color: dimgray;
+  --chart-bg-color: #fdeeed;
+  --promote-bg-color: #e2a4a4;
+  --not-promote-bg-color: gray;
+  --turn-label-color: lightyellow;
+  --turn-label-bg-color: #2424e6;
+  --turn-label-border-color: midnightblue;
+  --control-button-color: white;
+  --control-button-bg-color: #d06868;
+  --disabled-control-button-bg-color: dimgray;
+  --hovered-control-button-bg-color: #e48282;
+  --dialog-title-color: black;
+  --dialog-bg-color: #e2a4a4;
+  --dialog-border-color: #cd6666;
+  --dialog-form-color: black;
+  --dialog-form-bg-color: #fdeeed;
+  --error-dialog-color: white;
+  --error-dialog-bg-color: #aa0000;
+  --error-dialog-border-color: white;
+  --error-dialog-button-color: white;
+  --error-dialog-button-bg-color: #cc7777;
+  --hovered-error-dialog-button-bg-color: #aa5555;
+  --bussy-dialog-color: white;
+  --bussy-dialog-bg-color: dimgray;
+  --bussy-dialog-border-color: white;
+}
+
 .dark {
   --main-color: white;
   --main-bg-color: black;

@@ -6,6 +6,7 @@ import {
 
 export enum Thema {
   STANDARD = "standard",
+  CHERRY_BLOSSOM = "cherry-blossom",
   DARK = "dark",
 }
 

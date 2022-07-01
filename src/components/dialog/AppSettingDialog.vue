@@ -4,7 +4,19 @@
       <div class="dialog-title">アプリ設定</div>
       <div class="dialog-form-area settings">
         <div class="section">
-          <div class="section-title">盤面</div>
+          <div class="section-title">外観</div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">テーマ</div>
+            <select ref="thema" :value="appSetting.thema">
+              <option
+                v-for="themaOption of themaOptions"
+                :key="themaOption.value"
+                :value="themaOption.value"
+              >
+                {{ themaOption.name }}
+              </option>
+            </select>
+          </div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">駒画像</div>
             <select ref="pieceImage" :value="appSetting.pieceImage">
@@ -201,7 +213,7 @@ import {
   BoardImageType,
   BoardLabelType,
 } from "@/components/primitive/BoardLayout";
-import { AppSettingUpdate } from "@/settings/app";
+import { AppSettingUpdate, Thema } from "@/settings/app";
 import { useStore } from "@/store";
 import { ref, defineComponent, onMounted, Ref, computed } from "vue";
 import { readInputAsNumber } from "@/helpers/form";
@@ -225,6 +237,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
+    const thema: Ref = ref(null);
     const pieceImage: Ref = ref(null);
     const boardImage: Ref = ref(null);
     const displayBoardLabels: Ref = ref(null);
@@ -247,6 +260,7 @@ export default defineComponent({
 
     const saveAndClose = async () => {
       const update: AppSettingUpdate = {
+        thema: thema.value.value,
         pieceImage: pieceImage.value.value,
         boardImage: boardImage.value.value,
         boardLabelType: displayBoardLabels.value.checked
@@ -287,6 +301,17 @@ export default defineComponent({
       };
     });
 
+    const themaOptions = [
+      {
+        name: "標準（緑）",
+        value: Thema.STANDARD,
+      },
+      {
+        name: "ダーク",
+        value: Thema.DARK,
+      },
+    ];
+
     const pieceImageTypes = [
       {
         name: "一文字駒",
@@ -295,6 +320,14 @@ export default defineComponent({
       {
         name: "一文字駒（ゴシック体）",
         value: PieceImageType.HITOMOJI_GOTHIC,
+      },
+      {
+        name: "一文字駒（ダーク）",
+        value: PieceImageType.HITOMOJI_DARK,
+      },
+      {
+        name: "一文字駒（ゴシック体・ダーク）",
+        value: PieceImageType.HITOMOJI_GOTHIC_DARK,
       },
     ];
 
@@ -311,11 +344,16 @@ export default defineComponent({
         name: "塩化ビニル",
         value: BoardImageType.RESIN,
       },
+      {
+        name: "ダーク",
+        value: BoardImageType.DARK,
+      },
     ];
 
     return {
       BoardLabelType,
       dialog,
+      thema,
       pieceImage,
       boardImage,
       displayBoardLabels,
@@ -332,6 +370,7 @@ export default defineComponent({
       enableAppLog,
       enableUSILog,
       appSetting,
+      themaOptions,
       pieceImageTypes,
       boardImageTypes,
       isNative: isNative(),

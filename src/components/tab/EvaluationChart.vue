@@ -28,10 +28,45 @@ import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
 import { stringifyUSIInfoSender, USIInfoSender } from "@/store/usi";
 import { ImmutableRecord } from "@/shogi";
 import { scoreToPercentage } from "@/store/score";
-import { AppSetting } from "@/settings/app";
+import { AppSetting, Thema } from "@/settings/app";
 
 const MAX_SCORE = 2000;
 const MIN_SCORE = -MAX_SCORE;
+
+type ColorPalette = {
+  main: string;
+  ticks: string;
+  grid: string;
+  head: string;
+  blackPlayer: string;
+  whitePlayer: string;
+  researcher: string;
+};
+
+function getColorPalette(thema: Thema): ColorPalette {
+  switch (thema) {
+    default:
+      return {
+        main: "black",
+        ticks: "dimgray",
+        grid: "lightgray",
+        head: "red",
+        blackPlayer: "royalblue",
+        whitePlayer: "darkorange",
+        researcher: "darkgreen",
+      };
+    case Thema.DARK:
+      return {
+        main: "white",
+        ticks: "darkgray",
+        grid: "dimgray",
+        head: "red",
+        blackPlayer: "deepskyblue",
+        whitePlayer: "orange",
+        researcher: "mediumseagreen",
+      };
+  }
+}
 
 export enum EvaluationChartType {
   RAW = "raw",
@@ -94,10 +129,10 @@ export default defineComponent({
       };
     };
 
-    const verticalLine = (record: ImmutableRecord) => {
+    const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
       return {
         label: "現在の局面",
-        borderColor: "red",
+        borderColor: palette.head,
         data: [
           { x: record.current.number, y: maxScore },
           { x: record.current.number, y: minScore },
@@ -108,36 +143,60 @@ export default defineComponent({
       };
     };
 
-    const buildDatasets = (record: ImmutableRecord, appSetting: AppSetting) => {
+    const buildDatasets = (
+      record: ImmutableRecord,
+      appSetting: AppSetting,
+      palette: ColorPalette
+    ) => {
       return [
-        verticalLine(record),
+        verticalLine(record, palette),
         buildDataset(
-          "royalblue",
+          palette.blackPlayer,
           USIInfoSender.BLACK_PLAYER,
           record,
           appSetting
         ),
         buildDataset(
-          "darkorange",
+          palette.whitePlayer,
           USIInfoSender.WHITE_PLAYER,
           record,
           appSetting
         ),
-        buildDataset("darkgreen", USIInfoSender.RESEARCHER, record, appSetting),
+        buildDataset(
+          palette.researcher,
+          USIInfoSender.RESEARCHER,
+          record,
+          appSetting
+        ),
       ];
     };
 
-    const buildScalesOption = (record: ImmutableRecord) => {
+    const buildScalesOption = (
+      record: ImmutableRecord,
+      palette: ColorPalette
+    ) => {
       return {
         x: {
           min: 0,
           max: record.length + 10,
+          ticks: { color: palette.ticks },
+          grid: { color: palette.grid },
         },
         y: {
           min: minScore,
           max: maxScore,
+          ticks: { color: palette.ticks },
+          grid: { color: palette.grid },
         },
       };
+    };
+
+    const updateChart = (record: ImmutableRecord, appSetting: AppSetting) => {
+      const palette = getColorPalette(appSetting.thema);
+      chart.data.datasets = buildDatasets(record, appSetting, palette);
+      chart.options.color = palette.main;
+      chart.options.scales = buildScalesOption(record, palette);
+      chart.update();
     };
 
     const onClick = (event: ChartEvent, _: ActiveElement[], chart: Chart) => {
@@ -156,14 +215,12 @@ export default defineComponent({
     onMounted(() => {
       const canvas = canvasRef.value as HTMLCanvasElement;
       const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-      const record = store.record;
       chart = new Chart(context, {
         type: "scatter",
         data: {
-          datasets: buildDatasets(record, store.appSetting),
+          datasets: [],
         },
         options: {
-          color: "black",
           animation: {
             duration: 0,
           },
@@ -181,14 +238,8 @@ export default defineComponent({
 
     watch(
       () => [store.record, store.appSetting],
-      ([record, appSetting]) => {
-        chart.data.datasets = buildDatasets(
-          record as ImmutableRecord,
-          appSetting as AppSetting
-        );
-        chart.options.scales = buildScalesOption(record as ImmutableRecord);
-        chart.update();
-      },
+      ([record, appSetting]) =>
+        updateChart(record as ImmutableRecord, appSetting as AppSetting),
       { deep: true }
     );
 

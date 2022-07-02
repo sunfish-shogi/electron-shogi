@@ -89,7 +89,9 @@
         エンジンの既定値に戻す
       </button>
       <div class="dialog-main-buttons">
-        <button class="dialog-button" @click="ok()">OK</button>
+        <button class="dialog-button" @click="ok()">
+          {{ okButtonText }}
+        </button>
         <button class="dialog-button" @click="cancel()">キャンセル</button>
       </div>
     </dialog>
@@ -114,6 +116,11 @@ export default defineComponent({
     latestEngineSetting: {
       type: Object as PropType<USIEngineSetting>,
       required: true,
+    },
+    okButtonText: {
+      type: String,
+      required: false,
+      default: "OK",
     },
   },
   emits: ["ok", "cancel"],

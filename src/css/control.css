@@ -19,7 +19,9 @@ button .icon {
 input {
   color: var(--text-color);
   background-color: var(--text-bg-color);
-  border-color: var(--text-separator-color);
+  border-color: var(--input-border-color);
+  border-style: solid;
+  border-width: 1px;
 }
 
 select {

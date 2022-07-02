@@ -14,6 +14,7 @@
   --text-bg-color-danger: red;
   --text-separator-color: gray;
   --text-dashed-separator-color: dimgray;
+  --input-border-color: gray;
   --chart-bg-color: white;
   --promote-bg-color: white;
   --not-promote-bg-color: gray;
@@ -56,6 +57,7 @@
   --text-bg-color-danger: red;
   --text-separator-color: gray;
   --text-dashed-separator-color: dimgray;
+  --input-border-color: gray;
   --chart-bg-color: #fdeeed;
   --promote-bg-color: #e2a4a4;
   --not-promote-bg-color: gray;
@@ -98,6 +100,7 @@
   --text-bg-color-danger: red;
   --text-separator-color: gainsboro;
   --text-dashed-separator-color: lightgray;
+  --input-border-color: gray;
   --chart-bg-color: black;
   --promote-bg-color: dimgray;
   --not-promote-bg-color: black;

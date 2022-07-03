@@ -10,7 +10,7 @@
               ref="blackPlayerSelect"
               class="player-select"
               size="1"
-              :value="defaultValues.black.type"
+              @change="onPlayerChange"
             >
               <option
                 v-for="player in players"
@@ -20,6 +20,17 @@
                 {{ player.name }}
               </option>
             </select>
+            <div class="player-info">
+              先読み USI_Ponder: <span ref="blackPonderState"></span>
+            </div>
+            <button
+              class="player-setting"
+              :disabled="!isBlackPlayerSettingEnabled"
+              @click="openBlackPlayerSetting"
+            >
+              <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
+              設定
+            </button>
           </div>
           <div class="player">
             <div class="top-label">後手（上手）</div>
@@ -27,7 +38,7 @@
               ref="whitePlayerSelect"
               class="player-select"
               size="1"
-              :value="defaultValues.white.type"
+              @change="onPlayerChange"
             >
               <option
                 v-for="player in players"
@@ -37,6 +48,17 @@
                 {{ player.name }}
               </option>
             </select>
+            <div class="player-info">
+              先読み USI_Ponder: <span ref="whitePonderState"></span>
+            </div>
+            <button
+              class="player-setting"
+              :disabled="!isWhitePlayerSettingEnabled"
+              @click="openWhitePlayerSetting"
+            >
+              <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
+              設定
+            </button>
           </div>
         </div>
         <div class="players-control">
@@ -57,7 +79,6 @@
               min="0"
               max="99"
               step="1"
-              :value="defaultValues.timeLimit.hours"
             />
             <div class="dialog-form-item-unit">時間</div>
             <input
@@ -67,7 +88,6 @@
               min="0"
               max="59"
               step="1"
-              :value="defaultValues.timeLimit.minutes"
             />
             <div class="dialog-form-item-unit">分</div>
           </div>
@@ -80,7 +100,6 @@
               min="0"
               max="60"
               step="1"
-              :value="defaultValues.timeLimit.byoyomi"
             />
             <div class="dialog-form-item-unit">秒</div>
           </div>
@@ -93,14 +112,13 @@
               min="0"
               max="99"
               step="1"
-              :value="defaultValues.timeLimit.increment"
             />
             <div class="dialog-form-item-unit">秒</div>
           </div>
         </div>
         <div class="dialog-form-area flags">
           <div class="dialog-form-item">
-            <select ref="startPosition" :value="defaultValues.startPosition">
+            <select ref="startPosition">
               <option value="current">現在の局面</option>
               <option value="standard">平手</option>
               <option value="handicapLance">香落ち</option>
@@ -119,17 +137,11 @@
               id="disable-engine-timeout"
               ref="enableEngineTimeout"
               type="checkbox"
-              :checked="defaultValues.enableEngineTimeout"
             />
             <label for="disable-engine-timeout">エンジンの時間切れあり</label>
           </div>
           <div class="dialog-form-item">
-            <input
-              id="human-is-front"
-              ref="humanIsFront"
-              type="checkbox"
-              :checked="defaultValues.humanIsFront"
-            />
+            <input id="human-is-front" ref="humanIsFront" type="checkbox" />
             <label for="human-is-front">人を手前に表示する</label>
           </div>
         </div>
@@ -141,11 +153,23 @@
       </div>
     </dialog>
   </div>
+  <USIEngineOptionDialog
+    v-if="engineSettingDialog"
+    :latest-engine-setting="engineSettingDialog"
+    ok-button-text="保存"
+    @ok="savePlayerSetting"
+    @cancel="closePlayerSetting"
+  />
 </template>
 
 <script lang="ts">
-import { USIEngineSettings } from "@/settings/usi";
-import { ref, onMounted, defineComponent, Ref, computed } from "vue";
+import {
+  getUSIEngineOptionCurrentValue,
+  USIEngineSetting,
+  USIEngineSettings,
+  USIPonder,
+} from "@/settings/usi";
+import { ref, onMounted, defineComponent, Ref, computed, onUpdated } from "vue";
 import api from "@/ipc/api";
 import { useStore } from "@/store";
 import {
@@ -159,17 +183,23 @@ import * as uri from "@/uri";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { readInputAsNumber } from "@/helpers/form";
 import { Icon } from "@/assets/icons";
+import USIEngineOptionDialog from "@/components/dialog/USIEngineOptionDialog.vue";
 
 export default defineComponent({
   name: "GameDialog",
   components: {
     ButtonIcon,
+    USIEngineOptionDialog,
   },
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
     const blackPlayerSelect: Ref = ref(null);
+    const blackPonderState: Ref = ref(null);
     const whitePlayerSelect: Ref = ref(null);
+    const whitePonderState: Ref = ref(null);
+    const isBlackPlayerSettingEnabled = ref(false);
+    const isWhitePlayerSettingEnabled = ref(false);
     const hours: Ref = ref(null);
     const minutes: Ref = ref(null);
     const byoyomi: Ref = ref(null);
@@ -178,15 +208,16 @@ export default defineComponent({
     const enableEngineTimeout: Ref = ref(null);
     const humanIsFront: Ref = ref(null);
     const gameSetting = ref(defaultGameSetting());
-    const engineSetting = ref(new USIEngineSettings());
+    const engineSettings = ref(new USIEngineSettings());
+    const engineSettingDialog: Ref<USIEngineSetting | null> = ref(null);
 
     store.retainBussyState();
 
     onMounted(async () => {
-      showModalDialog(dialog.value);
       try {
         gameSetting.value = await api.loadGameSetting();
-        engineSetting.value = await api.loadUSIEngineSetting();
+        engineSettings.value = await api.loadUSIEngineSetting();
+        showModalDialog(dialog.value);
       } catch (e) {
         store.pushError(e);
         store.closeDialog();
@@ -195,9 +226,50 @@ export default defineComponent({
       }
     });
 
+    let defaultValueApplied = false;
+    onUpdated(() => {
+      if (!defaultValueApplied) {
+        blackPlayerSelect.value.value = gameSetting.value.black.uri;
+        whitePlayerSelect.value.value = gameSetting.value.white.uri;
+        hours.value.value = Math.floor(
+          gameSetting.value.timeLimit.timeSeconds / 3600
+        );
+        minutes.value.value =
+          Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
+        byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
+        increment.value.value = gameSetting.value.timeLimit.increment;
+        startPosition.value.value =
+          gameSetting.value.startPosition !== undefined
+            ? gameSetting.value.startPosition
+            : "current";
+        enableEngineTimeout.value.checked =
+          gameSetting.value.enableEngineTimeout;
+        humanIsFront.value.checked = gameSetting.value.humanIsFront;
+        onPlayerChange();
+        defaultValueApplied = true;
+      }
+    });
+
+    const onUpdatePlayer = (playerURI: string, info: HTMLDivElement) => {
+      if (uri.isUSIEngine(playerURI)) {
+        const engine = engineSettings.value.getEngine(playerURI);
+        info.innerHTML =
+          getUSIEngineOptionCurrentValue(engine.options[USIPonder]) === "true"
+            ? "ON"
+            : "OFF";
+      } else {
+        info.innerHTML = "N/A";
+      }
+    };
+
+    onUpdated(() => {
+      onUpdatePlayer(blackPlayerSelect.value.value, blackPonderState.value);
+      onUpdatePlayer(whitePlayerSelect.value.value, whitePonderState.value);
+    });
+
     const buildPlayerSetting = (playerURI: string): PlayerSetting => {
       if (uri.isUSIEngine(playerURI)) {
-        const engine = engineSetting.value.getEngine(playerURI);
+        const engine = engineSettings.value.getEngine(playerURI);
         return {
           name: engine.name,
           uri: playerURI,
@@ -208,6 +280,51 @@ export default defineComponent({
         name: "人",
         uri: uri.ES_HUMAN,
       };
+    };
+
+    const onPlayerChange = () => {
+      isBlackPlayerSettingEnabled.value =
+        blackPlayerSelect.value &&
+        uri.isUSIEngine(blackPlayerSelect.value.value);
+      isWhitePlayerSettingEnabled.value =
+        whitePlayerSelect.value &&
+        uri.isUSIEngine(whitePlayerSelect.value.value);
+    };
+
+    const openPlayerSetting = (playerURI: string) => {
+      if (uri.isUSIEngine(playerURI)) {
+        const engine = engineSettings.value.getEngine(playerURI);
+        engineSettingDialog.value = engine;
+      }
+    };
+
+    const openBlackPlayerSetting = () => {
+      const uri = blackPlayerSelect.value.value;
+      openPlayerSetting(uri);
+    };
+
+    const openWhitePlayerSetting = () => {
+      const uri = whitePlayerSelect.value.value;
+      openPlayerSetting(uri);
+    };
+
+    const savePlayerSetting = async (setting: USIEngineSetting) => {
+      const clone = new USIEngineSettings(engineSettings.value.json);
+      clone.updateEngine(setting);
+      store.retainBussyState();
+      try {
+        await api.saveUSIEngineSetting(clone);
+        engineSettings.value = clone;
+        engineSettingDialog.value = null;
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
+      }
+    };
+
+    const closePlayerSetting = () => {
+      engineSettingDialog.value = null;
     };
 
     const onStart = () => {
@@ -246,39 +363,22 @@ export default defineComponent({
         whitePlayerSelect.value.value,
         blackPlayerSelect.value.value,
       ];
+      onPlayerChange();
     };
-
-    const defaultValues = computed(() => {
-      return {
-        black: { type: gameSetting.value.black.uri },
-        white: { type: gameSetting.value.white.uri },
-        timeLimit: {
-          hours: Math.floor(gameSetting.value.timeLimit.timeSeconds / 3600),
-          minutes:
-            Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60,
-          byoyomi: gameSetting.value.timeLimit.byoyomi,
-          increment: gameSetting.value.timeLimit.increment,
-        },
-        startPosition:
-          gameSetting.value.startPosition !== undefined
-            ? gameSetting.value.startPosition
-            : "current",
-        enableEngineTimeout: gameSetting.value.enableEngineTimeout,
-        humanIsFront: gameSetting.value.humanIsFront,
-      };
-    });
 
     const players = computed(() => {
       return [
         { name: "人", uri: uri.ES_HUMAN },
-        ...engineSetting.value.engineList,
+        ...engineSettings.value.engineList,
       ];
     });
 
     return {
       dialog,
       blackPlayerSelect,
+      blackPonderState,
       whitePlayerSelect,
+      whitePonderState,
       hours,
       minutes,
       byoyomi,
@@ -286,8 +386,15 @@ export default defineComponent({
       startPosition,
       enableEngineTimeout,
       humanIsFront,
-      defaultValues,
       players,
+      isBlackPlayerSettingEnabled,
+      isWhitePlayerSettingEnabled,
+      engineSettingDialog,
+      onPlayerChange,
+      openBlackPlayerSetting,
+      openWhitePlayerSetting,
+      savePlayerSetting,
+      closePlayerSetting,
       onStart,
       onCancel,
       onSwapColor,
@@ -317,6 +424,15 @@ export default defineComponent({
 }
 .player-select {
   width: 200px;
+}
+.player-info {
+  width: 200px;
+  margin: 2px auto 2px auto;
+  height: 1.4em;
+  font-size: 0.8em;
+}
+.player-setting {
+  margin: 0px auto 0px auto;
 }
 .players-control {
   width: 100%;

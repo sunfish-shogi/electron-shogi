@@ -84,6 +84,23 @@ export class USIPlayerMonitor {
     this.iterates = [];
   }
 
+  get latestIteration(): USIIteration[] {
+    const result: USIIteration[] = [];
+    const multiPVSet = new Set();
+    const moveSet = new Set();
+    for (const iterate of this.iterates) {
+      const move = iterate.pv ? iterate.pv[0] : undefined;
+      if (!multiPVSet.has(iterate.multiPV) && !moveSet.has(move)) {
+        result.push(iterate);
+        multiPVSet.add(iterate.multiPV);
+        moveSet.add(move);
+      }
+    }
+    return result.sort((a, b) => {
+      return (a.multiPV || 1) - (b.multiPV || 1);
+    });
+  }
+
   update(sfen: string, update: InfoCommand, ponderMove?: Move): void {
     const position = Position.newBySFEN(sfen);
     const iterate: USIIteration = {

@@ -32,6 +32,14 @@
         </span>
         <span
           class="tab"
+          :class="{ selected: activeTab === Tab.PV }"
+          @click="changeSelect(Tab.PV)"
+        >
+          <ButtonIcon class="icon" :icon="Icon.PV" />
+          読み筋
+        </span>
+        <span
+          class="tab"
           :class="{ selected: activeTab === Tab.CHART }"
           @click="changeSelect(Tab.CHART)"
         >
@@ -70,6 +78,13 @@
           class="tab-content"
           :class="{ selected: activeTab === Tab.SEARCH }"
           :size="contentSize"
+          :history-mode="true"
+        />
+        <EngineAnalytics
+          class="tab-content"
+          :class="{ selected: activeTab === Tab.PV }"
+          :size="contentSize"
+          :history-mode="false"
         />
         <EvaluationChart
           class="tab-content"

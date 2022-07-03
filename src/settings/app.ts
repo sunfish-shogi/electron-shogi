@@ -14,6 +14,7 @@ export enum Tab {
   RECORD_INFO = "recordInfo",
   COMMENT = "comment",
   SEARCH = "search",
+  PV = "pv",
   CHART = "chart",
   PERCENTAGE_CHART = "percentageChart",
   INVISIBLE = "invisible",

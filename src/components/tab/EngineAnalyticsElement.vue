@@ -40,10 +40,12 @@
       </div>
       <div class="list" :style="`height:${height - 37}px`">
         <div
-          v-for="(iterate, index) in info.iterates"
+          v-for="(iterate, index) in historyMode
+            ? info.iterates
+            : info.latestIteration"
           :key="index"
           class="list-item"
-          :class="{ best: iterate.multiPV === 1 }"
+          :class="{ highlight: historyMode && iterate.multiPV === 1 }"
         >
           <div class="list-column time">
             {{ iterate.timeMs ? (iterate.timeMs / 1e3).toFixed(1) + "s" : "" }}
@@ -111,6 +113,10 @@ export default defineComponent({
     PVPreviewDialog,
   },
   props: {
+    historyMode: {
+      type: Boolean,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -214,7 +220,7 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
 }
-.list-item.best {
+.list-item.highlight {
   background: var(--text-bg-color-warning);
   border-bottom: dashed var(--text-separator-color) 1px;
 }

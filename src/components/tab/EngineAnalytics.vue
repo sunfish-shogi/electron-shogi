@@ -3,18 +3,21 @@
     <div class="root">
       <EngineAnalyticsElement
         v-if="blackPlayer"
+        :history-mode="historyMode"
         :name="blackPlayer.name"
         :info="blackPlayer"
         :height="elementHeight"
       />
       <EngineAnalyticsElement
         v-if="whitePlayer"
+        :history-mode="historyMode"
         :name="whitePlayer.name"
         :info="whitePlayer"
         :height="elementHeight"
       />
       <EngineAnalyticsElement
         v-if="researcher"
+        :history-mode="historyMode"
         :name="researcher.name"
         :info="researcher"
         :height="elementHeight"
@@ -37,6 +40,10 @@ export default defineComponent({
   props: {
     size: {
       type: RectSize,
+      required: true,
+    },
+    historyMode: {
+      type: Boolean,
       required: true,
     },
   },

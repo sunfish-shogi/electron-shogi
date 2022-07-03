@@ -1,5 +1,5 @@
 <template>
-  <img class="icon" :src="source" />
+  <img class="icon" :src="source" draggable="false" />
 </template>
 
 <script lang="ts">

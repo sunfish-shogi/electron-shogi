@@ -1,6 +1,6 @@
 <template>
   <div>
-    <dialog ref="dialog">
+    <dialog ref="dialog" class="info">
       <div class="content">
         <ButtonIcon class="icon" :icon="Icon.INFO" />
         <div class="message">{{ message }}</div>
@@ -47,3 +47,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+dialog.info {
+  color: var(--info-dialog-color);
+  background-color: var(--info-dialog-bg-color);
+  border: 3px solid var(--info-dialog-border-color);
+}
+</style>

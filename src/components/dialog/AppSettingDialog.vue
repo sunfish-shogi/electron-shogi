@@ -51,6 +51,7 @@
             />
           </div>
         </div>
+        <hr class="separator" />
         <div class="section">
           <div class="section-title">音</div>
           <div class="dialog-form-item">
@@ -94,6 +95,7 @@
             </select>
           </div>
         </div>
+        <hr class="separator" />
         <div class="section">
           <div class="section-title">ファイル</div>
           <div class="dialog-form-item">
@@ -105,6 +107,7 @@
             </select>
           </div>
         </div>
+        <hr class="separator" />
         <div class="section">
           <div class="section-title">評価値・期待勝率</div>
           <div class="dialog-form-item">
@@ -163,6 +166,7 @@
             <div class="dialog-form-item-unit">%</div>
           </div>
         </div>
+        <hr class="separator" />
         <div class="section">
           <div class="section-title">開発者向け</div>
           <div class="dialog-form-item">
@@ -387,15 +391,20 @@ export default defineComponent({
 
 <style scoped>
 .settings {
-  width: 450px;
+  width: 540px;
   height: 540px;
   padding: 10px;
   overflow: auto;
   display: flex;
   flex-direction: column;
 }
+.separator {
+  width: 100%;
+  border: none;
+  border-top: 1px dashed var(--dialog-border-color);
+}
 .section {
-  margin: 0px 0px 20px 0px;
+  margin: 20px 0px 20px 0px;
 }
 .section-title {
   font-size: 1.1em;

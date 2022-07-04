@@ -462,6 +462,8 @@ export default defineComponent({
   display: flex;
   justify-content: left;
   align-items: center;
+  border: 1px solid black;
+  box-sizing: border-box;
 }
 .player-name-text {
   margin-left: 5px;
@@ -474,6 +476,8 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 1px solid black;
+  box-sizing: border-box;
 }
 .clock.warning {
   background-color: var(--text-bg-color-warning);

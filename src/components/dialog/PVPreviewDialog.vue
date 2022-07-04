@@ -62,7 +62,7 @@ import {
   watch,
   onUnmounted,
 } from "vue";
-import BoardView from "../primitive/BoardView.vue";
+import BoardView from "@/components/primitive/BoardView.vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { RectSize } from "@/components/primitive/Types";
 import { computed } from "@vue/reactivity";

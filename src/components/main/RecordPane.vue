@@ -44,7 +44,7 @@ import RecordView from "@/components/primitive/RecordView.vue";
 import { useStore } from "@/store";
 import { AppState } from "@/store/state";
 
-export const minWidth = 230;
+export const minWidth = 200;
 
 export default defineComponent({
   name: "RecordPane",
@@ -144,12 +144,14 @@ export default defineComponent({
 }
 .options {
   width: 100%;
-  height: 23px;
   margin-top: 2px;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 .option {
+  white-space: nowrap;
   padding: 0 10px 0 10px;
 }
 </style>

@@ -101,6 +101,6 @@ export default defineComponent({
 
 <style scoped>
 .engine-select {
-  width: 250px;
+  width: 320px;
 }
 </style>

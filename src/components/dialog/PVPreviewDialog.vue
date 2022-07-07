@@ -194,12 +194,14 @@ export default defineComponent({
 .control-row {
   width: 100%;
   height: 25%;
+  margin: 0px;
   display: flex;
   flex-direction: row;
 }
 .control .control-item {
   width: 50%;
   height: 100%;
+  margin: 0px;
   font-size: 100%;
   padding: 0 5% 0 5%;
 }

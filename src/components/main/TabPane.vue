@@ -63,7 +63,6 @@
           最小化
         </span>
       </div>
-      <div class="tab-border" />
       <div class="tab-contents">
         <RecordInfo
           class="tab-content"
@@ -178,31 +177,25 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   user-select: none;
+  background-color: var(--tab-bg-color);
+  padding-bottom: 2px;
 }
 .tab {
-  height: 24px;
-  color: var(--inactive-tab-color);
-  background-color: var(--inactive-tab-bg-color);
-  border: solid 1px var(--inactive-tab-border-color);
-  border-bottom: 0px;
-  border-top-right-radius: 10px;
+  height: 23px;
+  color: var(--tab-color);
+  background-color: var(--tab-bg-color);
+  border-bottom: solid 3px transparent;
   padding: 0px 20px 0px 10px;
   line-height: 28px;
   font-size: 1rem;
   text-align: left;
 }
 .tab.selected {
-  color: var(--active-tab-color);
-  background-color: var(--active-tab-bg-color);
+  border-bottom: solid 3px var(--tab-highlight-color);
 }
 .tab .icon {
   height: 100%;
   vertical-align: top;
-}
-.tab-border {
-  width: 100%;
-  height: 4px;
-  background-color: var(--active-tab-bg-color);
 }
 .tab-contents {
   flex: 1;

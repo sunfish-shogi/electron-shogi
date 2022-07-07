@@ -70,13 +70,13 @@ export default defineComponent({
 
 <style scoped>
 .message {
-  width: 400px;
+  width: 460px;
   text-align: left;
   font-size: 0.8rem;
 }
 textarea {
-  width: 400px;
-  height: 50vh;
+  width: 460px;
+  height: 60vh;
   min-height: 100px;
   resize: none;
 }

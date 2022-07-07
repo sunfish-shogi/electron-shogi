@@ -1,9 +1,10 @@
 button {
   color: var(--control-button-color);
   background-color: var(--control-button-bg-color);
-  border-width: 0px;
+  border-width: 0px 1px 1px 0px;
   padding-left: 20px;
   padding-right: 20px;
+  font-size: 100%;
 }
 button:disabled {
   background-color: var(--disabled-control-button-bg-color);
@@ -14,6 +15,7 @@ button:hover:enabled {
 
 button .icon {
   height: 100%;
+  vertical-align: top;
 }
 
 input {
@@ -22,14 +24,17 @@ input {
   border-color: var(--input-border-color);
   border-style: solid;
   border-width: 1px;
+  font-size: 0.9em;
 }
 
 select {
   color: var(--text-color);
   background-color: var(--text-bg-color);
+  font-size: 0.9em;
 }
 
 textarea {
   color: var(--text-color);
   background-color: var(--text-bg-color);
+  font-size: 0.9em;
 }

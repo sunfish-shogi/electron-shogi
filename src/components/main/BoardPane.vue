@@ -101,25 +101,13 @@
             <ButtonIcon class="icon" :icon="Icon.SWAP" />
             手番変更
           </button>
-          <select
+          <button
             v-if="controlStates.initPosition"
             class="control-item"
-            @change="onInitPosition"
+            @click="onInitPosition"
           >
-            <option>局面の初期化</option>
-            <option value="standard">平手</option>
-            <option value="handicapLance">香落ち</option>
-            <option value="handicapRightLance">右香落ち</option>
-            <option value="handicapBishop">角落ち</option>
-            <option value="handicapRook">飛車落ち</option>
-            <option value="handicapRookLance">飛車香落ち</option>
-            <option value="handicap2Pieces">2枚落ち</option>
-            <option value="handicap4Pieces">4枚落ち</option>
-            <option value="handicap6Pieces">6枚落ち</option>
-            <option value="handicap8Pieces">8枚落ち</option>
-            <option value="tsumeShogi">詰め将棋</option>
-            <option value="tsumeShogi2Kings">双玉詰め将棋</option>
-          </select>
+            局面の初期化
+          </button>
         </div>
       </template>
       <template #left-control>
@@ -140,17 +128,9 @@
             <ButtonIcon class="icon" :icon="Icon.FLIP" />
             盤面反転
           </button>
-          <button
-            class="control-item"
-            :disabled="!controlStates.paste"
-            @click="onPaste"
-          >
-            <ButtonIcon class="icon" :icon="Icon.PASTE" />
-            棋譜貼り付け
-          </button>
-          <button class="control-item" @click="onCopy">
-            <ButtonIcon class="icon" :icon="Icon.COPY" />
-            棋譜コピー
+          <button class="control-item" @click="onFileAction">
+            <ButtonIcon class="icon" :icon="Icon.FILE" />
+            ファイル
           </button>
           <button
             class="control-item"
@@ -163,30 +143,34 @@
         </div>
       </template>
     </BoardView>
+    <FileMenu v-if="isFileMenuVisible" @close="isFileMenuVisible = false" />
+    <InitialPositionMenu
+      v-if="isInitialPositionMenuVisible"
+      @close="isInitialPositionMenuVisible = false"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import BoardView from "@/components/primitive/BoardView.vue";
-import {
-  InitialPositionType,
-  Move,
-  PositionChange,
-  RecordMetadataKey,
-} from "@/shogi";
+import { Move, PositionChange, RecordMetadataKey } from "@/shogi";
 import { RectSize } from "@/components/primitive/Types";
 import { useStore } from "@/store";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { AppState } from "@/store/state";
 import { humanPlayer } from "@/players/human";
 import { Icon } from "@/assets/icons";
+import FileMenu from "@/components/menu/FileMenu.vue";
+import InitialPositionMenu from "@/components/menu/InitialPositionMenu.vue";
 
 export default defineComponent({
   name: "BoardPane",
   components: {
     BoardView,
     ButtonIcon,
+    FileMenu,
+    InitialPositionMenu,
   },
   props: {
     maxSize: {
@@ -196,6 +180,8 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const isFileMenuVisible = ref(false);
+    const isInitialPositionMenuVisible = ref(false);
 
     const onMove = (move: Move) => {
       if (store.appState === AppState.GAME) {
@@ -245,11 +231,8 @@ export default defineComponent({
       store.endPositionEditing();
     };
 
-    const onInitPosition = (event: Event) => {
-      const select = event.target as HTMLSelectElement;
-      if (select.value) {
-        store.initializePosition(select.value as InitialPositionType);
-      }
+    const onInitPosition = () => {
+      isInitialPositionMenuVisible.value = true;
     };
 
     const onChangeTurn = () => {
@@ -268,12 +251,8 @@ export default defineComponent({
       useStore().flipBoard();
     };
 
-    const onPaste = () => {
-      store.showPasteDialog();
-    };
-
-    const onCopy = () => {
-      store.copyRecordKIF();
+    const onFileAction = () => {
+      isFileMenuVisible.value = true;
     };
 
     const onRemoveAfter = () => {
@@ -335,12 +314,13 @@ export default defineComponent({
         removeAfter:
           store.appState === AppState.NORMAL ||
           store.appState === AppState.RESEARCH,
-        paste: store.appState === AppState.NORMAL,
         engineSettings: store.appState === AppState.NORMAL,
       };
     });
 
     return {
+      isFileMenuVisible,
+      isInitialPositionMenuVisible,
       appSetting,
       position,
       lastMove,
@@ -367,8 +347,7 @@ export default defineComponent({
       onOpenAppSettings,
       onOpenEngineSettings,
       onFlip,
-      onPaste,
-      onCopy,
+      onFileAction,
       onRemoveAfter,
       allowEdit,
       allowMove,
@@ -379,20 +358,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.board {
-  position: absolute;
-}
-.board-image {
-  width: 100%;
-  height: 100%;
-}
-.piece {
-  position: absolute;
-}
-.piece-image {
-  width: 100%;
-  height: 100%;
-}
 .control {
   width: 100%;
   height: 100%;
@@ -407,20 +372,20 @@ export default defineComponent({
 }
 .control .control-item {
   width: 100%;
-  height: 15%;
+  height: 19%;
   font-size: 100%;
   text-align: left;
   line-height: 200%;
   padding: 0 5% 0 5%;
 }
 .control.top .control-item:not(:last-child) {
-  margin-bottom: 2%;
+  margin-bottom: 1%;
 }
 .control.bottom .control-item:not(:last-child) {
-  margin-top: 2%;
+  margin-top: 1%;
 }
 .control .control-item .icon {
-  height: 80%;
+  height: 68%;
   vertical-align: top;
 }
 .control select {

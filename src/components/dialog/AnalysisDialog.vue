@@ -213,7 +213,7 @@ export default defineComponent({
 
 <style scoped>
 .engine-select {
-  width: 300px;
+  width: 400px;
 }
 input.toggle {
   height: 1rem;

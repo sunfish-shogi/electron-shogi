@@ -13,15 +13,9 @@
           :value="engine.uri"
         >
           <div class="engine-name">{{ engine.name }}</div>
-          <button class="dialog-narrow-button" @click="openOptions(engine.uri)">
-            設定
-          </button>
-          <button class="dialog-narrow-button" @click="duplicate(engine.uri)">
-            複製
-          </button>
-          <button class="dialog-narrow-button" @click="remove(engine.uri)">
-            削除
-          </button>
+          <button @click="openOptions(engine.uri)">設定</button>
+          <button @click="duplicate(engine.uri)">複製</button>
+          <button @click="remove(engine.uri)">削除</button>
         </div>
       </div>
       <button class="dialog-wide-button" @click="add()">追加</button>
@@ -153,7 +147,7 @@ export default defineComponent({
 
 <style scoped>
 .engine-list {
-  width: 620px;
+  width: 720px;
   height: 400px;
   overflow: auto;
   display: flex;
@@ -168,7 +162,7 @@ export default defineComponent({
 }
 .engine-name {
   text-align: left;
-  width: 380px;
+  width: 450px;
   margin-top: 5px;
   margin-right: 10px;
   white-space: nowrap;

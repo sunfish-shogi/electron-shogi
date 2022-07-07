@@ -409,7 +409,7 @@ export default defineComponent({
   text-align: center;
 }
 .dialog-form-area {
-  width: 480px;
+  width: 520px;
   display: flex;
   flex-direction: column;
 }
@@ -420,10 +420,10 @@ export default defineComponent({
   width: 100%;
 }
 .player {
-  width: 220px;
+  width: 250px;
 }
 .player-select {
-  width: 200px;
+  width: 240px;
 }
 .player-info {
   width: 200px;
@@ -441,7 +441,7 @@ export default defineComponent({
   margin-top: 5px;
 }
 .dialog-form-area.time-limit {
-  width: 240px;
+  width: 260px;
 }
 .time-input {
   text-align: right;
@@ -449,7 +449,5 @@ export default defineComponent({
 }
 .dialog-form-area.flags {
   width: 225px;
-  margin-left: 5px;
-  margin-bottom: 5px;
 }
 </style>

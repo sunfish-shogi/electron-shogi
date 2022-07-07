@@ -248,6 +248,8 @@ export default defineComponent({
         onPlayerChange();
         defaultValueApplied = true;
       }
+      onUpdatePlayer(blackPlayerSelect.value.value, blackPonderState.value);
+      onUpdatePlayer(whitePlayerSelect.value.value, whitePonderState.value);
     });
 
     const onUpdatePlayer = (playerURI: string, info: HTMLDivElement) => {
@@ -261,11 +263,6 @@ export default defineComponent({
         info.innerHTML = "N/A";
       }
     };
-
-    onUpdated(() => {
-      onUpdatePlayer(blackPlayerSelect.value.value, blackPonderState.value);
-      onUpdatePlayer(whitePlayerSelect.value.value, whitePonderState.value);
-    });
 
     const buildPlayerSetting = (playerURI: string): PlayerSetting => {
       if (uri.isUSIEngine(playerURI)) {
@@ -289,6 +286,8 @@ export default defineComponent({
       isWhitePlayerSettingEnabled.value =
         whitePlayerSelect.value &&
         uri.isUSIEngine(whitePlayerSelect.value.value);
+      onUpdatePlayer(blackPlayerSelect.value.value, blackPonderState.value);
+      onUpdatePlayer(whitePlayerSelect.value.value, whitePonderState.value);
     };
 
     const openPlayerSetting = (playerURI: string) => {

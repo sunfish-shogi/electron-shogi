@@ -1,24 +1,18 @@
 <template>
   <div>
-    <dialog ref="dialog">
+    <dialog ref="dialog" class="root">
       <div class="dialog-title">検討</div>
       <div class="dialog-form-area">
         <div class="dialog-form-item">
-          <div class="dialog-form-item-label">エンジン</div>
-          <select
-            ref="engineSelect"
-            class="engine-select"
-            size="1"
-            :value="defaultValue"
-          >
-            <option
-              v-for="engine in engines"
-              :key="engine.uri"
-              :value="engine.uri"
-            >
-              {{ engine.name }}
-            </option>
-          </select>
+          <PlayerSelector
+            :players="engines"
+            :player-uri="engineURI"
+            :engine-settings="engineSettings.json"
+            :display-thread-state="true"
+            :display-multi-pv-state="true"
+            @update-engine-setting="onUpdatePlayerSetting"
+            @select-player="onSelectPlayer"
+          />
         </div>
       </div>
       <div class="dialog-main-buttons">
@@ -33,18 +27,22 @@
 import { showModalDialog } from "@/helpers/dialog";
 import api from "@/ipc/api";
 import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
-import { USIEngineSettings } from "@/settings/usi";
+import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
+import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 
 export default defineComponent({
   name: "ResearchDialog",
+  components: {
+    PlayerSelector,
+  },
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
-    const engineSelect: Ref = ref(null);
     const researchSetting = ref(defaultResearchSetting());
-    const engineSetting = ref(new USIEngineSettings());
+    const engineSettings = ref(new USIEngineSettings());
+    const engineURI = ref("");
 
     store.retainBussyState();
 
@@ -52,7 +50,8 @@ export default defineComponent({
       showModalDialog(dialog.value);
       try {
         researchSetting.value = await api.loadResearchSetting();
-        engineSetting.value = await api.loadUSIEngineSetting();
+        engineSettings.value = await api.loadUSIEngineSetting();
+        engineURI.value = researchSetting.value.usi?.uri || "";
       } catch (e) {
         store.pushError(e);
         store.closeDialog();
@@ -61,15 +60,19 @@ export default defineComponent({
       }
     });
 
+    const engines = computed(() => engineSettings.value.engineList);
+
     const onStart = () => {
-      const uri = engineSelect.value.value;
-      if (!engineSetting.value.hasEngine(uri)) {
+      if (
+        !engineURI.value ||
+        !engineSettings.value.hasEngine(engineURI.value)
+      ) {
         store.pushError("エンジンを選択してください。");
         return;
       }
-      const engine = engineSetting.value.getEngine(uri);
+      const engineSetting = engineSettings.value.getEngine(engineURI.value);
       const researchSetting: ResearchSetting = {
-        usi: engine,
+        usi: engineSetting,
       };
       store.startResearch(researchSetting);
     };
@@ -78,29 +81,40 @@ export default defineComponent({
       store.closeDialog();
     };
 
-    const engines = computed(() => engineSetting.value.engineList);
-
-    const defaultValue = computed(() => {
-      if (researchSetting.value.usi) {
-        return researchSetting.value.usi.uri;
+    const onUpdatePlayerSetting = async (setting: USIEngineSetting) => {
+      const clone = new USIEngineSettings(engineSettings.value.json);
+      clone.updateEngine(setting);
+      store.retainBussyState();
+      try {
+        await api.saveUSIEngineSetting(clone);
+        engineSettings.value = clone;
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
       }
-      return "";
-    });
+    };
+
+    const onSelectPlayer = (uri: string) => {
+      engineURI.value = uri;
+    };
 
     return {
       dialog,
-      engineSelect,
+      engineSettings,
+      engineURI,
       engines,
-      defaultValue,
       onStart,
       onCancel,
+      onUpdatePlayerSetting,
+      onSelectPlayer,
     };
   },
 });
 </script>
 
 <style scoped>
-.engine-select {
-  width: 320px;
+.root {
+  width: 380px;
 }
 </style>

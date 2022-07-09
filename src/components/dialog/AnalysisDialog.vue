@@ -1,24 +1,19 @@
 <template>
   <div>
-    <dialog ref="dialog">
+    <dialog ref="dialog" class="root">
       <div class="dialog-title">棋譜解析</div>
       <div class="dialog-form-area">
         <div>エンジン</div>
         <div class="dialog-form-item">
-          <select
-            ref="engineSelect"
-            class="engine-select"
-            size="1"
-            :value="defaultValues.engineURI"
-          >
-            <option
-              v-for="engine in engines"
-              :key="engine.uri"
-              :value="engine.uri"
-            >
-              {{ engine.name }}
-            </option>
-          </select>
+          <PlayerSelector
+            :players="engines"
+            :player-uri="engineURI"
+            :engine-settings="engineSettings.json"
+            :display-thread-state="true"
+            :display-multi-pv-state="true"
+            @update-engine-setting="onUpdatePlayerSetting"
+            @select-player="onSelectPlayer"
+          />
         </div>
       </div>
       <div class="dialog-form-area">
@@ -108,16 +103,19 @@ import { showModalDialog } from "@/helpers/dialog";
 import { readInputAsNumber } from "@/helpers/form";
 import api from "@/ipc/api";
 import { AnalysisSetting, defaultAnalysisSetting } from "@/settings/analysis";
-import { USIEngineSettings } from "@/settings/usi";
+import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { useStore } from "@/store";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
+import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 
 export default defineComponent({
   name: "ResearchDialog",
+  components: {
+    PlayerSelector,
+  },
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
-    const engineSelect: Ref = ref(null);
     const enableStartNumber: Ref = ref(null);
     const startNumber: Ref = ref(null);
     const enableEndNumber: Ref = ref(null);
@@ -125,7 +123,8 @@ export default defineComponent({
     const maxSecondsPerMove: Ref = ref(null);
     const commentBehavior: Ref = ref(null);
     const analysisSetting = ref(defaultAnalysisSetting());
-    const engineSetting = ref(new USIEngineSettings());
+    const engineSettings = ref(new USIEngineSettings());
+    const engineURI = ref("");
 
     store.retainBussyState();
 
@@ -133,7 +132,8 @@ export default defineComponent({
       showModalDialog(dialog.value);
       try {
         analysisSetting.value = await api.loadAnalysisSetting();
-        engineSetting.value = await api.loadUSIEngineSetting();
+        engineSettings.value = await api.loadUSIEngineSetting();
+        engineURI.value = analysisSetting.value.usi?.uri || "";
       } catch (e) {
         store.pushError(e);
         store.closeDialog();
@@ -148,12 +148,14 @@ export default defineComponent({
     };
 
     const onStart = () => {
-      const uri = engineSelect.value.value;
-      if (!engineSetting.value.hasEngine(uri)) {
+      if (
+        !engineURI.value ||
+        !engineSettings.value.hasEngine(engineURI.value)
+      ) {
         store.pushError("エンジンを選択してください。");
         return;
       }
-      const engine = engineSetting.value.getEngine(uri);
+      const engine = engineSettings.value.getEngine(engineURI.value);
       const analysisSetting: AnalysisSetting = {
         usi: engine,
         startCriteria: {
@@ -176,13 +178,28 @@ export default defineComponent({
       store.closeDialog();
     };
 
-    const engines = computed(() => engineSetting.value.engineList);
+    const onUpdatePlayerSetting = async (setting: USIEngineSetting) => {
+      const clone = new USIEngineSettings(engineSettings.value.json);
+      clone.updateEngine(setting);
+      store.retainBussyState();
+      try {
+        await api.saveUSIEngineSetting(clone);
+        engineSettings.value = clone;
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
+      }
+    };
+
+    const onSelectPlayer = (uri: string) => {
+      engineURI.value = uri;
+    };
+
+    const engines = computed(() => engineSettings.value.engineList);
 
     const defaultValues = computed(() => {
       return {
-        engineURI: analysisSetting.value.usi
-          ? analysisSetting.value.usi.uri
-          : "",
         enableStartNumber: analysisSetting.value.startCriteria.enableNumber,
         startNumber: analysisSetting.value.startCriteria.number,
         enableEndNumber: analysisSetting.value.endCriteria.enableNumber,
@@ -194,8 +211,9 @@ export default defineComponent({
 
     return {
       dialog,
+      engineSettings,
+      engineURI,
       enableStartNumber,
-      engineSelect,
       startNumber,
       enableEndNumber,
       endNumber,
@@ -206,14 +224,16 @@ export default defineComponent({
       updateToggle,
       onStart,
       onCancel,
+      onUpdatePlayerSetting,
+      onSelectPlayer,
     };
   },
 });
 </script>
 
 <style scoped>
-.engine-select {
-  width: 400px;
+.root {
+  width: 420px;
 }
 input.toggle {
   height: 1rem;

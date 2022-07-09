@@ -3,6 +3,12 @@ import { issueEngineURI } from "@/uri";
 // reserved option names
 export const USIPonder = "USI_Ponder";
 export const USIHash = "USI_Hash";
+export const USIMultiPV = "USI_MultiPV";
+
+// well-known option names
+export const Threads = "Threads";
+export const NumberOfThreads = "NumberOfThreads";
+export const MultiPV = "MultiPV";
 
 export type USIEngineOptionType =
   | "check"
@@ -23,8 +29,11 @@ export type USIEngineOption = {
 };
 
 export function getUSIEngineOptionCurrentValue(
-  option: USIEngineOption
+  option: USIEngineOption | null | undefined
 ): string | number | undefined {
+  if (!option) {
+    return;
+  }
   if (option.value !== undefined) {
     return option.value;
   }

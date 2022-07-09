@@ -6,59 +6,30 @@
         <div class="players">
           <div class="player">
             <div class="top-label">先手（下手）</div>
-            <select
-              ref="blackPlayerSelect"
-              class="player-select"
-              size="1"
-              @change="onPlayerChange"
-            >
-              <option
-                v-for="player in players"
-                :key="player.uri"
-                :value="player.uri"
-              >
-                {{ player.name }}
-              </option>
-            </select>
-            <div class="player-info">
-              先読み USI_Ponder: <span ref="blackPonderState"></span>
-            </div>
-            <button
-              class="player-setting"
-              :disabled="!isBlackPlayerSettingEnabled"
-              @click="openBlackPlayerSetting"
-            >
-              <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
-              設定
-            </button>
+            <PlayerSelector
+              :players="players"
+              :player-uri="blackPlayerURI"
+              :engine-settings="engineSettings.json"
+              :display-ponder-state="true"
+              :display-thread-state="true"
+              :display-multi-pv-state="true"
+              @update-engine-setting="onUpdatePlayerSetting"
+              @select-player="onSelectBlackPlayer"
+            />
           </div>
           <div class="player">
             <div class="top-label">後手（上手）</div>
-            <select
-              ref="whitePlayerSelect"
-              class="player-select"
-              size="1"
-              @change="onPlayerChange"
-            >
-              <option
-                v-for="player in players"
-                :key="player.uri"
-                :value="player.uri"
-              >
-                {{ player.name }}
-              </option>
-            </select>
-            <div class="player-info">
-              先読み USI_Ponder: <span ref="whitePonderState"></span>
-            </div>
-            <button
-              class="player-setting"
-              :disabled="!isWhitePlayerSettingEnabled"
-              @click="openWhitePlayerSetting"
-            >
-              <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
-              設定
-            </button>
+            <PlayerSelector
+              v-if="whitePlayerURI"
+              :players="players"
+              :player-uri="whitePlayerURI"
+              :engine-settings="engineSettings.json"
+              :display-ponder-state="true"
+              :display-thread-state="true"
+              :display-multi-pv-state="true"
+              @update-engine-setting="onUpdatePlayerSetting"
+              @select-player="onSelectWhitePlayer"
+            />
           </div>
         </div>
         <div class="players-control">
@@ -153,22 +124,10 @@
       </div>
     </dialog>
   </div>
-  <USIEngineOptionDialog
-    v-if="engineSettingDialog"
-    :latest-engine-setting="engineSettingDialog"
-    ok-button-text="保存"
-    @ok="savePlayerSetting"
-    @cancel="closePlayerSetting"
-  />
 </template>
 
 <script lang="ts">
-import {
-  getUSIEngineOptionCurrentValue,
-  USIEngineSetting,
-  USIEngineSettings,
-  USIPonder,
-} from "@/settings/usi";
+import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { ref, onMounted, defineComponent, Ref, computed, onUpdated } from "vue";
 import api from "@/ipc/api";
 import { useStore } from "@/store";
@@ -180,26 +139,20 @@ import {
 } from "@/settings/game";
 import { showModalDialog } from "@/helpers/dialog";
 import * as uri from "@/uri";
-import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { readInputAsNumber } from "@/helpers/form";
 import { Icon } from "@/assets/icons";
-import USIEngineOptionDialog from "@/components/dialog/USIEngineOptionDialog.vue";
+import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
+import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 
 export default defineComponent({
   name: "GameDialog",
   components: {
     ButtonIcon,
-    USIEngineOptionDialog,
+    PlayerSelector,
   },
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
-    const blackPlayerSelect: Ref = ref(null);
-    const blackPonderState: Ref = ref(null);
-    const whitePlayerSelect: Ref = ref(null);
-    const whitePonderState: Ref = ref(null);
-    const isBlackPlayerSettingEnabled = ref(false);
-    const isWhitePlayerSettingEnabled = ref(false);
     const hours: Ref = ref(null);
     const minutes: Ref = ref(null);
     const byoyomi: Ref = ref(null);
@@ -209,7 +162,8 @@ export default defineComponent({
     const humanIsFront: Ref = ref(null);
     const gameSetting = ref(defaultGameSetting());
     const engineSettings = ref(new USIEngineSettings());
-    const engineSettingDialog: Ref<USIEngineSetting | null> = ref(null);
+    const blackPlayerURI = ref("");
+    const whitePlayerURI = ref("");
 
     store.retainBussyState();
 
@@ -217,6 +171,8 @@ export default defineComponent({
       try {
         gameSetting.value = await api.loadGameSetting();
         engineSettings.value = await api.loadUSIEngineSetting();
+        blackPlayerURI.value = gameSetting.value.black.uri;
+        whitePlayerURI.value = gameSetting.value.white.uri;
         showModalDialog(dialog.value);
       } catch (e) {
         store.pushError(e);
@@ -229,8 +185,6 @@ export default defineComponent({
     let defaultValueApplied = false;
     onUpdated(() => {
       if (!defaultValueApplied) {
-        blackPlayerSelect.value.value = gameSetting.value.black.uri;
-        whitePlayerSelect.value.value = gameSetting.value.white.uri;
         hours.value.value = Math.floor(
           gameSetting.value.timeLimit.timeSeconds / 3600
         );
@@ -245,24 +199,9 @@ export default defineComponent({
         enableEngineTimeout.value.checked =
           gameSetting.value.enableEngineTimeout;
         humanIsFront.value.checked = gameSetting.value.humanIsFront;
-        onPlayerChange();
         defaultValueApplied = true;
       }
-      onUpdatePlayer(blackPlayerSelect.value.value, blackPonderState.value);
-      onUpdatePlayer(whitePlayerSelect.value.value, whitePonderState.value);
     });
-
-    const onUpdatePlayer = (playerURI: string, info: HTMLDivElement) => {
-      if (uri.isUSIEngine(playerURI)) {
-        const engine = engineSettings.value.getEngine(playerURI);
-        info.innerHTML =
-          getUSIEngineOptionCurrentValue(engine.options[USIPonder]) === "true"
-            ? "ON"
-            : "OFF";
-      } else {
-        info.innerHTML = "N/A";
-      }
-    };
 
     const buildPlayerSetting = (playerURI: string): PlayerSetting => {
       if (uri.isUSIEngine(playerURI)) {
@@ -279,57 +218,10 @@ export default defineComponent({
       };
     };
 
-    const onPlayerChange = () => {
-      isBlackPlayerSettingEnabled.value =
-        blackPlayerSelect.value &&
-        uri.isUSIEngine(blackPlayerSelect.value.value);
-      isWhitePlayerSettingEnabled.value =
-        whitePlayerSelect.value &&
-        uri.isUSIEngine(whitePlayerSelect.value.value);
-      onUpdatePlayer(blackPlayerSelect.value.value, blackPonderState.value);
-      onUpdatePlayer(whitePlayerSelect.value.value, whitePonderState.value);
-    };
-
-    const openPlayerSetting = (playerURI: string) => {
-      if (uri.isUSIEngine(playerURI)) {
-        const engine = engineSettings.value.getEngine(playerURI);
-        engineSettingDialog.value = engine;
-      }
-    };
-
-    const openBlackPlayerSetting = () => {
-      const uri = blackPlayerSelect.value.value;
-      openPlayerSetting(uri);
-    };
-
-    const openWhitePlayerSetting = () => {
-      const uri = whitePlayerSelect.value.value;
-      openPlayerSetting(uri);
-    };
-
-    const savePlayerSetting = async (setting: USIEngineSetting) => {
-      const clone = new USIEngineSettings(engineSettings.value.json);
-      clone.updateEngine(setting);
-      store.retainBussyState();
-      try {
-        await api.saveUSIEngineSetting(clone);
-        engineSettings.value = clone;
-        engineSettingDialog.value = null;
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    const closePlayerSetting = () => {
-      engineSettingDialog.value = null;
-    };
-
     const onStart = () => {
       const gameSetting: GameSetting = {
-        black: buildPlayerSetting(blackPlayerSelect.value.value),
-        white: buildPlayerSetting(whitePlayerSelect.value.value),
+        black: buildPlayerSetting(blackPlayerURI.value),
+        white: buildPlayerSetting(whitePlayerURI.value),
         timeLimit: {
           timeSeconds:
             (readInputAsNumber(hours.value) * 60 +
@@ -357,12 +249,32 @@ export default defineComponent({
       store.closeDialog();
     };
 
+    const onUpdatePlayerSetting = async (setting: USIEngineSetting) => {
+      const clone = new USIEngineSettings(engineSettings.value.json);
+      clone.updateEngine(setting);
+      store.retainBussyState();
+      try {
+        await api.saveUSIEngineSetting(clone);
+        engineSettings.value = clone;
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
+      }
+    };
+
+    const onSelectBlackPlayer = (uri: string) => {
+      blackPlayerURI.value = uri;
+    };
+    const onSelectWhitePlayer = (uri: string) => {
+      whitePlayerURI.value = uri;
+    };
+
     const onSwapColor = () => {
-      [blackPlayerSelect.value.value, whitePlayerSelect.value.value] = [
-        whitePlayerSelect.value.value,
-        blackPlayerSelect.value.value,
+      [blackPlayerURI.value, whitePlayerURI.value] = [
+        whitePlayerURI.value,
+        blackPlayerURI.value,
       ];
-      onPlayerChange();
     };
 
     const players = computed(() => {
@@ -374,10 +286,6 @@ export default defineComponent({
 
     return {
       dialog,
-      blackPlayerSelect,
-      blackPonderState,
-      whitePlayerSelect,
-      whitePonderState,
       hours,
       minutes,
       byoyomi,
@@ -385,17 +293,15 @@ export default defineComponent({
       startPosition,
       enableEngineTimeout,
       humanIsFront,
+      engineSettings,
+      blackPlayerURI,
+      whitePlayerURI,
       players,
-      isBlackPlayerSettingEnabled,
-      isWhitePlayerSettingEnabled,
-      engineSettingDialog,
-      onPlayerChange,
-      openBlackPlayerSetting,
-      openWhitePlayerSetting,
-      savePlayerSetting,
-      closePlayerSetting,
       onStart,
       onCancel,
+      onUpdatePlayerSetting,
+      onSelectBlackPlayer,
+      onSelectWhitePlayer,
       onSwapColor,
       Icon,
     };
@@ -420,18 +326,6 @@ export default defineComponent({
 }
 .player {
   width: 250px;
-}
-.player-select {
-  width: 240px;
-}
-.player-info {
-  width: 200px;
-  margin: 2px auto 2px auto;
-  height: 1.4em;
-  font-size: 0.8em;
-}
-.player-setting {
-  margin: 0px auto 0px auto;
 }
 .players-control {
   width: 100%;

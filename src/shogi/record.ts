@@ -189,8 +189,8 @@ export interface ImmutableNode {
   readonly isCheck: boolean;
   readonly comment: string;
   readonly customData: string | undefined;
-  readonly displayMoveText: string;
   readonly displayText: string;
+  readonly timeText: string;
   readonly hasBranch: boolean;
   readonly isFirstBranch: boolean;
   readonly elapsedMs: number;
@@ -226,7 +226,7 @@ class NodeImpl implements Node {
     this.totalElapsedMs = 0;
   }
 
-  get displayMoveText(): string {
+  get displayText(): string {
     const prev =
       this.prev && this.prev.move instanceof Move ? this.prev.move : null;
     return this.move instanceof Move
@@ -234,14 +234,10 @@ class NodeImpl implements Node {
       : specialMoveToDisplayString(this.move);
   }
 
-  get displayText(): string {
-    let ret = this.displayMoveText;
-    if (this.number !== 0) {
-      const elapsed = millisecondsToMSS(this.elapsedMs);
-      const totalElapsed = millisecondsToHMMSS(this.totalElapsedMs);
-      ret += ` (${elapsed} / ${totalElapsed})`;
-    }
-    return ret;
+  get timeText(): string {
+    const elapsed = millisecondsToMSS(this.elapsedMs);
+    const totalElapsed = millisecondsToHMMSS(this.totalElapsedMs);
+    return `${elapsed} / ${totalElapsed}`;
   }
 
   get hasBranch(): boolean {

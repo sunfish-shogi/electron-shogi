@@ -16,6 +16,7 @@
       :black-player-byoyomi="blackPlayerByoyomi"
       :white-player-time-ms="whitePlayerTimeMs"
       :white-player-byoyomi="whitePlayerByoyomi"
+      @resize="onResize"
       @move="onMove"
       @edit="onEdit"
     >
@@ -178,10 +179,15 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
+  emits: ["resize"],
+  setup(_, context) {
     const store = useStore();
     const isFileMenuVisible = ref(false);
     const isInitialPositionMenuVisible = ref(false);
+
+    const onResize = (size: RectSize) => {
+      context.emit("resize", size);
+    };
 
     const onMove = (move: Move) => {
       if (store.appState === AppState.GAME) {
@@ -331,6 +337,7 @@ export default defineComponent({
       whitePlayerTimeMs,
       whitePlayerByoyomi,
       controlStates,
+      onResize,
       onMove,
       onEdit,
       onGame,

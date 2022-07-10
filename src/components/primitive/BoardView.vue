@@ -228,7 +228,7 @@ export default defineComponent({
       default: undefined,
     },
   },
-  emits: ["move", "edit"],
+  emits: ["resize", "move", "edit"],
   setup(props, context) {
     const state = reactive({
       pointer: null,
@@ -377,16 +377,19 @@ export default defineComponent({
       return builder;
     });
 
-    const layout = computed(() =>
-      layoutBuilder.value.build(
-        props.maxSize.reduce(new RectSize(20, 20)),
+    const layout = computed(() => {
+      const margin = new RectSize(20, 20);
+      const layout = layoutBuilder.value.build(
+        props.maxSize.reduce(margin),
         props.position,
         props.lastMove,
         state.pointer,
         state.reservedMove,
         props.flip
-      )
-    );
+      );
+      context.emit("resize", layout.frame.size.add(margin));
+      return layout;
+    });
 
     const formatTime = (timeMs?: number, byoyomi?: number): string => {
       if (timeMs) {

@@ -1,80 +1,63 @@
 <template>
-  <div>
-    <div class="frame">
-      <div class="controller">
-        <button
-          class="control-button"
-          :disabled="!operational"
-          @click="goBegin()"
-        >
-          <ButtonIcon class="icon" :icon="Icon.FIRST" />
-        </button>
-        <button
-          class="control-button"
-          :disabled="!operational"
-          @click="goBack()"
-        >
-          <ButtonIcon class="icon" :icon="Icon.BACK" />
-        </button>
-        <button
-          class="control-button"
-          :disabled="!operational"
-          @click="goForward()"
-        >
-          <ButtonIcon class="icon" :icon="Icon.NEXT" />
-        </button>
-        <button
-          class="control-button"
-          :disabled="!operational"
-          @click="goEnd()"
-        >
-          <ButtonIcon class="icon" :icon="Icon.LAST" />
-        </button>
-      </div>
-      <select
-        ref="moveList"
-        class="move-list"
-        size="2"
+  <div class="record-view">
+    <div class="controller">
+      <button
+        class="control-button"
         :disabled="!operational"
-        @change="changeNumber()"
+        @click="goBegin()"
       >
-        <option
-          v-for="move in moves"
-          :key="move.number"
-          :class="{ 'has-branch': move.hasBranch, selected: move.selected }"
-          :selected="move.selected"
-          :value="move.number"
-        >
+        <ButtonIcon class="icon" :icon="Icon.FIRST" />
+      </button>
+      <button class="control-button" :disabled="!operational" @click="goBack()">
+        <ButtonIcon class="icon" :icon="Icon.BACK" />
+      </button>
+      <button
+        class="control-button"
+        :disabled="!operational"
+        @click="goForward()"
+      >
+        <ButtonIcon class="icon" :icon="Icon.NEXT" />
+      </button>
+      <button class="control-button" :disabled="!operational" @click="goEnd()">
+        <ButtonIcon class="icon" :icon="Icon.LAST" />
+      </button>
+    </div>
+    <div ref="moveList" class="move-list">
+      <div
+        v-for="move in moves"
+        :key="move.number"
+        class="move-element"
+        :class="{ 'has-branch': move.hasBranch, selected: move.selected }"
+        :value="move.number"
+        @click="changeNumber(move.number)"
+      >
+        <div class="move-number">
           {{ move.number !== 0 ? move.number : "" }}
-          {{ move.number !== 0 ? " " : "" }}
-          {{ move.text }}
-          {{ showComment && move.comment ? "-- " + move.comment : "" }}
-        </option>
-      </select>
-      <select
-        ref="branchList"
-        class="branch-list"
-        size="2"
-        :disabled="!operational"
-        @change="changeBranch()"
+        </div>
+        <div class="move-text">{{ move.text }}</div>
+        <div v-if="showElapsedTime" class="move-time">{{ move.time }}</div>
+        <div v-if="showComment" class="move-comment">{{ move.comment }}</div>
+      </div>
+    </div>
+    <div ref="branchList" class="branch-list">
+      <div
+        v-for="branch in branches"
+        :key="branch.index"
+        class="move-element"
+        :class="{ selected: branch.selected }"
+        :value="branch.index"
+        @click="changeBranch(branch.index)"
       >
-        <option
-          v-for="branch in branches"
-          :key="branch.index"
-          :selected="branch.selected"
-          :value="branch.index"
-        >
-          {{ branch.text }}
-          {{ showComment && branch.comment ? "-- " + branch.comment : "" }}
-        </option>
-      </select>
+        <div class="move-text">{{ branch.text }}</div>
+        <div v-if="showComment" class="move-comment">{{ branch.comment }}</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { ImmutableRecord, Node } from "@/shogi";
-import { computed, ref, defineComponent, Ref, PropType } from "vue";
+import { computed, ref, defineComponent, Ref, PropType, onUpdated } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Icon } from "@/assets/icons";
 
@@ -110,39 +93,52 @@ export default defineComponent({
     "selectBranch",
   ],
   setup(props, context) {
-    const moveList: Ref = ref(null);
+    const moveList: Ref<HTMLDivElement | null> = ref(null);
     const branchList: Ref = ref(null);
 
     const goBegin = () => {
-      context.emit("goBegin");
+      if (props.operational) {
+        context.emit("goBegin");
+      }
     };
 
     const goBack = () => {
-      context.emit("goBack");
+      if (props.operational) {
+        context.emit("goBack");
+      }
     };
 
     const goForward = () => {
-      context.emit("goForward");
+      if (props.operational) {
+        context.emit("goForward");
+      }
     };
 
     const goEnd = () => {
-      context.emit("goEnd");
+      if (props.operational) {
+        context.emit("goEnd");
+      }
     };
 
-    const changeNumber = () => {
-      context.emit("selectMove", Number(moveList.value.value));
+    const changeNumber = (number: number) => {
+      if (props.operational) {
+        context.emit("selectMove", Number(number));
+      }
     };
 
-    const changeBranch = () => {
-      context.emit("selectBranch", Number(branchList.value.value));
+    const changeBranch = (index: number) => {
+      if (props.operational) {
+        context.emit("selectBranch", Number(index));
+      }
     };
 
     const beginPosSelected = computed(() => props.record.current.number === 0);
 
     const moves = computed(() => {
       const ret: {
-        text: string;
         number: number;
+        text: string;
+        time: string;
         hasBranch: boolean;
         comment: string;
         selected: boolean;
@@ -150,7 +146,8 @@ export default defineComponent({
       props.record.moves.forEach((elem) => {
         ret.push({
           number: elem.number,
-          text: props.showElapsedTime ? elem.displayText : elem.displayMoveText,
+          text: elem.displayText,
+          time: elem.number != 0 ? elem.timeText : "",
           hasBranch: elem.hasBranch,
           comment: elem.comment,
           selected: elem === props.record.current,
@@ -173,12 +170,24 @@ export default defineComponent({
       for (p = props.record.branchBegin; p && p.move; p = p.branch) {
         ret.push({
           index: ret.length,
-          text: p.displayMoveText,
+          text: p.displayText,
           comment: p.comment,
           selected: p.activeBranch,
         });
       }
       return ret;
+    });
+
+    onUpdated(() => {
+      const moveListElement = moveList.value as HTMLElement;
+      moveListElement.childNodes.forEach((elem) => {
+        if (
+          elem instanceof HTMLElement &&
+          elem.classList.contains("selected")
+        ) {
+          elem.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+      });
     });
 
     return {
@@ -200,12 +209,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.frame {
+.record-view {
   max-width: 600px;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  user-select: none;
 }
 .controller {
   width: 100%;
@@ -220,13 +230,65 @@ export default defineComponent({
   margin-top: 1px;
   width: 100%;
   height: 70%;
-}
-.move-list .has-branch:not(.selected) {
-  background-color: var(--text-bg-color-warning);
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--text-color);
+  background-color: var(--text-bg-color);
 }
 .branch-list {
   flex: auto;
   margin-top: 2px;
   width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--text-color);
+  background-color: var(--text-bg-color);
+}
+.move-element {
+  height: 1.4em;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  line-height: 1.4em;
+  font-size: 0.85em;
+}
+.move-element.has-branch:not(.selected) {
+  background-color: var(--text-bg-color-warning);
+}
+.move-element.selected {
+  background-color: var(--text-bg-color-selected);
+}
+.move-number {
+  min-width: 38px;
+  height: 100%;
+  padding-right: 5px;
+  text-align: right;
+  vertical-align: baseline;
+}
+.move-text {
+  min-width: 100px;
+  height: 100%;
+  padding-right: 5px;
+  text-align: left;
+  vertical-align: baseline;
+}
+.move-time {
+  min-width: 90px;
+  height: 100%;
+  padding-right: 5px;
+  text-align: left;
+  vertical-align: baseline;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.move-comment {
+  min-width: 0px;
+  height: 100%;
+  text-align: left;
+  vertical-align: baseline;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

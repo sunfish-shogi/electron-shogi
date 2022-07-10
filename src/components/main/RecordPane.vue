@@ -1,8 +1,7 @@
 <template>
-  <div>
-    <div class="frame">
+  <div class="record-pane">
+    <div class="record">
       <RecordView
-        class="record"
         :record="record"
         :operational="isRecordOperational"
         :show-comment="showComment"
@@ -14,25 +13,25 @@
         @select-move="selectMove"
         @select-branch="selectBranch"
       />
-      <div class="options">
-        <div class="option">
-          <input
-            id="show-elapsed-time"
-            type="checkbox"
-            :checked="showElapsedTime"
-            @change="onToggleElapsedTime"
-          />
-          <label for="show-elapsed-time">消費時間</label>
-        </div>
-        <div class="option">
-          <input
-            id="show-comment"
-            type="checkbox"
-            :checked="showComment"
-            @change="onToggleComment"
-          />
-          <label for="show-comment">コメント</label>
-        </div>
+    </div>
+    <div class="options">
+      <div class="option">
+        <input
+          id="show-elapsed-time"
+          type="checkbox"
+          :checked="showElapsedTime"
+          @change="onToggleElapsedTime"
+        />
+        <label for="show-elapsed-time">消費時間</label>
+      </div>
+      <div class="option">
+        <input
+          id="show-comment"
+          type="checkbox"
+          :checked="showComment"
+          @change="onToggleComment"
+        />
+        <label for="show-comment">コメント</label>
       </div>
     </div>
   </div>
@@ -130,7 +129,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.frame {
+.record-pane {
   box-sizing: border-box;
   padding: 10px;
   width: 100%;
@@ -140,6 +139,7 @@ export default defineComponent({
 }
 .record {
   width: 100%;
+  min-height: 0;
   flex: auto;
 }
 .options {

@@ -1,9 +1,13 @@
 <template>
   <div>
     <div class="main">
-      <div ref="topPane" class="top-pane">
-        <BoardPane class="top-left-pane" :max-size="boardPaneMaxSize" />
-        <RecordPane class="top-right-pane" />
+      <div class="top-pane">
+        <BoardPane
+          class="top-left-pane"
+          :max-size="boardPaneMaxSize"
+          @resize="onBoardPaneResize"
+        />
+        <RecordPane class="top-right-pane" :style="recordPaneStyle" />
       </div>
       <TabPane class="bottom-pane" :size="bottomPaneSize" />
     </div>
@@ -17,7 +21,6 @@ import {
   onUnmounted,
   defineComponent,
   computed,
-  Ref,
   ref,
 } from "vue";
 import BoardPane from "./BoardPane.vue";
@@ -39,28 +42,25 @@ export default defineComponent({
   },
   setup() {
     const windowSize = reactive(new RectSize(0, 0));
-    const topPaneHeight = ref(0);
-    const topPane: Ref = ref(null);
+    const boardPaneSize = ref(new RectSize(0, 0));
 
     const updateSize = () => {
       windowSize.width = window.innerWidth;
       windowSize.height = window.innerHeight;
     };
 
-    const topPaneResizeObserver = new ResizeObserver((entries) => {
-      topPaneHeight.value = entries[0].contentRect.height;
-    });
-
     onMounted(() => {
       updateSize();
       window.addEventListener("resize", updateSize);
-      topPaneResizeObserver.observe(topPane.value);
     });
 
     onUnmounted(() => {
       window.removeEventListener("resize", updateSize);
-      topPaneResizeObserver.disconnect();
     });
+
+    const onBoardPaneResize = (size: RectSize) => {
+      boardPaneSize.value = size;
+    };
 
     const boardPaneMaxSize = computed(() => {
       const minTabPaneHeight =
@@ -73,17 +73,25 @@ export default defineComponent({
       );
     });
 
+    const recordPaneStyle = computed(() => {
+      return {
+        width: `${windowSize.width - boardPaneSize.value.width}px`,
+        height: `${boardPaneSize.value.height}px`,
+      };
+    });
+
     const bottomPaneSize = computed(() => {
       return new RectSize(
         windowSize.width,
-        windowSize.height - topPaneHeight.value
+        windowSize.height - boardPaneSize.value.height
       );
     });
 
     return {
-      topPane,
       boardPaneMaxSize,
+      recordPaneStyle,
       bottomPaneSize,
+      onBoardPaneResize,
     };
   },
 });
@@ -91,19 +99,19 @@ export default defineComponent({
 
 <style scoped>
 .main {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 .top-pane {
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: 100vw;
 }
 .bottom-pane {
   flex: 1;
-  width: 100%;
+  width: 100vw;
 }
 .top-left-pane {
   height: 100%;

@@ -367,6 +367,7 @@ const handLaytoutRule = {
 
 type FrameLayout = {
   style: { [key: string]: string };
+  size: RectSize;
 };
 
 type BoardLayout = {
@@ -509,11 +510,14 @@ export default class LayoutBuilder {
     }
 
     const buildFrameLayout = (): FrameLayout => {
+      const height = layoutTemplate.frame.height * ratio;
+      const width = layoutTemplate.frame.width * ratio;
       return {
         style: {
-          height: layoutTemplate.frame.height * ratio + "px",
-          width: layoutTemplate.frame.width * ratio + "px",
+          height: height + "px",
+          width: width + "px",
         },
+        size: new RectSize(width, height),
       };
     };
 

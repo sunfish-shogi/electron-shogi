@@ -8,6 +8,7 @@
   --text-color-danger: white;
   --text-color: black;
   --text-bg-color: white;
+  --text-bg-color-selected: #a6eaff;
   --text-bg-color-warning: #ffff88;
   --text-bg-color-danger: red;
   --text-separator-color: gray;
@@ -50,6 +51,7 @@
   --text-color-danger: white;
   --text-color: black;
   --text-bg-color: #fdeeed;
+  --text-bg-color-selected: #a6eaff;
   --text-bg-color-warning: #ffff88;
   --text-bg-color-danger: red;
   --text-separator-color: gray;
@@ -92,6 +94,7 @@
   --text-color-danger: white;
   --text-color: white;
   --text-bg-color: #202020;
+  --text-bg-color-selected: #4444b3;
   --text-bg-color-warning: #b08000;
   --text-bg-color-danger: red;
   --text-separator-color: gainsboro;

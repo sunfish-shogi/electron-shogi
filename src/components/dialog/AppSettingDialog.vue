@@ -410,8 +410,8 @@ export default defineComponent({
   font-size: 1.1em;
 }
 input.toggle {
-  height: 1rem;
-  width: 1rem;
+  height: 1em;
+  width: 1em;
   margin-right: 10px;
 }
 </style>

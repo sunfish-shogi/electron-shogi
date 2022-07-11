@@ -236,8 +236,8 @@ export default defineComponent({
   width: 420px;
 }
 input.toggle {
-  height: 1rem;
-  width: 1rem;
+  height: 1em;
+  width: 1em;
   margin-right: 10px;
 }
 input.small {

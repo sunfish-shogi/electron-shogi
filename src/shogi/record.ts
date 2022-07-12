@@ -489,6 +489,7 @@ export default class Record {
         isCheck
       );
       this._current = this._current.next;
+      this._current.setElapsedMs(0);
       return true;
     }
     let p: NodeImpl | null;
@@ -517,6 +518,7 @@ export default class Record {
       move,
       isCheck
     );
+    this._current.setElapsedMs(0);
     lastBranch.branch = this._current;
     return true;
   }

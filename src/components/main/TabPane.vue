@@ -187,7 +187,7 @@ export default defineComponent({
   border-bottom: solid 3px transparent;
   padding: 0px 20px 0px 10px;
   line-height: 28px;
-  font-size: 1rem;
+  font-size: 1em;
   text-align: left;
 }
 .tab.selected {

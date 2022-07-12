@@ -73,11 +73,11 @@ export default defineComponent({
 }
 .index {
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: 0.8em;
   margin: 0px;
 }
 .message {
-  font-size: 0.8rem;
+  font-size: 0.8em;
   margin: 0px;
 }
 </style>

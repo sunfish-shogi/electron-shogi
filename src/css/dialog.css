@@ -6,6 +6,7 @@ dialog {
   border: 1px solid var(--dialog-border-color);
   border-radius: 10px 10px 10px 10px;
   padding: 15px;
+  font-size: 1rem;
 }
 
 dialog::backdrop {

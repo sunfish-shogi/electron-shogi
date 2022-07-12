@@ -72,7 +72,7 @@ export default defineComponent({
 .message {
   width: 460px;
   text-align: left;
-  font-size: 0.8rem;
+  font-size: 0.8em;
 }
 textarea {
   width: 460px;

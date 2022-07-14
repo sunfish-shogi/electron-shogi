@@ -47,14 +47,14 @@ export default defineComponent({
 
     const onOk = () => {
       const data = textarea.value.value;
-      store.closePasteDialog();
+      store.closeModalDialog();
       if (data) {
         store.pasteRecord(data);
       }
     };
 
     const onCancel = () => {
-      store.closePasteDialog();
+      store.closeModalDialog();
     };
 
     return {

@@ -39,4 +39,4 @@ export {
 } from "./record";
 export { exportKakinoki, importKakinoki } from "./kakinoki";
 export { exportCSA, importCSA } from "./csa";
-export { detectRecordFormat } from "./detect";
+export { detectRecordFormat, RecordFormatType } from "./detect";

@@ -112,6 +112,10 @@ function createMockHandlers(record: Record) {
 }
 
 describe("store/game", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("GameManager/resign", () => {
     const record = new Record();
     const mockBlackPlayer = createMockPlayer({

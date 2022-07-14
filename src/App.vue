@@ -57,7 +57,7 @@ export default defineComponent({
         research: store.appState === AppState.RESEARCH_DIALOG,
         analysis: store.appState === AppState.ANALYSIS_DIALOG,
         usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
-        appSetting: store.displayAppSetting,
+        appSetting: store.isAppSettingDialogVisible,
         paste: store.appState === AppState.PASTE_DIALOG,
         bussy: store.isBussy,
         confirm: store.confirmation !== undefined,

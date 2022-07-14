@@ -23,11 +23,15 @@ export class TimeoutChain {
       promise = promise.then(() => {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            const ret = entry.callback();
-            if (ret instanceof Promise) {
-              ret.then(resolve).catch(reject);
-            } else {
-              resolve();
+            try {
+              const ret = entry.callback();
+              if (ret instanceof Promise) {
+                ret.then(resolve).catch(reject);
+              } else {
+                resolve();
+              }
+            } catch (e) {
+              reject(e);
             }
           }, entry.ms);
         });

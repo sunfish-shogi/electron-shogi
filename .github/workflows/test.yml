@@ -16,7 +16,10 @@ jobs:
         node-version: 16.x
         cache: 'npm'
     - run: npm ci
-    - run: npm run test:unit
     - run: npm run lint
     - run: npm run report:license
     - run: git diff --exit-code
+    - run: npm run test:unit -- --coverage
+    - uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage/clover.xml

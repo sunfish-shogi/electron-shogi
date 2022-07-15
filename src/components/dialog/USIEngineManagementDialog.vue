@@ -66,7 +66,7 @@ export default defineComponent({
         setting.value = await api.loadUSIEngineSetting();
       } catch (e) {
         store.pushError(e);
-        store.closeDialog();
+        store.closeModalDialog();
       } finally {
         store.releaseBussyState();
       }
@@ -105,7 +105,7 @@ export default defineComponent({
       try {
         store.retainBussyState();
         await api.saveUSIEngineSetting(setting.value as USIEngineSettings);
-        store.closeDialog();
+        store.closeModalDialog();
       } catch (e) {
         store.pushError(e);
       } finally {
@@ -114,7 +114,7 @@ export default defineComponent({
     };
 
     const cancel = () => {
-      store.closeDialog();
+      store.closeModalDialog();
     };
 
     const optionOk = (engine: USIEngineSetting) => {

@@ -1,5 +1,3 @@
-import { BrowserWindow } from "electron";
-
 export type WindowSetting = {
   width: number;
   height: number;
@@ -16,9 +14,18 @@ export function defaultWindowSetting(): WindowSetting {
   };
 }
 
+interface Window {
+  isMaximized(): boolean;
+  isFullScreen(): boolean;
+  getBounds(): {
+    height: number;
+    width: number;
+  };
+}
+
 export function buildWindowSetting(
   latest: WindowSetting,
-  win: BrowserWindow
+  win: Window
 ): WindowSetting {
   const normal = !win.isMaximized() && !win.isFullScreen();
   return {

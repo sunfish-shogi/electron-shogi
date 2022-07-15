@@ -54,7 +54,7 @@ export default defineComponent({
         engineURI.value = researchSetting.value.usi?.uri || "";
       } catch (e) {
         store.pushError(e);
-        store.closeDialog();
+        store.closeModalDialog();
       } finally {
         store.releaseBussyState();
       }
@@ -78,7 +78,7 @@ export default defineComponent({
     };
 
     const onCancel = () => {
-      store.closeDialog();
+      store.closeModalDialog();
     };
 
     const onUpdatePlayerSetting = async (setting: USIEngineSetting) => {

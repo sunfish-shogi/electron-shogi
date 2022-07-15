@@ -154,10 +154,10 @@ export function setup(): void {
         store.flipBoard();
         break;
       case MenuEvent.APP_SETTING_DIALOG:
-        store.openAppSettingDialog();
+        store.showAppSettingDialog();
         break;
       case MenuEvent.USI_ENGINE_SETTING_DIALOG:
-        store.openUsiEngineManagementDialog();
+        store.showUsiEngineManagementDialog();
         break;
     }
   });

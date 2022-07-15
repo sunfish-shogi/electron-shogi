@@ -16,10 +16,11 @@ import {
   specialMoveToDisplayString,
   exportKakinoki,
   importKakinoki,
+  RecordFormatType,
 } from "@/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import iconv from "iconv-lite";
-import { formatTimeLimitCSA, GameSetting } from "@/settings/game";
+import { GameSetting } from "@/settings/game";
 import {
   AppSetting,
   AppSettingUpdate,
@@ -34,7 +35,7 @@ import {
   playPieceBeat,
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
-import { RecordCustomData } from "./record";
+import { formatTimeLimitCSA, RecordCustomData } from "./record";
 import { defaultPlayerBuilder, GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
@@ -45,27 +46,27 @@ import { MessageStore } from "./message";
 import { ErrorStore } from "./error";
 import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
-import { RecordFormatType } from "@/shogi/detect";
 import { getDateString, getDateTimeString } from "@/helpers/datetime";
 import {
   AnalysisManager,
   AnalysisResult,
+  appendAnalysisComment,
   buildRecordComment,
   loadScoreFromRecordComment,
 } from "./analysis";
-import { AnalysisSetting, appendAnalysisComment } from "@/settings/analysis";
+import { AnalysisSetting } from "@/settings/analysis";
 import { USIPlayer } from "@/players/usi";
 import { LogLevel } from "@/ipc/log";
 import { toString } from "@/helpers/string";
 
-class Store {
+export class Store {
   private _bussy: BussyStore;
   private _message: MessageStore;
   private _error: ErrorStore;
   private _appSetting: AppSetting;
   private _appState: AppState;
   private lastAppState?: AppState;
-  private _displayAppSetting: boolean;
+  private _isAppSettingDialogVisible: boolean;
   private _confirmation?: Confirmation;
   private _usi: USIMonitor;
   private game: GameManager;
@@ -81,7 +82,7 @@ class Store {
     this._error = new ErrorStore();
     this._appSetting = defaultAppSetting();
     this._appState = AppState.NORMAL;
-    this._displayAppSetting = false;
+    this._isAppSettingDialogVisible = false;
     this._usi = new USIMonitor();
     this.game = new GameManager(defaultPlayerBuilder, this);
     this._record = new Record();
@@ -210,12 +211,6 @@ class Store {
     }
   }
 
-  closePasteDialog(): void {
-    if (this.appState === AppState.PASTE_DIALOG) {
-      this._appState = AppState.NORMAL;
-    }
-  }
-
   showGameDialog(): void {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.GAME_DIALOG;
@@ -234,33 +229,34 @@ class Store {
     }
   }
 
-  get displayAppSetting(): boolean {
-    return this._displayAppSetting;
-  }
-
-  openAppSettingDialog(): void {
-    this._displayAppSetting = true;
-  }
-
-  closeAppSettingDialog(): void {
-    this._displayAppSetting = false;
-  }
-
-  openUsiEngineManagementDialog(): void {
+  showUsiEngineManagementDialog(): void {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.USI_ENGINE_SETTING_DIALOG;
     }
   }
 
-  closeDialog(): void {
+  closeModalDialog(): void {
     if (
-      this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
+      this.appState === AppState.PASTE_DIALOG ||
       this.appState === AppState.GAME_DIALOG ||
       this.appState === AppState.RESEARCH_DIALOG ||
-      this.appState === AppState.ANALYSIS_DIALOG
+      this.appState === AppState.ANALYSIS_DIALOG ||
+      this.appState === AppState.USI_ENGINE_SETTING_DIALOG
     ) {
       this._appState = AppState.NORMAL;
     }
+  }
+
+  get isAppSettingDialogVisible(): boolean {
+    return this._isAppSettingDialogVisible;
+  }
+
+  showAppSettingDialog(): void {
+    this._isAppSettingDialogVisible = true;
+  }
+
+  closeAppSettingDialog(): void {
+    this._isAppSettingDialogVisible = false;
   }
 
   get usiBlackPlayerMonitor(): USIPlayerMonitor | undefined {
@@ -303,6 +299,7 @@ class Store {
   ): void {
     const record = Record.newByUSI(usi);
     if (record instanceof Error) {
+      api.log(LogLevel.ERROR, `invalid USI: ${usi} (updateUSIPonderInfo)`);
       return;
     }
     const ponderMove = record.current.move;
@@ -831,6 +828,7 @@ class Store {
     }
     this.clearRecordFilePath();
     this._record = recordOrError;
+    this.restoreCustomData();
     this.onUpdatePosition();
   }
 

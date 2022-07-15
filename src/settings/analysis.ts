@@ -45,21 +45,3 @@ export function defaultAnalysisSetting(): AnalysisSetting {
     commentBehavior: CommentBehavior.INSERT,
   };
 }
-
-export function appendAnalysisComment(
-  org: string,
-  add: string,
-  behavior: CommentBehavior
-): string {
-  const sep = org ? "\n" : "";
-  switch (behavior) {
-    case CommentBehavior.NONE:
-      return org;
-    case CommentBehavior.INSERT:
-      return add + sep + org;
-    case CommentBehavior.APPEND:
-      return org + sep + add;
-    case CommentBehavior.OVERWRITE:
-      return add;
-  }
-}

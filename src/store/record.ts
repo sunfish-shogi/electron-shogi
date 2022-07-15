@@ -1,3 +1,5 @@
+import { secondsToMSS } from "@/helpers/time";
+import { TimeLimitSetting } from "@/settings/game";
 import { Color } from "@/shogi";
 import { InfoCommand as USIInfoCommand, USIInfoSender } from "@/store/usi";
 
@@ -59,4 +61,12 @@ export class RecordCustomData {
   stringify(): string {
     return JSON.stringify(this);
   }
+}
+
+export function formatTimeLimitCSA(setting: TimeLimitSetting): string {
+  return (
+    secondsToMSS(setting.timeSeconds) +
+    "+" +
+    String(setting.byoyomi).padStart(2, "0")
+  );
 }

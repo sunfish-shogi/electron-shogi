@@ -1,5 +1,5 @@
 import { USIPlayer } from "@/players/usi";
-import { AnalysisSetting } from "@/settings/analysis";
+import { AnalysisSetting, CommentBehavior } from "@/settings/analysis";
 import { AppSetting } from "@/settings/app";
 import { USIEngineSetting } from "@/settings/usi";
 import {
@@ -246,5 +246,23 @@ export function loadScoreFromRecordComment(
     if (matched) {
       return Number(matched[1]);
     }
+  }
+}
+
+export function appendAnalysisComment(
+  org: string,
+  add: string,
+  behavior: CommentBehavior
+): string {
+  const sep = org ? "\n" : "";
+  switch (behavior) {
+    case CommentBehavior.NONE:
+      return org;
+    case CommentBehavior.INSERT:
+      return add + sep + org;
+    case CommentBehavior.APPEND:
+      return org + sep + add;
+    case CommentBehavior.OVERWRITE:
+      return add;
   }
 }

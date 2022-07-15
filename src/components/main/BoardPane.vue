@@ -246,11 +246,11 @@ export default defineComponent({
     };
 
     const onOpenAppSettings = () => {
-      store.openAppSettingDialog();
+      store.showAppSettingDialog();
     };
 
     const onOpenEngineSettings = () => {
-      store.openUsiEngineManagementDialog();
+      store.showUsiEngineManagementDialog();
     };
 
     const onFlip = () => {

@@ -193,6 +193,7 @@ export interface ImmutableNode {
   readonly timeText: string;
   readonly hasBranch: boolean;
   readonly isFirstBranch: boolean;
+  readonly isLastMove: boolean;
   readonly elapsedMs: number;
   readonly totalElapsedMs: number;
 }
@@ -246,6 +247,18 @@ class NodeImpl implements Node {
 
   get isFirstBranch(): boolean {
     return !this.prev || this.prev.next === this;
+  }
+
+  get isLastMove(): boolean {
+    if (!this.next) {
+      return true;
+    }
+    for (let p: Node | null = this.next; p; p = p.branch) {
+      if (p.move instanceof Move) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private updateTotalElapsedMs() {

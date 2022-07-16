@@ -756,8 +756,7 @@ export class Store {
     ) {
       return;
     }
-    const next = this.record.current.next;
-    if (!next || !(next.move instanceof Move)) {
+    if (this.record.current.isLastMove) {
       this._record.removeAfter();
       this.onUpdatePosition();
       return;

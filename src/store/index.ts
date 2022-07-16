@@ -633,9 +633,14 @@ export class Store {
     if (this.appState != AppState.NORMAL) {
       return;
     }
-    this._record.clear();
-    this.onUpdatePosition();
-    this.clearRecordFilePath();
+    this.showConfirmation({
+      message: "現在の棋譜は削除されます。よろしいですか？",
+      onOk: () => {
+        this._record.clear();
+        this.onUpdatePosition();
+        this.clearRecordFilePath();
+      },
+    });
   }
 
   updateRecordComment(comment: string): void {

@@ -58,6 +58,23 @@ P-00AL
 %TSUMI,T0
 `;
 
+const sampleBranchKIF = `
+手合割：平手
+手数----指手---------消費時間--
+1 ２六歩(27) ( 0:00/0:00:00)
+2 ８四歩(83) ( 0:00/0:00:00)
+3 ２五歩(26) ( 0:00/0:00:00)
+4 ８五歩(84) ( 0:00/0:00:00)
+5 ７八金(69) ( 0:00/0:00:00)
+6 ３二金(41) ( 0:00/0:00:00)
+7 ３八銀(39) ( 0:00/0:00:00)+
+8 ７二銀(71) ( 0:00/0:00:00)
+9 中断 ( 0:00/0:00:00)
+
+変化：7手
+7 ２四歩(25) ( 0:00/0:00:00)
+`;
+
 describe("store/index", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -308,6 +325,30 @@ describe("store/index", () => {
         expect(store.recordFilePath).toBeUndefined();
       })
       .invoke();
+  });
+
+  it("removeRecordAfter", () => {
+    const store = new Store();
+    store.pasteRecord(sampleBranchKIF);
+    store.changeMoveNumber(8);
+    store.removeRecordAfter();
+    expect(store.confirmation).toBeUndefined();
+    expect(store.record.current.number).toBe(7);
+    expect(store.record.moves.length).toBe(8);
+    store.removeRecordAfter();
+    expect(store.confirmation).toBeUndefined();
+    expect(store.record.current.number).toBe(6);
+    expect(store.record.moves.length).toBe(8);
+    store.removeRecordAfter();
+    expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
+    store.confirmationCancel();
+    expect(store.record.current.number).toBe(6);
+    expect(store.record.moves.length).toBe(8);
+    store.removeRecordAfter();
+    expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
+    store.confirmationOk();
+    expect(store.record.current.number).toBe(5);
+    expect(store.record.moves.length).toBe(6);
   });
 
   it("copyRecordKIF", () => {

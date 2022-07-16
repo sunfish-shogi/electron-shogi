@@ -229,7 +229,7 @@ export default defineComponent({
 .move-list {
   margin-top: 1px;
   width: 100%;
-  height: 70%;
+  height: calc(70% - 30px);
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--text-color);
@@ -239,6 +239,7 @@ export default defineComponent({
   flex: auto;
   margin-top: 2px;
   width: 100%;
+  height: calc(30% - 10px);
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--text-color);

@@ -34,14 +34,6 @@ https://sunfish-shogi.github.io/electron-shogi/
 
 ![スクリーンショット3](docs/screenshots/screenshot003.png)
 
-![スクリーンショット4](docs/screenshots/screenshot004.png)
-
-![スクリーンショット5](docs/screenshots/screenshot005.png)
-
-![スクリーンショット6](docs/screenshots/screenshot006.png)
-
-![スクリーンショット7](docs/screenshots/screenshot007.png)
-
 ## ダウンロード
 
 [Releases](https://github.com/sunfish-shogi/electron-shogi/releases) から Windows 版、Mac 版をダウンロードできます。

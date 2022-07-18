@@ -60,6 +60,12 @@ img.border {
   border: solid 1px darkslategray;
 }
 
+img.shadow {
+  margin-right: 10px;
+  margin-bottom: 10px;
+  box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.5);;
+}
+
 img.icon {
   width: auto;
   height: 1.2em;

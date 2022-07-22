@@ -59,6 +59,7 @@ import {
   NumberOfThreads,
   MultiPV,
 } from "@/settings/usi";
+import { useStore } from "@/store";
 
 type Player = {
   name: string;
@@ -99,6 +100,7 @@ export default defineComponent({
   },
   emits: ["select-player", "update-engine-setting"],
   setup(props, context) {
+    const store = useStore();
     const playerSelect: Ref = ref(null);
     const engineSettingDialog: Ref<USIEngineSetting | null> = ref(null);
 
@@ -152,9 +154,11 @@ export default defineComponent({
       if (uri.isUSIEngine(props.playerUri)) {
         const settings = new USIEngineSettings(props.engineSettings);
         const engine = settings.getEngine(props.playerUri);
-        if (engine) {
-          engineSettingDialog.value = engine;
+        if (!engine) {
+          store.pushError("利用可能なエンジンが選択されていません。");
+          return;
         }
+        engineSettingDialog.value = engine;
       }
     };
 

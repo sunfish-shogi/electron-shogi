@@ -92,11 +92,11 @@ export default defineComponent({
     };
 
     const openOptions = (uri: string) => {
-      optionDialog.value = setting.value.getEngine(uri);
+      optionDialog.value = setting.value.getEngine(uri) as USIEngineSetting;
     };
 
     const duplicate = (uri: string) => {
-      const src = setting.value.getEngine(uri);
+      const src = setting.value.getEngine(uri) as USIEngineSetting;
       const engine = duplicateEngineSetting(src);
       setting.value.addEngine(engine);
     };

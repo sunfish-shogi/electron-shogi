@@ -108,8 +108,8 @@ export default defineComponent({
       }
       const settings = new USIEngineSettings(props.engineSettings);
       const engine = settings.getEngine(props.playerUri);
-      return getUSIEngineOptionCurrentValue(engine.options[USIPonder]) ===
-        "true"
+      return engine &&
+        getUSIEngineOptionCurrentValue(engine.options[USIPonder]) === "true"
         ? "ON"
         : "OFF";
     });
@@ -120,6 +120,9 @@ export default defineComponent({
       }
       const settings = new USIEngineSettings(props.engineSettings);
       const engine = settings.getEngine(props.playerUri);
+      if (!engine) {
+        return null;
+      }
       const threads =
         getUSIEngineOptionCurrentValue(engine.options[Threads]) ||
         getUSIEngineOptionCurrentValue(engine.options[NumberOfThreads]);
@@ -132,6 +135,9 @@ export default defineComponent({
       }
       const settings = new USIEngineSettings(props.engineSettings);
       const engine = settings.getEngine(props.playerUri);
+      if (!engine) {
+        return null;
+      }
       const multiPV =
         getUSIEngineOptionCurrentValue(engine.options[USIMultiPV]) ||
         getUSIEngineOptionCurrentValue(engine.options[MultiPV]);
@@ -146,7 +152,9 @@ export default defineComponent({
       if (uri.isUSIEngine(props.playerUri)) {
         const settings = new USIEngineSettings(props.engineSettings);
         const engine = settings.getEngine(props.playerUri);
-        engineSettingDialog.value = engine;
+        if (engine) {
+          engineSettingDialog.value = engine;
+        }
       }
     };
 

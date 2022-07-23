@@ -117,7 +117,7 @@ export class USIEngineSettings {
     return true;
   }
 
-  getEngine(uri: string): USIEngineSetting {
+  getEngine(uri: string): USIEngineSetting | undefined {
     return this.engines[uri];
   }
 

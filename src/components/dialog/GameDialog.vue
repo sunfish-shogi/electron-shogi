@@ -204,8 +204,13 @@ export default defineComponent({
     });
 
     const buildPlayerSetting = (playerURI: string): PlayerSetting => {
-      if (uri.isUSIEngine(playerURI)) {
-        const engine = engineSettings.value.getEngine(playerURI);
+      if (
+        uri.isUSIEngine(playerURI) &&
+        engineSettings.value.hasEngine(playerURI)
+      ) {
+        const engine = engineSettings.value.getEngine(
+          playerURI
+        ) as USIEngineSetting;
         return {
           name: engine.name,
           uri: playerURI,

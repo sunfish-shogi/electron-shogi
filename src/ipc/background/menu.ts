@@ -11,6 +11,7 @@ import { openLogsDirectory } from "@/ipc/background/log";
 import { onMenuEvent } from "@/ipc/background";
 import { MenuEvent } from "@/ipc/menu";
 import { AppState } from "@/store/state";
+import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
 
 const isMac = process.platform === "darwin";
 
@@ -268,6 +269,23 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
       {
         label: "ログファイルのフォルダを開く",
         click: openLogsDirectory,
+      },
+    ],
+  },
+  {
+    label: "ヘルプ",
+    submenu: [
+      {
+        label: "Web サイトを開く",
+        click: openWebSite,
+      },
+      {
+        label: "使い方を開く",
+        click: openHowToUse,
+      },
+      {
+        label: "最新バージョンを確認",
+        click: checkLatestVersion,
       },
     ],
   },

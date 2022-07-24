@@ -16,6 +16,7 @@ describe("shogi/record", () => {
     expect(record.first.next).toBeNull();
     expect(record.first.comment).toBe("");
     expect(record.first.customData).toBeUndefined();
+    expect(record.first.nextColor).toBe(Color.BLACK);
     expect(record.current).toBe(record.first);
   });
 
@@ -61,8 +62,11 @@ describe("shogi/record", () => {
       ) as Move;
     };
     expect(record.append(move(7, 7, 7, 6))).toBeTruthy();
+    expect(record.current.nextColor).toBe(Color.WHITE);
     expect(record.append(move(3, 3, 3, 4))).toBeTruthy();
+    expect(record.current.nextColor).toBe(Color.BLACK);
     expect(record.append(move(2, 7, 2, 6))).toBeTruthy();
+    expect(record.current.nextColor).toBe(Color.WHITE);
     expect(record.goBack()).toBeTruthy();
     expect(record.goBack()).toBeTruthy();
     expect(record.append(move(8, 3, 8, 4))).toBeTruthy();

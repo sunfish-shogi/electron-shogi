@@ -1,6 +1,7 @@
 // CSA file format (.csa)
 // See http://www2.computer-shogi.org/protocol/record_v22.html
 
+import { appendLine } from "@/helpers/string";
 import { Record } from ".";
 import { InitialPositionType } from "./board";
 import { Color } from "./color";
@@ -22,6 +23,7 @@ import Square from "./square";
 
 enum LineType {
   VERSION,
+  EXTENDED_COMMENT,
   COMMENT,
   BLACK_NAME,
   WHITE_NAME,
@@ -48,7 +50,12 @@ const linePatterns = [
     sectionType: SectionType.HEADER,
   },
   {
-    pattern: /^'/,
+    pattern: /^'\*(.+)$/,
+    type: LineType.EXTENDED_COMMENT,
+    sectionType: SectionType.NEUTRAL,
+  },
+  {
+    pattern: /^'(.+)$/,
     type: LineType.COMMENT,
     sectionType: SectionType.NEUTRAL,
   },
@@ -116,14 +123,15 @@ function parseLine(line: string): Line[] {
   const lines = line.match(/^['N$]/) ? [line] : line.split(",");
   for (const line of lines) {
     for (let i = 0; i < linePatterns.length; i++) {
-      const result = linePatterns[i].pattern.exec(line);
-      if (result) {
+      const matched = linePatterns[i].pattern.exec(line);
+      if (matched) {
         results.push({
           type: linePatterns[i].type,
           line: line,
-          args: result.slice(1),
+          args: matched.slice(1),
           sectionType: linePatterns[i].sectionType,
         });
+        break;
       }
     }
   }
@@ -282,6 +290,7 @@ export function importCSA(data: string): Record | Error {
   const record = new Record();
   const position = new Position();
   position.reset(InitialPositionType.EMPTY);
+  let preMoveComment = "";
   let inMoveSection = false;
   const lines = data.replace(/\r?\n\//, "").split(/\r?\n/);
   for (const line of lines) {
@@ -294,6 +303,16 @@ export function importCSA(data: string): Record | Error {
       }
       switch (parsed.type) {
         case LineType.VERSION:
+          break;
+        case LineType.EXTENDED_COMMENT:
+          if (inMoveSection) {
+            record.current.comment = appendLine(
+              record.current.comment,
+              parsed.args[0]
+            );
+          } else {
+            preMoveComment = appendLine(preMoveComment, parsed.args[0]);
+          }
           break;
         case LineType.COMMENT:
           break;
@@ -342,6 +361,7 @@ export function importCSA(data: string): Record | Error {
             position.setColor(Color.WHITE);
           }
           record.clear(position);
+          record.first.comment = preMoveComment;
           inMoveSection = true;
           break;
         case LineType.MOVE: {
@@ -367,6 +387,7 @@ export function importCSA(data: string): Record | Error {
   }
   if (!inMoveSection) {
     record.clear(position);
+    record.first.comment = preMoveComment;
   }
   record.goto(0);
   record.resetAllBranchSelection();
@@ -539,6 +560,11 @@ export function exportCSA(
     if (move) {
       ret += move + returnCode;
       ret += "T" + Math.floor(node.elapsedMs / 1e3) + returnCode;
+    }
+    if (node.comment) {
+      node.comment.split("\n").forEach((line) => {
+        ret += "'*" + line + returnCode;
+      });
     }
   });
   return ret;

@@ -1,6 +1,6 @@
 import { secondsToMSS } from "@/helpers/time";
 import { TimeLimitSetting } from "@/settings/game";
-import { Color } from "@/shogi";
+import { Color, Record } from "@/shogi";
 import { InfoCommand as USIInfoCommand, USIInfoSender } from "@/store/usi";
 
 type Evaluation = {
@@ -19,6 +19,10 @@ export class RecordCustomData {
       const obj = JSON.parse(json);
       this.evaluation = obj.evaluation;
     }
+  }
+
+  get empty(): boolean {
+    return !this.evaluation;
   }
 
   updateScore(color: Color, sender: USIInfoSender, score: number): void {
@@ -61,6 +65,43 @@ export class RecordCustomData {
   stringify(): string {
     return JSON.stringify(this);
   }
+}
+
+export function restoreCustomData(record: Record): void {
+  record.forEach((node) => {
+    const data = new RecordCustomData(node.customData);
+    const lines = node.comment.split("\n");
+    for (const line of lines) {
+      // TODO: 正規表現を改善する。
+      const research = /^#評価値=([+-]?[.0-9]+)/.exec(line);
+      if (research) {
+        data.updateScore(
+          Color.BLACK,
+          USIInfoSender.RESEARCHER,
+          Number(research[1])
+        );
+      }
+      const player = /^\* *([+-]?[.0-9]+)/.exec(line);
+      if (player) {
+        if (node.nextColor === Color.WHITE) {
+          data.updateScore(
+            Color.BLACK,
+            USIInfoSender.BLACK_PLAYER,
+            Number(player[1])
+          );
+        } else {
+          data.updateScore(
+            Color.WHITE,
+            USIInfoSender.WHITE_PLAYER,
+            -Number(player[1])
+          );
+        }
+      }
+    }
+    if (!data.empty) {
+      node.customData = data.stringify();
+    }
+  });
 }
 
 export function formatTimeLimitCSA(setting: TimeLimitSetting): string {

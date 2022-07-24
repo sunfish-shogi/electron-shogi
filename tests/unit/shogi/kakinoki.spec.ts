@@ -669,6 +669,7 @@ describe("shogi/kakinoki", () => {
     record.current.setElapsedMs(8 * 1e3);
     record.append(record.position.createMoveBySFEN("3c3d") as Move);
     record.current.setElapsedMs(12 * 1e3);
+    record.current.comment = "2手目へのコメント\n2手目へのコメント2";
     record.append(record.position.createMoveBySFEN("8h2b+") as Move);
     record.current.setElapsedMs(15 * 1e3);
     record.append(record.position.createMoveBySFEN("3a2b") as Move);
@@ -703,6 +704,8 @@ describe("shogi/kakinoki", () => {
 手数----指手---------消費時間--
 1 ７六歩(77) ( 0:08/0:00:08)
 2 ３四歩(33) ( 0:12/0:00:12)
+*2手目へのコメント
+*2手目へのコメント2
 3 ２二角成(88) ( 0:15/0:00:23)
 4 ２二銀(31) ( 0:03/0:00:15)+
 5 ４五角打 ( 0:06/0:00:29)

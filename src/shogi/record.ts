@@ -185,6 +185,7 @@ export interface ImmutableNode {
   readonly branch: Node | null;
   readonly branchIndex: number;
   readonly activeBranch: boolean;
+  readonly nextColor: Color;
   readonly move: Move | SpecialMove;
   readonly isCheck: boolean;
   readonly comment: string;
@@ -217,6 +218,7 @@ class NodeImpl implements Node {
     public prev: NodeImpl | null,
     public branchIndex: number,
     public activeBranch: boolean,
+    public nextColor: Color,
     public move: Move | SpecialMove,
     public isCheck: boolean
   ) {
@@ -286,12 +288,13 @@ class NodeImpl implements Node {
     }
   }
 
-  static newRootEntry(): NodeImpl {
+  static newRootEntry(color: Color): NodeImpl {
     return new NodeImpl(
       0, // number
       null, // prev
       0, // branchIndex
       true, // activeBranch
+      color, // color
       SpecialMove.START, // move
       false // isCheck
     );
@@ -328,7 +331,7 @@ export default class Record {
     this.metadata = new RecordMetadata();
     this._initialPosition = position ? position.clone() : new Position();
     this._position = this.initialPosition.clone();
-    this._first = NodeImpl.newRootEntry();
+    this._first = NodeImpl.newRootEntry(this._initialPosition.color);
     this._current = this._first;
     this.repetitionCounts = {};
     this.repetitionStart = {};
@@ -398,7 +401,7 @@ export default class Record {
       this._initialPosition = position.clone();
     }
     this._position = this.initialPosition.clone();
-    this._first = NodeImpl.newRootEntry();
+    this._first = NodeImpl.newRootEntry(this._initialPosition.color);
     this._current = this._first;
     this.repetitionCounts = {};
     this.repetitionStart = {};
@@ -498,6 +501,7 @@ export default class Record {
         this._current, // prev
         0, // branchIndex
         true, // activeBranch
+        this.position.color, // nextColor
         move,
         isCheck
       );
@@ -528,6 +532,7 @@ export default class Record {
       this._current, // prev
       lastBranch.branchIndex + 1, // branchIndex
       true, // activeBranch
+      this.position.color, // nextColor
       move,
       isCheck
     );

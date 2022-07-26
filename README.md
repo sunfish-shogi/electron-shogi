@@ -16,9 +16,14 @@
 コンピューター将棋界の権威ある開発者も[オープンソースのGUIの必要性に言及](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/)しています。
 Electron 将棋はオープンソースであり、そして低い制限のもとで自由に利用・改変が可能です。
 
-また、 Web の技術を使うことで幅広い活用を目指します。
-USI エンジンを呼び出す機能やファイル操作を除いて、多くの機能がブラウザで利用できます。
-将来は[Tauri](https://github.com/tauri-apps/tauri)版の制作やスマホ対応を行うことも視野に入れています。
+Electron 将棋はその名前の通り [Electron](https://www.electronjs.org/) を使っています。
+Web の技術を使うことで将来の幅広い活用を目指しており、機能は限られますが通常のブラウザでも動作します。
+Electron は Chromium をバンドルするため、どの OS でも同じ操作性と品質が担保しやすいのも特徴です。
+将来は [Tauri](https://github.com/tauri-apps/tauri) 版の制作やスマホ対応を行うことも視野に入れています。
+
+昨今では 2in1 PC やコンパーチブル型 PC の普及により、PC 向けの OS でもタッチパネルを使って将棋の対局ができるようになりました。
+しかし、 PC 向けの伝統的なアプリケーションは UI コンポーネントが細かく、タッチ操作との相性がよくありません。
+Electron 将棋ではタッチ操作のしやすさも重視して UI を設計しています。
 
 ## Web サイト
 
@@ -103,8 +108,8 @@ npm run lint
 
 ### アイコン画像のライセンス
 
-[/public/icon](https://github.com/sunfish-shogi/electron-shogi/tree/main/public/icon) 配下のアイコン画像は[Material Icons](https://google.github.io/material-design-icons/) を使用しています。
-これには[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)が適用されます。
+[/public/icon](https://github.com/sunfish-shogi/electron-shogi/tree/main/public/icon) 配下のアイコン画像は [Material Icons](https://google.github.io/material-design-icons/) を使用しています。
+これには [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt) が適用されます。
 
 ### 依存モジュールのライセンス
 

@@ -349,12 +349,28 @@ export default defineComponent({
         value: BoardImageType.WARM,
       },
       {
-        name: "塩化ビニル",
+        name: "レジン",
         value: BoardImageType.RESIN,
+      },
+      {
+        name: "レジン2",
+        value: BoardImageType.RESIN2,
+      },
+      {
+        name: "レジン3",
+        value: BoardImageType.RESIN3,
       },
       {
         name: "ダーク",
         value: BoardImageType.DARK,
+      },
+      {
+        name: "緑",
+        value: BoardImageType.GREEN,
+      },
+      {
+        name: "桜",
+        value: BoardImageType.CHERRY_BLOSSOM,
       },
     ];
 

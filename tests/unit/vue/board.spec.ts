@@ -20,8 +20,8 @@ describe("BoardView", () => {
         position,
       },
     });
-    const boardImage = wrapper.get("div.board img");
-    expect(boardImage.attributes()["src"]).toBe("./board/light.png");
+    const boardTexture = wrapper.get("div.board-texture img");
+    expect(boardTexture.attributes()["src"]).toBe("./board/wood_light.png");
     const pieces = wrapper.findAll("div.piece img");
     expect(pieces[10].attributes()["src"]).toBe(
       "./piece/hitomoji/white_bishop.png"
@@ -45,8 +45,8 @@ describe("BoardView", () => {
         position,
       },
     });
-    const boardImage = wrapper.get("div.board img");
-    expect(boardImage.attributes()["src"]).toBe("./board/warm.png");
+    const boardTexture = wrapper.get("div.board-texture img");
+    expect(boardTexture.attributes()["src"]).toBe("./board/wood_warm.png");
     const pieces = wrapper.findAll("div.piece img");
     expect(pieces[10].attributes()["src"]).toBe(
       "./piece/hitomoji_gothic/white_bishop.png"

@@ -23,7 +23,11 @@ export enum BoardImageType {
   LIGHT = "light",
   WARM = "warm",
   RESIN = "resin",
+  RESIN2 = "resin2",
+  RESIN3 = "resin3",
   DARK = "dark",
+  GREEN = "green",
+  CHERRY_BLOSSOM = "cherry-blossom",
 }
 
 export enum BoardLabelType {
@@ -316,18 +320,48 @@ const pieceImageMap: { [key: string]: PieceImages } = {
   },
 };
 
-const boardImageMap = {
-  [BoardImageType.LIGHT]: "./board/light.png",
-  [BoardImageType.WARM]: "./board/warm.png",
-  [BoardImageType.RESIN]: "./board/resin.png",
-  [BoardImageType.DARK]: "./board/dark.png",
+const boardGridMap = {
+  [BoardImageType.LIGHT]: "./board/grid.svg",
+  [BoardImageType.WARM]: "./board/grid.svg",
+  [BoardImageType.RESIN]: "./board/grid.svg",
+  [BoardImageType.RESIN2]: "./board/grid.svg",
+  [BoardImageType.RESIN3]: "./board/grid.svg",
+  [BoardImageType.DARK]: "./board/grid_white.svg",
+  [BoardImageType.GREEN]: "./board/grid.svg",
+  [BoardImageType.CHERRY_BLOSSOM]: "./board/grid.svg",
+};
+
+const boardTextureMap = {
+  [BoardImageType.LIGHT]: "./board/wood_light.png",
+  [BoardImageType.WARM]: "./board/wood_warm.png",
+  [BoardImageType.RESIN]: null,
+  [BoardImageType.RESIN2]: null,
+  [BoardImageType.RESIN3]: null,
+  [BoardImageType.DARK]: null,
+  [BoardImageType.GREEN]: null,
+  [BoardImageType.CHERRY_BLOSSOM]: null,
+};
+
+const boardBackgroundColorMap = {
+  [BoardImageType.LIGHT]: "rgba(0, 0, 0, 0)",
+  [BoardImageType.WARM]: "rgba(0, 0, 0, 0)",
+  [BoardImageType.RESIN]: "#d69b00",
+  [BoardImageType.RESIN2]: "#efbf63",
+  [BoardImageType.RESIN3]: "#ad7624",
+  [BoardImageType.DARK]: "#333333",
+  [BoardImageType.GREEN]: "#598459",
+  [BoardImageType.CHERRY_BLOSSOM]: "#ecb6b6",
 };
 
 const handColorMap = {
   [BoardImageType.LIGHT]: "#8b4513",
   [BoardImageType.WARM]: "#8b4513",
   [BoardImageType.RESIN]: "#8b4513",
+  [BoardImageType.RESIN2]: "#8b4513",
+  [BoardImageType.RESIN3]: "#8b4513",
   [BoardImageType.DARK]: "#333333",
+  [BoardImageType.GREEN]: "#527a52",
+  [BoardImageType.CHERRY_BLOSSOM]: "#e8a9a9",
 };
 
 const handLaytoutRule = {
@@ -371,7 +405,8 @@ type FrameLayout = {
 };
 
 type BoardLayout = {
-  imagePath: string;
+  gridImagePath: string;
+  textureImagePath: string | null;
   x: number;
   y: number;
   style: { [key: string]: string };
@@ -474,24 +509,25 @@ const rankCharMap: { [n: number]: string } = {
 
 export default class LayoutBuilder {
   private pieceImages: PieceImages;
-  private boardImage: string;
-  private handColor: string;
-  private boardLabelType: BoardLabelType;
+  private boardGridImage: string;
+  private boardTextureImage: string | null;
 
   constructor(
     pieceImageType: PieceImageType,
-    boardImageType: BoardImageType,
-    boardLabelType: BoardLabelType
+    private boardImageType: BoardImageType,
+    private boardLabelType: BoardLabelType
   ) {
     this.pieceImages =
       pieceImageMap[pieceImageType] || pieceImageMap[PieceImageType.HITOMOJI];
-    this.boardImage = boardImageMap[boardImageType];
-    this.handColor = handColorMap[boardImageType];
-    this.boardLabelType = boardLabelType;
+    this.boardGridImage = boardGridMap[boardImageType];
+    this.boardTextureImage = boardTextureMap[boardImageType];
   }
 
   preload(): void {
-    preloadImage(this.boardImage);
+    preloadImage(this.boardGridImage);
+    if (this.boardTextureImage) {
+      preloadImage(this.boardTextureImage);
+    }
     Object.values(this.pieceImages.black).forEach(preloadImage);
     Object.values(this.pieceImages.white).forEach(preloadImage);
   }
@@ -522,19 +558,21 @@ export default class LayoutBuilder {
     };
 
     const buildBoardLayout = (): BoardLayout => {
-      const imagePath = this.boardImage;
       const x = layoutTemplate.board.x * ratio;
       const y = layoutTemplate.board.y * ratio;
       const width = layoutTemplate.board.width * ratio;
       const height = layoutTemplate.board.height * ratio;
+      const bgColor = boardBackgroundColorMap[this.boardImageType];
       const style = {
+        "background-color": bgColor,
         left: x + "px",
         top: y + "px",
         height: height + "px",
         width: width + "px",
       };
       return {
-        imagePath,
+        gridImagePath: this.boardGridImage,
+        textureImagePath: this.boardTextureImage,
         x,
         y,
         style,
@@ -704,12 +742,13 @@ export default class LayoutBuilder {
 
     const buildHandLayout = (color: Color, hand: ImmutableHand): HandLayout => {
       const displayColor = flip ? reverseColor(color) : color;
+      const bgColor = handColorMap[this.boardImageType];
       const standX = layoutTemplate.hand[displayColor].x * ratio;
       const standY = layoutTemplate.hand[displayColor].y * ratio;
       const standWidth = layoutTemplate.hand.width * ratio;
       const standHeight = layoutTemplate.hand.height * ratio;
       const standStyle = {
-        "background-color": this.handColor,
+        "background-color": bgColor,
         left: standX + "px",
         top: standY + "px",
         width: standWidth + "px",

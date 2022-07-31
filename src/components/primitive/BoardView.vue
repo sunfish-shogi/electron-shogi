@@ -1,8 +1,15 @@
 <template>
   <div>
     <div class="frame" :style="layout.frame.style" @click="clickFrame()">
-      <div class="board" :style="layout.board.style">
-        <img class="board-image" :src="layout.board.imagePath" />
+      <div
+        v-if="layout.board.textureImagePath"
+        class="board-texture"
+        :style="layout.board.style"
+      >
+        <img class="board-image" :src="layout.board.textureImagePath" />
+      </div>
+      <div class="board-grid" :style="layout.board.style">
+        <img class="board-image" :src="layout.board.gridImagePath" />
       </div>
       <div
         class="player-name"

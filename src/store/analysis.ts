@@ -237,18 +237,6 @@ export function buildRecordComment(
   return comment;
 }
 
-export function loadScoreFromRecordComment(
-  comment: string
-): number | undefined {
-  const lines = comment.split("\n");
-  for (const line of lines) {
-    const matched = /^#評価値=([+-.0-9]+)/.exec(line);
-    if (matched) {
-      return Number(matched[1]);
-    }
-  }
-}
-
 export function appendAnalysisComment(
   org: string,
   add: string,

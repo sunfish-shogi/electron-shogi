@@ -45,7 +45,11 @@ P+00HI00HI00KI00KI
 P-00AL
 +
 +1321NK,T0
+'読み飛ばすコメント
+'*初手へのコメント
+'** 30000 2b2a
 -2221OU,T0
+'** -30000
 +0013KE,T0
 -2122OU,T0
 +0012KI,T0
@@ -383,6 +387,16 @@ describe("store/index", () => {
     store.pasteRecord(sampleCSA);
     const moves = store.record.moves;
     expect(moves.length).toBe(13);
+    store.changeMoveNumber(1);
+    expect(store.record.current.comment).toBe("初手へのコメント\n* 30000 2b2a");
+    const customData1 = new RecordCustomData(store.record.current.customData);
+    expect(customData1.evaluation?.blackPlayer).toBe(30000);
+    expect(customData1.evaluation?.whitePlayer).toBeUndefined();
+    store.changeMoveNumber(2);
+    expect(store.record.current.comment).toBe("* -30000");
+    const customData2 = new RecordCustomData(store.record.current.customData);
+    expect(customData2.evaluation?.blackPlayer).toBeUndefined();
+    expect(customData2.evaluation?.whitePlayer).toBe(-30000);
     expect(store.hasError).toBeFalsy();
   });
 

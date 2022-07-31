@@ -32,6 +32,10 @@ P-
 +
 +7776FU
 T0
+'無視すべきコメント
+'*初手に対するコメント
+'*初手に対するコメント2
+'** 読み筋と評価値
 -3334FU
 T0
 +8822UM
@@ -41,6 +45,7 @@ T20
 +0045KA
 T30
 %TORYO
+'*特殊な手に対するコメント
 T40
 `;
     const record = importCSA(data) as Record;
@@ -58,6 +63,9 @@ T40
     expect(record.current.move).toBe(SpecialMove.START);
     record.goto(1);
     expect((record.current.move as Move).getDisplayText()).toBe("▲７六歩(77)");
+    expect(record.current.comment).toBe(
+      "初手に対するコメント\n初手に対するコメント2\n* 読み筋と評価値"
+    );
     record.goto(2);
     expect((record.current.move as Move).getDisplayText()).toBe("△３四歩(33)");
     record.goto(3);
@@ -73,6 +81,7 @@ T40
     expect(record.current.elapsedMs).toBe(30000);
     record.goto(6);
     expect(record.current.move).toBe(SpecialMove.RESIGN);
+    expect(record.current.comment).toBe("特殊な手に対するコメント");
     expect(record.current.elapsedMs).toBe(40000);
   });
 
@@ -538,6 +547,7 @@ PI82HI
     };
     record.append(move(7, 7, 7, 6));
     record.append(move(3, 3, 3, 4));
+    record.current.comment = "2手目へのコメント\n2手目へのコメント2";
     record.append(move(8, 8, 2, 2).withPromote());
     record.append(move(3, 1, 2, 2));
     record.current.setElapsedMs(12345); // 12.345 seconds
@@ -567,6 +577,8 @@ P-
 T0
 -3334FU
 T0
+'*2手目へのコメント
+'*2手目へのコメント2
 +8822UM
 T0
 -3122GI

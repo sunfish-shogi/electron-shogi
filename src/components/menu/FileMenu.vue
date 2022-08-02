@@ -77,7 +77,7 @@ export default defineComponent({
       context.emit("close");
     };
     const onNewFile = () => {
-      store.newRecord();
+      store.resetRecord();
       context.emit("close");
     };
     const onOpen = () => {

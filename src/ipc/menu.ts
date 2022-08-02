@@ -1,5 +1,5 @@
 export enum MenuEvent {
-  NEW_RECORD = "newRecord",
+  NEW_RECORD = "resetRecord",
   OPEN_RECORD = "openRecord",
   SAVE_RECORD = "saveRecord",
   SAVE_RECORD_AS = "saveRecordAs",

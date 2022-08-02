@@ -1,25 +1,18 @@
 import api from "@/ipc/api";
 import {
   Color,
-  detectRecordFormat,
   exportCSA,
   ImmutableRecord,
-  importCSA,
   InitialPositionType,
   Move,
-  Position,
   PositionChange,
   Record,
-  RecordMetadataKey,
-  reverseColor,
   SpecialMove,
   specialMoveToDisplayString,
   exportKakinoki,
-  importKakinoki,
-  RecordFormatType,
+  RecordMetadataKey,
 } from "@/shogi";
-import { reactive, UnwrapNestedRefs } from "vue";
-import iconv from "iconv-lite";
+import { reactive, UnwrapNestedRefs, watch } from "vue";
 import { GameSetting } from "@/settings/game";
 import {
   AppSetting,
@@ -35,11 +28,7 @@ import {
   playPieceBeat,
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
-import {
-  formatTimeLimitCSA,
-  RecordCustomData,
-  restoreCustomData,
-} from "./record";
+import { RecordCustomData, RecordManager } from "./record";
 import { defaultPlayerBuilder, GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
@@ -50,7 +39,6 @@ import { MessageStore } from "./message";
 import { ErrorStore } from "./error";
 import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
-import { getDateString, getDateTimeString } from "@/helpers/datetime";
 import {
   AnalysisManager,
   AnalysisResult,
@@ -66,29 +54,32 @@ export class Store {
   private _bussy: BussyStore;
   private _message: MessageStore;
   private _error: ErrorStore;
+  private recordManager: RecordManager;
   private _appSetting: AppSetting;
   private _appState: AppState;
   private lastAppState?: AppState;
   private _isAppSettingDialogVisible: boolean;
   private _confirmation?: Confirmation;
-  private _usi: USIMonitor;
-  private game: GameManager;
+  private usiMonitor: USIMonitor;
+  private gameManager: GameManager;
   private researcher?: USIPlayer;
-  private analysis?: AnalysisManager;
+  private analysisManager?: AnalysisManager;
   private unlimitedBeepHandler?: AudioEventHandler;
-  private _recordFilePath?: string;
-  private _record: Record;
 
   constructor() {
     this._bussy = new BussyStore();
     this._message = new MessageStore();
     this._error = new ErrorStore();
+    this.recordManager = new RecordManager();
     this._appSetting = defaultAppSetting();
     this._appState = AppState.NORMAL;
     this._isAppSettingDialogVisible = false;
-    this._usi = new USIMonitor();
-    this.game = new GameManager(defaultPlayerBuilder, this);
-    this._record = new Record();
+    this.usiMonitor = new USIMonitor();
+    this.gameManager = new GameManager(
+      this.recordManager,
+      defaultPlayerBuilder,
+      this
+    );
   }
 
   get isBussy(): boolean {
@@ -134,6 +125,21 @@ export class Store {
 
   clearErrors(): void {
     this._error.clear();
+  }
+
+  get record(): ImmutableRecord {
+    return this.recordManager.record;
+  }
+
+  get recordFilePath(): string | undefined {
+    return this.recordManager.recordFilePath;
+  }
+
+  updateStandardRecordMetadata(update: {
+    key: RecordMetadataKey;
+    value: string;
+  }): void {
+    this.recordManager.updateStandardMetadata(update);
   }
 
   get appSetting(): AppSetting {
@@ -263,15 +269,15 @@ export class Store {
   }
 
   get usiBlackPlayerMonitor(): USIPlayerMonitor | undefined {
-    return this._usi.blackPlayer;
+    return this.usiMonitor.blackPlayer;
   }
 
   get usiWhitePlayerMonitor(): USIPlayerMonitor | undefined {
-    return this._usi.whitePlayer;
+    return this.usiMonitor.whitePlayer;
   }
 
   get usiResearcherMonitor(): USIPlayerMonitor | undefined {
-    return this._usi.researcher;
+    return this.usiMonitor.researcher;
   }
 
   updateUSIInfo(
@@ -281,15 +287,26 @@ export class Store {
     name: string,
     info: InfoCommand
   ): void {
-    if (this.record.usi !== usi) {
+    if (this.recordManager.record.usi !== usi) {
       return;
     }
-    this._usi.update(sessionID, this.record.position, sender, name, info);
-    const data = new RecordCustomData(this.record.current.customData);
-    data.updateUSIInfo(this.record.position.color, sender, info);
-    this.record.current.customData = data.stringify();
-    if (this.analysis) {
-      this.analysis.updateUSIInfo(this.record.position, info);
+    this.usiMonitor.update(
+      sessionID,
+      this.recordManager.record.position,
+      sender,
+      name,
+      info
+    );
+    const data = new RecordCustomData(
+      this.recordManager.record.current.customData
+    );
+    data.updateUSIInfo(this.recordManager.record.position.color, sender, info);
+    this.recordManager.record.current.customData = data.stringify();
+    if (this.analysisManager) {
+      this.analysisManager.updateUSIInfo(
+        this.recordManager.record.position,
+        info
+      );
     }
   }
 
@@ -309,7 +326,7 @@ export class Store {
     if (!(ponderMove instanceof Move)) {
       return;
     }
-    this._usi.update(
+    this.usiMonitor.update(
       sessionID,
       record.position,
       sender,
@@ -320,27 +337,23 @@ export class Store {
   }
 
   get gameSetting(): GameSetting {
-    return this.game.setting;
+    return this.gameManager.setting;
   }
 
   get blackTimeMs(): number {
-    return this.game.blackTimeMs;
+    return this.gameManager.blackTimeMs;
   }
 
   get blackByoyomi(): number {
-    return this.game.blackByoyomi;
+    return this.gameManager.blackByoyomi;
   }
 
   get whiteTimeMs(): number {
-    return this.game.whiteTimeMs;
+    return this.gameManager.whiteTimeMs;
   }
 
   get whiteByoyomi(): number {
-    return this.game.whiteByoyomi;
-  }
-
-  get elapsedMs(): number {
-    return this.game.elapsedMs;
+    return this.gameManager.whiteByoyomi;
   }
 
   startGame(setting: GameSetting): void {
@@ -356,43 +369,12 @@ export class Store {
     this.retainBussyState();
     try {
       await api.saveGameSetting(setting);
-      this.initializeRecordForGame(setting);
       this.initializeDisplaySettingForGame(setting);
-      await this.game.startGame(setting, this.record);
+      await this.gameManager.startGame(setting);
       this._appState = AppState.GAME;
     } finally {
       this.releaseBussyState();
     }
-  }
-
-  private initializeRecordForGame(setting: GameSetting): void {
-    if (setting.startPosition) {
-      const position = new Position();
-      position.reset(setting.startPosition);
-      this._record.clear(position);
-      this.onUpdatePosition();
-      this.clearRecordFilePath();
-    }
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.BLACK_NAME,
-      setting.black.name
-    );
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.WHITE_NAME,
-      setting.white.name
-    );
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.DATE,
-      getDateString()
-    );
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.START_DATETIME,
-      getDateTimeString()
-    );
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.TIME_LIMIT,
-      formatTimeLimitCSA(setting.timeLimit)
-    );
   }
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
@@ -417,20 +399,12 @@ export class Store {
 
   stopGame(): void {
     if (this.appState === AppState.GAME) {
-      this.game.endGame(SpecialMove.INTERRUPT);
+      this.gameManager.endGame(SpecialMove.INTERRUPT);
     }
   }
 
-  onMove(move: Move): ImmutableRecord {
-    if (this.appState === AppState.GAME) {
-      this._record.append(move, {
-        ignoreValidation: true,
-      });
-      this.onUpdatePosition();
-      this.record.current.setElapsedMs(this.elapsedMs);
-      playPieceBeat(this.appSetting.pieceVolume);
-    }
-    return this.record;
+  onPieceBeat(): void {
+    playPieceBeat(this.appSetting.pieceVolume);
   }
 
   onEndGame(specialMove?: SpecialMove): void {
@@ -442,13 +416,6 @@ export class Store {
         `対局終了（${specialMoveToDisplayString(specialMove)})`
       );
     }
-    this._record.append(specialMove || SpecialMove.INTERRUPT);
-    this.onUpdatePosition();
-    this._record.current.setElapsedMs(this.elapsedMs);
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.END_DATETIME,
-      getDateTimeString()
-    );
     this._appState = AppState.NORMAL;
   }
 
@@ -498,27 +465,30 @@ export class Store {
     ) {
       return;
     }
-    this._record.append(move);
-    this.onUpdatePosition();
+    if (!this.recordManager.appendMove({ move })) {
+      return;
+    }
     playPieceBeat(this.appSetting.pieceVolume);
   }
 
   onNext(number: number): ImmutableRecord | null {
     if (this.appState === AppState.ANALYSIS) {
-      this._record.goto(number);
-      return this.record.current.number === number ? this.record : null;
+      this.recordManager.changeMoveNumber(number);
+      return this.recordManager.record.current.number === number
+        ? this.recordManager.record
+        : null;
     }
     return null;
   }
 
   onResult(result: AnalysisResult): void {
-    if (this.appState === AppState.ANALYSIS && this.analysis) {
+    if (this.appState === AppState.ANALYSIS && this.analysisManager) {
       const comment = buildRecordComment(result, this.appSetting);
       if (comment) {
-        this._record.current.comment = appendAnalysisComment(
-          this._record.current.comment,
+        this.recordManager.record.current.comment = appendAnalysisComment(
+          this.recordManager.record.current.comment,
           comment,
-          this.analysis.setting.commentBehavior
+          this.analysisManager.setting.commentBehavior
         );
       }
     }
@@ -590,9 +560,9 @@ export class Store {
     this.retainBussyState();
     try {
       await api.saveAnalysisSetting(analysisSetting);
-      const analysis = new AnalysisManager(analysisSetting, this);
-      await analysis.start();
-      this.analysis = analysis;
+      const analysisManager = new AnalysisManager(analysisSetting, this);
+      await analysisManager.start();
+      this.analysisManager = analysisManager;
       this._appState = AppState.ANALYSIS;
     } finally {
       this.releaseBussyState();
@@ -603,58 +573,33 @@ export class Store {
     if (this.appState !== AppState.ANALYSIS) {
       return;
     }
-    if (this.analysis) {
-      this.analysis.close();
-      this.analysis = undefined;
+    if (this.analysisManager) {
+      this.analysisManager.close();
+      this.analysisManager = undefined;
     }
     this._appState = AppState.NORMAL;
   }
 
-  private onUpdatePosition(): void {
+  onUpdatePosition(): void {
     if (this.researcher) {
-      this.researcher.startResearch(this.record);
+      this.researcher.startResearch(this.recordManager.record);
     }
   }
 
-  get recordFilePath(): string | undefined {
-    return this._recordFilePath;
-  }
-
-  private updateRecordFilePath(recordFilePath: string): void {
-    this._recordFilePath = recordFilePath;
-  }
-
-  private clearRecordFilePath(): void {
-    this._recordFilePath = undefined;
-  }
-
-  get record(): ImmutableRecord {
-    return this._record;
-  }
-
-  newRecord(): void {
+  resetRecord(): void {
     if (this.appState != AppState.NORMAL) {
       return;
     }
     this.showConfirmation({
       message: "現在の棋譜は削除されます。よろしいですか？",
       onOk: () => {
-        this._record.clear();
-        this.onUpdatePosition();
-        this.clearRecordFilePath();
+        this.recordManager.reset();
       },
     });
   }
 
   updateRecordComment(comment: string): void {
-    this.record.current.comment = comment;
-  }
-
-  updateStandardRecordMetadata(update: {
-    key: RecordMetadataKey;
-    value: string;
-  }): void {
-    this._record.metadata.setStandardMetadata(update.key, update.value);
+    this.recordManager.updateComment(comment);
   }
 
   insertSpecialMove(specialMove: SpecialMove): void {
@@ -664,8 +609,7 @@ export class Store {
     ) {
       return;
     }
-    this._record.append(specialMove);
-    this.onUpdatePosition();
+    this.recordManager.appendMove({ move: specialMove });
   }
 
   startPositionEditing(): void {
@@ -676,15 +620,12 @@ export class Store {
       message: "現在の棋譜は削除されます。よろしいですか？",
       onOk: () => {
         this._appState = AppState.POSITION_EDITING;
-        this._record.clear(this.record.position);
-        this.onUpdatePosition();
-        this.clearRecordFilePath();
+        this.recordManager.resetByCurrentPosition();
       },
     });
   }
 
   endPositionEditing(): void {
-    // FIXME: 局面整合性チェック
     if (this.appState === AppState.POSITION_EDITING) {
       this._appState = AppState.NORMAL;
     }
@@ -697,59 +638,39 @@ export class Store {
     this.showConfirmation({
       message: "現在の局面は破棄されます。よろしいですか？",
       onOk: () => {
-        const position = new Position();
-        position.reset(initialPositionType);
-        this._record.clear(position);
-        this.onUpdatePosition();
-        this.clearRecordFilePath();
+        this.recordManager.reset(initialPositionType);
       },
     });
   }
 
   changeTurn(): void {
-    if (this.appState != AppState.POSITION_EDITING) {
-      return;
+    if (this.appState == AppState.POSITION_EDITING) {
+      this.recordManager.swapNextTurn();
     }
-    const position = this.record.position.clone();
-    position.setColor(reverseColor(position.color));
-    this._record.clear(position);
-    this.onUpdatePosition();
-    this.clearRecordFilePath();
   }
 
   editPosition(change: PositionChange): void {
     if (this.appState === AppState.POSITION_EDITING) {
-      const position = this.record.position.clone();
-      position.edit(change);
-      this._record.clear(position);
-      this.onUpdatePosition();
-      this.clearRecordFilePath();
+      this.recordManager.changePosition(change);
     }
   }
 
   changeMoveNumber(number: number): void {
     if (
-      this.appState !== AppState.NORMAL &&
-      this.appState !== AppState.RESEARCH
+      this.appState === AppState.NORMAL ||
+      this.appState === AppState.RESEARCH
     ) {
-      return;
+      this.recordManager.changeMoveNumber(number);
     }
-    this._record.goto(number);
-    this.onUpdatePosition();
   }
 
   changeBranch(index: number): void {
     if (
-      this.appState !== AppState.NORMAL &&
-      this.appState !== AppState.RESEARCH
+      this.appState === AppState.NORMAL ||
+      this.appState === AppState.RESEARCH
     ) {
-      return;
+      this.recordManager.changeBranch(index);
     }
-    if (this.record.current.branchIndex === index) {
-      return;
-    }
-    this._record.switchBranchByIndex(index);
-    this.onUpdatePosition();
   }
 
   removeRecordAfter(): void {
@@ -759,46 +680,44 @@ export class Store {
     ) {
       return;
     }
-    if (this.record.current.isLastMove) {
-      this._record.removeAfter();
-      this.onUpdatePosition();
+    if (this.recordManager.record.current.isLastMove) {
+      this.recordManager.removeAfter();
       return;
     }
     this.showConfirmation({
-      message: `${this.record.current.number}手目以降を削除します。よろしいですか？`,
+      message: `${this.recordManager.record.current.number}手目以降を削除します。よろしいですか？`,
       onOk: () => {
-        this._record.removeAfter();
-        this.onUpdatePosition();
+        this.recordManager.removeAfter();
       },
     });
   }
 
   copyRecordKIF(): void {
-    const str = exportKakinoki(this._record, {
+    const str = exportKakinoki(this.recordManager.record, {
       returnCode: this.appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordCSA(): void {
-    const str = exportCSA(this._record, {
+    const str = exportCSA(this.recordManager.record, {
       returnCode: this.appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordUSIBefore(): void {
-    const str = this._record.usi;
+    const str = this.recordManager.record.usi;
     navigator.clipboard.writeText(str);
   }
 
   copyRecordUSIAll(): void {
-    const str = this._record.usiAll;
+    const str = this.recordManager.record.usiAll;
     navigator.clipboard.writeText(str);
   }
 
   copyBoardSFEN(): void {
-    const str = this._record.sfen;
+    const str = this.recordManager.record.sfen;
     navigator.clipboard.writeText(str);
   }
 
@@ -806,37 +725,11 @@ export class Store {
     if (this.appState !== AppState.NORMAL) {
       return;
     }
-    let recordOrError: Record | Error;
-    switch (detectRecordFormat(data)) {
-      case RecordFormatType.SFEN: {
-        const position = Position.newBySFEN(data);
-        recordOrError = position
-          ? new Record(position)
-          : new Error("局面を読み込めませんでした。");
-        break;
-      }
-      case RecordFormatType.USI:
-        recordOrError =
-          Record.newByUSI(data) || new Error("棋譜を読み込めませんでした。");
-        break;
-      case RecordFormatType.KIF:
-        recordOrError = importKakinoki(data);
-        break;
-      case RecordFormatType.CSA:
-        recordOrError = importCSA(data);
-        break;
-      default:
-        recordOrError = new Error("棋譜フォーマットの検出ができませんでした。");
-        break;
-    }
-    if (recordOrError instanceof Error) {
-      this.pushError(recordOrError);
+    const error = this.recordManager.importRecord(data);
+    if (error) {
+      this.pushError(error);
       return;
     }
-    this.clearRecordFilePath();
-    this._record = recordOrError;
-    restoreCustomData(this._record);
-    this.onUpdatePosition();
   }
 
   openRecord(path?: string): void {
@@ -858,24 +751,13 @@ export class Store {
         }
       }
       const data = await api.openRecord(path);
-      let recordOrError: Record | Error;
-      if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-        const str = path.match(/\.kif$/)
-          ? iconv.decode(data as Buffer, "Shift_JIS")
-          : new TextDecoder().decode(data);
-        recordOrError = importKakinoki(str);
-      } else if (path.match(/\.csa$/)) {
-        recordOrError = importCSA(new TextDecoder().decode(data));
-      } else {
-        recordOrError = new Error("不明なファイル形式: " + path);
+      const error = this.recordManager.importRecordFromBuffer(
+        data as Buffer,
+        path
+      );
+      if (error) {
+        throw error;
       }
-      if (recordOrError instanceof Error) {
-        throw recordOrError;
-      }
-      this.updateRecordFilePath(path);
-      this._record = recordOrError;
-      restoreCustomData(this._record);
-      this.onUpdatePosition();
     } finally {
       this.releaseBussyState();
     }
@@ -895,33 +777,23 @@ export class Store {
     }
     this.retainBussyState();
     try {
-      let path = this.recordFilePath;
+      let path = this.recordManager.recordFilePath;
       if (!options?.overwrite || !path) {
-        const defaultPath = defaultRecordFileName(this._record.metadata);
+        const defaultPath = defaultRecordFileName(
+          this.recordManager.record.metadata
+        );
         path = await api.showSaveRecordDialog(defaultPath);
         if (!path) {
           return;
         }
       }
-      let data: Uint8Array;
-      if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-        const str = exportKakinoki(this.record, {
-          returnCode: this.appSetting.returnCode,
-        });
-        data = path.match(/\.kif$/)
-          ? iconv.encode(str, "Shift_JIS")
-          : new TextEncoder().encode(str);
-      } else if (path.match(/\.csa$/)) {
-        data = new TextEncoder().encode(
-          exportCSA(this.record, {
-            returnCode: this.appSetting.returnCode,
-          })
-        );
-      } else {
-        throw new Error("不明なファイル形式: " + path);
+      const dataOrError = this.recordManager.exportRecordAsBuffer(path, {
+        returnCode: this.appSetting.returnCode,
+      });
+      if (dataOrError instanceof Error) {
+        throw dataOrError;
       }
-      await api.saveRecord(path, data);
-      this.updateRecordFilePath(path);
+      await api.saveRecord(path, dataOrError);
     } finally {
       this.releaseBussyState();
     }
@@ -934,7 +806,7 @@ export class Store {
         return true;
       case AppState.GAME:
         return (
-          (this.record.position.color === Color.BLACK
+          (this.recordManager.record.position.color === Color.BLACK
             ? this.gameSetting.black.uri
             : this.gameSetting.white.uri) === uri.ES_HUMAN
         );
@@ -948,3 +820,7 @@ const store = reactive<Store>(new Store());
 export function useStore(): UnwrapNestedRefs<Store> {
   return store;
 }
+
+watch([useStore().record], () => {
+  useStore().onUpdatePosition();
+});

@@ -19,7 +19,7 @@ export function setup(): void {
     }
     switch (event) {
       case MenuEvent.NEW_RECORD:
-        store.newRecord();
+        store.resetRecord();
         break;
       case MenuEvent.OPEN_RECORD:
         store.openRecord();

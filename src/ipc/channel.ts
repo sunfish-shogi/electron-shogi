@@ -14,6 +14,8 @@ export enum Background {
   SAVE_ANALYSIS_SETTING = "saveAnalysisSetting",
   LOAD_GAME_SETTING = "loadGameSetting",
   SAVE_GAME_SETTING = "saveGameSetting",
+  LOAD_CSA_GAME_SETTING_HISTORY = "loadCSAGameSettingHistory",
+  SAVE_CSA_GAME_SETTING_HISTORY = "saveCSAGameSettingHistory",
   LOAD_USI_ENGINE_SETTING = "loadUSIEngineSetting",
   SAVE_USI_ENGINE_SETTING = "saveUSIEngineSetting",
   SHOW_SELECT_USI_ENGINE_DIALOG = "showSelectUSIEngineDialog",
@@ -27,6 +29,13 @@ export enum Background {
   USI_STOP = "usiStop",
   USI_GAMEOVER = "usiGameover",
   USI_QUIT = "usiQuit",
+  CSA_LOGIN = "csaLogin",
+  CSA_LOGOUT = "csaLogout",
+  CSA_AGREE = "csaAgree",
+  CSA_MOVE = "csaMove",
+  CSA_RESIGN = "csaResign",
+  CSA_WIN = "csaWin",
+  CSA_STOP = "csaStop",
   LOG = "log",
 }
 
@@ -36,4 +45,10 @@ export enum Renderer {
   USI_BEST_MOVE = "usiBestMove",
   USI_INFO = "usiInfo",
   USI_PONDER_INFO = "usiPonderInfo",
+  CSA_GAME_SUMMARY = "csaGameSummary",
+  CSA_REJECT = "csaReject",
+  CSA_START = "csaStart",
+  CSA_MOVE = "csaMove",
+  CSA_GAME_RESULT = "csaGameResult",
+  CSA_CLOSE = "csaClose",
 }

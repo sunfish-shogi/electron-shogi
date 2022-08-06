@@ -4,11 +4,13 @@ import fs from "fs";
 import {
   loadAnalysisSetting,
   loadAppSetting,
+  loadCSAGameSettingHistory,
   loadGameSetting,
   loadResearchSetting,
   loadUSIEngineSetting,
   saveAnalysisSetting,
   saveAppSetting,
+  saveCSAGameSettingHistory,
   saveGameSetting,
   saveResearchSetting,
   saveUSIEngineSetting,
@@ -33,6 +35,22 @@ import {
 import { GameResult } from "@/players/player";
 import { LogLevel } from "@/ipc/log";
 import { getAppLogger } from "./log";
+import {
+  login as csaLogin,
+  logout as csaLogout,
+  agree as csaAgree,
+  doMove as csaDoMove,
+  resign as csaResign,
+  win as csaWin,
+  stop as csaStop,
+} from "./csa";
+import {
+  CSAGameResult,
+  CSAGameSummary,
+  CSAPlayerStates,
+  CSASpecialMove,
+} from "@/ipc/csa";
+import { CSAServerSetting } from "@/settings/csa";
 
 const isWindows = process.platform === "win32";
 
@@ -164,6 +182,17 @@ ipcMain.handle(Background.SAVE_GAME_SETTING, (_, json: string): void => {
   saveGameSetting(JSON.parse(json));
 });
 
+ipcMain.handle(Background.LOAD_CSA_GAME_SETTING_HISTORY, (): string => {
+  return JSON.stringify(loadCSAGameSettingHistory());
+});
+
+ipcMain.handle(
+  Background.SAVE_CSA_GAME_SETTING_HISTORY,
+  (_, json: string): void => {
+    saveCSAGameSettingHistory(JSON.parse(json));
+  }
+);
+
 ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (): string => {
   return loadUSIEngineSetting().json;
 });
@@ -215,8 +244,8 @@ ipcMain.handle(
     blackTimeMs: number,
     whiteTimeMs: number
   ) => {
-    const gameSetting = JSON.parse(json);
-    usiGo(sessionID, usi, gameSetting, blackTimeMs, whiteTimeMs);
+    const timeLimit = JSON.parse(json);
+    usiGo(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
   }
 );
 
@@ -230,8 +259,8 @@ ipcMain.handle(
     blackTimeMs: number,
     whiteTimeMs: number
   ) => {
-    const gameSetting = JSON.parse(json);
-    usiGoPonder(sessionID, usi, gameSetting, blackTimeMs, whiteTimeMs);
+    const timeLimit = JSON.parse(json);
+    usiGoPonder(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
   }
 );
 
@@ -259,6 +288,41 @@ ipcMain.handle(
 
 ipcMain.handle(Background.USI_QUIT, (_, sessionID: number) => {
   usiQuit(sessionID);
+});
+
+ipcMain.handle(Background.CSA_LOGIN, (_, json: string): number => {
+  const setting: CSAServerSetting = JSON.parse(json);
+  return csaLogin(setting);
+});
+
+ipcMain.handle(Background.CSA_LOGOUT, (_, sessionID: number): void => {
+  csaLogout(sessionID);
+});
+
+ipcMain.handle(
+  Background.CSA_AGREE,
+  (_, sessionID: number, gameID: string): void => {
+    csaAgree(sessionID, gameID);
+  }
+);
+
+ipcMain.handle(
+  Background.CSA_MOVE,
+  (_, sessionID: number, move: string): void => {
+    csaDoMove(sessionID, move);
+  }
+);
+
+ipcMain.handle(Background.CSA_RESIGN, (_, sessionID: number): void => {
+  csaResign(sessionID);
+});
+
+ipcMain.handle(Background.CSA_WIN, (_, sessionID: number): void => {
+  csaWin(sessionID);
+});
+
+ipcMain.handle(Background.CSA_STOP, (_, sessionID: number): void => {
+  csaStop(sessionID);
 });
 
 ipcMain.handle(Background.LOG, (_, level: LogLevel, message: string) => {
@@ -330,4 +394,60 @@ export function onUSIPonderInfo(
     name,
     JSON.stringify(info)
   );
+}
+
+export function onCSAGameSummary(
+  sessionID: number,
+  gameSummary: CSAGameSummary
+): void {
+  mainWindow.webContents.send(
+    Renderer.CSA_GAME_SUMMARY,
+    sessionID,
+    JSON.stringify(gameSummary)
+  );
+}
+
+export function onCSAReject(sessionID: number): void {
+  mainWindow.webContents.send(Renderer.CSA_REJECT, sessionID);
+}
+
+export function onCSAStart(
+  sessionID: number,
+  playerStates: CSAPlayerStates
+): void {
+  mainWindow.webContents.send(
+    Renderer.CSA_START,
+    sessionID,
+    JSON.stringify(playerStates)
+  );
+}
+
+export function onCSAMove(
+  sessionID: number,
+  move: string,
+  playerStates: CSAPlayerStates
+): void {
+  mainWindow.webContents.send(
+    Renderer.CSA_MOVE,
+    sessionID,
+    move,
+    JSON.stringify(playerStates)
+  );
+}
+
+export function onCSAGameResult(
+  sessionID: number,
+  specialMove: CSASpecialMove,
+  gameResult: CSAGameResult
+): void {
+  mainWindow.webContents.send(
+    Renderer.CSA_GAME_RESULT,
+    sessionID,
+    specialMove,
+    gameResult
+  );
+}
+
+export function onCSAClose(sessionID: number): void {
+  mainWindow.webContents.send(Renderer.CSA_CLOSE, sessionID);
 }

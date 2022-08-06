@@ -51,7 +51,7 @@
             />
           </div>
         </div>
-        <hr class="separator" />
+        <hr />
         <div class="section">
           <div class="section-title">音</div>
           <div class="dialog-form-item">
@@ -95,7 +95,7 @@
             </select>
           </div>
         </div>
-        <hr class="separator" />
+        <hr />
         <div class="section">
           <div class="section-title">ファイル</div>
           <div class="dialog-form-item">
@@ -107,7 +107,7 @@
             </select>
           </div>
         </div>
-        <hr class="separator" />
+        <hr />
         <div class="section">
           <div class="section-title">評価値・期待勝率</div>
           <div class="dialog-form-item">
@@ -166,9 +166,23 @@
             <div class="dialog-form-item-unit">%</div>
           </div>
         </div>
-        <hr class="separator" />
+        <hr />
         <div class="section">
           <div class="section-title">開発者向け</div>
+          <div class="dialog-form-area dialog-form-warning">
+            <div v-if="!isNative" class="dialog-form-note">
+              ※ブラウザ版でログは出力されません。
+            </div>
+            <div class="dialog-form-note">
+              ※ログの有効化にはアプリの再起動が必要です。
+            </div>
+            <div class="dialog-form-note">
+              ※ログの出力先は「デバッグ」-「ログファイルの場所を開く」で開きます。
+            </div>
+            <div class="dialog-form-note">
+              ※現在、古いログファイルの自動削除機能はありません。
+            </div>
+          </div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">アプリログを出力</div>
             <input
@@ -177,12 +191,6 @@
               :checked="appSetting.enableAppLog"
               type="checkbox"
             />
-            <div v-if="isNative" class="dialog-form-item-unit">
-              （再起動後に反映）
-            </div>
-            <div v-if="!isNative" class="dialog-form-item-unit">
-              （ブラウザ版では機能しません）
-            </div>
           </div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">USI通信ログを出力</div>
@@ -192,12 +200,15 @@
               :checked="appSetting.enableUSILog"
               type="checkbox"
             />
-            <div v-if="isNative" class="dialog-form-item-unit">
-              （再起動後に反映）
-            </div>
-            <div v-if="!isNative" class="dialog-form-item-unit">
-              （ブラウザ版では機能しません）
-            </div>
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">CSA通信ログを出力</div>
+            <input
+              ref="enableCSALog"
+              class="toggle"
+              :checked="appSetting.enableCSALog"
+              type="checkbox"
+            />
           </div>
         </div>
       </div>
@@ -257,6 +268,7 @@ export default defineComponent({
     const badMoveLevelThreshold4: Ref = ref(null);
     const enableAppLog: Ref = ref(null);
     const enableUSILog: Ref = ref(null);
+    const enableCSALog: Ref = ref(null);
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -282,6 +294,7 @@ export default defineComponent({
         badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
         enableAppLog: enableAppLog.value.checked,
         enableUSILog: enableUSILog.value.checked,
+        enableCSALog: enableCSALog.value.checked,
       };
       store.retainBussyState();
       try {
@@ -393,6 +406,7 @@ export default defineComponent({
       badMoveLevelThreshold4,
       enableAppLog,
       enableUSILog,
+      enableCSALog,
       appSetting,
       themaOptions,
       pieceImageTypes,
@@ -413,11 +427,6 @@ export default defineComponent({
   overflow: auto;
   display: flex;
   flex-direction: column;
-}
-.separator {
-  width: 100%;
-  border: none;
-  border-top: 1px dashed var(--dialog-border-color);
 }
 .section {
   margin: 20px 0px 20px 0px;

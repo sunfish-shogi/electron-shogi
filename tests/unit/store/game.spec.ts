@@ -1,68 +1,14 @@
 import { TimeoutChain } from "@/helpers/testing";
-import { Player, SearchHandler } from "@/players/player";
-import { GameSetting, PlayerSetting } from "@/settings/game";
-import {
-  ImmutableRecord,
-  InitialPositionType,
-  Move,
-  Position,
-  SpecialMove,
-} from "@/shogi";
+import { InitialPositionType, Position, SpecialMove } from "@/shogi";
+import { Clock } from "@/store/clock";
 import { GameManager } from "@/store/game";
 import { RecordManager } from "@/store/record";
-import { gameSetting10m30s } from "../mock/game";
-
-function createMockPlayer(moves: { [usi: string]: string }) {
-  return {
-    isEngine(): boolean {
-      return false;
-    },
-    startSearch: jest.fn(
-      (
-        r: ImmutableRecord,
-        s: GameSetting,
-        bt: number,
-        wt: number,
-        h: SearchHandler
-      ) => {
-        const sfen = moves[r.usi];
-        if (sfen === "no-reply") {
-          // eslint-disable-next-line  @typescript-eslint/no-empty-function
-          return new Promise<void>(() => {});
-        }
-        if (sfen === "resign") {
-          h.onResign();
-          return Promise.resolve();
-        }
-        const move = r.position.createMoveBySFEN(sfen) as Move;
-        h.onMove(move);
-        return Promise.resolve();
-      }
-    ),
-    startPonder: jest.fn(() => Promise.resolve()),
-    stop: jest.fn(() => Promise.resolve()),
-    gameover: jest.fn(() => Promise.resolve()),
-    close: jest.fn(() => Promise.resolve()),
-  };
-}
-
-function createMockPlayerBuilder(blackPlayer: Player, whitePlayer: Player) {
-  return {
-    build: (playerSetting: PlayerSetting) => {
-      switch (playerSetting.uri) {
-        case "es://usi/test-engine-01":
-          return Promise.resolve(blackPlayer);
-        case "es://usi/test-engine-02":
-          return Promise.resolve(whitePlayer);
-      }
-      throw new Error("unexpected player URI");
-    },
-  };
-}
+import { playerURI01, playerURI02, gameSetting10m30s } from "../mock/game";
+import { createMockPlayer, createMockPlayerBuilder } from "../mock/player";
 
 function createMockHandlers() {
   return {
-    onEndGame: jest.fn(),
+    onGameEnd: jest.fn(),
     onPieceBeat: jest.fn(),
     onBeepShort: jest.fn(),
     onBeepUnlimited: jest.fn(),
@@ -89,14 +35,16 @@ describe("store/game", () => {
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
         "resign",
     });
-    const mockPlayerBuilder = createMockPlayerBuilder(
-      mockBlackPlayer,
-      mockWhitePlayer
-    );
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
     const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
     const manager = new GameManager(
       recordManager,
+      new Clock(),
+      new Clock(),
       mockPlayerBuilder,
       mockHandlers
     );
@@ -113,7 +61,7 @@ describe("store/game", () => {
         expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onEndGame.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
         expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
         expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
@@ -140,15 +88,17 @@ describe("store/game", () => {
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f":
         "2c2d",
     });
-    const mockPlayerBuilder = createMockPlayerBuilder(
-      mockBlackPlayer,
-      mockWhitePlayer
-    );
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
     const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
     recordManager.importRecord(initPos.sfen);
     const manager = new GameManager(
       recordManager,
+      new Clock(),
+      new Clock(),
       mockPlayerBuilder,
       mockHandlers
     );
@@ -165,7 +115,7 @@ describe("store/game", () => {
         expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onEndGame.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
         expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
         expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
@@ -190,14 +140,16 @@ describe("store/game", () => {
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
         "no-reply",
     });
-    const mockPlayerBuilder = createMockPlayerBuilder(
-      mockBlackPlayer,
-      mockWhitePlayer
-    );
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
     const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
     const manager = new GameManager(
       recordManager,
+      new Clock(),
+      new Clock(),
       mockPlayerBuilder,
       mockHandlers
     );
@@ -215,8 +167,8 @@ describe("store/game", () => {
         expect(mockWhitePlayer.gameover.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onEndGame.mock.calls.length).toBe(1);
-        expect(mockHandlers.onEndGame.mock.calls[0][0]).toBe(
+        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls[0][0]).toBe(
           SpecialMove.INTERRUPT
         );
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
@@ -243,22 +195,26 @@ describe("store/game", () => {
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
         "resign",
     });
-    const mockPlayerBuilder = createMockPlayerBuilder(
-      mockBlackPlayer,
-      mockWhitePlayer
-    );
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
     const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
+    const blackClock = new Clock();
+    const whiteClock = new Clock();
     const manager = new GameManager(
       recordManager,
+      blackClock,
+      whiteClock,
       mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
       .next(() => manager.startGame(gameSetting10m30s))
       .next(() => {
-        expect(manager.blackTimeMs).toBe(600 * 1e3);
-        expect(manager.whiteTimeMs).toBe(600 * 1e3);
+        expect(blackClock.timeMs).toBe(600 * 1e3);
+        expect(whiteClock.timeMs).toBe(600 * 1e3);
       })
       .invoke();
   });

@@ -19,7 +19,8 @@ describe("store/clock", () => {
       onStopBeep: jest.fn(),
       onTimeout: jest.fn(),
     };
-    const clock = new Clock(setting);
+    const clock = new Clock();
+    clock.setup(setting);
     clock.start();
     // 5:00
     expect(clock.timeMs).toBe(300 * 1e3);
@@ -79,7 +80,8 @@ describe("store/clock", () => {
       onStopBeep: jest.fn(),
       onTimeout: jest.fn(),
     };
-    const clock = new Clock(setting);
+    const clock = new Clock();
+    clock.setup(setting);
     clock.start();
     // 5:00 - 60
     expect(clock.timeMs).toBe(300 * 1e3);
@@ -148,7 +150,8 @@ describe("store/clock", () => {
       onStopBeep: jest.fn(),
       onTimeout: jest.fn(),
     };
-    const clock = new Clock(setting);
+    const clock = new Clock();
+    clock.setup(setting);
     clock.start();
     // 5:00
     expect(clock.timeMs).toBe(300 * 1e3);

@@ -67,6 +67,16 @@ dialog::backdrop {
   align-items: center;
 }
 
+.dialog-form-note {
+  text-align: left;
+  font-size: 0.8em;
+  margin-top: 5px;
+}
+
+.dialog-form-warning {
+  background-color: var(--text-bg-color-warning);
+}
+
 .dialog-main-buttons {
   display: flex;
   flex-direction: row;
@@ -115,7 +125,7 @@ dialog.menu {
 }
 
 dialog.menu .groups {
-  width: 80%;
+  width: 80vw;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -157,4 +167,17 @@ dialog.menu .label {
   display: block;
   font-size: 14px;
   margin-top: 0.5em;
+}
+
+dialog hr {
+  width: 100%;
+  border: none;
+  border-top: 1px dashed var(--dialog-border-color);
+}
+
+dialog select {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: auto;
 }

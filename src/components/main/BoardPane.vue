@@ -12,10 +12,10 @@
       :allow-edit="allowEdit"
       :black-player-name="blackPlayerName"
       :white-player-name="whitePlayerName"
-      :black-player-time-ms="blackPlayerTimeMs"
-      :black-player-byoyomi="blackPlayerByoyomi"
-      :white-player-time-ms="whitePlayerTimeMs"
-      :white-player-byoyomi="whitePlayerByoyomi"
+      :black-player-time-ms="clock?.black.timeMs"
+      :black-player-byoyomi="clock?.black.byoyomi"
+      :white-player-time-ms="clock?.white.timeMs"
+      :white-player-byoyomi="clock?.white.byoyomi"
       @resize="onResize"
       @move="onMove"
       @edit="onEdit"
@@ -144,6 +144,7 @@
         </div>
       </template>
     </BoardView>
+    <GameMenu v-if="isGameMenuVisible" @close="isGameMenuVisible = false" />
     <FileMenu v-if="isFileMenuVisible" @close="isFileMenuVisible = false" />
     <InitialPositionMenu
       v-if="isInitialPositionMenuVisible"
@@ -162,14 +163,17 @@ import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { AppState } from "@/store/state";
 import { humanPlayer } from "@/players/human";
 import { Icon } from "@/assets/icons";
+import GameMenu from "@/components/menu/GameMenu.vue";
 import FileMenu from "@/components/menu/FileMenu.vue";
 import InitialPositionMenu from "@/components/menu/InitialPositionMenu.vue";
+import { CSAGameState } from "@/store/csa";
 
 export default defineComponent({
   name: "BoardPane",
   components: {
     BoardView,
     ButtonIcon,
+    GameMenu,
     FileMenu,
     InitialPositionMenu,
   },
@@ -182,6 +186,7 @@ export default defineComponent({
   emits: ["resize"],
   setup(_, context) {
     const store = useStore();
+    const isGameMenuVisible = ref(false);
     const isFileMenuVisible = ref(false);
     const isInitialPositionMenuVisible = ref(false);
 
@@ -190,7 +195,10 @@ export default defineComponent({
     };
 
     const onMove = (move: Move) => {
-      if (store.appState === AppState.GAME) {
+      if (
+        store.appState === AppState.GAME ||
+        store.appState === AppState.CSA_GAME
+      ) {
         humanPlayer.doMove(move);
       } else {
         store.doMove(move);
@@ -202,7 +210,7 @@ export default defineComponent({
     };
 
     const onGame = () => {
-      store.showGameDialog();
+      isGameMenuVisible.value = true;
     };
 
     const onStop = () => {
@@ -292,24 +300,35 @@ export default defineComponent({
       );
     });
 
-    const blackPlayerTimeMs = computed(() =>
-      store.appState === AppState.GAME ? store.blackTimeMs : undefined
-    );
-    const blackPlayerByoyomi = computed(() =>
-      store.appState === AppState.GAME ? store.blackByoyomi : undefined
-    );
-    const whitePlayerTimeMs = computed(() =>
-      store.appState === AppState.GAME ? store.whiteTimeMs : undefined
-    );
-    const whitePlayerByoyomi = computed(() =>
-      store.appState === AppState.GAME ? store.whiteByoyomi : undefined
-    );
+    const clock = computed(() => {
+      if (
+        store.appState === AppState.GAME ||
+        store.csaGameState === CSAGameState.GAME
+      ) {
+        return {
+          black: {
+            timeMs: store.blackTimeMs,
+            byoyomi: store.blackByoyomi,
+          },
+          white: {
+            timeMs: store.whiteTimeMs,
+            byoyomi: store.whiteByoyomi,
+          },
+        };
+      }
+      return undefined;
+    });
 
     const controlStates = computed(() => {
       return {
         game: store.appState === AppState.NORMAL,
-        stop: store.appState === AppState.GAME,
-        resign: store.appState === AppState.GAME && store.isMovableByUser,
+        stop:
+          store.appState === AppState.GAME ||
+          store.appState === AppState.CSA_GAME,
+        resign:
+          (store.appState === AppState.GAME ||
+            store.appState === AppState.CSA_GAME) &&
+          store.isMovableByUser,
         research: store.appState === AppState.NORMAL,
         endResearch: store.appState === AppState.RESEARCH,
         analysis: store.appState === AppState.NORMAL,
@@ -325,6 +344,7 @@ export default defineComponent({
     });
 
     return {
+      isGameMenuVisible,
       isFileMenuVisible,
       isInitialPositionMenuVisible,
       appSetting,
@@ -332,10 +352,7 @@ export default defineComponent({
       lastMove,
       blackPlayerName,
       whitePlayerName,
-      blackPlayerTimeMs,
-      blackPlayerByoyomi,
-      whitePlayerTimeMs,
-      whitePlayerByoyomi,
+      clock,
       controlStates,
       onResize,
       onMove,

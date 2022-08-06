@@ -134,7 +134,6 @@ import { useStore } from "@/store";
 import {
   defaultGameSetting,
   GameSetting,
-  PlayerSetting,
   validateGameSetting,
 } from "@/settings/game";
 import { showModalDialog } from "@/helpers/dialog";
@@ -143,6 +142,7 @@ import { readInputAsNumber } from "@/helpers/form";
 import { Icon } from "@/assets/icons";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
+import { PlayerSetting } from "@/settings/player";
 
 export default defineComponent({
   name: "GameDialog",

@@ -1,12 +1,21 @@
 import { watch } from "vue";
 import { SpecialMove, InitialPositionType } from "@/shogi";
 import { useStore } from "@/store";
-import { usiBestMove } from "@/players/usi";
+import { onUSIBestMove } from "@/players/usi";
 import { humanPlayer } from "@/players/human";
 import { bridge } from "./api";
 import { MenuEvent } from "./menu";
 import { USIInfoSender } from "@/store/usi";
 import { AppState } from "@/store/state";
+import {
+  onCSAClose,
+  onCSAGameResult,
+  onCSAGameSummary,
+  onCSAMove,
+  onCSAReject,
+  onCSAStart,
+} from "@/store/csa";
+import { CSAGameResult, CSASpecialMove } from "./csa";
 
 export function setup(): void {
   const store = useStore();
@@ -132,11 +141,20 @@ export function setup(): void {
       case MenuEvent.START_GAME:
         store.showGameDialog();
         break;
+      case MenuEvent.START_CSA_GAME:
+        store.showCSAGameDialog();
+        break;
       case MenuEvent.STOP_GAME:
         store.stopGame();
         break;
       case MenuEvent.RESIGN:
         humanPlayer.resign();
+        break;
+      case MenuEvent.WIN:
+        humanPlayer.win();
+        break;
+      case MenuEvent.LOGOUT:
+        store.logoutCSAGame();
         break;
       case MenuEvent.START_RESEARCH:
         store.showResearchDialog();
@@ -163,7 +181,7 @@ export function setup(): void {
   });
   bridge.onUSIBestMove(
     (sessionID: number, usi: string, sfen: string, ponder?: string) => {
-      usiBestMove(sessionID, usi, sfen, ponder);
+      onUSIBestMove(sessionID, usi, sfen, ponder);
     }
   );
   bridge.onUSIInfo(
@@ -188,6 +206,32 @@ export function setup(): void {
       store.updateUSIPonderInfo(sessionID, usi, sender, name, JSON.parse(json));
     }
   );
+  bridge.onCSAGameSummary((sessionID: number, gameSummary: string): void => {
+    onCSAGameSummary(sessionID, JSON.parse(gameSummary));
+  });
+  bridge.onCSAReject((sessionID: number): void => {
+    onCSAReject(sessionID);
+  });
+  bridge.onCSAStart((sessionID: number, playerStates: string): void => {
+    onCSAStart(sessionID, JSON.parse(playerStates));
+  });
+  bridge.onCSAMove(
+    (sessionID: number, move: string, playerStates: string): void => {
+      onCSAMove(sessionID, move, JSON.parse(playerStates));
+    }
+  );
+  bridge.onCSAGameResult(
+    (
+      sessionID: number,
+      specialMove: CSASpecialMove,
+      gameResult: CSAGameResult
+    ): void => {
+      onCSAGameResult(sessionID, specialMove, gameResult);
+    }
+  );
+  bridge.onCSAClose((sessionID: number) => {
+    onCSAClose(sessionID);
+  });
   watch(
     () => [store.appState, store.isBussy],
     ([appState, bussy]) => {

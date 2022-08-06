@@ -285,6 +285,13 @@ function parseSpecialMove(line: string): SpecialMove | undefined {
   }
 }
 
+export function parseCSAMove(
+  position: ImmutablePosition,
+  line: string
+): Move | Error {
+  return parseMove(line, position);
+}
+
 export function importCSA(data: string): Record | Error {
   const metadata = new RecordMetadata();
   const record = new Record();
@@ -535,6 +542,10 @@ function formatSpecialMove(move: SpecialMove): string | undefined {
     case SpecialMove.MATE:
       return "%TSUMI";
   }
+}
+
+export function formatCSAMove(move: Move): string {
+  return formatMove(move);
 }
 
 export function exportCSA(

@@ -1,7 +1,7 @@
 type ClockSetting = {
-  timeMs: number;
-  byoyomi: number;
-  increment: number;
+  timeMs?: number;
+  byoyomi?: number;
+  increment?: number;
   onBeepShort?: () => void;
   onBeepUnlimited?: () => void;
   onStopBeep?: () => void;
@@ -9,20 +9,23 @@ type ClockSetting = {
 };
 
 export class Clock {
-  private _timeMs: number;
-  private _byoyomi: number;
-  private _elapsedMs: number;
-  private timerHandle: number;
-  private timerStart: number;
-  private lastTimeMs: number;
+  private setting: ClockSetting = {
+    timeMs: 0,
+    byoyomi: 0,
+    increment: 0,
+  };
+  private _timeMs = 0;
+  private _byoyomi = 0;
+  private _elapsedMs = 0;
+  private timerHandle = 0;
+  private timerStart = 0;
+  private lastTimeMs = 0;
 
-  constructor(private setting: ClockSetting) {
-    this._timeMs = this.setting.timeMs;
-    this._byoyomi = this.setting.byoyomi;
+  setup(setting: ClockSetting): void {
+    this.setting = setting;
+    this._timeMs = setting.timeMs || 0;
+    this._byoyomi = setting.byoyomi || 0;
     this._elapsedMs = 0;
-    this.timerHandle = 0;
-    this.timerStart = 0;
-    this.lastTimeMs = 0;
   }
 
   get timeMs(): number {
@@ -41,7 +44,7 @@ export class Clock {
     this.clearTimer();
     this.timerStart = Date.now();
     this.lastTimeMs = this._timeMs;
-    this._byoyomi = this.setting.byoyomi;
+    this._byoyomi = this.setting.byoyomi || 0;
     this._elapsedMs = 0;
     this.timerHandle = window.setInterval(() => {
       const lastTimeMs = this.timeMs;
@@ -53,7 +56,7 @@ export class Clock {
       } else {
         this._timeMs = 0;
         this._byoyomi = Math.max(
-          Math.ceil(this.setting.byoyomi + timeMs / 1e3),
+          Math.ceil((this.setting.byoyomi || 0) + timeMs / 1e3),
           0
         );
       }
@@ -128,6 +131,6 @@ export class Clock {
   }
 
   private incrementTime(): void {
-    this._timeMs += this.setting.increment * 1e3;
+    this._timeMs += (this.setting.increment || 0) * 1e3;
   }
 }

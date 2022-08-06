@@ -1,37 +1,14 @@
 import { LogLevel } from "@/ipc/log";
 import api from "@/ipc/api";
 import { GameResult, Player } from "@/players/player";
-import { humanPlayer } from "@/players/human";
-import { USIPlayer } from "@/players/usi";
-import {
-  defaultGameSetting,
-  GameSetting,
-  PlayerSetting,
-} from "@/settings/game";
+import { defaultGameSetting, GameSetting } from "@/settings/game";
 import { Color, Move, reverseColor, SpecialMove } from "@/shogi";
-import * as uri from "@/uri";
 import { RecordManager } from "./record";
 import { Clock } from "./clock";
-
-export interface PlayerBuilder {
-  build(playerSetting: PlayerSetting): Promise<Player>;
-}
-
-export const defaultPlayerBuilder: PlayerBuilder = {
-  async build(playerSetting: PlayerSetting): Promise<Player> {
-    if (playerSetting.uri === uri.ES_HUMAN) {
-      return humanPlayer;
-    } else if (uri.isUSIEngine(playerSetting.uri) && playerSetting.usi) {
-      const player = new USIPlayer(playerSetting.usi);
-      await player.launch();
-      return player;
-    }
-    throw new Error("予期せぬプレイヤーURIです: " + playerSetting.uri);
-  },
-};
+import { PlayerBuilder } from "@/players/builder";
 
 export interface GameHandlers {
-  onEndGame(specialMove?: SpecialMove): void;
+  onGameEnd(specialMove?: SpecialMove): void;
   onPieceBeat(): void;
   onBeepShort(): void;
   onBeepUnlimited(): void;
@@ -48,8 +25,6 @@ enum GameState {
 
 export class GameManager {
   private state: GameState;
-  private blackClock: Clock;
-  private whiteClock: Clock;
   private _setting: GameSetting;
   private blackPlayer?: Player;
   private whitePlayer?: Player;
@@ -57,30 +32,14 @@ export class GameManager {
 
   constructor(
     private recordManager: RecordManager,
+    private blackClock: Clock,
+    private whiteClock: Clock,
     private playerBuilder: PlayerBuilder,
     private handlers: GameHandlers
   ) {
     this.state = GameState.IDLE;
-    this.blackClock = new Clock({ timeMs: 0, byoyomi: 0, increment: 0 });
-    this.whiteClock = new Clock({ timeMs: 0, byoyomi: 0, increment: 0 });
     this._setting = defaultGameSetting();
     this.lastEventID = 0;
-  }
-
-  get blackTimeMs(): number {
-    return this.blackClock.timeMs;
-  }
-
-  get blackByoyomi(): number {
-    return this.blackClock.byoyomi;
-  }
-
-  get whiteTimeMs(): number {
-    return this.whiteClock.timeMs;
-  }
-
-  get whiteByoyomi(): number {
-    return this.whiteClock.byoyomi;
   }
 
   get setting(): GameSetting {
@@ -90,7 +49,7 @@ export class GameManager {
   async startGame(setting: GameSetting): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
-        "前回の対局が正常に終了できていません。アプリを再起動してください。"
+        "GameManager#startGame: 前回の対局が正常に終了できていません。アプリを再起動してください。"
       );
     }
     if (setting.startPosition) {
@@ -109,13 +68,13 @@ export class GameManager {
       onBeepUnlimited: () => this.handlers.onBeepUnlimited(),
       onStopBeep: () => this.handlers.onStopBeep(),
     };
-    this.blackClock = new Clock({
+    this.blackClock.setup({
       ...clockSetting,
       onTimeout: () => {
         this.timeout(Color.BLACK);
       },
     });
-    this.whiteClock = new Clock({
+    this.whiteClock.setup({
       ...clockSetting,
       onTimeout: () => {
         this.timeout(Color.WHITE);
@@ -140,7 +99,7 @@ export class GameManager {
   private next(): void {
     if (this.state !== GameState.ACTIVE) {
       this.handlers.onError(
-        "予期せぬステータスです: GameManager.next(): " + this.state
+        "GameManager#next: 予期せぬステータスです:" + this.state
       );
       return;
     }
@@ -150,7 +109,7 @@ export class GameManager {
     const ponderPlayer = this.getPlayer(reverseColor(color));
     if (!player || !ponderPlayer) {
       this.handlers.onError(
-        "致命的なエラーが発生しました: GameManager.next(): player is undefined"
+        "GameManager#next: プレイヤーが初期化されていません。"
       );
       return;
     }
@@ -158,9 +117,9 @@ export class GameManager {
     player
       .startSearch(
         this.recordManager.record,
-        this.setting,
-        this.blackTimeMs,
-        this.whiteTimeMs,
+        this.setting.timeLimit,
+        this.blackClock.timeMs,
+        this.whiteClock.timeMs,
         {
           onMove: (move: Move) => this.onMove(eventID, move),
           onResign: () => this.onResign(eventID),
@@ -170,32 +129,37 @@ export class GameManager {
       )
       .catch((e) => {
         this.handlers.onError(
-          new Error("プレイヤーにコマンドを送信できませんでした: " + e)
+          new Error(
+            "GameManager#next: プレイヤーにコマンドを送信できませんでした: " + e
+          )
         );
       });
     ponderPlayer
       .startPonder(
         this.recordManager.record,
-        this.setting,
-        this.blackTimeMs,
-        this.whiteTimeMs
+        this.setting.timeLimit,
+        this.blackClock.timeMs,
+        this.whiteClock.timeMs
       )
       .catch((e) => {
         this.handlers.onError(
-          new Error("プレイヤーにPonderコマンドを送信できませんでした: " + e)
+          new Error(
+            "GameManager#next: プレイヤーにPonderコマンドを送信できませんでした: " +
+              e
+          )
         );
       });
   }
 
   private onMove(eventID: number, move: Move): void {
     if (eventID !== this.lastEventID) {
-      api.log(LogLevel.WARN, "指し手を受信しましたが既にイベントは無効です。");
+      api.log(LogLevel.ERROR, "GameManager#onMove: event ID already disabled");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
       api.log(
-        LogLevel.WARN,
-        "指し手を受信しましたが既に対局中ではありません。"
+        LogLevel.ERROR,
+        "GameManager#onMove: invalid state: " + this.state
       );
       return;
     }
@@ -229,11 +193,17 @@ export class GameManager {
 
   private onResign(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      api.log(LogLevel.WARN, "投了を受信しましたが既にイベントは無効です。");
+      api.log(
+        LogLevel.ERROR,
+        "GameManager#onResign: event ID already disabled"
+      );
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      api.log(LogLevel.WARN, "投了を受信しましたが既に対局中ではありません。");
+      api.log(
+        LogLevel.ERROR,
+        "GameManager#onResign: invalid state: " + this.state
+      );
       return;
     }
     this.endGame(SpecialMove.RESIGN);
@@ -241,16 +211,13 @@ export class GameManager {
 
   private onWin(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      api.log(
-        LogLevel.WARN,
-        "勝ち宣言を受信しましたが既にイベントは無効です。"
-      );
+      api.log(LogLevel.ERROR, "GameManager#onWin: event ID already disabled");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
       api.log(
-        LogLevel.WARN,
-        "勝ち宣言を受信しましたが既に対局中ではありません。"
+        LogLevel.ERROR,
+        "GameManager#onWin: invalid state: " + this.state
       );
       return;
     }
@@ -260,7 +227,7 @@ export class GameManager {
   private onTimeout(): void {
     if (this.state !== GameState.ACTIVE) {
       this.handlers.onError(
-        "予期せぬステータスです: GameManager.onTimeout(): " + this.state
+        "GameManager#onTimeout: 予期せぬステータスです: " + this.state
       );
       return;
     }
@@ -273,7 +240,10 @@ export class GameManager {
     if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
         this.handlers.onError(
-          new Error("プレイヤーにコマンドを送信できませんでした: " + e)
+          new Error(
+            "GameManager#timeout: プレイヤーにコマンドを送信できませんでした: " +
+              e
+          )
         );
       });
       return;
@@ -305,7 +275,7 @@ export class GameManager {
         });
         this.recordManager.setGameEndMetadata();
         this.state = GameState.IDLE;
-        this.handlers.onEndGame(specialMove);
+        this.handlers.onGameEnd(specialMove);
       })
       .catch((e) => {
         this.handlers.onError(e);

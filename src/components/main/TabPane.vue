@@ -146,7 +146,10 @@ export default defineComponent({
           tab: id,
         })
         .catch((e) => {
-          api.log(LogLevel.WARN, toString(e));
+          api.log(
+            LogLevel.WARN,
+            "TabPane: failed to update app setting: " + toString(e)
+          );
         });
     };
     const activeTab = computed(() => store.appSetting.tab);

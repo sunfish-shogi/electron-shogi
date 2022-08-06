@@ -39,5 +39,5 @@ export {
   getNextColorFromUSI,
 } from "./record";
 export { exportKakinoki, importKakinoki } from "./kakinoki";
-export { exportCSA, importCSA } from "./csa";
+export { formatCSAMove, exportCSA, parseCSAMove, importCSA } from "./csa";
 export { detectRecordFormat, RecordFormatType } from "./detect";

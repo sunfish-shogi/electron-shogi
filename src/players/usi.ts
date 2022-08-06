@@ -1,5 +1,5 @@
 import api from "@/ipc/api";
-import { GameSetting } from "@/settings/game";
+import { TimeLimitSetting } from "@/settings/game";
 import {
   getUSIEngineOptionCurrentValue,
   USIEngineSetting,
@@ -29,7 +29,7 @@ export class USIPlayer implements Player {
 
   async startSearch(
     record: ImmutableRecord,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,
     handler: SearchHandler
@@ -43,7 +43,7 @@ export class USIPlayer implements Player {
       await api.usiGo(
         this.sessionID,
         this.usi,
-        gameSetting,
+        timeLimit,
         blackTimeMs,
         whiteTimeMs
       );
@@ -54,7 +54,7 @@ export class USIPlayer implements Player {
 
   async startPonder(
     record: ImmutableRecord,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void> {
@@ -71,7 +71,7 @@ export class USIPlayer implements Player {
     await api.usiGoPonder(
       this.sessionID,
       this.ponder,
-      gameSetting,
+      timeLimit,
       blackTimeMs,
       whiteTimeMs
     );
@@ -127,7 +127,7 @@ export class USIPlayer implements Player {
 
 export const usiPlayers: { [sessionID: number]: USIPlayer } = {};
 
-export function usiBestMove(
+export function onUSIBestMove(
   sessionID: number,
   usi: string,
   sfen: string,

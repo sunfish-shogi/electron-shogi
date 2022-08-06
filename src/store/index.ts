@@ -29,7 +29,7 @@ import {
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
 import { RecordManager } from "./record";
-import { defaultPlayerBuilder, GameManager } from "./game";
+import { GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
 import { BussyStore } from "./bussy";
@@ -49,6 +49,10 @@ import { AnalysisSetting } from "@/settings/analysis";
 import { USIPlayer } from "@/players/usi";
 import { LogLevel } from "@/ipc/log";
 import { toString } from "@/helpers/string";
+import { CSAGameManager, CSAGameState } from "./csa";
+import { Clock } from "./clock";
+import { CSAGameSetting, appendCSAGameSettingHistory } from "@/settings/csa";
+import { defaultPlayerBuilder } from "@/players/builder";
 
 export class Store {
   private _bussy = new BussyStore();
@@ -61,8 +65,19 @@ export class Store {
   private _isAppSettingDialogVisible = false;
   private _confirmation?: Confirmation;
   private usiMonitor = new USIMonitor();
+  private blackClock = new Clock();
+  private whiteClock = new Clock();
   private gameManager = new GameManager(
     this.recordManager,
+    this.blackClock,
+    this.whiteClock,
+    defaultPlayerBuilder,
+    this
+  );
+  private csaGameManager = new CSAGameManager(
+    this.recordManager,
+    this.blackClock,
+    this.whiteClock,
     defaultPlayerBuilder,
     this
   );
@@ -170,13 +185,16 @@ export class Store {
     if (this.appState == AppState.TEMPORARY) {
       api.log(
         LogLevel.ERROR,
-        "確認ダイアログを多重に表示しようとしました。" +
+        "Store#showConfirmation: 確認ダイアログを多重に表示しようとしました。" +
           ` lastAppState=${this.lastAppState}` +
           (this._confirmation
             ? ` currentMessage=${this._confirmation.message}`
             : "") +
           ` newMessage=${confirmation.message}`
       );
+      if (confirmation.onCancel) {
+        confirmation.onCancel();
+      }
       return;
     }
     this._confirmation = confirmation;
@@ -220,6 +238,12 @@ export class Store {
     }
   }
 
+  showCSAGameDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.CSA_GAME_DIALOG;
+    }
+  }
+
   showResearchDialog(): void {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.RESEARCH_DIALOG;
@@ -242,6 +266,7 @@ export class Store {
     if (
       this.appState === AppState.PASTE_DIALOG ||
       this.appState === AppState.GAME_DIALOG ||
+      this.appState === AppState.CSA_GAME_DIALOG ||
       this.appState === AppState.RESEARCH_DIALOG ||
       this.appState === AppState.ANALYSIS_DIALOG ||
       this.appState === AppState.USI_ENGINE_SETTING_DIALOG
@@ -326,24 +351,20 @@ export class Store {
     );
   }
 
-  get gameSetting(): GameSetting {
-    return this.gameManager.setting;
-  }
-
   get blackTimeMs(): number {
-    return this.gameManager.blackTimeMs;
+    return this.blackClock.timeMs;
   }
 
   get blackByoyomi(): number {
-    return this.gameManager.blackByoyomi;
+    return this.blackClock.byoyomi;
   }
 
   get whiteTimeMs(): number {
-    return this.gameManager.whiteTimeMs;
+    return this.whiteClock.timeMs;
   }
 
   get whiteByoyomi(): number {
-    return this.gameManager.whiteByoyomi;
+    return this.whiteClock.byoyomi;
   }
 
   startGame(setting: GameSetting): void {
@@ -366,6 +387,45 @@ export class Store {
       .finally(() => {
         this.releaseBussyState();
       });
+  }
+
+  get csaGameState(): CSAGameState {
+    return this.csaGameManager.state;
+  }
+
+  loginCSAGame(setting: CSAGameSetting, opt: { saveHistory: boolean }): void {
+    if (this.appState !== AppState.CSA_GAME_DIALOG) {
+      return;
+    }
+    this.retainBussyState();
+    Promise.resolve()
+      .then(async () => {
+        if (opt.saveHistory) {
+          const latestHistory = await api.loadCSAGameSettingHistory();
+          const history = appendCSAGameSettingHistory(latestHistory, setting);
+          await api.saveCSAGameSettingHistory(history);
+        }
+      })
+      .then(() => this.csaGameManager.login(setting))
+      .then(() => (this._appState = AppState.CSA_GAME))
+      .catch((e) => {
+        this.pushError("対局の初期化中にエラーが出ました: " + e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
+  }
+
+  logoutCSAGame(): void {
+    if (this.appState !== AppState.CSA_GAME) {
+      return;
+    }
+    if (this.csaGameManager.state === CSAGameState.GAME) {
+      this.pushError("ログアウトするには対局を終了してください。");
+      return;
+    }
+    this.csaGameManager.logout();
+    this._appState = AppState.NORMAL;
   }
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
@@ -391,6 +451,13 @@ export class Store {
   stopGame(): void {
     if (this.appState === AppState.GAME) {
       this.gameManager.endGame(SpecialMove.INTERRUPT);
+    } else if (this.appState === AppState.CSA_GAME) {
+      this.showConfirmation({
+        message: "中断を要求すると負けになる可能性があります。よろしいですか？",
+        onOk: () => {
+          this.csaGameManager.stop();
+        },
+      });
     }
   }
 
@@ -398,7 +465,7 @@ export class Store {
     playPieceBeat(this.appSetting.pieceVolume);
   }
 
-  onEndGame(specialMove?: SpecialMove): void {
+  onGameEnd(specialMove?: SpecialMove): void {
     if (this.appState !== AppState.GAME) {
       return;
     }
@@ -408,6 +475,19 @@ export class Store {
       );
     }
     this._appState = AppState.NORMAL;
+  }
+
+  onCSAGameEnd(): void {
+    if (this.appState !== AppState.CSA_GAME) {
+      return;
+    }
+    this._appState = AppState.NORMAL;
+  }
+
+  onFlipBoard(flip: boolean): void {
+    if (this._appSetting.boardFlipping !== flip) {
+      this.flipBoard();
+    }
   }
 
   onBeepShort(): void {
@@ -791,8 +871,13 @@ export class Store {
       case AppState.GAME:
         return (
           (this.recordManager.record.position.color === Color.BLACK
-            ? this.gameSetting.black.uri
-            : this.gameSetting.white.uri) === uri.ES_HUMAN
+            ? this.gameManager.setting.black.uri
+            : this.gameManager.setting.white.uri) === uri.ES_HUMAN
+        );
+      case AppState.CSA_GAME:
+        return (
+          this.csaGameManager.isMyTurn &&
+          this.csaGameManager.setting.player.uri === uri.ES_HUMAN
         );
     }
     return false;

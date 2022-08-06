@@ -8,7 +8,7 @@ import * as uri from "@/uri";
 import { onUSIBestMove, onUSIInfo, onUSIPonderInfo } from "@/ipc/background";
 import { Color, getNextColorFromUSI } from "@/shogi";
 import { USIInfoSender } from "@/store/usi";
-import { GameSetting } from "@/settings/game";
+import { TimeLimitSetting } from "@/settings/game";
 import { GameResult } from "@/players/player";
 
 const TimeoutSeconds = 10;
@@ -81,7 +81,7 @@ enum SessionType {
   RESEARCH,
 }
 
-type Player = {
+type Session = {
   name: string;
   process: EngineProcess;
   setting: USIEngineSetting;
@@ -95,25 +95,31 @@ function issueSessionID(): number {
   return lastSessionID;
 }
 
-const players = new Map<number, Player>();
+const sessions = new Map<number, Session>();
 
-function getPlayer(sessionID: number): Player {
-  const player = players.get(sessionID);
-  if (!player) {
+function getSession(sessionID: number): Session {
+  const session = sessions.get(sessionID);
+  if (!session) {
     throw new Error(
       "エンジンのセッションが見つかりません: SessionID=" + sessionID
     );
   }
-  return player;
+  return session;
 }
 
 export function setupPlayer(setting: USIEngineSetting): Promise<number> {
   const sessionID = issueSessionID();
+  const process = new EngineProcess(setting.path, sessionID, {
+    timeout: TimeoutSeconds * 1e3,
+    engineOptions: Object.values(setting.options),
+  });
+  sessions.set(sessionID, {
+    name: setting.name,
+    process,
+    setting,
+    sessionType: SessionType.GAME,
+  });
   return new Promise<number>((resolve, reject) => {
-    const process = new EngineProcess(setting.path, sessionID, {
-      timeout: TimeoutSeconds * 1e3,
-      engineOptions: Object.values(setting.options),
-    });
     process.on("error", (e) => {
       reject(e);
     });
@@ -123,12 +129,6 @@ export function setupPlayer(setting: USIEngineSetting): Promise<number> {
           TimeoutSeconds + "秒以内にエンジンから応答がありませんでした。"
         )
       );
-    });
-    players.set(sessionID, {
-      name: setting.name,
-      process,
-      setting,
-      sessionType: SessionType.GAME,
     });
     process.on("bestmove", (usi, sfen, ponder) => {
       onUSIBestMove(sessionID, usi, sfen, ponder);
@@ -141,102 +141,102 @@ export function setupPlayer(setting: USIEngineSetting): Promise<number> {
 }
 
 function buildTimeState(
-  gameSetting: GameSetting,
+  timeLimit: TimeLimitSetting,
   blackTimeMs: number,
   whiteTimeMs: number
 ): TimeState {
   // USI では btime + binc (または wtime + winc) が今回利用可能な時間を表すとしている。
   // Electron Shogi では既に加算した後の値を保持しているため、ここで減算する。
   return {
-    btime: blackTimeMs - gameSetting.timeLimit.increment * 1e3,
-    wtime: whiteTimeMs - gameSetting.timeLimit.increment * 1e3,
-    byoyomi: gameSetting.timeLimit.byoyomi * 1e3,
-    binc: gameSetting.timeLimit.increment * 1e3,
-    winc: gameSetting.timeLimit.increment * 1e3,
+    btime: blackTimeMs - timeLimit.increment * 1e3,
+    wtime: whiteTimeMs - timeLimit.increment * 1e3,
+    byoyomi: timeLimit.byoyomi * 1e3,
+    binc: timeLimit.increment * 1e3,
+    winc: timeLimit.increment * 1e3,
   };
 }
 
 export function go(
   sessionID: number,
   usi: string,
-  gameSetting: GameSetting,
+  timeLimit: TimeLimitSetting,
   blackTimeMs: number,
   whiteTimeMs: number
 ): void {
-  const player = getPlayer(sessionID);
-  player.process.go(usi, buildTimeState(gameSetting, blackTimeMs, whiteTimeMs));
-  player.process.on("info", (usi, info) => {
+  const session = getSession(sessionID);
+  session.process.go(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
+  session.process.on("info", (usi, info) => {
     const sender =
       getNextColorFromUSI(usi) === Color.BLACK
         ? USIInfoSender.BLACK_PLAYER
         : USIInfoSender.WHITE_PLAYER;
-    onUSIInfo(sessionID, usi, sender, player.name, info);
+    onUSIInfo(sessionID, usi, sender, session.name, info);
   });
 }
 
 export function goPonder(
   sessionID: number,
   usi: string,
-  gameSetting: GameSetting,
+  timeLimit: TimeLimitSetting,
   blackTimeMs: number,
   whiteTimeMs: number
 ): void {
-  const player = getPlayer(sessionID);
-  player.process.goPonder(
+  const session = getSession(sessionID);
+  session.process.goPonder(
     usi,
-    buildTimeState(gameSetting, blackTimeMs, whiteTimeMs)
+    buildTimeState(timeLimit, blackTimeMs, whiteTimeMs)
   );
-  player.process.on("ponderInfo", (usi, info) => {
+  session.process.on("ponderInfo", (usi, info) => {
     const sender =
       getNextColorFromUSI(usi) === Color.BLACK
         ? USIInfoSender.BLACK_PLAYER
         : USIInfoSender.WHITE_PLAYER;
-    onUSIPonderInfo(sessionID, usi, sender, player.name, info);
+    onUSIPonderInfo(sessionID, usi, sender, session.name, info);
   });
 }
 
 export function goInfinite(sessionID: number, usi: string): void {
-  const player = getPlayer(sessionID);
-  player.process.go(usi);
-  player.process.on("info", (usi, info) => {
-    onUSIInfo(sessionID, usi, USIInfoSender.RESEARCHER, player.name, info);
+  const session = getSession(sessionID);
+  session.process.go(usi);
+  session.process.on("info", (usi, info) => {
+    onUSIInfo(sessionID, usi, USIInfoSender.RESEARCHER, session.name, info);
   });
 }
 
 export function ponderHit(sessionID: number): void {
-  const player = getPlayer(sessionID);
-  player.process.ponderHit();
+  const session = getSession(sessionID);
+  session.process.ponderHit();
 }
 
 export function stop(sessionID: number): void {
-  const player = getPlayer(sessionID);
-  player.process.stop();
+  const session = getSession(sessionID);
+  session.process.stop();
 }
 
 export function gameover(sessionID: number, result: GameResult): void {
-  const player = getPlayer(sessionID);
+  const session = getSession(sessionID);
   switch (result) {
     case GameResult.WIN:
-      player.process.gameover(USIGameResult.WIN);
+      session.process.gameover(USIGameResult.WIN);
       break;
     case GameResult.LOSE:
-      player.process.gameover(USIGameResult.LOSE);
+      session.process.gameover(USIGameResult.LOSE);
       break;
     case GameResult.DRAW:
-      player.process.gameover(USIGameResult.DRAW);
+      session.process.gameover(USIGameResult.DRAW);
       break;
   }
 }
 
 export function quit(sessionID: number): void {
-  const player = getPlayer(sessionID);
-  player.process.quit();
-  players.delete(sessionID);
+  const session = getSession(sessionID);
+  session.process.quit();
+  sessions.delete(sessionID);
 }
 
 export function quitAll(): void {
-  players.forEach((player) => {
-    player.process.quit();
+  sessions.forEach((session) => {
+    session.process.quit();
   });
-  players.clear();
+  sessions.clear();
 }

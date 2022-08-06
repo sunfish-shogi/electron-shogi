@@ -2,6 +2,7 @@
   <div class="root" :class="thema">
     <StandardLayout class="main" />
     <GameDialog v-if="dialogVisibilities.game" />
+    <CSAGameDialog v-if="dialogVisibilities.csaGame" />
     <ResearchDialog v-if="dialogVisibilities.research" />
     <AnalysisDialog v-if="dialogVisibilities.analysis" />
     <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
@@ -9,6 +10,7 @@
     <PasteDialog v-if="dialogVisibilities.paste" />
     <BussyMessage v-if="dialogVisibilities.bussy" />
     <ConfirmDialog v-if="dialogVisibilities.confirm" />
+    <CSAGameReadyDialog v-if="dialogVisibilities.csaGameReady" />
     <InfoMessage v-if="hasMessage" />
     <ErrorMessage v-if="hasErrors" />
   </div>
@@ -18,6 +20,7 @@
 import { defineComponent, computed, onMounted } from "vue";
 import StandardLayout from "@/components/main/StandardLayout.vue";
 import GameDialog from "@/components/dialog/GameDialog.vue";
+import CSAGameDialog from "@/components/dialog/CSAGameDialog.vue";
 import ResearchDialog from "@/components/dialog/ResearchDialog.vue";
 import USIEngineManagementDialog from "@/components/dialog/USIEngineManagementDialog.vue";
 import AppSettingDialog from "@/components/dialog/AppSettingDialog.vue";
@@ -29,13 +32,16 @@ import ErrorMessage from "@/components/dialog/ErrorMessage.vue";
 import { useStore } from "@/store";
 import { AppState } from "@/store/state";
 import { handleKeyDownEvent } from "@/helpers/key";
-import AnalysisDialog from "./components/dialog/AnalysisDialog.vue";
+import AnalysisDialog from "@/components/dialog/AnalysisDialog.vue";
+import CSAGameReadyDialog from "@/components/dialog/CSAGameReadyDialog.vue";
+import { CSAGameState } from "./store/csa";
 
 export default defineComponent({
   name: "App",
   components: {
     StandardLayout,
     GameDialog,
+    CSAGameDialog,
     ResearchDialog,
     USIEngineManagementDialog,
     AppSettingDialog,
@@ -45,6 +51,7 @@ export default defineComponent({
     InfoMessage,
     ErrorMessage,
     AnalysisDialog,
+    CSAGameReadyDialog,
   },
   setup() {
     const store = useStore();
@@ -54,6 +61,7 @@ export default defineComponent({
     const dialogVisibilities = computed(() => {
       return {
         game: store.appState === AppState.GAME_DIALOG,
+        csaGame: store.appState === AppState.CSA_GAME_DIALOG,
         research: store.appState === AppState.RESEARCH_DIALOG,
         analysis: store.appState === AppState.ANALYSIS_DIALOG,
         usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
@@ -61,6 +69,7 @@ export default defineComponent({
         paste: store.appState === AppState.PASTE_DIALOG,
         bussy: store.isBussy,
         confirm: store.confirmation !== undefined,
+        csaGameReady: store.csaGameState === CSAGameState.READY,
       };
     });
 

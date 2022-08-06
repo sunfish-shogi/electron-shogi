@@ -129,7 +129,7 @@ export default defineComponent({
     const dialog: Ref = ref(null);
     const engineNameInput: Ref = ref(null);
     const latest = props.latestEngineSetting as USIEngineSetting;
-    let engine = ref(latest);
+    const engine = ref(latest);
 
     const options = computed(() => {
       return Object.values(engine.value.options)

@@ -65,7 +65,7 @@ import {
 import BoardView from "@/components/primitive/BoardView.vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { RectSize } from "@/components/primitive/Types";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import { showModalDialog } from "@/helpers/dialog";
 import { Icon } from "@/assets/icons";
 

@@ -8,15 +8,10 @@ import {
   GameSetting,
   PlayerSetting,
 } from "@/settings/game";
-import {
-  Color,
-  ImmutableRecord,
-  Move,
-  Record,
-  reverseColor,
-  SpecialMove,
-} from "@/shogi";
+import { Color, Move, reverseColor, SpecialMove } from "@/shogi";
 import * as uri from "@/uri";
+import { RecordManager } from "./record";
+import { Clock } from "./clock";
 
 export interface PlayerBuilder {
   build(playerSetting: PlayerSetting): Promise<Player>;
@@ -35,14 +30,9 @@ export const defaultPlayerBuilder: PlayerBuilder = {
   },
 };
 
-type PlayerState = {
-  timeMs: number;
-  byoyomi: number;
-};
-
 export interface GameHandlers {
-  onMove(move: Move): ImmutableRecord;
   onEndGame(specialMove?: SpecialMove): void;
+  onPieceBeat(): void;
   onBeepShort(): void;
   onBeepUnlimited(): void;
   onStopBeep(): void;
@@ -58,74 +48,80 @@ enum GameState {
 
 export class GameManager {
   private state: GameState;
-  private handlers: GameHandlers;
-  private playerBuilder: PlayerBuilder;
-  private blackState: PlayerState;
-  private whiteState: PlayerState;
-  private timerHandle: number;
-  private timerStart: Date;
-  private lastTimeMs: number;
-  private _elapsedMs: number;
+  private blackClock: Clock;
+  private whiteClock: Clock;
   private _setting: GameSetting;
   private blackPlayer?: Player;
   private whitePlayer?: Player;
   private lastEventID: number;
-  private record: ImmutableRecord;
 
-  constructor(playerBuilder: PlayerBuilder, handlers: GameHandlers) {
+  constructor(
+    private recordManager: RecordManager,
+    private playerBuilder: PlayerBuilder,
+    private handlers: GameHandlers
+  ) {
     this.state = GameState.IDLE;
-    this.handlers = handlers;
-    this.playerBuilder = playerBuilder;
-    this.blackState = { timeMs: 0, byoyomi: 0 };
-    this.whiteState = { timeMs: 0, byoyomi: 0 };
-    this.timerHandle = 0;
-    this.timerStart = new Date();
-    this.lastTimeMs = 0;
-    this._elapsedMs = 0;
+    this.blackClock = new Clock({ timeMs: 0, byoyomi: 0, increment: 0 });
+    this.whiteClock = new Clock({ timeMs: 0, byoyomi: 0, increment: 0 });
     this._setting = defaultGameSetting();
     this.lastEventID = 0;
-    this.record = new Record();
   }
 
   get blackTimeMs(): number {
-    return this.blackState.timeMs;
+    return this.blackClock.timeMs;
   }
 
   get blackByoyomi(): number {
-    return this.blackState.byoyomi;
+    return this.blackClock.byoyomi;
   }
 
   get whiteTimeMs(): number {
-    return this.whiteState.timeMs;
+    return this.whiteClock.timeMs;
   }
 
   get whiteByoyomi(): number {
-    return this.whiteState.byoyomi;
-  }
-
-  get elapsedMs(): number {
-    return this._elapsedMs;
+    return this.whiteClock.byoyomi;
   }
 
   get setting(): GameSetting {
     return this._setting;
   }
 
-  async startGame(
-    setting: GameSetting,
-    record: ImmutableRecord
-  ): Promise<void> {
+  async startGame(setting: GameSetting): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
         "前回の対局が正常に終了できていません。アプリを再起動してください。"
       );
     }
-    this.blackState.timeMs = setting.timeLimit.timeSeconds * 1e3;
-    this.blackState.byoyomi = setting.timeLimit.byoyomi;
-    this.whiteState.timeMs = setting.timeLimit.timeSeconds * 1e3;
-    this.whiteState.byoyomi = setting.timeLimit.byoyomi;
+    if (setting.startPosition) {
+      this.recordManager.reset(setting.startPosition);
+    }
+    this.recordManager.setGameStartMetadata({
+      blackName: setting.black.name,
+      whiteName: setting.white.name,
+      timeLimit: setting.timeLimit,
+    });
+    const clockSetting = {
+      timeMs: setting.timeLimit.timeSeconds * 1e3,
+      byoyomi: setting.timeLimit.byoyomi,
+      increment: setting.timeLimit.increment,
+      onBeepShort: () => this.handlers.onBeepShort(),
+      onBeepUnlimited: () => this.handlers.onBeepUnlimited(),
+      onStopBeep: () => this.handlers.onStopBeep(),
+    };
+    this.blackClock = new Clock({
+      ...clockSetting,
+      onTimeout: () => {
+        this.timeout(Color.BLACK);
+      },
+    });
+    this.whiteClock = new Clock({
+      ...clockSetting,
+      onTimeout: () => {
+        this.timeout(Color.WHITE);
+      },
+    });
     this._setting = setting;
-    this.record = record;
     try {
       this.blackPlayer = await this.playerBuilder.build(setting.black);
       this.whitePlayer = await this.playerBuilder.build(setting.white);
@@ -148,8 +144,8 @@ export class GameManager {
       );
       return;
     }
-    const color = this.record.position.color;
-    this.startTimer(color);
+    const color = this.recordManager.record.position.color;
+    this.getActiveClock().start();
     const player = this.getPlayer(color);
     const ponderPlayer = this.getPlayer(reverseColor(color));
     if (!player || !ponderPlayer) {
@@ -161,7 +157,7 @@ export class GameManager {
     const eventID = this.issueEventID();
     player
       .startSearch(
-        this.record,
+        this.recordManager.record,
         this.setting,
         this.blackTimeMs,
         this.whiteTimeMs,
@@ -179,7 +175,7 @@ export class GameManager {
       });
     ponderPlayer
       .startPonder(
-        this.record,
+        this.recordManager.record,
         this.setting,
         this.blackTimeMs,
         this.whiteTimeMs
@@ -203,23 +199,28 @@ export class GameManager {
       );
       return;
     }
-    if (!this.record.position.isValidMove(move)) {
+    if (!this.recordManager.record.position.isValidMove(move)) {
       this.handlers.onError("反則手: " + move.getDisplayText());
       this.endGame(SpecialMove.FOUL_LOSE);
       return;
     }
-    this.incrementTime(this.record.position.color);
-    this.record = this.handlers.onMove(move);
-    const faulColor = this.record.perpetualCheck;
+    this.getActiveClock().stop();
+    this.recordManager.appendMove({
+      move,
+      moveOption: { ignoreValidation: true },
+      elapsedMs: this.getActiveClock().elapsedMs,
+    });
+    this.handlers.onPieceBeat();
+    const faulColor = this.recordManager.record.perpetualCheck;
     if (faulColor) {
-      if (faulColor === this.record.position.color) {
+      if (faulColor === this.recordManager.record.position.color) {
         this.endGame(SpecialMove.FOUL_LOSE);
         return;
       } else {
         this.endGame(SpecialMove.FOUL_WIN);
         return;
       }
-    } else if (this.record.repetition) {
+    } else if (this.recordManager.record.repetition) {
       this.endGame(SpecialMove.REPETITION_DRAW);
       return;
     }
@@ -266,53 +267,8 @@ export class GameManager {
     this.endGame(SpecialMove.TIMEOUT);
   }
 
-  private startTimer(color: Color): void {
-    this.stopTimer();
-    const playerState = this.getPlayerState(color);
-    this.timerStart = new Date();
-    this.lastTimeMs = playerState.timeMs;
-    playerState.byoyomi = this.setting.timeLimit.byoyomi;
-    this._elapsedMs = 0;
-    this.timerHandle = window.setInterval(() => {
-      const lastTimeMs = playerState.timeMs;
-      const lastByoyomi = playerState.byoyomi;
-      const now = new Date();
-      this._elapsedMs = now.getTime() - this.timerStart.getTime();
-      const timeMs = this.lastTimeMs - this._elapsedMs;
-      if (timeMs >= 0) {
-        playerState.timeMs = timeMs;
-      } else {
-        playerState.timeMs = 0;
-        playerState.byoyomi = Math.max(
-          Math.ceil(this.setting.timeLimit.byoyomi + timeMs / 1e3),
-          0
-        );
-      }
-      if (playerState.timeMs === 0 && playerState.byoyomi === 0) {
-        this.timeout(color);
-        return;
-      }
-      const lastTime = Math.ceil(lastTimeMs / 1e3);
-      const time = Math.ceil(playerState.timeMs / 1e3);
-      const byoyomi = playerState.byoyomi;
-      if (time === 0 && (lastTimeMs > 0 || byoyomi !== lastByoyomi)) {
-        if (byoyomi <= 5) {
-          this.handlers.onBeepUnlimited();
-        } else if (byoyomi <= 10 || byoyomi % 10 === 0) {
-          this.handlers.onBeepShort();
-        }
-      } else if (!this.setting.timeLimit.byoyomi && time !== lastTime) {
-        if (time <= 5) {
-          this.handlers.onBeepUnlimited();
-        } else if (time <= 10 || time === 20 || time === 30 || time === 60) {
-          this.handlers.onBeepShort();
-        }
-      }
-    }, 100);
-  }
-
   private timeout(color: Color): void {
-    this.stopTimer();
+    this.handlers.onStopBeep();
     const player = this.getPlayer(color);
     if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
@@ -330,7 +286,6 @@ export class GameManager {
       return;
     }
     this.state = GameState.BUSSY;
-    this.stopTimer();
     this.endGameAsync(specialMove)
       .then(() => {
         this.state = GameState.IDLE;
@@ -343,10 +298,16 @@ export class GameManager {
 
   private async endGameAsync(specialMove?: SpecialMove): Promise<void> {
     if (specialMove) {
-      const color = this.record.position.color;
+      const color = this.recordManager.record.position.color;
       await this.sendGameResults(color, specialMove);
     }
     await this.closePlayers();
+    this.getActiveClock().pause();
+    this.recordManager.appendMove({
+      move: specialMove || SpecialMove.INTERRUPT,
+      elapsedMs: this.getActiveClock().elapsedMs,
+    });
+    this.recordManager.setGameEndMetadata();
     this.handlers.onEndGame(specialMove);
   }
 
@@ -389,18 +350,6 @@ export class GameManager {
     return null;
   }
 
-  private stopTimer(): void {
-    this.handlers.onStopBeep();
-    if (this.timerHandle) {
-      window.clearInterval(this.timerHandle);
-      this.timerHandle = 0;
-    }
-  }
-
-  private incrementTime(color: Color): void {
-    this.getPlayerState(color).timeMs += this.setting.timeLimit.increment * 1e3;
-  }
-
   private async closePlayers(): Promise<void> {
     if (this.blackPlayer) {
       await this.blackPlayer.close();
@@ -421,12 +370,13 @@ export class GameManager {
     }
   }
 
-  private getPlayerState(color: Color): PlayerState {
+  private getActiveClock(): Clock {
+    const color = this.recordManager.record.position.color;
     switch (color) {
       case Color.BLACK:
-        return this.blackState;
+        return this.blackClock;
       case Color.WHITE:
-        return this.whiteState;
+        return this.whiteClock;
     }
   }
 

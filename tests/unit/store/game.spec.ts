@@ -6,10 +6,10 @@ import {
   InitialPositionType,
   Move,
   Position,
-  Record,
   SpecialMove,
 } from "@/shogi";
 import { GameManager } from "@/store/game";
+import { RecordManager } from "@/store/record";
 
 const blackPlayerSetting = {
   name: "USI Engine 01",
@@ -97,13 +97,10 @@ function createMockPlayerBuilder(blackPlayer: Player, whitePlayer: Player) {
   };
 }
 
-function createMockHandlers(record: Record) {
+function createMockHandlers() {
   return {
-    onMove(move: Move): ImmutableRecord {
-      expect(record.append(move)).toBeTruthy();
-      return record;
-    },
     onEndGame: jest.fn(),
+    onPieceBeat: jest.fn(),
     onBeepShort: jest.fn(),
     onBeepUnlimited: jest.fn(),
     onStopBeep: jest.fn(),
@@ -117,7 +114,6 @@ describe("store/game", () => {
   });
 
   it("GameManager/resign", () => {
-    const record = new Record();
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
         "7g7f",
@@ -134,10 +130,15 @@ describe("store/game", () => {
       mockBlackPlayer,
       mockWhitePlayer
     );
-    const mockHandlers = createMockHandlers(record);
-    const manager = new GameManager(mockPlayerBuilder, mockHandlers);
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    const manager = new GameManager(
+      recordManager,
+      mockPlayerBuilder,
+      mockHandlers
+    );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s, record))
+      .next(() => manager.startGame(gameSetting10m30s))
       .next(() => {
         expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
         expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
@@ -152,9 +153,9 @@ describe("store/game", () => {
         expect(mockHandlers.onEndGame.mock.calls.length).toBe(1);
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
         expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(5);
+        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
         expect(mockHandlers.onError.mock.calls.length).toBe(0);
-        expect(record.usi).toBe(
+        expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
         );
       })
@@ -164,7 +165,6 @@ describe("store/game", () => {
   it("GameManager/handicap-bishop", () => {
     const initPos = new Position();
     initPos.reset(InitialPositionType.HANDICAP_BISHOP);
-    const record = new Record(initPos);
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b":
         "7g7f",
@@ -181,10 +181,16 @@ describe("store/game", () => {
       mockBlackPlayer,
       mockWhitePlayer
     );
-    const mockHandlers = createMockHandlers(record);
-    const manager = new GameManager(mockPlayerBuilder, mockHandlers);
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.importRecord(initPos.sfen);
+    const manager = new GameManager(
+      recordManager,
+      mockPlayerBuilder,
+      mockHandlers
+    );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s, record))
+      .next(() => manager.startGame(gameSetting10m30s))
       .next(() => {
         expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
         expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
@@ -199,9 +205,9 @@ describe("store/game", () => {
         expect(mockHandlers.onEndGame.mock.calls.length).toBe(1);
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
         expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(5);
+        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
         expect(mockHandlers.onError.mock.calls.length).toBe(0);
-        expect(record.usi).toBe(
+        expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f 2c2d"
         );
       })
@@ -209,7 +215,6 @@ describe("store/game", () => {
   });
 
   it("GameManager/endGame", () => {
-    const record = new Record();
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
         "7g7f",
@@ -226,10 +231,15 @@ describe("store/game", () => {
       mockBlackPlayer,
       mockWhitePlayer
     );
-    const mockHandlers = createMockHandlers(record);
-    const manager = new GameManager(mockPlayerBuilder, mockHandlers);
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    const manager = new GameManager(
+      recordManager,
+      mockPlayerBuilder,
+      mockHandlers
+    );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s, record))
+      .next(() => manager.startGame(gameSetting10m30s))
       .next(() => manager.endGame(SpecialMove.INTERRUPT))
       .next(() => {
         expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
@@ -248,9 +258,9 @@ describe("store/game", () => {
         );
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
         expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(5);
+        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
         expect(mockHandlers.onError.mock.calls.length).toBe(0);
-        expect(record.usi).toBe(
+        expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
         );
       })
@@ -258,7 +268,6 @@ describe("store/game", () => {
   });
 
   it("GameManager/time-not-reduced", () => {
-    const record = new Record();
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
         "7g7f",
@@ -275,10 +284,15 @@ describe("store/game", () => {
       mockBlackPlayer,
       mockWhitePlayer
     );
-    const mockHandlers = createMockHandlers(record);
-    const manager = new GameManager(mockPlayerBuilder, mockHandlers);
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    const manager = new GameManager(
+      recordManager,
+      mockPlayerBuilder,
+      mockHandlers
+    );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s, record))
+      .next(() => manager.startGame(gameSetting10m30s))
       .next(() => {
         expect(manager.blackTimeMs).toBe(600 * 1e3);
         expect(manager.whiteTimeMs).toBe(600 * 1e3);

@@ -309,7 +309,7 @@ describe("store/index", () => {
     );
   });
 
-  it("newRecord", () => {
+  it("resetRecord", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
       iconv.encode(sampleKIF, "Shift_JIS")
@@ -320,7 +320,7 @@ describe("store/index", () => {
       .next(() => {
         expect(store.record.moves.length).not.toBe(1);
         expect(store.recordFilePath).not.toBeUndefined();
-        store.newRecord();
+        store.resetRecord();
         expect(store.confirmation).toBe(
           "現在の棋譜は削除されます。よろしいですか？"
         );

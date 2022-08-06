@@ -1,6 +1,9 @@
-import { RecordMetadata, RecordMetadataKey } from "@/shogi";
+import { RecordMetadataKey } from "@/shogi";
+import { ImmutableRecordMetadata } from "@/shogi/record";
 
-export function defaultRecordFileName(metadata: RecordMetadata): string {
+export function defaultRecordFileName(
+  metadata: ImmutableRecordMetadata
+): string {
   let ret = getDateString(metadata);
   const title =
     metadata.getStandardMetadata(RecordMetadataKey.TITLE) ||
@@ -28,7 +31,7 @@ export function defaultRecordFileName(metadata: RecordMetadata): string {
   return ret + ".kif";
 }
 
-function getDateString(metadata: RecordMetadata): string {
+function getDateString(metadata: ImmutableRecordMetadata): string {
   const date = metadata.getStandardMetadata(RecordMetadataKey.DATE);
   if (date) {
     return date

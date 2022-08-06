@@ -314,6 +314,7 @@ export interface ImmutableRecord {
   readonly repetition: boolean;
   readonly perpetualCheck: Color | null;
   readonly usi: string;
+  readonly usiAll: string;
   readonly sfen: string;
   forEach(handler: (node: ImmutableNode) => void): void;
 }
@@ -457,6 +458,9 @@ export default class Record {
   }
 
   switchBranchByIndex(index: number): boolean {
+    if (this.current.branchIndex === index) {
+      return true;
+    }
     if (!this._current.prev) {
       return false;
     }

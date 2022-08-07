@@ -85,6 +85,81 @@ T40
     expect(record.current.elapsedMs).toBe(40000);
   });
 
+  it("import/standard2", () => {
+    const data = `'----------棋譜ファイルの例"example.csa"-----------------
+'バージョン
+V2.2
+'対局者名
+N+NAKAHARA
+N-YONENAGA
+'棋譜情報
+'棋戦名
+$EVENT:13th World Computer Shogi Championship
+'対局場所
+$SITE:KAZUSA ARC
+'開始日時
+$START_TIME:2003/05/03 10:30:00
+'終了日時
+$END_TIME:2003/05/03 11:11:05
+'持ち時間:25分、切れ負け
+$TIME_LIMIT:00:25+00
+'戦型:矢倉
+$OPENING:YAGURA
+'平手の局面
+P1-KY-KE-GI-KI-OU-KI-GI-KE-KY
+P2 * -HI *  *  *  *  * -KA * 
+P3-FU-FU-FU-FU-FU-FU-FU-FU-FU
+P4 *  *  *  *  *  *  *  *  * 
+P5 *  *  *  *  *  *  *  *  * 
+P6 *  *  *  *  *  *  *  *  * 
+P7+FU+FU+FU+FU+FU+FU+FU+FU+FU
+P8 * +KA *  *  *  *  * +HI * 
+P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
+'先手番
++
+'指し手と消費時間
++2726FU
+T12
+-3334FU
+T6
+%CHUDAN
+'---------------------------------------------------------`;
+    const record = importCSA(data) as Record;
+    expect(record).toBeInstanceOf(Record);
+    expect(record.initialPosition.sfen).toBe(
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+    );
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+    ).toBe("NAKAHARA");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+    ).toBe("YONENAGA");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.TITLE)).toBe(
+      "13th World Computer Shogi Championship"
+    );
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.PLACE)).toBe(
+      "KAZUSA ARC"
+    );
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME)
+    ).toBe("2003/05/03 10:30:00");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME)
+    ).toBe("2003/05/03 11:11:05");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)
+    ).toBe("00:25+00");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.STRATEGY)
+    ).toBe("YAGURA");
+    expect(record.moves).toHaveLength(4);
+    expect(record.moves[0].move).toBe(SpecialMove.START);
+    expect((record.moves[1].move as Move).sfen).toBe("2g2f");
+    expect((record.moves[2].move as Move).sfen).toBe("3c3d");
+    expect(record.moves[3].move).toBe(SpecialMove.INTERRUPT);
+  });
+
   it("import/custom-position", () => {
     const data = `
 V2.2
@@ -523,6 +598,26 @@ PI82HI
     expect(record.initialPosition.sfen).toBe(
       "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
+  });
+
+  it("import/multi-records", () => {
+    const data = `V2.2
+PI
++
++2726FU
+-3334FU
+%CHUDAN
+/
+V2.2
+PI
++
++7776FU
+-8384FU
++5756FU
+%CHUDAN`;
+    const record = importCSA(data) as Record;
+    expect(record).toBeInstanceOf(Record);
+    expect(record.moves).toHaveLength(4);
   });
 
   it("export/standard", () => {

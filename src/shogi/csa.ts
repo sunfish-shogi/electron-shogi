@@ -292,7 +292,7 @@ export function importCSA(data: string): Record | Error {
   position.reset(InitialPositionType.EMPTY);
   let preMoveComment = "";
   let inMoveSection = false;
-  const lines = data.replace(/\r?\n\//, "").split(/\r?\n/);
+  const lines = data.replace(/\r?\n\/(\r?\n[\s\S]*)?$/, "").split(/\r?\n/);
   for (const line of lines) {
     for (const parsed of parseLine(line)) {
       if (

@@ -151,9 +151,13 @@ type ExportOptions = {
 export class RecordManager {
   private _record: Record;
   private _recordFilePath?: string;
+  private onChangePosition = (): void => {
+    /* noop */
+  };
 
   constructor() {
     this._record = new Record();
+    this.setupHandler();
   }
 
   get record(): ImmutableRecord {
@@ -215,6 +219,7 @@ export class RecordManager {
       return recordOrError;
     }
     this._record = recordOrError;
+    this.setupHandler();
     this.clearRecordFilePath();
     restoreCustomData(this._record);
     return;
@@ -236,6 +241,7 @@ export class RecordManager {
       return recordOrError;
     }
     this._record = recordOrError;
+    this.setupHandler();
     this._recordFilePath = path;
     restoreCustomData(this._record);
     return;
@@ -333,5 +339,19 @@ export class RecordManager {
     value: string;
   }): void {
     this._record.metadata.setStandardMetadata(update.key, update.value);
+  }
+
+  on(event: "changePosition", handler: () => void): void;
+  on(event: string, handler: unknown): void {
+    switch (event) {
+      case "changePosition":
+        this.onChangePosition = handler as () => void;
+        break;
+    }
+    this.setupHandler();
+  }
+
+  private setupHandler(): void {
+    this._record.on("changePosition", this.onChangePosition);
   }
 }

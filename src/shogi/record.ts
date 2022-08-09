@@ -317,6 +317,7 @@ export interface ImmutableRecord {
   readonly usiAll: string;
   readonly sfen: string;
   forEach(handler: (node: ImmutableNode) => void): void;
+  on(event: "changePosition", handler: () => void): void;
 }
 
 export default class Record {
@@ -327,6 +328,9 @@ export default class Record {
   private _current: NodeImpl;
   private repetitionCounts: { [sfen: string]: number };
   private repetitionStart: { [sfen: string]: number };
+  private onChangePosition = (): void => {
+    /* noop */
+  };
 
   constructor(position?: ImmutablePosition) {
     this.metadata = new RecordMetadata();
@@ -407,9 +411,18 @@ export default class Record {
     this.repetitionCounts = {};
     this.repetitionStart = {};
     this.incrementRepetition();
+    this.onChangePosition();
   }
 
   goBack(): boolean {
+    if (this._goBack()) {
+      this.onChangePosition();
+      return true;
+    }
+    return false;
+  }
+
+  private _goBack(): boolean {
     if (this._current.prev) {
       if (this._current.move instanceof Move) {
         this.decrementRepetition();
@@ -422,6 +435,14 @@ export default class Record {
   }
 
   goForward(): boolean {
+    if (this._goForward()) {
+      this.onChangePosition();
+      return true;
+    }
+    return false;
+  }
+
+  private _goForward(): boolean {
     if (this._current.next) {
       this._current = this._current.next;
       while (!this._current.activeBranch) {
@@ -440,15 +461,16 @@ export default class Record {
 
   goto(number: number): void {
     while (number < this._current.number) {
-      if (!this.goBack()) {
+      if (!this._goBack()) {
         break;
       }
     }
     while (number > this._current.number) {
-      if (!this.goForward()) {
+      if (!this._goForward()) {
         break;
       }
     }
+    this.onChangePosition();
   }
 
   resetAllBranchSelection(): void {
@@ -484,6 +506,9 @@ export default class Record {
         p.activeBranch = false;
       }
     }
+    if (ok) {
+      this.onChangePosition();
+    }
     return ok;
   }
 
@@ -511,6 +536,7 @@ export default class Record {
       );
       this._current = this._current.next;
       this._current.setElapsedMs(0);
+      this.onChangePosition();
       return true;
     }
     let p: NodeImpl | null;
@@ -527,6 +553,7 @@ export default class Record {
       ) {
         this._current = p;
         this._current.activeBranch = true;
+        this.onChangePosition();
         return true;
       }
       lastBranch = p;
@@ -542,6 +569,7 @@ export default class Record {
     );
     this._current.setElapsedMs(0);
     lastBranch.branch = this._current;
+    this.onChangePosition();
     return true;
   }
 
@@ -569,6 +597,7 @@ export default class Record {
     if (this._current.next) {
       this._current.next.activeBranch = true;
     }
+    this.onChangePosition();
   }
 
   private incrementRepetition(): void {
@@ -664,6 +693,15 @@ export default class Record {
       } else {
         p = stack.pop() || null;
       }
+    }
+  }
+
+  on(event: "changePosition", handler: () => void): void;
+  on(event: string, handler: unknown): void {
+    switch (event) {
+      case "changePosition":
+        this.onChangePosition = handler as () => void;
+        break;
     }
   }
 

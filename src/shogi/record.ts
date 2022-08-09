@@ -305,12 +305,12 @@ export interface ImmutableRecord {
   readonly metadata: ImmutableRecordMetadata;
   readonly initialPosition: ImmutablePosition;
   readonly position: ImmutablePosition;
-  readonly first: Node;
-  readonly current: Node;
-  readonly moves: Array<Node>; // TODO: forEach に統合したい。
-  readonly movesBefore: Array<Node>;
+  readonly first: ImmutableNode;
+  readonly current: ImmutableNode;
+  readonly moves: Array<ImmutableNode>; // TODO: forEach に統合したい。
+  readonly movesBefore: Array<ImmutableNode>;
   readonly length: number;
-  readonly branchBegin: Node;
+  readonly branchBegin: ImmutableNode;
   readonly repetition: boolean;
   readonly perpetualCheck: Color | null;
   readonly usi: string;

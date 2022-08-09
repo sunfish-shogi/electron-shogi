@@ -28,7 +28,7 @@ import {
   playPieceBeat,
 } from "@/audio";
 import { InfoCommand, USIInfoSender } from "@/store/usi";
-import { RecordCustomData, RecordManager } from "./record";
+import { RecordManager } from "./record";
 import { defaultPlayerBuilder, GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
@@ -300,11 +300,7 @@ export class Store {
       name,
       info
     );
-    const data = new RecordCustomData(
-      this.recordManager.record.current.customData
-    );
-    data.updateUSIInfo(this.recordManager.record.position.color, sender, info);
-    this.recordManager.record.current.customData = data.stringify();
+    this.recordManager.updateUSIInfo(sender, info);
     if (this.analysisManager) {
       this.analysisManager.updateUSIInfo(
         this.recordManager.record.position,
@@ -485,14 +481,13 @@ export class Store {
   }
 
   onResult(result: AnalysisResult): void {
-    if (this.appState === AppState.ANALYSIS && this.analysisManager) {
+    const commentBehavior = this.analysisManager?.setting.commentBehavior;
+    if (this.appState === AppState.ANALYSIS && commentBehavior) {
       const comment = buildRecordComment(result, this.appSetting);
       if (comment) {
-        this.recordManager.record.current.comment = appendAnalysisComment(
-          this.recordManager.record.current.comment,
-          comment,
-          this.analysisManager.setting.commentBehavior
-        );
+        this.recordManager.appendComment(comment, (org, add) => {
+          return appendAnalysisComment(org, add, commentBehavior);
+        });
       }
     }
   }

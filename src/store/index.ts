@@ -12,7 +12,7 @@ import {
   exportKakinoki,
   RecordMetadataKey,
 } from "@/shogi";
-import { reactive, UnwrapNestedRefs, watch } from "vue";
+import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/settings/game";
 import {
   AppSetting,
@@ -71,6 +71,9 @@ export class Store {
     this._message = new MessageStore();
     this._error = new ErrorStore();
     this.recordManager = new RecordManager();
+    this.recordManager.on("changePosition", () => {
+      this.onUpdatePosition();
+    });
     this._appSetting = defaultAppSetting();
     this._appState = AppState.NORMAL;
     this._isAppSettingDialogVisible = false;
@@ -820,7 +823,3 @@ const store = reactive<Store>(new Store());
 export function useStore(): UnwrapNestedRefs<Store> {
   return store;
 }
-
-watch([useStore().record], () => {
-  useStore().onUpdatePosition();
-});

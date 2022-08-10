@@ -31,6 +31,7 @@ export {
   ImmutableRecord,
   SpecialMove,
   Node,
+  ImmutableNode,
   RecordMetadataKey,
   RecordMetadata,
   getStandardMetadataDisplayName,

@@ -29,7 +29,13 @@ Electron 将棋ではタッチ操作のしやすさも重視して UI を設計�
 
 https://sunfish-shogi.github.io/electron-shogi/
 
-リンク先からブラウザ版アプリを試すことができます。
+ブラウザ版アプリを試すことができます。
+
+## Wiki
+
+https://github.com/sunfish-shogi/electron-shogi/wiki
+
+使い方や設計に関する情報はこちらを参照してください。
 
 ## スクリーンショット
 

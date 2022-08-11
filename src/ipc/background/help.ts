@@ -6,7 +6,7 @@ export function openWebSite(): void {
 
 export function openHowToUse(): void {
   shell.openExternal(
-    "https://sunfish-shogi.github.io/electron-shogi/how-to-use.html"
+    "https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9"
   );
 }
 

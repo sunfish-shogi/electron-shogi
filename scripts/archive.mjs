@@ -39,6 +39,7 @@ switch (platform) {
   default:
     throw new Error("unknown platform");
 }
+archive.file("LICENSE", { name: "LICENSE.txt" });
 archive.file("docs/third-party-licenses.html", {
   name: "third-party-licenses.html",
 });

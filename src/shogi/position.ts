@@ -86,17 +86,10 @@ export type DoMoveOption = {
 };
 
 export default class Position {
-  private _board: Board;
-  private _color: Color;
-  private _blackHand: Hand;
-  private _whiteHand: Hand;
-
-  constructor() {
-    this._board = new Board();
-    this._color = Color.BLACK;
-    this._blackHand = new Hand();
-    this._whiteHand = new Hand();
-  }
+  private _board = new Board();
+  private _color = Color.BLACK;
+  private _blackHand = new Hand();
+  private _whiteHand = new Hand();
 
   get board(): Board {
     return this._board;

@@ -53,14 +53,7 @@ function sfenRankToNumber(sfen: string): number | null {
 const sfenRanks = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
 
 export default class Square {
-  file: number;
-
-  rank: number;
-
-  constructor(file: number, rank: number) {
-    this.file = file;
-    this.rank = rank;
-  }
+  constructor(public file: number, public rank: number) {}
 
   get x(): number {
     return 9 - this.file;

@@ -1,9 +1,5 @@
 export class MessageStore {
-  private _queue: string[];
-
-  constructor() {
-    this._queue = [];
-  }
+  private _queue: string[] = [];
 
   get message(): string {
     return this._queue[0];

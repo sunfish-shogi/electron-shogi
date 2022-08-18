@@ -103,13 +103,8 @@ export interface ImmutableRecordMetadata {
 }
 
 export class RecordMetadata {
-  private standard: Map<RecordMetadataKey, string>;
-  private custom: Map<string, string>;
-
-  constructor() {
-    this.standard = new Map<RecordMetadataKey, string>();
-    this.custom = new Map<string, string>();
-  }
+  private standard = new Map<RecordMetadataKey, string>();
+  private custom = new Map<string, string>();
 
   get standardMetadataKeys(): IterableIterator<RecordMetadataKey> {
     return this.standard.keys();
@@ -206,12 +201,12 @@ export interface Node extends ImmutableNode {
 }
 
 class NodeImpl implements Node {
-  public next: NodeImpl | null;
-  public branch: NodeImpl | null;
-  public comment: string;
+  public next: NodeImpl | null = null;
+  public branch: NodeImpl | null = null;
+  public comment = "";
   public customData: string | undefined;
-  public elapsedMs: number;
-  public totalElapsedMs: number;
+  public elapsedMs = 0;
+  public totalElapsedMs = 0;
 
   constructor(
     public number: number,
@@ -221,13 +216,7 @@ class NodeImpl implements Node {
     public nextColor: Color,
     public move: Move | SpecialMove,
     public isCheck: boolean
-  ) {
-    this.next = null;
-    this.branch = null;
-    this.comment = "";
-    this.elapsedMs = 0;
-    this.totalElapsedMs = 0;
-  }
+  ) {}
 
   get displayText(): string {
     const prev =
@@ -307,7 +296,7 @@ export interface ImmutableRecord {
   readonly position: ImmutablePosition;
   readonly first: ImmutableNode;
   readonly current: ImmutableNode;
-  readonly moves: Array<ImmutableNode>; // TODO: forEach に統合したい。
+  readonly moves: Array<ImmutableNode>;
   readonly movesBefore: Array<ImmutableNode>;
   readonly length: number;
   readonly branchBegin: ImmutableNode;
@@ -316,6 +305,7 @@ export interface ImmutableRecord {
   readonly usi: string;
   readonly usiAll: string;
   readonly sfen: string;
+  // 深さ優先で全てのノードを訪問します。
   forEach(handler: (node: ImmutableNode) => void): void;
   on(event: "changePosition", handler: () => void): void;
 }
@@ -326,8 +316,8 @@ export default class Record {
   private _position: Position;
   private _first: NodeImpl;
   private _current: NodeImpl;
-  private repetitionCounts: { [sfen: string]: number };
-  private repetitionStart: { [sfen: string]: number };
+  private repetitionCounts: { [sfen: string]: number } = {};
+  private repetitionStart: { [sfen: string]: number } = {};
   private onChangePosition = (): void => {
     /* noop */
   };
@@ -338,8 +328,6 @@ export default class Record {
     this._position = this.initialPosition.clone();
     this._first = NodeImpl.newRootEntry(this._initialPosition.color);
     this._current = this._first;
-    this.repetitionCounts = {};
-    this.repetitionStart = {};
     this.incrementRepetition();
   }
 
@@ -676,6 +664,7 @@ export default class Record {
     return this.position.getSFEN(this._current.number + 1);
   }
 
+  // 深さ優先で全てのノードを訪問します。
   forEach(handler: (node: Node) => void): void {
     this._forEach(handler);
   }

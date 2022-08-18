@@ -51,38 +51,29 @@ import { LogLevel } from "@/ipc/log";
 import { toString } from "@/helpers/string";
 
 export class Store {
-  private _bussy: BussyStore;
-  private _message: MessageStore;
-  private _error: ErrorStore;
-  private recordManager: RecordManager;
-  private _appSetting: AppSetting;
-  private _appState: AppState;
+  private _bussy = new BussyStore();
+  private _message = new MessageStore();
+  private _error = new ErrorStore();
+  private recordManager = new RecordManager();
+  private _appSetting = defaultAppSetting();
+  private _appState = AppState.NORMAL;
   private lastAppState?: AppState;
-  private _isAppSettingDialogVisible: boolean;
+  private _isAppSettingDialogVisible = false;
   private _confirmation?: Confirmation;
-  private usiMonitor: USIMonitor;
-  private gameManager: GameManager;
+  private usiMonitor = new USIMonitor();
+  private gameManager = new GameManager(
+    this.recordManager,
+    defaultPlayerBuilder,
+    this
+  );
   private researcher?: USIPlayer;
   private analysisManager?: AnalysisManager;
   private unlimitedBeepHandler?: AudioEventHandler;
 
   constructor() {
-    this._bussy = new BussyStore();
-    this._message = new MessageStore();
-    this._error = new ErrorStore();
-    this.recordManager = new RecordManager();
     this.recordManager.on("changePosition", () => {
       this.onUpdatePosition();
     });
-    this._appSetting = defaultAppSetting();
-    this._appState = AppState.NORMAL;
-    this._isAppSettingDialogVisible = false;
-    this.usiMonitor = new USIMonitor();
-    this.gameManager = new GameManager(
-      this.recordManager,
-      defaultPlayerBuilder,
-      this
-    );
   }
 
   get isBussy(): boolean {
@@ -356,24 +347,22 @@ export class Store {
   }
 
   startGame(setting: GameSetting): void {
-    this.startGameAsync(setting).catch((e) => {
-      this.pushError("対局の初期化中にエラーが出ました: " + e);
-    });
-  }
-
-  private async startGameAsync(setting: GameSetting): Promise<void> {
     if (this.appState !== AppState.GAME_DIALOG) {
       return;
     }
     this.retainBussyState();
-    try {
+    (async () => {
       await api.saveGameSetting(setting);
       this.initializeDisplaySettingForGame(setting);
       await this.gameManager.startGame(setting);
       this._appState = AppState.GAME;
-    } finally {
-      this.releaseBussyState();
-    }
+    })()
+      .catch((e) => {
+        this.pushError("対局の初期化中にエラーが出ました: " + e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
   }
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
@@ -470,16 +459,6 @@ export class Store {
     playPieceBeat(this.appSetting.pieceVolume);
   }
 
-  onNext(number: number): ImmutableRecord | null {
-    if (this.appState === AppState.ANALYSIS) {
-      this.recordManager.changeMoveNumber(number);
-      return this.recordManager.record.current.number === number
-        ? this.recordManager.record
-        : null;
-    }
-    return null;
-  }
-
   onResult(result: AnalysisResult): void {
     const commentBehavior = this.analysisManager?.setting.commentBehavior;
     if (this.appState === AppState.ANALYSIS && commentBehavior) {
@@ -504,23 +483,11 @@ export class Store {
   }
 
   startResearch(researchSetting: ResearchSetting): void {
-    this.startResearchAsync(researchSetting)
-      .then(() => {
-        this.onUpdatePosition();
-      })
-      .catch((e) => {
-        this.pushError("検討の初期化中にエラーが出ました: " + e);
-      });
-  }
-
-  private async startResearchAsync(
-    researchSetting: ResearchSetting
-  ): Promise<void> {
     if (this.appState !== AppState.RESEARCH_DIALOG) {
       return;
     }
     this.retainBussyState();
-    try {
+    (async () => {
       await api.saveResearchSetting(researchSetting);
       if (!researchSetting.usi) {
         throw new Error("エンジンが設定されていません。");
@@ -529,9 +496,16 @@ export class Store {
       await researcher.launch();
       this.researcher = researcher;
       this._appState = AppState.RESEARCH;
-    } finally {
-      this.releaseBussyState();
-    }
+    })()
+      .then(() => {
+        this.onUpdatePosition();
+      })
+      .catch((e) => {
+        this.pushError("検討の初期化中にエラーが出ました: " + e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
   }
 
   stopResearch(): void {
@@ -546,25 +520,27 @@ export class Store {
   }
 
   startAnalysis(analysisSetting: AnalysisSetting): void {
-    this.startAnalysisAsync(analysisSetting).catch((e) => {
-      this.pushError("検討の初期化中にエラーが出ました: " + e);
-    });
-  }
-
-  private async startAnalysisAsync(analysisSetting: AnalysisSetting) {
     if (this.appState !== AppState.ANALYSIS_DIALOG) {
       return;
     }
     this.retainBussyState();
-    try {
+    (async () => {
       await api.saveAnalysisSetting(analysisSetting);
-      const analysisManager = new AnalysisManager(analysisSetting, this);
+      const analysisManager = new AnalysisManager(
+        this.recordManager,
+        analysisSetting,
+        this
+      );
       await analysisManager.start();
       this.analysisManager = analysisManager;
       this._appState = AppState.ANALYSIS;
-    } finally {
-      this.releaseBussyState();
-    }
+    })()
+      .catch((e) => {
+        this.pushError("検討の初期化中にエラーが出ました: " + e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
   }
 
   stopAnalysis(): void {
@@ -731,17 +707,11 @@ export class Store {
   }
 
   openRecord(path?: string): void {
-    this.openRecordAsync(path).catch((e) => {
-      this.pushError("棋譜の読み込み中にエラーが出ました: " + e);
-    });
-  }
-
-  private async openRecordAsync(path?: string): Promise<void> {
     if (this.appState !== AppState.NORMAL) {
       return;
     }
     this.retainBussyState();
-    try {
+    (async () => {
       if (!path) {
         path = await api.showOpenRecordDialog();
         if (!path) {
@@ -756,25 +726,21 @@ export class Store {
       if (error) {
         throw error;
       }
-    } finally {
-      this.releaseBussyState();
-    }
+    })()
+      .catch((e) => {
+        this.pushError("棋譜の読み込み中にエラーが出ました: " + e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
   }
 
   saveRecord(options?: { overwrite: boolean }): void {
-    this.saveRecordAsync(options).catch((e) => {
-      this.pushError("棋譜の保存中にエラーが出ました: " + e);
-    });
-  }
-
-  private async saveRecordAsync(options?: {
-    overwrite: boolean;
-  }): Promise<void> {
     if (this.appState !== AppState.NORMAL) {
       return;
     }
     this.retainBussyState();
-    try {
+    (async () => {
       let path = this.recordManager.recordFilePath;
       if (!options?.overwrite || !path) {
         const defaultPath = defaultRecordFileName(
@@ -792,9 +758,13 @@ export class Store {
         throw dataOrError;
       }
       await api.saveRecord(path, dataOrError);
-    } finally {
-      this.releaseBussyState();
-    }
+    })()
+      .catch((e) => {
+        this.pushError("棋譜の保存中にエラーが出ました: " + e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
   }
 
   get isMovableByUser() {

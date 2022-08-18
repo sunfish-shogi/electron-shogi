@@ -197,18 +197,12 @@ describe("store/index", () => {
         expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);
         expect(store.usiWhitePlayerMonitor).toBeUndefined();
         expect(store.usiResearcherMonitor).toBeUndefined();
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.blackPlayer
-        ).toBe(138);
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.whitePlayer
-        ).toBeUndefined();
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.researcher
-        ).toBeUndefined();
+        const customData = new RecordCustomData(
+          store.record.current.customData
+        );
+        expect(customData.evaluation?.blackPlayer).toBe(138);
+        expect(customData.evaluation?.whitePlayer).toBeUndefined();
+        expect(customData.evaluation?.researcher).toBeUndefined();
         store.updateUSIInfo(1000, usi, USIInfoSender.BLACK_PLAYER, "Engine A", {
           depth: 10,
           scoreCP: 213,
@@ -226,18 +220,12 @@ describe("store/index", () => {
         expect(store.usiWhitePlayerMonitor?.iterates[0].depth).toBe(9);
         expect(store.usiWhitePlayerMonitor?.iterates[0].score).toBe(-89);
         expect(store.usiResearcherMonitor).toBeUndefined();
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.blackPlayer
-        ).toBe(213);
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.whitePlayer
-        ).toBe(89);
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.researcher
-        ).toBeUndefined();
+        const customData = new RecordCustomData(
+          store.record.current.customData
+        );
+        expect(customData.evaluation?.blackPlayer).toBe(213);
+        expect(customData.evaluation?.whitePlayer).toBe(89);
+        expect(customData.evaluation?.researcher).toBeUndefined();
         store.updateUSIInfo(1000, usi, USIInfoSender.RESEARCHER, "Engine C", {
           depth: 12,
           scoreCP: 721,
@@ -249,18 +237,12 @@ describe("store/index", () => {
         expect(store.usiResearcherMonitor?.iterates.length).toBe(1);
         expect(store.usiResearcherMonitor?.iterates[0].depth).toBe(12);
         expect(store.usiResearcherMonitor?.iterates[0].score).toBe(721);
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.blackPlayer
-        ).toBe(213);
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.whitePlayer
-        ).toBe(89);
-        expect(
-          new RecordCustomData(store.record.current.customData).evaluation
-            ?.researcher
-        ).toBe(-721);
+        const customData = new RecordCustomData(
+          store.record.current.customData
+        );
+        expect(customData.evaluation?.blackPlayer).toBe(213);
+        expect(customData.evaluation?.whitePlayer).toBe(89);
+        expect(customData.evaluation?.researcher).toBe(-721);
       }, 100)
       .invoke();
   });
@@ -376,9 +358,8 @@ describe("store/index", () => {
     expect(moves[1].comment).toBe("通常コメント");
     expect(moves[1].customData).toBeUndefined();
     expect(moves[2].comment).toBe("#評価値=108");
-    expect(
-      new RecordCustomData(moves[2].customData).evaluation?.researcher
-    ).toBe(108);
+    const customData = new RecordCustomData(moves[2].customData);
+    expect(customData.evaluation?.researcher).toBe(108);
     expect(store.hasError).toBeFalsy();
   });
 
@@ -426,9 +407,8 @@ describe("store/index", () => {
         expect(moves[1].comment).toBe("通常コメント");
         expect(moves[1].customData).toBeUndefined();
         expect(moves[2].comment).toBe("#評価値=108");
-        expect(
-          new RecordCustomData(moves[2].customData).evaluation?.researcher
-        ).toBe(108);
+        const customData = new RecordCustomData(moves[2].customData);
+        expect(customData.evaluation?.researcher).toBe(108);
         expect(store.hasError).toBeFalsy();
       })
       .invoke();

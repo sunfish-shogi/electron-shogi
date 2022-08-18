@@ -81,10 +81,9 @@ export function mergeUSIEngineSetting(
 }
 
 export class USIEngineSettings {
-  private engines: { [uri: string]: USIEngineSetting };
+  private engines: { [uri: string]: USIEngineSetting } = {};
 
   constructor(json?: string) {
-    this.engines = {};
     if (json) {
       const src = JSON.parse(json);
       if (src.engines instanceof Object) {

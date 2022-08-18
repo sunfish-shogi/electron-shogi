@@ -129,6 +129,9 @@ body {
   font-size: 17px;
   margin: 0;
 }
+body::-webkit-scrollbar {
+  display: none;
+}
 #app {
   text-align: center;
   height: 100vh;

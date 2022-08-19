@@ -108,3 +108,53 @@ dialog button .icon {
   margin-right: 5px;
   vertical-align: top;
 }
+
+dialog.menu {
+  border-style: none;
+  background-color: transparent;
+}
+
+dialog.menu .groups {
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+dialog.menu .group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0px 10px 0px;
+}
+
+dialog.menu button {
+  width: 150px;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 5px 5px 5px darkgray;
+}
+
+dialog.menu button.close:enabled {
+  background-color: var(--close-button-bg-color);
+}
+
+dialog.menu button.close:hover:enabled {
+  background-color: var(--hovered-close-button-bg-color);
+}
+
+dialog.menu .icon {
+  height: 36px;
+  width: 36px;
+  display: block;
+}
+
+dialog.menu .label {
+  display: block;
+  font-size: 14px;
+  margin-top: 0.5em;
+}

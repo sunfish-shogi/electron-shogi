@@ -36,13 +36,17 @@ type Evaluation = {
 export const MATE_SCORE = 30000;
 
 export class RecordCustomData {
-  evaluation?: Evaluation;
+  private _evaluation?: Evaluation;
 
   constructor(json?: string) {
     if (json) {
       const obj = JSON.parse(json);
-      this.evaluation = obj.evaluation;
+      this._evaluation = obj.evaluation;
     }
+  }
+
+  get evaluation(): Evaluation | undefined {
+    return this._evaluation;
   }
 
   get empty(): boolean {
@@ -50,18 +54,18 @@ export class RecordCustomData {
   }
 
   updateScore(color: Color, sender: USIInfoSender, score: number): void {
-    if (!this.evaluation) {
-      this.evaluation = {};
+    if (!this._evaluation) {
+      this._evaluation = {};
     }
     switch (sender) {
       case USIInfoSender.BLACK_PLAYER:
-        this.evaluation[USIInfoSender.BLACK_PLAYER] = score;
+        this._evaluation[USIInfoSender.BLACK_PLAYER] = score;
         break;
       case USIInfoSender.WHITE_PLAYER:
-        this.evaluation[USIInfoSender.WHITE_PLAYER] = -score;
+        this._evaluation[USIInfoSender.WHITE_PLAYER] = -score;
         break;
       case USIInfoSender.RESEARCHER:
-        this.evaluation[USIInfoSender.RESEARCHER] =
+        this._evaluation[USIInfoSender.RESEARCHER] =
           color === Color.BLACK ? score : -score;
         break;
     }
@@ -87,7 +91,9 @@ export class RecordCustomData {
   }
 
   stringify(): string {
-    return JSON.stringify(this);
+    return JSON.stringify({
+      evaluation: this.evaluation,
+    });
   }
 }
 
@@ -153,14 +159,13 @@ type ExportOptions = {
 };
 
 export class RecordManager {
-  private _record: Record;
+  private _record = new Record();
   private _recordFilePath?: string;
   private onChangePosition = (): void => {
     /* noop */
   };
 
   constructor() {
-    this._record = new Record();
     this.setupHandler();
   }
 

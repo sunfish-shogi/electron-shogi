@@ -5,11 +5,7 @@ type TimeoutEntry = {
 };
 
 export class TimeoutChain {
-  private chain: TimeoutEntry[];
-
-  constructor() {
-    this.chain = [];
-  }
+  private chain = [] as TimeoutEntry[];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   next(callback: () => any, ms?: number): TimeoutChain {

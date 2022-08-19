@@ -6,33 +6,14 @@ const fileDisplayTexts = ["１", "２", "３", "４", "５", "６", "７", "８"
 const rankDisplayTexts = ["一", "二", "三", "四", "五", "六", "七", "八", "九"];
 
 export default class Move {
-  from: Square | PieceType;
-
-  to: Square;
-
-  promote: boolean;
-
-  color: Color;
-
-  pieceType: PieceType;
-
-  capturedPieceType: PieceType | null;
-
   constructor(
-    from: Square | PieceType,
-    to: Square,
-    promote: boolean,
-    color: Color,
-    pieceType: PieceType,
-    capturedPieceType: PieceType | null
-  ) {
-    this.from = from;
-    this.to = to;
-    this.promote = promote;
-    this.color = color;
-    this.pieceType = pieceType;
-    this.capturedPieceType = capturedPieceType;
-  }
+    public from: Square | PieceType,
+    public to: Square,
+    public promote: boolean,
+    public color: Color,
+    public pieceType: PieceType,
+    public capturedPieceType: PieceType | null
+  ) {}
 
   equals(move: Move | null | undefined): boolean {
     if (!move) {

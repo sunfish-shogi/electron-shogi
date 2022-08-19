@@ -152,17 +152,14 @@ enum State {
 const DefaultTimeout = 10 * 1e3;
 
 export class EngineProcess {
-  private _path: string;
-  private option: EngineProcessOption;
-  private handle: ChildProcessWithoutNullStreams | null;
-  private _name: string;
-  private _author: string;
-  private _options: USIEngineOptions;
-  private state: State;
-  private currentPosition: string;
+  private handle: ChildProcessWithoutNullStreams | null = null;
+  private _name = "NO NAME";
+  private _author = "";
+  private _options = {} as USIEngineOptions;
+  private state = State.WaitingForReadyOK;
+  private currentPosition = "";
   private reservedGoCommand?: ReservedGoCommand;
-  private readline: Readline | null;
-  private sessionID: number;
+  private readline: Readline | null = null;
   private timeout?: NodeJS.Timeout;
   timeoutCallback?: TimeoutCallback;
   errorCallback?: ErrorCallback;
@@ -172,18 +169,11 @@ export class EngineProcess {
   infoCallback?: InfoCallback;
   ponderInfoCallback?: InfoCallback;
 
-  constructor(path: string, sessionID: number, option: EngineProcessOption) {
-    this._path = path;
-    this.option = option;
-    this.handle = null;
-    this._name = "NO NAME";
-    this._author = "";
-    this._options = {};
-    this.state = State.WaitingForReadyOK;
-    this.currentPosition = "";
-    this.readline = null;
-    this.sessionID = sessionID;
-  }
+  constructor(
+    private _path: string,
+    private sessionID: number,
+    private option: EngineProcessOption
+  ) {}
 
   get path(): string {
     return this._path;

@@ -70,7 +70,7 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
 export class USIPlayerMonitor {
   public nodes?: number;
   public nps?: number;
-  public iterates: USIIteration[];
+  public iterates: USIIteration[] = [];
   public hashfull?: number;
   public currentMove?: string;
   public currentMoveText?: string;
@@ -80,9 +80,7 @@ export class USIPlayerMonitor {
     public sessionID: number,
     public name: string,
     public sfen: string
-  ) {
-    this.iterates = [];
-  }
+  ) {}
 
   get latestIteration(): USIIteration[] {
     const result: USIIteration[] = [];
@@ -178,12 +176,8 @@ export class USIMonitor {
   private _blackPlayer?: USIPlayerMonitor;
   private _whitePlayer?: USIPlayerMonitor;
   private _researcher?: USIPlayerMonitor;
-  private updateQueue: USIUpdate[];
+  private updateQueue: USIUpdate[] = [];
   private timeoutHandle?: number;
-
-  constructor() {
-    this.updateQueue = [];
-  }
 
   get blackPlayer(): USIPlayerMonitor | undefined {
     return this._blackPlayer;

@@ -1,9 +1,5 @@
 export class ErrorStore {
-  private _queue: Error[];
-
-  constructor() {
-    this._queue = [];
-  }
+  private _queue: Error[] = [];
 
   get errors(): Error[] {
     return this._queue;

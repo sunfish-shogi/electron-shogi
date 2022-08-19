@@ -9,19 +9,14 @@ import { ImmutableRecord, Position } from "@/shogi";
 import { GameResult, Player, SearchHandler } from "./player";
 
 export class USIPlayer implements Player {
-  private setting: USIEngineSetting;
-  private sessionID: number;
+  private sessionID = 0;
   private usi?: string;
   private position?: Position;
   private searchHandler?: SearchHandler;
   private ponder?: string;
-  private inPonder: boolean;
+  private inPonder = false;
 
-  constructor(setting: USIEngineSetting) {
-    this.setting = setting;
-    this.sessionID = 0;
-    this.inPonder = false;
-  }
+  constructor(private setting: USIEngineSetting) {}
 
   async launch(): Promise<void> {
     this.sessionID = await api.usiLaunch(this.setting);

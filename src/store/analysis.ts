@@ -2,13 +2,8 @@ import { USIPlayer } from "@/players/usi";
 import { AnalysisSetting, CommentBehavior } from "@/settings/analysis";
 import { AppSetting } from "@/settings/app";
 import { USIEngineSetting } from "@/settings/usi";
-import {
-  Color,
-  ImmutablePosition,
-  ImmutableRecord,
-  Move,
-  reverseColor,
-} from "@/shogi";
+import { Color, ImmutablePosition, Move, reverseColor } from "@/shogi";
+import { RecordManager } from "./record";
 import { getMoveAccuracyText, getSituationText } from "./score";
 import { InfoCommand } from "./usi";
 
@@ -23,19 +18,19 @@ export interface AnalysisResult {
 }
 
 export interface AnalysisHandler {
+  // 1 手ごとの評価結果を通知します。
   onResult(result: AnalysisResult): void;
-  onNext(number: number): ImmutableRecord | null;
+  // 終了した際に呼び出されます。
   onFinish(): void;
+  // エラーを通知します。
   onError(e: unknown): void;
 }
 
 export class AnalysisManager {
-  private handler: AnalysisHandler;
   private researcher?: USIPlayer;
-  private _setting: AnalysisSetting;
   private number?: number;
   private actualMove?: Move;
-  private color: Color;
+  private color = Color.BLACK;
   private lastScore?: number;
   private score?: number;
   private mate?: number;
@@ -43,13 +38,14 @@ export class AnalysisManager {
   private pv?: Move[];
   private timerHandle?: number;
 
-  constructor(setting: AnalysisSetting, handler: AnalysisHandler) {
-    if (!setting.usi) {
+  constructor(
+    private recordManager: RecordManager,
+    private _setting: AnalysisSetting,
+    private handler: AnalysisHandler
+  ) {
+    if (!_setting.usi) {
       throw new Error("エンジンが設定されていません。");
     }
-    this._setting = setting;
-    this.handler = handler;
-    this.color = Color.BLACK;
   }
 
   get setting(): AnalysisSetting {
@@ -61,18 +57,6 @@ export class AnalysisManager {
     setTimeout(() => this.next());
   }
 
-  private async setupEngine(setting: USIEngineSetting): Promise<void> {
-    await this.closeEngine();
-    const researcher = new USIPlayer(setting);
-    await researcher.launch();
-    this.researcher = researcher;
-  }
-
-  private finish(): void {
-    this.handler.onFinish();
-    this.close();
-  }
-
   close(): void {
     this.clearTimer();
     this.closeEngine().catch((e) => {
@@ -80,7 +64,19 @@ export class AnalysisManager {
     });
   }
 
+  private async setupEngine(setting: USIEngineSetting): Promise<void> {
+    await this.closeEngine();
+    const researcher = new USIPlayer(setting);
+    await researcher.launch();
+    this.researcher = researcher;
+  }
+
   private next(): void {
+    if (!this.researcher) {
+      this.handler.onError(new Error("エンジンが初期化されていません。"));
+      this.finish();
+      return;
+    }
     this.clearTimer();
     this.onResult();
 
@@ -104,8 +100,9 @@ export class AnalysisManager {
       return;
     }
 
-    const record = this.handler.onNext(this.number);
-    if (!record) {
+    this.recordManager.changeMoveNumber(this.number);
+    const record = this.recordManager.record;
+    if (record.current.number !== this.number) {
       this.finish();
       return;
     }
@@ -120,9 +117,14 @@ export class AnalysisManager {
       () => this.next(),
       this.setting.perMoveCriteria.maxSeconds * 1e3
     );
-    this.goAsync(record).catch((e) => {
+    this.researcher.startResearch(record).catch((e) => {
       this.handler.onError(e);
     });
+  }
+
+  private finish(): void {
+    this.handler.onFinish();
+    this.close();
   }
 
   private clearTimer(): void {
@@ -157,12 +159,6 @@ export class AnalysisManager {
           ? this.actualMove.equals(this.lastPV[0])
           : undefined,
     });
-  }
-
-  async goAsync(record: ImmutableRecord): Promise<void> {
-    if (this.researcher) {
-      await this.researcher.startResearch(record);
-    }
   }
 
   private async closeEngine(): Promise<void> {

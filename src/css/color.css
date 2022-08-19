@@ -24,6 +24,8 @@
   --control-button-bg-color: #4b704b;
   --disabled-control-button-bg-color: dimgray;
   --hovered-control-button-bg-color: #527a52;
+  --close-button-bg-color: #ba151d;
+  --hovered-close-button-bg-color: #d81922;
   --dialog-color: black;
   --dialog-bg-color: #d0d6d0;
   --dialog-border-color: dimgray;
@@ -67,6 +69,8 @@
   --control-button-bg-color: #d06868;
   --disabled-control-button-bg-color: dimgray;
   --hovered-control-button-bg-color: #e18f8f;
+  --close-button-bg-color: #c91720;
+  --hovered-close-button-bg-color: #e51d27;
   --dialog-color: black;
   --dialog-bg-color: #efc4c4;
   --dialog-border-color: #cd6666;
@@ -110,6 +114,8 @@
   --control-button-bg-color: #4d6868;
   --disabled-control-button-bg-color: #5c5c5c;
   --hovered-control-button-bg-color: #6c8d8d;
+  --close-button-bg-color: #aa141b;
+  --hovered-close-button-bg-color: #c91720;
   --dialog-color: white;
   --dialog-bg-color: black;
   --dialog-border-color: dimgray;

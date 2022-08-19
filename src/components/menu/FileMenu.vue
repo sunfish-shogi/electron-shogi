@@ -1,49 +1,49 @@
 <template>
   <div>
-    <dialog ref="dialog" class="background">
+    <dialog ref="dialog" class="menu">
       <div class="groups">
         <div class="group">
-          <button class="button" @click="onClose">
+          <button class="close" @click="onClose">
             <ButtonIcon class="icon" :icon="Icon.CLOSE" />
             <div class="label">戻る</div>
           </button>
         </div>
         <div class="group">
-          <button class="button" :disabled="!states.newFile" @click="onNewFile">
+          <button :disabled="!states.newFile" @click="onNewFile">
             <ButtonIcon class="icon" :icon="Icon.FILE" />
             <div class="label">初期化</div>
           </button>
-          <button class="button" :disabled="!states.open" @click="onOpen">
+          <button :disabled="!states.open" @click="onOpen">
             <ButtonIcon class="icon" :icon="Icon.OPEN" />
             <div class="label">開く</div>
           </button>
-          <button class="button" :disabled="!states.saveAs" @click="onSave">
+          <button :disabled="!states.saveAs" @click="onSave">
             <ButtonIcon class="icon" :icon="Icon.SAVE" />
             <div class="label">上書き保存</div>
           </button>
-          <button class="button" :disabled="!states.save" @click="onSaveAs">
+          <button :disabled="!states.save" @click="onSaveAs">
             <ButtonIcon class="icon" :icon="Icon.SAVE_AS" />
             <div class="label">保存</div>
           </button>
         </div>
         <div class="group">
-          <button class="button" @click="onCopyKIF">
+          <button @click="onCopyKIF">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
             <div class="label">コピー・KIF</div>
           </button>
-          <button class="button" @click="onCopyCSA">
+          <button @click="onCopyCSA">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
             <div class="label">コピー・CSA</div>
           </button>
-          <button class="button" @click="onCopyUSI">
+          <button @click="onCopyUSI">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
             <div class="label">コピー・USI</div>
           </button>
-          <button class="button" @click="onCopySFEN">
+          <button @click="onCopySFEN">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
             <div class="label">コピー・SFEN</div>
           </button>
-          <button class="button" :disabled="!states.paste" @click="onPaste">
+          <button :disabled="!states.paste" @click="onPaste">
             <ButtonIcon class="icon" :icon="Icon.PASTE" />
             <div class="label">貼り付け</div>
           </button>
@@ -139,42 +139,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-dialog.background {
-  border-style: none;
-  background-color: transparent;
-}
-.groups {
-  width: 80%;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-}
-.group {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  margin: 10px 0px 10px 0px;
-}
-.button {
-  width: 150px;
-  margin: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 5px 5px 5px darkgray;
-}
-.icon {
-  height: 36px;
-  width: 36px;
-  display: block;
-}
-.label {
-  display: block;
-  font-size: 14px;
-  margin-top: 0.5em;
-}
-</style>

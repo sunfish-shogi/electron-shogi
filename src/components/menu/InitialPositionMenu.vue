@@ -1,59 +1,59 @@
 <template>
   <div>
-    <dialog ref="dialog" class="background">
+    <dialog ref="dialog" class="menu">
       <div class="groups">
         <div class="group">
-          <button class="button" @click="onClose">
+          <button class="close" @click="onClose">
             <ButtonIcon class="icon" :icon="Icon.CLOSE" />
             <div class="label">戻る</div>
           </button>
         </div>
         <div class="group">
-          <button class="button" @click="onStandard">
+          <button @click="onStandard">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">平手</div>
           </button>
-          <button class="button" @click="onHandicapLance">
+          <button @click="onHandicapLance">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">香落ち</div>
           </button>
-          <button class="button" @click="onHandicapRightLance">
+          <button @click="onHandicapRightLance">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">右香落ち</div>
           </button>
-          <button class="button" @click="onHandicapBishop">
+          <button @click="onHandicapBishop">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">角落ち</div>
           </button>
-          <button class="button" @click="onHandicapRook">
+          <button @click="onHandicapRook">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">飛車落ち</div>
           </button>
-          <button class="button" @click="onHandicapRookLance">
+          <button @click="onHandicapRookLance">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">飛車香落ち</div>
           </button>
-          <button class="button" @click="onHandicap2Pieces">
+          <button @click="onHandicap2Pieces">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">2枚落ち</div>
           </button>
-          <button class="button" @click="onHandicap4Pieces">
+          <button @click="onHandicap4Pieces">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">4枚落ち</div>
           </button>
-          <button class="button" @click="onHandicap6Pieces">
+          <button @click="onHandicap6Pieces">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">6枚落ち</div>
           </button>
-          <button class="button" @click="onHandicap8Pieces">
+          <button @click="onHandicap8Pieces">
             <ButtonIcon class="icon" :icon="Icon.GAME" />
             <div class="label">8枚落ち</div>
           </button>
-          <button class="button" @click="onTsumeShogi">
+          <button @click="onTsumeShogi">
             <ButtonIcon class="icon" :icon="Icon.QUIZ" />
             <div class="label">詰め将棋</div>
           </button>
-          <button class="button" @click="onTsumeShogi2Kings">
+          <button @click="onTsumeShogi2Kings">
             <ButtonIcon class="icon" :icon="Icon.QUIZ" />
             <div class="label">双玉詰め将棋</div>
           </button>
@@ -154,42 +154,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-dialog.background {
-  border-style: none;
-  background-color: transparent;
-}
-.groups {
-  width: 80%;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-}
-.group {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  margin: 10px 0px 10px 0px;
-}
-.button {
-  width: 150px;
-  margin: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 5px 5px 5px darkgray;
-}
-.icon {
-  height: 36px;
-  width: 36px;
-  display: block;
-}
-.label {
-  display: block;
-  font-size: 14px;
-  margin-top: 0.5em;
-}
-</style>

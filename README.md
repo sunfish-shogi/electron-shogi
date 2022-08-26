@@ -100,6 +100,8 @@ npm run build
 npm run test:unit
 ```
 
+カバレッジレポートを出力する場合は `-- --coverage` を付与すると `coverage` ディレクトリに結果が出力されます。
+
 ### Lint
 
 ```

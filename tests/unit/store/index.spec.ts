@@ -14,16 +14,26 @@ import { AnalysisManager } from "@/store/analysis";
 import { analysisSetting } from "../mock/analysis";
 import { USIPlayer } from "@/players/usi";
 import { researchSetting } from "../mock/research";
+import {
+  csaGameSetting,
+  emptyCSAGameSettingHistory,
+  singleCSAGameSettingHistory,
+} from "../mock/csa";
+import { CSAGameManager } from "@/store/csa";
 
 jest.mock("@/audio");
 jest.mock("@/ipc/api");
 jest.mock("@/store/game");
+jest.mock("@/store/csa");
 jest.mock("@/players/usi");
 jest.mock("@/store/analysis");
 
 const mockAudio = audio as jest.Mocked<typeof audio>;
 const mockAPI = api as jest.Mocked<API>;
 const mockGameManager = GameManager as jest.MockedClass<typeof GameManager>;
+const mockCSAGameManager = CSAGameManager as jest.MockedClass<
+  typeof CSAGameManager
+>;
 const mockUSIPlayer = USIPlayer as jest.MockedClass<typeof USIPlayer>;
 const mockAnalysisManager = AnalysisManager as jest.MockedClass<
   typeof AnalysisManager
@@ -319,6 +329,66 @@ describe("store/index", () => {
   it("startGame/invalidState", () => {
     const store = new Store();
     store.startGame(gameSetting10m30s);
+    return new TimeoutChain()
+      .next(() => {
+        expect(store.isBussy).toBeFalsy();
+        expect(store.appState).toBe(AppState.NORMAL);
+      })
+      .invoke();
+  });
+
+  it("loginCSAGame/success", () => {
+    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
+      Promise.resolve(emptyCSAGameSettingHistory)
+    );
+    mockAPI.saveCSAGameSettingHistory.mockResolvedValue(Promise.resolve());
+    mockCSAGameManager.prototype.login.mockResolvedValue(Promise.resolve());
+    const store = new Store();
+    store.showCSAGameDialog();
+    store.loginCSAGame(csaGameSetting, { saveHistory: true });
+    return new TimeoutChain()
+      .next(() => {
+        expect(store.isBussy).toBeFalsy();
+        expect(store.appState).toBe(AppState.CSA_GAME);
+        expect(mockAPI.loadCSAGameSettingHistory.mock.calls).toHaveLength(1);
+        expect(mockAPI.saveCSAGameSettingHistory.mock.calls).toHaveLength(1);
+        expect(
+          mockAPI.saveCSAGameSettingHistory.mock.calls[0][0]
+        ).toStrictEqual(singleCSAGameSettingHistory);
+        expect(mockCSAGameManager.prototype.login.mock.calls).toHaveLength(1);
+        expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
+          csaGameSetting
+        );
+      })
+      .invoke();
+  });
+
+  it("loginCSAGame/doNotSaveHistory", () => {
+    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
+      Promise.resolve(emptyCSAGameSettingHistory)
+    );
+    mockAPI.saveCSAGameSettingHistory.mockResolvedValue(Promise.resolve());
+    mockCSAGameManager.prototype.login.mockResolvedValue(Promise.resolve());
+    const store = new Store();
+    store.showCSAGameDialog();
+    store.loginCSAGame(csaGameSetting, { saveHistory: false });
+    return new TimeoutChain()
+      .next(() => {
+        expect(store.isBussy).toBeFalsy();
+        expect(store.appState).toBe(AppState.CSA_GAME);
+        expect(mockAPI.loadCSAGameSettingHistory.mock.calls).toHaveLength(0);
+        expect(mockAPI.saveCSAGameSettingHistory.mock.calls).toHaveLength(0);
+        expect(mockCSAGameManager.prototype.login.mock.calls).toHaveLength(1);
+        expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
+          csaGameSetting
+        );
+      })
+      .invoke();
+  });
+
+  it("loginCSAGame/invalidState", () => {
+    const store = new Store();
+    store.loginCSAGame(csaGameSetting, { saveHistory: true });
     return new TimeoutChain()
       .next(() => {
         expect(store.isBussy).toBeFalsy();

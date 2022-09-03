@@ -1,5 +1,5 @@
 import fs from "fs";
-import { app, shell } from "electron";
+import { app, safeStorage, shell } from "electron";
 import path from "path";
 import { USIEngineSettings } from "@/settings/usi";
 import { AppSetting, defaultAppSetting } from "@/settings/app";
@@ -8,6 +8,12 @@ import { defaultGameSetting, GameSetting } from "@/settings/game";
 import { defaultResearchSetting, ResearchSetting } from "@/settings/research";
 import { AnalysisSetting, defaultAnalysisSetting } from "@/settings/analysis";
 import { getAppLogger } from "@/ipc/background/log";
+import {
+  CSAGameSettingHistory,
+  decryptCSAGameSettingHistory,
+  defaultCSAGameSettingHistory,
+  encryptCSAGameSettingHistory,
+} from "@/settings/csa";
 
 const rootDir = app.getPath("userData");
 
@@ -92,6 +98,45 @@ export function loadGameSetting(): GameSetting {
   return {
     ...defaultGameSetting(),
     ...JSON.parse(fs.readFileSync(gameSettingPath, "utf8")),
+  };
+}
+
+const csaGameSettingHistoryPath = path.join(
+  rootDir,
+  "csa_game_setting_history.json"
+);
+
+export function saveCSAGameSettingHistory(
+  setting: CSAGameSettingHistory
+): void {
+  const encrypted = encryptCSAGameSettingHistory(setting, (plainText) => {
+    return safeStorage.encryptString(plainText).toString("base64");
+  });
+  fs.writeFileSync(
+    csaGameSettingHistoryPath,
+    JSON.stringify(encrypted, undefined, 2),
+    "utf8"
+  );
+}
+
+export function loadCSAGameSettingHistory(): CSAGameSettingHistory {
+  if (!fs.existsSync(csaGameSettingHistoryPath)) {
+    return defaultCSAGameSettingHistory();
+  }
+  const encrypted = JSON.parse(
+    fs.readFileSync(csaGameSettingHistoryPath, "utf8")
+  );
+  const setting = decryptCSAGameSettingHistory(encrypted, (encrypted) => {
+    try {
+      return safeStorage.decryptString(Buffer.from(encrypted, "base64"));
+    } catch (e) {
+      getAppLogger().error("failed to decrypt CSA server password: %s", e);
+      return "";
+    }
+  });
+  return {
+    ...defaultCSAGameSettingHistory(),
+    ...setting,
   };
 }
 

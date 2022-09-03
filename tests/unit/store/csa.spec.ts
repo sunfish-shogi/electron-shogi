@@ -1,0 +1,125 @@
+import { TimeoutChain } from "@/helpers/testing";
+import api, { API } from "@/ipc/api";
+import { CSAGameResult, CSASpecialMove } from "@/ipc/csa";
+import { SpecialMove } from "@/shogi";
+import { Clock } from "@/store/clock";
+import {
+  CSAGameManager,
+  onCSAGameResult,
+  onCSAGameSummary,
+  onCSAMove,
+  onCSAStart,
+} from "@/store/csa";
+import { RecordManager } from "@/store/record";
+import { csaGameSetting, csaGameSummary, playerURI } from "../mock/csa";
+import { createMockPlayer, createMockPlayerBuilder } from "../mock/player";
+
+jest.mock("@/ipc/api");
+
+const mockAPI = api as jest.Mocked<API>;
+
+function createMockHandlers() {
+  return {
+    onCSAGameEnd: jest.fn(),
+    onFlipBoard: jest.fn(),
+    onPieceBeat: jest.fn(),
+    onBeepShort: jest.fn(),
+    onBeepUnlimited: jest.fn(),
+    onStopBeep: jest.fn(),
+    onError: jest.fn(),
+  };
+}
+
+describe("store/csa", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("CSAManager/resign", () => {
+    mockAPI.csaLogin.mockResolvedValueOnce(123);
+    mockAPI.csaAgree.mockResolvedValueOnce();
+    mockAPI.csaMove.mockResolvedValue();
+    mockAPI.csaLogout.mockResolvedValueOnce();
+    const mockPlayer = createMockPlayer({
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
+        "7g7f",
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
+        "2g2f",
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
+        "resign",
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI]: mockPlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    const manager = new CSAGameManager(
+      recordManager,
+      new Clock(),
+      new Clock(),
+      mockPlayerBuilder,
+      mockHandlers
+    );
+    return new TimeoutChain()
+      .next(() => manager.login(csaGameSetting))
+      .next(() => {
+        expect(mockAPI.csaLogin.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+        expect(mockAPI.csaAgree.mock.calls).toHaveLength(0);
+        onCSAGameSummary(123, csaGameSummary);
+        expect(mockAPI.csaAgree.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaMove.mock.calls).toHaveLength(0);
+        expect(mockPlayer.startSearch.mock.calls).toHaveLength(0);
+        onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
+        expect(mockAPI.csaMove.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaMove.mock.calls[0][0]).toBe(123);
+        expect(mockAPI.csaMove.mock.calls[0][1]).toBe("+7776FU");
+        expect(mockPlayer.startSearch.mock.calls).toHaveLength(1);
+        expect(mockPlayer.startPonder.mock.calls).toHaveLength(0);
+        onCSAMove(123, "+7776FU", {
+          black: { time: 590 },
+          white: { time: 600 },
+        });
+        expect(mockAPI.csaMove.mock.calls).toHaveLength(1);
+        expect(mockPlayer.startSearch.mock.calls).toHaveLength(1);
+        expect(mockPlayer.startPonder.mock.calls).toHaveLength(1);
+        onCSAMove(123, "-3334FU", {
+          black: { time: 590 },
+          white: { time: 580 },
+        });
+        expect(mockAPI.csaMove.mock.calls).toHaveLength(2);
+        expect(mockAPI.csaMove.mock.calls[1][0]).toBe(123);
+        expect(mockAPI.csaMove.mock.calls[1][1]).toBe("+2726FU");
+        expect(mockPlayer.startSearch.mock.calls).toHaveLength(2);
+        expect(mockPlayer.startPonder.mock.calls).toHaveLength(1);
+        onCSAMove(123, "+2726FU", {
+          black: { time: 570 },
+          white: { time: 580 },
+        });
+        expect(mockAPI.csaMove.mock.calls).toHaveLength(2);
+        expect(mockAPI.csaResign.mock.calls).toHaveLength(0);
+        expect(mockPlayer.startSearch.mock.calls).toHaveLength(2);
+        expect(mockPlayer.startPonder.mock.calls).toHaveLength(2);
+        onCSAMove(123, "-8384FU", {
+          black: { time: 570 },
+          white: { time: 560 },
+        });
+        expect(mockAPI.csaLogout.mock.calls).toHaveLength(0);
+        expect(mockAPI.csaMove.mock.calls).toHaveLength(2);
+        expect(mockAPI.csaResign.mock.calls).toHaveLength(1);
+        expect(mockPlayer.startSearch.mock.calls).toHaveLength(3);
+        expect(mockPlayer.startPonder.mock.calls).toHaveLength(2);
+        expect(mockPlayer.close.mock.calls).toHaveLength(0);
+        expect(mockHandlers.onCSAGameEnd.mock.calls).toHaveLength(0);
+        onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
+        expect(mockAPI.csaLogout.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(123);
+        expect(mockPlayer.close.mock.calls).toHaveLength(1);
+        expect(mockHandlers.onCSAGameEnd.mock.calls).toHaveLength(1);
+        expect(mockHandlers.onError.mock.calls).toHaveLength(0);
+        expect(recordManager.record.moves).toHaveLength(6);
+        expect(recordManager.record.moves[5].move).toBe(SpecialMove.RESIGN);
+      })
+      .invoke();
+  });
+});

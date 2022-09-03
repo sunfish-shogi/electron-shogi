@@ -46,6 +46,7 @@ export type AppSetting = {
   showCommentInRecordView: boolean;
   enableAppLog: boolean;
   enableUSILog: boolean;
+  enableCSALog: boolean;
 };
 
 export type AppSettingUpdate = {
@@ -69,6 +70,7 @@ export type AppSettingUpdate = {
   showCommentInRecordView?: boolean;
   enableAppLog?: boolean;
   enableUSILog?: boolean;
+  enableCSALog?: boolean;
 };
 
 export function defaultAppSetting(returnCode?: string): AppSetting {
@@ -93,6 +95,7 @@ export function defaultAppSetting(returnCode?: string): AppSetting {
     showCommentInRecordView: true,
     enableAppLog: false,
     enableUSILog: false,
+    enableCSALog: false,
   };
 }
 

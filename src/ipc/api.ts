@@ -1,5 +1,5 @@
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
-import { GameSetting } from "@/settings/game";
+import { GameSetting, TimeLimitSetting } from "@/settings/game";
 import { AppSetting } from "@/settings/app";
 import { MenuEvent } from "@/ipc/menu";
 import { USIInfoSender } from "@/store/usi";
@@ -9,6 +9,8 @@ import { AppState } from "@/store/state";
 import { GameResult } from "@/players/player";
 import { AnalysisSetting } from "@/settings/analysis";
 import { LogLevel } from "./log";
+import { CSAGameResult, CSASpecialMove } from "./csa";
+import { CSAGameSettingHistory, CSAServerSetting } from "@/settings/csa";
 
 export interface Bridge {
   getRecordPathFromProcArg(): Promise<string>;
@@ -26,6 +28,8 @@ export interface Bridge {
   saveAnalysisSetting(setting: string): Promise<void>;
   loadGameSetting(): Promise<string>;
   saveGameSetting(setting: string): Promise<void>;
+  loadCSAGameSettingHistory(): Promise<string>;
+  saveCSAGameSettingHistory(setting: string): Promise<void>;
   loadUSIEngineSetting(): Promise<string>;
   saveUSIEngineSetting(setting: string): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
@@ -51,6 +55,13 @@ export interface Bridge {
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;
+  csaLogin(json: string): Promise<number>;
+  csaLogout(sessionID: number): Promise<void>;
+  csaAgree(sessionID: number, gameID: string): Promise<void>;
+  csaMove(sessionID: number, move: string): Promise<void>;
+  csaResign(sessionID: number): Promise<void>;
+  csaWin(sessionID: number): Promise<void>;
+  csaStop(sessionID: number): Promise<void>;
   log(level: LogLevel, message: string): void;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
@@ -80,6 +91,22 @@ export interface Bridge {
       json: string
     ) => void
   ): void;
+  onCSAGameSummary(
+    callback: (sessionID: number, gameSummary: string) => void
+  ): void;
+  onCSAReject(callback: (sessionID: number) => void): void;
+  onCSAStart(callback: (sessionID: number, playerStates: string) => void): void;
+  onCSAMove(
+    callback: (sessionID: number, mvoe: string, playerStates: string) => void
+  ): void;
+  onCSAGameResult(
+    callback: (
+      sessionID: number,
+      specialMove: CSASpecialMove,
+      gameResult: CSAGameResult
+    ) => void
+  ): void;
+  onCSAClose(callback: (sessionID: number) => void): void;
 }
 
 export interface API {
@@ -98,6 +125,8 @@ export interface API {
   saveAnalysisSetting(setting: AnalysisSetting): Promise<void>;
   loadGameSetting(): Promise<GameSetting>;
   saveGameSetting(setting: GameSetting): Promise<void>;
+  loadCSAGameSettingHistory(): Promise<CSAGameSettingHistory>;
+  saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void>;
   loadUSIEngineSetting(): Promise<USIEngineSettings>;
   saveUSIEngineSetting(setting: USIEngineSettings): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
@@ -107,14 +136,14 @@ export interface API {
   usiGo(
     sessionID: number,
     usi: string,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void>;
   usiGoPonder(
     sessionID: number,
     usi: string,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void>;
@@ -123,11 +152,18 @@ export interface API {
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;
+  csaLogin(setting: CSAServerSetting): Promise<number>;
+  csaLogout(sessionID: number): Promise<void>;
+  csaAgree(sessionID: number, gameID: string): Promise<void>;
+  csaMove(sessionID: number, move: string): Promise<void>;
+  csaResign(sessionID: number): Promise<void>;
+  csaWin(sessionID: number): Promise<void>;
+  csaStop(sessionID: number): Promise<void>;
   log(level: LogLevel, message: string): void;
 }
 
 interface ExtendedWindow extends Window {
-  electronShogiAPI: Bridge;
+  electronShogiAPI?: Bridge;
 }
 
 function getWindowObject(): ExtendedWindow {
@@ -162,6 +198,12 @@ const api: API = {
   saveGameSetting(setting: GameSetting): Promise<void> {
     return bridge.saveGameSetting(JSON.stringify(setting));
   },
+  async loadCSAGameSettingHistory(): Promise<CSAGameSettingHistory> {
+    return JSON.parse(await bridge.loadCSAGameSettingHistory());
+  },
+  saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void> {
+    return bridge.saveCSAGameSettingHistory(JSON.stringify(setting));
+  },
   async loadUSIEngineSetting(): Promise<USIEngineSettings> {
     return new USIEngineSettings(await bridge.loadUSIEngineSetting());
   },
@@ -177,14 +219,14 @@ const api: API = {
   usiGo(
     sessionID: number,
     usi: string,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void> {
     return bridge.usiGo(
       sessionID,
       usi,
-      JSON.stringify(gameSetting),
+      JSON.stringify(timeLimit),
       blackTimeMs,
       whiteTimeMs
     );
@@ -192,17 +234,20 @@ const api: API = {
   usiGoPonder(
     sessionID: number,
     usi: string,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void> {
     return bridge.usiGoPonder(
       sessionID,
       usi,
-      JSON.stringify(gameSetting),
+      JSON.stringify(timeLimit),
       blackTimeMs,
       whiteTimeMs
     );
+  },
+  csaLogin(setting: CSAServerSetting): Promise<number> {
+    return bridge.csaLogin(JSON.stringify(setting));
   },
 };
 

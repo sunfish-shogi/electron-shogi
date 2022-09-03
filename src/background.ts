@@ -10,8 +10,8 @@ import {
   saveWindowSetting,
 } from "@/ipc/background/settings";
 import { buildWindowSetting } from "@/settings/window";
-import { getAppLogger, shutdownLoggers } from "./ipc/background/log";
-import { quitAll as usiQuitAll } from "./ipc/background/usi";
+import { getAppLogger, shutdownLoggers } from "@/ipc/background/log";
+import { quitAll as usiQuitAll } from "@/ipc/background/usi";
 
 getAppLogger().info("start main process");
 getAppLogger().info("process argv: %s", process.argv.join(" "));

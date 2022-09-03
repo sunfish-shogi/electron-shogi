@@ -143,9 +143,10 @@ function formatTimeLimitCSA(setting: TimeLimitSetting): string {
 }
 
 type GameStartMetadata = {
-  blackName: string;
-  whiteName: string;
-  timeLimit: TimeLimitSetting;
+  gameTitle?: string;
+  blackName?: string;
+  whiteName?: string;
+  timeLimit?: TimeLimitSetting;
 };
 
 type AppendMoveParams = {
@@ -201,9 +202,12 @@ export class RecordManager {
     this.clearRecordFilePath();
   }
 
-  importRecord(data: string): Error | undefined {
+  importRecord(data: string, type?: RecordFormatType): Error | undefined {
     let recordOrError: Record | Error;
-    switch (detectRecordFormat(data)) {
+    if (!type) {
+      type = detectRecordFormat(data);
+    }
+    switch (type) {
       case RecordFormatType.SFEN: {
         const position = Position.newBySFEN(data);
         recordOrError = position
@@ -313,14 +317,24 @@ export class RecordManager {
   }
 
   setGameStartMetadata(metadata: GameStartMetadata): void {
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.BLACK_NAME,
-      metadata.blackName
-    );
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.WHITE_NAME,
-      metadata.whiteName
-    );
+    if (metadata.gameTitle) {
+      this._record.metadata.setStandardMetadata(
+        RecordMetadataKey.TITLE,
+        metadata.gameTitle
+      );
+    }
+    if (metadata.blackName) {
+      this._record.metadata.setStandardMetadata(
+        RecordMetadataKey.BLACK_NAME,
+        metadata.blackName
+      );
+    }
+    if (metadata.whiteName) {
+      this._record.metadata.setStandardMetadata(
+        RecordMetadataKey.WHITE_NAME,
+        metadata.whiteName
+      );
+    }
     this._record.metadata.setStandardMetadata(
       RecordMetadataKey.DATE,
       getDateString()
@@ -329,10 +343,12 @@ export class RecordManager {
       RecordMetadataKey.START_DATETIME,
       getDateTimeString()
     );
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.TIME_LIMIT,
-      formatTimeLimitCSA(metadata.timeLimit)
-    );
+    if (metadata.timeLimit) {
+      this._record.metadata.setStandardMetadata(
+        RecordMetadataKey.TIME_LIMIT,
+        formatTimeLimitCSA(metadata.timeLimit)
+      );
+    }
   }
 
   setGameEndMetadata(): void {

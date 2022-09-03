@@ -5,12 +5,14 @@ import { defaultResearchSetting } from "@/settings/research";
 import { USIEngineSettings } from "@/settings/usi";
 import { LogLevel } from "./log";
 import { Bridge } from "./api";
+import { defaultCSAGameSetting } from "@/settings/csa";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
   RESEARCH_SETTING = "researchSetting",
   ANALYSIS_SETTING = "analysisSetting",
   GAME_SETTING = "gameSetting",
+  CSA_GAME_SETTING_HISTORY = "csaGameSettingHistory",
 }
 
 // Electron を使わずにシンプルな Web アプリケーションとして実行した場合に使用します。
@@ -88,6 +90,19 @@ export const webAPI: Bridge = {
   async saveGameSetting(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.GAME_SETTING, json);
   },
+  async loadCSAGameSettingHistory(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY);
+    if (!json) {
+      return JSON.stringify(defaultCSAGameSetting());
+    }
+    return JSON.stringify({
+      ...defaultCSAGameSetting(),
+      ...JSON.parse(json),
+    });
+  },
+  async saveCSAGameSettingHistory(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY, json);
+  },
   async loadUSIEngineSetting(): Promise<string> {
     return new USIEngineSettings().json;
   },
@@ -127,6 +142,27 @@ export const webAPI: Bridge = {
   async usiQuit(): Promise<void> {
     // Do Nothing
   },
+  async csaLogin(): Promise<number> {
+    throw "Web版では利用できない機能です。";
+  },
+  async csaLogout(): Promise<void> {
+    // Do Nothing
+  },
+  async csaAgree(): Promise<void> {
+    // Do Nothing
+  },
+  async csaMove(): Promise<void> {
+    // Do Nothing
+  },
+  async csaResign(): Promise<void> {
+    // Do Nothing
+  },
+  async csaWin(): Promise<void> {
+    // Do Nothing
+  },
+  async csaStop(): Promise<void> {
+    // Do Nothing
+  },
   log(level: LogLevel, message: string): void {
     switch (level) {
       case LogLevel.INFO:
@@ -153,6 +189,24 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   onUSIPonderInfo(): void {
+    // Do Nothing
+  },
+  onCSAGameSummary(): void {
+    // Do Nothing
+  },
+  onCSAReject(): void {
+    // Do Nothing
+  },
+  onCSAStart(): void {
+    // Do Nothing
+  },
+  onCSAMove(): void {
+    // Do Nothing
+  },
+  onCSAGameResult(): void {
+    // Do Nothing
+  },
+  onCSAClose(): void {
     // Do Nothing
   },
 };

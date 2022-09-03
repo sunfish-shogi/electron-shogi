@@ -25,6 +25,7 @@ const datetime = new Date()
 
 const appLogPath = path.join(rootDir, `app-${datetime}.log`);
 const usiLogPath = path.join(rootDir, `usi-${datetime}.log`);
+const csaLogPath = path.join(rootDir, `csa-${datetime}.log`);
 
 let config: log4js.Log4js;
 
@@ -36,6 +37,7 @@ function getLogger(category: string): log4js.Logger {
         stdout: { type: "stdout" },
         app: { type: "file", filename: appLogPath },
         usi: { type: "file", filename: usiLogPath },
+        csa: { type: "file", filename: csaLogPath },
       },
       categories: {
         default: { appenders: ["stdout"], level: "info" },
@@ -45,6 +47,10 @@ function getLogger(category: string): log4js.Logger {
         },
         usi: {
           appenders: appSetting.enableUSILog ? ["usi"] : ["stdout"],
+          level: "info",
+        },
+        csa: {
+          appenders: appSetting.enableCSALog ? ["csa"] : ["stdout"],
           level: "info",
         },
       },
@@ -59,6 +65,10 @@ export function getAppLogger(): log4js.Logger {
 
 export function getUSILogger(): log4js.Logger {
   return getLogger("usi");
+}
+
+export function getCSALogger(): log4js.Logger {
+  return getLogger("csa");
 }
 
 export function shutdownLoggers(): void {

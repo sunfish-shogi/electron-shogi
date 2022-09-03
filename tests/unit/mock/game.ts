@@ -1,10 +1,13 @@
 import { GameSetting } from "@/settings/game";
 
+export const playerURI01 = "es://usi/test-engine-01";
+export const playerURI02 = "es://usi/test-engine-02";
+
 const blackPlayerSetting = {
   name: "USI Engine 01",
-  uri: "es://usi/test-engine-01",
+  uri: playerURI01,
   usi: {
-    uri: "es://usi/test-engine-01",
+    uri: playerURI01,
     name: "my usi engine 01",
     defaultName: "engine 01",
     author: "author01",
@@ -15,9 +18,9 @@ const blackPlayerSetting = {
 
 const whitePlayerSetting02 = {
   name: "USI Engine 02",
-  uri: "es://usi/test-engine-02",
+  uri: playerURI02,
   usi: {
-    uri: "es://usi/test-engine-02",
+    uri: playerURI02,
     name: "my usi engine 02",
     defaultName: "engine 02",
     author: "author02",

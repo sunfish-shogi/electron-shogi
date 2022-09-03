@@ -1,4 +1,4 @@
-import { GameSetting } from "@/settings/game";
+import { TimeLimitSetting } from "@/settings/game";
 import { ImmutableRecord, Move } from "@/shogi";
 import { Player, SearchHandler } from "./player";
 
@@ -11,7 +11,7 @@ export class HumanPlayer implements Player {
 
   async startSearch(
     record: ImmutableRecord,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,
     handler: SearchHandler
@@ -48,6 +48,14 @@ export class HumanPlayer implements Player {
     this.searchHandler = undefined;
     if (searchHandler) {
       searchHandler.onResign();
+    }
+  }
+
+  win() {
+    const searchHandler = this.searchHandler;
+    this.searchHandler = undefined;
+    if (searchHandler) {
+      searchHandler.onWin();
     }
   }
 }

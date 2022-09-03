@@ -1,4 +1,4 @@
-import { GameSetting } from "@/settings/game";
+import { TimeLimitSetting } from "@/settings/game";
 import { ImmutableRecord, Move } from "@/shogi";
 
 export enum GameResult {
@@ -18,14 +18,14 @@ export interface Player {
   isEngine(): boolean;
   startSearch(
     record: ImmutableRecord,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,
     handler: SearchHandler
   ): Promise<void>;
   startPonder(
     record: ImmutableRecord,
-    gameSetting: GameSetting,
+    timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void>;

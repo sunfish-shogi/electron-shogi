@@ -1,12 +1,6 @@
 import { InitialPositionType } from "@/shogi";
-import { USIEngineSetting } from "./usi";
 import * as uri from "@/uri";
-
-export type PlayerSetting = {
-  name: string;
-  uri: string;
-  usi?: USIEngineSetting;
-};
+import { PlayerSetting } from "./player";
 
 export type TimeLimitSetting = {
   timeSeconds: number;

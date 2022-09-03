@@ -191,6 +191,13 @@ export class USIMonitor {
     return this._researcher;
   }
 
+  clear(): void {
+    this._blackPlayer = undefined;
+    this._whitePlayer = undefined;
+    this._researcher = undefined;
+    this.updateQueue = [];
+  }
+
   update(
     sessionID: number,
     position: ImmutablePosition,

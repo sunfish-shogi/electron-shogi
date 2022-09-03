@@ -379,6 +379,7 @@ export class Store {
         return this.gameManager.startGame(setting);
       })
       .then(() => {
+        this.usiMonitor.clear();
         this._appState = AppState.GAME;
       })
       .catch((e) => {
@@ -407,7 +408,10 @@ export class Store {
         }
       })
       .then(() => this.csaGameManager.login(setting))
-      .then(() => (this._appState = AppState.CSA_GAME))
+      .then(() => {
+        this.usiMonitor.clear();
+        this._appState = AppState.CSA_GAME;
+      })
       .catch((e) => {
         this.pushError("対局の初期化中にエラーが出ました: " + e);
       })

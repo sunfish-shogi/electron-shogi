@@ -45,7 +45,7 @@
             : info.latestIteration"
           :key="index"
           class="list-item"
-          :class="{ highlight: historyMode && iterate.multiPV === 1 }"
+          :class="{ highlight: enableHighlight && iterate.multiPV === 1 }"
         >
           <div class="list-column time">
             {{ iterate.timeMs ? (iterate.timeMs / 1e3).toFixed(1) + "s" : "" }}
@@ -95,7 +95,7 @@
 
 <script lang="ts">
 import { USIIteration, USIPlayerMonitor } from "@/store/usi";
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { Icon } from "@/assets/icons";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import PVPreviewDialog from "@/components/dialog/PVPreviewDialog.vue";
@@ -130,8 +130,21 @@ export default defineComponent({
       required: true,
     },
   },
-  setup: () => {
+  setup: (props) => {
+    const enableHighlight = computed(() => {
+      if (!props.historyMode) {
+        return false;
+      }
+      for (const iterate of props.info.iterates) {
+        if (iterate.multiPV && iterate.multiPV !== 1) {
+          return true;
+        }
+      }
+      return false;
+    });
+
     const preview = ref<Preview | null>(null);
+
     const showPreview = (ite: USIIteration) => {
       const infos = [];
       if (ite.depth !== undefined) {
@@ -161,11 +174,14 @@ export default defineComponent({
         infos: [infos.join(" / "), ite.text || ""],
       };
     };
+
     const closePreview = () => {
       preview.value = null;
     };
+
     return {
       Icon,
+      enableHighlight,
       preview,
       showPreview,
       closePreview,

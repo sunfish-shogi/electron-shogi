@@ -7,7 +7,7 @@ import {
 import * as uri from "@/uri";
 import { onUSIBestMove, onUSIInfo, onUSIPonderInfo } from "@/ipc/background";
 import { Color, getNextColorFromUSI } from "@/shogi";
-import { USIInfoSender } from "@/store/usi";
+import { USIInfoSender } from "@/ipc/usi";
 import { TimeLimitSetting } from "@/settings/game";
 import { GameResult } from "@/players/player";
 

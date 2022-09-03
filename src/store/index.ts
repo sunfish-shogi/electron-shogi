@@ -27,7 +27,6 @@ import {
   beepUnlimited,
   playPieceBeat,
 } from "@/audio";
-import { InfoCommand, USIInfoSender } from "@/store/usi";
 import { RecordManager } from "./record";
 import { GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
@@ -39,12 +38,7 @@ import { MessageStore } from "./message";
 import { ErrorStore } from "./error";
 import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
-import {
-  AnalysisManager,
-  AnalysisResult,
-  appendAnalysisComment,
-  buildRecordComment,
-} from "./analysis";
+import { AnalysisManager } from "./analysis";
 import { AnalysisSetting } from "@/settings/analysis";
 import { USIPlayer } from "@/players/usi";
 import { LogLevel } from "@/ipc/log";
@@ -53,6 +47,7 @@ import { CSAGameManager, CSAGameState } from "./csa";
 import { Clock } from "./clock";
 import { CSAGameSetting, appendCSAGameSettingHistory } from "@/settings/csa";
 import { defaultPlayerBuilder } from "@/players/builder";
+import { USIInfoCommand, USIInfoSender } from "@/ipc/usi";
 
 export class Store {
   private _bussy = new BussyStore();
@@ -304,7 +299,7 @@ export class Store {
     usi: string,
     sender: USIInfoSender,
     name: string,
-    info: InfoCommand
+    info: USIInfoCommand
   ): void {
     if (this.recordManager.record.usi !== usi) {
       return;
@@ -330,7 +325,7 @@ export class Store {
     usi: string,
     sender: USIInfoSender,
     name: string,
-    info: InfoCommand
+    info: USIInfoCommand
   ): void {
     const record = Record.newByUSI(usi);
     if (record instanceof Error) {
@@ -546,18 +541,6 @@ export class Store {
     playPieceBeat(this.appSetting.pieceVolume);
   }
 
-  onResult(result: AnalysisResult): void {
-    const commentBehavior = this.analysisManager?.setting.commentBehavior;
-    if (this.appState === AppState.ANALYSIS && commentBehavior) {
-      const comment = buildRecordComment(result, this.appSetting);
-      if (comment) {
-        this.recordManager.appendComment(comment, (org, add) => {
-          return appendAnalysisComment(org, add, commentBehavior);
-        });
-      }
-    }
-  }
-
   onFinish(): void {
     if (this.appState === AppState.ANALYSIS) {
       this._message.enqueue("棋譜解析が終了しました。");
@@ -620,6 +603,7 @@ export class Store {
         this.analysisManager = new AnalysisManager(
           this.recordManager,
           analysisSetting,
+          this.appSetting,
           this
         );
         return this.analysisManager.start();

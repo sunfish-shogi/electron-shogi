@@ -4,8 +4,8 @@ import { AppSetting } from "@/settings/app";
 import { USIEngineSetting } from "@/settings/usi";
 import { Color, ImmutablePosition, Move, reverseColor } from "@/shogi";
 import { RecordManager } from "./record";
-import { getMoveAccuracyText, getSituationText } from "./score";
-import { InfoCommand } from "./usi";
+import { getSituationText, scoreToPercentage } from "./score";
+import { USIInfoCommand } from "@/ipc/usi";
 
 export interface AnalysisResult {
   number: number;
@@ -18,8 +18,6 @@ export interface AnalysisResult {
 }
 
 export interface AnalysisHandler {
-  // 1 手ごとの評価結果を通知します。
-  onResult(result: AnalysisResult): void;
   // 終了した際に呼び出されます。
   onFinish(): void;
   // エラーを通知します。
@@ -41,6 +39,7 @@ export class AnalysisManager {
   constructor(
     private recordManager: RecordManager,
     private _setting: AnalysisSetting,
+    private appSetting: AppSetting,
     private handler: AnalysisHandler
   ) {
     if (!_setting.usi) {
@@ -138,7 +137,7 @@ export class AnalysisManager {
     if (this.number === undefined) {
       return;
     }
-    this.handler.onResult({
+    const result = {
       number: this.number,
       score: this.score,
       negaScore: this.score
@@ -158,6 +157,13 @@ export class AnalysisManager {
         this.actualMove && this.lastPV
           ? this.actualMove.equals(this.lastPV[0])
           : undefined,
+    };
+    const comment = buildRecordComment(result, this.appSetting);
+    if (!comment) {
+      return;
+    }
+    this.recordManager.appendComment(comment, (org, add) => {
+      return appendAnalysisComment(org, add, this.setting.commentBehavior);
     });
   }
 
@@ -168,7 +174,7 @@ export class AnalysisManager {
     }
   }
 
-  updateUSIInfo(position: ImmutablePosition, info: InfoCommand): void {
+  updateUSIInfo(position: ImmutablePosition, info: USIInfoCommand): void {
     if (info.multipv !== undefined && info.multipv !== 1) {
       return;
     }
@@ -249,4 +255,24 @@ export function appendAnalysisComment(
     case CommentBehavior.OVERWRITE:
       return add;
   }
+}
+
+export function getMoveAccuracyText(
+  before: number,
+  after: number,
+  appSetting: AppSetting
+): string | null {
+  const loss =
+    scoreToPercentage(before, appSetting.coefficientInSigmoid) -
+    scoreToPercentage(after, appSetting.coefficientInSigmoid);
+  if (loss >= appSetting.badMoveLevelThreshold4) {
+    return "大悪手";
+  } else if (loss >= appSetting.badMoveLevelThreshold3) {
+    return "悪手";
+  } else if (loss >= appSetting.badMoveLevelThreshold2) {
+    return "疑問手";
+  } else if (loss >= appSetting.badMoveLevelThreshold1) {
+    return "緩手";
+  }
+  return null;
 }

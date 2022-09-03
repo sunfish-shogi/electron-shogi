@@ -20,11 +20,7 @@ import {
   reverseColor,
   SpecialMove,
 } from "@/shogi";
-import {
-  InfoCommand,
-  InfoCommand as USIInfoCommand,
-  USIInfoSender,
-} from "@/store/usi";
+import { USIInfoCommand, USIInfoSender } from "@/ipc/usi";
 import iconv from "iconv-lite";
 
 type Evaluation = {
@@ -358,7 +354,7 @@ export class RecordManager {
     );
   }
 
-  updateUSIInfo(sender: USIInfoSender, info: InfoCommand): void {
+  updateUSIInfo(sender: USIInfoSender, info: USIInfoCommand): void {
     const data = new RecordCustomData(this.record.current.customData);
     data.updateUSIInfo(this.record.position.color, sender, info);
     this._record.current.customData = data.stringify();

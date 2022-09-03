@@ -5,7 +5,7 @@ import { onUSIBestMove } from "@/players/usi";
 import { humanPlayer } from "@/players/human";
 import { bridge } from "./api";
 import { MenuEvent } from "./menu";
-import { USIInfoSender } from "@/store/usi";
+import { USIInfoSender } from "@/ipc/usi";
 import { AppState } from "@/store/state";
 import {
   onCSAClose,

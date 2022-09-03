@@ -1,3 +1,4 @@
+import { CommentBehavior } from "@/store/record";
 import { USIEngineSetting } from "./usi";
 
 type StartCriteria = {
@@ -13,13 +14,6 @@ type EndCriteria = {
 type PerMoveCriteria = {
   maxSeconds: number;
 };
-
-export enum CommentBehavior {
-  NONE = "none",
-  INSERT = "insert",
-  APPEND = "append",
-  OVERWRITE = "overwrite",
-}
 
 export type AnalysisSetting = {
   usi?: USIEngineSetting;

@@ -1,5 +1,6 @@
-import { AnalysisSetting, CommentBehavior } from "@/settings/analysis";
+import { AnalysisSetting } from "@/settings/analysis";
 import { USIEngineSetting } from "@/settings/usi";
+import { CommentBehavior } from "@/store/record";
 
 const engine: USIEngineSetting = {
   uri: "es://usi/test-engine",

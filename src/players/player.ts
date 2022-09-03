@@ -1,5 +1,10 @@
+import { USIInfoCommand } from "@/ipc/usi";
 import { TimeLimitSetting } from "@/settings/game";
 import { ImmutableRecord, Move } from "@/shogi";
+
+export type MoveOption = {
+  usiInfoCommand?: USIInfoCommand;
+};
 
 export enum GameResult {
   WIN = "win",
@@ -8,7 +13,7 @@ export enum GameResult {
 }
 
 export interface SearchHandler {
-  onMove: (move: Move) => void;
+  onMove: (move: Move, opt?: MoveOption) => void;
   onResign: () => void;
   onWin: () => void;
   onError: (e: unknown) => void;

@@ -22,6 +22,7 @@ import {
 } from "@/shogi";
 import { USIInfoCommand, USIInfoSender } from "@/ipc/usi";
 import iconv from "iconv-lite";
+import { getSituationText } from "./score";
 
 type Evaluation = {
   blackPlayer?: number;
@@ -93,41 +94,100 @@ export class RecordCustomData {
   }
 }
 
+function parsePlayerScoreComment(line: string): number | undefined {
+  const matched = /^\*評価値=([+-]?[.0-9]+)/.exec(line);
+  return matched ? Number(matched[1]) : undefined;
+}
+
+function parseResearchScoreComment(line: string): number | undefined {
+  const matched = /^#評価値=([+-]?[.0-9]+)/.exec(line);
+  return matched ? Number(matched[1]) : undefined;
+}
+
+function parseFloodgateScoreComment(line: string): number | undefined {
+  const matched = /^\* *([+-]?[.0-9]+)/.exec(line);
+  return matched ? Number(matched[1]) : undefined;
+}
+
 function restoreCustomData(record: Record): void {
   record.forEach((node) => {
     const data = new RecordCustomData(node.customData);
     const lines = node.comment.split("\n");
     for (const line of lines) {
-      // TODO: 正規表現を改善する。
-      const research = /^#評価値=([+-]?[.0-9]+)/.exec(line);
-      if (research) {
-        data.updateScore(
-          Color.BLACK,
-          USIInfoSender.RESEARCHER,
-          Number(research[1])
-        );
-      }
-      const player = /^\* *([+-]?[.0-9]+)/.exec(line);
-      if (player) {
+      const playerScore =
+        parsePlayerScoreComment(line) || parseFloodgateScoreComment(line);
+      const researchScore = parseResearchScoreComment(line);
+      if (playerScore !== undefined) {
         if (node.nextColor === Color.WHITE) {
           data.updateScore(
             Color.BLACK,
             USIInfoSender.BLACK_PLAYER,
-            Number(player[1])
+            playerScore
           );
         } else {
           data.updateScore(
             Color.WHITE,
             USIInfoSender.WHITE_PLAYER,
-            -Number(player[1])
+            -playerScore
           );
         }
+      }
+      if (researchScore !== undefined) {
+        data.updateScore(Color.BLACK, USIInfoSender.RESEARCHER, researchScore);
       }
     }
     if (!data.empty) {
       node.customData = data.stringify();
     }
   });
+}
+
+export enum SearchEngineType {
+  PLAYER,
+  RESEARCHER,
+}
+
+function searchCommentKeyPrefix(type: SearchEngineType): string {
+  switch (type) {
+    case SearchEngineType.PLAYER:
+      return "*";
+    case SearchEngineType.RESEARCHER:
+      return "#";
+  }
+}
+
+export type SearchResult = {
+  type: SearchEngineType;
+  score?: number; // 先手から見た評価値
+  pv?: Move[];
+  mate?: number;
+};
+
+export function buildSearchComment(searchResult: SearchResult): string {
+  const prefix = searchCommentKeyPrefix(searchResult.type);
+  let comment = "";
+  if (searchResult.mate) {
+    comment += `${searchResult.mate}手詰\n`;
+  }
+  if (searchResult.score !== undefined) {
+    comment += getSituationText(searchResult.score) + "\n";
+    comment += `${prefix}評価値=${searchResult.score}\n`;
+  }
+  if (searchResult.pv && searchResult.pv.length !== 0) {
+    comment += `${prefix}読み筋=`;
+    for (const move of searchResult.pv) {
+      comment += `${move.getDisplayText()}`;
+    }
+    comment += "\n";
+  }
+  return comment;
+}
+
+export enum CommentBehavior {
+  NONE = "none",
+  INSERT = "insert",
+  APPEND = "append",
+  OVERWRITE = "overwrite",
 }
 
 function formatTimeLimitCSA(setting: TimeLimitSetting): string {
@@ -302,14 +362,25 @@ export class RecordManager {
     this._record.current.comment = comment;
   }
 
-  appendComment(
-    comment: string,
-    appender: (org: string, add: string) => string
-  ): void {
-    this._record.current.comment = appender(
-      this.record.current.comment,
-      comment
-    );
+  appendComment(add: string, behavior: CommentBehavior): void {
+    if (!add) {
+      return;
+    }
+    const org = this._record.current.comment;
+    const sep = this.record.current.comment ? "\n" : "";
+    switch (behavior) {
+      case CommentBehavior.NONE:
+        break;
+      case CommentBehavior.INSERT:
+        this._record.current.comment = add + sep + org;
+        break;
+      case CommentBehavior.APPEND:
+        this._record.current.comment = org + sep + add;
+        break;
+      case CommentBehavior.OVERWRITE:
+        this._record.current.comment = add;
+        break;
+    }
   }
 
   setGameStartMetadata(metadata: GameStartMetadata): void {

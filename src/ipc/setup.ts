@@ -1,11 +1,11 @@
 import { watch } from "vue";
 import { SpecialMove, InitialPositionType } from "@/shogi";
 import { useStore } from "@/store";
-import { onUSIBestMove } from "@/players/usi";
+import { onUSIBestMove, onUSIInfo } from "@/players/usi";
 import { humanPlayer } from "@/players/human";
 import { bridge } from "./api";
 import { MenuEvent } from "./menu";
-import { USIInfoSender } from "@/ipc/usi";
+import { USIInfoCommand, USIInfoSender } from "@/ipc/usi";
 import { AppState } from "@/store/state";
 import {
   onCSAClose,
@@ -192,7 +192,9 @@ export function setup(): void {
       name: string,
       json: string
     ) => {
-      store.updateUSIInfo(sessionID, usi, sender, name, JSON.parse(json));
+      const info = JSON.parse(json) as USIInfoCommand;
+      store.updateUSIInfo(sessionID, usi, sender, name, info);
+      onUSIInfo(sessionID, usi, info);
     }
   );
   bridge.onUSIPonderInfo(

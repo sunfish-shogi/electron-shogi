@@ -1,4 +1,5 @@
 import api from "@/ipc/api";
+import { USIInfoCommand } from "@/ipc/usi";
 import { TimeLimitSetting } from "@/settings/game";
 import {
   getUSIEngineOptionCurrentValue,
@@ -15,6 +16,7 @@ export class USIPlayer implements Player {
   private searchHandler?: SearchHandler;
   private ponder?: string;
   private inPonder = false;
+  private info?: USIInfoCommand;
 
   constructor(private setting: USIEngineSetting) {}
 
@@ -36,6 +38,7 @@ export class USIPlayer implements Player {
   ): Promise<void> {
     this.searchHandler = handler;
     this.usi = record.usi;
+    this.info = undefined;
     this.position = record.position.clone();
     if (this.inPonder && this.ponder === this.usi) {
       api.usiPonderHit(this.sessionID);
@@ -121,7 +124,16 @@ export class USIPlayer implements Player {
       return;
     }
     this.ponder = ponder && `${usi} ${sfen} ${ponder}`;
-    searchHandler.onMove(move);
+    searchHandler.onMove(move, {
+      usiInfoCommand: this.info,
+    });
+  }
+
+  onUSIInfo(usi: string, info: USIInfoCommand) {
+    if (usi !== this.usi) {
+      return;
+    }
+    this.info = info;
   }
 }
 
@@ -138,4 +150,16 @@ export function onUSIBestMove(
     return;
   }
   player.onBestMove(usi, sfen, ponder);
+}
+
+export function onUSIInfo(
+  sessionID: number,
+  usi: string,
+  info: USIInfoCommand
+) {
+  const player = usiPlayers[sessionID];
+  if (!player) {
+    return;
+  }
+  player.onUSIInfo(usi, info);
 }

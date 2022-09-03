@@ -1,9 +1,15 @@
+import { USIInfoCommand } from "@/ipc/usi";
 import { Player, SearchHandler } from "@/players/player";
 import { TimeLimitSetting } from "@/settings/game";
 import { PlayerSetting } from "@/settings/player";
 import { ImmutableRecord, Move } from "@/shogi";
 
-export function createMockPlayer(moves: { [usi: string]: string }) {
+export type MoveWithOption = {
+  sfen: string;
+  usiInfo?: USIInfoCommand;
+};
+
+export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
   return {
     isEngine(): boolean {
       return false;
@@ -16,17 +22,17 @@ export function createMockPlayer(moves: { [usi: string]: string }) {
         wt: number,
         h: SearchHandler
       ) => {
-        const sfen = moves[r.usi];
-        if (sfen === "no-reply") {
+        const m = moves[r.usi];
+        if (m.sfen === "no-reply") {
           // eslint-disable-next-line  @typescript-eslint/no-empty-function
           return new Promise<void>(() => {});
         }
-        if (sfen === "resign") {
+        if (m.sfen === "resign") {
           h.onResign();
           return Promise.resolve();
         }
-        const move = r.position.createMoveBySFEN(sfen) as Move;
-        h.onMove(move);
+        const move = r.position.createMoveBySFEN(m.sfen) as Move;
+        h.onMove(move, { usiInfoCommand: m.usiInfo });
         return Promise.resolve();
       }
     ),

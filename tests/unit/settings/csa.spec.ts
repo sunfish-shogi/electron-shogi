@@ -21,6 +21,7 @@ describe("settings/csa", () => {
         password: "test0123",
       },
       autoFlip: true,
+      enableComment: true,
     });
     expect(result).toBeUndefined();
   });
@@ -38,6 +39,7 @@ describe("settings/csa", () => {
         password: "test0123",
       },
       autoFlip: true,
+      enableComment: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -55,6 +57,7 @@ describe("settings/csa", () => {
         password: "test0123",
       },
       autoFlip: true,
+      enableComment: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -72,6 +75,7 @@ describe("settings/csa", () => {
         password: "test0123",
       },
       autoFlip: true,
+      enableComment: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -88,6 +92,7 @@ describe("settings/csa", () => {
           id: `TestPlayer${n}`,
         },
         autoFlip: true,
+        enableComment: true,
       };
     };
     let history = emptyCSAGameSettingHistory;
@@ -144,6 +149,7 @@ describe("settings/csa", () => {
         },
       ],
       autoFlip: true,
+      enableComment: true,
     };
     const secure = encryptCSAGameSettingHistory(raw, (src) => {
       return (
@@ -193,6 +199,7 @@ describe("settings/csa", () => {
         },
       ],
       autoFlip: true,
+      enableComment: true,
     };
     const raw = decryptCSAGameSettingHistory(secure, (src) => {
       return (

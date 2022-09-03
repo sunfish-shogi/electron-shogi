@@ -12,6 +12,7 @@ export type CSAGameSetting = {
   player: PlayerSetting;
   server: CSAServerSetting;
   autoFlip: boolean;
+  enableComment: boolean;
 };
 
 export function defaultCSAServerSetting(): CSAServerSetting {
@@ -31,6 +32,7 @@ export function defaultCSAGameSetting(): CSAGameSetting {
     },
     server: defaultCSAServerSetting(),
     autoFlip: true,
+    enableComment: true,
   };
 }
 
@@ -53,6 +55,7 @@ export type CSAGameSettingHistory = {
   player: PlayerSetting;
   serverHistory: CSAServerSetting[];
   autoFlip: boolean;
+  enableComment: boolean;
 };
 
 export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
@@ -63,6 +66,7 @@ export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
     },
     serverHistory: [],
     autoFlip: true,
+    enableComment: true,
   };
 }
 
@@ -77,6 +81,7 @@ export function buildCSAGameSettingByHistory(
         ? history.serverHistory[index]
         : defaultCSAServerSetting(),
     autoFlip: history.autoFlip,
+    enableComment: history.enableComment,
   };
 }
 
@@ -104,6 +109,7 @@ export function appendCSAGameSettingHistory(
     player: setting.player,
     serverHistory: newServerHistory,
     autoFlip: setting.autoFlip,
+    enableComment: setting.enableComment,
   };
 }
 
@@ -118,7 +124,20 @@ export type SecureCSAGameSettingHistory = {
   player: PlayerSetting;
   serverHistory: SecureCSAServerSetting[];
   autoFlip: boolean;
+  enableComment: boolean;
 };
+
+export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistory {
+  return {
+    player: {
+      name: "人",
+      uri: uri.ES_HUMAN,
+    },
+    serverHistory: [],
+    autoFlip: true,
+    enableComment: true,
+  };
+}
 
 export function encryptCSAGameSettingHistory(
   history: CSAGameSettingHistory,
@@ -137,6 +156,7 @@ export function encryptCSAGameSettingHistory(
     player: history.player,
     serverHistory: serverHistory,
     autoFlip: history.autoFlip,
+    enableComment: history.enableComment,
   };
 }
 
@@ -157,5 +177,6 @@ export function decryptCSAGameSettingHistory(
     player: history.player,
     serverHistory: serverHistory,
     autoFlip: history.autoFlip,
+    enableComment: history.enableComment,
   };
 }

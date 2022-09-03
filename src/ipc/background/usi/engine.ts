@@ -9,7 +9,7 @@ import {
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import path from "path";
 import { createInterface as readline, Interface as Readline } from "readline";
-import { InfoCommand } from "@/store/usi";
+import { USIInfoCommand } from "@/ipc/usi";
 import { getUSILogger } from "@/ipc/background/log";
 
 export type EngineProcessOption = {
@@ -43,8 +43,8 @@ function parseScoreMate(arg: string): number {
   }
 }
 
-function parseInfoCommand(args: string): InfoCommand {
-  const result: InfoCommand = {};
+function parseInfoCommand(args: string): USIInfoCommand {
+  const result: USIInfoCommand = {};
   const s = args.split(" ");
   for (let i = 0; i < args.length; i += 1) {
     switch (s[i]) {
@@ -120,7 +120,7 @@ type BestmoveCallback = (
   sfen: string,
   ponder?: string
 ) => void;
-type InfoCallback = (position: string, info: InfoCommand) => void;
+type InfoCallback = (position: string, info: USIInfoCommand) => void;
 
 type ReservedGoCommand = {
   position: string;

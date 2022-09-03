@@ -18,7 +18,7 @@ import {
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { setupMenu, updateMenuState } from "@/ipc/background/menu";
 import { MenuEvent } from "@/ipc/menu";
-import { InfoCommand, USIInfoSender } from "@/store/usi";
+import { USIInfoCommand, USIInfoSender } from "@/ipc/usi";
 import { AppState } from "@/store/state";
 import {
   gameover as usiGameover,
@@ -367,7 +367,7 @@ export function onUSIInfo(
   usi: string,
   sender: USIInfoSender,
   name: string,
-  info: InfoCommand
+  info: USIInfoCommand
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_INFO,
@@ -384,7 +384,7 @@ export function onUSIPonderInfo(
   usi: string,
   sender: USIInfoSender,
   name: string,
-  info: InfoCommand
+  info: USIInfoCommand
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_PONDER_INFO,

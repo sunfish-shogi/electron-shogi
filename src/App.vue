@@ -34,7 +34,7 @@ import { AppState } from "@/store/state";
 import { handleKeyDownEvent } from "@/helpers/key";
 import AnalysisDialog from "@/components/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/components/dialog/CSAGameReadyDialog.vue";
-import { CSAGameState } from "./store/csa";
+import { CSAGameState } from "@/store/csa";
 
 export default defineComponent({
   name: "App",

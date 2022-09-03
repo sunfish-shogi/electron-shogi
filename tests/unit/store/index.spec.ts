@@ -4,7 +4,7 @@ import { Thema } from "@/settings/app";
 import { Move } from "@/shogi";
 import { Store } from "@/store";
 import { RecordCustomData } from "@/store/record";
-import { USIInfoSender } from "@/store/usi";
+import { USIInfoSender } from "@/ipc/usi";
 import iconv from "iconv-lite";
 import * as audio from "@/audio";
 import { gameSetting10m30s } from "../mock/game";

@@ -2,7 +2,7 @@ import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { GameSetting, TimeLimitSetting } from "@/settings/game";
 import { AppSetting } from "@/settings/app";
 import { MenuEvent } from "@/ipc/menu";
-import { USIInfoSender } from "@/store/usi";
+import { USIInfoSender } from "./usi";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/settings/research";
 import { AppState } from "@/store/state";

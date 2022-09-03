@@ -1,7 +1,7 @@
 import { MenuEvent } from "@/ipc/menu";
 import { AppState } from "@/store/state";
 import { GameResult } from "@/players/player";
-import { USIInfoSender } from "@/store/usi";
+import { USIInfoSender } from "@/ipc/usi";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "./channel";
 import { Bridge } from "./api";

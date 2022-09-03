@@ -25,7 +25,7 @@ import {
   watch,
 } from "vue";
 import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
-import { stringifyUSIInfoSender, USIInfoSender } from "@/store/usi";
+import { stringifyUSIInfoSender, USIInfoSender } from "@/ipc/usi";
 import { ImmutableRecord } from "@/shogi";
 import { scoreToPercentage } from "@/store/score";
 import { AppSetting, Thema } from "@/settings/app";
@@ -112,7 +112,7 @@ export default defineComponent({
               value = Math.min(Math.max(value, MIN_SCORE), MAX_SCORE);
               break;
             case EvaluationChartType.WIN_RATE:
-              value = scoreToPercentage(value, appSetting);
+              value = scoreToPercentage(value, appSetting.coefficientInSigmoid);
               break;
           }
           dataPoints.push({

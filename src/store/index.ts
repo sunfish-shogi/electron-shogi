@@ -27,7 +27,7 @@ import {
   beepUnlimited,
   playPieceBeat,
 } from "@/audio";
-import { RecordManager } from "./record";
+import { RecordManager, SearchEngineType } from "./record";
 import { GameManager } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
@@ -311,13 +311,6 @@ export class Store {
       name,
       info
     );
-    this.recordManager.updateUSIInfo(sender, info);
-    if (this.analysisManager) {
-      this.analysisManager.updateUSIInfo(
-        this.recordManager.record.position,
-        info
-      );
-    }
   }
 
   updateUSIPonderInfo(
@@ -565,7 +558,12 @@ export class Store {
     api
       .saveResearchSetting(researchSetting)
       .then(() => {
-        this.researcher = new USIPlayer(usiSetting);
+        this.researcher = new USIPlayer(usiSetting, (info) => {
+          this.recordManager.updateSearchInfo(
+            SearchEngineType.RESEARCHER,
+            info
+          );
+        });
         return this.researcher.launch();
       })
       .then(() => {

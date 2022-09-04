@@ -181,10 +181,11 @@ export class USIMonitor {
       info,
       ponderMove,
     });
+    // 高頻度でコマンドが送られてくると描画が追いつかないので、一定時間ごとに反映する。
     if (!this.timeoutHandle) {
       this.timeoutHandle = window.setTimeout(() => {
         this.dequeue();
-      }, 100);
+      }, 500);
     }
   }
 

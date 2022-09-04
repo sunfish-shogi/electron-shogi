@@ -184,7 +184,7 @@ export interface ImmutableNode {
   readonly move: Move | SpecialMove;
   readonly isCheck: boolean;
   readonly comment: string;
-  readonly customData: string | undefined;
+  readonly customData: unknown;
   readonly displayText: string;
   readonly timeText: string;
   readonly hasBranch: boolean;
@@ -196,7 +196,7 @@ export interface ImmutableNode {
 
 export interface Node extends ImmutableNode {
   comment: string;
-  customData: string | undefined;
+  customData: unknown;
   setElapsedMs(elapsedMs: number): void;
 }
 
@@ -204,7 +204,7 @@ class NodeImpl implements Node {
   public next: NodeImpl | null = null;
   public branch: NodeImpl | null = null;
   public comment = "";
-  public customData: string | undefined;
+  public customData: unknown;
   public elapsedMs = 0;
   public totalElapsedMs = 0;
 

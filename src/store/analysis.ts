@@ -1,11 +1,11 @@
+import { SearchInfo } from "@/players/player";
 import { USIPlayer } from "@/players/usi";
 import { AnalysisSetting } from "@/settings/analysis";
 import { AppSetting } from "@/settings/app";
 import { USIEngineSetting } from "@/settings/usi";
-import { Color, ImmutablePosition, Move, reverseColor } from "@/shogi";
+import { Color, Move, reverseColor } from "@/shogi";
 import { buildSearchComment, RecordManager, SearchEngineType } from "./record";
 import { scoreToPercentage } from "./score";
-import { parseSFENPV, USIInfoCommand } from "@/ipc/usi";
 
 export interface AnalysisHandler {
   // 終了した際に呼び出されます。
@@ -19,11 +19,8 @@ export class AnalysisManager {
   private number?: number;
   private actualMove?: Move;
   private color = Color.BLACK;
-  private lastScore?: number;
-  private score?: number;
-  private mate?: number;
-  private lastPV?: Move[];
-  private pv?: Move[];
+  private lastSearchInfo?: SearchInfo;
+  private searchInfo?: SearchInfo;
   private timerHandle?: number;
 
   constructor(
@@ -55,7 +52,7 @@ export class AnalysisManager {
 
   private async setupEngine(setting: USIEngineSetting): Promise<void> {
     await this.closeEngine();
-    const researcher = new USIPlayer(setting);
+    const researcher = new USIPlayer(setting, this.updateSearchInfo.bind(this));
     await researcher.launch();
     this.researcher = researcher;
   }
@@ -69,11 +66,8 @@ export class AnalysisManager {
     this.clearTimer();
 
     this.actualMove = undefined;
-    this.lastScore = this.score;
-    this.score = undefined;
-    this.mate = undefined;
-    this.lastPV = this.pv;
-    this.pv = undefined;
+    this.lastSearchInfo = this.searchInfo;
+    this.searchInfo = undefined;
     this.number =
       this.number !== undefined
         ? this.number + 1
@@ -123,20 +117,22 @@ export class AnalysisManager {
   }
 
   private onResult(): void {
-    const negaScore = this.score
-      ? this.color === Color.BLACK
-        ? this.score
-        : -this.score
-      : undefined;
+    if (!this.searchInfo || !this.lastSearchInfo) {
+      return;
+    }
+    const sign = this.color === Color.BLACK ? 1 : -1;
+    const negaScore =
+      this.searchInfo.score !== undefined
+        ? this.searchInfo.score * sign
+        : undefined;
     const scoreDelta =
-      this.score !== undefined && this.lastScore !== undefined
-        ? this.color === Color.BLACK
-          ? this.score - this.lastScore
-          : -(this.score - this.lastScore)
+      this.searchInfo.score !== undefined &&
+      this.lastSearchInfo.score !== undefined
+        ? (this.searchInfo.score - this.lastSearchInfo.score) * sign
         : undefined;
     const isBestMove =
-      this.actualMove && this.lastPV
-        ? this.actualMove.equals(this.lastPV[0])
+      this.actualMove && this.lastSearchInfo.pv
+        ? this.actualMove.equals(this.lastSearchInfo.pv[0])
         : undefined;
     let comment = "";
     if (scoreDelta !== undefined && negaScore !== undefined && !isBestMove) {
@@ -149,12 +145,7 @@ export class AnalysisManager {
         comment += `【${text}】\n`;
       }
     }
-    comment += buildSearchComment({
-      type: SearchEngineType.RESEARCHER,
-      score: this.score,
-      pv: this.pv,
-      mate: this.mate,
-    });
+    comment += buildSearchComment(SearchEngineType.RESEARCHER, this.searchInfo);
     this.recordManager.appendComment(comment, this.setting.commentBehavior);
   }
 
@@ -165,25 +156,9 @@ export class AnalysisManager {
     }
   }
 
-  updateUSIInfo(position: ImmutablePosition, info: USIInfoCommand): void {
-    if (info.multipv !== undefined && info.multipv !== 1) {
-      return;
-    }
-    if (info.scoreCP !== undefined) {
-      this.score =
-        position.color === Color.BLACK ? info.scoreCP : -info.scoreCP;
-    }
-    if (info.scoreMate) {
-      this.mate = Math.abs(info.scoreMate);
-    }
-    if (info.pv && info.pv.length !== 0) {
-      this.pv = parseSFENPV(position, info.pv);
-    } else if (info.currmove) {
-      const move = position.createMoveBySFEN(info.currmove);
-      if (move) {
-        this.pv = [move];
-      }
-    }
+  updateSearchInfo(info: SearchInfo): void {
+    this.recordManager.updateSearchInfo(SearchEngineType.RESEARCHER, info);
+    this.searchInfo = info;
   }
 }
 

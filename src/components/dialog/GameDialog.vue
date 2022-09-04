@@ -41,6 +41,7 @@
       </div>
       <div class="dialog-form-areas-h">
         <div class="dialog-form-area time-limit">
+          <div class="top-label">時間</div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label">持ち時間</div>
             <input
@@ -86,9 +87,19 @@
             />
             <div class="dialog-form-item-unit">秒</div>
           </div>
+          <div class="dialog-form-item">
+            <input
+              id="disable-engine-timeout"
+              ref="enableEngineTimeout"
+              type="checkbox"
+            />
+            <label for="disable-engine-timeout">エンジンの時間切れあり</label>
+          </div>
         </div>
         <div class="dialog-form-area flags">
+          <div class="top-label">その他</div>
           <div class="dialog-form-item">
+            <div class="dialog-form-item-label">開始局面</div>
             <select ref="startPosition">
               <option value="current">現在の局面</option>
               <option value="standard">平手</option>
@@ -104,12 +115,8 @@
             </select>
           </div>
           <div class="dialog-form-item">
-            <input
-              id="disable-engine-timeout"
-              ref="enableEngineTimeout"
-              type="checkbox"
-            />
-            <label for="disable-engine-timeout">エンジンの時間切れあり</label>
+            <input id="enable-comment" ref="enableComment" type="checkbox" />
+            <label for="enable-comment">コメントを出力する</label>
           </div>
           <div class="dialog-form-item">
             <input id="human-is-front" ref="humanIsFront" type="checkbox" />
@@ -131,6 +138,7 @@ import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { ref, onMounted, defineComponent, Ref, computed, onUpdated } from "vue";
 import api from "@/ipc/api";
 import { useStore } from "@/store";
+import { CommentBehavior } from "@/store/record";
 import {
   defaultGameSetting,
   GameSetting,
@@ -160,6 +168,7 @@ export default defineComponent({
     const startPosition: Ref = ref(null);
     const enableEngineTimeout: Ref = ref(null);
     const humanIsFront: Ref = ref(null);
+    const enableComment: Ref = ref(null);
     const gameSetting = ref(defaultGameSetting());
     const engineSettings = ref(new USIEngineSettings());
     const blackPlayerURI = ref("");
@@ -199,6 +208,7 @@ export default defineComponent({
         enableEngineTimeout.value.checked =
           gameSetting.value.enableEngineTimeout;
         humanIsFront.value.checked = gameSetting.value.humanIsFront;
+        enableComment.value.checked = gameSetting.value.enableComment;
         defaultValueApplied = true;
       }
     });
@@ -241,6 +251,7 @@ export default defineComponent({
             : undefined,
         enableEngineTimeout: enableEngineTimeout.value.checked,
         humanIsFront: humanIsFront.value.checked,
+        enableComment: enableComment.value.checked,
       };
       const error = validateGameSetting(gameSetting);
       if (error) {
@@ -290,6 +301,7 @@ export default defineComponent({
     });
 
     return {
+      CommentBehavior,
       dialog,
       hours,
       minutes,
@@ -298,6 +310,7 @@ export default defineComponent({
       startPosition,
       enableEngineTimeout,
       humanIsFront,
+      enableComment,
       engineSettings,
       blackPlayerURI,
       whitePlayerURI,

@@ -1,21 +1,11 @@
 import { USIPlayer } from "@/players/usi";
-import { AnalysisSetting, CommentBehavior } from "@/settings/analysis";
+import { AnalysisSetting } from "@/settings/analysis";
 import { AppSetting } from "@/settings/app";
 import { USIEngineSetting } from "@/settings/usi";
 import { Color, ImmutablePosition, Move, reverseColor } from "@/shogi";
-import { RecordManager } from "./record";
-import { getSituationText, scoreToPercentage } from "./score";
-import { USIInfoCommand } from "@/ipc/usi";
-
-export interface AnalysisResult {
-  number: number;
-  score?: number;
-  negaScore?: number;
-  scoreDelta?: number;
-  mate?: number;
-  pv?: Move[];
-  isBestMove?: boolean;
-}
+import { buildSearchComment, RecordManager, SearchEngineType } from "./record";
+import { scoreToPercentage } from "./score";
+import { parseSFENPV, USIInfoCommand } from "@/ipc/usi";
 
 export interface AnalysisHandler {
   // 終了した際に呼び出されます。
@@ -77,7 +67,6 @@ export class AnalysisManager {
       return;
     }
     this.clearTimer();
-    this.onResult();
 
     this.actualMove = undefined;
     this.lastScore = this.score;
@@ -112,10 +101,10 @@ export class AnalysisManager {
     this.actualMove =
       record.current.move instanceof Move ? record.current.move : undefined;
     this.color = reverseColor(record.position.color);
-    this.timerHandle = window.setTimeout(
-      () => this.next(),
-      this.setting.perMoveCriteria.maxSeconds * 1e3
-    );
+    this.timerHandle = window.setTimeout(() => {
+      this.onResult();
+      this.next();
+    }, this.setting.perMoveCriteria.maxSeconds * 1e3);
     this.researcher.startResearch(record).catch((e) => {
       this.handler.onError(e);
     });
@@ -134,37 +123,39 @@ export class AnalysisManager {
   }
 
   private onResult(): void {
-    if (this.number === undefined) {
-      return;
-    }
-    const result = {
-      number: this.number,
-      score: this.score,
-      negaScore: this.score
+    const negaScore = this.score
+      ? this.color === Color.BLACK
+        ? this.score
+        : -this.score
+      : undefined;
+    const scoreDelta =
+      this.score !== undefined && this.lastScore !== undefined
         ? this.color === Color.BLACK
-          ? this.score
-          : -this.score
-        : undefined,
-      scoreDelta:
-        this.score !== undefined && this.lastScore !== undefined
-          ? this.color === Color.BLACK
-            ? this.score - this.lastScore
-            : -(this.score - this.lastScore)
-          : undefined,
-      mate: this.mate,
-      pv: this.pv,
-      isBestMove:
-        this.actualMove && this.lastPV
-          ? this.actualMove.equals(this.lastPV[0])
-          : undefined,
-    };
-    const comment = buildRecordComment(result, this.appSetting);
-    if (!comment) {
-      return;
+          ? this.score - this.lastScore
+          : -(this.score - this.lastScore)
+        : undefined;
+    const isBestMove =
+      this.actualMove && this.lastPV
+        ? this.actualMove.equals(this.lastPV[0])
+        : undefined;
+    let comment = "";
+    if (scoreDelta !== undefined && negaScore !== undefined && !isBestMove) {
+      const text = getMoveAccuracyText(
+        negaScore - scoreDelta,
+        negaScore,
+        this.appSetting
+      );
+      if (text) {
+        comment += `【${text}】\n`;
+      }
     }
-    this.recordManager.appendComment(comment, (org, add) => {
-      return appendAnalysisComment(org, add, this.setting.commentBehavior);
+    comment += buildSearchComment({
+      type: SearchEngineType.RESEARCHER,
+      score: this.score,
+      pv: this.pv,
+      mate: this.mate,
     });
+    this.recordManager.appendComment(comment, this.setting.commentBehavior);
   }
 
   private async closeEngine(): Promise<void> {
@@ -186,15 +177,7 @@ export class AnalysisManager {
       this.mate = Math.abs(info.scoreMate);
     }
     if (info.pv && info.pv.length !== 0) {
-      this.pv = [];
-      const pos = position.clone();
-      for (const sfen of info.pv) {
-        const move = pos.createMoveBySFEN(sfen);
-        if (!move || !pos.doMove(move)) {
-          break;
-        }
-        this.pv.push(move);
-      }
+      this.pv = parseSFENPV(position, info.pv);
     } else if (info.currmove) {
       const move = position.createMoveBySFEN(info.currmove);
       if (move) {
@@ -204,60 +187,7 @@ export class AnalysisManager {
   }
 }
 
-export function buildRecordComment(
-  result: AnalysisResult,
-  appSetting: AppSetting
-): string {
-  let comment = "";
-  if (result.mate) {
-    comment += `${result.mate}手詰\n`;
-  }
-  if (
-    result.scoreDelta !== undefined &&
-    result.negaScore !== undefined &&
-    !result.isBestMove
-  ) {
-    const text = getMoveAccuracyText(
-      result.negaScore - result.scoreDelta,
-      result.negaScore,
-      appSetting
-    );
-    if (text) {
-      comment += `【${text}】\n`;
-    }
-  }
-  if (result.score !== undefined) {
-    comment += `#評価値=${result.score}\n`;
-    comment += getSituationText(result.score) + "\n";
-  }
-  if (result.pv && result.pv.length !== 0) {
-    for (const move of result.pv) {
-      comment += `${move.getDisplayText()}`;
-    }
-    comment += "\n";
-  }
-  return comment;
-}
-
-export function appendAnalysisComment(
-  org: string,
-  add: string,
-  behavior: CommentBehavior
-): string {
-  const sep = org ? "\n" : "";
-  switch (behavior) {
-    case CommentBehavior.NONE:
-      return org;
-    case CommentBehavior.INSERT:
-      return add + sep + org;
-    case CommentBehavior.APPEND:
-      return org + sep + add;
-    case CommentBehavior.OVERWRITE:
-      return add;
-  }
-}
-
-export function getMoveAccuracyText(
+function getMoveAccuracyText(
   before: number,
   after: number,
   appSetting: AppSetting

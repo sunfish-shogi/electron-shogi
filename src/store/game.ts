@@ -1,11 +1,17 @@
 import { LogLevel } from "@/ipc/log";
 import api from "@/ipc/api";
-import { GameResult, Player } from "@/players/player";
+import { GameResult, MoveOption, Player } from "@/players/player";
 import { defaultGameSetting, GameSetting } from "@/settings/game";
 import { Color, Move, reverseColor, SpecialMove } from "@/shogi";
-import { RecordManager } from "./record";
+import {
+  buildSearchComment,
+  CommentBehavior,
+  RecordManager,
+  SearchEngineType,
+} from "./record";
 import { Clock } from "./clock";
 import { PlayerBuilder } from "@/players/builder";
+import { parseSFENPV, USIInfoCommand } from "@/ipc/usi";
 
 export interface GameHandlers {
   onGameEnd(specialMove?: SpecialMove): void;
@@ -121,7 +127,7 @@ export class GameManager {
         this.blackClock.timeMs,
         this.whiteClock.timeMs,
         {
-          onMove: (move: Move) => this.onMove(eventID, move),
+          onMove: (move, opt) => this.onMove(eventID, move, opt),
           onResign: () => this.onResign(eventID),
           onWin: () => this.onWin(eventID),
           onError: (e) => this.handlers.onError(e),
@@ -151,7 +157,7 @@ export class GameManager {
       });
   }
 
-  private onMove(eventID: number, move: Move): void {
+  private onMove(eventID: number, move: Move, opt?: MoveOption): void {
     if (eventID !== this.lastEventID) {
       api.log(LogLevel.ERROR, "GameManager#onMove: event ID already disabled");
       return;
@@ -174,6 +180,9 @@ export class GameManager {
       moveOption: { ignoreValidation: true },
       elapsedMs: this.getActiveClock().elapsedMs,
     });
+    if (opt && opt.usiInfoCommand) {
+      this.appendSearchComment(opt.usiInfoCommand);
+    }
     this.handlers.onPieceBeat();
     const faulColor = this.recordManager.record.perpetualCheck;
     if (faulColor) {
@@ -355,5 +364,22 @@ export class GameManager {
   private issueEventID(): number {
     this.lastEventID += 1;
     return this.lastEventID;
+  }
+
+  private appendSearchComment(info: USIInfoCommand) {
+    if (!this.setting.enableComment) {
+      return;
+    }
+    const position = this.recordManager.record.position;
+    const pv = info.pv && parseSFENPV(position, info.pv.slice(1));
+    const comment = buildSearchComment({
+      type: SearchEngineType.PLAYER,
+      score:
+        info.scoreCP &&
+        (position.color === Color.WHITE ? info.scoreCP : -info.scoreCP),
+      pv: pv,
+      mate: info.scoreMate && Math.abs(info.scoreMate),
+    });
+    this.recordManager.appendComment(comment, CommentBehavior.APPEND);
   }
 }

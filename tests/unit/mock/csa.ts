@@ -32,12 +32,14 @@ export const csaGameSetting: CSAGameSetting = {
   player: playerSetting,
   server: csaServerSetting,
   autoFlip: true,
+  enableComment: true,
 };
 
 export const emptyCSAGameSettingHistory: CSAGameSettingHistory = {
   player: playerSetting,
   serverHistory: [],
   autoFlip: true,
+  enableComment: true,
 };
 
 export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
@@ -51,6 +53,7 @@ export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
     },
   ],
   autoFlip: true,
+  enableComment: true,
 };
 
 const initialPosition = `\

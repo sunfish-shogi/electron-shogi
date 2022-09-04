@@ -6,19 +6,24 @@ import {
   CSASpecialMove,
   emptyCSAGameSummary,
 } from "@/ipc/csa";
+import { parseSFENPV, USIInfoCommand } from "@/ipc/usi";
 import { PlayerBuilder } from "@/players/builder";
 import { Player } from "@/players/player";
 import { CSAGameSetting, defaultCSAGameSetting } from "@/settings/csa";
 import {
   Color,
-  Move,
   RecordFormatType,
   parseCSAMove,
   formatCSAMove,
   SpecialMove,
 } from "@/shogi";
 import { Clock } from "./clock";
-import { RecordManager } from "./record";
+import {
+  buildSearchComment,
+  CommentBehavior,
+  RecordManager,
+  SearchEngineType,
+} from "./record";
 
 export enum CSAGameState {
   OFFLINE,
@@ -42,6 +47,7 @@ export class CSAGameManager {
   private sessionID = 0;
   private player?: Player;
   private gameSummary = emptyCSAGameSummary();
+  private usiInfo?: USIInfoCommand;
 
   constructor(
     private recordManager: RecordManager,
@@ -151,6 +157,7 @@ export class CSAGameManager {
   }
 
   onMove(data: string, playerStates: CSAPlayerStates) {
+    const isMyMove = this.isMyTurn;
     const move = parseCSAMove(this.recordManager.record.position, data);
     if (move instanceof Error) {
       this.handlers.onError(`解釈できない指し手 [${data}]: ${move.message}`);
@@ -167,6 +174,9 @@ export class CSAGameManager {
       },
       elapsedMs,
     });
+    if (isMyMove) {
+      this.appendSearchComment();
+    }
     this.handlers.onPieceBeat();
     this.next(playerStates);
   }
@@ -269,7 +279,8 @@ export class CSAGameManager {
           playerStates.black.time * this.gameSummary.timeUnitMs,
           playerStates.white.time * this.gameSummary.timeUnitMs,
           {
-            onMove: (move: Move) => {
+            onMove: (move, opt) => {
+              this.usiInfo = opt?.usiInfoCommand;
               api.csaMove(this.sessionID, formatCSAMove(move));
             },
             onResign: () => {
@@ -308,6 +319,26 @@ export class CSAGameManager {
           );
         });
     }
+  }
+
+  private appendSearchComment() {
+    if (!this.setting.enableComment || !this.usiInfo) {
+      return;
+    }
+    const position = this.recordManager.record.position;
+    const pv =
+      this.usiInfo.pv && parseSFENPV(position, this.usiInfo.pv.slice(1));
+    const comment = buildSearchComment({
+      type: SearchEngineType.PLAYER,
+      score:
+        this.usiInfo.scoreCP &&
+        (position.color === Color.WHITE
+          ? this.usiInfo.scoreCP
+          : -this.usiInfo.scoreCP),
+      pv: pv,
+      mate: this.usiInfo.scoreMate && Math.abs(this.usiInfo.scoreMate),
+    });
+    this.recordManager.appendComment(comment, CommentBehavior.APPEND);
   }
 }
 

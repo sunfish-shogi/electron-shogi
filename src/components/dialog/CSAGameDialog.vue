@@ -90,6 +90,10 @@
       </div>
       <div class="dialog-form-area">
         <div class="dialog-form-item">
+          <input id="enable-comment" ref="enableComment" type="checkbox" />
+          <label for="enable-comment">コメントを出力する</label>
+        </div>
+        <div class="dialog-form-item">
           <input id="auto-flip" ref="autoFlip" type="checkbox" />
           <label for="auto-flip">盤面の向きを自動で調整する</label>
         </div>
@@ -135,6 +139,7 @@ export default defineComponent({
     const id: Ref = ref(null);
     const password: Ref = ref(null);
     const saveHistory: Ref = ref(null);
+    const enableComment: Ref = ref(null);
     const autoFlip: Ref = ref(null);
     const history = ref(defaultCSAGameSettingHistory());
     const defaultSetting = ref(defaultCSAGameSetting());
@@ -165,6 +170,7 @@ export default defineComponent({
         port.value.value = defaultSetting.value.server.port;
         id.value.value = defaultSetting.value.server.id;
         password.value.value = defaultSetting.value.server.password;
+        enableComment.value.checked = defaultSetting.value.enableComment;
         autoFlip.value.checked = defaultSetting.value.autoFlip;
         defaultValueApplied = true;
       }
@@ -199,6 +205,7 @@ export default defineComponent({
           id: String(id.value.value || ""),
           password: String(password.value.value || ""),
         },
+        enableComment: enableComment.value.checked,
         autoFlip: autoFlip.value.checked,
       };
       const error = validateCSAGameSetting(csaGameSetting);
@@ -281,6 +288,7 @@ export default defineComponent({
       id,
       password,
       saveHistory,
+      enableComment,
       autoFlip,
       engineSettings,
       playerURI,

@@ -12,6 +12,7 @@ import {
   CSAGameSettingHistory,
   decryptCSAGameSettingHistory,
   defaultCSAGameSettingHistory,
+  defaultSecureCSAGameSettingHistory,
   encryptCSAGameSettingHistory,
 } from "@/settings/csa";
 
@@ -126,18 +127,20 @@ export function loadCSAGameSettingHistory(): CSAGameSettingHistory {
   const encrypted = JSON.parse(
     fs.readFileSync(csaGameSettingHistoryPath, "utf8")
   );
-  const setting = decryptCSAGameSettingHistory(encrypted, (encrypted) => {
-    try {
-      return safeStorage.decryptString(Buffer.from(encrypted, "base64"));
-    } catch (e) {
-      getAppLogger().error("failed to decrypt CSA server password: %s", e);
-      return "";
+  return decryptCSAGameSettingHistory(
+    {
+      ...defaultSecureCSAGameSettingHistory(),
+      ...encrypted,
+    },
+    (encrypted) => {
+      try {
+        return safeStorage.decryptString(Buffer.from(encrypted, "base64"));
+      } catch (e) {
+        getAppLogger().error("failed to decrypt CSA server password: %s", e);
+        return "";
+      }
     }
-  });
-  return {
-    ...defaultCSAGameSettingHistory(),
-    ...setting,
-  };
+  );
 }
 
 const researchSettingPath = path.join(rootDir, "research_setting.json");

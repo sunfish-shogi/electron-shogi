@@ -42,11 +42,17 @@ describe("store/csa", () => {
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        "7g7f",
+        {
+          sfen: "7g7f",
+          usiInfo: { scoreCP: 82, pv: ["7g7f", "3c3d", "2g2f", "8c8d"] },
+        },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        "2g2f",
+        {
+          sfen: "2g2f",
+          usiInfo: { scoreCP: 78, pv: ["2g2f", "8c8d", "2f2e", "8d8e"] },
+        },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
-        "resign",
+        { sfen: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
@@ -118,6 +124,14 @@ describe("store/csa", () => {
         expect(mockHandlers.onCSAGameEnd.mock.calls).toHaveLength(1);
         expect(mockHandlers.onError.mock.calls).toHaveLength(0);
         expect(recordManager.record.moves).toHaveLength(6);
+        expect(recordManager.record.moves[1].comment).toBe(
+          "互角\n*評価値=82\n*読み筋=△３四歩(33)▲２六歩(27)△８四歩(83)\n"
+        );
+        expect(recordManager.record.moves[2].comment).toBe("");
+        expect(recordManager.record.moves[3].comment).toBe(
+          "互角\n*評価値=78\n*読み筋=△８四歩(83)▲２五歩(26)△８五歩(84)\n"
+        );
+        expect(recordManager.record.moves[4].comment).toBe("");
         expect(recordManager.record.moves[5].move).toBe(SpecialMove.RESIGN);
       })
       .invoke();

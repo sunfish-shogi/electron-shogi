@@ -77,16 +77,16 @@
       <div class="dialog-form-area">
         <div>出力設定</div>
         <div class="dialog-form-item">
-          <div class="dialog-item-label">指し手コメント:</div>
+          <div class="dialog-form-item-label-wide">指し手コメント</div>
           <select
             ref="commentBehavior"
             size="1"
             :value="defaultValues.commentBehavior"
           >
-            <option value="none">出力しない</option>
-            <option value="insert">前方に加筆する</option>
-            <option value="append">末尾に加筆する</option>
-            <option value="overwrite">上書きする</option>
+            <option :value="CommentBehavior.NONE">出力しない</option>
+            <option :value="CommentBehavior.INSERT">前方に加筆する</option>
+            <option :value="CommentBehavior.APPEND">末尾に加筆する</option>
+            <option :value="CommentBehavior.OVERWRITE">上書きする</option>
           </select>
         </div>
       </div>
@@ -105,6 +105,7 @@ import api from "@/ipc/api";
 import { AnalysisSetting, defaultAnalysisSetting } from "@/settings/analysis";
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { useStore } from "@/store";
+import { CommentBehavior } from "@/store/record";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 
@@ -210,6 +211,7 @@ export default defineComponent({
     });
 
     return {
+      CommentBehavior,
       dialog,
       engineSettings,
       engineURI,

@@ -15,6 +15,7 @@ export type GameSetting = {
   startPosition?: InitialPositionType;
   enableEngineTimeout: boolean;
   humanIsFront: boolean;
+  enableComment: boolean;
 };
 
 export function defaultGameSetting(): GameSetting {
@@ -34,6 +35,7 @@ export function defaultGameSetting(): GameSetting {
     },
     enableEngineTimeout: false,
     humanIsFront: true,
+    enableComment: true,
   };
 }
 

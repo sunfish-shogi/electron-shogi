@@ -25,15 +25,24 @@ describe("store/game", () => {
   it("GameManager/resign", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        "7g7f",
+        {
+          sfen: "7g7f",
+          usiInfo: { scoreCP: 82, pv: ["7g7f", "3c3d", "2g2f", "8c8d"] },
+        },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        "2g2f",
+        {
+          sfen: "2g2f",
+          usiInfo: { scoreCP: 78, pv: ["2g2f", "8c8d", "2f2e", "8d8e"] },
+        },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        "3c3d",
+        {
+          sfen: "3c3d",
+          usiInfo: { scoreCP: -64, pv: ["3c3d", "2g2f", "8c8d"] },
+        },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        "resign",
+        { sfen: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -69,6 +78,15 @@ describe("store/game", () => {
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
         );
+        expect(recordManager.record.moves[1].comment).toBe(
+          "互角\n*評価値=82\n*読み筋=△３四歩(33)▲２六歩(27)△８四歩(83)\n"
+        );
+        expect(recordManager.record.moves[2].comment).toBe(
+          "互角\n*評価値=64\n*読み筋=▲２六歩(27)△８四歩(83)\n"
+        );
+        expect(recordManager.record.moves[3].comment).toBe(
+          "互角\n*評価値=78\n*読み筋=△８四歩(83)▲２五歩(26)△８五歩(84)\n"
+        );
       })
       .invoke();
   });
@@ -78,15 +96,15 @@ describe("store/game", () => {
     initPos.reset(InitialPositionType.HANDICAP_BISHOP);
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b":
-        "7g7f",
+        { sfen: "7g7f" },
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f 2c2d":
-        "resign",
+        { sfen: "resign" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves":
-        "8b2b",
+        { sfen: "8b2b" },
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f":
-        "2c2d",
+        { sfen: "2c2d" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -130,15 +148,15 @@ describe("store/game", () => {
   it("GameManager/endGame", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        "7g7f",
+        { sfen: "7g7f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        "2g2f",
+        { sfen: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        "3c3d",
+        { sfen: "3c3d" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        "no-reply",
+        { sfen: "no-reply" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -185,15 +203,15 @@ describe("store/game", () => {
   it("GameManager/time-not-reduced", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        "7g7f",
+        { sfen: "7g7f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        "2g2f",
+        { sfen: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        "3c3d",
+        { sfen: "3c3d" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        "resign",
+        { sfen: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,

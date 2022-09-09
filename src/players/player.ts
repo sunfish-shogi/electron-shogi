@@ -1,9 +1,11 @@
-import { USIInfoCommand } from "@/ipc/usi";
 import { TimeLimitSetting } from "@/settings/game";
 import { ImmutableRecord, Move } from "@/shogi";
 
-export type MoveOption = {
-  usiInfoCommand?: USIInfoCommand;
+export type SearchInfo = {
+  usi: string; // 局面
+  score?: number; // 先手から見た評価値
+  mate?: number; // 先手勝ちの場合に正の値、後手勝ちの場合に負の値
+  pv?: Move[];
 };
 
 export enum GameResult {
@@ -13,10 +15,14 @@ export enum GameResult {
 }
 
 export interface SearchHandler {
-  onMove: (move: Move, opt?: MoveOption) => void;
+  onMove: (move: Move, info?: SearchInfo) => void;
   onResign: () => void;
   onWin: () => void;
   onError: (e: unknown) => void;
+}
+
+export interface PonderHandler {
+  onSearchInfo: (info: SearchInfo) => void;
 }
 
 export interface Player {

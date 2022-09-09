@@ -6,17 +6,6 @@ export enum USIInfoSender {
   RESEARCHER = "researcher",
 }
 
-export function stringifyUSIInfoSender(sender: USIInfoSender): string {
-  switch (sender) {
-    case USIInfoSender.BLACK_PLAYER:
-      return "先手";
-    case USIInfoSender.WHITE_PLAYER:
-      return "後手";
-    case USIInfoSender.RESEARCHER:
-      return "検討";
-  }
-}
-
 export type USIInfoCommand = {
   depth?: number;
   seldepth?: number;

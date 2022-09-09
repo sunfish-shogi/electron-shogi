@@ -72,18 +72,27 @@ P-00AL
 +1321NK,T0
 '読み飛ばすコメント
 '*初手へのコメント
-'** 30000 2b2a
+'** 30011 2b2a
 -2221OU,T0
-'** -30000
+'** 30010
 +0013KE,T0
+'** 30009
 -2122OU,T0
+'** 30008
 +0012KI,T0
+'** 30007
 -2212OU,T0
+'** 30006
 +0011HI,T0
+'** 30005
 -1211OU,T0
+'** 30004
 +0021KI,T0
+'** 30003
 -1112OU,T0
+'** 30002
 +0011HI,T0
+'** 30001
 %TSUMI,T0
 `;
 
@@ -106,6 +115,7 @@ const sampleBranchKIF = `
 
 describe("store/index", () => {
   afterEach(() => {
+    jest.useRealTimers();
     jest.clearAllMocks();
   });
 
@@ -202,106 +212,84 @@ describe("store/index", () => {
   });
 
   it("updateUSIInfo", () => {
+    jest.useFakeTimers();
     const usi =
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f";
     const store = new Store();
-    return new TimeoutChain()
-      .next(() => {
-        store.pasteRecord(usi);
-        store.updateUSIInfo(1000, usi, USIInfoSender.BLACK_PLAYER, "Engine A", {
-          depth: 8,
-          scoreCP: 138,
-        });
-      })
-      .next(() => {
-        expect(store.usiBlackPlayerMonitor?.sfen).toBe(
-          "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 1"
-        );
-        expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(1);
-        expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(8);
-        expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);
-        expect(store.usiWhitePlayerMonitor).toBeUndefined();
-        expect(store.usiResearcherMonitor).toBeUndefined();
-        const customData = new RecordCustomData(
-          store.record.current.customData
-        );
-        expect(customData.evaluation?.blackPlayer).toBe(138);
-        expect(customData.evaluation?.whitePlayer).toBeUndefined();
-        expect(customData.evaluation?.researcher).toBeUndefined();
-        store.updateUSIInfo(1000, usi, USIInfoSender.BLACK_PLAYER, "Engine A", {
-          depth: 10,
-          scoreCP: 213,
-        });
-        store.updateUSIInfo(1000, usi, USIInfoSender.WHITE_PLAYER, "Engine B", {
-          depth: 9,
-          scoreCP: -89,
-        });
-      }, 100)
-      .next(() => {
-        expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(2);
-        expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(10);
-        expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(213);
-        expect(store.usiWhitePlayerMonitor?.iterates.length).toBe(1);
-        expect(store.usiWhitePlayerMonitor?.iterates[0].depth).toBe(9);
-        expect(store.usiWhitePlayerMonitor?.iterates[0].score).toBe(-89);
-        expect(store.usiResearcherMonitor).toBeUndefined();
-        const customData = new RecordCustomData(
-          store.record.current.customData
-        );
-        expect(customData.evaluation?.blackPlayer).toBe(213);
-        expect(customData.evaluation?.whitePlayer).toBe(89);
-        expect(customData.evaluation?.researcher).toBeUndefined();
-        store.updateUSIInfo(1000, usi, USIInfoSender.RESEARCHER, "Engine C", {
-          depth: 12,
-          scoreCP: 721,
-        });
-      }, 100)
-      .next(() => {
-        expect(store.usiBlackPlayerMonitor).toBeUndefined();
-        expect(store.usiWhitePlayerMonitor).toBeUndefined();
-        expect(store.usiResearcherMonitor?.iterates.length).toBe(1);
-        expect(store.usiResearcherMonitor?.iterates[0].depth).toBe(12);
-        expect(store.usiResearcherMonitor?.iterates[0].score).toBe(721);
-        const customData = new RecordCustomData(
-          store.record.current.customData
-        );
-        expect(customData.evaluation?.blackPlayer).toBe(213);
-        expect(customData.evaluation?.whitePlayer).toBe(89);
-        expect(customData.evaluation?.researcher).toBe(-721);
-      }, 100)
-      .invoke();
+    store.pasteRecord(usi);
+    store.updateUSIInfo(1000, usi, USIInfoSender.BLACK_PLAYER, "Engine A", {
+      depth: 8,
+      scoreCP: 138,
+    });
+    jest.runOnlyPendingTimers();
+    expect(store.usiBlackPlayerMonitor?.sfen).toBe(
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
+    expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(1);
+    expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(8);
+    expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);
+    expect(store.usiWhitePlayerMonitor).toBeUndefined();
+    expect(store.usiResearcherMonitor).toBeUndefined();
+    store.updateUSIInfo(1000, usi, USIInfoSender.BLACK_PLAYER, "Engine A", {
+      depth: 10,
+      scoreCP: 213,
+    });
+    store.updateUSIPonderInfo(
+      1000,
+      usi,
+      USIInfoSender.WHITE_PLAYER,
+      "Engine B",
+      {
+        depth: 9,
+        scoreCP: -89,
+      }
+    );
+    jest.runOnlyPendingTimers();
+    expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(2);
+    expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(10);
+    expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(213);
+    expect(store.usiWhitePlayerMonitor?.iterates.length).toBe(1);
+    expect(store.usiWhitePlayerMonitor?.iterates[0].depth).toBe(9);
+    expect(store.usiWhitePlayerMonitor?.iterates[0].score).toBe(-89);
+    expect(store.usiResearcherMonitor).toBeUndefined();
+    store.updateUSIInfo(1000, usi, USIInfoSender.RESEARCHER, "Engine C", {
+      depth: 12,
+      scoreCP: 721,
+    });
+    jest.runOnlyPendingTimers();
+    expect(store.usiBlackPlayerMonitor).toBeUndefined();
+    expect(store.usiWhitePlayerMonitor).toBeUndefined();
+    expect(store.usiResearcherMonitor?.iterates.length).toBe(1);
+    expect(store.usiResearcherMonitor?.iterates[0].depth).toBe(12);
+    expect(store.usiResearcherMonitor?.iterates[0].score).toBe(721);
   });
 
   it("updateUSIPonderInfo", () => {
+    jest.useFakeTimers();
     const usi =
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f";
     const usi2 =
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d";
     const store = new Store();
-    return new TimeoutChain()
-      .next(() => {
-        store.pasteRecord(usi);
-        store.updateUSIPonderInfo(
-          1000,
-          usi2,
-          USIInfoSender.BLACK_PLAYER,
-          "Engine A",
-          {
-            depth: 8,
-            scoreCP: 138,
-          }
-        );
-      })
-      .next(() => {
-        expect(store.usiBlackPlayerMonitor?.sfen).toBe(
-          "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1"
-        );
-        expect(store.usiBlackPlayerMonitor?.ponderMove).toBe("△３四歩(33)");
-        expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(1);
-        expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(8);
-        expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);
-      }, 100)
-      .invoke();
+    store.pasteRecord(usi);
+    store.updateUSIPonderInfo(
+      1000,
+      usi2,
+      USIInfoSender.BLACK_PLAYER,
+      "Engine A",
+      {
+        depth: 8,
+        scoreCP: 138,
+      }
+    );
+    jest.runOnlyPendingTimers();
+    expect(store.usiBlackPlayerMonitor?.sfen).toBe(
+      "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1"
+    );
+    expect(store.usiBlackPlayerMonitor?.ponderMove).toBe("△３四歩(33)");
+    expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(1);
+    expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(8);
+    expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);
   });
 
   it("startGame/success", () => {
@@ -537,10 +525,10 @@ describe("store/index", () => {
     const moves = store.record.moves;
     expect(moves.length).toBe(11);
     expect(moves[1].comment).toBe("通常コメント");
-    expect(moves[1].customData).toBeUndefined();
+    expect(moves[1].customData).toStrictEqual({});
     expect(moves[2].comment).toBe("#評価値=108");
-    const customData = new RecordCustomData(moves[2].customData);
-    expect(customData.evaluation?.researcher).toBe(108);
+    const customData = moves[2].customData as RecordCustomData;
+    expect(customData.researchInfo?.score).toBe(108);
     expect(store.hasError).toBeFalsy();
   });
 
@@ -550,15 +538,13 @@ describe("store/index", () => {
     const moves = store.record.moves;
     expect(moves.length).toBe(13);
     store.changeMoveNumber(1);
-    expect(store.record.current.comment).toBe("初手へのコメント\n* 30000 2b2a");
-    const customData1 = new RecordCustomData(store.record.current.customData);
-    expect(customData1.evaluation?.blackPlayer).toBe(30000);
-    expect(customData1.evaluation?.whitePlayer).toBeUndefined();
+    expect(store.record.current.comment).toBe("初手へのコメント\n* 30011 2b2a");
+    const customData1 = store.record.current.customData as RecordCustomData;
+    expect(customData1.playerSearchInfo?.score).toBe(30011);
     store.changeMoveNumber(2);
-    expect(store.record.current.comment).toBe("* -30000");
-    const customData2 = new RecordCustomData(store.record.current.customData);
-    expect(customData2.evaluation?.blackPlayer).toBeUndefined();
-    expect(customData2.evaluation?.whitePlayer).toBe(-30000);
+    expect(store.record.current.comment).toBe("* 30010");
+    const customData2 = store.record.current.customData as RecordCustomData;
+    expect(customData2.playerSearchInfo?.score).toBe(30010);
     expect(store.hasError).toBeFalsy();
   });
 
@@ -586,10 +572,10 @@ describe("store/index", () => {
         const moves = store.record.moves;
         expect(moves.length).toBe(11);
         expect(moves[1].comment).toBe("通常コメント");
-        expect(moves[1].customData).toBeUndefined();
+        expect(moves[1].customData).toStrictEqual({});
         expect(moves[2].comment).toBe("#評価値=108");
-        const customData = new RecordCustomData(moves[2].customData);
-        expect(customData.evaluation?.researcher).toBe(108);
+        const customData = moves[2].customData as RecordCustomData;
+        expect(customData.researchInfo?.score).toBe(108);
         expect(store.hasError).toBeFalsy();
       })
       .invoke();

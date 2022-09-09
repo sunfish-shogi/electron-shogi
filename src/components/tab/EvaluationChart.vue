@@ -24,14 +24,85 @@ import {
   Ref,
   watch,
 } from "vue";
-import { ActiveElement, Chart, ChartEvent, Color } from "chart.js";
-import { stringifyUSIInfoSender, USIInfoSender } from "@/ipc/usi";
-import { ImmutableRecord } from "@/shogi";
+import {
+  ActiveElement,
+  Chart,
+  ChartEvent,
+  Color as ChartColor,
+} from "chart.js";
+import { Color, ImmutableNode, ImmutableRecord } from "@/shogi";
 import { scoreToPercentage } from "@/store/score";
 import { AppSetting, Thema } from "@/settings/app";
+import { SearchInfo } from "@/players/player";
 
+const MATE_SCORE = 1000000;
 const MAX_SCORE = 2000;
 const MIN_SCORE = -MAX_SCORE;
+
+enum Series {
+  BLACK_PLAYER,
+  WHITE_PLAYER,
+  RESEARCHER,
+}
+
+function getSeriesName(series: Series): string {
+  switch (series) {
+    case Series.BLACK_PLAYER:
+      return "先手";
+    case Series.WHITE_PLAYER:
+      return "後手";
+    case Series.RESEARCHER:
+      return "検討";
+  }
+}
+
+function getSearchInfo(
+  node: ImmutableNode,
+  series: Series
+): SearchInfo | undefined {
+  const data = node.customData as RecordCustomData;
+  if (!data) {
+    return;
+  }
+  switch (series) {
+    case Series.BLACK_PLAYER:
+      if (node.nextColor === Color.BLACK) {
+        return;
+      }
+      return data.playerSearchInfo;
+    case Series.WHITE_PLAYER:
+      if (node.nextColor === Color.WHITE) {
+        return;
+      }
+      return data.playerSearchInfo;
+    case Series.RESEARCHER:
+      return data.researchInfo;
+  }
+}
+
+function getScore(
+  searchInfo: SearchInfo,
+  type: EvaluationChartType,
+  coefficientInSigmoid: number
+): number | undefined {
+  const score =
+    searchInfo.score !== undefined
+      ? searchInfo.score
+      : searchInfo.mate !== undefined
+      ? searchInfo.mate > 0
+        ? MATE_SCORE
+        : -MATE_SCORE
+      : undefined;
+  if (score === undefined) {
+    return;
+  }
+  switch (type) {
+    case EvaluationChartType.RAW:
+      return Math.min(Math.max(score, MIN_SCORE), MAX_SCORE);
+    case EvaluationChartType.WIN_RATE:
+      return scoreToPercentage(score, coefficientInSigmoid);
+  }
+}
 
 type ColorPalette = {
   main: string;
@@ -97,32 +168,53 @@ export default defineComponent({
     }
 
     const buildDataset = (
-      borderColor: Color,
-      sender: USIInfoSender,
+      borderColor: ChartColor,
+      series: Series,
       record: ImmutableRecord,
       appSetting: AppSetting
     ) => {
       const dataPoints: { x: number; y: number }[] = [];
-      record.moves.forEach((node) => {
-        const data = new RecordCustomData(node.customData);
-        let value = data.evaluation && data.evaluation[sender];
-        if (value !== undefined) {
-          switch (props.type) {
-            case EvaluationChartType.RAW:
-              value = Math.min(Math.max(value, MIN_SCORE), MAX_SCORE);
-              break;
-            case EvaluationChartType.WIN_RATE:
-              value = scoreToPercentage(value, appSetting.coefficientInSigmoid);
-              break;
-          }
+      const nodes = record.moves;
+      for (const node of nodes) {
+        const searchInfo = getSearchInfo(node, series);
+        if (!searchInfo) {
+          continue;
+        }
+        const score = getScore(
+          searchInfo,
+          props.type,
+          appSetting.coefficientInSigmoid
+        );
+        if (score !== undefined) {
           dataPoints.push({
             x: node.number,
-            y: value,
+            y: score,
           });
         }
-      });
+      }
+      const lastNode = nodes[nodes.length - 1];
+      if (
+        (series === Series.BLACK_PLAYER &&
+          lastNode.nextColor === Color.BLACK) ||
+        (series === Series.WHITE_PLAYER && lastNode.nextColor === Color.WHITE)
+      ) {
+        const data = lastNode.customData as RecordCustomData;
+        if (data && data.enemySearchInfo) {
+          const score = getScore(
+            data.enemySearchInfo,
+            props.type,
+            appSetting.coefficientInSigmoid
+          );
+          if (score !== undefined) {
+            dataPoints.push({
+              x: lastNode.number + 1,
+              y: score,
+            });
+          }
+        }
+      }
       return {
-        label: stringifyUSIInfoSender(sender),
+        label: getSeriesName(series),
         borderColor,
         data: dataPoints,
         showLine: true,
@@ -152,22 +244,17 @@ export default defineComponent({
         verticalLine(record, palette),
         buildDataset(
           palette.blackPlayer,
-          USIInfoSender.BLACK_PLAYER,
+          Series.BLACK_PLAYER,
           record,
           appSetting
         ),
         buildDataset(
           palette.whitePlayer,
-          USIInfoSender.WHITE_PLAYER,
+          Series.WHITE_PLAYER,
           record,
           appSetting
         ),
-        buildDataset(
-          palette.researcher,
-          USIInfoSender.RESEARCHER,
-          record,
-          appSetting
-        ),
+        buildDataset(palette.researcher, Series.RESEARCHER, record, appSetting),
       ];
     };
 

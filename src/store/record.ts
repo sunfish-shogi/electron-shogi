@@ -2,7 +2,6 @@ import { getDateString, getDateTimeString } from "@/helpers/datetime";
 import { secondsToMSS } from "@/helpers/time";
 import { TimeLimitSetting } from "@/settings/game";
 import {
-  Color,
   detectRecordFormat,
   DoMoveOption,
   exportCSA,
@@ -20,79 +19,20 @@ import {
   reverseColor,
   SpecialMove,
 } from "@/shogi";
-import { USIInfoCommand, USIInfoSender } from "@/ipc/usi";
 import iconv from "iconv-lite";
 import { getSituationText } from "./score";
+import { SearchInfo } from "@/players/player";
 
-type Evaluation = {
-  blackPlayer?: number;
-  whitePlayer?: number;
-  researcher?: number;
-};
-
-export const MATE_SCORE = 30000;
-
-export class RecordCustomData {
-  private _evaluation?: Evaluation;
-
-  constructor(json?: string) {
-    if (json) {
-      const obj = JSON.parse(json);
-      this._evaluation = obj.evaluation;
-    }
-  }
-
-  get evaluation(): Evaluation | undefined {
-    return this._evaluation;
-  }
-
-  get empty(): boolean {
-    return !this.evaluation;
-  }
-
-  updateScore(color: Color, sender: USIInfoSender, score: number): void {
-    if (!this._evaluation) {
-      this._evaluation = {};
-    }
-    switch (sender) {
-      case USIInfoSender.BLACK_PLAYER:
-        this._evaluation[USIInfoSender.BLACK_PLAYER] = score;
-        break;
-      case USIInfoSender.WHITE_PLAYER:
-        this._evaluation[USIInfoSender.WHITE_PLAYER] = -score;
-        break;
-      case USIInfoSender.RESEARCHER:
-        this._evaluation[USIInfoSender.RESEARCHER] =
-          color === Color.BLACK ? score : -score;
-        break;
-    }
-  }
-
-  updateUSIInfo(
-    color: Color,
-    sender: USIInfoSender,
-    command: USIInfoCommand
-  ): void {
-    if (command.multipv !== undefined && command.multipv !== 1) {
-      return;
-    }
-    if (command.scoreCP) {
-      this.updateScore(color, sender, command.scoreCP);
-    } else if (command.scoreMate) {
-      this.updateScore(
-        color,
-        sender,
-        command.scoreMate >= 0 ? MATE_SCORE : -MATE_SCORE
-      );
-    }
-  }
-
-  stringify(): string {
-    return JSON.stringify({
-      evaluation: this.evaluation,
-    });
-  }
+export enum SearchEngineType {
+  PLAYER,
+  RESEARCHER,
 }
+
+export type RecordCustomData = {
+  playerSearchInfo?: SearchInfo;
+  enemySearchInfo?: SearchInfo;
+  researchInfo?: SearchInfo;
+};
 
 function parsePlayerScoreComment(line: string): number | undefined {
   const matched = /^\*評価値=([+-]?[.0-9]+)/.exec(line);
@@ -111,40 +51,27 @@ function parseFloodgateScoreComment(line: string): number | undefined {
 
 function restoreCustomData(record: Record): void {
   record.forEach((node) => {
-    const data = new RecordCustomData(node.customData);
+    const data = (node.customData || {}) as RecordCustomData;
     const lines = node.comment.split("\n");
     for (const line of lines) {
       const playerScore =
         parsePlayerScoreComment(line) || parseFloodgateScoreComment(line);
-      const researchScore = parseResearchScoreComment(line);
       if (playerScore !== undefined) {
-        if (node.nextColor === Color.WHITE) {
-          data.updateScore(
-            Color.BLACK,
-            USIInfoSender.BLACK_PLAYER,
-            playerScore
-          );
-        } else {
-          data.updateScore(
-            Color.WHITE,
-            USIInfoSender.WHITE_PLAYER,
-            -playerScore
-          );
-        }
+        data.playerSearchInfo = {
+          usi: record.usi,
+          score: playerScore,
+        };
       }
+      const researchScore = parseResearchScoreComment(line);
       if (researchScore !== undefined) {
-        data.updateScore(Color.BLACK, USIInfoSender.RESEARCHER, researchScore);
+        data.researchInfo = {
+          usi: record.usi,
+          score: researchScore,
+        };
       }
     }
-    if (!data.empty) {
-      node.customData = data.stringify();
-    }
+    node.customData = data;
   });
-}
-
-export enum SearchEngineType {
-  PLAYER,
-  RESEARCHER,
 }
 
 function searchCommentKeyPrefix(type: SearchEngineType): string {
@@ -156,26 +83,22 @@ function searchCommentKeyPrefix(type: SearchEngineType): string {
   }
 }
 
-export type SearchResult = {
-  type: SearchEngineType;
-  score?: number; // 先手から見た評価値
-  pv?: Move[];
-  mate?: number;
-};
-
-export function buildSearchComment(searchResult: SearchResult): string {
-  const prefix = searchCommentKeyPrefix(searchResult.type);
+export function buildSearchComment(
+  type: SearchEngineType,
+  searchInfo: SearchInfo
+): string {
+  const prefix = searchCommentKeyPrefix(type);
   let comment = "";
-  if (searchResult.mate) {
-    comment += `${searchResult.mate}手詰\n`;
+  if (searchInfo.mate) {
+    comment += `${Math.abs(searchInfo.mate)}手詰\n`;
   }
-  if (searchResult.score !== undefined) {
-    comment += getSituationText(searchResult.score) + "\n";
-    comment += `${prefix}評価値=${searchResult.score}\n`;
+  if (searchInfo.score !== undefined) {
+    comment += getSituationText(searchInfo.score) + "\n";
+    comment += `${prefix}評価値=${searchInfo.score}\n`;
   }
-  if (searchResult.pv && searchResult.pv.length !== 0) {
+  if (searchInfo.pv && searchInfo.pv.length !== 0) {
     comment += `${prefix}読み筋=`;
-    for (const move of searchResult.pv) {
+    for (const move of searchInfo.pv) {
       comment += `${move.getDisplayText()}`;
     }
     comment += "\n";
@@ -425,10 +348,23 @@ export class RecordManager {
     );
   }
 
-  updateUSIInfo(sender: USIInfoSender, info: USIInfoCommand): void {
-    const data = new RecordCustomData(this.record.current.customData);
-    data.updateUSIInfo(this.record.position.color, sender, info);
-    this._record.current.customData = data.stringify();
+  updateSearchInfo(type: SearchEngineType, searchInfo: SearchInfo): void {
+    const data = (this.record.current.customData || {}) as RecordCustomData;
+    switch (type) {
+      case SearchEngineType.PLAYER:
+        data.playerSearchInfo = searchInfo;
+        break;
+      case SearchEngineType.RESEARCHER:
+        data.researchInfo = searchInfo;
+        break;
+    }
+    this._record.current.customData = data;
+  }
+
+  updateEnemySearchInfo(searchInfo: SearchInfo): void {
+    const data = (this.record.current.customData || {}) as RecordCustomData;
+    data.enemySearchInfo = searchInfo;
+    this._record.current.customData = data;
   }
 
   appendMove(params: AppendMoveParams): boolean {

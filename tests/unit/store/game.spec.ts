@@ -27,19 +27,19 @@ describe("store/game", () => {
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
         {
           sfen: "7g7f",
-          usiInfo: { scoreCP: 82, pv: ["7g7f", "3c3d", "2g2f", "8c8d"] },
+          info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
         {
           sfen: "2g2f",
-          usiInfo: { scoreCP: 78, pv: ["2g2f", "8c8d", "2f2e", "8d8e"] },
+          info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
         },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
         {
           sfen: "3c3d",
-          usiInfo: { scoreCP: -64, pv: ["3c3d", "2g2f", "8c8d"] },
+          info: { score: 64, pv: ["2g2f", "8c8d"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
         { sfen: "resign" },

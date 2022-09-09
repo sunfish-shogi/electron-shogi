@@ -1,13 +1,13 @@
 import api from "@/ipc/api";
-import { USIInfoCommand } from "@/ipc/usi";
+import { parseSFENPV, USIInfoCommand } from "@/ipc/usi";
 import { TimeLimitSetting } from "@/settings/game";
 import {
   getUSIEngineOptionCurrentValue,
   USIEngineSetting,
   USIPonder,
 } from "@/settings/usi";
-import { ImmutableRecord, Position } from "@/shogi";
-import { GameResult, Player, SearchHandler } from "./player";
+import { Color, ImmutableRecord, Position } from "@/shogi";
+import { GameResult, Player, SearchInfo, SearchHandler } from "./player";
 
 export class USIPlayer implements Player {
   private sessionID = 0;
@@ -16,9 +16,13 @@ export class USIPlayer implements Player {
   private searchHandler?: SearchHandler;
   private ponder?: string;
   private inPonder = false;
-  private info?: USIInfoCommand;
+  private info?: SearchInfo;
+  private usiInfoTimeout?: number;
 
-  constructor(private setting: USIEngineSetting) {}
+  constructor(
+    private setting: USIEngineSetting,
+    private onSearchInfo?: (info: SearchInfo) => void
+  ) {}
 
   async launch(): Promise<void> {
     this.sessionID = await api.usiLaunch(this.setting);
@@ -61,6 +65,10 @@ export class USIPlayer implements Player {
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void> {
+    this.searchHandler = undefined;
+    this.usi = record.usi;
+    this.info = undefined;
+    this.position = record.position.clone();
     if (!this.ponder || !this.ponder.startsWith(record.usi)) {
       return;
     }
@@ -83,6 +91,8 @@ export class USIPlayer implements Player {
   async startResearch(record: ImmutableRecord): Promise<void> {
     this.searchHandler = undefined;
     this.usi = record.usi;
+    this.info = undefined;
+    this.position = record.position.clone();
     await api.usiGoInfinite(this.sessionID, record.usi);
   }
 
@@ -124,16 +134,54 @@ export class USIPlayer implements Player {
       return;
     }
     this.ponder = ponder && `${usi} ${sfen} ${ponder}`;
-    searchHandler.onMove(move, {
-      usiInfoCommand: this.info,
-    });
+    if (this.info && this.info.pv && this.info.pv.length >= 1) {
+      if (this.info.pv[0].equals(move)) {
+        this.info = {
+          ...this.info,
+          pv: this.info.pv.slice(1),
+        };
+      } else {
+        this.info = undefined;
+      }
+    }
+    this.clearUSIInfoTimeout();
+    searchHandler.onMove(move, this.info);
   }
 
-  onUSIInfo(usi: string, info: USIInfoCommand) {
-    if (usi !== this.usi) {
+  onUSIInfo(usi: string, infoCommand: USIInfoCommand) {
+    if (usi !== this.usi || !this.position || !this.onSearchInfo) {
       return;
     }
+    if (infoCommand.multipv && infoCommand.multipv !== 1) {
+      return;
+    }
+    const sign = this.position.color === Color.BLACK ? 1 : -1;
+    const pv =
+      infoCommand.pv && infoCommand.pv.length >= 1
+        ? infoCommand.pv
+        : infoCommand.currmove
+        ? [infoCommand.currmove]
+        : undefined;
+    const info = {
+      usi: usi,
+      score: infoCommand.scoreCP && infoCommand.scoreCP * sign,
+      mate: infoCommand.scoreMate && infoCommand.scoreMate * sign,
+      pv: pv && parseSFENPV(this.position, pv),
+    };
     this.info = info;
+    this.clearUSIInfoTimeout();
+    // 高頻度でコマンドが送られてくると描画が追いつかないので、一定時間ごとに反映する。
+    this.usiInfoTimeout = window.setTimeout(() => {
+      if (this.onSearchInfo) {
+        this.onSearchInfo(info);
+      }
+    }, 500);
+  }
+
+  private clearUSIInfoTimeout() {
+    if (this.usiInfoTimeout) {
+      clearTimeout(this.usiInfoTimeout);
+    }
   }
 }
 

@@ -6,9 +6,8 @@ import {
   CSASpecialMove,
   emptyCSAGameSummary,
 } from "@/ipc/csa";
-import { parseSFENPV, USIInfoCommand } from "@/ipc/usi";
 import { PlayerBuilder } from "@/players/builder";
-import { Player } from "@/players/player";
+import { Player, SearchInfo } from "@/players/player";
 import { CSAGameSetting, defaultCSAGameSetting } from "@/settings/csa";
 import {
   Color,
@@ -47,7 +46,7 @@ export class CSAGameManager {
   private sessionID = 0;
   private player?: Player;
   private gameSummary = emptyCSAGameSummary();
-  private usiInfo?: USIInfoCommand;
+  private searchInfo?: SearchInfo;
 
   constructor(
     private recordManager: RecordManager,
@@ -84,7 +83,10 @@ export class CSAGameManager {
     }
     this._setting = setting;
     try {
-      this.player = await this.playerBuilder.build(this._setting.player);
+      this.player = await this.playerBuilder.build(
+        this._setting.player,
+        (info) => this.recordManager.updateEnemySearchInfo(info)
+      );
       this.sessionID = await api.csaLogin(this._setting.server);
       this._state = CSAGameState.READY;
       csaGameManagers[this.sessionID] = this;
@@ -174,8 +176,18 @@ export class CSAGameManager {
       },
       elapsedMs,
     });
-    if (isMyMove) {
-      this.appendSearchComment();
+    if (isMyMove && this.searchInfo) {
+      this.recordManager.updateSearchInfo(
+        SearchEngineType.PLAYER,
+        this.searchInfo
+      );
+    }
+    if (isMyMove && this.searchInfo && this.setting.enableComment) {
+      const comment = buildSearchComment(
+        SearchEngineType.PLAYER,
+        this.searchInfo
+      );
+      this.recordManager.appendComment(comment, CommentBehavior.APPEND);
     }
     this.handlers.onPieceBeat();
     this.next(playerStates);
@@ -279,8 +291,8 @@ export class CSAGameManager {
           playerStates.black.time * this.gameSummary.timeUnitMs,
           playerStates.white.time * this.gameSummary.timeUnitMs,
           {
-            onMove: (move, opt) => {
-              this.usiInfo = opt?.usiInfoCommand;
+            onMove: (move, info) => {
+              this.searchInfo = info;
               api.csaMove(this.sessionID, formatCSAMove(move));
             },
             onResign: () => {
@@ -319,26 +331,6 @@ export class CSAGameManager {
           );
         });
     }
-  }
-
-  private appendSearchComment() {
-    if (!this.setting.enableComment || !this.usiInfo) {
-      return;
-    }
-    const position = this.recordManager.record.position;
-    const pv =
-      this.usiInfo.pv && parseSFENPV(position, this.usiInfo.pv.slice(1));
-    const comment = buildSearchComment({
-      type: SearchEngineType.PLAYER,
-      score:
-        this.usiInfo.scoreCP &&
-        (position.color === Color.WHITE
-          ? this.usiInfo.scoreCP
-          : -this.usiInfo.scoreCP),
-      pv: pv,
-      mate: this.usiInfo.scoreMate && Math.abs(this.usiInfo.scoreMate),
-    });
-    this.recordManager.appendComment(comment, CommentBehavior.APPEND);
   }
 }
 

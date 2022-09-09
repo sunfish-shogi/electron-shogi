@@ -1,4 +1,4 @@
-import { USIInfoCommand } from "@/ipc/usi";
+import { parseSFENPV } from "@/ipc/usi";
 import { Player, SearchHandler } from "@/players/player";
 import { TimeLimitSetting } from "@/settings/game";
 import { PlayerSetting } from "@/settings/player";
@@ -6,7 +6,11 @@ import { ImmutableRecord, Move } from "@/shogi";
 
 export type MoveWithOption = {
   sfen: string;
-  usiInfo?: USIInfoCommand;
+  info?: {
+    score?: number; // 先手から見た評価値
+    mate?: number; // 先手勝ちの場合に正の値、後手勝ちの場合に負の値
+    pv?: string[];
+  };
 };
 
 export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
@@ -32,7 +36,17 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
           return Promise.resolve();
         }
         const move = r.position.createMoveBySFEN(m.sfen) as Move;
-        h.onMove(move, { usiInfoCommand: m.usiInfo });
+        h.onMove(
+          move,
+          m.info && {
+            usi: r.usi,
+            score: m.info?.score,
+            mate: m.info?.mate,
+            pv:
+              m.info?.pv &&
+              parseSFENPV(r.position, [m.sfen].concat(...m.info.pv)).slice(1),
+          }
+        );
         return Promise.resolve();
       }
     ),

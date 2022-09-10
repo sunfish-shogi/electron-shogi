@@ -214,7 +214,7 @@ export default defineComponent({
       required: false,
       default: "後手",
     },
-    blackPlayerTimeMs: {
+    blackPlayerTime: {
       type: Number,
       required: false,
       default: undefined,
@@ -224,7 +224,7 @@ export default defineComponent({
       required: false,
       default: undefined,
     },
-    whitePlayerTimeMs: {
+    whitePlayerTime: {
       type: Number,
       required: false,
       default: undefined,
@@ -398,20 +398,20 @@ export default defineComponent({
       return layout;
     });
 
-    const formatTime = (timeMs?: number, byoyomi?: number): string => {
-      if (timeMs) {
-        return secondsToHMMSS(Math.ceil(timeMs / 1e3));
+    const formatTime = (time?: number, byoyomi?: number): string => {
+      if (time) {
+        return secondsToHMMSS(time);
       } else if (byoyomi !== undefined) {
         return "" + byoyomi;
       }
       return "0:00:00";
     };
 
-    const timeSeverity = (timeMs?: number, byoyomi?: number) => {
-      if (!timeMs && !byoyomi) {
+    const timeSeverity = (time?: number, byoyomi?: number) => {
+      if (!time && !byoyomi) {
         return "normal";
       }
-      const rem = (timeMs || 0) / 1e3 + (byoyomi || 0);
+      const rem = (time || 0) + (byoyomi || 0);
       if (rem <= 5) {
         return "danger";
       } else if (rem <= 10) {
@@ -421,19 +421,19 @@ export default defineComponent({
     };
 
     const blackPlayerTimeText = computed(() => {
-      return formatTime(props.blackPlayerTimeMs, props.blackPlayerByoyomi);
+      return formatTime(props.blackPlayerTime, props.blackPlayerByoyomi);
     });
 
     const blackPlayerTimeSeverity = computed(() => {
-      return timeSeverity(props.blackPlayerTimeMs, props.blackPlayerByoyomi);
+      return timeSeverity(props.blackPlayerTime, props.blackPlayerByoyomi);
     });
 
     const whitePlayerTimeText = computed(() => {
-      return formatTime(props.whitePlayerTimeMs, props.whitePlayerByoyomi);
+      return formatTime(props.whitePlayerTime, props.whitePlayerByoyomi);
     });
 
     const whitePlayerTimeSeverity = computed(() => {
-      return timeSeverity(props.whitePlayerTimeMs, props.whitePlayerByoyomi);
+      return timeSeverity(props.whitePlayerTime, props.whitePlayerByoyomi);
     });
 
     return {

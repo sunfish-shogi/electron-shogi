@@ -60,14 +60,6 @@ export class CSAGameManager {
     return this._state;
   }
 
-  get blackTimeMs(): number {
-    return this.blackClock.timeMs;
-  }
-
-  get whiteTimeMs(): number {
-    return this.whiteClock.timeMs;
-  }
-
   get setting(): CSAGameSetting {
     return this._setting;
   }

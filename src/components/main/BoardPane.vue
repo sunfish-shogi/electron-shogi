@@ -12,9 +12,9 @@
       :allow-edit="allowEdit"
       :black-player-name="blackPlayerName"
       :white-player-name="whitePlayerName"
-      :black-player-time-ms="clock?.black.timeMs"
+      :black-player-time="clock?.black.time"
       :black-player-byoyomi="clock?.black.byoyomi"
-      :white-player-time-ms="clock?.white.timeMs"
+      :white-player-time="clock?.white.time"
       :white-player-byoyomi="clock?.white.byoyomi"
       @resize="onResize"
       @move="onMove"
@@ -307,11 +307,11 @@ export default defineComponent({
       ) {
         return {
           black: {
-            timeMs: store.blackTimeMs,
+            time: store.blackTime,
             byoyomi: store.blackByoyomi,
           },
           white: {
-            timeMs: store.whiteTimeMs,
+            time: store.whiteTime,
             byoyomi: store.whiteByoyomi,
           },
         };

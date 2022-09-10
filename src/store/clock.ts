@@ -28,6 +28,10 @@ export class Clock {
     this._elapsedMs = 0;
   }
 
+  get time(): number {
+    return Math.ceil(this._timeMs / 1e3);
+  }
+
   get timeMs(): number {
     return this._timeMs;
   }

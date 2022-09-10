@@ -339,16 +339,16 @@ export class Store {
     );
   }
 
-  get blackTimeMs(): number {
-    return this.blackClock.timeMs;
+  get blackTime(): number {
+    return this.blackClock.time;
   }
 
   get blackByoyomi(): number {
     return this.blackClock.byoyomi;
   }
 
-  get whiteTimeMs(): number {
-    return this.whiteClock.timeMs;
+  get whiteTime(): number {
+    return this.whiteClock.time;
   }
 
   get whiteByoyomi(): number {

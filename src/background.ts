@@ -4,7 +4,7 @@ import path from "path";
 import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
-import { setup } from "@/ipc/background";
+import { getAppState, sendError, setup } from "@/ipc/background";
 import {
   loadWindowSetting,
   saveWindowSetting,
@@ -12,6 +12,7 @@ import {
 import { buildWindowSetting } from "@/settings/window";
 import { getAppLogger, shutdownLoggers } from "@/ipc/background/log";
 import { quitAll as usiQuitAll } from "@/ipc/background/usi";
+import { AppState } from "./store/state";
 
 getAppLogger().info("start main process");
 getAppLogger().info("process argv: %s", process.argv.join(" "));
@@ -43,7 +44,12 @@ async function createWindow() {
   win.on("resized", () => {
     setting = buildWindowSetting(setting, win);
   });
-  win.on("close", () => {
+  win.on("close", (event) => {
+    if (getAppState() === AppState.CSA_GAME) {
+      event.preventDefault();
+      sendError(new Error("CSAプロトコル使用中はアプリを終了できません。"));
+      return;
+    }
     setting = buildWindowSetting(setting, win);
     saveWindowSetting(setting);
   });

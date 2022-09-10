@@ -55,10 +55,15 @@ import { CSAServerSetting } from "@/settings/csa";
 const isWindows = process.platform === "win32";
 
 let mainWindow: BrowserWindow;
+let appState = AppState.NORMAL;
 
 export function setup(win: BrowserWindow): void {
   mainWindow = win;
   setupMenu();
+}
+
+export function getAppState(): AppState {
+  return appState;
 }
 
 ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, () => {
@@ -70,8 +75,9 @@ ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, () => {
 
 ipcMain.on(
   Background.UPDATE_MENU_STATE,
-  (_, appState: AppState, bussy: boolean) => {
-    updateMenuState(appState, bussy);
+  (_, state: AppState, bussy: boolean) => {
+    appState = state;
+    updateMenuState(state, bussy);
   }
 );
 

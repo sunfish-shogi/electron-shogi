@@ -38,6 +38,10 @@
             <ButtonIcon class="icon" :icon="Icon.STOP" />
             対局中断
           </button>
+          <button v-if="controlStates.win" class="control-item" @click="onWin">
+            <ButtonIcon class="icon" :icon="Icon.CALL" />
+            勝ち宣言
+          </button>
           <button
             v-if="controlStates.resign"
             class="control-item"
@@ -217,6 +221,10 @@ export default defineComponent({
       store.stopGame();
     };
 
+    const onWin = () => {
+      humanPlayer.win();
+    };
+
     const onResign = () => {
       humanPlayer.resign();
     };
@@ -325,6 +333,7 @@ export default defineComponent({
         stop:
           store.appState === AppState.GAME ||
           store.appState === AppState.CSA_GAME,
+        win: store.appState === AppState.CSA_GAME && store.isMovableByUser,
         resign:
           (store.appState === AppState.GAME ||
             store.appState === AppState.CSA_GAME) &&
@@ -359,6 +368,7 @@ export default defineComponent({
       onEdit,
       onGame,
       onStop,
+      onWin,
       onResign,
       onResearch,
       onEndResearch,

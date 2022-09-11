@@ -28,7 +28,7 @@ export function defaultRecordFileName(
   if (white) {
     ret += "_" + white;
   }
-  return ret + ".kif";
+  return ret.trim().replaceAll("/", "_").replaceAll("\\", "_") + ".kif";
 }
 
 function getDateString(metadata: ImmutableRecordMetadata): string {

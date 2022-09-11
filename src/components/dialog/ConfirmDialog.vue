@@ -1,7 +1,7 @@
 <template>
   <div>
     <dialog ref="dialog" class="confirm">
-      <div class="content">
+      <div class="message-box">
         <ButtonIcon class="icon" :icon="Icon.QUESTION" />
         <div class="message">{{ message }}</div>
       </div>

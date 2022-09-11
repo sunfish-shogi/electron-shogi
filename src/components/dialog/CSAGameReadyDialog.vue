@@ -1,7 +1,7 @@
 <template>
   <div>
     <dialog ref="dialog" class="bussy">
-      <div class="content">
+      <div class="message-box">
         <ButtonIcon class="icon" :icon="Icon.BUSSY" />
         <div class="message">対局の開始を待っています。</div>
       </div>

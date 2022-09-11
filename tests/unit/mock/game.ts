@@ -1,4 +1,5 @@
 import { GameSetting } from "@/settings/game";
+import { InitialPositionType } from "@/shogi";
 
 export const playerURI01 = "es://usi/test-engine-01";
 export const playerURI02 = "es://usi/test-engine-02";
@@ -16,7 +17,7 @@ const blackPlayerSetting = {
   },
 };
 
-const whitePlayerSetting02 = {
+const whitePlayerSetting = {
   name: "USI Engine 02",
   uri: playerURI02,
   usi: {
@@ -31,14 +32,17 @@ const whitePlayerSetting02 = {
 
 export const gameSetting10m30s: GameSetting = {
   black: blackPlayerSetting,
-  white: whitePlayerSetting02,
+  white: whitePlayerSetting,
   timeLimit: {
     timeSeconds: 600,
     byoyomi: 30,
     increment: 0,
   },
+  startPosition: InitialPositionType.STANDARD,
   enableEngineTimeout: false,
   humanIsFront: false,
   enableComment: true,
   enableAutoSave: true,
+  repeat: 1,
+  swapPlayers: true,
 };

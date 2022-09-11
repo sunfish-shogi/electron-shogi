@@ -1,7 +1,7 @@
 <template>
   <div>
     <dialog ref="dialog" class="error">
-      <div class="content">
+      <div class="message-box">
         <ButtonIcon class="icon" :icon="Icon.ERROR" />
         <div class="items">
           <div class="notice">

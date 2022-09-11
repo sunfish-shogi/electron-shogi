@@ -14,6 +14,7 @@ export type CSAGameSetting = {
   autoFlip: boolean;
   enableComment: boolean;
   enableAutoSave: boolean;
+  repeat: number;
 };
 
 export function defaultCSAServerSetting(): CSAServerSetting {
@@ -35,6 +36,7 @@ export function defaultCSAGameSetting(): CSAGameSetting {
     autoFlip: true,
     enableComment: true,
     enableAutoSave: true,
+    repeat: 1,
   };
 }
 
@@ -59,6 +61,7 @@ export type CSAGameSettingHistory = {
   autoFlip: boolean;
   enableComment: boolean;
   enableAutoSave: boolean;
+  repeat: number;
 };
 
 export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
@@ -71,6 +74,7 @@ export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
     autoFlip: true,
     enableComment: true,
     enableAutoSave: true,
+    repeat: 1,
   };
 }
 
@@ -87,6 +91,7 @@ export function buildCSAGameSettingByHistory(
     autoFlip: history.autoFlip,
     enableComment: history.enableComment,
     enableAutoSave: history.enableAutoSave,
+    repeat: history.repeat,
   };
 }
 
@@ -116,6 +121,7 @@ export function appendCSAGameSettingHistory(
     autoFlip: setting.autoFlip,
     enableComment: setting.enableComment,
     enableAutoSave: setting.enableAutoSave,
+    repeat: setting.repeat,
   };
 }
 
@@ -132,6 +138,7 @@ export type SecureCSAGameSettingHistory = {
   autoFlip: boolean;
   enableComment: boolean;
   enableAutoSave: boolean;
+  repeat: number;
 };
 
 export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistory {
@@ -144,6 +151,7 @@ export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistor
     autoFlip: true,
     enableComment: true,
     enableAutoSave: true,
+    repeat: 1,
   };
 }
 
@@ -166,6 +174,7 @@ export function encryptCSAGameSettingHistory(
     autoFlip: history.autoFlip,
     enableComment: history.enableComment,
     enableAutoSave: history.enableAutoSave,
+    repeat: history.repeat,
   };
 }
 
@@ -188,5 +197,6 @@ export function decryptCSAGameSettingHistory(
     autoFlip: history.autoFlip,
     enableComment: history.enableComment,
     enableAutoSave: history.enableAutoSave,
+    repeat: history.repeat,
   };
 }

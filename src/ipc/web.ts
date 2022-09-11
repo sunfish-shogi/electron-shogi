@@ -5,7 +5,6 @@ import { defaultResearchSetting } from "@/settings/research";
 import { USIEngineSettings } from "@/settings/usi";
 import { LogLevel } from "./log";
 import { Bridge } from "./api";
-import { defaultCSAGameSetting } from "@/settings/csa";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
@@ -94,14 +93,7 @@ export const webAPI: Bridge = {
     localStorage.setItem(STORAGE_KEY.GAME_SETTING, json);
   },
   async loadCSAGameSettingHistory(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY);
-    if (!json) {
-      return JSON.stringify(defaultCSAGameSetting());
-    }
-    return JSON.stringify({
-      ...defaultCSAGameSetting(),
-      ...JSON.parse(json),
-    });
+    throw "Web版では利用できない機能です。";
   },
   async saveCSAGameSettingHistory(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY, json);

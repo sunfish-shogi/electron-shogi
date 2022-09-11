@@ -6,7 +6,10 @@ import {
   MenuItemConstructorOptions,
   shell,
 } from "electron";
-import { openSettingsDirectory } from "@/ipc/background/settings";
+import {
+  openAutoSaveDirectory,
+  openSettingsDirectory,
+} from "@/ipc/background/settings";
 import { openLogsDirectory } from "@/ipc/background/log";
 import { onMenuEvent } from "@/ipc/background";
 import { MenuEvent } from "@/ipc/menu";
@@ -72,6 +75,11 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
         [AppState.NORMAL],
         "CmdOrCtrl+Shift+S"
       ),
+      { type: "separator" },
+      {
+        label: "自動保存先を開く",
+        click: openAutoSaveDirectory,
+      },
       { type: "separator" },
       isMac
         ? { role: "close", label: "閉じる" }

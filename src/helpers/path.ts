@@ -32,7 +32,9 @@ export function defaultRecordFileName(
 }
 
 function getDateString(metadata: ImmutableRecordMetadata): string {
-  const date = metadata.getStandardMetadata(RecordMetadataKey.DATE);
+  const date =
+    metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME) ||
+    metadata.getStandardMetadata(RecordMetadataKey.DATE);
   if (date) {
     return date
       .trim()

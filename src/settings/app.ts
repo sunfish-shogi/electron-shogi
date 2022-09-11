@@ -37,6 +37,7 @@ export type AppSetting = {
   boardFlipping: boolean;
   tab: Tab;
   returnCode: string;
+  autoSaveDirectory: string;
   coefficientInSigmoid: number;
   badMoveLevelThreshold1: number;
   badMoveLevelThreshold2: number;
@@ -61,6 +62,7 @@ export type AppSettingUpdate = {
   boardFlipping?: boolean;
   tab?: Tab;
   returnCode?: string;
+  autoSaveDirectory?: string;
   coefficientInSigmoid?: number;
   badMoveLevelThreshold1?: number;
   badMoveLevelThreshold2?: number;
@@ -73,7 +75,10 @@ export type AppSettingUpdate = {
   enableCSALog?: boolean;
 };
 
-export function defaultAppSetting(returnCode?: string): AppSetting {
+export function defaultAppSetting(opt?: {
+  returnCode?: string;
+  autoSaveDirectory?: string;
+}): AppSetting {
   return {
     thema: Thema.STANDARD,
     pieceImage: PieceImageType.HITOMOJI,
@@ -85,7 +90,8 @@ export function defaultAppSetting(returnCode?: string): AppSetting {
     clockSoundTarget: ClockSoundTarget.ONLY_USER,
     boardFlipping: false,
     tab: Tab.RECORD_INFO,
-    returnCode: returnCode || "\r\n",
+    returnCode: opt?.returnCode || "\r\n",
+    autoSaveDirectory: opt?.autoSaveDirectory || "",
     coefficientInSigmoid: 600,
     badMoveLevelThreshold1: 5,
     badMoveLevelThreshold2: 10,

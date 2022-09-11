@@ -13,6 +13,7 @@ export type CSAGameSetting = {
   server: CSAServerSetting;
   autoFlip: boolean;
   enableComment: boolean;
+  enableAutoSave: boolean;
 };
 
 export function defaultCSAServerSetting(): CSAServerSetting {
@@ -33,6 +34,7 @@ export function defaultCSAGameSetting(): CSAGameSetting {
     server: defaultCSAServerSetting(),
     autoFlip: true,
     enableComment: true,
+    enableAutoSave: true,
   };
 }
 
@@ -56,6 +58,7 @@ export type CSAGameSettingHistory = {
   serverHistory: CSAServerSetting[];
   autoFlip: boolean;
   enableComment: boolean;
+  enableAutoSave: boolean;
 };
 
 export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
@@ -67,6 +70,7 @@ export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
     serverHistory: [],
     autoFlip: true,
     enableComment: true,
+    enableAutoSave: true,
   };
 }
 
@@ -82,6 +86,7 @@ export function buildCSAGameSettingByHistory(
         : defaultCSAServerSetting(),
     autoFlip: history.autoFlip,
     enableComment: history.enableComment,
+    enableAutoSave: history.enableAutoSave,
   };
 }
 
@@ -110,6 +115,7 @@ export function appendCSAGameSettingHistory(
     serverHistory: newServerHistory,
     autoFlip: setting.autoFlip,
     enableComment: setting.enableComment,
+    enableAutoSave: setting.enableAutoSave,
   };
 }
 
@@ -125,6 +131,7 @@ export type SecureCSAGameSettingHistory = {
   serverHistory: SecureCSAServerSetting[];
   autoFlip: boolean;
   enableComment: boolean;
+  enableAutoSave: boolean;
 };
 
 export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistory {
@@ -136,6 +143,7 @@ export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistor
     serverHistory: [],
     autoFlip: true,
     enableComment: true,
+    enableAutoSave: true,
   };
 }
 
@@ -157,6 +165,7 @@ export function encryptCSAGameSettingHistory(
     serverHistory: serverHistory,
     autoFlip: history.autoFlip,
     enableComment: history.enableComment,
+    enableAutoSave: history.enableAutoSave,
   };
 }
 
@@ -178,5 +187,6 @@ export function decryptCSAGameSettingHistory(
     serverHistory: serverHistory,
     autoFlip: history.autoFlip,
     enableComment: history.enableComment,
+    enableAutoSave: history.enableAutoSave,
   };
 }

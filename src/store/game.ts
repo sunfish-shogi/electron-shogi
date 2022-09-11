@@ -13,6 +13,7 @@ import { Clock } from "./clock";
 import { PlayerBuilder } from "@/players/builder";
 
 export interface GameHandlers {
+  onSaveRecord(): Promise<void>;
   onGameEnd(specialMove?: SpecialMove): void;
   onPieceBeat(): void;
   onBeepShort(): void;
@@ -291,6 +292,13 @@ export class GameManager {
         });
         this.recordManager.setGameEndMetadata();
         this.state = GameState.IDLE;
+      })
+      .then(() => {
+        if (this._setting.enableAutoSave) {
+          return this.handlers.onSaveRecord();
+        }
+      })
+      .then(() => {
         this.handlers.onGameEnd(specialMove);
       })
       .catch((e) => {

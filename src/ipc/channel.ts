@@ -6,6 +6,7 @@ export enum Background {
   SHOW_SAVE_RECORD_DIALOG = "showSaveRecordDialog",
   SAVE_RECORD = "saveRecord",
   SHOW_SELECT_FILE_DIALOG = "showSelectFileDialog",
+  SHOW_SELECT_DIRECTORY_DIALOG = "showSelectDirectoryDialog",
   LOAD_APP_SETTING = "loadAppSetting",
   SAVE_APP_SETTING = "saveAppSetting",
   LOAD_RESEARCH_SETTING = "loadResearchSetting",

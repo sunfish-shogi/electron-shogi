@@ -453,10 +453,6 @@ export class Store {
     }
   }
 
-  onPieceBeat(): void {
-    playPieceBeat(this.appSetting.pieceVolume);
-  }
-
   onGameEnd(specialMove?: SpecialMove): void {
     if (this.appState !== AppState.GAME) {
       return;
@@ -480,6 +476,16 @@ export class Store {
     if (this._appSetting.boardFlipping !== flip) {
       this.flipBoard();
     }
+  }
+
+  onSaveRecord(): Promise<void> {
+    const fname = defaultRecordFileName(this.recordManager.record.metadata);
+    const path = `${this.appSetting.autoSaveDirectory}/${fname}`;
+    return this.saveRecordByPath(path);
+  }
+
+  onPieceBeat(): void {
+    playPieceBeat(this.appSetting.pieceVolume);
   }
 
   onBeepShort(): void {
@@ -830,23 +836,31 @@ export class Store {
         if (!path) {
           return;
         }
-        const dataOrError = this.recordManager.exportRecordAsBuffer(
-          path as string,
-          {
-            returnCode: this.appSetting.returnCode,
-          }
-        );
-        if (dataOrError instanceof Error) {
-          return Promise.reject(dataOrError);
-        }
-        return api.saveRecord(path as string, dataOrError);
+        return this.saveRecordByPath(path);
       })
       .catch((e) => {
-        this.pushError("棋譜の保存中にエラーが出ました: " + e);
+        this.pushError(e);
       })
       .finally(() => {
         this.releaseBussyState();
       });
+  }
+
+  private async saveRecordByPath(path: string): Promise<void> {
+    const dataOrError = this.recordManager.exportRecordAsBuffer(path, {
+      returnCode: this.appSetting.returnCode,
+    });
+    if (dataOrError instanceof Error) {
+      throw dataOrError;
+    }
+    this.retainBussyState();
+    try {
+      await api.saveRecord(path, dataOrError);
+    } catch (e) {
+      this.pushError(new Error(`棋譜の保存に失敗しました: ${e}`));
+    } finally {
+      this.releaseBussyState();
+    }
   }
 
   get isMovableByUser() {

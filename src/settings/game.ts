@@ -16,6 +16,7 @@ export type GameSetting = {
   enableEngineTimeout: boolean;
   humanIsFront: boolean;
   enableComment: boolean;
+  enableAutoSave: boolean;
 };
 
 export function defaultGameSetting(): GameSetting {
@@ -36,6 +37,7 @@ export function defaultGameSetting(): GameSetting {
     enableEngineTimeout: false,
     humanIsFront: true,
     enableComment: true,
+    enableAutoSave: true,
   };
 }
 

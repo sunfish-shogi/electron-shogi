@@ -20,6 +20,7 @@ export interface Bridge {
   showSaveRecordDialog(defaultPath: string): Promise<string>;
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
+  showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
   loadAppSetting(): Promise<string>;
   saveAppSetting(setting: string): Promise<void>;
   loadResearchSetting(): Promise<string>;
@@ -117,6 +118,7 @@ export interface API {
   showSaveRecordDialog(defaultPath: string): Promise<string>;
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
+  showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
   loadAppSetting(): Promise<AppSetting>;
   saveAppSetting(setting: AppSetting): Promise<void>;
   loadResearchSetting(): Promise<ResearchSetting>;

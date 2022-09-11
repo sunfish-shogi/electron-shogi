@@ -119,6 +119,10 @@
             <label for="enable-comment">コメントを出力する</label>
           </div>
           <div class="dialog-form-item">
+            <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
+            <label for="enable-auto-save">棋譜を自動で保存する</label>
+          </div>
+          <div class="dialog-form-item">
             <input id="human-is-front" ref="humanIsFront" type="checkbox" />
             <label for="human-is-front">人を手前に表示する</label>
           </div>
@@ -169,6 +173,7 @@ export default defineComponent({
     const enableEngineTimeout: Ref = ref(null);
     const humanIsFront: Ref = ref(null);
     const enableComment: Ref = ref(null);
+    const enableAutoSave: Ref = ref(null);
     const gameSetting = ref(defaultGameSetting());
     const engineSettings = ref(new USIEngineSettings());
     const blackPlayerURI = ref("");
@@ -209,6 +214,7 @@ export default defineComponent({
           gameSetting.value.enableEngineTimeout;
         humanIsFront.value.checked = gameSetting.value.humanIsFront;
         enableComment.value.checked = gameSetting.value.enableComment;
+        enableAutoSave.value.checked = gameSetting.value.enableAutoSave;
         defaultValueApplied = true;
       }
     });
@@ -252,6 +258,7 @@ export default defineComponent({
         enableEngineTimeout: enableEngineTimeout.value.checked,
         humanIsFront: humanIsFront.value.checked,
         enableComment: enableComment.value.checked,
+        enableAutoSave: enableAutoSave.value.checked,
       };
       const error = validateGameSetting(gameSetting);
       if (error) {
@@ -311,6 +318,7 @@ export default defineComponent({
       enableEngineTimeout,
       humanIsFront,
       enableComment,
+      enableAutoSave,
       engineSettings,
       blackPlayerURI,
       whitePlayerURI,

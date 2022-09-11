@@ -94,6 +94,10 @@
           <label for="enable-comment">コメントを出力する</label>
         </div>
         <div class="dialog-form-item">
+          <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
+          <label for="enable-auto-save">棋譜を自動で保存する</label>
+        </div>
+        <div class="dialog-form-item">
           <input id="auto-flip" ref="autoFlip" type="checkbox" />
           <label for="auto-flip">盤面の向きを自動で調整する</label>
         </div>
@@ -140,6 +144,7 @@ export default defineComponent({
     const password: Ref = ref(null);
     const saveHistory: Ref = ref(null);
     const enableComment: Ref = ref(null);
+    const enableAutoSave: Ref = ref(null);
     const autoFlip: Ref = ref(null);
     const history = ref(defaultCSAGameSettingHistory());
     const defaultSetting = ref(defaultCSAGameSetting());
@@ -171,6 +176,7 @@ export default defineComponent({
         id.value.value = defaultSetting.value.server.id;
         password.value.value = defaultSetting.value.server.password;
         enableComment.value.checked = defaultSetting.value.enableComment;
+        enableAutoSave.value.checked = defaultSetting.value.enableAutoSave;
         autoFlip.value.checked = defaultSetting.value.autoFlip;
         defaultValueApplied = true;
       }
@@ -206,6 +212,7 @@ export default defineComponent({
           password: String(password.value.value || ""),
         },
         enableComment: enableComment.value.checked,
+        enableAutoSave: enableAutoSave.value.checked,
         autoFlip: autoFlip.value.checked,
       };
       const error = validateCSAGameSetting(csaGameSetting);
@@ -289,6 +296,7 @@ export default defineComponent({
       password,
       saveHistory,
       enableComment,
+      enableAutoSave,
       autoFlip,
       engineSettings,
       playerURI,

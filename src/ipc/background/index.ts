@@ -1,5 +1,6 @@
 import { BrowserWindow, dialog, ipcMain } from "electron";
 import { Background, Renderer } from "@/ipc/channel";
+import path from "path";
 import fs from "fs";
 import {
   loadAnalysisSetting,
@@ -134,11 +135,13 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.SAVE_RECORD,
-  async (_, path: string, data: Uint8Array): Promise<void> => {
-    if (!isValidRecordFilePath(path)) {
+  async (_, filePath: string, data: Uint8Array): Promise<void> => {
+    if (!isValidRecordFilePath(filePath)) {
       throw new Error(`取り扱いできないファイル拡張子です`);
     }
-    fs.promises.writeFile(path, data);
+    const dir = path.dirname(filePath);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.promises.writeFile(filePath, data);
   }
 );
 
@@ -151,6 +154,21 @@ ipcMain.handle(
     }
     const results = dialog.showOpenDialogSync(win, {
       properties: ["openFile"],
+    });
+    return results && results.length === 1 ? results[0] : "";
+  }
+);
+
+ipcMain.handle(
+  Background.SHOW_SELECT_DIRECTORY_DIALOG,
+  async (_, defaultPath?: string): Promise<string> => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (!win) {
+      throw "予期せぬエラーでダイアログを表示せきません。";
+    }
+    const results = dialog.showOpenDialogSync(win, {
+      properties: ["createDirectory", "openDirectory"],
+      defaultPath: defaultPath,
     });
     return results && results.length === 1 ? results[0] : "";
   }

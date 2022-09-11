@@ -20,6 +20,7 @@ const mockAPI = api as jest.Mocked<API>;
 
 function createMockHandlers() {
   return {
+    onSaveRecord: jest.fn(),
     onCSAGameEnd: jest.fn(),
     onFlipBoard: jest.fn(),
     onPieceBeat: jest.fn(),
@@ -118,6 +119,8 @@ describe("store/csa", () => {
         expect(mockPlayer.close.mock.calls).toHaveLength(0);
         expect(mockHandlers.onCSAGameEnd.mock.calls).toHaveLength(0);
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
+      })
+      .next(() => {
         expect(mockAPI.csaLogout.mock.calls).toHaveLength(1);
         expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(123);
         expect(mockPlayer.close.mock.calls).toHaveLength(1);

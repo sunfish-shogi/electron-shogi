@@ -31,6 +31,7 @@ export enum CSAGameState {
 }
 
 export interface CSAGameHandlers {
+  onSaveRecord(): Promise<void>;
   onCSAGameEnd(): void;
   onFlipBoard(flip: boolean): void;
   onPieceBeat(): void;
@@ -231,6 +232,9 @@ export class CSAGameManager {
       });
     }
     this.close();
+    if (this.setting.enableAutoSave) {
+      await this.handlers.onSaveRecord();
+    }
     this.handlers.onCSAGameEnd();
   }
 

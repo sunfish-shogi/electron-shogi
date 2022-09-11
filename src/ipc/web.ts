@@ -38,6 +38,9 @@ export const webAPI: Bridge = {
   async showSelectFileDialog(): Promise<string> {
     throw "Web版では利用できない機能です。";
   },
+  async showSelectDirectoryDialog(): Promise<string> {
+    throw "Web版では利用できない機能です。";
+  },
   async loadAppSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.APP_SETTING);
     if (!json) {

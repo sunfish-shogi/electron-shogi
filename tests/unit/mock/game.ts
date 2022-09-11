@@ -40,4 +40,5 @@ export const gameSetting10m30s: GameSetting = {
   enableEngineTimeout: false,
   humanIsFront: false,
   enableComment: true,
+  enableAutoSave: true,
 };

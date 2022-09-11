@@ -17,9 +17,15 @@ import {
 } from "@/settings/csa";
 
 const rootDir = app.getPath("userData");
+const docDir = path.join(app.getPath("documents"), "ElectronShogi");
 
 export function openSettingsDirectory(): void {
   shell.openPath(rootDir);
+}
+
+export function openAutoSaveDirectory(): void {
+  const appSetting = loadAppSetting();
+  shell.openPath(appSetting.autoSaveDirectory || docDir);
 }
 
 const windowSettingPath = path.join(rootDir, "window.json");
@@ -74,10 +80,16 @@ export function saveAppSetting(setting: AppSetting): void {
 export function loadAppSetting(): AppSetting {
   const defautlReturnCode = process.platform === "win32" ? "\r\n" : "\n";
   if (!fs.existsSync(appSettingPath)) {
-    return defaultAppSetting(defautlReturnCode);
+    return defaultAppSetting({
+      returnCode: defautlReturnCode,
+      autoSaveDirectory: docDir,
+    });
   }
   return {
-    ...defaultAppSetting(defautlReturnCode),
+    ...defaultAppSetting({
+      returnCode: defautlReturnCode,
+      autoSaveDirectory: docDir,
+    }),
     ...JSON.parse(fs.readFileSync(appSettingPath, "utf8")),
   };
 }

@@ -8,6 +8,7 @@ import { createMockPlayer, createMockPlayerBuilder } from "../mock/player";
 
 function createMockHandlers() {
   return {
+    onSaveRecord: jest.fn(),
     onGameEnd: jest.fn(),
     onPieceBeat: jest.fn(),
     onBeepShort: jest.fn(),

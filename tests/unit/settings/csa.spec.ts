@@ -22,6 +22,7 @@ describe("settings/csa", () => {
       },
       autoFlip: true,
       enableComment: true,
+      enableAutoSave: true,
     });
     expect(result).toBeUndefined();
   });
@@ -40,6 +41,7 @@ describe("settings/csa", () => {
       },
       autoFlip: true,
       enableComment: true,
+      enableAutoSave: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -58,6 +60,7 @@ describe("settings/csa", () => {
       },
       autoFlip: true,
       enableComment: true,
+      enableAutoSave: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -76,6 +79,7 @@ describe("settings/csa", () => {
       },
       autoFlip: true,
       enableComment: true,
+      enableAutoSave: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -93,6 +97,7 @@ describe("settings/csa", () => {
         },
         autoFlip: true,
         enableComment: true,
+        enableAutoSave: true,
       };
     };
     let history = emptyCSAGameSettingHistory;
@@ -150,6 +155,7 @@ describe("settings/csa", () => {
       ],
       autoFlip: true,
       enableComment: true,
+      enableAutoSave: true,
     };
     const secure = encryptCSAGameSettingHistory(raw, (src) => {
       return (
@@ -200,6 +206,7 @@ describe("settings/csa", () => {
       ],
       autoFlip: true,
       enableComment: true,
+      enableAutoSave: true,
     };
     const raw = decryptCSAGameSettingHistory(secure, (src) => {
       return (

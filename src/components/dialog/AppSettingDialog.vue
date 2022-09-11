@@ -106,6 +106,18 @@
               <option value="cr">CR (90年代Mac)</option>
             </select>
           </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">棋譜の自動保存先</div>
+            <input
+              ref="autoSaveDirectory"
+              class="directory"
+              :value="appSetting.autoSaveDirectory"
+              type="text"
+            />
+            <button class="dialog-button" @click="selectAutoSaveDirectory">
+              選択
+            </button>
+          </div>
         </div>
         <hr />
         <div class="section">
@@ -233,7 +245,7 @@ import { useStore } from "@/store";
 import { ref, defineComponent, onMounted, Ref, computed } from "vue";
 import { readInputAsNumber } from "@/helpers/form";
 import { showModalDialog } from "@/helpers/dialog";
-import { isNative } from "@/ipc/api";
+import api, { isNative } from "@/ipc/api";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -261,6 +273,7 @@ export default defineComponent({
     const clockPitch: Ref = ref(null);
     const clockSoundTarget: Ref = ref(null);
     const returnCode: Ref = ref(null);
+    const autoSaveDirectory: Ref = ref(null);
     const coefficientInSigmoid: Ref = ref(null);
     const badMoveLevelThreshold1: Ref = ref(null);
     const badMoveLevelThreshold2: Ref = ref(null);
@@ -287,6 +300,7 @@ export default defineComponent({
         clockPitch: readInputAsNumber(clockPitch.value),
         clockSoundTarget: clockSoundTarget.value.value,
         returnCode: nameToReturnCode[returnCode.value.value],
+        autoSaveDirectory: autoSaveDirectory.value.value,
         coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
         badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
         badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
@@ -300,6 +314,22 @@ export default defineComponent({
       try {
         await store.updateAppSetting(update);
         store.closeAppSettingDialog();
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
+      }
+    };
+
+    const selectAutoSaveDirectory = async () => {
+      store.retainBussyState();
+      try {
+        const path = await api.showSelectDirectoryDialog(
+          autoSaveDirectory.value.value
+        );
+        if (path) {
+          autoSaveDirectory.value.value = path;
+        }
       } catch (e) {
         store.pushError(e);
       } finally {
@@ -399,6 +429,7 @@ export default defineComponent({
       clockPitch,
       clockSoundTarget,
       returnCode,
+      autoSaveDirectory,
       coefficientInSigmoid,
       badMoveLevelThreshold1,
       badMoveLevelThreshold2,
@@ -412,6 +443,7 @@ export default defineComponent({
       pieceImageTypes,
       boardImageTypes,
       isNative: isNative(),
+      selectAutoSaveDirectory,
       saveAndClose,
       cancel,
     };
@@ -438,5 +470,8 @@ input.toggle {
   height: 1em;
   width: 1em;
   margin-right: 10px;
+}
+input.directory {
+  width: 250px;
 }
 </style>

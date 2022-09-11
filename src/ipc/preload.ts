@@ -39,6 +39,12 @@ const api: Bridge = {
   async showSelectFileDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_SELECT_FILE_DIALOG);
   },
+  async showSelectDirectoryDialog(defaultPath?: string): Promise<string> {
+    return await ipcRenderer.invoke(
+      Background.SHOW_SELECT_DIRECTORY_DIALOG,
+      defaultPath
+    );
+  },
   async loadAppSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_APP_SETTING);
   },

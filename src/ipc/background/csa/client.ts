@@ -99,7 +99,7 @@ export class Client {
     this.state = State.CONNECTING;
     this.socket = new Socket(this.setting.host, this.setting.port, {
       onConnect: this.onConnect.bind(this),
-      onError: this.onError.bind(this),
+      onError: this.onConnectionError.bind(this),
       onFIN: this.onFIN.bind(this),
       onClose: this.onClose.bind(this),
       onRead: this.onRead.bind(this),
@@ -196,6 +196,17 @@ export class Client {
     this.send(`LOGIN ${this.setting.id} ${this.setting.password}`);
   }
 
+  private onConnectionError(e: Error): void {
+    if (this.state === State.CLOSED) {
+      return;
+    }
+    this.onError(e);
+    this.state = State.CLOSED;
+    if (this.closeCallback) {
+      this.closeCallback();
+    }
+  }
+
   private onError(e: Error): void {
     this.logger.info("sid=%d: error: %s %s", this.sessionID, e.name, e.message);
     if (this.errorCallback) {
@@ -208,6 +219,9 @@ export class Client {
   }
 
   private onClose(hadError: boolean): void {
+    if (this.state === State.CLOSED) {
+      return;
+    }
     switch (this.state) {
       case State.WAITING_LOGOUT:
       case State.WAITING_CLOSE:

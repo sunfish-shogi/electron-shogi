@@ -34,6 +34,7 @@ export const csaGameSetting: CSAGameSetting = {
   autoFlip: true,
   enableComment: true,
   enableAutoSave: true,
+  repeat: 1,
 };
 
 export const emptyCSAGameSettingHistory: CSAGameSettingHistory = {
@@ -42,6 +43,7 @@ export const emptyCSAGameSettingHistory: CSAGameSettingHistory = {
   autoFlip: true,
   enableComment: true,
   enableAutoSave: true,
+  repeat: 1,
 };
 
 export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
@@ -57,6 +59,7 @@ export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
   autoFlip: true,
   enableComment: true,
   enableAutoSave: true,
+  repeat: 1,
 };
 
 const initialPosition = `\

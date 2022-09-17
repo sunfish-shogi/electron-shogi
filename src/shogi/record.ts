@@ -11,6 +11,7 @@ import { millisecondsToHMMSS, millisecondsToMSS } from "@/helpers/time";
 
 export enum RecordMetadataKey {
   // 柿木形式で規定されている項目
+  TITLE = "title", // 表題
   BLACK_NAME = "blackName", // 先手
   WHITE_NAME = "whiteName", // 後手
   START_DATETIME = "startDatetime", // 開始日時
@@ -18,7 +19,6 @@ export enum RecordMetadataKey {
   DATE = "date", // 対局日
   TOURNAMENT = "tournament", // 棋戦
   STRATEGY = "strategy", // 戦型
-  TITLE = "title", // 表題
   TIME_LIMIT = "timeLimit", // 持ち時間
   TIME_SPENT = "timeSpent", // 消費時間
   PLACE = "place", // 場所

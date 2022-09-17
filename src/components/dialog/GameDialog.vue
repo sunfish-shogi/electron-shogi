@@ -46,7 +46,7 @@
             <div class="dialog-form-item-label">持ち時間</div>
             <input
               ref="hours"
-              class="time-input"
+              class="time"
               type="number"
               min="0"
               max="99"
@@ -55,7 +55,7 @@
             <div class="dialog-form-item-unit">時間</div>
             <input
               ref="minutes"
-              class="time-input"
+              class="time"
               type="number"
               min="0"
               max="59"
@@ -67,7 +67,7 @@
             <div class="dialog-form-item-label">秒読み</div>
             <input
               ref="byoyomi"
-              class="time-input single"
+              class="time"
               type="number"
               min="0"
               max="60"
@@ -79,7 +79,7 @@
             <div class="dialog-form-item-label">増加</div>
             <input
               ref="increment"
-              class="time-input single"
+              class="time"
               type="number"
               min="0"
               max="99"
@@ -115,6 +115,14 @@
             </select>
           </div>
           <div class="dialog-form-item">
+            <div class="dialog-form-item-label">連続対局</div>
+            <input ref="repeat" class="number" type="number" />
+          </div>
+          <div class="dialog-form-item">
+            <input id="swap-players" ref="swapPlayers" type="checkbox" />
+            <label for="swap-players">1局ごとに手番を入れ替える</label>
+          </div>
+          <div class="dialog-form-item">
             <input id="enable-comment" ref="enableComment" type="checkbox" />
             <label for="enable-comment">コメントを出力する</label>
           </div>
@@ -140,13 +148,14 @@
 <script lang="ts">
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
 import { ref, onMounted, defineComponent, Ref, computed, onUpdated } from "vue";
-import api from "@/ipc/api";
+import api, { isNative } from "@/ipc/api";
 import { useStore } from "@/store";
 import { CommentBehavior } from "@/store/record";
 import {
   defaultGameSetting,
   GameSetting,
   validateGameSetting,
+  validateGameSettingForWeb,
 } from "@/settings/game";
 import { showModalDialog } from "@/helpers/dialog";
 import * as uri from "@/uri";
@@ -172,6 +181,8 @@ export default defineComponent({
     const startPosition: Ref = ref(null);
     const enableEngineTimeout: Ref = ref(null);
     const humanIsFront: Ref = ref(null);
+    const repeat: Ref = ref(null);
+    const swapPlayers: Ref = ref(null);
     const enableComment: Ref = ref(null);
     const enableAutoSave: Ref = ref(null);
     const gameSetting = ref(defaultGameSetting());
@@ -213,6 +224,8 @@ export default defineComponent({
         enableEngineTimeout.value.checked =
           gameSetting.value.enableEngineTimeout;
         humanIsFront.value.checked = gameSetting.value.humanIsFront;
+        repeat.value.value = gameSetting.value.repeat;
+        swapPlayers.value.checked = gameSetting.value.swapPlayers;
         enableComment.value.checked = gameSetting.value.enableComment;
         enableAutoSave.value.checked = gameSetting.value.enableAutoSave;
         defaultValueApplied = true;
@@ -257,10 +270,14 @@ export default defineComponent({
             : undefined,
         enableEngineTimeout: enableEngineTimeout.value.checked,
         humanIsFront: humanIsFront.value.checked,
+        repeat: repeat.value.value,
+        swapPlayers: swapPlayers.value.checked,
         enableComment: enableComment.value.checked,
         enableAutoSave: enableAutoSave.value.checked,
       };
-      const error = validateGameSetting(gameSetting);
+      const error = isNative()
+        ? validateGameSetting(gameSetting)
+        : validateGameSettingForWeb(gameSetting);
       if (error) {
         store.pushError(error);
       } else {
@@ -317,6 +334,8 @@ export default defineComponent({
       startPosition,
       enableEngineTimeout,
       humanIsFront,
+      repeat,
+      swapPlayers,
       enableComment,
       enableAutoSave,
       engineSettings,
@@ -362,9 +381,13 @@ export default defineComponent({
 .dialog-form-area.time-limit {
   width: 260px;
 }
-.time-input {
+input.time {
   text-align: right;
   width: 40px;
+}
+input.number {
+  text-align: right;
+  width: 80px;
 }
 .dialog-form-area.flags {
   width: 225px;

@@ -26,13 +26,15 @@ import {
 
 export enum CSAGameState {
   OFFLINE,
+  WAITING_LOGIN,
   READY,
   GAME,
 }
 
 export interface CSAGameHandlers {
   onSaveRecord(): Promise<void>;
-  onCSAGameEnd(): void;
+  onGameNext(): void;
+  onGameEnd(): void;
   onFlipBoard(flip: boolean): void;
   onPieceBeat(): void;
   onBeepShort(): void;
@@ -45,6 +47,7 @@ export class CSAGameManager {
   private _state = CSAGameState.OFFLINE;
   private _setting = defaultCSAGameSetting();
   private sessionID = 0;
+  private repeat = 0;
   private player?: Player;
   private gameSummary = emptyCSAGameSummary();
   private searchInfo?: SearchInfo;
@@ -70,11 +73,18 @@ export class CSAGameManager {
     return color === this.gameSummary.myColor;
   }
 
-  async login(setting: CSAGameSetting): Promise<void> {
+  login(setting: CSAGameSetting): Promise<void> {
     if (this.sessionID) {
       throw new Error("CSAGameManager#start: session already exists");
     }
     this._setting = setting;
+    this.repeat = 0;
+    return this.relogin();
+  }
+
+  private async relogin(): Promise<void> {
+    this.repeat++;
+    this._state = CSAGameState.WAITING_LOGIN;
     try {
       this.player = await this.playerBuilder.build(
         this._setting.player,
@@ -83,8 +93,9 @@ export class CSAGameManager {
       this.sessionID = await api.csaLogin(this._setting.server);
       this._state = CSAGameState.READY;
       csaGameManagers[this.sessionID] = this;
+      this.handlers.onGameNext();
     } catch (e) {
-      this.close();
+      this.close(true);
       throw e;
     }
   }
@@ -92,14 +103,18 @@ export class CSAGameManager {
   stop(): void {
     if (this.sessionID) {
       api.csaStop(this.sessionID);
+      this.close(true);
     }
   }
 
   logout(): void {
-    this.close();
+    this.close(true);
   }
 
-  private close(): void {
+  private close(doNotRepeat?: boolean): void {
+    if (this._state === CSAGameState.OFFLINE) {
+      return;
+    }
     if (this.sessionID) {
       delete csaGameManagers[this.sessionID];
       api.csaLogout(this.sessionID).catch((e) => {
@@ -116,6 +131,13 @@ export class CSAGameManager {
     this.blackClock.stop();
     this.whiteClock.stop();
     this._state = CSAGameState.OFFLINE;
+    if (doNotRepeat || this.repeat >= this.setting.repeat) {
+      this.handlers.onGameEnd();
+      return;
+    }
+    this.relogin().catch((e) => {
+      this.handlers.onError(e);
+    });
   }
 
   onGameSummary(gameSummary: CSAGameSummary): void {
@@ -231,16 +253,14 @@ export class CSAGameManager {
         move: SpecialMove.INTERRUPT,
       });
     }
-    this.close();
     if (this.setting.enableAutoSave) {
       await this.handlers.onSaveRecord();
     }
-    this.handlers.onCSAGameEnd();
+    this.close();
   }
 
   async onClose(): Promise<void> {
-    this.close();
-    this.handlers.onCSAGameEnd();
+    this.close(true);
   }
 
   private next(playerStates: CSAPlayerStates): void {

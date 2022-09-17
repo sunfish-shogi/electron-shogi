@@ -223,6 +223,7 @@ export class Client {
       return;
     }
     switch (this.state) {
+      case State.WAITING_GAME_SUMMARY:
       case State.WAITING_LOGOUT:
       case State.WAITING_CLOSE:
         if (!hadError) {

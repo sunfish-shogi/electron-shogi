@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TimeoutChain } from "@/helpers/testing";
 import api, { API } from "@/ipc/api";
 import { Thema } from "@/settings/app";
@@ -122,15 +123,30 @@ describe("store/index", () => {
   it("message", () => {
     const store = new Store();
     expect(store.hasMessage).toBeFalsy();
-    store.enqueueMessage("first message");
+    store.enqueueMessage({ text: "first message" });
     expect(store.hasMessage).toBeTruthy();
-    expect(store.message).toBe("first message");
-    store.enqueueMessage("second message");
+    expect(store.message.text).toBe("first message");
+    expect(store.message.attachments).toBeUndefined();
+    store.enqueueMessage({
+      text: "second message",
+      attachments: [
+        {
+          type: "list",
+          items: [{ text: "item1" }, { text: "item2" }],
+        },
+      ],
+    });
     expect(store.hasMessage).toBeTruthy();
-    expect(store.message).toBe("first message");
+    expect(store.message.text).toBe("first message");
+    expect(store.message.attachments).toBeUndefined();
     store.dequeueMessage();
     expect(store.hasMessage).toBeTruthy();
-    expect(store.message).toBe("second message");
+    expect(store.message.text).toBe("second message");
+    expect(store.message.attachments).toHaveLength(1);
+    expect(store.message.attachments![0].type).toBe("list");
+    expect(store.message.attachments![0].items).toHaveLength(2);
+    expect(store.message.attachments![0].items[0].text).toBe("item1");
+    expect(store.message.attachments![0].items[1].text).toBe("item2");
     store.dequeueMessage();
     expect(store.hasMessage).toBeFalsy();
   });

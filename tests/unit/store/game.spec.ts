@@ -1,5 +1,10 @@
 import { TimeoutChain } from "@/helpers/testing";
-import { InitialPositionType, Position, SpecialMove } from "@/shogi";
+import {
+  InitialPositionType,
+  Move,
+  RecordMetadataKey,
+  SpecialMove,
+} from "@/shogi";
 import { Clock } from "@/store/clock";
 import { GameManager } from "@/store/game";
 import { RecordManager } from "@/store/record";
@@ -9,6 +14,7 @@ import { createMockPlayer, createMockPlayerBuilder } from "../mock/player";
 function createMockHandlers() {
   return {
     onSaveRecord: jest.fn(),
+    onGameNext: jest.fn(),
     onGameEnd: jest.fn(),
     onPieceBeat: jest.fn(),
     onBeepShort: jest.fn(),
@@ -72,6 +78,16 @@ describe("store/game", () => {
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
         expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 1 },
+          player2: { name: "USI Engine 02", win: 0 },
+          draw: 0,
+          invalid: 0,
+          total: 1,
+        });
+        expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
+          SpecialMove.RESIGN
+        );
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
         expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
         expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
@@ -93,8 +109,6 @@ describe("store/game", () => {
   });
 
   it("GameManager/handicap-bishop", () => {
-    const initPos = new Position();
-    initPos.reset(InitialPositionType.HANDICAP_BISHOP);
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b":
         { sfen: "7g7f" },
@@ -113,7 +127,6 @@ describe("store/game", () => {
     });
     const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
-    recordManager.importRecord(initPos.sfen);
     const manager = new GameManager(
       recordManager,
       new Clock(),
@@ -122,7 +135,12 @@ describe("store/game", () => {
       mockHandlers
     );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s))
+      .next(() =>
+        manager.startGame({
+          ...gameSetting10m30s,
+          startPosition: InitialPositionType.HANDICAP_BISHOP,
+        })
+      )
       .next(() => {
         expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
         expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
@@ -187,7 +205,14 @@ describe("store/game", () => {
         expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
         expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
         expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
-        expect(mockHandlers.onGameEnd.mock.calls[0][0]).toBe(
+        expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 0 },
+          player2: { name: "USI Engine 02", win: 0 },
+          draw: 0,
+          invalid: 1,
+          total: 1,
+        });
+        expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
           SpecialMove.INTERRUPT
         );
         expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
@@ -234,6 +259,219 @@ describe("store/game", () => {
       .next(() => {
         expect(blackClock.timeMs).toBe(600 * 1e3);
         expect(whiteClock.timeMs).toBe(600 * 1e3);
+      })
+      .invoke();
+  });
+
+  it("GameManager/resign/twice", () => {
+    const mockBlackPlayer = createMockPlayer({
+      // 1st game
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
+        { sfen: "7g7f" },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
+        { sfen: "2g2f" },
+      // 2nd game
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
+        { sfen: "3c3d" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      // 1st game
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
+        { sfen: "3c3d" },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
+        { sfen: "resign" },
+      // 2nd game
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
+        { sfen: "7g7f" },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
+        { sfen: "resign" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    const manager = new GameManager(
+      recordManager,
+      new Clock(),
+      new Clock(),
+      mockPlayerBuilder,
+      mockHandlers
+    );
+    return new TimeoutChain()
+      .next(() => {
+        manager.startGame({
+          ...gameSetting10m30s,
+          repeat: 2,
+        });
+        expect(
+          recordManager.record.metadata.getStandardMetadata(
+            RecordMetadataKey.TITLE
+          )
+        ).toBe("連続対局 1/2");
+        expect(manager.setting.black.name).toBe("USI Engine 01");
+        expect(manager.setting.white.name).toBe("USI Engine 02");
+      })
+      .next(() => {
+        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
+        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
+        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
+        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
+        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
+        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
+        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(recordManager.record.usi).toBe(
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves"
+        );
+        expect(
+          recordManager.record.metadata.getStandardMetadata(
+            RecordMetadataKey.TITLE
+          )
+        ).toBe("連続対局 2/2");
+        expect(manager.setting.black.name).toBe("USI Engine 02");
+        expect(manager.setting.white.name).toBe("USI Engine 01");
+      })
+      .next(() => {
+        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(3);
+        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(4);
+        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
+        expect(mockBlackPlayer.close.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(4);
+        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(3);
+        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
+        expect(mockWhitePlayer.close.mock.calls.length).toBe(2);
+        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
+          player1: { name: "USI Engine 02", win: 0 },
+          player2: { name: "USI Engine 01", win: 2 },
+          draw: 0,
+          invalid: 0,
+          total: 2,
+        });
+        expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
+          SpecialMove.RESIGN
+        );
+        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
+        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(14);
+        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(recordManager.record.usi).toBe(
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d"
+        );
+      })
+      .invoke();
+  });
+
+  it("GameManager/noStartPosition/twice", () => {
+    const mockBlackPlayer = createMockPlayer({
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
+        { sfen: "2g2f" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
+        { sfen: "3c3d" },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
+        { sfen: "resign" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.appendMove({
+      move: recordManager.record.position.createMoveBySFEN("7g7f") as Move,
+    });
+    const manager = new GameManager(
+      recordManager,
+      new Clock(),
+      new Clock(),
+      mockPlayerBuilder,
+      mockHandlers
+    );
+    return new TimeoutChain()
+      .next(() => {
+        manager.startGame({
+          ...gameSetting10m30s,
+          startPosition: undefined,
+          repeat: 2,
+          swapPlayers: false,
+        });
+        expect(
+          recordManager.record.metadata.getStandardMetadata(
+            RecordMetadataKey.TITLE
+          )
+        ).toBe("連続対局 1/2");
+        expect(manager.setting.black.name).toBe("USI Engine 01");
+        expect(manager.setting.white.name).toBe("USI Engine 02");
+      })
+      .next(() => {
+        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
+        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
+        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(1);
+        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
+        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
+        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
+        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(6);
+        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(recordManager.record.usi).toBe(
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f"
+        );
+        expect(
+          recordManager.record.metadata.getStandardMetadata(
+            RecordMetadataKey.TITLE
+          )
+        ).toBe("連続対局 2/2");
+        expect(manager.setting.black.name).toBe("USI Engine 01");
+        expect(manager.setting.white.name).toBe("USI Engine 02");
+      })
+      .next(() => {
+        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(4);
+        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(2);
+        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
+        expect(mockBlackPlayer.close.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(4);
+        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(2);
+        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
+        expect(mockWhitePlayer.close.mock.calls.length).toBe(2);
+        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 2 },
+          player2: { name: "USI Engine 02", win: 0 },
+          draw: 0,
+          invalid: 0,
+          total: 2,
+        });
+        expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
+          SpecialMove.RESIGN
+        );
+        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
+        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(12);
+        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(recordManager.record.usi).toBe(
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
+        );
       })
       .invoke();
   });

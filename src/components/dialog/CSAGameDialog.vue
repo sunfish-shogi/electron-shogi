@@ -57,7 +57,7 @@
           <div class="dialog-form-item-label-wide">ポート番号</div>
           <input
             ref="port"
-            class="port-number"
+            class="number"
             list="csa-server-port-number"
             type="number"
           />
@@ -89,6 +89,10 @@
         </div>
       </div>
       <div class="dialog-form-area">
+        <div class="dialog-form-item">
+          <div class="dialog-form-item-label-wide number">連続対局</div>
+          <input ref="repeat" type="number" />
+        </div>
         <div class="dialog-form-item">
           <input id="enable-comment" ref="enableComment" type="checkbox" />
           <label for="enable-comment">コメントを出力する</label>
@@ -145,6 +149,7 @@ export default defineComponent({
     const saveHistory: Ref = ref(null);
     const enableComment: Ref = ref(null);
     const enableAutoSave: Ref = ref(null);
+    const repeat: Ref = ref(null);
     const autoFlip: Ref = ref(null);
     const history = ref(defaultCSAGameSettingHistory());
     const defaultSetting = ref(defaultCSAGameSetting());
@@ -177,6 +182,7 @@ export default defineComponent({
         password.value.value = defaultSetting.value.server.password;
         enableComment.value.checked = defaultSetting.value.enableComment;
         enableAutoSave.value.checked = defaultSetting.value.enableAutoSave;
+        repeat.value.value = defaultSetting.value.repeat;
         autoFlip.value.checked = defaultSetting.value.autoFlip;
         defaultValueApplied = true;
       }
@@ -213,6 +219,7 @@ export default defineComponent({
         },
         enableComment: enableComment.value.checked,
         enableAutoSave: enableAutoSave.value.checked,
+        repeat: repeat.value.value,
         autoFlip: autoFlip.value.checked,
       };
       const error = validateCSAGameSetting(csaGameSetting);
@@ -297,6 +304,7 @@ export default defineComponent({
       saveHistory,
       enableComment,
       enableAutoSave,
+      repeat,
       autoFlip,
       engineSettings,
       playerURI,
@@ -319,7 +327,7 @@ export default defineComponent({
 .root {
   width: 450px;
 }
-.port-number {
+input.number {
   width: 100px;
 }
 .long-text {

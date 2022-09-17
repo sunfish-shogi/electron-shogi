@@ -28,13 +28,13 @@ import {
   playPieceBeat,
 } from "@/audio";
 import { RecordManager, SearchEngineType } from "./record";
-import { GameManager } from "./game";
+import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName } from "@/helpers/path";
 import { ResearchSetting } from "@/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { AppState } from "./state";
-import { MessageStore } from "./message";
+import { Message, MessageStore } from "./message";
 import { ErrorStore } from "./error";
 import * as uri from "@/uri";
 import { Confirmation } from "./confirm";
@@ -42,7 +42,7 @@ import { AnalysisManager } from "./analysis";
 import { AnalysisSetting } from "@/settings/analysis";
 import { USIPlayer } from "@/players/usi";
 import { LogLevel } from "@/ipc/log";
-import { toString } from "@/helpers/string";
+import { formatPercentage, toString } from "@/helpers/string";
 import { CSAGameManager, CSAGameState } from "./csa";
 import { Clock } from "./clock";
 import { CSAGameSetting, appendCSAGameSettingHistory } from "@/settings/csa";
@@ -98,7 +98,7 @@ export class Store {
     return this._bussy.release();
   }
 
-  get message(): string {
+  get message(): Message {
     return this._message.message;
   }
 
@@ -106,7 +106,7 @@ export class Store {
     return this._message.hasMessage;
   }
 
-  enqueueMessage(message: string): void {
+  enqueueMessage(message: Message): void {
     this._message.enqueue(message);
   }
 
@@ -366,10 +366,7 @@ export class Store {
         this.initializeDisplaySettingForGame(setting);
         return this.gameManager.startGame(setting);
       })
-      .then(() => {
-        this.usiMonitor.clear();
-        this._appState = AppState.GAME;
-      })
+      .then(() => (this._appState = AppState.GAME))
       .catch((e) => {
         this.pushError("対局の初期化中にエラーが出ました: " + e);
       })
@@ -396,10 +393,7 @@ export class Store {
         }
       })
       .then(() => this.csaGameManager.login(setting))
-      .then(() => {
-        this.usiMonitor.clear();
-        this._appState = AppState.CSA_GAME;
-      })
+      .then(() => (this._appState = AppState.CSA_GAME))
       .catch((e) => {
         this.pushError("対局の初期化中にエラーが出ました: " + e);
       })
@@ -453,21 +447,58 @@ export class Store {
     }
   }
 
-  onGameEnd(specialMove?: SpecialMove): void {
-    if (this.appState !== AppState.GAME) {
-      return;
-    }
-    if (specialMove) {
-      this.enqueueMessage(
-        `対局終了（${specialMoveToDisplayString(specialMove)})`
-      );
-    }
-    this._appState = AppState.NORMAL;
+  onGameNext(): void {
+    this.usiMonitor.clear();
   }
 
-  onCSAGameEnd(): void {
-    if (this.appState !== AppState.CSA_GAME) {
+  onGameEnd(gameResults?: GameResults, specialMove?: SpecialMove): void {
+    if (
+      this.appState !== AppState.GAME &&
+      this.appState !== AppState.CSA_GAME
+    ) {
       return;
+    }
+    if (gameResults && gameResults.total >= 2) {
+      const validTotal = gameResults.total - gameResults.invalid;
+      this.enqueueMessage({
+        text: "連続対局終了",
+        attachments: [
+          {
+            type: "list",
+            items: [
+              {
+                text: gameResults.player1.name,
+                children: [
+                  `勝ち数: ${gameResults.player1.win}`,
+                  `勝率: ${formatPercentage(
+                    gameResults.player1.win,
+                    validTotal,
+                    1
+                  )}`,
+                ],
+              },
+              {
+                text: gameResults.player2.name,
+                children: [
+                  `勝ち数: ${gameResults.player2.win}`,
+                  `勝率: ${formatPercentage(
+                    gameResults.player2.win,
+                    validTotal,
+                    1
+                  )}`,
+                ],
+              },
+              { text: `引き分け: ${gameResults.draw}` },
+              { text: `有効対局数: ${validTotal}` },
+              { text: `無効対局数: ${gameResults.invalid}` },
+            ],
+          },
+        ],
+      });
+    } else if (specialMove) {
+      this.enqueueMessage({
+        text: `対局終了（${specialMoveToDisplayString(specialMove)})`,
+      });
     }
     this._appState = AppState.NORMAL;
   }
@@ -542,7 +573,7 @@ export class Store {
 
   onFinish(): void {
     if (this.appState === AppState.ANALYSIS) {
-      this._message.enqueue("棋譜解析が終了しました。");
+      this._message.enqueue({ text: "棋譜解析が終了しました。" });
       this._appState = AppState.NORMAL;
     }
   }
@@ -857,7 +888,7 @@ export class Store {
     try {
       await api.saveRecord(path, dataOrError);
     } catch (e) {
-      this.pushError(new Error(`棋譜の保存に失敗しました: ${e}`));
+      throw new Error(`棋譜の保存に失敗しました: ${e}`);
     } finally {
       this.releaseBussyState();
     }

@@ -17,6 +17,8 @@ export type GameSetting = {
   humanIsFront: boolean;
   enableComment: boolean;
   enableAutoSave: boolean;
+  repeat: number;
+  swapPlayers: boolean;
 };
 
 export function defaultGameSetting(): GameSetting {
@@ -38,6 +40,8 @@ export function defaultGameSetting(): GameSetting {
     humanIsFront: true,
     enableComment: true,
     enableAutoSave: true,
+    repeat: 1,
+    swapPlayers: false,
   };
 }
 
@@ -55,6 +59,19 @@ export function validateGameSetting(
     gameSetting.timeLimit.increment !== 0
   ) {
     return new Error("秒読みとフィッシャールールは併用できません。");
+  }
+  return;
+}
+
+export function validateGameSettingForWeb(
+  gameSetting: GameSetting
+): Error | undefined {
+  const result = validateGameSetting(gameSetting);
+  if (result) {
+    return result;
+  }
+  if (gameSetting.enableAutoSave) {
+    return new Error("自動保存はWeb版で利用できません。");
   }
   return;
 }

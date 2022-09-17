@@ -1,7 +1,24 @@
-export class MessageStore {
-  private _queue: string[] = [];
+export type ListItem = {
+  text: string;
+  children?: string[];
+};
 
-  get message(): string {
+export type List = {
+  type: "list";
+  items: ListItem[];
+};
+
+export type Attachment = List;
+
+export type Message = {
+  text: string;
+  attachments?: Attachment[];
+};
+
+export class MessageStore {
+  private _queue: Message[] = [];
+
+  get message(): Message {
     return this._queue[0];
   }
 
@@ -9,7 +26,7 @@ export class MessageStore {
     return this._queue.length !== 0;
   }
 
-  enqueue(message: string): void {
+  enqueue(message: Message): void {
     this._queue.push(message);
   }
 
@@ -17,7 +34,3 @@ export class MessageStore {
     this._queue.shift();
   }
 }
-
-export type MessageState = {
-  queue: string[];
-};

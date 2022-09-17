@@ -45,4 +45,5 @@ export const gameSetting10m30s: GameSetting = {
   enableAutoSave: true,
   repeat: 1,
   swapPlayers: true,
+  maxMoves: 1000,
 };

@@ -759,7 +759,7 @@ export class Store {
     }
   }
 
-  removeRecordAfter(): void {
+  removeCurrentMove(): void {
     if (
       this.appState !== AppState.NORMAL &&
       this.appState !== AppState.RESEARCH
@@ -767,13 +767,13 @@ export class Store {
       return;
     }
     if (this.recordManager.record.current.isLastMove) {
-      this.recordManager.removeAfter();
+      this.recordManager.removeCurrentMove();
       return;
     }
     this.showConfirmation({
       message: `${this.recordManager.record.current.number}手目以降を削除します。よろしいですか？`,
       onOk: () => {
-        this.recordManager.removeAfter();
+        this.recordManager.removeCurrentMove();
       },
     });
   }

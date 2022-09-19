@@ -161,7 +161,7 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
       },
       menuItem(
         "現在の位置から棋譜を削除",
-        MenuEvent.REMOVE_RECORD_AFTER,
+        MenuEvent.REMOVE_CURRENT_MOVE,
         [AppState.NORMAL, AppState.RESEARCH],
         "CmdOrCtrl+D"
       ),

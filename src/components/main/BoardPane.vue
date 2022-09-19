@@ -139,8 +139,8 @@
           </button>
           <button
             class="control-item"
-            :disabled="!controlStates.removeAfter"
-            @click="onRemoveAfter"
+            :disabled="!controlStates.removeCurrentMove"
+            @click="onRemoveCurrentMove"
           >
             <ButtonIcon class="icon" :icon="Icon.DELETE" />
             指し手削除
@@ -277,8 +277,8 @@ export default defineComponent({
       isFileMenuVisible.value = true;
     };
 
-    const onRemoveAfter = () => {
-      store.removeRecordAfter();
+    const onRemoveCurrentMove = () => {
+      store.removeCurrentMove();
     };
 
     const allowEdit = computed(
@@ -345,7 +345,7 @@ export default defineComponent({
         startEditPosition: store.appState === AppState.NORMAL,
         endEditPosition: store.appState === AppState.POSITION_EDITING,
         initPosition: store.appState === AppState.POSITION_EDITING,
-        removeAfter:
+        removeCurrentMove:
           store.appState === AppState.NORMAL ||
           store.appState === AppState.RESEARCH,
         engineSettings: store.appState === AppState.NORMAL,
@@ -382,7 +382,7 @@ export default defineComponent({
       onOpenEngineSettings,
       onFlip,
       onFileAction,
-      onRemoveAfter,
+      onRemoveCurrentMove,
       allowEdit,
       allowMove,
       Icon,

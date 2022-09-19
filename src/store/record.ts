@@ -277,8 +277,12 @@ export class RecordManager {
     return this._record.switchBranchByIndex(index);
   }
 
-  removeAfter(): void {
-    this._record.removeAfter();
+  removeCurrentMove(): void {
+    this._record.removeCurrentMove();
+  }
+
+  removeNextMove(): void {
+    this._record.removeNextMove();
   }
 
   updateComment(comment: string): void {

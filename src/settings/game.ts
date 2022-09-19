@@ -19,6 +19,7 @@ export type GameSetting = {
   enableAutoSave: boolean;
   repeat: number;
   swapPlayers: boolean;
+  maxMoves: number;
 };
 
 export function defaultGameSetting(): GameSetting {
@@ -42,6 +43,7 @@ export function defaultGameSetting(): GameSetting {
     enableAutoSave: true,
     repeat: 1,
     swapPlayers: false,
+    maxMoves: 1000,
   };
 }
 

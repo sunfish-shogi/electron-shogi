@@ -91,7 +91,7 @@
       <div class="dialog-form-area">
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide number">連続対局</div>
-          <input ref="repeat" type="number" />
+          <input ref="repeat" type="number" min="1" />
         </div>
         <div class="dialog-form-item">
           <input id="enable-comment" ref="enableComment" type="checkbox" />
@@ -133,6 +133,7 @@ import * as uri from "@/uri";
 import { Icon } from "@/assets/icons";
 import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/settings/player";
+import { readInputAsNumber } from "@/helpers/form";
 
 export default defineComponent({
   name: "CSAGameDialog",
@@ -219,7 +220,7 @@ export default defineComponent({
         },
         enableComment: enableComment.value.checked,
         enableAutoSave: enableAutoSave.value.checked,
-        repeat: repeat.value.value,
+        repeat: readInputAsNumber(repeat.value),
         autoFlip: autoFlip.value.checked,
       };
       const error = validateCSAGameSetting(csaGameSetting);

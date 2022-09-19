@@ -89,11 +89,11 @@
           </div>
           <div class="dialog-form-item">
             <input
-              id="disable-engine-timeout"
+              id="enable-engine-timeout"
               ref="enableEngineTimeout"
               type="checkbox"
             />
-            <label for="disable-engine-timeout">エンジンの時間切れあり</label>
+            <label for="enable-engine-timeout">エンジンの時間切れあり</label>
           </div>
         </div>
         <div class="dialog-form-area flags">
@@ -115,8 +115,12 @@
             </select>
           </div>
           <div class="dialog-form-item">
+            <div class="dialog-form-item-label">最大手数</div>
+            <input ref="maxMoves" class="number" type="number" min="1" />
+          </div>
+          <div class="dialog-form-item">
             <div class="dialog-form-item-label">連続対局</div>
-            <input ref="repeat" class="number" type="number" />
+            <input ref="repeat" class="number" type="number" min="1" />
           </div>
           <div class="dialog-form-item">
             <input id="swap-players" ref="swapPlayers" type="checkbox" />
@@ -180,6 +184,7 @@ export default defineComponent({
     const increment: Ref = ref(null);
     const startPosition: Ref = ref(null);
     const enableEngineTimeout: Ref = ref(null);
+    const maxMoves: Ref = ref(null);
     const humanIsFront: Ref = ref(null);
     const repeat: Ref = ref(null);
     const swapPlayers: Ref = ref(null);
@@ -223,6 +228,7 @@ export default defineComponent({
             : "current";
         enableEngineTimeout.value.checked =
           gameSetting.value.enableEngineTimeout;
+        maxMoves.value.value = gameSetting.value.maxMoves;
         humanIsFront.value.checked = gameSetting.value.humanIsFront;
         repeat.value.value = gameSetting.value.repeat;
         swapPlayers.value.checked = gameSetting.value.swapPlayers;
@@ -269,8 +275,9 @@ export default defineComponent({
             ? startPosition.value.value
             : undefined,
         enableEngineTimeout: enableEngineTimeout.value.checked,
+        maxMoves: readInputAsNumber(maxMoves.value),
         humanIsFront: humanIsFront.value.checked,
-        repeat: repeat.value.value,
+        repeat: readInputAsNumber(repeat.value),
         swapPlayers: swapPlayers.value.checked,
         enableComment: enableComment.value.checked,
         enableAutoSave: enableAutoSave.value.checked,
@@ -333,6 +340,7 @@ export default defineComponent({
       increment,
       startPosition,
       enableEngineTimeout,
+      maxMoves,
       humanIsFront,
       repeat,
       swapPlayers,

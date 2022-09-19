@@ -159,6 +159,13 @@ export class GameManager {
       );
       return;
     }
+    if (
+      this._setting.maxMoves &&
+      this.recordManager.record.current.number >= this._setting.maxMoves
+    ) {
+      this.endGame(SpecialMove.DRAW);
+      return;
+    }
     const color = this.recordManager.record.position.color;
     this.getActiveClock().start();
     const player = this.getPlayer(color);

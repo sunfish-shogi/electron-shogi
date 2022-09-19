@@ -30,10 +30,6 @@ export default defineComponent({
     const dialog: Ref = ref(null);
     const message = computed(() => store.confirmation);
 
-    onMounted(() => {
-      showModalDialog(dialog.value);
-    });
-
     const onOk = () => {
       store.confirmationOk();
     };
@@ -41,6 +37,10 @@ export default defineComponent({
     const onClose = () => {
       store.confirmationCancel();
     };
+
+    onMounted(() => {
+      showModalDialog(dialog.value, onClose);
+    });
 
     return {
       dialog,

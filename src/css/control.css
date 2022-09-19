@@ -12,6 +12,12 @@ button:disabled {
 button:hover:enabled {
   background-color: var(--hovered-control-button-bg-color);
 }
+button.close:enabled {
+  background-color: var(--close-button-bg-color);
+}
+button.close:hover:enabled {
+  background-color: var(--hovered-close-button-bg-color);
+}
 
 button .icon {
   height: 100%;

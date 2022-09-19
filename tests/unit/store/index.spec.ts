@@ -498,24 +498,24 @@ describe("store/index", () => {
       .invoke();
   });
 
-  it("removeRecordAfter", () => {
+  it("removeCurrentMove", () => {
     const store = new Store();
     store.pasteRecord(sampleBranchKIF);
     store.changeMoveNumber(8);
-    store.removeRecordAfter();
+    store.removeCurrentMove();
     expect(store.confirmation).toBeUndefined();
     expect(store.record.current.number).toBe(7);
     expect(store.record.moves.length).toBe(8);
-    store.removeRecordAfter();
+    store.removeCurrentMove();
     expect(store.confirmation).toBeUndefined();
     expect(store.record.current.number).toBe(6);
     expect(store.record.moves.length).toBe(8);
-    store.removeRecordAfter();
+    store.removeCurrentMove();
     expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
     store.confirmationCancel();
     expect(store.record.current.number).toBe(6);
     expect(store.record.moves.length).toBe(8);
-    store.removeRecordAfter();
+    store.removeCurrentMove();
     expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
     store.confirmationOk();
     expect(store.record.current.number).toBe(5);

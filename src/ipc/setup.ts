@@ -90,8 +90,8 @@ export function setup(): void {
       case MenuEvent.INSERT_LOSS_BY_DEFAULT:
         store.insertSpecialMove(SpecialMove.LOSS_BY_DEFAULT);
         break;
-      case MenuEvent.REMOVE_RECORD_AFTER:
-        store.removeRecordAfter();
+      case MenuEvent.REMOVE_CURRENT_MOVE:
+        store.removeCurrentMove();
         break;
       case MenuEvent.START_POSITION_EDITING:
         store.startPositionEditing();

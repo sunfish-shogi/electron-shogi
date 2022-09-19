@@ -20,7 +20,7 @@ export enum MenuEvent {
   INSERT_ENTERING_OF_KING = "insertEnteringOfKing",
   INSERT_WIN_BY_DEFAULT = "insertWinByDefault",
   INSERT_LOSS_BY_DEFAULT = "insertLossByDefault",
-  REMOVE_RECORD_AFTER = "remvoeRecordAfter",
+  REMOVE_CURRENT_MOVE = "remvoeCurrentMove",
   START_POSITION_EDITING = "startPositionEditing",
   END_POSITION_EDITING = "endPositionEditing",
   CHANGE_TURN = "changeTurn",

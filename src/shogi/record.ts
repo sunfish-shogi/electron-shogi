@@ -561,7 +561,7 @@ export default class Record {
     return true;
   }
 
-  removeAfter(): void {
+  removeCurrentMove(): void {
     const target = this._current;
     if (!this.goBack()) {
       this._current.next = null;
@@ -586,6 +586,10 @@ export default class Record {
       this._current.next.activeBranch = true;
     }
     this.onChangePosition();
+  }
+
+  removeNextMove(): void {
+    this._current.next = null;
   }
 
   private incrementRepetition(): void {

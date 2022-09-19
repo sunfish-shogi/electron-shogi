@@ -98,8 +98,11 @@ export class GameManager {
     this.repeat++;
     if (this.setting.startPosition) {
       this.recordManager.reset(this.setting.startPosition);
-    } else {
+    } else if (
+      this.recordManager.record.current.number !== this.startMoveNumber
+    ) {
       this.recordManager.changeMoveNumber(this.startMoveNumber);
+      this.recordManager.removeNextMove();
     }
     this.recordManager.setGameStartMetadata({
       gameTitle:

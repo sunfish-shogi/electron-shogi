@@ -137,24 +137,23 @@ dialog.menu .group {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  margin: 10px 0px 10px 0px;
+  margin: 20px 0px 20px 0px;
 }
 
 dialog.menu button {
   width: 150px;
-  margin: 5px;
+  margin: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 5px 5px 5px darkgray;
 }
 
-dialog.menu button.close:enabled {
-  background-color: var(--close-button-bg-color);
+dialog.menu button:enabled {
+  box-shadow: 2px 2px 5px 3px lightgray;
 }
 
-dialog.menu button.close:hover:enabled {
-  background-color: var(--hovered-close-button-bg-color);
+dialog.menu button:disabled {
+  box-shadow: 2px 2px 5px 3px gray;
 }
 
 dialog.menu .icon {

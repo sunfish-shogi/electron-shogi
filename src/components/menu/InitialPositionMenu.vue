@@ -80,12 +80,12 @@ export default defineComponent({
   setup(_, context) {
     const store = useStore();
     const dialog: Ref = ref(null);
-    onMounted(() => {
-      showModalDialog(dialog.value);
-    });
     const onClose = () => {
       context.emit("close");
     };
+    onMounted(() => {
+      showModalDialog(dialog.value, onClose);
+    });
     const onStandard = () => {
       store.initializePosition(InitialPositionType.STANDARD);
       context.emit("close");

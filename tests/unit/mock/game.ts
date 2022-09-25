@@ -30,14 +30,16 @@ const whitePlayerSetting = {
   },
 };
 
+export const timeLimitSetting = {
+  timeSeconds: 600,
+  byoyomi: 30,
+  increment: 0,
+};
+
 export const gameSetting10m30s: GameSetting = {
   black: blackPlayerSetting,
   white: whitePlayerSetting,
-  timeLimit: {
-    timeSeconds: 600,
-    byoyomi: 30,
-    increment: 0,
-  },
+  timeLimit: timeLimitSetting,
   startPosition: InitialPositionType.STANDARD,
   enableEngineTimeout: false,
   humanIsFront: false,

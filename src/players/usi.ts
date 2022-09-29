@@ -42,11 +42,11 @@ export class USIPlayer implements Player {
   ): Promise<void> {
     this.searchHandler = handler;
     this.usi = record.usi;
-    this.info = undefined;
     this.position = record.position.clone();
     if (this.inPonder && this.ponder === this.usi) {
       api.usiPonderHit(this.sessionID);
     } else {
+      this.info = undefined;
       await api.usiGo(
         this.sessionID,
         this.usi,
@@ -65,11 +65,8 @@ export class USIPlayer implements Player {
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void> {
-    this.searchHandler = undefined;
-    this.usi = record.usi;
-    this.info = undefined;
-    this.position = record.position.clone();
-    if (!this.ponder || !this.ponder.startsWith(record.usi)) {
+    const baseUSI = record.usi;
+    if (!this.ponder || !this.ponder.startsWith(baseUSI)) {
       return;
     }
     const ponderSetting = getUSIEngineOptionCurrentValue(
@@ -78,6 +75,17 @@ export class USIPlayer implements Player {
     if (ponderSetting !== "true") {
       return;
     }
+    this.searchHandler = undefined;
+    this.usi = this.ponder;
+    this.position = record.position.clone();
+    const ponderMove = this.position.createMoveBySFEN(
+      this.ponder.slice(baseUSI.length + 1)
+    );
+    if (!ponderMove) {
+      return;
+    }
+    this.position.doMove(ponderMove);
+    this.info = undefined;
     this.inPonder = true;
     await api.usiGoPonder(
       this.sessionID,
@@ -134,22 +142,25 @@ export class USIPlayer implements Player {
       return;
     }
     this.ponder = ponder && `${usi} ${sfen} ${ponder}`;
-    if (this.info && this.info.pv && this.info.pv.length >= 1) {
-      if (this.info.pv[0].equals(move)) {
-        this.info = {
-          ...this.info,
-          pv: this.info.pv.slice(1),
-        };
-      } else {
-        this.info = undefined;
-      }
+    this.flushUSIInfo();
+    if (
+      this.info &&
+      this.info.pv &&
+      this.info.pv.length >= 1 &&
+      this.info.pv[0].equals(move)
+    ) {
+      const info = {
+        ...this.info,
+        pv: this.info.pv.slice(1),
+      };
+      searchHandler.onMove(move, info);
+    } else {
+      searchHandler.onMove(move);
     }
-    this.clearUSIInfoTimeout();
-    searchHandler.onMove(move, this.info);
   }
 
   onUSIInfo(usi: string, infoCommand: USIInfoCommand) {
-    if (usi !== this.usi || !this.position || !this.onSearchInfo) {
+    if (usi !== this.usi || !this.position) {
       return;
     }
     if (infoCommand.multipv && infoCommand.multipv !== 1) {
@@ -168,19 +179,27 @@ export class USIPlayer implements Player {
       mate: infoCommand.scoreMate && infoCommand.scoreMate * sign,
       pv: pv && parseSFENPV(this.position, pv),
     };
+    this.updateUSIInfo(info);
+  }
+
+  private updateUSIInfo(info: SearchInfo) {
     this.info = info;
-    this.clearUSIInfoTimeout();
     // 高頻度でコマンドが送られてくると描画が追いつかないので、一定時間ごとに反映する。
+    if (this.usiInfoTimeout) {
+      return;
+    }
     this.usiInfoTimeout = window.setTimeout(() => {
-      if (this.onSearchInfo) {
-        this.onSearchInfo(info);
-      }
+      this.flushUSIInfo();
     }, 500);
   }
 
-  private clearUSIInfoTimeout() {
+  private flushUSIInfo() {
     if (this.usiInfoTimeout) {
       clearTimeout(this.usiInfoTimeout);
+      this.usiInfoTimeout = undefined;
+    }
+    if (this.onSearchInfo && this.info) {
+      this.onSearchInfo(this.info);
     }
   }
 }

@@ -205,7 +205,9 @@ export function setup(): void {
       name: string,
       json: string
     ) => {
-      store.updateUSIPonderInfo(sessionID, usi, sender, name, JSON.parse(json));
+      const info = JSON.parse(json) as USIInfoCommand;
+      store.updateUSIPonderInfo(sessionID, usi, sender, name, info);
+      onUSIInfo(sessionID, usi, info);
     }
   );
   bridge.onCSAGameSummary((sessionID: number, gameSummary: string): void => {

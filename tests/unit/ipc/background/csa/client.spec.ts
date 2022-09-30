@@ -62,26 +62,26 @@ describe("ipc/background/csa/client", () => {
   it("singleGame/winByResign", async () => {
     const client = new Client(123, csaServerSetting, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
-    expect(mockSocket.mock.calls).toHaveLength(0);
+    expect(mockSocket).toBeCalledTimes(0);
     client.login();
-    expect(mockSocket.mock.calls).toHaveLength(1);
+    expect(mockSocket).toBeCalledTimes(1);
     expect(mockSocket.mock.calls[0][0]).toBe("test-server");
     expect(mockSocket.mock.calls[0][1]).toBe(4081);
     const socketHandlers = mockSocket.mock.calls[0][2];
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(0);
+    expect(mockSocket.prototype.write).toBeCalledTimes(0);
     socketHandlers.onConnect();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(1);
+    expect(mockSocket.prototype.write).toBeCalledTimes(1);
     expect(mockSocket.prototype.write.mock.calls[0][0]).toBe(
       "LOGIN TestPlayer test-password"
     );
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(1);
+    expect(mockSocket.prototype.write).toBeCalledTimes(1);
     socketHandlers.onRead("LOGIN:TestPlayer OK");
     for (const line of mockGameSummary) {
       socketHandlers.onRead(line);
     }
-    expect(clientHandlers.mockOnGameSummary.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(0);
     socketHandlers.onRead("END Game_Summary");
-    expect(clientHandlers.mockOnGameSummary.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
       blackPlayerName: "TANUKI",
@@ -96,57 +96,57 @@ describe("ipc/background/csa/client", () => {
       increment: 0,
     });
     client.agree("20150505-CSA25-3-5-7");
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(2);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
     expect(mockSocket.prototype.write.mock.calls[1][0]).toBe(
       "AGREE 20150505-CSA25-3-5-7"
     );
-    expect(clientHandlers.mockOnStart.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnStart).toBeCalledTimes(0);
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
-    expect(clientHandlers.mockOnStart.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnStart).toBeCalledTimes(1);
     expect(clientHandlers.mockOnStart.mock.calls[0][0]).toStrictEqual({
       black: { time: 600 },
       white: { time: 600 },
     });
-    expect(clientHandlers.mockOnMove.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(0);
     socketHandlers.onRead("+7776FU,T11");
-    expect(clientHandlers.mockOnMove.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(1);
     expect(clientHandlers.mockOnMove.mock.calls[0][0]).toBe("+7776FU,T11");
     expect(clientHandlers.mockOnMove.mock.calls[0][1]).toStrictEqual({
       black: { time: 589 },
       white: { time: 600 },
     });
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(2);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
     client.doMove("-3334FU");
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     expect(mockSocket.prototype.write.mock.calls[2][0]).toBe("-3334FU");
-    expect(clientHandlers.mockOnMove.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(1);
     socketHandlers.onRead("-3334FU,T8");
-    expect(clientHandlers.mockOnMove.mock.calls).toHaveLength(2);
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(2);
     expect(clientHandlers.mockOnMove.mock.calls[1][0]).toBe("-3334FU,T8");
     expect(clientHandlers.mockOnMove.mock.calls[1][1]).toStrictEqual({
       black: { time: 589 },
       white: { time: 592 },
     });
-    expect(clientHandlers.mockOnGameResult.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnGameResult).toBeCalledTimes(0);
     socketHandlers.onRead("%TORYO,T20");
     socketHandlers.onRead("#RESIGN");
     socketHandlers.onRead("#WIN");
-    expect(clientHandlers.mockOnGameResult.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnGameResult).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameResult.mock.calls[0][0]).toBe(
       CSASpecialMove.RESIGN
     );
     expect(clientHandlers.mockOnGameResult.mock.calls[0][1]).toBe(
       CSAGameResult.WIN
     );
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     client.logout();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(4);
+    expect(mockSocket.prototype.write).toBeCalledTimes(4);
     expect(mockSocket.prototype.write.mock.calls[3][0]).toBe("LOGOUT");
     socketHandlers.onRead("LOGOUT:completed");
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(0);
     socketHandlers.onClose(false);
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(1);
-    expect(clientHandlers.mockOnReject.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnReject).toBeCalledTimes(0);
   });
 
   it("singleGame/loseByResign", async () => {
@@ -163,30 +163,30 @@ describe("ipc/background/csa/client", () => {
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
     socketHandlers.onRead("+7776FU,T11");
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(2);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
     client.resign();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     expect(mockSocket.prototype.write.mock.calls[2][0]).toBe("%TORYO");
-    expect(clientHandlers.mockOnGameResult.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnGameResult).toBeCalledTimes(0);
     socketHandlers.onRead("%TORYO,T20");
     socketHandlers.onRead("#RESIGN");
     socketHandlers.onRead("#LOSE");
-    expect(clientHandlers.mockOnGameResult.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnGameResult).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameResult.mock.calls[0][0]).toBe(
       CSASpecialMove.RESIGN
     );
     expect(clientHandlers.mockOnGameResult.mock.calls[0][1]).toBe(
       CSAGameResult.LOSE
     );
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     client.logout();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(4);
+    expect(mockSocket.prototype.write).toBeCalledTimes(4);
     expect(mockSocket.prototype.write.mock.calls[3][0]).toBe("LOGOUT");
     socketHandlers.onRead("LOGOUT:completed");
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(0);
     socketHandlers.onClose(false);
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(1);
-    expect(clientHandlers.mockOnReject.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnReject).toBeCalledTimes(0);
   });
 
   it("reject", async () => {
@@ -201,21 +201,21 @@ describe("ipc/background/csa/client", () => {
     }
     socketHandlers.onRead("END Game_Summary");
     client.reject("20150505-CSA25-3-5-7");
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(2);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
     expect(mockSocket.prototype.write.mock.calls[1][0]).toBe(
       "REJECT 20150505-CSA25-3-5-7"
     );
-    expect(clientHandlers.mockOnReject.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnReject).toBeCalledTimes(0);
     socketHandlers.onRead("REJECT:20150505-CSA25-3-5-7 by Player1");
-    expect(clientHandlers.mockOnReject.mock.calls).toHaveLength(1);
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(2);
+    expect(clientHandlers.mockOnReject).toBeCalledTimes(1);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
     client.logout();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     expect(mockSocket.prototype.write.mock.calls[2][0]).toBe("LOGOUT");
     socketHandlers.onRead("LOGOUT:completed");
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(0);
     socketHandlers.onClose(false);
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
   });
 
   it("rejectByAnotherPlayer", async () => {
@@ -230,17 +230,17 @@ describe("ipc/background/csa/client", () => {
     }
     socketHandlers.onRead("END Game_Summary");
     client.agree("20150505-CSA25-3-5-7");
-    expect(clientHandlers.mockOnReject.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnReject).toBeCalledTimes(0);
     socketHandlers.onRead("REJECT:20150505-CSA25-3-5-7 by Player2");
-    expect(clientHandlers.mockOnReject.mock.calls).toHaveLength(1);
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(2);
+    expect(clientHandlers.mockOnReject).toBeCalledTimes(1);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
     client.logout();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     expect(mockSocket.prototype.write.mock.calls[2][0]).toBe("LOGOUT");
     socketHandlers.onRead("LOGOUT:completed");
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(0);
     socketHandlers.onClose(false);
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
   });
 
   it("stop", async () => {
@@ -257,28 +257,28 @@ describe("ipc/background/csa/client", () => {
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
     socketHandlers.onRead("+7776FU,T11");
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(2);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
     client.stop();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     expect(mockSocket.prototype.write.mock.calls[2][0]).toBe("%CHUDAN");
-    expect(clientHandlers.mockOnGameResult.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnGameResult).toBeCalledTimes(0);
     socketHandlers.onRead("#CHUDAN");
-    expect(clientHandlers.mockOnGameResult.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnGameResult).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameResult.mock.calls[0][0]).toBe(
       CSASpecialMove.UNKNOWN
     );
     expect(clientHandlers.mockOnGameResult.mock.calls[0][1]).toBe(
       CSAGameResult.CHUDAN
     );
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(3);
+    expect(mockSocket.prototype.write).toBeCalledTimes(3);
     client.logout();
-    expect(mockSocket.prototype.write.mock.calls).toHaveLength(4);
+    expect(mockSocket.prototype.write).toBeCalledTimes(4);
     expect(mockSocket.prototype.write.mock.calls[3][0]).toBe("LOGOUT");
     socketHandlers.onRead("LOGOUT:completed");
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(0);
     socketHandlers.onClose(false);
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(1);
-    expect(clientHandlers.mockOnReject.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnReject).toBeCalledTimes(0);
   });
 
   it("loginIncorrect", async () => {
@@ -287,16 +287,16 @@ describe("ipc/background/csa/client", () => {
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
     socketHandlers.onConnect();
-    expect(clientHandlers.mockOnError.mock.calls).toHaveLength(0);
-    expect(mockSocket.prototype.end.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnError).toBeCalledTimes(0);
+    expect(mockSocket.prototype.end).toBeCalledTimes(0);
     socketHandlers.onRead("LOGIN:incorrect");
-    expect(clientHandlers.mockOnError.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnError).toBeCalledTimes(1);
     expect(clientHandlers.mockOnError.mock.calls[0][0].toString()).toBe(
       "Error: CSAサーバーへのログインが拒否されました。"
     );
-    expect(mockSocket.prototype.end.mock.calls).toHaveLength(1);
+    expect(mockSocket.prototype.end).toBeCalledTimes(1);
     socketHandlers.onClose(false);
-    expect(clientHandlers.mockOnError.mock.calls).toHaveLength(2);
+    expect(clientHandlers.mockOnError).toBeCalledTimes(2);
     expect(clientHandlers.mockOnError.mock.calls[1][0].toString()).toBe(
       "Error: CSAサーバーへの接続が切れました。"
     );
@@ -307,13 +307,13 @@ describe("ipc/background/csa/client", () => {
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
-    expect(clientHandlers.mockOnError.mock.calls).toHaveLength(0);
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(0);
+    expect(clientHandlers.mockOnError).toBeCalledTimes(0);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(0);
     socketHandlers.onClose(true);
-    expect(clientHandlers.mockOnError.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnError).toBeCalledTimes(1);
     expect(clientHandlers.mockOnError.mock.calls[0][0].toString()).toBe(
       "Error: CSAサーバーへ接続できませんでした。"
     );
-    expect(clientHandlers.mockOnClose.mock.calls).toHaveLength(1);
+    expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
   });
 });

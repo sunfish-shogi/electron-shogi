@@ -67,17 +67,17 @@ describe("store/game", () => {
     return new TimeoutChain()
       .next(() => manager.startGame(gameSetting10m30s))
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
           player1: { name: "USI Engine 01", win: 1 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -88,10 +88,10 @@ describe("store/game", () => {
         expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
           SpecialMove.RESIGN
         );
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
         );
@@ -142,21 +142,21 @@ describe("store/game", () => {
         })
       )
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f 2c2d"
         );
@@ -194,17 +194,17 @@ describe("store/game", () => {
       .next(() => manager.startGame(gameSetting10m30s))
       .next(() => manager.endGame(SpecialMove.INTERRUPT))
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(0);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(0);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
           player1: { name: "USI Engine 01", win: 0 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -215,10 +215,10 @@ describe("store/game", () => {
         expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
           SpecialMove.INTERRUPT
         );
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
         );
@@ -314,21 +314,21 @@ describe("store/game", () => {
         expect(manager.setting.white.name).toBe("USI Engine 02");
       })
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(8);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves"
         );
@@ -341,17 +341,17 @@ describe("store/game", () => {
         expect(manager.setting.white.name).toBe("USI Engine 01");
       })
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(3);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(4);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(4);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(3);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(2);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(3);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(4);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(2);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(4);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(3);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(2);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(2);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
           player1: { name: "USI Engine 02", win: 0 },
           player2: { name: "USI Engine 01", win: 2 },
@@ -362,10 +362,10 @@ describe("store/game", () => {
         expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
           SpecialMove.RESIGN
         );
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(14);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(14);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d"
         );
@@ -417,21 +417,21 @@ describe("store/game", () => {
         expect(manager.setting.white.name).toBe("USI Engine 02");
       })
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(1);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(6);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(1);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(1);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(6);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f"
         );
@@ -444,17 +444,17 @@ describe("store/game", () => {
         expect(manager.setting.white.name).toBe("USI Engine 02");
       })
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(4);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(4);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(2);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(4);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(2);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(4);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(2);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(2);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
           player1: { name: "USI Engine 01", win: 2 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -465,10 +465,10 @@ describe("store/game", () => {
         expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
           SpecialMove.RESIGN
         );
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(12);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(12);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
         );
@@ -510,17 +510,17 @@ describe("store/game", () => {
         })
       )
       .next(() => {
-        expect(mockBlackPlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockBlackPlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockBlackPlayer.stop.mock.calls.length).toBe(0);
-        expect(mockBlackPlayer.close.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.startSearch.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.startPonder.mock.calls.length).toBe(2);
-        expect(mockWhitePlayer.gameover.mock.calls.length).toBe(1);
-        expect(mockWhitePlayer.stop.mock.calls.length).toBe(0);
-        expect(mockWhitePlayer.close.mock.calls.length).toBe(1);
-        expect(mockHandlers.onGameEnd.mock.calls.length).toBe(1);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onGameEnd.mock.calls[0][0]).toStrictEqual({
           player1: { name: "USI Engine 01", win: 0 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -529,10 +529,10 @@ describe("store/game", () => {
           total: 1,
         });
         expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(SpecialMove.DRAW);
-        expect(mockHandlers.onBeepShort.mock.calls.length).toBe(0);
-        expect(mockHandlers.onBeepUnlimited.mock.calls.length).toBe(0);
-        expect(mockHandlers.onStopBeep.mock.calls.length).toBe(9);
-        expect(mockHandlers.onError.mock.calls.length).toBe(0);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(9);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d"
         );

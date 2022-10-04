@@ -1,5 +1,5 @@
 export function getDateString(date?: Date): string {
-  return (date || new Date()).toLocaleDateString(undefined, {
+  return (date || new Date()).toLocaleDateString("ja-JP", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -7,7 +7,7 @@ export function getDateString(date?: Date): string {
 }
 
 export function getDateTimeString(date?: Date): string {
-  return (date || new Date()).toLocaleTimeString(undefined, {
+  return (date || new Date()).toLocaleTimeString("ja-JP", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

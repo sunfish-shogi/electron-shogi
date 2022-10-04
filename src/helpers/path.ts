@@ -1,10 +1,11 @@
 import { RecordMetadataKey } from "@/shogi";
 import { ImmutableRecordMetadata } from "@/shogi/record";
+import { getDateString } from "./datetime";
 
 export function defaultRecordFileName(
   metadata: ImmutableRecordMetadata
 ): string {
-  let ret = getDateString(metadata);
+  let ret = getDateStringByMeta(metadata);
   const title =
     metadata.getStandardMetadata(RecordMetadataKey.TITLE) ||
     metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT) ||
@@ -31,7 +32,7 @@ export function defaultRecordFileName(
   return ret.trim().replaceAll("/", "_").replaceAll("\\", "_") + ".kif";
 }
 
-function getDateString(metadata: ImmutableRecordMetadata): string {
+function getDateStringByMeta(metadata: ImmutableRecordMetadata): string {
   const date =
     metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME) ||
     metadata.getStandardMetadata(RecordMetadataKey.DATE);
@@ -42,11 +43,5 @@ function getDateString(metadata: ImmutableRecordMetadata): string {
       .replaceAll("/", "")
       .replaceAll(":", "");
   }
-  return new Date()
-    .toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    })
-    .replaceAll("/", "");
+  return getDateString().replaceAll("/", "");
 }

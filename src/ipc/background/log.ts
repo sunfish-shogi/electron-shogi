@@ -2,6 +2,7 @@ import path from "path";
 import { app, shell } from "electron";
 import log4js from "log4js";
 import { loadAppSetting } from "@/ipc/background/settings";
+import { getDateTimeString } from "@/helpers/datetime";
 
 const rootDir = app.getPath("logs");
 
@@ -9,16 +10,7 @@ export function openLogsDirectory(): void {
   shell.openPath(rootDir);
 }
 
-const datetime = new Date()
-  .toLocaleTimeString(undefined, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  })
+const datetime = getDateTimeString()
   .replaceAll(" ", "_")
   .replaceAll("/", "")
   .replaceAll(":", "");

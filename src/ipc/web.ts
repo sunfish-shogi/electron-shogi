@@ -158,6 +158,9 @@ export const webAPI: Bridge = {
   async csaStop(): Promise<void> {
     // Do Nothing
   },
+  async isEncryptionAvailable(): Promise<boolean> {
+    return false;
+  },
   log(level: LogLevel, message: string): void {
     switch (level) {
       case LogLevel.INFO:

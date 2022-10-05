@@ -129,7 +129,8 @@ export type SecureCSAServerSetting = {
   host: string;
   port: number;
   id: string;
-  encryptedPassword: string;
+  encryptedPassword?: string;
+  password?: string;
 };
 
 export type SecureCSAGameSettingHistory = {
@@ -157,16 +158,21 @@ export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistor
 
 export function encryptCSAGameSettingHistory(
   history: CSAGameSettingHistory,
-  encryptor: (plainText: string) => string
+  encryptor?: (plainText: string) => string
 ): SecureCSAGameSettingHistory {
-  const serverHistory = [];
+  const serverHistory = [] as SecureCSAServerSetting[];
   for (const setting of history.serverHistory) {
-    serverHistory.push({
+    const entry = {
       host: setting.host,
       port: setting.port,
       id: setting.id,
-      encryptedPassword: encryptor(setting.password),
-    });
+    } as SecureCSAServerSetting;
+    if (encryptor) {
+      entry.encryptedPassword = encryptor(setting.password);
+    } else {
+      entry.password = setting.password;
+    }
+    serverHistory.push(entry);
   }
   return {
     player: history.player,
@@ -180,15 +186,18 @@ export function encryptCSAGameSettingHistory(
 
 export function decryptCSAGameSettingHistory(
   history: SecureCSAGameSettingHistory,
-  decryptor: (encrypted: string) => string
+  decryptor?: (encrypted: string) => string
 ): CSAGameSettingHistory {
-  const serverHistory = [];
+  const serverHistory = [] as CSAServerSetting[];
   for (const setting of history.serverHistory) {
     serverHistory.push({
       host: setting.host,
       port: setting.port,
       id: setting.id,
-      password: decryptor(setting.encryptedPassword),
+      password:
+        decryptor && setting.encryptedPassword
+          ? decryptor(setting.encryptedPassword)
+          : setting.password || "",
     });
   }
   return {

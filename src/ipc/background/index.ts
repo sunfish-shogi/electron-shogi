@@ -52,6 +52,7 @@ import {
   CSASpecialMove,
 } from "@/ipc/csa";
 import { CSAServerSetting } from "@/settings/csa";
+import { isEncryptionAvailable } from "./encrypt";
 
 const isWindows = process.platform === "win32";
 
@@ -351,6 +352,10 @@ ipcMain.handle(Background.CSA_WIN, (_, sessionID: number): void => {
 
 ipcMain.handle(Background.CSA_STOP, (_, sessionID: number): void => {
   csaStop(sessionID);
+});
+
+ipcMain.handle(Background.IS_ENCRYPTION_AVAILABLE, (): boolean => {
+  return isEncryptionAvailable();
 });
 
 ipcMain.handle(Background.LOG, (_, level: LogLevel, message: string) => {

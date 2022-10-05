@@ -161,6 +161,9 @@ const api: Bridge = {
   async csaStop(sessionID: number): Promise<void> {
     return await ipcRenderer.invoke(Background.CSA_STOP, sessionID);
   },
+  async isEncryptionAvailable(): Promise<boolean> {
+    return await ipcRenderer.invoke(Background.IS_ENCRYPTION_AVAILABLE);
+  },
   log(level: LogLevel, message: string): void {
     ipcRenderer.invoke(Background.LOG, level, message);
   },

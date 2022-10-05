@@ -71,62 +71,62 @@ describe("store/csa", () => {
     return new TimeoutChain()
       .next(() => manager.login(csaGameSetting))
       .next(() => {
-        expect(mockAPI.csaLogin.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaLogin).toBeCalledTimes(1);
         expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
-        expect(mockAPI.csaAgree.mock.calls).toHaveLength(0);
+        expect(mockAPI.csaAgree).toBeCalledTimes(0);
         onCSAGameSummary(123, csaGameSummary);
-        expect(mockAPI.csaAgree.mock.calls).toHaveLength(1);
-        expect(mockAPI.csaMove.mock.calls).toHaveLength(0);
-        expect(mockPlayer.startSearch.mock.calls).toHaveLength(0);
+        expect(mockAPI.csaAgree).toBeCalledTimes(1);
+        expect(mockAPI.csaMove).toBeCalledTimes(0);
+        expect(mockPlayer.startSearch).toBeCalledTimes(0);
         onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
-        expect(mockAPI.csaMove.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaMove).toBeCalledTimes(1);
         expect(mockAPI.csaMove.mock.calls[0][0]).toBe(123);
         expect(mockAPI.csaMove.mock.calls[0][1]).toBe("+7776FU");
-        expect(mockPlayer.startSearch.mock.calls).toHaveLength(1);
-        expect(mockPlayer.startPonder.mock.calls).toHaveLength(0);
+        expect(mockPlayer.startSearch).toBeCalledTimes(1);
+        expect(mockPlayer.startPonder).toBeCalledTimes(0);
         onCSAMove(123, "+7776FU", {
           black: { time: 590 },
           white: { time: 600 },
         });
-        expect(mockAPI.csaMove.mock.calls).toHaveLength(1);
-        expect(mockPlayer.startSearch.mock.calls).toHaveLength(1);
-        expect(mockPlayer.startPonder.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaMove).toBeCalledTimes(1);
+        expect(mockPlayer.startSearch).toBeCalledTimes(1);
+        expect(mockPlayer.startPonder).toBeCalledTimes(1);
         onCSAMove(123, "-3334FU", {
           black: { time: 590 },
           white: { time: 580 },
         });
-        expect(mockAPI.csaMove.mock.calls).toHaveLength(2);
+        expect(mockAPI.csaMove).toBeCalledTimes(2);
         expect(mockAPI.csaMove.mock.calls[1][0]).toBe(123);
         expect(mockAPI.csaMove.mock.calls[1][1]).toBe("+2726FU");
-        expect(mockPlayer.startSearch.mock.calls).toHaveLength(2);
-        expect(mockPlayer.startPonder.mock.calls).toHaveLength(1);
+        expect(mockPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockPlayer.startPonder).toBeCalledTimes(1);
         onCSAMove(123, "+2726FU", {
           black: { time: 570 },
           white: { time: 580 },
         });
-        expect(mockAPI.csaMove.mock.calls).toHaveLength(2);
-        expect(mockAPI.csaResign.mock.calls).toHaveLength(0);
-        expect(mockPlayer.startSearch.mock.calls).toHaveLength(2);
-        expect(mockPlayer.startPonder.mock.calls).toHaveLength(2);
+        expect(mockAPI.csaMove).toBeCalledTimes(2);
+        expect(mockAPI.csaResign).toBeCalledTimes(0);
+        expect(mockPlayer.startSearch).toBeCalledTimes(2);
+        expect(mockPlayer.startPonder).toBeCalledTimes(2);
         onCSAMove(123, "-8384FU", {
           black: { time: 570 },
           white: { time: 560 },
         });
-        expect(mockAPI.csaLogout.mock.calls).toHaveLength(0);
-        expect(mockAPI.csaMove.mock.calls).toHaveLength(2);
-        expect(mockAPI.csaResign.mock.calls).toHaveLength(1);
-        expect(mockPlayer.startSearch.mock.calls).toHaveLength(3);
-        expect(mockPlayer.startPonder.mock.calls).toHaveLength(2);
-        expect(mockPlayer.close.mock.calls).toHaveLength(0);
-        expect(mockHandlers.onGameEnd.mock.calls).toHaveLength(0);
+        expect(mockAPI.csaLogout).toBeCalledTimes(0);
+        expect(mockAPI.csaMove).toBeCalledTimes(2);
+        expect(mockAPI.csaResign).toBeCalledTimes(1);
+        expect(mockPlayer.startSearch).toBeCalledTimes(3);
+        expect(mockPlayer.startPonder).toBeCalledTimes(2);
+        expect(mockPlayer.close).toBeCalledTimes(0);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
       })
       .next(() => {
-        expect(mockAPI.csaLogout.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaLogout).toBeCalledTimes(1);
         expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(123);
-        expect(mockPlayer.close.mock.calls).toHaveLength(1);
-        expect(mockHandlers.onGameEnd.mock.calls).toHaveLength(1);
-        expect(mockHandlers.onError.mock.calls).toHaveLength(0);
+        expect(mockPlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
         expect(recordManager.record.moves[1].comment).toBe(
           "互角\n*評価値=82\n*読み筋=△３四歩(33)▲２六歩(27)△８四歩(83)\n"
@@ -180,7 +180,7 @@ describe("store/csa", () => {
         })
       )
       .next(() => {
-        expect(mockHandlers.onGameNext.mock.calls).toHaveLength(1);
+        expect(mockHandlers.onGameNext).toBeCalledTimes(1);
         onCSAGameSummary(123, csaGameSummary);
         onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
         onCSAMove(123, "+7776FU", {
@@ -199,18 +199,18 @@ describe("store/csa", () => {
           black: { time: 570 },
           white: { time: 560 },
         });
-        expect(mockAPI.csaLogin.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaLogin).toBeCalledTimes(1);
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
-        expect(mockAPI.csaLogin.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaLogin).toBeCalledTimes(1);
       })
       .next(() => {
-        expect(mockHandlers.onGameNext.mock.calls).toHaveLength(2);
-        expect(mockHandlers.onGameEnd.mock.calls).toHaveLength(0);
+        expect(mockHandlers.onGameNext).toBeCalledTimes(2);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
-        expect(mockAPI.csaLogin.mock.calls).toHaveLength(2);
-        expect(mockAPI.csaAgree.mock.calls).toHaveLength(1);
+        expect(mockAPI.csaLogin).toBeCalledTimes(2);
+        expect(mockAPI.csaAgree).toBeCalledTimes(1);
         onCSAGameSummary(123, csaGameSummary);
-        expect(mockAPI.csaAgree.mock.calls).toHaveLength(2);
+        expect(mockAPI.csaAgree).toBeCalledTimes(2);
         onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
         expect(recordManager.record.moves).toHaveLength(1);
         onCSAMove(123, "+7776FU", {
@@ -232,11 +232,11 @@ describe("store/csa", () => {
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
       })
       .next(() => {
-        expect(mockAPI.csaLogout.mock.calls).toHaveLength(2);
-        expect(mockPlayer.close.mock.calls).toHaveLength(2);
-        expect(mockHandlers.onGameNext.mock.calls).toHaveLength(2);
-        expect(mockHandlers.onGameEnd.mock.calls).toHaveLength(1);
-        expect(mockHandlers.onError.mock.calls).toHaveLength(0);
+        expect(mockAPI.csaLogout).toBeCalledTimes(2);
+        expect(mockPlayer.close).toBeCalledTimes(2);
+        expect(mockHandlers.onGameNext).toBeCalledTimes(2);
+        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
+        expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
       })
       .invoke();

@@ -212,8 +212,8 @@ describe("store/index", () => {
     expect(store.confirmation).toBe("Are you ready?");
     store.confirmationOk();
     expect(store.confirmation).toBeUndefined();
-    expect(confirmation1.onOk.mock.calls.length).toBe(1);
-    expect(confirmation1.onCancel.mock.calls.length).toBe(0);
+    expect(confirmation1.onOk).toBeCalledTimes(1);
+    expect(confirmation1.onCancel).toBeCalledTimes(0);
     const confirmation2 = {
       message: "Do you really want to delete?",
       onOk: jest.fn(),
@@ -223,8 +223,8 @@ describe("store/index", () => {
     expect(store.confirmation).toBe("Do you really want to delete?");
     store.confirmationCancel();
     expect(store.confirmation).toBeUndefined();
-    expect(confirmation2.onOk.mock.calls.length).toBe(0);
-    expect(confirmation2.onCancel.mock.calls.length).toBe(1);
+    expect(confirmation2.onOk).toBeCalledTimes(0);
+    expect(confirmation2.onCancel).toBeCalledTimes(1);
   });
 
   it("updateUSIInfo", () => {
@@ -318,11 +318,11 @@ describe("store/index", () => {
       .next(() => {
         expect(store.isBussy).toBeFalsy();
         expect(store.appState).toBe(AppState.GAME);
-        expect(mockAPI.saveGameSetting.mock.calls.length).toBe(1);
+        expect(mockAPI.saveGameSetting).toBeCalledTimes(1);
         expect(mockAPI.saveGameSetting.mock.calls[0][0]).toBe(
           gameSetting10m30s
         );
-        expect(mockGameManager.prototype.startGame.mock.calls.length).toBe(1);
+        expect(mockGameManager.prototype.startGame).toBeCalledTimes(1);
         expect(mockGameManager.prototype.startGame.mock.calls[0][0]).toBe(
           gameSetting10m30s
         );
@@ -354,12 +354,12 @@ describe("store/index", () => {
       .next(() => {
         expect(store.isBussy).toBeFalsy();
         expect(store.appState).toBe(AppState.CSA_GAME);
-        expect(mockAPI.loadCSAGameSettingHistory.mock.calls).toHaveLength(1);
-        expect(mockAPI.saveCSAGameSettingHistory.mock.calls).toHaveLength(1);
+        expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(1);
+        expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(1);
         expect(
           mockAPI.saveCSAGameSettingHistory.mock.calls[0][0]
         ).toStrictEqual(singleCSAGameSettingHistory);
-        expect(mockCSAGameManager.prototype.login.mock.calls).toHaveLength(1);
+        expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
         expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
           csaGameSetting
         );
@@ -380,9 +380,9 @@ describe("store/index", () => {
       .next(() => {
         expect(store.isBussy).toBeFalsy();
         expect(store.appState).toBe(AppState.CSA_GAME);
-        expect(mockAPI.loadCSAGameSettingHistory.mock.calls).toHaveLength(0);
-        expect(mockAPI.saveCSAGameSettingHistory.mock.calls).toHaveLength(0);
-        expect(mockCSAGameManager.prototype.login.mock.calls).toHaveLength(1);
+        expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(0);
+        expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(0);
+        expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
         expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
           csaGameSetting
         );
@@ -412,11 +412,11 @@ describe("store/index", () => {
       .next(() => {
         expect(store.isBussy).toBeFalsy();
         expect(store.appState).toBe(AppState.RESEARCH);
-        expect(mockAPI.saveResearchSetting.mock.calls.length).toBe(1);
-        expect(mockUSIPlayer.mock.calls.length).toBe(1);
+        expect(mockAPI.saveResearchSetting).toBeCalledTimes(1);
+        expect(mockUSIPlayer).toBeCalledTimes(1);
         expect(mockUSIPlayer.mock.calls[0][0]).toBe(researchSetting.usi);
-        expect(mockUSIPlayer.prototype.launch.mock.calls.length).toBe(1);
-        expect(mockUSIPlayer.prototype.startResearch.mock.calls.length).toBe(1);
+        expect(mockUSIPlayer.prototype.launch).toBeCalledTimes(1);
+        expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
       })
       .invoke();
   });
@@ -442,13 +442,13 @@ describe("store/index", () => {
       .next(() => {
         expect(store.isBussy).toBeFalsy();
         expect(store.appState).toBe(AppState.ANALYSIS);
-        expect(mockAPI.saveAnalysisSetting.mock.calls.length).toBe(1);
+        expect(mockAPI.saveAnalysisSetting).toBeCalledTimes(1);
         expect(mockAPI.saveAnalysisSetting.mock.calls[0][0]).toBe(
           analysisSetting
         );
-        expect(mockAnalysisManager.mock.calls.length).toBe(1);
+        expect(mockAnalysisManager).toBeCalledTimes(1);
         expect(mockAnalysisManager.mock.calls[0][1]).toBe(analysisSetting);
-        expect(mockAnalysisManager.prototype.start.mock.calls.length).toBe(1);
+        expect(mockAnalysisManager.prototype.start).toBeCalledTimes(1);
       })
       .invoke();
   });
@@ -612,8 +612,8 @@ describe("store/index", () => {
         const moves = store.record.moves;
         expect(moves.length).toBe(13);
         expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showOpenRecordDialog.mock.calls.length).toBe(1);
-        expect(mockAPI.openRecord.mock.calls.length).toBe(1);
+        expect(mockAPI.showOpenRecordDialog).toBeCalledTimes(1);
+        expect(mockAPI.openRecord).toBeCalledTimes(1);
         expect(mockAPI.openRecord.mock.calls[0][0]).toBe("/test/sample.csa");
       })
       .invoke();
@@ -659,8 +659,8 @@ describe("store/index", () => {
         expect(store.isBussy).toBeFalsy();
         expect(store.recordFilePath).toBe("/test/sample.csa");
         expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog.mock.calls.length).toBe(1);
-        expect(mockAPI.saveRecord.mock.calls.length).toBe(1);
+        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+        expect(mockAPI.saveRecord).toBeCalledTimes(1);
         expect(mockAPI.saveRecord.mock.calls[0][0]).toBe("/test/sample.csa");
         const data = new TextDecoder().decode(
           mockAPI.saveRecord.mock.calls[0][1]
@@ -695,8 +695,8 @@ describe("store/index", () => {
         expect(store.isBussy).toBeFalsy();
         expect(store.recordFilePath).toBeUndefined();
         expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog.mock.calls.length).toBe(1);
-        expect(mockAPI.saveRecord.mock.calls.length).toBe(0);
+        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+        expect(mockAPI.saveRecord).toBeCalledTimes(0);
       })
       .invoke();
   });
@@ -719,8 +719,8 @@ describe("store/index", () => {
         expect(store.isBussy).toBeFalsy();
         expect(store.recordFilePath).toBe("/test/sample2.csa");
         expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog.mock.calls.length).toBe(1);
-        expect(mockAPI.saveRecord.mock.calls.length).toBe(1);
+        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+        expect(mockAPI.saveRecord).toBeCalledTimes(1);
       })
       .invoke();
   });
@@ -745,8 +745,8 @@ describe("store/index", () => {
         expect(store.isBussy).toBeFalsy();
         expect(store.recordFilePath).toBe("/test/sample1.csa");
         expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog.mock.calls.length).toBe(0);
-        expect(mockAPI.saveRecord.mock.calls.length).toBe(1);
+        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(0);
+        expect(mockAPI.saveRecord).toBeCalledTimes(1);
       })
       .invoke();
   });

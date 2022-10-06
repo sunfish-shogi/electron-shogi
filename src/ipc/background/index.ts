@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, ipcMain } from "electron";
+import { BrowserWindow, dialog, ipcMain, WebContents } from "electron";
 import { Background, Renderer } from "@/ipc/channel";
 import path from "path";
 import fs from "fs";
@@ -65,6 +65,10 @@ export function setup(win: BrowserWindow): void {
 
 export function getAppState(): AppState {
   return appState;
+}
+
+export function getWebContents(): WebContents {
+  return mainWindow.webContents;
 }
 
 ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, () => {

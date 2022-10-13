@@ -310,7 +310,7 @@ const stringToPieceType: { [kanji: string]: PieceType } = {
 const stringToSpecialMove: { [move: string]: SpecialMove } = {
   中断: SpecialMove.INTERRUPT,
   投了: SpecialMove.RESIGN,
-  持将棋: SpecialMove.DRAW,
+  持将棋: SpecialMove.IMPASS,
   千日手: SpecialMove.REPETITION_DRAW,
   詰み: SpecialMove.MATE,
   切れ負け: SpecialMove.TIMEOUT,
@@ -585,6 +585,7 @@ const specialMoveToString = {
   start: "",
   resign: "投了",
   interrupt: "中断",
+  impass: "持将棋",
   draw: "持将棋",
   repetitionDraw: "千日手",
   mate: "詰み",

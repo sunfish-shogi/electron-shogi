@@ -121,7 +121,11 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
             AppState.NORMAL,
             AppState.RESEARCH,
           ]),
-          menuItem("持将棋", MenuEvent.INSERT_DRAW, [
+          menuItem("引き分け", MenuEvent.INSERT_DRAW, [
+            AppState.NORMAL,
+            AppState.RESEARCH,
+          ]),
+          menuItem("持将棋", MenuEvent.INSERT_IMPASS, [
             AppState.NORMAL,
             AppState.RESEARCH,
           ]),

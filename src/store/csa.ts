@@ -212,51 +212,51 @@ export class CSAGameManager {
     move: CSASpecialMove,
     gameResult: CSAGameResult
   ): Promise<void> {
-    if (move === CSASpecialMove.RESIGN) {
-      this.recordManager.appendMove({
-        move: SpecialMove.RESIGN,
-      });
-    } else if (move === CSASpecialMove.JISHOGI) {
-      this.recordManager.appendMove({
-        move: SpecialMove.ENTERING_OF_KING,
-      });
-    } else if (move === CSASpecialMove.ILLEGAL_MOVE) {
-      const color = this.recordManager.record.position.color;
-      if (gameResult === CSAGameResult.WIN) {
-        this.recordManager.appendMove({
-          move:
-            color === this.gameSummary.myColor
-              ? SpecialMove.FOUL_WIN
-              : SpecialMove.FOUL_LOSE,
-        });
-      } else if (gameResult === CSAGameResult.LOSE) {
-        this.recordManager.appendMove({
-          move:
-            color === this.gameSummary.myColor
-              ? SpecialMove.FOUL_LOSE
-              : SpecialMove.FOUL_WIN,
-        });
-      }
-    } else if (move === CSASpecialMove.TIME_UP) {
-      this.recordManager.appendMove({
-        move: SpecialMove.TIMEOUT,
-      });
-    } else if (gameResult === CSAGameResult.DRAW) {
-      this.recordManager.appendMove({
-        move: SpecialMove.DRAW,
-      });
-    } else if (
-      gameResult === CSAGameResult.CHUDAN ||
-      gameResult === CSAGameResult.CENSORED
-    ) {
-      this.recordManager.appendMove({
-        move: SpecialMove.INTERRUPT,
-      });
-    }
+    this.recordManager.appendMove({
+      move: this.gameResultToSpecialMove(move, gameResult),
+    });
     if (this.setting.enableAutoSave) {
       await this.handlers.onSaveRecord();
     }
     this.close();
+  }
+
+  private gameResultToSpecialMove(
+    move: CSASpecialMove,
+    gameResult: CSAGameResult
+  ): SpecialMove {
+    const color = this.recordManager.record.position.color;
+    switch (move) {
+      case CSASpecialMove.RESIGN:
+        return SpecialMove.RESIGN;
+      case CSASpecialMove.SENNICHITE:
+        return SpecialMove.REPETITION_DRAW;
+      case CSASpecialMove.OUTE_SENNICHITE:
+      case CSASpecialMove.ILLEGAL_MOVE:
+      case CSASpecialMove.ILLEGAL_ACTION:
+        switch (gameResult) {
+          case CSAGameResult.WIN:
+            return color === this.gameSummary.myColor
+              ? SpecialMove.FOUL_WIN
+              : SpecialMove.FOUL_LOSE;
+          case CSAGameResult.LOSE:
+            return color === this.gameSummary.myColor
+              ? SpecialMove.FOUL_LOSE
+              : SpecialMove.FOUL_WIN;
+        }
+        break;
+      case CSASpecialMove.TIME_UP:
+        return SpecialMove.TIMEOUT;
+      case CSASpecialMove.JISHOGI:
+        return SpecialMove.ENTERING_OF_KING;
+      case CSASpecialMove.MAX_MOVES:
+        return SpecialMove.IMPASS;
+    }
+
+    if (gameResult === CSAGameResult.DRAW) {
+      return SpecialMove.DRAW;
+    }
+    return SpecialMove.INTERRUPT;
   }
 
   async onClose(): Promise<void> {

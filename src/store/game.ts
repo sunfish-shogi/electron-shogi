@@ -166,7 +166,7 @@ export class GameManager {
       this._setting.maxMoves &&
       this.recordManager.record.current.number >= this._setting.maxMoves
     ) {
-      this.endGame(SpecialMove.DRAW);
+      this.endGame(SpecialMove.IMPASS);
       return;
     }
     const color = this.recordManager.record.position.color;
@@ -486,7 +486,7 @@ function specialMoveToPlayerGameResult(
     case SpecialMove.TIMEOUT:
     case SpecialMove.FOUL_LOSE:
       return currentColor == playerColor ? GameResult.LOSE : GameResult.WIN;
-    case SpecialMove.DRAW:
+    case SpecialMove.IMPASS:
     case SpecialMove.REPETITION_DRAW:
       return GameResult.DRAW;
   }

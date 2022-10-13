@@ -66,6 +66,9 @@ export function setup(): void {
       case MenuEvent.INSERT_DRAW:
         store.insertSpecialMove(SpecialMove.DRAW);
         break;
+      case MenuEvent.INSERT_IMPASS:
+        store.insertSpecialMove(SpecialMove.IMPASS);
+        break;
       case MenuEvent.INSERT_REPETITION_DRAW:
         store.insertSpecialMove(SpecialMove.REPETITION_DRAW);
         break;

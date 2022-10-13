@@ -12,6 +12,7 @@ export enum MenuEvent {
   INSERT_INTERRUPT = "insertInterrupt",
   INSERT_RESIGN = "insertResign",
   INSERT_DRAW = "insertDraw",
+  INSERT_IMPASS = "insertImpass",
   INSERT_REPETITION_DRAW = "insertRepetitionDraw",
   INSERT_MATE = "insertMate",
   INSERT_TIMEOUT = "insertTimeout",

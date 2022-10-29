@@ -11,7 +11,7 @@ import {
   openSettingsDirectory,
 } from "@/ipc/background/settings";
 import { openLogsDirectory } from "@/ipc/background/log";
-import { onMenuEvent } from "@/ipc/background";
+import { getWebContents, onMenuEvent } from "@/ipc/background";
 import { MenuEvent } from "@/ipc/menu";
 import { AppState } from "@/store/state";
 import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
@@ -248,7 +248,29 @@ const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
         role: "togglefullscreen",
       },
       menuItem("盤面反転", MenuEvent.FLIP_BOARD, null, "CmdOrCtrl+T"),
-      { type: "separator" },
+      {
+        label: "標準の文字サイズ",
+        click: () => {
+          getWebContents().setZoomLevel(0);
+        },
+        accelerator: "CmdOrCtrl+0",
+      },
+      {
+        label: "文字を拡大",
+        click: () => {
+          const level = getWebContents().getZoomLevel();
+          getWebContents().setZoomLevel(level + 1);
+        },
+        accelerator: "CmdOrCtrl+Plus",
+      },
+      {
+        label: "文字を縮小",
+        click: () => {
+          const level = getWebContents().getZoomLevel();
+          getWebContents().setZoomLevel(level - 1);
+        },
+        accelerator: "CmdOrCtrl+-",
+      },
     ],
   },
   {

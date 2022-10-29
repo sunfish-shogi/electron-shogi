@@ -188,6 +188,24 @@ describe("settings/csa", () => {
         },
       ],
     });
+    const insecure = encryptCSAGameSettingHistory(raw);
+    expect(insecure).toStrictEqual({
+      ...raw,
+      serverHistory: [
+        {
+          host: "test-server01",
+          port: 4081,
+          id: "user01",
+          password: "test01",
+        },
+        {
+          host: "test-server02",
+          port: 4081,
+          id: "user02",
+          password: "test02",
+        },
+      ],
+    });
   });
 
   it("decrypt", () => {
@@ -215,6 +233,23 @@ describe("settings/csa", () => {
       enableAutoSave: true,
       repeat: 1,
     };
+    const insecure = {
+      ...secure,
+      serverHistory: [
+        {
+          host: "test-server03",
+          port: 4081,
+          id: "user03",
+          password: "test03",
+        },
+        {
+          host: "test-server04",
+          port: 4081,
+          id: "user04",
+          password: "test04",
+        },
+      ],
+    };
     const raw = decryptCSAGameSettingHistory(secure, (src) => {
       return (
         {
@@ -237,6 +272,24 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user02",
           password: "test02",
+        },
+      ],
+    });
+    const raw2 = decryptCSAGameSettingHistory(insecure);
+    expect(raw2).toStrictEqual({
+      ...secure,
+      serverHistory: [
+        {
+          host: "test-server03",
+          port: 4081,
+          id: "user03",
+          password: "test03",
+        },
+        {
+          host: "test-server04",
+          port: 4081,
+          id: "user04",
+          password: "test04",
         },
       ],
     });

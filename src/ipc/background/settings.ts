@@ -1,5 +1,5 @@
 import fs from "fs";
-import { app, safeStorage, shell } from "electron";
+import { app, shell } from "electron";
 import path from "path";
 import { USIEngineSettings } from "@/settings/usi";
 import { AppSetting, defaultAppSetting } from "@/settings/app";
@@ -15,6 +15,7 @@ import {
   defaultSecureCSAGameSettingHistory,
   encryptCSAGameSettingHistory,
 } from "@/settings/csa";
+import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
 
 const rootDir = app.getPath("userData");
 const docDir = path.join(app.getPath("documents"), "ElectronShogi");
@@ -122,9 +123,10 @@ const csaGameSettingHistoryPath = path.join(
 export function saveCSAGameSettingHistory(
   setting: CSAGameSettingHistory
 ): void {
-  const encrypted = encryptCSAGameSettingHistory(setting, (plainText) => {
-    return safeStorage.encryptString(plainText).toString("base64");
-  });
+  const encrypted = encryptCSAGameSettingHistory(
+    setting,
+    isEncryptionAvailable() ? EncryptString : undefined
+  );
   fs.writeFileSync(
     csaGameSettingHistoryPath,
     JSON.stringify(encrypted, undefined, 2),
@@ -144,14 +146,7 @@ export function loadCSAGameSettingHistory(): CSAGameSettingHistory {
       ...defaultSecureCSAGameSettingHistory(),
       ...encrypted,
     },
-    (encrypted) => {
-      try {
-        return safeStorage.decryptString(Buffer.from(encrypted, "base64"));
-      } catch (e) {
-        getAppLogger().error("failed to decrypt CSA server password: %s", e);
-        return "";
-      }
-    }
+    isEncryptionAvailable() ? DecryptString : undefined
   );
 }
 

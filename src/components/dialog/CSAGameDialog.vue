@@ -9,6 +9,16 @@
           アプリ設定からログを有効にしてアプリを再起動してください。
         </div>
       </div>
+      <div class="dialog-form-area dialog-form-warning">
+        <div v-if="isEncryptionAvailable" class="dialog-form-note">
+          CSAプロトコルの規格上パスワードは平文で送信されます。
+        </div>
+        <div v-else class="dialog-form-note">
+          OSの暗号化機能が利用できないため、入力したパスワードは平文で保存されます。
+          保存したくない場合は「履歴に保存する」のチェックを外してください。
+          なお、履歴の保存に関係なくCSAプロトコルの規格上パスワードは平文で送信されます。
+        </div>
+      </div>
       <div class="dialog-form-area">
         <div>プレイヤー</div>
         <PlayerSelector
@@ -152,6 +162,7 @@ export default defineComponent({
     const enableAutoSave: Ref = ref(null);
     const repeat: Ref = ref(null);
     const autoFlip: Ref = ref(null);
+    const isEncryptionAvailable: Ref = ref(false);
     const history = ref(defaultCSAGameSettingHistory());
     const defaultSetting = ref(defaultCSAGameSetting());
     const engineSettings = ref(new USIEngineSettings());
@@ -161,6 +172,7 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
+        isEncryptionAvailable.value = await api.isEncryptionAvailable();
         history.value = await api.loadCSAGameSettingHistory();
         defaultSetting.value = buildCSAGameSettingByHistory(history.value, 0);
         engineSettings.value = await api.loadUSIEngineSetting();
@@ -312,6 +324,7 @@ export default defineComponent({
       players,
       serverHistory,
       logEnabled,
+      isEncryptionAvailable,
       onStart,
       onCancel,
       onUpdatePlayerSetting,

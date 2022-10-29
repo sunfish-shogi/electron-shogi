@@ -63,6 +63,7 @@ export interface Bridge {
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
+  isEncryptionAvailable(): Promise<boolean>;
   log(level: LogLevel, message: string): void;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
@@ -161,6 +162,7 @@ export interface API {
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
+  isEncryptionAvailable(): Promise<boolean>;
   log(level: LogLevel, message: string): void;
 }
 

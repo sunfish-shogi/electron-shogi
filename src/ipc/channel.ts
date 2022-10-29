@@ -37,6 +37,7 @@ export enum Background {
   CSA_RESIGN = "csaResign",
   CSA_WIN = "csaWin",
   CSA_STOP = "csaStop",
+  IS_ENCRYPTION_AVAILABLE = "isEncryptionAvailable",
   LOG = "log",
 }
 

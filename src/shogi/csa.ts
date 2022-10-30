@@ -264,24 +264,24 @@ function parseMove(line: string, position: ImmutablePosition): Move | Error {
 
 function parseSpecialMove(line: string): SpecialMove | undefined {
   switch (line) {
-    case "%TORYO":
-      return SpecialMove.RESIGN;
     case "%CHUDAN":
       return SpecialMove.INTERRUPT;
+    case "%TORYO":
+      return SpecialMove.RESIGN;
+    case "%JISHOGI":
+      return SpecialMove.IMPASS;
+    case "%HIKIWAKE":
+      return SpecialMove.DRAW;
     case "%SENNICHITE":
       return SpecialMove.REPETITION_DRAW;
+    case "%TSUMI":
+      return SpecialMove.MATE;
     case "%TIME_UP":
       return SpecialMove.TIMEOUT;
     case "%ILLEGAL_MOVE":
       return SpecialMove.FOUL_LOSE;
-    case "%JISHOGI":
-      return SpecialMove.DRAW;
     case "%KACHI":
       return SpecialMove.ENTERING_OF_KING;
-    case "%HIKIWAKE":
-      return SpecialMove.DRAW;
-    case "%TSUMI":
-      return SpecialMove.MATE;
   }
 }
 
@@ -525,22 +525,24 @@ function formatMove(move: Move): string {
 
 function formatSpecialMove(move: SpecialMove): string | undefined {
   switch (move) {
-    case SpecialMove.RESIGN:
-      return "%TORYO";
     case SpecialMove.INTERRUPT:
       return "%CHUDAN";
+    case SpecialMove.RESIGN:
+      return "%TORYO";
+    case SpecialMove.IMPASS:
+      return "%JISHOGI";
+    case SpecialMove.DRAW:
+      return "%HIKIWAKE";
     case SpecialMove.REPETITION_DRAW:
       return "%SENNICHITE";
+    case SpecialMove.MATE:
+      return "%TSUMI";
     case SpecialMove.TIMEOUT:
       return "%TIME_UP";
     case SpecialMove.FOUL_LOSE:
       return "%ILLEGAL_MOVE";
-    case SpecialMove.DRAW:
-      return "%JISHOGI";
     case SpecialMove.ENTERING_OF_KING:
       return "%KACHI";
-    case SpecialMove.MATE:
-      return "%TSUMI";
   }
 }
 

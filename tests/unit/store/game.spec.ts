@@ -528,7 +528,9 @@ describe("store/game", () => {
           invalid: 0,
           total: 1,
         });
-        expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(SpecialMove.DRAW);
+        expect(mockHandlers.onGameEnd.mock.calls[0][1]).toBe(
+          SpecialMove.IMPASS
+        );
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(9);

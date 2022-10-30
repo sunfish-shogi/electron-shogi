@@ -132,7 +132,6 @@ import api from "@/ipc/api";
 import { useStore } from "@/store";
 import {
   maxServerHistoryLenght,
-  defaultCSAGameSetting,
   CSAGameSetting,
   validateCSAGameSetting,
   buildCSAGameSettingByHistory,
@@ -164,20 +163,20 @@ export default defineComponent({
     const autoFlip: Ref = ref(null);
     const isEncryptionAvailable: Ref = ref(false);
     const history = ref(defaultCSAGameSettingHistory());
-    const defaultSetting = ref(defaultCSAGameSetting());
     const engineSettings = ref(new USIEngineSettings());
     const playerURI = ref("");
 
+    let defaultValueLoaded = false;
+    let defaultValueApplied = false;
     store.retainBussyState();
 
     onMounted(async () => {
       try {
         isEncryptionAvailable.value = await api.isEncryptionAvailable();
         history.value = await api.loadCSAGameSettingHistory();
-        defaultSetting.value = buildCSAGameSettingByHistory(history.value, 0);
         engineSettings.value = await api.loadUSIEngineSetting();
-        playerURI.value = defaultSetting.value.player.uri;
         showModalDialog(dialog.value);
+        defaultValueLoaded = true;
       } catch (e) {
         store.pushError(e);
         store.closeModalDialog();
@@ -186,19 +185,21 @@ export default defineComponent({
       }
     });
 
-    let defaultValueApplied = false;
     onUpdated(() => {
-      if (!defaultValueApplied) {
-        host.value.value = defaultSetting.value.server.host;
-        port.value.value = defaultSetting.value.server.port;
-        id.value.value = defaultSetting.value.server.id;
-        password.value.value = defaultSetting.value.server.password;
-        enableComment.value.checked = defaultSetting.value.enableComment;
-        enableAutoSave.value.checked = defaultSetting.value.enableAutoSave;
-        repeat.value.value = defaultSetting.value.repeat;
-        autoFlip.value.checked = defaultSetting.value.autoFlip;
-        defaultValueApplied = true;
+      if (!defaultValueLoaded || defaultValueApplied) {
+        return;
       }
+      const defaultSetting = buildCSAGameSettingByHistory(history.value, 0);
+      host.value.value = defaultSetting.server.host;
+      port.value.value = defaultSetting.server.port;
+      id.value.value = defaultSetting.server.id;
+      password.value.value = defaultSetting.server.password;
+      enableComment.value.checked = defaultSetting.enableComment;
+      enableAutoSave.value.checked = defaultSetting.enableAutoSave;
+      repeat.value.value = defaultSetting.repeat;
+      autoFlip.value.checked = defaultSetting.autoFlip;
+      playerURI.value = defaultSetting.player.uri;
+      defaultValueApplied = true;
     });
 
     const buildPlayerSetting = (playerURI: string): PlayerSetting => {

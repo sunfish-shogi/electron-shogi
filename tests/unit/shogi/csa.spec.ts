@@ -673,22 +673,13 @@ PI
       RecordMetadataKey.TITLE,
       "TypeScript Festival"
     );
-    const move = (ff: number, fr: number, tf: number, tr: number): Move => {
-      return record.position.createMove(
-        new Square(ff, fr),
-        new Square(tf, tr)
-      ) as Move;
-    };
-    const drop = (pt: PieceType, tf: number, tr: number): Move => {
-      return record.position.createMove(pt, new Square(tf, tr)) as Move;
-    };
-    record.append(move(7, 7, 7, 6));
-    record.append(move(3, 3, 3, 4));
+    record.append(record.position.createMoveBySFEN("7g7f") as Move);
+    record.append(record.position.createMoveBySFEN("3c3d") as Move);
     record.current.comment = "2手目へのコメント\n2手目へのコメント2";
-    record.append(move(8, 8, 2, 2).withPromote());
-    record.append(move(3, 1, 2, 2));
+    record.append(record.position.createMoveBySFEN("8h2b+") as Move);
+    record.append(record.position.createMoveBySFEN("3a2b") as Move);
     record.current.setElapsedMs(12345); // 12.345 seconds
-    record.append(drop(PieceType.BISHOP, 4, 5));
+    record.append(record.position.createMoveBySFEN("B*4e") as Move);
     record.current.setElapsedMs(34567); // 34.567 seconds
     record.append(SpecialMove.RESIGN);
     record.current.setElapsedMs(56789); // 56.789 seconds

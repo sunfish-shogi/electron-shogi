@@ -2,12 +2,10 @@ import {
   exportCSA,
   importCSA,
   Move,
-  PieceType,
   Position,
   Record,
   RecordMetadataKey,
   SpecialMove,
-  Square,
 } from "@/shogi";
 
 describe("shogi/csa", () => {

@@ -16,7 +16,7 @@
         :class="{ active: position.color == 'black' }"
         :style="layout.blackPlayerName.style"
       >
-        <span class="player-name-text">▲{{ blackPlayerName }}</span>
+        <span class="player-name-text">☗{{ blackPlayerName }}</span>
       </div>
       <div
         class="clock"
@@ -30,7 +30,7 @@
         :class="{ active: position.color == 'white' }"
         :style="layout.whitePlayerName.style"
       >
-        <span class="player-name-text">△{{ whitePlayerName }}</span>
+        <span class="player-name-text">☖{{ whitePlayerName }}</span>
       </div>
       <div
         class="clock"

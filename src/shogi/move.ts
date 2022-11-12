@@ -47,7 +47,7 @@ export default class Move {
 
   getDisplayText(prev?: Move | null): string {
     let text = "";
-    text += this.color === Color.BLACK ? "▲" : "△";
+    text += this.color === Color.BLACK ? "☗" : "☖";
     if (prev && prev.to.equals(this.to)) {
       text += "同　";
     } else {

@@ -302,7 +302,7 @@ describe("store/index", () => {
     expect(store.usiBlackPlayerMonitor?.sfen).toBe(
       "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1"
     );
-    expect(store.usiBlackPlayerMonitor?.ponderMove).toBe("△３四歩(33)");
+    expect(store.usiBlackPlayerMonitor?.ponderMove).toBe("☖３四歩(33)");
     expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(1);
     expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(8);
     expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);

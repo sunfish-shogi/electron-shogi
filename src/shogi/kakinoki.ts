@@ -13,8 +13,8 @@ import {
   RecordMetadataKey,
   Square,
 } from ".";
-import Board, { InitialPositionType } from "./board";
-import Hand, { ImmutableHand } from "./hand";
+import { Board, InitialPositionType } from "./board";
+import { Hand, ImmutableHand } from "./hand";
 import { Piece, PieceType } from "./piece";
 import {
   ImmutableRecord,

@@ -2,6 +2,7 @@ import { CSAGameSummary } from "@/ipc/csa";
 import {
   CSAGameSetting,
   CSAGameSettingHistory,
+  CSAProtocolVersion,
   CSAServerSetting,
 } from "@/settings/csa";
 import { Color } from "@/shogi";
@@ -22,6 +23,7 @@ const playerSetting = {
 };
 
 export const csaServerSetting: CSAServerSetting = {
+  protocolVersion: CSAProtocolVersion.V121,
   host: "test-server",
   port: 4081,
   id: "TestPlayer",
@@ -50,6 +52,7 @@ export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
   player: playerSetting,
   serverHistory: [
     {
+      protocolVersion: CSAProtocolVersion.V121,
       host: "test-server",
       port: 4081,
       id: "TestPlayer",

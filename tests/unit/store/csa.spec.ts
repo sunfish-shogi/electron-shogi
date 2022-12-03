@@ -1,7 +1,8 @@
 import { TimeoutChain } from "@/helpers/testing";
 import api, { API } from "@/ipc/api";
 import { CSAGameResult, CSASpecialMove } from "@/ipc/csa";
-import { SpecialMove } from "@/shogi";
+import { CSAProtocolVersion } from "@/settings/csa";
+import { Color, Move, PieceType, SpecialMove, Square } from "@/shogi";
 import { Clock } from "@/store/clock";
 import {
   CSAGameManager,
@@ -241,5 +242,86 @@ describe("store/csa", () => {
         expect(recordManager.record.moves).toHaveLength(6);
       })
       .invoke();
+  });
+
+  describe("CSAManager/onPlayerMove", () => {
+    mockAPI.csaMove.mockResolvedValue();
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    const move = new Move(
+      new Square(7, 7),
+      new Square(7, 6),
+      false,
+      Color.BLACK,
+      PieceType.PAWN,
+      null
+    );
+    const info = {
+      usi: "",
+      score: 159,
+      pv: [
+        new Move(
+          new Square(3, 3),
+          new Square(3, 4),
+          false,
+          Color.WHITE,
+          PieceType.PAWN,
+          null
+        ),
+        new Move(
+          new Square(2, 7),
+          new Square(2, 6),
+          false,
+          Color.BLACK,
+          PieceType.PAWN,
+          null
+        ),
+        new Move(
+          new Square(2, 2),
+          new Square(8, 8),
+          true,
+          Color.WHITE,
+          PieceType.BISHOP,
+          PieceType.BISHOP
+        ),
+      ],
+    };
+
+    it("standard", () => {
+      const manager = new CSAGameManager(
+        recordManager,
+        new Clock(),
+        new Clock(),
+        mockHandlers
+      );
+      manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121;
+      manager["onPlayerMove"](move, info);
+      expect(mockAPI.csaMove).toBeCalledTimes(1);
+      expect(mockAPI.csaMove).toBeCalledWith(
+        0,
+        "+7776FU",
+        undefined,
+        undefined
+      );
+    });
+
+    it("floodgate", () => {
+      const manager = new CSAGameManager(
+        recordManager,
+        new Clock(),
+        new Clock(),
+        mockHandlers
+      );
+      manager["_setting"].server.protocolVersion =
+        CSAProtocolVersion.V121_FLOODGATE;
+      manager["onPlayerMove"](move, info);
+      expect(mockAPI.csaMove).toBeCalledTimes(1);
+      expect(mockAPI.csaMove).toBeCalledWith(
+        0,
+        "+7776FU",
+        159,
+        "-3334FU +2726FU -2288UM"
+      );
+    });
   });
 });

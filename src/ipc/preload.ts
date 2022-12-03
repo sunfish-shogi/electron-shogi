@@ -169,8 +169,19 @@ const api: Bridge = {
   async csaAgree(sessionID: number, gameID: string): Promise<void> {
     return await ipcRenderer.invoke(Background.CSA_AGREE, sessionID, gameID);
   },
-  async csaMove(sessionID: number, move: string): Promise<void> {
-    return await ipcRenderer.invoke(Background.CSA_MOVE, sessionID, move);
+  async csaMove(
+    sessionID: number,
+    move: string,
+    score?: number,
+    pv?: string
+  ): Promise<void> {
+    return await ipcRenderer.invoke(
+      Background.CSA_MOVE,
+      sessionID,
+      move,
+      score,
+      pv
+    );
   },
   async csaResign(sessionID: number): Promise<void> {
     return await ipcRenderer.invoke(Background.CSA_RESIGN, sessionID);

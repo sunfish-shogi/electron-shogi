@@ -1,6 +1,7 @@
 import * as uri from "@/uri";
 import {
   appendCSAGameSettingHistory,
+  CSAProtocolVersion,
   decryptCSAGameSettingHistory,
   encryptCSAGameSettingHistory,
   validateCSAGameSetting,
@@ -15,6 +16,7 @@ describe("settings/csa", () => {
         uri: uri.ES_HUMAN,
       },
       server: {
+        protocolVersion: CSAProtocolVersion.V121,
         host: "localhost",
         port: 4081,
         id: "TestUser",
@@ -35,6 +37,7 @@ describe("settings/csa", () => {
         uri: uri.ES_HUMAN,
       },
       server: {
+        protocolVersion: CSAProtocolVersion.V121,
         host: "",
         port: 4081,
         id: "TestUser",
@@ -55,6 +58,7 @@ describe("settings/csa", () => {
         uri: uri.ES_HUMAN,
       },
       server: {
+        protocolVersion: CSAProtocolVersion.V121,
         host: "localhost",
         port: 100000,
         id: "TestUser",
@@ -75,6 +79,7 @@ describe("settings/csa", () => {
         uri: uri.ES_HUMAN,
       },
       server: {
+        protocolVersion: CSAProtocolVersion.V121,
         host: "localhost",
         port: 4081,
         id: "",
@@ -146,12 +151,14 @@ describe("settings/csa", () => {
       },
       serverHistory: [
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server01",
           port: 4081,
           id: "user01",
           password: "test01",
         },
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server02",
           port: 4081,
           id: "user02",
@@ -175,12 +182,14 @@ describe("settings/csa", () => {
       ...raw,
       serverHistory: [
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server01",
           port: 4081,
           id: "user01",
           encryptedPassword: "xyz01",
         },
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server02",
           port: 4081,
           id: "user02",
@@ -193,12 +202,14 @@ describe("settings/csa", () => {
       ...raw,
       serverHistory: [
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server01",
           port: 4081,
           id: "user01",
           password: "test01",
         },
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server02",
           port: 4081,
           id: "user02",
@@ -216,12 +227,14 @@ describe("settings/csa", () => {
       },
       serverHistory: [
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server01",
           port: 4081,
           id: "user01",
           encryptedPassword: "xyz01",
         },
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server02",
           port: 4081,
           id: "user02",
@@ -237,12 +250,14 @@ describe("settings/csa", () => {
       ...secure,
       serverHistory: [
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server03",
           port: 4081,
           id: "user03",
           password: "test03",
         },
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server04",
           port: 4081,
           id: "user04",
@@ -262,12 +277,14 @@ describe("settings/csa", () => {
       ...secure,
       serverHistory: [
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server01",
           port: 4081,
           id: "user01",
           password: "test01",
         },
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server02",
           port: 4081,
           id: "user02",
@@ -280,12 +297,14 @@ describe("settings/csa", () => {
       ...secure,
       serverHistory: [
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server03",
           port: 4081,
           id: "user03",
           password: "test03",
         },
         {
+          protocolVersion: CSAProtocolVersion.V121,
           host: "test-server04",
           port: 4081,
           id: "user04",

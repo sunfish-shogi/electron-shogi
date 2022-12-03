@@ -9,16 +9,6 @@
           アプリ設定からログを有効にしてアプリを再起動してください。
         </div>
       </div>
-      <div class="dialog-form-area dialog-form-warning">
-        <div v-if="isEncryptionAvailable" class="dialog-form-note">
-          CSAプロトコルの規格上パスワードは平文で送信されます。
-        </div>
-        <div v-else class="dialog-form-note">
-          OSの暗号化機能が利用できないため、入力したパスワードは平文で保存されます。
-          保存したくない場合は「履歴に保存する」のチェックを外してください。
-          なお、履歴の保存に関係なくCSAプロトコルの規格上パスワードは平文で送信されます。
-        </div>
-      </div>
       <div class="dialog-form-area">
         <div>プレイヤー</div>
         <PlayerSelector
@@ -49,6 +39,38 @@
           </select>
         </div>
         <hr />
+        <div class="dialog-form-item">
+          <div class="dialog-form-item-label-wide">バージョン</div>
+          <select
+            ref="protocolVersion"
+            class="long-text"
+            value="CSA_v121"
+            @change="onChangeProtocolVersion"
+          >
+            <option :value="CSAProtocolVersion.V121">
+              CSAプロトコル1.2.1 標準
+            </option>
+            <option :value="CSAProtocolVersion.V121_FLOODGATE">
+              CSAプロトコル1.2.1 読み筋コメント付き
+            </option>
+          </select>
+        </div>
+        <div
+          v-if="selectedProtocolVersion === CSAProtocolVersion.V121"
+          class="dialog-form-area dialog-form-item dialog-form-warning"
+        >
+          <div class="dialog-form-note">
+            標準のCSAプロトコルでは評価値や読み筋が送信されません。
+          </div>
+        </div>
+        <div
+          v-if="selectedProtocolVersion === CSAProtocolVersion.V121_FLOODGATE"
+          class="dialog-form-area dialog-form-item dialog-form-warning"
+        >
+          <div class="dialog-form-note">
+            Floodgate仕様で評価値と読み筋を送信します。WCSCで使用しないでください。
+          </div>
+        </div>
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide">接続先ホスト</div>
           <input
@@ -91,6 +113,16 @@
           />
           <label for="show-password">パスワードを表示する</label>
         </div>
+        <div class="dialog-form-area dialog-form-item dialog-form-warning">
+          <div v-if="isEncryptionAvailable" class="dialog-form-note">
+            CSAプロトコルの規格上パスワードは平文で送信されます。
+          </div>
+          <div v-else class="dialog-form-note">
+            OSの暗号化機能が利用できないため、入力したパスワードは平文で保存されます。
+            保存したくない場合は「履歴に保存する」のチェックを外してください。
+            なお、履歴の保存に関係なくCSAプロトコルの規格上パスワードは平文で送信されます。
+          </div>
+        </div>
         <div class="dialog-form-item">
           <input id="save-history" ref="saveHistory" type="checkbox" checked />
           <label for="save-history">
@@ -101,7 +133,7 @@
       <div class="dialog-form-area">
         <div class="dialog-form-item">
           <div class="dialog-form-item-label-wide number">連続対局</div>
-          <input ref="repeat" type="number" min="1" />
+          <input ref="repeat" class="number" type="number" min="1" />
         </div>
         <div class="dialog-form-item">
           <input id="enable-comment" ref="enableComment" type="checkbox" />
@@ -131,6 +163,7 @@ import { ref, onMounted, defineComponent, Ref, computed, onUpdated } from "vue";
 import api from "@/ipc/api";
 import { useStore } from "@/store";
 import {
+  CSAProtocolVersion,
   maxServerHistoryLenght,
   CSAGameSetting,
   validateCSAGameSetting,
@@ -152,6 +185,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
+    const protocolVersion: Ref = ref(null);
+    const selectedProtocolVersion = ref(CSAProtocolVersion.V121);
     const host: Ref = ref(null);
     const port: Ref = ref(null);
     const id: Ref = ref(null);
@@ -190,6 +225,8 @@ export default defineComponent({
         return;
       }
       const defaultSetting = buildCSAGameSettingByHistory(history.value, 0);
+      protocolVersion.value.value = selectedProtocolVersion.value =
+        defaultSetting.server.protocolVersion;
       host.value.value = defaultSetting.server.host;
       port.value.value = defaultSetting.server.port;
       id.value.value = defaultSetting.server.id;
@@ -226,6 +263,7 @@ export default defineComponent({
       const csaGameSetting: CSAGameSetting = {
         player: buildPlayerSetting(playerURI.value),
         server: {
+          protocolVersion: protocolVersion.value.value,
           host: String(host.value.value || "").trim(),
           port: Number(port.value.value),
           id: String(id.value.value || ""),
@@ -277,11 +315,16 @@ export default defineComponent({
       const select = event.target as HTMLSelectElement;
       const server = history.value.serverHistory[Number(select.value)];
       if (server) {
+        protocolVersion.value.value = server.protocolVersion;
         host.value.value = server.host;
         port.value.value = server.port;
         id.value.value = server.id;
         password.value.value = server.password;
       }
+    };
+
+    const onChangeProtocolVersion = () => {
+      selectedProtocolVersion.value = protocolVersion.value.value;
     };
 
     const players = computed(() => {
@@ -309,8 +352,10 @@ export default defineComponent({
     });
 
     return {
+      CSAProtocolVersion,
       maxServerHistoryLenght,
       dialog,
+      protocolVersion,
       host,
       port,
       id,
@@ -324,6 +369,8 @@ export default defineComponent({
       playerURI,
       players,
       serverHistory,
+      selectedProtocolVersion,
+      onChangeProtocolVersion,
       logEnabled,
       isEncryptionAvailable,
       onStart,
@@ -340,12 +387,12 @@ export default defineComponent({
 
 <style scoped>
 .root {
-  width: 450px;
+  width: 540px;
 }
 input.number {
   width: 100px;
 }
 .long-text {
-  width: 240px;
+  flex-grow: 1;
 }
 </style>

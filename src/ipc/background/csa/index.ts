@@ -68,10 +68,15 @@ export function agree(sessionID: number, gameID: string): void {
   }
 }
 
-export function doMove(sessionID: number, move: string): void {
+export function doMove(
+  sessionID: number,
+  move: string,
+  score?: number,
+  pv?: string
+): void {
   const client = clients.get(sessionID);
   if (client) {
-    client.doMove(move);
+    client.doMove(move, score, pv);
   }
 }
 

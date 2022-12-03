@@ -309,7 +309,7 @@ export class CSAGameManager {
           {
             onMove: (move, info) => {
               this.searchInfo = info;
-              api.csaMove(this.sessionID, formatCSAMove(move));
+              api.csaMove(this.sessionID, formatCSAMove(move), info?.score);
             },
             onResign: () => {
               api.csaResign(this.sessionID);

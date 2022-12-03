@@ -141,11 +141,15 @@ export class Client {
     this.send(`REJECT ${this.gameSummary.id}`);
   }
 
-  doMove(move: string): void {
+  doMove(move: string, score?: number): void {
     if (this.state !== State.PLAYING) {
       return;
     }
-    this.send(move);
+    if (score !== undefined) {
+      this.send(`${move},'* ${Math.round(score)}`);
+    } else {
+      this.send(move);
+    }
   }
 
   resign(): void {

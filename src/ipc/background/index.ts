@@ -337,8 +337,8 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.CSA_MOVE,
-  (_, sessionID: number, move: string): void => {
-    csaDoMove(sessionID, move);
+  (_, sessionID: number, move: string, score?: number): void => {
+    csaDoMove(sessionID, move, score);
   }
 );
 

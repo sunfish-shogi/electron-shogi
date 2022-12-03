@@ -27,6 +27,21 @@ li {
   margin: 0.5em;
 }
 
+ul.faq {
+  margin-left: auto;
+  margin-right: auto;
+  width: min(90vw, 110vh);
+  text-align: left;
+}
+
+ul.faq li {
+  margin-left: 0;
+}
+
+ul.faq li li {
+  margin-left: 1.8em;
+}
+
 .long-text {
   margin-left: auto;
   margin-right: auto;

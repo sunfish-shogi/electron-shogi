@@ -141,15 +141,18 @@ export class Client {
     this.send(`REJECT ${this.gameSummary.id}`);
   }
 
-  doMove(move: string, score?: number): void {
+  doMove(move: string, score?: number, pv?: string): void {
     if (this.state !== State.PLAYING) {
       return;
     }
+    let command = move;
     if (score !== undefined) {
-      this.send(`${move},'* ${Math.round(score)}`);
-    } else {
-      this.send(move);
+      command += `,'* ${Math.round(score)}`;
+      if (pv !== undefined) {
+        command += pv;
+      }
     }
+    this.send(command);
   }
 
   resign(): void {

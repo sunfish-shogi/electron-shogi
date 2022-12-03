@@ -99,7 +99,7 @@ export function buildSearchComment(
   if (searchInfo.pv && searchInfo.pv.length !== 0) {
     comment += `${prefix}読み筋=`;
     for (const move of searchInfo.pv) {
-      comment += `${move.getDisplayText()}`;
+      comment += `${move.getDisplayText({ legacy: true })}`;
     }
     comment += "\n";
   }

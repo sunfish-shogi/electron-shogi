@@ -45,10 +45,27 @@ export default class Move {
     );
   }
 
-  getDisplayText(prev?: Move | null): string {
+  getDisplayText(opt?: {
+    /**
+     * 前の指し手を指定します。
+     * 指定することで「同　歩」のような表記になります。
+     */
+    prev?: Move | null;
+    /**
+     * 古いファイルフォーマットでの文字化けを防ぐ場合に指定します。
+     */
+    legacy?: boolean;
+  }): string {
     let text = "";
-    text += this.color === Color.BLACK ? "☗" : "☖";
-    if (prev && prev.to.equals(this.to)) {
+    text +=
+      this.color === Color.BLACK
+        ? opt?.legacy
+          ? "▲"
+          : "☗"
+        : opt?.legacy
+        ? "△"
+        : "☖";
+    if (opt?.prev && opt?.prev.to.equals(this.to)) {
       text += "同　";
     } else {
       text += fileDisplayTexts[this.to.file - 1];

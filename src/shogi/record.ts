@@ -224,7 +224,7 @@ class NodeImpl implements Node {
     const prev =
       this.prev && this.prev.move instanceof Move ? this.prev.move : null;
     return this.move instanceof Move
-      ? this.move.getDisplayText(prev)
+      ? this.move.getDisplayText({ prev })
       : specialMoveToDisplayString(this.move);
   }
 

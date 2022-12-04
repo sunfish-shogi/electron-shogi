@@ -65,11 +65,10 @@ describe("store/csa", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
-      .next(() => manager.login(csaGameSetting))
+      .next(() => manager.login(csaGameSetting, mockPlayerBuilder))
       .next(() => {
         expect(mockAPI.csaLogin).toBeCalledTimes(1);
         expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
@@ -169,15 +168,17 @@ describe("store/csa", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
       .next(() =>
-        manager.login({
-          ...csaGameSetting,
-          repeat: 2,
-        })
+        manager.login(
+          {
+            ...csaGameSetting,
+            repeat: 2,
+          },
+          mockPlayerBuilder
+        )
       )
       .next(() => {
         expect(mockHandlers.onGameNext).toBeCalledTimes(1);

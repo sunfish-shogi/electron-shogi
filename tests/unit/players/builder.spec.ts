@@ -10,7 +10,7 @@ const mockAPI = api as jest.Mocked<API>;
 
 describe("builder", () => {
   it("human", async () => {
-    const player = await defaultPlayerBuilder.build({
+    const player = await defaultPlayerBuilder().build({
       name: "人",
       uri: uri.ES_HUMAN,
     });
@@ -31,8 +31,8 @@ describe("builder", () => {
         options: {},
       },
     };
-    const player = await defaultPlayerBuilder.build(setting);
+    const player = await defaultPlayerBuilder().build(setting);
     expect(player).toBeInstanceOf(USIPlayer);
-    expect(mockAPI.usiLaunch).toBeCalledWith(setting.usi);
+    expect(mockAPI.usiLaunch).toBeCalledWith(setting.usi, 10);
   });
 });

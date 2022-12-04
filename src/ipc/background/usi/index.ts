@@ -11,26 +11,28 @@ import { USIInfoSender } from "@/ipc/usi";
 import { TimeLimitSetting } from "@/settings/game";
 import { GameResult } from "@/players/player";
 
-const TimeoutSeconds = 10;
+function newTimeoutError(timeoutSeconds: number): Error {
+  return new Error(
+    timeoutSeconds +
+      "秒以内にエンジンから応答がありませんでした。エンジンの起動が重い場合はアプリ設定で待ち時間を延長してください。"
+  );
+}
 
 export async function getUSIEngineInfo(
-  path: string
+  path: string,
+  timeoutSeconds: number
 ): Promise<USIEngineSetting> {
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
     const process = new EngineProcess(path, sessionID, {
       setupOnly: true,
-      timeout: TimeoutSeconds * 1e3,
+      timeout: timeoutSeconds * 1e3,
     });
     process.on("error", (e) => {
       reject(e);
     });
     process.on("timeout", () => {
-      reject(
-        new Error(
-          TimeoutSeconds + "秒以内にエンジンから応答がありませんでした。"
-        )
-      );
+      reject(newTimeoutError(timeoutSeconds));
     });
     process.on("usiok", () => {
       resolve({
@@ -49,23 +51,20 @@ export async function getUSIEngineInfo(
 
 export function sendSetOptionCommand(
   path: string,
-  name: string
+  name: string,
+  timeoutSeconds: number
 ): Promise<void> {
   const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
     const process = new EngineProcess(path, sessionID, {
       setupOnly: true,
-      timeout: TimeoutSeconds * 1e3,
+      timeout: timeoutSeconds * 1e3,
     });
     process.on("error", (e) => {
       reject(e);
     });
     process.on("timeout", () => {
-      reject(
-        new Error(
-          TimeoutSeconds + "秒以内にエンジンから応答がありませんでした。"
-        )
-      );
+      reject(newTimeoutError(timeoutSeconds));
     });
     process.on("usiok", () => {
       process.setOption(name);
@@ -107,10 +106,13 @@ function getSession(sessionID: number): Session {
   return session;
 }
 
-export function setupPlayer(setting: USIEngineSetting): Promise<number> {
+export function setupPlayer(
+  setting: USIEngineSetting,
+  timeoutSeconds: number
+): Promise<number> {
   const sessionID = issueSessionID();
   const process = new EngineProcess(setting.path, sessionID, {
-    timeout: TimeoutSeconds * 1e3,
+    timeout: timeoutSeconds * 1e3,
     engineOptions: Object.values(setting.options),
   });
   sessions.set(sessionID, {
@@ -124,11 +126,7 @@ export function setupPlayer(setting: USIEngineSetting): Promise<number> {
       reject(e);
     });
     process.on("timeout", () => {
-      reject(
-        new Error(
-          TimeoutSeconds + "秒以内にエンジンから応答がありませんでした。"
-        )
-      );
+      reject(newTimeoutError(timeoutSeconds));
     });
     process.on("bestmove", (usi, sfen, ponder) => {
       onUSIBestMove(sessionID, usi, sfen, ponder);

@@ -27,7 +27,7 @@ describe("usi", () => {
     const record1 = Record.newByUSI(usi1) as Record;
     const record2 = Record.newByUSI(usi2) as Record;
     const record3 = Record.newByUSI(usi3) as Record;
-    const player = new USIPlayer(usiEngineSettingWithPonder);
+    const player = new USIPlayer(usiEngineSettingWithPonder, 10);
     try {
       await player.launch();
       const searchHandler = {

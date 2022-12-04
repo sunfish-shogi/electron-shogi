@@ -66,14 +66,12 @@ export class Store {
     this.recordManager,
     this.blackClock,
     this.whiteClock,
-    defaultPlayerBuilder,
     this
   );
   private csaGameManager = new CSAGameManager(
     this.recordManager,
     this.blackClock,
     this.whiteClock,
-    defaultPlayerBuilder,
     this
   );
   private researcher?: USIPlayer;
@@ -364,7 +362,10 @@ export class Store {
       .saveGameSetting(setting)
       .then(() => {
         this.initializeDisplaySettingForGame(setting);
-        return this.gameManager.startGame(setting);
+        const builder = defaultPlayerBuilder(
+          this.appSetting.engineTimeoutSeconds
+        );
+        return this.gameManager.startGame(setting, builder);
       })
       .then(() => (this._appState = AppState.GAME))
       .catch((e) => {
@@ -392,7 +393,12 @@ export class Store {
           await api.saveCSAGameSettingHistory(history);
         }
       })
-      .then(() => this.csaGameManager.login(setting))
+      .then(() => {
+        const builder = defaultPlayerBuilder(
+          this.appSetting.engineTimeoutSeconds
+        );
+        return this.csaGameManager.login(setting, builder);
+      })
       .then(() => (this._appState = AppState.CSA_GAME))
       .catch((e) => {
         this.pushError("対局の初期化中にエラーが出ました: " + e);
@@ -595,12 +601,16 @@ export class Store {
     api
       .saveResearchSetting(researchSetting)
       .then(() => {
-        this.researcher = new USIPlayer(usiSetting, (info) => {
-          this.recordManager.updateSearchInfo(
-            SearchEngineType.RESEARCHER,
-            info
-          );
-        });
+        this.researcher = new USIPlayer(
+          usiSetting,
+          this.appSetting.engineTimeoutSeconds,
+          (info) => {
+            this.recordManager.updateSearchInfo(
+              SearchEngineType.RESEARCHER,
+              info
+            );
+          }
+        );
         return this.researcher.launch();
       })
       .then(() => {

@@ -6,7 +6,7 @@ import {
   CSASpecialMove,
   emptyCSAGameSummary,
 } from "@/ipc/csa";
-import { PlayerBuilder } from "@/players/builder";
+import { defaultPlayerBuilder, PlayerBuilder } from "@/players/builder";
 import { Player, SearchInfo } from "@/players/player";
 import { CSAGameSetting, defaultCSAGameSetting } from "@/settings/csa";
 import {
@@ -51,12 +51,12 @@ export class CSAGameManager {
   private player?: Player;
   private gameSummary = emptyCSAGameSummary();
   private searchInfo?: SearchInfo;
+  private playerBuilder = defaultPlayerBuilder();
 
   constructor(
     private recordManager: RecordManager,
     private blackClock: Clock,
     private whiteClock: Clock,
-    private playerBuilder: PlayerBuilder,
     private handlers: CSAGameHandlers
   ) {}
 
@@ -73,11 +73,12 @@ export class CSAGameManager {
     return color === this.gameSummary.myColor;
   }
 
-  login(setting: CSAGameSetting): Promise<void> {
+  login(setting: CSAGameSetting, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.sessionID) {
       throw new Error("CSAGameManager#start: session already exists");
     }
     this._setting = setting;
+    this.playerBuilder = playerBuilder;
     this.repeat = 0;
     return this.relogin();
   }

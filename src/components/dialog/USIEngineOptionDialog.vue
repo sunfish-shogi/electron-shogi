@@ -154,7 +154,8 @@ export default defineComponent({
     onMounted(async () => {
       showModalDialog(dialog.value);
       try {
-        engine.value = await api.getUSIEngineInfo(latest.path);
+        const timeoutSeconds = store.appSetting.engineTimeoutSeconds;
+        engine.value = await api.getUSIEngineInfo(latest.path, timeoutSeconds);
         mergeUSIEngineSetting(engine.value, latest);
         engineNameInput.value.value = engine.value.name;
         for (const option of options.value) {
@@ -189,7 +190,8 @@ export default defineComponent({
     const sendOption = async (name: string) => {
       store.retainBussyState();
       try {
-        await api.sendUSISetOption(engine.value.path, name);
+        const timeoutSeconds = store.appSetting.engineTimeoutSeconds;
+        await api.sendUSISetOption(engine.value.path, name, timeoutSeconds);
       } catch (e) {
         store.pushError(e);
       } finally {

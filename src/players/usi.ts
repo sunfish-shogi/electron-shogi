@@ -21,11 +21,12 @@ export class USIPlayer implements Player {
 
   constructor(
     private setting: USIEngineSetting,
+    private timeoutSeconds: number,
     private onSearchInfo?: (info: SearchInfo) => void
   ) {}
 
   async launch(): Promise<void> {
-    this.sessionID = await api.usiLaunch(this.setting);
+    this.sessionID = await api.usiLaunch(this.setting, this.timeoutSeconds);
     usiPlayers[this.sessionID] = this;
   }
 

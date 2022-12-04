@@ -34,9 +34,13 @@ export interface Bridge {
   loadUSIEngineSetting(): Promise<string>;
   saveUSIEngineSetting(setting: string): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
-  getUSIEngineInfo(path: string): Promise<string>;
-  sendUSISetOption(path: string, name: string): Promise<void>;
-  usiLaunch(json: string): Promise<number>;
+  getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<string>;
+  sendUSISetOption(
+    path: string,
+    name: string,
+    timeoutSeconds: number
+  ): Promise<void>;
+  usiLaunch(json: string, timeoutSeconds: number): Promise<number>;
   usiGo(
     sessionID: number,
     usi: string,
@@ -133,9 +137,16 @@ export interface API {
   loadUSIEngineSetting(): Promise<USIEngineSettings>;
   saveUSIEngineSetting(setting: USIEngineSettings): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
-  getUSIEngineInfo(path: string): Promise<USIEngineSetting>;
-  sendUSISetOption(path: string, name: string): Promise<void>;
-  usiLaunch(setting: USIEngineSetting): Promise<number>;
+  getUSIEngineInfo(
+    path: string,
+    timeoutSeconds: number
+  ): Promise<USIEngineSetting>;
+  sendUSISetOption(
+    path: string,
+    name: string,
+    timeoutSeconds: number
+  ): Promise<void>;
+  usiLaunch(setting: USIEngineSetting, timeoutSeconds: number): Promise<number>;
   usiGo(
     sessionID: number,
     usi: string,
@@ -214,11 +225,17 @@ const api: API = {
   saveUSIEngineSetting(settings: USIEngineSettings): Promise<void> {
     return bridge.saveUSIEngineSetting(settings.json);
   },
-  async getUSIEngineInfo(path: string): Promise<USIEngineSetting> {
-    return JSON.parse(await bridge.getUSIEngineInfo(path));
+  async getUSIEngineInfo(
+    path: string,
+    timeoutSeconds: number
+  ): Promise<USIEngineSetting> {
+    return JSON.parse(await bridge.getUSIEngineInfo(path, timeoutSeconds));
   },
-  usiLaunch(setting: USIEngineSetting): Promise<number> {
-    return bridge.usiLaunch(JSON.stringify(setting));
+  usiLaunch(
+    setting: USIEngineSetting,
+    timeoutSeconds: number
+  ): Promise<number> {
+    return bridge.usiLaunch(JSON.stringify(setting), timeoutSeconds);
   },
   usiGo(
     sessionID: number,

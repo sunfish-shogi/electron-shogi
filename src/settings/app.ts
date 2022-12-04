@@ -38,6 +38,7 @@ export type AppSetting = {
   tab: Tab;
   returnCode: string;
   autoSaveDirectory: string;
+  engineTimeoutSeconds: number;
   coefficientInSigmoid: number;
   badMoveLevelThreshold1: number;
   badMoveLevelThreshold2: number;
@@ -63,6 +64,7 @@ export type AppSettingUpdate = {
   tab?: Tab;
   returnCode?: string;
   autoSaveDirectory?: string;
+  engineTimeoutSeconds?: number;
   coefficientInSigmoid?: number;
   badMoveLevelThreshold1?: number;
   badMoveLevelThreshold2?: number;
@@ -92,6 +94,7 @@ export function defaultAppSetting(opt?: {
     tab: Tab.RECORD_INFO,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
+    engineTimeoutSeconds: 10,
     coefficientInSigmoid: 600,
     badMoveLevelThreshold1: 5,
     badMoveLevelThreshold2: 10,
@@ -114,6 +117,16 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   }
   if (setting.clockPitch < 220 || setting.clockPitch > 880) {
     return new Error("時計音の高さには220Hz～880Hzの値を指定してください。");
+  }
+  if (setting.engineTimeoutSeconds < 1) {
+    return new Error(
+      "エンジンのタイムアウト時間は 1 秒以上の値を指定してください。"
+    );
+  }
+  if (setting.engineTimeoutSeconds > 300) {
+    return new Error(
+      "エンジンのタイムアウト時間は 300 秒以下の値を指定してください。"
+    );
   }
   if (setting.coefficientInSigmoid <= 0) {
     return new Error("勝率換算係数には0より大きい値を指定してください。");

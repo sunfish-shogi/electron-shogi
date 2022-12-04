@@ -79,7 +79,10 @@ export default defineComponent({
         if (!path) {
           return;
         }
-        setting.value.addEngine(await api.getUSIEngineInfo(path));
+        const timeoutSeconds = store.appSetting.engineTimeoutSeconds;
+        setting.value.addEngine(
+          await api.getUSIEngineInfo(path, timeoutSeconds)
+        );
       } catch (e) {
         store.pushError(e);
       } finally {

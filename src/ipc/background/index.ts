@@ -246,22 +246,25 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (): string => {
 
 ipcMain.handle(
   Background.GET_USI_ENGINE_INFO,
-  async (_, path: string): Promise<string> => {
-    return JSON.stringify(await usiGetUSIEngineInfo(path));
+  async (_, path: string, timeoutSeconds: number): Promise<string> => {
+    return JSON.stringify(await usiGetUSIEngineInfo(path, timeoutSeconds));
   }
 );
 
 ipcMain.handle(
   Background.SEND_USI_SET_OPTION,
-  async (_, path: string, name: string) => {
-    await usiSendSetOptionCommand(path, name);
+  async (_, path: string, name: string, timeoutSeconds: number) => {
+    await usiSendSetOptionCommand(path, name, timeoutSeconds);
   }
 );
 
-ipcMain.handle(Background.LAUNCH_USI, async (_, json: string) => {
-  const setting = JSON.parse(json) as USIEngineSetting;
-  return await usiSetupPlayer(setting);
-});
+ipcMain.handle(
+  Background.LAUNCH_USI,
+  async (_, json: string, timeoutSeconds: number) => {
+    const setting = JSON.parse(json) as USIEngineSetting;
+    return await usiSetupPlayer(setting, timeoutSeconds);
+  }
+);
 
 ipcMain.handle(
   Background.USI_GO,

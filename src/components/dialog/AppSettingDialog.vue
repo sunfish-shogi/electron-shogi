@@ -85,7 +85,7 @@
               max="880"
               min="220"
             />
-            <div class="dialog-form-item-unit">Hz (220 ~ 880)</div>
+            <div class="dialog-form-item-unit">Hz (220 から 880 まで)</div>
           </div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">時計音の対象</div>
@@ -117,6 +117,21 @@
             <button class="dialog-button" @click="selectAutoSaveDirectory">
               選択
             </button>
+          </div>
+        </div>
+        <hr />
+        <div class="section">
+          <div class="section-title">USIプロトコル</div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">最大起動待ち時間</div>
+            <input
+              ref="engineTimeoutSeconds"
+              :value="appSetting.engineTimeoutSeconds"
+              type="number"
+              max="300"
+              min="1"
+            />
+            <div class="dialog-form-item-unit">秒 (1 から 300 まで)</div>
           </div>
         </div>
         <hr />
@@ -274,6 +289,7 @@ export default defineComponent({
     const clockSoundTarget: Ref = ref(null);
     const returnCode: Ref = ref(null);
     const autoSaveDirectory: Ref = ref(null);
+    const engineTimeoutSeconds: Ref = ref(null);
     const coefficientInSigmoid: Ref = ref(null);
     const badMoveLevelThreshold1: Ref = ref(null);
     const badMoveLevelThreshold2: Ref = ref(null);
@@ -301,6 +317,7 @@ export default defineComponent({
         clockSoundTarget: clockSoundTarget.value.value,
         returnCode: nameToReturnCode[returnCode.value.value],
         autoSaveDirectory: autoSaveDirectory.value.value,
+        engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
         coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
         badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
         badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
@@ -430,6 +447,7 @@ export default defineComponent({
       clockSoundTarget,
       returnCode,
       autoSaveDirectory,
+      engineTimeoutSeconds,
       coefficientInSigmoid,
       badMoveLevelThreshold1,
       badMoveLevelThreshold2,

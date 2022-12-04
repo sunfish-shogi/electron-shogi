@@ -10,7 +10,7 @@ import {
   SearchEngineType,
 } from "./record";
 import { Clock } from "./clock";
-import { PlayerBuilder } from "@/players/builder";
+import { defaultPlayerBuilder, PlayerBuilder } from "@/players/builder";
 
 export interface GameHandlers {
   onSaveRecord(): Promise<void>;
@@ -60,6 +60,7 @@ export class GameManager {
   private repeat = 0;
   private blackPlayer?: Player;
   private whitePlayer?: Player;
+  private playerBuilder = defaultPlayerBuilder();
   private gameResults: GameResults = newGameResults("", "");
   private lastEventID: number;
 
@@ -67,7 +68,6 @@ export class GameManager {
     private recordManager: RecordManager,
     private blackClock: Clock,
     private whiteClock: Clock,
-    private playerBuilder: PlayerBuilder,
     private handlers: GameHandlers
   ) {
     this.state = GameState.IDLE;
@@ -79,13 +79,17 @@ export class GameManager {
     return this._setting;
   }
 
-  async startGame(setting: GameSetting): Promise<void> {
+  async startGame(
+    setting: GameSetting,
+    playerBuilder: PlayerBuilder
+  ): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
         "GameManager#startGame: 前回の対局が正常に終了できていません。アプリを再起動してください。"
       );
     }
     this._setting = setting;
+    this.playerBuilder = playerBuilder;
     this.repeat = 0;
     if (!setting.startPosition) {
       this.startMoveNumber = this.recordManager.record.current.number;

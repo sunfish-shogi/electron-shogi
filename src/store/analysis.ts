@@ -52,7 +52,11 @@ export class AnalysisManager {
 
   private async setupEngine(setting: USIEngineSetting): Promise<void> {
     await this.closeEngine();
-    const researcher = new USIPlayer(setting, this.updateSearchInfo.bind(this));
+    const researcher = new USIPlayer(
+      setting,
+      this.appSetting.engineTimeoutSeconds,
+      this.updateSearchInfo.bind(this)
+    );
     await researcher.launch();
     this.researcher = researcher;
   }

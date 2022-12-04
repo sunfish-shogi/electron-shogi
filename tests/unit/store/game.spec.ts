@@ -61,11 +61,10 @@ describe("store/game", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s))
+      .next(() => manager.startGame(gameSetting10m30s, mockPlayerBuilder))
       .next(() => {
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
@@ -131,15 +130,17 @@ describe("store/game", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
       .next(() =>
-        manager.startGame({
-          ...gameSetting10m30s,
-          startPosition: InitialPositionType.HANDICAP_BISHOP,
-        })
+        manager.startGame(
+          {
+            ...gameSetting10m30s,
+            startPosition: InitialPositionType.HANDICAP_BISHOP,
+          },
+          mockPlayerBuilder
+        )
       )
       .next(() => {
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
@@ -187,11 +188,10 @@ describe("store/game", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s))
+      .next(() => manager.startGame(gameSetting10m30s, mockPlayerBuilder))
       .next(() => manager.endGame(SpecialMove.INTERRUPT))
       .next(() => {
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
@@ -251,11 +251,10 @@ describe("store/game", () => {
       recordManager,
       blackClock,
       whiteClock,
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
-      .next(() => manager.startGame(gameSetting10m30s))
+      .next(() => manager.startGame(gameSetting10m30s, mockPlayerBuilder))
       .next(() => {
         expect(blackClock.timeMs).toBe(600 * 1e3);
         expect(whiteClock.timeMs).toBe(600 * 1e3);
@@ -296,15 +295,17 @@ describe("store/game", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
       .next(() => {
-        manager.startGame({
-          ...gameSetting10m30s,
-          repeat: 2,
-        });
+        manager.startGame(
+          {
+            ...gameSetting10m30s,
+            repeat: 2,
+          },
+          mockPlayerBuilder
+        );
         expect(
           recordManager.record.metadata.getStandardMetadata(
             RecordMetadataKey.TITLE
@@ -397,17 +398,19 @@ describe("store/game", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
       .next(() => {
-        manager.startGame({
-          ...gameSetting10m30s,
-          startPosition: undefined,
-          repeat: 2,
-          swapPlayers: false,
-        });
+        manager.startGame(
+          {
+            ...gameSetting10m30s,
+            startPosition: undefined,
+            repeat: 2,
+            swapPlayers: false,
+          },
+          mockPlayerBuilder
+        );
         expect(
           recordManager.record.metadata.getStandardMetadata(
             RecordMetadataKey.TITLE
@@ -499,15 +502,17 @@ describe("store/game", () => {
       recordManager,
       new Clock(),
       new Clock(),
-      mockPlayerBuilder,
       mockHandlers
     );
     return new TimeoutChain()
       .next(() =>
-        manager.startGame({
-          ...gameSetting10m30s,
-          maxMoves: 4,
-        })
+        manager.startGame(
+          {
+            ...gameSetting10m30s,
+            maxMoves: 4,
+          },
+          mockPlayerBuilder
+        )
       )
       .next(() => {
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);

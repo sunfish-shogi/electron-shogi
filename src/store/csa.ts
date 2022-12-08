@@ -8,13 +8,18 @@ import {
 } from "@/ipc/csa";
 import { defaultPlayerBuilder, PlayerBuilder } from "@/players/builder";
 import { Player, SearchInfo } from "@/players/player";
-import { CSAGameSetting, defaultCSAGameSetting } from "@/settings/csa";
+import {
+  CSAGameSetting,
+  CSAProtocolVersion,
+  defaultCSAGameSetting,
+} from "@/settings/csa";
 import {
   Color,
   RecordFormatType,
   parseCSAMove,
   formatCSAMove,
   SpecialMove,
+  Move,
 } from "@/shogi";
 import { Clock } from "./clock";
 import {
@@ -308,19 +313,10 @@ export class CSAGameManager {
           playerStates.black.time * this.gameSummary.timeUnitMs,
           playerStates.white.time * this.gameSummary.timeUnitMs,
           {
-            onMove: (move, info) => {
-              this.searchInfo = info;
-              api.csaMove(this.sessionID, formatCSAMove(move));
-            },
-            onResign: () => {
-              api.csaResign(this.sessionID);
-            },
-            onWin: () => {
-              api.csaWin(this.sessionID);
-            },
-            onError: (e: unknown) => {
-              this.handlers.onError(e);
-            },
+            onMove: this.onPlayerMove.bind(this),
+            onResign: this.onPlayerResign.bind(this),
+            onWin: this.onPlayerWin.bind(this),
+            onError: this.onPlayerError.bind(this),
           }
         )
         .catch((e) => {
@@ -348,6 +344,38 @@ export class CSAGameManager {
           );
         });
     }
+  }
+
+  private onPlayerMove(move: Move, info?: SearchInfo): void {
+    this.searchInfo = info;
+    let score: number | undefined = undefined;
+    let pv: string | undefined = undefined;
+    switch (this._setting.server.protocolVersion) {
+      case CSAProtocolVersion.V121:
+        break;
+      case CSAProtocolVersion.V121_FLOODGATE:
+        score = info?.score;
+        if (info?.pv) {
+          for (const move of info.pv) {
+            pv = pv ? pv + " " : "";
+            pv += formatCSAMove(move);
+          }
+        }
+        break;
+    }
+    api.csaMove(this.sessionID, formatCSAMove(move), score, pv);
+  }
+
+  private onPlayerResign(): void {
+    api.csaResign(this.sessionID);
+  }
+
+  private onPlayerWin(): void {
+    api.csaWin(this.sessionID);
+  }
+
+  private onPlayerError(e: unknown): void {
+    this.handlers.onError(e);
   }
 }
 

@@ -1,7 +1,13 @@
 import * as uri from "@/uri";
 import { PlayerSetting } from "./player";
 
+export enum CSAProtocolVersion {
+  V121 = "v121",
+  V121_FLOODGATE = "v121_floodgate",
+}
+
 export type CSAServerSetting = {
+  protocolVersion: CSAProtocolVersion;
   host: string;
   port: number;
   id: string;
@@ -19,6 +25,7 @@ export type CSAGameSetting = {
 
 export function defaultCSAServerSetting(): CSAServerSetting {
   return {
+    protocolVersion: CSAProtocolVersion.V121,
     host: "localhost",
     port: 4081,
     id: "",
@@ -43,6 +50,12 @@ export function defaultCSAGameSetting(): CSAGameSetting {
 export function validateCSAGameSetting(
   csaGameSetting: CSAGameSetting
 ): Error | undefined {
+  if (
+    csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121 &&
+    csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121_FLOODGATE
+  ) {
+    return new Error("プロトコルのバージョンを選択してください。");
+  }
   if (csaGameSetting.server.host === "") {
     return new Error("ホスト名が空です。");
   }
@@ -104,6 +117,7 @@ export function appendCSAGameSettingHistory(
   const newServerHistory = [setting.server];
   for (const server of history.serverHistory) {
     if (
+      server.protocolVersion !== setting.server.protocolVersion ||
       server.host !== setting.server.host ||
       server.port !== setting.server.port ||
       server.id !== setting.server.id ||
@@ -126,6 +140,7 @@ export function appendCSAGameSettingHistory(
 }
 
 export type SecureCSAServerSetting = {
+  protocolVersion: CSAProtocolVersion;
   host: string;
   port: number;
   id: string;
@@ -163,6 +178,7 @@ export function encryptCSAGameSettingHistory(
   const serverHistory = [] as SecureCSAServerSetting[];
   for (const setting of history.serverHistory) {
     const entry = {
+      protocolVersion: setting.protocolVersion,
       host: setting.host,
       port: setting.port,
       id: setting.id,
@@ -191,6 +207,7 @@ export function decryptCSAGameSettingHistory(
   const serverHistory = [] as CSAServerSetting[];
   for (const setting of history.serverHistory) {
     serverHistory.push({
+      protocolVersion: setting.protocolVersion,
       host: setting.host,
       port: setting.port,
       id: setting.id,

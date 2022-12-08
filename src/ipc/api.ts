@@ -63,7 +63,12 @@ export interface Bridge {
   csaLogin(json: string): Promise<number>;
   csaLogout(sessionID: number): Promise<void>;
   csaAgree(sessionID: number, gameID: string): Promise<void>;
-  csaMove(sessionID: number, move: string): Promise<void>;
+  csaMove(
+    sessionID: number,
+    move: string,
+    score?: number,
+    pv?: string
+  ): Promise<void>;
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
@@ -169,7 +174,12 @@ export interface API {
   csaLogin(setting: CSAServerSetting): Promise<number>;
   csaLogout(sessionID: number): Promise<void>;
   csaAgree(sessionID: number, gameID: string): Promise<void>;
-  csaMove(sessionID: number, move: string): Promise<void>;
+  csaMove(
+    sessionID: number,
+    move: string,
+    score?: number,
+    pv?: string
+  ): Promise<void>;
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;

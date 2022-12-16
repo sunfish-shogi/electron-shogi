@@ -312,7 +312,7 @@ export interface ImmutableRecord {
   on(event: "changePosition", handler: () => void): void;
 }
 
-export default class Record {
+export class Record {
   public metadata: RecordMetadata;
   private _initialPosition: ImmutablePosition;
   private _position: Position;

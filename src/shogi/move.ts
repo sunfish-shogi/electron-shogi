@@ -1,11 +1,11 @@
 import { Color } from "./color";
 import { Piece, PieceType, pieceTypeToSFEN, standardPieceName } from "./piece";
-import Square from "./square";
+import { Square } from "./square";
 
 const fileDisplayTexts = ["１", "２", "３", "４", "５", "６", "７", "８", "９"];
 const rankDisplayTexts = ["一", "二", "三", "四", "五", "六", "七", "八", "九"];
 
-export default class Move {
+export class Move {
   constructor(
     public from: Square | PieceType,
     public to: Square,

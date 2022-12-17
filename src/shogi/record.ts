@@ -712,7 +712,7 @@ export default class Record {
         data.slice(prefixPositionStartpos.length)
       );
     } else if (data.startsWith(prefixPositionSfen)) {
-      return Record.newByUSIFromSFENPosition(
+      return Record.newByUSIFromSFEN(
         data.slice(prefixPositionSfen.length)
       );
     } else if (data.startsWith(prefixStartpos)) {
@@ -721,7 +721,7 @@ export default class Record {
         data.slice(prefixStartpos.length)
       );
     } else if (data.startsWith(prefixSfen)) {
-      return Record.newByUSIFromSFENPosition(data.slice(prefixSfen.length));
+      return Record.newByUSIFromSFEN(data.slice(prefixSfen.length));
     } else if (data.startsWith(prefixMoves)) {
       return Record.newByUSIFromMoves(new Position(), data);
     } else {
@@ -729,7 +729,7 @@ export default class Record {
     }
   }
 
-  private static newByUSIFromSFENPosition(data: string): Record | Error {
+  private static newByUSIFromSFEN(data: string): Record | Error {
     const sections = data.split(" ");
     if (sections.length < 4) {
       return new Error("不正なUSI(2): " + data);

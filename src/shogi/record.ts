@@ -712,9 +712,7 @@ export class Record {
         data.slice(prefixPositionStartpos.length)
       );
     } else if (data.startsWith(prefixPositionSfen)) {
-      return Record.newByUSIFromSFEN(
-        data.slice(prefixPositionSfen.length)
-      );
+      return Record.newByUSIFromSFEN(data.slice(prefixPositionSfen.length));
     } else if (data.startsWith(prefixStartpos)) {
       return Record.newByUSIFromMoves(
         new Position(),

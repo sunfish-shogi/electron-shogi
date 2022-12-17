@@ -647,7 +647,7 @@ export class Record {
     let ret = "position sfen " + this.initialPosition.sfen + " moves";
     this.movesBefore.forEach((node) => {
       if (node.move instanceof Move) {
-        ret += " " + node.move.sfen;
+        ret += " " + node.move.usi;
       }
     });
     return ret;
@@ -660,7 +660,7 @@ export class Record {
         p = p.branch as NodeImpl;
       }
       if (p.move instanceof Move) {
-        ret += " " + p.move.sfen;
+        ret += " " + p.move.usi;
       }
     }
     return ret;

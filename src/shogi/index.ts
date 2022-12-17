@@ -15,7 +15,7 @@ export {
   parseSFENColor,
 } from "./color";
 export { default as Square } from "./square";
-export { default as Move, parseSFENMove } from "./move";
+export { default as Move, parseUSIMove } from "./move";
 export { default as Board, InitialPositionType } from "./board";
 export { default as Hand, ImmutableHand } from "./hand";
 export {

@@ -5,7 +5,7 @@ import {
   Move,
   Color,
   reverseColor,
-  parseSFENMove,
+  parseUSIMove,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/helpers/time";
 
@@ -754,7 +754,7 @@ export default class Record {
       return new Error("不正なUSI(4): " + data);
     }
     for (let i = 1; i < sections.length; i++) {
-      const parsed = parseSFENMove(sections[i]);
+      const parsed = parseUSIMove(sections[i]);
       if (!parsed) {
         break;
       }

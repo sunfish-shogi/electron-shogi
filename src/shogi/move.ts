@@ -99,7 +99,7 @@ export default class Move {
   }
 }
 
-export function parseSFENMove(sfen: string): {
+export function parseUSIMove(sfen: string): {
   from: Square | PieceType;
   to: Square;
   promote: boolean;

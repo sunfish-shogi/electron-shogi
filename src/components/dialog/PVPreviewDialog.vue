@@ -14,26 +14,46 @@
         <template #right-control>
           <div class="control top">
             <div class="control-row">
-              <button class="control-item" @click="doFlip">
+              <button
+                class="control-item"
+                data-hotkey="Control+t"
+                @click="doFlip"
+              >
                 <ButtonIcon class="icon" :icon="Icon.FLIP" />
               </button>
-              <button class="control-item" @click="close">
+              <button class="control-item" data-hotkey="Escape" @click="close">
                 <ButtonIcon class="icon" :icon="Icon.CLOSE" />
               </button>
             </div>
             <div class="control-row">
-              <button class="control-item" @click="goBegin">
+              <button
+                class="control-item"
+                data-hotkey="ArrowLeft"
+                @click="goBegin"
+              >
                 <ButtonIcon class="icon" :icon="Icon.FIRST" />
               </button>
-              <button class="control-item" @click="goEnd">
+              <button
+                class="control-item"
+                data-hotkey="ArrowRight"
+                @click="goEnd"
+              >
                 <ButtonIcon class="icon" :icon="Icon.LAST" />
               </button>
             </div>
             <div class="control-row">
-              <button class="control-item" @click="goBack">
+              <button
+                class="control-item"
+                data-hotkey="ArrowUp"
+                @click="goBack"
+              >
                 <ButtonIcon class="icon" :icon="Icon.BACK" />
               </button>
-              <button class="control-item" @click="goForward">
+              <button
+                class="control-item"
+                data-hotkey="ArrowDown"
+                @click="goForward"
+              >
                 <ButtonIcon class="icon" :icon="Icon.NEXT" />
               </button>
             </div>
@@ -60,7 +80,7 @@ import {
   ref,
   reactive,
   watch,
-  onUnmounted,
+  onBeforeUnmount,
 } from "vue";
 import BoardView from "@/components/primitive/BoardView.vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
@@ -68,6 +88,7 @@ import { RectSize } from "@/components/primitive/Types";
 import { computed } from "vue";
 import { showModalDialog } from "@/helpers/dialog";
 import { Icon } from "@/assets/icons";
+import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
 
 export default defineComponent({
   name: "PVPreviewDialog",
@@ -121,10 +142,12 @@ export default defineComponent({
       updateRecord();
       window.addEventListener("resize", updateSize);
       showModalDialog(dialog.value);
+      installHotKey(dialog.value);
     });
 
-    onUnmounted(() => {
+    onBeforeUnmount(() => {
       window.removeEventListener("resize", updateSize);
+      uninstallHotKey(dialog.value);
     });
 
     watch([() => props.position, () => props.pv], () => {

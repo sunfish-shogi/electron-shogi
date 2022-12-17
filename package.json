@@ -22,6 +22,7 @@
   },
   "main": "dist/src/background.js",
   "dependencies": {
+    "@github/hotkey": "^2.0.1",
     "chart.js": "^4.0.1",
     "iconv-lite": "^0.6.3",
     "log4js": "^6.7.0",

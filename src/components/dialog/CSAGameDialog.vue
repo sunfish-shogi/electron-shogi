@@ -148,7 +148,6 @@
           <label for="auto-flip">盤面の向きを自動で調整する</label>
         </div>
       </div>
-      <!-- TODO: 連続対局 -->
       <div class="dialog-main-buttons">
         <button class="dialog-button" @click="onStart()">対局開始</button>
         <button class="dialog-button" @click="onCancel()">キャンセル</button>

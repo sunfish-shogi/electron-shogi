@@ -21,7 +21,12 @@
               >
                 <ButtonIcon class="icon" :icon="Icon.FLIP" />
               </button>
-              <button class="control-item" data-hotkey="Escape" @click="close">
+              <button
+                class="control-item"
+                autofocus
+                data-hotkey="Escape"
+                @click="close"
+              >
                 <ButtonIcon class="icon" :icon="Icon.CLOSE" />
               </button>
             </div>

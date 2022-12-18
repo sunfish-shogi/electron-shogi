@@ -5,7 +5,7 @@ import {
   Move,
   Color,
   reverseColor,
-  parseSFENMove,
+  parseUSIMove,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/helpers/time";
 
@@ -647,7 +647,7 @@ export class Record {
     let ret = "position sfen " + this.initialPosition.sfen + " moves";
     this.movesBefore.forEach((node) => {
       if (node.move instanceof Move) {
-        ret += " " + node.move.sfen;
+        ret += " " + node.move.usi;
       }
     });
     return ret;
@@ -660,7 +660,7 @@ export class Record {
         p = p.branch as NodeImpl;
       }
       if (p.move instanceof Move) {
-        ret += " " + p.move.sfen;
+        ret += " " + p.move.usi;
       }
     }
     return ret;
@@ -712,16 +712,14 @@ export class Record {
         data.slice(prefixPositionStartpos.length)
       );
     } else if (data.startsWith(prefixPositionSfen)) {
-      return Record.newByUSIFromSFENPosition(
-        data.slice(prefixPositionSfen.length)
-      );
+      return Record.newByUSIFromSFEN(data.slice(prefixPositionSfen.length));
     } else if (data.startsWith(prefixStartpos)) {
       return Record.newByUSIFromMoves(
         new Position(),
         data.slice(prefixStartpos.length)
       );
     } else if (data.startsWith(prefixSfen)) {
-      return Record.newByUSIFromSFENPosition(data.slice(prefixSfen.length));
+      return Record.newByUSIFromSFEN(data.slice(prefixSfen.length));
     } else if (data.startsWith(prefixMoves)) {
       return Record.newByUSIFromMoves(new Position(), data);
     } else {
@@ -729,7 +727,7 @@ export class Record {
     }
   }
 
-  private static newByUSIFromSFENPosition(data: string): Record | Error {
+  private static newByUSIFromSFEN(data: string): Record | Error {
     const sections = data.split(" ");
     if (sections.length < 4) {
       return new Error("不正なUSI(2): " + data);
@@ -754,7 +752,7 @@ export class Record {
       return new Error("不正なUSI(4): " + data);
     }
     for (let i = 1; i < sections.length; i++) {
-      const parsed = parseSFENMove(sections[i]);
+      const parsed = parseUSIMove(sections[i]);
       if (!parsed) {
         break;
       }

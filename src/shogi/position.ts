@@ -6,7 +6,7 @@ import {
   parseSFENColor,
   isValidSFENColor,
 } from "./color";
-import { Move, parseSFENMove } from "./move";
+import { Move, parseUSIMove } from "./move";
 import { Square } from "./square";
 import { Hand, ImmutableHand } from "./hand";
 import { Piece, PieceType } from "./piece";
@@ -182,7 +182,7 @@ export class Position {
   }
 
   createMoveBySFEN(sfen: string): Move | null {
-    const m = parseSFENMove(sfen);
+    const m = parseUSIMove(sfen);
     if (!m) {
       return null;
     }

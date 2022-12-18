@@ -149,8 +149,17 @@
         </div>
       </div>
       <div class="dialog-main-buttons">
-        <button class="dialog-button" @click="onStart()">対局開始</button>
-        <button class="dialog-button" @click="onCancel()">キャンセル</button>
+        <button
+          data-hotkey="Enter"
+          autofocus
+          class="dialog-button"
+          @click="onStart()"
+        >
+          対局開始
+        </button>
+        <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
+          キャンセル
+        </button>
       </div>
     </dialog>
   </div>
@@ -158,7 +167,15 @@
 
 <script lang="ts">
 import { USIEngineSetting, USIEngineSettings } from "@/settings/usi";
-import { ref, onMounted, defineComponent, Ref, computed, onUpdated } from "vue";
+import {
+  ref,
+  onMounted,
+  defineComponent,
+  Ref,
+  computed,
+  onUpdated,
+  onBeforeUnmount,
+} from "vue";
 import api from "@/ipc/api";
 import { useStore } from "@/store";
 import {
@@ -175,6 +192,7 @@ import { Icon } from "@/assets/icons";
 import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/settings/player";
 import { readInputAsNumber } from "@/helpers/form";
+import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
 
 export default defineComponent({
   name: "CSAGameDialog",
@@ -210,6 +228,7 @@ export default defineComponent({
         history.value = await api.loadCSAGameSettingHistory();
         engineSettings.value = await api.loadUSIEngineSetting();
         showModalDialog(dialog.value);
+        installHotKey(dialog.value);
         defaultValueLoaded = true;
       } catch (e) {
         store.pushError(e);
@@ -217,6 +236,10 @@ export default defineComponent({
       } finally {
         store.releaseBussyState();
       }
+    });
+
+    onBeforeUnmount(() => {
+      uninstallHotKey(dialog.value);
     });
 
     onUpdated(() => {

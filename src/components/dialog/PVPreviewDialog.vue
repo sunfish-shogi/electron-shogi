@@ -69,6 +69,13 @@
         <div v-for="info in infos" :key="info" class="information">
           {{ info }}
         </div>
+        <div class="information">
+          <span v-for="move in displayPV" :key="move.number">
+            <span class="move-element" :class="{ selected: move.selected }"
+              >&nbsp;{{ move.text }}&nbsp;</span
+            >
+          </span>
+        </div>
       </div>
     </dialog>
   </div>
@@ -189,6 +196,16 @@ export default defineComponent({
       record.current.move instanceof Move ? record.current.move : null
     );
 
+    const displayPV = computed(() => {
+      return record.moves.slice(1).map((move) => {
+        return {
+          number: move.number,
+          text: move.displayText,
+          selected: move.number === record.current.number,
+        };
+      });
+    });
+
     return {
       dialog,
       appSetting: store.appSetting,
@@ -196,6 +213,7 @@ export default defineComponent({
       lastMove,
       maxSize,
       flip,
+      displayPV,
       close,
       goBegin,
       goEnd,
@@ -245,7 +263,7 @@ export default defineComponent({
   vertical-align: top;
 }
 .informations {
-  height: 80px;
+  height: 120px;
   width: 80vw;
   overflow-y: scroll;
   margin-left: auto;
@@ -257,5 +275,8 @@ export default defineComponent({
   font-size: 14px;
   margin: 2px;
   text-align: left;
+}
+.move-element.selected {
+  background-color: var(--text-bg-color-selected);
 }
 </style>

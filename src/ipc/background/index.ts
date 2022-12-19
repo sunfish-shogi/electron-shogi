@@ -1,4 +1,10 @@
-import { BrowserWindow, dialog, ipcMain, WebContents } from "electron";
+import {
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  WebContents,
+  WebFrameMain,
+} from "electron";
 import { Background, Renderer } from "@/ipc/channel";
 import path from "path";
 import fs from "fs";
@@ -72,7 +78,20 @@ export function getWebContents(): WebContents {
   return mainWindow.webContents;
 }
 
-ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, () => {
+function validateSender(frame: WebFrameMain) {
+  const url = new URL(frame.url);
+  if (
+    !(url.protocol === "http:" && url.host.startsWith("localhost:")) &&
+    !(url.protocol === "file:" && url.host === "")
+  ) {
+    throw new Error(
+      `予期せぬイベントの送信元です。このエラーメッセージを開発者に報告してください。 [${frame.url}]`
+    );
+  }
+}
+
+ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, (event) => {
+  validateSender(event.senderFrame);
   const path = process.argv[process.argv.length - 1];
   if (isValidRecordFilePath(path)) {
     return path;
@@ -95,7 +114,8 @@ function isValidRecordFilePath(path: string) {
 
 ipcMain.handle(
   Background.SHOW_OPEN_RECORD_DIALOG,
-  async (): Promise<string> => {
+  async (event): Promise<string> => {
+    validateSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
       throw "予期せぬエラーでダイアログを表示せきません。";
@@ -110,7 +130,8 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.OPEN_RECORD,
-  async (_, path: string): Promise<Uint8Array> => {
+  async (event, path: string): Promise<Uint8Array> => {
+    validateSender(event.senderFrame);
     if (!isValidRecordFilePath(path)) {
       throw new Error(`取り扱いできないファイル拡張子です`);
     }
@@ -120,7 +141,8 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.SHOW_SAVE_RECORD_DIALOG,
-  async (_, defaultPath: string): Promise<string> => {
+  async (event, defaultPath: string): Promise<string> => {
+    validateSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
       throw "予期せぬエラーでダイアログを表示せきません。";
@@ -140,7 +162,8 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.SAVE_RECORD,
-  async (_, filePath: string, data: Uint8Array): Promise<void> => {
+  async (event, filePath: string, data: Uint8Array): Promise<void> => {
+    validateSender(event.senderFrame);
     if (!isValidRecordFilePath(filePath)) {
       throw new Error(`取り扱いできないファイル拡張子です`);
     }
@@ -152,7 +175,8 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.SHOW_SELECT_FILE_DIALOG,
-  async (): Promise<string> => {
+  async (event): Promise<string> => {
+    validateSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
       throw "予期せぬエラーでダイアログを表示せきません。";
@@ -166,7 +190,8 @@ ipcMain.handle(
 
 ipcMain.handle(
   Background.SHOW_SELECT_DIRECTORY_DIALOG,
-  async (_, defaultPath?: string): Promise<string> => {
+  async (event, defaultPath?: string): Promise<string> => {
+    validateSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
       throw "予期せぬエラーでダイアログを表示せきません。";
@@ -179,58 +204,80 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle(Background.LOAD_APP_SETTING, (): string => {
+ipcMain.handle(Background.LOAD_APP_SETTING, (event): string => {
+  validateSender(event.senderFrame);
   return JSON.stringify(loadAppSetting());
 });
 
-ipcMain.handle(Background.SAVE_APP_SETTING, (_, json: string): void => {
+ipcMain.handle(Background.SAVE_APP_SETTING, (event, json: string): void => {
+  validateSender(event.senderFrame);
   saveAppSetting(JSON.parse(json));
 });
 
-ipcMain.handle(Background.LOAD_RESEARCH_SETTING, (): string => {
+ipcMain.handle(Background.LOAD_RESEARCH_SETTING, (event): string => {
+  validateSender(event.senderFrame);
   return JSON.stringify(loadResearchSetting());
 });
 
-ipcMain.handle(Background.SAVE_RESEARCH_SETTING, (_, json: string): void => {
-  saveResearchSetting(JSON.parse(json));
-});
+ipcMain.handle(
+  Background.SAVE_RESEARCH_SETTING,
+  (event, json: string): void => {
+    validateSender(event.senderFrame);
+    saveResearchSetting(JSON.parse(json));
+  }
+);
 
-ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, (): string => {
+ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, (event): string => {
+  validateSender(event.senderFrame);
   return JSON.stringify(loadAnalysisSetting());
 });
 
-ipcMain.handle(Background.SAVE_ANALYSIS_SETTING, (_, json: string): void => {
-  saveAnalysisSetting(JSON.parse(json));
-});
+ipcMain.handle(
+  Background.SAVE_ANALYSIS_SETTING,
+  (event, json: string): void => {
+    validateSender(event.senderFrame);
+    saveAnalysisSetting(JSON.parse(json));
+  }
+);
 
-ipcMain.handle(Background.LOAD_GAME_SETTING, (): string => {
+ipcMain.handle(Background.LOAD_GAME_SETTING, (event): string => {
+  validateSender(event.senderFrame);
   return JSON.stringify(loadGameSetting());
 });
 
-ipcMain.handle(Background.SAVE_GAME_SETTING, (_, json: string): void => {
+ipcMain.handle(Background.SAVE_GAME_SETTING, (event, json: string): void => {
+  validateSender(event.senderFrame);
   saveGameSetting(JSON.parse(json));
 });
 
-ipcMain.handle(Background.LOAD_CSA_GAME_SETTING_HISTORY, (): string => {
+ipcMain.handle(Background.LOAD_CSA_GAME_SETTING_HISTORY, (event): string => {
+  validateSender(event.senderFrame);
   return JSON.stringify(loadCSAGameSettingHistory());
 });
 
 ipcMain.handle(
   Background.SAVE_CSA_GAME_SETTING_HISTORY,
-  (_, json: string): void => {
+  (event, json: string): void => {
+    validateSender(event.senderFrame);
     saveCSAGameSettingHistory(JSON.parse(json));
   }
 );
 
-ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (): string => {
+ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (event): string => {
+  validateSender(event.senderFrame);
   return loadUSIEngineSetting().json;
 });
 
-ipcMain.handle(Background.SAVE_USI_ENGINE_SETTING, (_, json: string): void => {
-  saveUSIEngineSetting(new USIEngineSettings(json));
-});
+ipcMain.handle(
+  Background.SAVE_USI_ENGINE_SETTING,
+  (event, json: string): void => {
+    validateSender(event.senderFrame);
+    saveUSIEngineSetting(new USIEngineSettings(json));
+  }
+);
 
-ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (): string => {
+ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
+  validateSender(event.senderFrame);
   const win = BrowserWindow.getFocusedWindow();
   if (!win) {
     throw "予期せぬエラーでダイアログを表示せきません。";
@@ -246,21 +293,24 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (): string => {
 
 ipcMain.handle(
   Background.GET_USI_ENGINE_INFO,
-  async (_, path: string, timeoutSeconds: number): Promise<string> => {
+  async (event, path: string, timeoutSeconds: number): Promise<string> => {
+    validateSender(event.senderFrame);
     return JSON.stringify(await usiGetUSIEngineInfo(path, timeoutSeconds));
   }
 );
 
 ipcMain.handle(
   Background.SEND_USI_SET_OPTION,
-  async (_, path: string, name: string, timeoutSeconds: number) => {
+  async (event, path: string, name: string, timeoutSeconds: number) => {
+    validateSender(event.senderFrame);
     await usiSendSetOptionCommand(path, name, timeoutSeconds);
   }
 );
 
 ipcMain.handle(
   Background.LAUNCH_USI,
-  async (_, json: string, timeoutSeconds: number) => {
+  async (event, json: string, timeoutSeconds: number) => {
+    validateSender(event.senderFrame);
     const setting = JSON.parse(json) as USIEngineSetting;
     return await usiSetupPlayer(setting, timeoutSeconds);
   }
@@ -269,13 +319,14 @@ ipcMain.handle(
 ipcMain.handle(
   Background.USI_GO,
   (
-    _,
+    event,
     sessionID: number,
     usi: string,
     json: string,
     blackTimeMs: number,
     whiteTimeMs: number
   ) => {
+    validateSender(event.senderFrame);
     const timeLimit = JSON.parse(json);
     usiGo(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
   }
@@ -284,84 +335,105 @@ ipcMain.handle(
 ipcMain.handle(
   Background.USI_GO_PONDER,
   (
-    _,
+    event,
     sessionID: number,
     usi: string,
     json: string,
     blackTimeMs: number,
     whiteTimeMs: number
   ) => {
+    validateSender(event.senderFrame);
     const timeLimit = JSON.parse(json);
     usiGoPonder(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
   }
 );
 
-ipcMain.handle(Background.USI_GO_PONDER_HIT, (_, sessionID: number) => {
+ipcMain.handle(Background.USI_GO_PONDER_HIT, (event, sessionID: number) => {
+  validateSender(event.senderFrame);
   usiPonderHit(sessionID);
 });
 
 ipcMain.handle(
   Background.USI_GO_INFINITE,
-  (_, sessionID: number, usi: string) => {
+  (event, sessionID: number, usi: string) => {
+    validateSender(event.senderFrame);
     usiGoInfinite(sessionID, usi);
   }
 );
 
-ipcMain.handle(Background.USI_STOP, (_, sessionID: number) => {
+ipcMain.handle(Background.USI_STOP, (event, sessionID: number) => {
+  validateSender(event.senderFrame);
   usiStop(sessionID);
 });
 
 ipcMain.handle(
   Background.USI_GAMEOVER,
-  (_, sessionID: number, result: GameResult) => {
+  (event, sessionID: number, result: GameResult) => {
+    validateSender(event.senderFrame);
     usiGameover(sessionID, result);
   }
 );
 
-ipcMain.handle(Background.USI_QUIT, (_, sessionID: number) => {
+ipcMain.handle(Background.USI_QUIT, (event, sessionID: number) => {
+  validateSender(event.senderFrame);
   usiQuit(sessionID);
 });
 
-ipcMain.handle(Background.CSA_LOGIN, (_, json: string): number => {
+ipcMain.handle(Background.CSA_LOGIN, (event, json: string): number => {
+  validateSender(event.senderFrame);
   const setting: CSAServerSetting = JSON.parse(json);
   return csaLogin(setting);
 });
 
-ipcMain.handle(Background.CSA_LOGOUT, (_, sessionID: number): void => {
+ipcMain.handle(Background.CSA_LOGOUT, (event, sessionID: number): void => {
+  validateSender(event.senderFrame);
   csaLogout(sessionID);
 });
 
 ipcMain.handle(
   Background.CSA_AGREE,
-  (_, sessionID: number, gameID: string): void => {
+  (event, sessionID: number, gameID: string): void => {
+    validateSender(event.senderFrame);
     csaAgree(sessionID, gameID);
   }
 );
 
 ipcMain.handle(
   Background.CSA_MOVE,
-  (_, sessionID: number, move: string, score?: number, pv?: string): void => {
+  (
+    event,
+    sessionID: number,
+    move: string,
+    score?: number,
+    pv?: string
+  ): void => {
+    validateSender(event.senderFrame);
     csaDoMove(sessionID, move, score, pv);
   }
 );
 
-ipcMain.handle(Background.CSA_RESIGN, (_, sessionID: number): void => {
+ipcMain.handle(Background.CSA_RESIGN, (event, sessionID: number): void => {
+  validateSender(event.senderFrame);
   csaResign(sessionID);
 });
 
-ipcMain.handle(Background.CSA_WIN, (_, sessionID: number): void => {
+ipcMain.handle(Background.CSA_WIN, (event, sessionID: number): void => {
+  validateSender(event.senderFrame);
   csaWin(sessionID);
 });
 
-ipcMain.handle(Background.CSA_STOP, (_, sessionID: number): void => {
+ipcMain.handle(Background.CSA_STOP, (event, sessionID: number): void => {
+  validateSender(event.senderFrame);
   csaStop(sessionID);
 });
 
-ipcMain.handle(Background.IS_ENCRYPTION_AVAILABLE, (): boolean => {
+ipcMain.handle(Background.IS_ENCRYPTION_AVAILABLE, (event): boolean => {
+  validateSender(event.senderFrame);
   return isEncryptionAvailable();
 });
 
-ipcMain.handle(Background.LOG, (_, level: LogLevel, message: string) => {
+ipcMain.handle(Background.LOG, (event, level: LogLevel, message: string) => {
+  validateSender(event.senderFrame);
   switch (level) {
     case LogLevel.INFO:
       getAppLogger().info("%s", message);

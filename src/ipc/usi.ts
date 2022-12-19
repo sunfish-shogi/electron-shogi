@@ -29,8 +29,8 @@ export function parseUSIPV(
 ): Move[] {
   const pv: Move[] = [];
   const pos = position.clone();
-  for (const oneOfUsiPv of usiPv) {
-    const move = pos.createMoveByUSI(oneOfUsiPv);
+  for (const usiMove of usiPv) {
+    const move = pos.createMoveByUSI(usiMove);
     if (!move || !pos.doMove(move)) {
       break;
     }

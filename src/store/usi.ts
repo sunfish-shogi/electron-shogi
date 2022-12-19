@@ -20,8 +20,8 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
   const p = position.clone();
   let prev: Move | undefined;
   let result = "";
-  for (const oneOfPv of pv) {
-    const move = p.createMoveByUSI(oneOfPv);
+  for (const usiMove of pv) {
+    const move = p.createMoveByUSI(usiMove);
     if (!move) {
       break;
     }

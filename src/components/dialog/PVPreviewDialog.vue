@@ -139,8 +139,8 @@ export default defineComponent({
         return;
       }
       record.clear(position);
-      for (const pvString of props.pv) {
-        const move = record.position.createMoveByUSI(pvString);
+      for (const usiMove of props.pv) {
+        const move = record.position.createMoveByUSI(usiMove);
         if (!move) {
           break;
         }

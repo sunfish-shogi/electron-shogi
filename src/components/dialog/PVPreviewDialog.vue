@@ -139,8 +139,8 @@ export default defineComponent({
         return;
       }
       record.clear(position);
-      for (const sfen of props.pv) {
-        const move = record.position.createMoveBySFEN(sfen);
+      for (const usiMove of props.pv) {
+        const move = record.position.createMoveByUSI(usiMove);
         if (!move) {
           break;
         }

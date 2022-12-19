@@ -72,7 +72,7 @@ export interface ImmutablePosition {
   hand(color: Color): ImmutableHand;
   readonly checked: boolean;
   createMove(from: Square | PieceType, to: Square): Move | null;
-  createMoveBySFEN(sfen: string): Move | null;
+  createMoveByUSI(usiMove: string): Move | null;
   isPawnDropMate(move: Move): boolean;
   isValidMove(move: Move): boolean;
   isValidEditing(from: Square | Piece, to: Square | Color): boolean;
@@ -181,8 +181,8 @@ export class Position {
     );
   }
 
-  createMoveBySFEN(sfen: string): Move | null {
-    const m = parseUSIMove(sfen);
+  createMoveByUSI(usiMove: string): Move | null {
+    const m = parseUSIMove(usiMove);
     if (!m) {
       return null;
     }

@@ -99,29 +99,29 @@ export class Move {
   }
 }
 
-export function parseUSIMove(str: string): {
+export function parseUSIMove(usiMove: string): {
   from: Square | PieceType;
   to: Square;
   promote: boolean;
 } | null {
   let from: PieceType | Square;
-  if (str[1] === "*") {
-    const piece = Piece.newBySFEN(str[0]);
+  if (usiMove[1] === "*") {
+    const piece = Piece.newBySFEN(usiMove[0]);
     if (!piece) {
       return null;
     }
     from = piece.type;
   } else {
-    const square = Square.parseSFENSquare(str);
+    const square = Square.parseSFENSquare(usiMove);
     if (!square) {
       return null;
     }
     from = square;
   }
-  const to = Square.parseSFENSquare(str.substring(2));
+  const to = Square.parseSFENSquare(usiMove.substring(2));
   if (!to) {
     return null;
   }
-  const promote = str.length >= 5 && str[4] === "+";
+  const promote = usiMove.length >= 5 && usiMove[4] === "+";
   return { from, to, promote };
 }

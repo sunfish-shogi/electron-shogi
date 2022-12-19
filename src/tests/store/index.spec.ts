@@ -467,9 +467,9 @@ describe("store/index", () => {
   it("doMove", () => {
     mockAudio.playPieceBeat.mockReturnValue();
     const store = new Store();
-    store.doMove(store.record.position.createMoveBySFEN("7g7f") as Move);
-    store.doMove(store.record.position.createMoveBySFEN("3c3d") as Move);
-    store.doMove(store.record.position.createMoveBySFEN("2g2f") as Move);
+    store.doMove(store.record.position.createMoveByUSI("7g7f") as Move);
+    store.doMove(store.record.position.createMoveByUSI("3c3d") as Move);
+    store.doMove(store.record.position.createMoveByUSI("2g2f") as Move);
     expect(store.record.current.number).toBe(3);
     expect(store.record.position.sfen).toBe(
       "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P4P1/PP1PPPP1P/1B5R1/LNSGKGSNL w - 1"

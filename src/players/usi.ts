@@ -1,5 +1,5 @@
 import api from "@/ipc/api";
-import { parseSFENPV, USIInfoCommand } from "@/ipc/usi";
+import { parseUSIPV, USIInfoCommand } from "@/ipc/usi";
 import { TimeLimitSetting } from "@/settings/game";
 import {
   getUSIEngineOptionCurrentValue,
@@ -79,7 +79,7 @@ export class USIPlayer implements Player {
     this.searchHandler = undefined;
     this.usi = this.ponder;
     this.position = record.position.clone();
-    const ponderMove = this.position.createMoveBySFEN(
+    const ponderMove = this.position.createMoveByUSI(
       this.ponder.slice(baseUSI.length + 1)
     );
     if (!ponderMove) {
@@ -136,7 +136,7 @@ export class USIPlayer implements Player {
       searchHandler.onWin();
       return;
     }
-    const move = this.position.createMoveBySFEN(sfen);
+    const move = this.position.createMoveByUSI(sfen);
     if (!move) {
       searchHandler.onError("エンジンから不明な指し手を受信しました:" + sfen);
       searchHandler.onResign();
@@ -178,7 +178,7 @@ export class USIPlayer implements Player {
       usi: usi,
       score: infoCommand.scoreCP && infoCommand.scoreCP * sign,
       mate: infoCommand.scoreMate && infoCommand.scoreMate * sign,
-      pv: pv && parseSFENPV(this.position, pv),
+      pv: pv && parseUSIPV(this.position, pv),
     };
     this.updateUSIInfo(info);
   }

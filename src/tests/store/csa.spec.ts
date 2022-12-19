@@ -46,16 +46,16 @@ describe("store/csa", () => {
     const mockPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
         {
-          sfen: "7g7f",
+          usi: "7g7f",
           info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
         {
-          sfen: "2g2f",
+          usi: "2g2f",
           info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
-        { sfen: "resign" },
+        { usi: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
@@ -149,16 +149,16 @@ describe("store/csa", () => {
     const mockPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
         {
-          sfen: "7g7f",
+          usi: "7g7f",
           info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
         {
-          sfen: "2g2f",
+          usi: "2g2f",
           info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
-        { sfen: "resign" },
+        { usi: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,

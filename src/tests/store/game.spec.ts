@@ -33,23 +33,23 @@ describe("store/game", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
         {
-          sfen: "7g7f",
+          usi: "7g7f",
           info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
         {
-          sfen: "2g2f",
+          usi: "2g2f",
           info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
         },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
         {
-          sfen: "3c3d",
+          usi: "3c3d",
           info: { score: 64, pv: ["2g2f", "8c8d"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        { sfen: "resign" },
+        { usi: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -110,15 +110,15 @@ describe("store/game", () => {
   it("GameManager/handicap-bishop", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b":
-        { sfen: "7g7f" },
+        { usi: "7g7f" },
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f 2c2d":
-        { sfen: "resign" },
+        { usi: "resign" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves":
-        { sfen: "8b2b" },
+        { usi: "8b2b" },
       "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f":
-        { sfen: "2c2d" },
+        { usi: "2c2d" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -168,15 +168,15 @@ describe("store/game", () => {
   it("GameManager/endGame", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        { sfen: "7g7f" },
+        { usi: "7g7f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { sfen: "2g2f" },
+        { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        { sfen: "3c3d" },
+        { usi: "3c3d" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        { sfen: "no-reply" },
+        { usi: "no-reply" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -229,15 +229,15 @@ describe("store/game", () => {
   it("GameManager/time-not-reduced", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        { sfen: "7g7f" },
+        { usi: "7g7f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { sfen: "2g2f" },
+        { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        { sfen: "3c3d" },
+        { usi: "3c3d" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        { sfen: "resign" },
+        { usi: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -266,24 +266,24 @@ describe("store/game", () => {
     const mockBlackPlayer = createMockPlayer({
       // 1st game
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        { sfen: "7g7f" },
+        { usi: "7g7f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { sfen: "2g2f" },
+        { usi: "2g2f" },
       // 2nd game
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        { sfen: "3c3d" },
+        { usi: "3c3d" },
     });
     const mockWhitePlayer = createMockPlayer({
       // 1st game
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        { sfen: "3c3d" },
+        { usi: "3c3d" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        { sfen: "resign" },
+        { usi: "resign" },
       // 2nd game
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        { sfen: "7g7f" },
+        { usi: "7g7f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { sfen: "resign" },
+        { usi: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -377,13 +377,13 @@ describe("store/game", () => {
   it("GameManager/noStartPosition/twice", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { sfen: "2g2f" },
+        { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        { sfen: "3c3d" },
+        { usi: "3c3d" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        { sfen: "resign" },
+        { usi: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -392,7 +392,7 @@ describe("store/game", () => {
     const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
     recordManager.appendMove({
-      move: recordManager.record.position.createMoveBySFEN("7g7f") as Move,
+      move: recordManager.record.position.createMoveByUSI("7g7f") as Move,
     });
     const manager = new GameManager(
       recordManager,
@@ -482,15 +482,15 @@ describe("store/game", () => {
   it("GameManager/maxMoves", () => {
     const mockBlackPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        { sfen: "7g7f" },
+        { usi: "7g7f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { sfen: "2g2f" },
+        { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f":
-        { sfen: "3c3d" },
+        { usi: "3c3d" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        { sfen: "8c8d" },
+        { usi: "8c8d" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,

@@ -23,14 +23,14 @@ export type USIInfoCommand = {
   string?: string;
 };
 
-export function parseSFENPV(
+export function parseUSIPV(
   position: ImmutablePosition,
-  sfenPV: string[]
+  usiPv: string[]
 ): Move[] {
   const pv: Move[] = [];
   const pos = position.clone();
-  for (const sfen of sfenPV) {
-    const move = pos.createMoveBySFEN(sfen);
+  for (const usiMove of usiPv) {
+    const move = pos.createMoveByUSI(usiMove);
     if (!move || !pos.doMove(move)) {
       break;
     }

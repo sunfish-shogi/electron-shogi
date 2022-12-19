@@ -1,11 +1,11 @@
-import { parseSFENPV } from "@/ipc/usi";
+import { parseUSIPV } from "@/ipc/usi";
 import { Player, SearchHandler } from "@/players/player";
 import { TimeLimitSetting } from "@/settings/game";
 import { PlayerSetting } from "@/settings/player";
 import { ImmutableRecord, Move } from "@/shogi";
 
 export type MoveWithOption = {
-  sfen: string;
+  usi: string;
   info?: {
     score?: number; // 先手から見た評価値
     mate?: number; // 先手勝ちの場合に正の値、後手勝ちの場合に負の値
@@ -27,15 +27,15 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
         h: SearchHandler
       ) => {
         const m = moves[r.usi];
-        if (m.sfen === "no-reply") {
+        if (m.usi === "no-reply") {
           // eslint-disable-next-line  @typescript-eslint/no-empty-function
           return new Promise<void>(() => {});
         }
-        if (m.sfen === "resign") {
+        if (m.usi === "resign") {
           h.onResign();
           return Promise.resolve();
         }
-        const move = r.position.createMoveBySFEN(m.sfen) as Move;
+        const move = r.position.createMoveByUSI(m.usi) as Move;
         h.onMove(
           move,
           m.info && {
@@ -44,7 +44,7 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
             mate: m.info?.mate,
             pv:
               m.info?.pv &&
-              parseSFENPV(r.position, [m.sfen].concat(...m.info.pv)).slice(1),
+              parseUSIPV(r.position, [m.usi].concat(...m.info.pv)).slice(1),
           }
         );
         return Promise.resolve();

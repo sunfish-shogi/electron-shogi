@@ -20,8 +20,8 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
   const p = position.clone();
   let prev: Move | undefined;
   let result = "";
-  for (const sfen of pv) {
-    const move = p.createMoveBySFEN(sfen);
+  for (const usiMove of pv) {
+    const move = p.createMoveByUSI(usiMove);
     if (!move) {
       break;
     }
@@ -104,7 +104,7 @@ export class USIPlayerMonitor {
     }
     if (update.currmove !== undefined) {
       this.currentMove = update.currmove;
-      const move = position && position.createMoveBySFEN(update.currmove);
+      const move = position && position.createMoveByUSI(update.currmove);
       if (move) {
         this.currentMoveText = move.getDisplayText();
       }

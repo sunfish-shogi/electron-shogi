@@ -295,8 +295,8 @@ export default defineComponent({
       const x =
         ((event.x - chart.scales.x.left) / displayWidth) * width +
         chart.scales.x.min;
-      const number = Math.round(x);
-      store.changeMoveNumber(number);
+      const ply = Math.round(x);
+      store.changePly(ply);
     };
 
     onMounted(() => {

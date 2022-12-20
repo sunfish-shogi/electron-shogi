@@ -269,8 +269,8 @@ export class RecordManager {
     this.clearRecordFilePath();
   }
 
-  changeMoveNumber(number: number): void {
-    this._record.goto(number);
+  changePly(ply: number): void {
+    this._record.goto(ply);
   }
 
   changeBranch(index: number): boolean {

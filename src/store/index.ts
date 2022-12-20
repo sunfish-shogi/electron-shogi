@@ -752,12 +752,12 @@ export class Store {
     }
   }
 
-  changeMoveNumber(number: number): void {
+  changePly(ply: number): void {
     if (
       this.appState === AppState.NORMAL ||
       this.appState === AppState.RESEARCH
     ) {
-      this.recordManager.changeMoveNumber(number);
+      this.recordManager.changePly(ply);
     }
   }
 

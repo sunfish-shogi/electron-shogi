@@ -56,7 +56,7 @@ function newGameResults(name1: string, name2: string): GameResults {
 export class GameManager {
   private state: GameState;
   private _setting: GameSetting;
-  private startMoveNumber = 0;
+  private startPly = 0;
   private repeat = 0;
   private blackPlayer?: Player;
   private whitePlayer?: Player;
@@ -92,7 +92,7 @@ export class GameManager {
     this.playerBuilder = playerBuilder;
     this.repeat = 0;
     if (!setting.startPosition) {
-      this.startMoveNumber = this.recordManager.record.current.number;
+      this.startPly = this.recordManager.record.current.number;
     }
     this.gameResults = newGameResults(setting.black.name, setting.white.name);
     await this.nextGame();
@@ -102,10 +102,8 @@ export class GameManager {
     this.repeat++;
     if (this.setting.startPosition) {
       this.recordManager.reset(this.setting.startPosition);
-    } else if (
-      this.recordManager.record.current.number !== this.startMoveNumber
-    ) {
-      this.recordManager.changeMoveNumber(this.startMoveNumber);
+    } else if (this.recordManager.record.current.number !== this.startPly) {
+      this.recordManager.changePly(this.startPly);
       this.recordManager.removeNextMove();
     }
     this.recordManager.setGameStartMetadata({

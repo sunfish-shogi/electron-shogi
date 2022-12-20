@@ -77,7 +77,7 @@ export interface ImmutablePosition {
   isValidMove(move: Move): boolean;
   isValidEditing(from: Square | Piece, to: Square | Color): boolean;
   readonly sfen: string;
-  getSFEN(nextMoveNumber: number): string;
+  getSFEN(nextPly: number): string;
   clone(): Position;
 }
 
@@ -411,10 +411,10 @@ export class Position {
     return this.getSFEN(1);
   }
 
-  getSFEN(nextMoveNumber: number): string {
+  getSFEN(nextPly: number): string {
     let ret = `${this._board.sfen} ${colorToSFEN(this.color)} `;
     ret += Hand.formatSFEN(this._blackHand, this._whiteHand);
-    ret += " " + nextMoveNumber;
+    ret += " " + nextPly;
     return ret;
   }
 

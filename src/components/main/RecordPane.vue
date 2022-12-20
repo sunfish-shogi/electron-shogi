@@ -53,8 +53,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const goto = (number: number) => {
-      store.changeMoveNumber(number);
+    const goto = (ply: number) => {
+      store.changePly(ply);
     };
 
     const goBegin = () => {
@@ -73,8 +73,8 @@ export default defineComponent({
       goto(Number.MAX_SAFE_INTEGER);
     };
 
-    const selectMove = (number: number) => {
-      goto(number);
+    const selectMove = (ply: number) => {
+      goto(ply);
     };
 
     const selectBranch = (index: number) => {

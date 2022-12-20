@@ -501,7 +501,7 @@ describe("store/index", () => {
   it("removeCurrentMove", () => {
     const store = new Store();
     store.pasteRecord(sampleBranchKIF);
-    store.changeMoveNumber(8);
+    store.changePly(8);
     store.removeCurrentMove();
     expect(store.confirmation).toBeUndefined();
     expect(store.record.current.number).toBe(7);
@@ -553,11 +553,11 @@ describe("store/index", () => {
     store.pasteRecord(sampleCSA);
     const moves = store.record.moves;
     expect(moves.length).toBe(13);
-    store.changeMoveNumber(1);
+    store.changePly(1);
     expect(store.record.current.comment).toBe("初手へのコメント\n* 30011 2b2a");
     const customData1 = store.record.current.customData as RecordCustomData;
     expect(customData1.playerSearchInfo?.score).toBe(30011);
-    store.changeMoveNumber(2);
+    store.changePly(2);
     expect(store.record.current.comment).toBe("* 30010");
     const customData2 = store.record.current.customData as RecordCustomData;
     expect(customData2.playerSearchInfo?.score).toBe(30010);

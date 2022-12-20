@@ -86,7 +86,7 @@ export class AnalysisManager {
       return;
     }
 
-    this.recordManager.changeMoveNumber(this.number);
+    this.recordManager.changePly(this.number);
     const record = this.recordManager.record;
     if (record.current.number !== this.number) {
       this.finish();

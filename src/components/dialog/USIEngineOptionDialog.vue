@@ -108,8 +108,11 @@
 <script lang="ts">
 import { getFormItemByID, showModalDialog } from "@/helpers/dialog";
 import { readInputAsNumber } from "@/helpers/form";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
 import api from "@/ipc/api";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 import {
   getUSIEngineOptionCurrentValue,
   mergeUSIEngineSetting,
@@ -169,7 +172,7 @@ export default defineComponent({
     store.retainBussyState();
     onMounted(async () => {
       showModalDialog(dialog.value);
-      installHotKey(dialog.value);
+      installHotKeyForDialog(dialog.value);
       try {
         const timeoutSeconds = store.appSetting.engineTimeoutSeconds;
         engine.value = await api.getUSIEngineInfo(latest.path, timeoutSeconds);
@@ -190,7 +193,7 @@ export default defineComponent({
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     const selectFile = async (id: string) => {

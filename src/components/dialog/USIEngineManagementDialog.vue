@@ -60,7 +60,10 @@ import {
 } from "vue";
 import USIEngineOptionDialog from "@/components/dialog/USIEngineOptionDialog.vue";
 import { showModalDialog } from "@/helpers/dialog";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 
 export default defineComponent({
   name: "USIEngineManagementDialog",
@@ -77,7 +80,7 @@ export default defineComponent({
 
     onMounted(async () => {
       showModalDialog(dialog.value);
-      installHotKey(dialog.value);
+      installHotKeyForDialog(dialog.value);
       try {
         setting.value = await api.loadUSIEngineSetting();
       } catch (e) {
@@ -89,7 +92,7 @@ export default defineComponent({
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     const add = async () => {

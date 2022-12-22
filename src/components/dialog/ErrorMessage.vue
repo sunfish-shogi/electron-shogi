@@ -35,7 +35,10 @@ import {
 import { showModalDialog } from "@/helpers/dialog";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Icon } from "@/assets/icons";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 
 export default defineComponent({
   name: "ErrorMessage",
@@ -48,11 +51,11 @@ export default defineComponent({
 
     onMounted(() => {
       showModalDialog(dialog.value);
-      installHotKey(dialog.value);
+      installHotKeyForDialog(dialog.value);
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     const errors = computed(() => {

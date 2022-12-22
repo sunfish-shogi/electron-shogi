@@ -47,7 +47,10 @@ import {
   Ref,
 } from "vue";
 import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 
 export default defineComponent({
   name: "ResearchDialog",
@@ -65,7 +68,7 @@ export default defineComponent({
 
     onMounted(async () => {
       showModalDialog(dialog.value);
-      installHotKey(dialog.value);
+      installHotKeyForDialog(dialog.value);
       try {
         researchSetting.value = await api.loadResearchSetting();
         engineSettings.value = await api.loadUSIEngineSetting();
@@ -79,7 +82,7 @@ export default defineComponent({
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     const engines = computed(() => engineSettings.value.engineList);

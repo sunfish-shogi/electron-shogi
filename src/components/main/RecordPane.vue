@@ -1,5 +1,5 @@
 <template>
-  <div class="record-pane">
+  <div ref="root" class="record-pane">
     <div class="record">
       <RecordView
         :record="record"
@@ -38,10 +38,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import RecordView from "@/components/primitive/RecordView.vue";
 import { useStore } from "@/store";
 import { AppState } from "@/store/state";
+import {
+  installHotKeyForMainWindow,
+  uninstallHotKeyForMainWindow,
+} from "@/keyboard/hotkey";
 
 export const minWidth = 200;
 
@@ -52,6 +56,15 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const root = ref();
+
+    onMounted(() => {
+      installHotKeyForMainWindow(root.value);
+    });
+
+    onUnmounted(() => {
+      uninstallHotKeyForMainWindow(root.value);
+    });
 
     const goto = (ply: number) => {
       store.changePly(ply);
@@ -111,6 +124,7 @@ export default defineComponent({
     const record = computed(() => store.record);
 
     return {
+      root,
       isRecordOperational,
       showElapsedTime,
       showComment,

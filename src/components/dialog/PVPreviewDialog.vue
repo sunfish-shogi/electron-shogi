@@ -100,7 +100,10 @@ import { RectSize } from "@/components/primitive/Types";
 import { computed } from "vue";
 import { showModalDialog } from "@/helpers/dialog";
 import { Icon } from "@/assets/icons";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 
 export default defineComponent({
   name: "PVPreviewDialog",
@@ -154,12 +157,12 @@ export default defineComponent({
       updateRecord();
       window.addEventListener("resize", updateSize);
       showModalDialog(dialog.value);
-      installHotKey(dialog.value);
+      installHotKeyForDialog(dialog.value);
     });
 
     onBeforeUnmount(() => {
       window.removeEventListener("resize", updateSize);
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     watch([() => props.position, () => props.pv], () => {

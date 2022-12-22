@@ -31,8 +31,11 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/helpers/dialog";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
 import { isNative } from "@/ipc/api";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 import { useStore } from "@/store";
 import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 
@@ -47,7 +50,7 @@ export default defineComponent({
     onMounted(async () => {
       try {
         showModalDialog(dialog.value);
-        installHotKey(dialog.value);
+        installHotKeyForDialog(dialog.value);
         if (isNative()) {
           textarea.value.value = await navigator.clipboard.readText();
         }
@@ -57,7 +60,7 @@ export default defineComponent({
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     const onOk = () => {

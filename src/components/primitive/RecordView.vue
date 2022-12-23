@@ -1,5 +1,5 @@
 <template>
-  <div ref="root" class="record-view">
+  <div class="record-view">
     <div class="controller">
       <button
         class="control-button"
@@ -69,19 +69,9 @@
 
 <script lang="ts">
 import { ImmutableRecord, ImmutableNode } from "@/shogi";
-import {
-  computed,
-  ref,
-  defineComponent,
-  Ref,
-  PropType,
-  onUpdated,
-  onMounted,
-  onBeforeUnmount,
-} from "vue";
+import { computed, ref, defineComponent, Ref, PropType, onUpdated } from "vue";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import { Icon } from "@/assets/icons";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
 
 export default defineComponent({
   name: "RecordView",
@@ -115,7 +105,6 @@ export default defineComponent({
     "selectBranch",
   ],
   setup(props, context) {
-    const root: Ref = ref(null);
     const moveList: Ref<HTMLDivElement | null> = ref(null);
     const branchList: Ref = ref(null);
 
@@ -201,14 +190,6 @@ export default defineComponent({
       return ret;
     });
 
-    onMounted(() => {
-      installHotKey(root.value);
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKey(root.value);
-    });
-
     onUpdated(() => {
       const moveListElement = moveList.value as HTMLElement;
       moveListElement.childNodes.forEach((elem) => {
@@ -222,7 +203,6 @@ export default defineComponent({
     });
 
     return {
-      root,
       beginPosSelected,
       moves,
       branches,

@@ -275,7 +275,10 @@ import {
 import { readInputAsNumber } from "@/helpers/form";
 import { showModalDialog } from "@/helpers/dialog";
 import api, { isNative } from "@/ipc/api";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -316,11 +319,11 @@ export default defineComponent({
 
     onMounted(() => {
       showModalDialog(dialog.value);
-      installHotKey(dialog.value);
+      installHotKeyForDialog(dialog.value);
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     const saveAndClose = async () => {

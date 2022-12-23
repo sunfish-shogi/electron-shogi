@@ -184,7 +184,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onUpdated, onBeforeUpdate, ref } from "vue";
+import {
+  computed,
+  defineComponent,
+  onUpdated,
+  onBeforeUpdate,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 import BoardView from "@/components/primitive/BoardView.vue";
 import { Move, PositionChange, RecordMetadataKey } from "@/shogi";
 import { RectSize } from "@/components/primitive/Types";
@@ -197,7 +205,10 @@ import GameMenu from "@/components/menu/GameMenu.vue";
 import FileMenu from "@/components/menu/FileMenu.vue";
 import InitialPositionMenu from "@/components/menu/InitialPositionMenu.vue";
 import { CSAGameState } from "@/store/csa";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForMainWindow,
+  uninstallHotKeyForMainWindow,
+} from "@/keyboard/hotkey";
 
 export default defineComponent({
   name: "BoardPane",
@@ -223,14 +234,24 @@ export default defineComponent({
     const isFileMenuVisible = ref(false);
     const isInitialPositionMenuVisible = ref(false);
 
+    onMounted(() => {
+      installHotKeyForMainWindow(rightControl.value);
+      installHotKeyForMainWindow(leftControl.value);
+    });
+
     onUpdated(() => {
-      installHotKey(rightControl.value);
-      installHotKey(leftControl.value);
+      installHotKeyForMainWindow(rightControl.value);
+      installHotKeyForMainWindow(leftControl.value);
     });
 
     onBeforeUpdate(() => {
-      uninstallHotKey(rightControl.value);
-      uninstallHotKey(leftControl.value);
+      uninstallHotKeyForMainWindow(rightControl.value);
+      uninstallHotKeyForMainWindow(leftControl.value);
+    });
+
+    onBeforeUnmount(() => {
+      uninstallHotKeyForMainWindow(rightControl.value);
+      uninstallHotKeyForMainWindow(leftControl.value);
     });
 
     const onResize = (size: RectSize) => {

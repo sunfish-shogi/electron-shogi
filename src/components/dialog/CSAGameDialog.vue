@@ -192,7 +192,10 @@ import { Icon } from "@/assets/icons";
 import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/settings/player";
 import { readInputAsNumber } from "@/helpers/form";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 
 export default defineComponent({
   name: "CSAGameDialog",
@@ -228,7 +231,7 @@ export default defineComponent({
         history.value = await api.loadCSAGameSettingHistory();
         engineSettings.value = await api.loadUSIEngineSetting();
         showModalDialog(dialog.value);
-        installHotKey(dialog.value);
+        installHotKeyForDialog(dialog.value);
         defaultValueLoaded = true;
       } catch (e) {
         store.pushError(e);
@@ -239,7 +242,7 @@ export default defineComponent({
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     onUpdated(() => {

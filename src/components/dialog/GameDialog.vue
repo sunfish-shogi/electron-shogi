@@ -184,7 +184,10 @@ import { Icon } from "@/assets/icons";
 import ButtonIcon from "@/components/primitive/ButtonIcon.vue";
 import PlayerSelector from "@/components/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/settings/player";
-import { installHotKey, uninstallHotKey } from "@/helpers/hotkey";
+import {
+  installHotKeyForDialog,
+  uninstallHotKeyForDialog,
+} from "@/keyboard/hotkey";
 
 export default defineComponent({
   name: "GameDialog",
@@ -221,7 +224,7 @@ export default defineComponent({
         blackPlayerURI.value = gameSetting.value.black.uri;
         whitePlayerURI.value = gameSetting.value.white.uri;
         showModalDialog(dialog.value);
-        installHotKey(dialog.value);
+        installHotKeyForDialog(dialog.value);
       } catch (e) {
         store.pushError(e);
         store.closeModalDialog();
@@ -231,7 +234,7 @@ export default defineComponent({
     });
 
     onBeforeUnmount(() => {
-      uninstallHotKey(dialog.value);
+      uninstallHotKeyForDialog(dialog.value);
     });
 
     let defaultValueApplied = false;

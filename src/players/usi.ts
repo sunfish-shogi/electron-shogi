@@ -176,6 +176,7 @@ export class USIPlayer implements Player {
         : undefined;
     const info = {
       usi: usi,
+      depth: infoCommand.depth,
       score: infoCommand.scoreCP && infoCommand.scoreCP * sign,
       mate: infoCommand.scoreMate && infoCommand.scoreMate * sign,
       pv: pv && parseUSIPV(this.position, pv),

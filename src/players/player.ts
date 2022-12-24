@@ -3,6 +3,7 @@ import { ImmutableRecord, Move } from "@/shogi";
 
 export type SearchInfo = {
   usi: string; // 局面
+  depth?: number; // 探索深さ
   score?: number; // 先手から見た評価値
   mate?: number; // 先手勝ちの場合に正の値、後手勝ちの場合に負の値
   pv?: Move[];

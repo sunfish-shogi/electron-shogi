@@ -359,7 +359,9 @@ export class RecordManager {
         data.playerSearchInfo = searchInfo;
         break;
       case SearchEngineType.RESEARCHER:
-        data.researchInfo = searchInfo;
+        if ((searchInfo.depth || 0) >= (data.researchInfo?.depth || 0)) {
+          data.researchInfo = searchInfo;
+        }
         break;
     }
     this._record.current.customData = data;

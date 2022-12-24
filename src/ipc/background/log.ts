@@ -3,8 +3,9 @@ import { app, shell } from "electron";
 import log4js from "log4js";
 import { loadAppSetting } from "@/ipc/background/settings";
 import { getDateTimeString } from "@/helpers/datetime";
+import { isTest } from "./environment";
 
-const rootDir = app.getPath("logs");
+const rootDir = !isTest() ? app.getPath("logs") : "";
 
 export function openLogsDirectory(): void {
   shell.openPath(rootDir);
@@ -19,6 +20,7 @@ const appLogPath = path.join(rootDir, `app-${datetime}.log`);
 const usiLogPath = path.join(rootDir, `usi-${datetime}.log`);
 const csaLogPath = path.join(rootDir, `csa-${datetime}.log`);
 
+const defaultAppenders = !isTest() ? ["stdout"] : [];
 let config: log4js.Log4js;
 
 function getLogger(category: string): log4js.Logger {
@@ -32,17 +34,17 @@ function getLogger(category: string): log4js.Logger {
         csa: { type: "file", filename: csaLogPath },
       },
       categories: {
-        default: { appenders: ["stdout"], level: "info" },
+        default: { appenders: defaultAppenders, level: "info" },
         app: {
-          appenders: appSetting.enableAppLog ? ["app"] : ["stdout"],
+          appenders: appSetting.enableAppLog ? ["app"] : defaultAppenders,
           level: "info",
         },
         usi: {
-          appenders: appSetting.enableUSILog ? ["usi"] : ["stdout"],
+          appenders: appSetting.enableUSILog ? ["usi"] : defaultAppenders,
           level: "info",
         },
         csa: {
-          appenders: appSetting.enableCSALog ? ["csa"] : ["stdout"],
+          appenders: appSetting.enableCSALog ? ["csa"] : defaultAppenders,
           level: "info",
         },
       },

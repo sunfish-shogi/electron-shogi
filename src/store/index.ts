@@ -18,6 +18,7 @@ import {
   AppSetting,
   AppSettingUpdate,
   ClockSoundTarget,
+  Tab,
   defaultAppSetting,
   validateAppSetting,
 } from "@/settings/app";
@@ -617,6 +618,14 @@ export class Store {
       .then(() => {
         this._appState = AppState.RESEARCH;
         this.onUpdatePosition();
+        if (
+          this.appSetting.tab !== Tab.SEARCH &&
+          this.appSetting.tab !== Tab.PV &&
+          this.appSetting.tab !== Tab.CHART &&
+          this.appSetting.tab !== Tab.PERCENTAGE_CHART
+        ) {
+          this.updateAppSetting({ tab: Tab.PV });
+        }
       })
       .catch((e) => {
         this.researcher = undefined;

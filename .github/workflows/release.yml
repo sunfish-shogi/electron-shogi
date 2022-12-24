@@ -13,6 +13,8 @@ jobs:
             os_short: win
           - os: macos
             os_short: mac
+          - os: ubuntu
+            os_short: linux
     runs-on: ${{ matrix.os }}-latest
     steps:
       - run: git config --global core.autocrlf false

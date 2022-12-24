@@ -36,6 +36,9 @@ switch (platform) {
   case "mac":
     archive.glob("*.dmg", { cwd: "dist" });
     break;
+  case "linux":
+    archive.glob("*.AppImage", { cwd: "dist" });
+    break;
   default:
     throw new Error("unknown platform");
 }

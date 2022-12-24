@@ -1,7 +1,7 @@
 "use strict";
 
 import path from "path";
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, session } from "electron";
 import { getAppState, sendError, setup } from "@/ipc/background";
 import {
   loadWindowSetting,
@@ -11,25 +11,27 @@ import { buildWindowSetting } from "@/settings/window";
 import { getAppLogger, shutdownLoggers } from "@/ipc/background/log";
 import { quitAll as usiQuitAll } from "@/ipc/background/usi";
 import { AppState } from "./store/state";
+import { validateHTTPRequest } from "./ipc/background/security";
+import {
+  isDevelopment,
+  isProduction,
+  isTest,
+} from "./ipc/background/environment";
 
 getAppLogger().info("start main process");
 getAppLogger().info("process argv: %s", process.argv.join(" "));
-
-const isDevelopment = process.env.npm_lifecycle_event === "electron:serve";
-const isPreview = process.env.npm_lifecycle_event === "electron:preview";
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
-async function createWindow() {
+function createWindow() {
   let setting = loadWindowSetting();
 
   getAppLogger().info("create BrowserWindow");
 
-  const preloadPath =
-    isDevelopment || isPreview ? "../packed/preload.js" : "./preload.js";
+  const preloadPath = isProduction() ? "./preload.js" : "../packed/preload.js";
 
   // Create the browser window.
   const win = new BrowserWindow({
@@ -58,14 +60,27 @@ async function createWindow() {
 
   setup(win);
 
-  if (isDevelopment) {
+  if (isDevelopment() || isTest()) {
+    // Development
     getAppLogger().info("load dev server URL");
-    await win.loadURL("http://localhost:5173"); // Open the DevTools.
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
+    win
+      .loadURL("http://localhost:5173")
+      .then(() => {
+        if (!process.env.IS_TEST) {
+          win.webContents.openDevTools();
+        }
+      })
+      .catch((e) => {
+        getAppLogger().error(`failed to load dev server URL: ${e}`);
+        throw e;
+      });
   } else {
+    // Production
     getAppLogger().info("load app URL");
-    // Load the index.html when not in development
-    win.loadFile(path.join(__dirname, "../index.html"));
+    win.loadFile(path.join(__dirname, "../index.html")).catch((e) => {
+      getAppLogger().error(`failed to load app URL: ${e}`);
+      throw e;
+    });
   }
 }
 
@@ -87,7 +102,9 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });
 
 app.on("web-contents-created", (_, contents) => {
@@ -99,28 +116,32 @@ app.on("web-contents-created", (_, contents) => {
   });
 });
 
+async function installElectronDevtools() {
+  const installer = await import("electron-devtools-installer");
+  await installer.default(installer.VUEJS3_DEVTOOLS);
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
+app.on("ready", () => {
+  if (isDevelopment()) {
     getAppLogger().info("install Vue3 Dev Tools");
     // Install Vue Devtools
-    try {
-      const installer = await import("electron-devtools-installer");
-      await installer.default(installer.VUEJS3_DEVTOOLS);
-    } catch (e: unknown) {
-      getAppLogger().error(
-        "Vue Devtools failed to install: %s",
-        (e as Error).toString()
-      );
-    }
+    installElectronDevtools().catch((e) => {
+      getAppLogger().error(`Vue Devtools failed to install: ${e}`);
+      throw e;
+    });
   }
+  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
+    validateHTTPRequest(details.method, details.url);
+    callback({});
+  });
   createWindow();
 });
 
 // Exit cleanly on request from parent process in development mode.
-if (isDevelopment) {
+if (isDevelopment() || isTest()) {
   if (process.platform === "win32") {
     process.on("message", (data) => {
       if (data === "graceful-exit") {

@@ -16,9 +16,12 @@ import {
   encryptCSAGameSettingHistory,
 } from "@/settings/csa";
 import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
+import { isTest } from "./environment";
 
-const rootDir = app.getPath("userData");
-const docDir = path.join(app.getPath("documents"), "ElectronShogi");
+const rootDir = !isTest() ? app.getPath("userData") : "";
+const docDir = !isTest()
+  ? path.join(app.getPath("documents"), "ElectronShogi")
+  : "";
 
 export function openSettingsDirectory(): void {
   shell.openPath(rootDir);

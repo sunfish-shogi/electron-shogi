@@ -109,7 +109,6 @@ export class CSAGameManager {
   stop(): void {
     if (this.sessionID) {
       api.csaStop(this.sessionID);
-      this.close(true);
     }
   }
 

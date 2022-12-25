@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [
     vue(),
     htmlTemplate({
-      "APP_TITLE": `Electron将棋 Version ${process.env.npm_package_version}`,
+      "APP_VERSION": `${process.env.npm_package_version}`,
     }),
   ],
   base: './',

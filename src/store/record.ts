@@ -138,15 +138,21 @@ type ExportOptions = {
   returnCode?: string;
 };
 
+type ChangeFilePathHandler = (path?: string) => void;
+type ChangePositionHandler = () => void;
+
 export class RecordManager {
   private _record = new Record();
   private _recordFilePath?: string;
-  private onChangePosition = (): void => {
+  private onChangeFilePath: ChangeFilePathHandler = () => {
+    /* noop */
+  };
+  private onChangePosition: ChangePositionHandler = () => {
     /* noop */
   };
 
   constructor() {
-    this.setupHandler();
+    this.setupRecordHandler();
   }
 
   get record(): ImmutableRecord {
@@ -159,10 +165,12 @@ export class RecordManager {
 
   private updateRecordFilePath(recordFilePath: string): void {
     this._recordFilePath = recordFilePath;
+    this.onChangeFilePath(recordFilePath);
   }
 
   private clearRecordFilePath(): void {
     this._recordFilePath = undefined;
+    this.onChangeFilePath();
   }
 
   reset(startPosition?: InitialPositionType): void {
@@ -211,7 +219,7 @@ export class RecordManager {
       return recordOrError;
     }
     this._record = recordOrError;
-    this.setupHandler();
+    this.setupRecordHandler();
     this.clearRecordFilePath();
     restoreCustomData(this._record);
     return;
@@ -233,8 +241,8 @@ export class RecordManager {
       return recordOrError;
     }
     this._record = recordOrError;
-    this.setupHandler();
-    this._recordFilePath = path;
+    this.setupRecordHandler();
+    this.updateRecordFilePath(path);
     restoreCustomData(this._record);
     return;
   }
@@ -391,17 +399,21 @@ export class RecordManager {
     this._record.metadata.setStandardMetadata(update.key, update.value);
   }
 
-  on(event: "changePosition", handler: () => void): void;
+  on(event: "changeFilePath", handler: ChangeFilePathHandler): void;
+  on(event: "changePosition", handler: ChangePositionHandler): void;
   on(event: string, handler: unknown): void {
     switch (event) {
+      case "changeFilePath":
+        this.onChangeFilePath = handler as (path?: string) => void;
+        break;
       case "changePosition":
         this.onChangePosition = handler as () => void;
+        this.setupRecordHandler();
         break;
     }
-    this.setupHandler();
   }
 
-  private setupHandler(): void {
+  private setupRecordHandler(): void {
     this._record.on("changePosition", this.onChangePosition);
   }
 }

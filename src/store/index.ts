@@ -1,4 +1,4 @@
-import api from "@/ipc/api";
+import api, { appInfo } from "@/ipc/api";
 import {
   Color,
   exportCSA,
@@ -80,9 +80,26 @@ export class Store {
   private unlimitedBeepHandler?: AudioEventHandler;
 
   constructor() {
+    this.updateAppTitle();
+    this.recordManager.on("changeFilePath", (path?: string) => {
+      this.updateAppTitle(path);
+    });
     this.recordManager.on("changePosition", () => {
       this.onUpdatePosition();
     });
+  }
+
+  private updateAppTitle(path?: string): void {
+    if (!document) {
+      return;
+    }
+    const appName = "Electron将棋";
+    const appVersion = appInfo.appVersion;
+    if (path) {
+      document.title = `${appName} Version ${appVersion} - ${path}`;
+    } else {
+      document.title = `${appName} Version ${appVersion}`;
+    }
   }
 
   get isBussy(): boolean {

@@ -235,7 +235,7 @@ export default defineComponent({
         defaultValueLoaded = true;
       } catch (e) {
         store.pushError(e);
-        store.closeModalDialog();
+        store.destroyModalDialog();
       } finally {
         store.releaseBussyState();
       }

@@ -75,7 +75,7 @@ export default defineComponent({
         engineURI.value = researchSetting.value.usi?.uri || "";
       } catch (e) {
         store.pushError(e);
-        store.closeModalDialog();
+        store.destroyModalDialog();
       } finally {
         store.releaseBussyState();
       }

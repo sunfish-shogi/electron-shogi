@@ -158,7 +158,7 @@ export default defineComponent({
         engineURI.value = analysisSetting.value.usi?.uri || "";
       } catch (e) {
         store.pushError(e);
-        store.closeModalDialog();
+        store.destroyModalDialog();
       } finally {
         store.releaseBussyState();
       }

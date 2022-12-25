@@ -65,10 +65,12 @@ export default defineComponent({
 
     const onOk = () => {
       const data = textarea.value.value;
-      store.closeModalDialog();
-      if (data) {
-        store.pasteRecord(data);
+      if (!data) {
+        store.pushError(new Error("棋譜が入力されていません。"));
+        return;
       }
+      store.closeModalDialog();
+      store.pasteRecord(data);
     };
 
     const onCancel = () => {

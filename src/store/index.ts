@@ -273,17 +273,22 @@ export class Store {
     }
   }
 
-  closeModalDialog(): void {
+  destroyModalDialog(): void {
     if (
-      (this.appState === AppState.PASTE_DIALOG ||
-        this.appState === AppState.GAME_DIALOG ||
-        this.appState === AppState.CSA_GAME_DIALOG ||
-        this.appState === AppState.RESEARCH_DIALOG ||
-        this.appState === AppState.ANALYSIS_DIALOG ||
-        this.appState === AppState.USI_ENGINE_SETTING_DIALOG) &&
-      !this.isBussy
+      this.appState === AppState.PASTE_DIALOG ||
+      this.appState === AppState.GAME_DIALOG ||
+      this.appState === AppState.CSA_GAME_DIALOG ||
+      this.appState === AppState.RESEARCH_DIALOG ||
+      this.appState === AppState.ANALYSIS_DIALOG ||
+      this.appState === AppState.USI_ENGINE_SETTING_DIALOG
     ) {
       this._appState = AppState.NORMAL;
+    }
+  }
+
+  closeModalDialog(): void {
+    if (!this.isBussy) {
+      this.destroyModalDialog();
     }
   }
 

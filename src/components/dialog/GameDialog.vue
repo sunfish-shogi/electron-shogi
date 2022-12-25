@@ -227,7 +227,7 @@ export default defineComponent({
         installHotKeyForDialog(dialog.value);
       } catch (e) {
         store.pushError(e);
-        store.closeModalDialog();
+        store.destroyModalDialog();
       } finally {
         store.releaseBussyState();
       }

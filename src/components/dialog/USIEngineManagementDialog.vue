@@ -128,15 +128,16 @@ export default defineComponent({
     };
 
     const saveAndClose = async () => {
+      store.retainBussyState();
       try {
-        store.retainBussyState();
         await api.saveUSIEngineSetting(setting.value as USIEngineSettings);
-        store.closeModalDialog();
       } catch (e) {
         store.pushError(e);
+        return;
       } finally {
         store.releaseBussyState();
       }
+      store.closeModalDialog();
     };
 
     const cancel = () => {

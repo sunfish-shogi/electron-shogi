@@ -12,6 +12,10 @@ import { LogLevel } from "./log";
 import { CSAGameResult, CSASpecialMove } from "./csa";
 import { CSAGameSettingHistory, CSAServerSetting } from "@/settings/csa";
 
+type AppInfo = {
+  appVersion?: string;
+};
+
 export interface Bridge {
   getRecordPathFromProcArg(): Promise<string>;
   updateMenuState(appState: AppState, bussy: boolean): void;
@@ -188,12 +192,15 @@ export interface API {
 }
 
 interface ExtendedWindow extends Window {
+  electronShogi?: AppInfo;
   electronShogiAPI?: Bridge;
 }
 
 function getWindowObject(): ExtendedWindow {
   return window as unknown as ExtendedWindow;
 }
+
+export const appInfo: AppInfo = getWindowObject().electronShogi || {};
 
 export const bridge: Bridge = getWindowObject().electronShogiAPI || webAPI;
 

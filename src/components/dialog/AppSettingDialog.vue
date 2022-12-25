@@ -10,6 +10,8 @@
             <select ref="thema" :value="appSetting.thema">
               <option :value="Thema.STANDARD">標準（緑）</option>
               <option :value="Thema.CHERRY_BLOSSOM">桜</option>
+              <option :value="Thema.AUTUMN">紅葉</option>
+              <option :value="Thema.SNOW">雪</option>
               <option :value="Thema.DARK">ダーク</option>
             </select>
           </div>

@@ -563,6 +563,49 @@ export class Record {
     return true;
   }
 
+  swapWithNextBranch(): boolean {
+    if (!this._current.branch) {
+      return false;
+    }
+    return Record.swapWithPreviousBranch(this._current.branch);
+  }
+
+  swapWithPreviousBranch(): boolean {
+    return Record.swapWithPreviousBranch(this._current);
+  }
+
+  private static swapWithPreviousBranch(target: NodeImpl): boolean {
+    const prev = target.prev;
+    if (!prev || !prev.next || prev.next == target) {
+      return false;
+    }
+    if (prev.next.branch === target) {
+      const pair = prev.next;
+      pair.branch = target.branch;
+      target.branch = pair;
+      prev.next = target;
+      [target.branchIndex, pair.branchIndex] = [
+        pair.branchIndex,
+        target.branchIndex,
+      ];
+      return true;
+    }
+    for (let p = prev.next; p.branch; p = p.branch) {
+      if (p.branch.branch === target) {
+        const pair = p.branch;
+        pair.branch = target.branch;
+        target.branch = pair;
+        p.branch = target;
+        [target.branchIndex, pair.branchIndex] = [
+          pair.branchIndex,
+          target.branchIndex,
+        ];
+        return true;
+      }
+    }
+    return false;
+  }
+
   removeCurrentMove(): void {
     const target = this._current;
     if (!this.goBack()) {

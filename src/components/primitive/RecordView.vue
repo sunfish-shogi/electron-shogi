@@ -51,17 +51,37 @@
         <div v-if="showComment" class="move-comment">{{ move.comment }}</div>
       </div>
     </div>
-    <div ref="branchList" class="branch-list">
-      <div
-        v-for="branch in branches"
-        :key="branch.index"
-        class="move-element"
-        :class="{ selected: branch.selected }"
-        :value="branch.index"
-        @click="changeBranch(branch.index)"
-      >
-        <div class="move-text">{{ branch.text }}</div>
-        <div v-if="showComment" class="move-comment">{{ branch.comment }}</div>
+    <div class="branch-list-area">
+      <div ref="branchList" class="branch-list">
+        <div
+          v-for="branch in branches"
+          :key="branch.index"
+          class="move-element"
+          :class="{ selected: branch.selected }"
+          :value="branch.index"
+          @click="changeBranch(branch.index)"
+        >
+          <div class="move-text">{{ branch.text }}</div>
+          <div v-if="showComment" class="move-comment">
+            {{ branch.comment }}
+          </div>
+        </div>
+      </div>
+      <div class="branch-list-control">
+        <button
+          class="branch-list-control-button"
+          :disabled="!operational"
+          @click="swapWithPreviousBranch()"
+        >
+          <ButtonIcon class="icon" :icon="Icon.ARROW_UP" />
+        </button>
+        <button
+          class="branch-list-control-button"
+          :disabled="!operational"
+          @click="swapWithNextBranch()"
+        >
+          <ButtonIcon class="icon" :icon="Icon.ARROW_DROP" />
+        </button>
       </div>
     </div>
   </div>
@@ -103,6 +123,8 @@ export default defineComponent({
     "goEnd",
     "selectMove",
     "selectBranch",
+    "swapWithPreviousBranch",
+    "swapWithNextBranch",
   ],
   setup(props, context) {
     const moveList: Ref<HTMLDivElement | null> = ref(null);
@@ -141,6 +163,18 @@ export default defineComponent({
     const changeBranch = (index: number) => {
       if (props.operational) {
         context.emit("selectBranch", Number(index));
+      }
+    };
+
+    const swapWithPreviousBranch = () => {
+      if (props.operational) {
+        context.emit("swapWithPreviousBranch");
+      }
+    };
+
+    const swapWithNextBranch = () => {
+      if (props.operational) {
+        context.emit("swapWithNextBranch");
       }
     };
 
@@ -200,6 +234,15 @@ export default defineComponent({
           elem.scrollIntoView({ behavior: "auto", block: "nearest" });
         }
       });
+      const branchListElement = branchList.value as HTMLElement;
+      branchListElement.childNodes.forEach((elem) => {
+        if (
+          elem instanceof HTMLElement &&
+          elem.classList.contains("selected")
+        ) {
+          elem.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+      });
     });
 
     return {
@@ -214,6 +257,8 @@ export default defineComponent({
       goEnd,
       changeNumber,
       changeBranch,
+      swapWithPreviousBranch,
+      swapWithNextBranch,
       Icon,
     };
   },
@@ -249,15 +294,35 @@ export default defineComponent({
   color: var(--text-color);
   background-color: var(--text-bg-color);
 }
-.branch-list {
-  flex: auto;
+.branch-list-area {
   margin-top: 2px;
   width: 100%;
   height: calc(30% - 10px);
+  display: flex;
+  flex-direction: row;
+}
+.branch-list {
+  flex: auto;
+  width: auto;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--text-color);
   background-color: var(--text-bg-color);
+}
+.branch-list-control {
+  width: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.branch-list-control-button {
+  height: 50%;
+  width: 100%;
+  padding: 0;
+}
+.branch-list-control-button .icon {
+  height: 40px;
 }
 .move-element {
   height: 1.4em;

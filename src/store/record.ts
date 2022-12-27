@@ -285,6 +285,14 @@ export class RecordManager {
     return this._record.switchBranchByIndex(index);
   }
 
+  swapWithNextBranch(): boolean {
+    return this._record.swapWithNextBranch();
+  }
+
+  swapWithPreviousBranch(): boolean {
+    return this._record.swapWithPreviousBranch();
+  }
+
   removeCurrentMove(): void {
     this._record.removeCurrentMove();
   }

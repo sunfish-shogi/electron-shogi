@@ -12,6 +12,8 @@
         @go-end="goEnd"
         @select-move="selectMove"
         @select-branch="selectBranch"
+        @swap-with-previous-branch="swapWithPreviousBranch"
+        @swap-with-next-branch="swapWithNextBranch"
       />
     </div>
     <div class="options">
@@ -94,6 +96,14 @@ export default defineComponent({
       store.changeBranch(index);
     };
 
+    const swapWithPreviousBranch = () => {
+      store.swapWithPreviousBranch();
+    };
+
+    const swapWithNextBranch = () => {
+      store.swapWithNextBranch();
+    };
+
     const onToggleElapsedTime = (event: Event) => {
       const checkbox = event.target as HTMLInputElement;
       store.updateAppSetting({
@@ -135,6 +145,8 @@ export default defineComponent({
       goEnd,
       selectMove,
       selectBranch,
+      swapWithPreviousBranch,
+      swapWithNextBranch,
       onToggleElapsedTime,
       onToggleComment,
     };

@@ -801,6 +801,14 @@ export class Store {
     }
   }
 
+  swapWithNextBranch(): boolean {
+    return this.recordManager.swapWithNextBranch();
+  }
+
+  swapWithPreviousBranch(): boolean {
+    return this.recordManager.swapWithPreviousBranch();
+  }
+
   removeCurrentMove(): void {
     if (
       this.appState !== AppState.NORMAL &&

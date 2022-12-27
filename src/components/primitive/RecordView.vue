@@ -232,6 +232,8 @@ export default defineComponent({
 .controller {
   width: 100%;
   height: 40px;
+  display: flex;
+  flex-direction: row;
 }
 .control-button {
   height: 100%;

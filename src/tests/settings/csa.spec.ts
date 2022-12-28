@@ -26,6 +26,7 @@ describe("settings/csa", () => {
       enableComment: true,
       enableAutoSave: true,
       repeat: 1,
+      autoRelogin: true,
     });
     expect(result).toBeUndefined();
   });
@@ -47,6 +48,7 @@ describe("settings/csa", () => {
       enableComment: true,
       enableAutoSave: true,
       repeat: 1,
+      autoRelogin: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -68,6 +70,7 @@ describe("settings/csa", () => {
       enableComment: true,
       enableAutoSave: true,
       repeat: 1,
+      autoRelogin: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -89,6 +92,7 @@ describe("settings/csa", () => {
       enableComment: true,
       enableAutoSave: true,
       repeat: 1,
+      autoRelogin: true,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -108,6 +112,7 @@ describe("settings/csa", () => {
         enableComment: true,
         enableAutoSave: true,
         repeat: 1,
+        autoRelogin: true,
       };
     };
     let history = emptyCSAGameSettingHistory;
@@ -169,6 +174,7 @@ describe("settings/csa", () => {
       enableComment: true,
       enableAutoSave: true,
       repeat: 1,
+      autoRelogin: true,
     };
     const secure = encryptCSAGameSettingHistory(raw, (src) => {
       return (
@@ -245,6 +251,7 @@ describe("settings/csa", () => {
       enableComment: true,
       enableAutoSave: true,
       repeat: 1,
+      autoRelogin: true,
     };
     const insecure = {
       ...secure,

@@ -52,6 +52,7 @@ export class CSAGameManager {
   private _state = CSAGameState.OFFLINE;
   private _setting = defaultCSAGameSetting();
   private sessionID = 0;
+  private stopRequested = false;
   private repeat = 0;
   private player?: Player;
   private gameSummary = emptyCSAGameSummary();
@@ -78,6 +79,9 @@ export class CSAGameManager {
     return color === this.gameSummary.myColor;
   }
 
+  /**
+   * CSA サーバーにログインする。
+   */
   login(setting: CSAGameSetting, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.sessionID) {
       throw new Error("CSAGameManager#start: session already exists");
@@ -89,16 +93,18 @@ export class CSAGameManager {
   }
 
   private async relogin(): Promise<void> {
-    this.repeat++;
     this._state = CSAGameState.WAITING_LOGIN;
     try {
+      // プレイヤーを初期化する。
       this.player = await this.playerBuilder.build(
         this._setting.player,
         (info) => this.recordManager.updateEnemySearchInfo(info)
       );
+      // CSA サーバーにログインする。
       this.sessionID = await api.csaLogin(this._setting.server);
+      // ステータスを更新する。
       this._state = CSAGameState.READY;
-      csaGameManagers[this.sessionID] = this;
+      entrySession(this.sessionID, this);
       this.handlers.onGameNext();
     } catch (e) {
       this.close(true);
@@ -106,12 +112,19 @@ export class CSAGameManager {
     }
   }
 
+  /**
+   * CSA サーバーに中断を要求する。
+   */
   stop(): void {
     if (this.sessionID) {
+      this.stopRequested = true;
       api.csaStop(this.sessionID);
     }
   }
 
+  /**
+   * CSA サーバーからログアウトする。
+   */
   logout(): void {
     this.close(true);
   }
@@ -120,26 +133,33 @@ export class CSAGameManager {
     if (this._state === CSAGameState.OFFLINE) {
       return;
     }
+    // CSA プロトコルのセッションが存在する場合は切断する。
     if (this.sessionID) {
-      delete csaGameManagers[this.sessionID];
+      releaseSession(this.sessionID);
       api.csaLogout(this.sessionID).catch((e) => {
         this.handlers.onError(e);
       });
       this.sessionID = 0;
+      this.stopRequested = false;
     }
+    // プレイヤーが起動している場合は終了する。
     if (this.player) {
       this.player.close().catch((e) => {
         this.handlers.onError(e);
       });
       this.player = undefined;
     }
+    // 時計を停止する。
     this.blackClock.stop();
     this.whiteClock.stop();
+    // ステータスをオフラインに戻す。
     this._state = CSAGameState.OFFLINE;
+    // 連続対局の条件を満たしていない場合はハンドラーを呼んで終了する。
     if (doNotRepeat || this.repeat >= this.setting.repeat) {
       this.handlers.onGameEnd();
       return;
     }
+    // 連続対局の条件を満たしている場合は再ログインする。
     this.relogin().catch((e) => {
       this.handlers.onError(e);
     });
@@ -155,10 +175,14 @@ export class CSAGameManager {
   }
 
   onStart(playerStates: CSAPlayerStates): void {
+    // 対局数をカウントアップする。
+    this.repeat++;
+    // 局面を初期化する。
     this.recordManager.importRecord(
       this.gameSummary.position,
       RecordFormatType.CSA
     );
+    // 対局情報を初期化する。
     this.recordManager.setGameStartMetadata({
       gameTitle: this.gameSummary.id,
       blackName: this.gameSummary.blackPlayerName,
@@ -171,24 +195,32 @@ export class CSAGameManager {
           (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3,
       },
     });
+    // 将棋盤の向きを調整する。
     if (this.setting.autoFlip && this.handlers.onFlipBoard) {
       this.handlers.onFlipBoard(this.gameSummary.myColor === Color.WHITE);
     }
+    // ステータスを更新する。
     this._state = CSAGameState.GAME;
+    // 次の処理を開始する。
     this.next(playerStates);
   }
 
   onMove(data: string, playerStates: CSAPlayerStates) {
     const isMyMove = this.isMyTurn;
+    // 指し手を読み取る。
     const move = parseCSAMove(this.recordManager.record.position, data);
     if (move instanceof Error) {
-      this.handlers.onError(`解釈できない指し手 [${data}]: ${move.message}`);
+      this.handlers.onError(
+        `CSAGameManager#onMove: 解釈できない指し手 [${data}]: ${move.message}`
+      );
       return;
     }
+    // 消費時間を読み取る。
     const parsed = /^.*,T([0-9]+)$/.exec(data);
     const elapsedMs = parsed
       ? Number(parseInt(parsed[1])) * this.gameSummary.timeUnitMs
       : 0;
+    // 局面を進める。
     this.recordManager.appendMove({
       move,
       moveOption: {
@@ -196,12 +228,14 @@ export class CSAGameManager {
       },
       elapsedMs,
     });
+    // 探索情報を記録する。
     if (isMyMove && this.searchInfo) {
       this.recordManager.updateSearchInfo(
         SearchEngineType.PLAYER,
         this.searchInfo
       );
     }
+    // コメントを記録する。
     if (isMyMove && this.searchInfo && this.setting.enableComment) {
       const comment = buildSearchComment(
         SearchEngineType.PLAYER,
@@ -209,19 +243,24 @@ export class CSAGameManager {
       );
       this.recordManager.appendComment(comment, CommentBehavior.APPEND);
     }
+    // 効果音を鳴らす。
     this.handlers.onPieceBeat();
+    // 次の処理を開始する。
     this.next(playerStates);
   }
 
   onGameResult(move: CSASpecialMove, gameResult: CSAGameResult): void {
+    // 終局理由を棋譜に記録する。
     this.recordManager.appendMove({
       move: this.gameResultToSpecialMove(move, gameResult),
     });
+    // 自動保存が有効な場合は棋譜を保存する。
     if (this.setting.enableAutoSave) {
       this.handlers.onSaveRecord().catch((e) => {
         this.handlers.onError(`棋譜の保存に失敗しました: ${e}`);
       });
     }
+    // セッションを終了する。
     this.close();
   }
 
@@ -264,12 +303,16 @@ export class CSAGameManager {
   }
 
   onClose(): void {
-    this.close(true);
+    // 自動再ログインが無効であるか、中断が要求された場合は再ログインしない。
+    const doNotRepeat = !this.setting.autoRelogin || this.stopRequested;
+    this.close(doNotRepeat);
   }
 
   private next(playerStates: CSAPlayerStates): void {
+    // 時計を一時停止する。
     this.blackClock.stop();
     this.whiteClock.stop();
+    // 時計をサーバーと同期する。
     const clockSetting = {
       byoyomi: (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3,
       onBeepShort: () => this.handlers.onBeepShort(),
@@ -284,18 +327,21 @@ export class CSAGameManager {
       ...clockSetting,
       timeMs: playerStates.white.time * this.gameSummary.timeUnitMs,
     });
+    // 時計をスタートする。
     const color = this.recordManager.record.position.color;
     if (color === Color.BLACK) {
       this.blackClock.start();
     } else {
       this.whiteClock.start();
     }
+    // プレイヤーの状態を確認する。
     if (!this.player) {
       this.handlers.onError(
         "想定されない問題が発生しました。CSA サーバーからデータを受信しましたが、プレイヤーが初期化されていません。"
       );
       return;
     }
+    // 次の指し手に適用される残り時間
     const timeLimit = {
       timeSeconds:
         (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3,
@@ -304,6 +350,7 @@ export class CSAGameManager {
         (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3,
     };
     if (color === this.gameSummary.myColor) {
+      // 自分の手番の場合は探索を開始する。
       this.player
         .startSearch(
           this.recordManager.record,
@@ -326,6 +373,7 @@ export class CSAGameManager {
           );
         });
     } else {
+      // 相手の手番の場合は Ponder を開始する。
       this.player
         .startPonder(
           this.recordManager.record,
@@ -350,8 +398,10 @@ export class CSAGameManager {
     let pv: string | undefined = undefined;
     switch (this._setting.server.protocolVersion) {
       case CSAProtocolVersion.V121:
+        // 通常の CSA プロトコルでは次の指し手のみを送信する。
         break;
       case CSAProtocolVersion.V121_FLOODGATE:
+        // Floodgate 拡張では評価値と PV を送信する。
         score = info?.score;
         if (info?.pv) {
           for (const move of info.pv) {
@@ -361,6 +411,7 @@ export class CSAGameManager {
         }
         break;
     }
+    // 指し手をサーバーに送信する。
     api.csaMove(this.sessionID, formatCSAMove(move), score, pv);
   }
 
@@ -378,6 +429,14 @@ export class CSAGameManager {
 }
 
 const csaGameManagers: { [sessionID: number]: CSAGameManager } = {};
+
+function entrySession(sessionID: number, gameManager: CSAGameManager): void {
+  csaGameManagers[sessionID] = gameManager;
+}
+
+function releaseSession(sessionID: number): void {
+  delete csaGameManagers[sessionID];
+}
 
 export function onCSAGameSummary(
   sessionID: number,

@@ -37,6 +37,7 @@ export const csaGameSetting: CSAGameSetting = {
   enableComment: true,
   enableAutoSave: true,
   repeat: 1,
+  autoRelogin: true,
 };
 
 export const emptyCSAGameSettingHistory: CSAGameSettingHistory = {
@@ -46,6 +47,7 @@ export const emptyCSAGameSettingHistory: CSAGameSettingHistory = {
   enableComment: true,
   enableAutoSave: true,
   repeat: 1,
+  autoRelogin: true,
 };
 
 export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
@@ -63,6 +65,7 @@ export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
   enableComment: true,
   enableAutoSave: true,
   repeat: 1,
+  autoRelogin: true,
 };
 
 const initialPosition = `\

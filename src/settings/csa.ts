@@ -21,6 +21,7 @@ export type CSAGameSetting = {
   enableComment: boolean;
   enableAutoSave: boolean;
   repeat: number;
+  autoRelogin: boolean;
 };
 
 export function defaultCSAServerSetting(): CSAServerSetting {
@@ -44,6 +45,7 @@ export function defaultCSAGameSetting(): CSAGameSetting {
     enableComment: true,
     enableAutoSave: true,
     repeat: 1,
+    autoRelogin: true,
   };
 }
 
@@ -75,6 +77,7 @@ export type CSAGameSettingHistory = {
   enableComment: boolean;
   enableAutoSave: boolean;
   repeat: number;
+  autoRelogin: boolean;
 };
 
 export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
@@ -88,6 +91,7 @@ export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
     enableComment: true,
     enableAutoSave: true,
     repeat: 1,
+    autoRelogin: true,
   };
 }
 
@@ -105,6 +109,7 @@ export function buildCSAGameSettingByHistory(
     enableComment: history.enableComment,
     enableAutoSave: history.enableAutoSave,
     repeat: history.repeat,
+    autoRelogin: history.autoRelogin,
   };
 }
 
@@ -136,6 +141,7 @@ export function appendCSAGameSettingHistory(
     enableComment: setting.enableComment,
     enableAutoSave: setting.enableAutoSave,
     repeat: setting.repeat,
+    autoRelogin: setting.autoRelogin,
   };
 }
 
@@ -155,6 +161,7 @@ export type SecureCSAGameSettingHistory = {
   enableComment: boolean;
   enableAutoSave: boolean;
   repeat: number;
+  autoRelogin: boolean;
 };
 
 export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistory {
@@ -168,6 +175,7 @@ export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistor
     enableComment: true,
     enableAutoSave: true,
     repeat: 1,
+    autoRelogin: true,
   };
 }
 
@@ -197,6 +205,7 @@ export function encryptCSAGameSettingHistory(
     enableComment: history.enableComment,
     enableAutoSave: history.enableAutoSave,
     repeat: history.repeat,
+    autoRelogin: history.autoRelogin,
   };
 }
 
@@ -224,5 +233,6 @@ export function decryptCSAGameSettingHistory(
     enableComment: history.enableComment,
     enableAutoSave: history.enableAutoSave,
     repeat: history.repeat,
+    autoRelogin: history.autoRelogin,
   };
 }

@@ -4,17 +4,15 @@
       <div class="dialog-title">棋譜解析</div>
       <div class="dialog-form-area">
         <div>エンジン</div>
-        <div class="dialog-form-item">
-          <PlayerSelector
-            :players="engines"
-            :player-uri="engineURI"
-            :engine-settings="engineSettings.json"
-            :display-thread-state="true"
-            :display-multi-pv-state="true"
-            @update-engine-setting="onUpdatePlayerSetting"
-            @select-player="onSelectPlayer"
-          />
-        </div>
+        <PlayerSelector
+          :players="engines"
+          :player-uri="engineURI"
+          :engine-settings="engineSettings.json"
+          :display-thread-state="true"
+          :display-multi-pv-state="true"
+          @update-engine-setting="onUpdatePlayerSetting"
+          @select-player="onSelectPlayer"
+        />
       </div>
       <div class="dialog-form-area">
         <div>開始条件</div>

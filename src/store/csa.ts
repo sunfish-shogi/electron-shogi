@@ -133,6 +133,9 @@ export class CSAGameManager {
     if (this._state === CSAGameState.OFFLINE) {
       return;
     }
+    if (this.stopRequested) {
+      doNotRepeat = true;
+    }
     // CSA プロトコルのセッションが存在する場合は切断する。
     if (this.sessionID) {
       releaseSession(this.sessionID);
@@ -303,9 +306,7 @@ export class CSAGameManager {
   }
 
   onClose(): void {
-    // 自動再ログインが無効であるか、中断が要求された場合は再ログインしない。
-    const doNotRepeat = !this.setting.autoRelogin || this.stopRequested;
-    this.close(doNotRepeat);
+    this.close(!this.setting.autoRelogin);
   }
 
   private next(playerStates: CSAPlayerStates): void {

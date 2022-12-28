@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog">
       <div class="dialog-title">アプリ設定</div>
-      <div class="dialog-form-area settings">
+      <div class="dialog-scroll-area settings">
         <div class="section">
           <div class="section-title">外観</div>
           <div class="dialog-form-item">
@@ -429,10 +429,6 @@ export default defineComponent({
 .settings {
   width: 540px;
   height: 540px;
-  padding: 10px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
 }
 .section {
   margin: 20px 0px 20px 0px;

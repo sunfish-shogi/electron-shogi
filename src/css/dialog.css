@@ -20,6 +20,16 @@ dialog::backdrop {
   font-size: 1.2em;
 }
 
+.dialog-scroll-area {
+  border: 1px dashed var(--dialog-border-color);
+  border-radius: 10px 10px 10px 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .dialog-form-areas-h {
   display: flex;
   flex-direction: row;

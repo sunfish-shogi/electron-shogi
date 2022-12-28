@@ -349,13 +349,11 @@ export class GameManager {
         this.recordManager.setGameEndMetadata();
         this.updateGameResults(color, specialMove);
         this.state = GameState.IDLE;
-      })
-      .then(() => {
         if (this._setting.enableAutoSave) {
-          return this.handlers.onSaveRecord();
+          this.handlers.onSaveRecord().catch((e) => {
+            this.handlers.onError(`棋譜の保存に失敗しました: ${e}`);
+          });
         }
-      })
-      .then(() => {
         const complete =
           specialMove === SpecialMove.INTERRUPT ||
           this.repeat >= this.setting.repeat;

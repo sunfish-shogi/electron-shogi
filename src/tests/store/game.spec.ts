@@ -13,7 +13,7 @@ import { createMockPlayer, createMockPlayerBuilder } from "../mock/player";
 
 function createMockHandlers() {
   return {
-    onSaveRecord: jest.fn(),
+    onSaveRecord: jest.fn().mockReturnValue(Promise.resolve()),
     onGameNext: jest.fn(),
     onGameEnd: jest.fn(),
     onPieceBeat: jest.fn(),

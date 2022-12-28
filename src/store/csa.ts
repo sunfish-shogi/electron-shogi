@@ -213,15 +213,14 @@ export class CSAGameManager {
     this.next(playerStates);
   }
 
-  async onGameResult(
-    move: CSASpecialMove,
-    gameResult: CSAGameResult
-  ): Promise<void> {
+  onGameResult(move: CSASpecialMove, gameResult: CSAGameResult): void {
     this.recordManager.appendMove({
       move: this.gameResultToSpecialMove(move, gameResult),
     });
     if (this.setting.enableAutoSave) {
-      await this.handlers.onSaveRecord();
+      this.handlers.onSaveRecord().catch((e) => {
+        this.handlers.onError(`棋譜の保存に失敗しました: ${e}`);
+      });
     }
     this.close();
   }
@@ -264,7 +263,7 @@ export class CSAGameManager {
     return SpecialMove.INTERRUPT;
   }
 
-  async onClose(): Promise<void> {
+  onClose(): void {
     this.close(true);
   }
 

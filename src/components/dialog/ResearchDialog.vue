@@ -3,17 +3,15 @@
     <dialog ref="dialog" class="root">
       <div class="dialog-title">検討</div>
       <div class="dialog-form-area">
-        <div class="dialog-form-item">
-          <PlayerSelector
-            :players="engines"
-            :player-uri="engineURI"
-            :engine-settings="engineSettings.json"
-            :display-thread-state="true"
-            :display-multi-pv-state="true"
-            @update-engine-setting="onUpdatePlayerSetting"
-            @select-player="onSelectPlayer"
-          />
-        </div>
+        <PlayerSelector
+          :players="engines"
+          :player-uri="engineURI"
+          :engine-settings="engineSettings.json"
+          :display-thread-state="true"
+          :display-multi-pv-state="true"
+          @update-engine-setting="onUpdatePlayerSetting"
+          @select-player="onSelectPlayer"
+        />
       </div>
       <div class="dialog-main-buttons">
         <button

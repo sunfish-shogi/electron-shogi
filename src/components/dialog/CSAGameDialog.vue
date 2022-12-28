@@ -136,6 +136,10 @@
           <input ref="repeat" class="number" type="number" min="1" />
         </div>
         <div class="dialog-form-item">
+          <input id="auto-relogin" ref="autoRelogin" type="checkbox" />
+          <label for="auto-relogin">自動で再ログインする</label>
+        </div>
+        <div class="dialog-form-item">
           <input id="enable-comment" ref="enableComment" type="checkbox" />
           <label for="enable-comment">コメントを出力する</label>
         </div>
@@ -215,6 +219,7 @@ export default defineComponent({
     const enableComment: Ref = ref(null);
     const enableAutoSave: Ref = ref(null);
     const repeat: Ref = ref(null);
+    const autoRelogin: Ref = ref(null);
     const autoFlip: Ref = ref(null);
     const isEncryptionAvailable: Ref = ref(false);
     const history = ref(defaultCSAGameSettingHistory());
@@ -259,6 +264,7 @@ export default defineComponent({
       enableComment.value.checked = defaultSetting.enableComment;
       enableAutoSave.value.checked = defaultSetting.enableAutoSave;
       repeat.value.value = defaultSetting.repeat;
+      autoRelogin.value.checked = defaultSetting.autoRelogin;
       autoFlip.value.checked = defaultSetting.autoFlip;
       playerURI.value = defaultSetting.player.uri;
       defaultValueApplied = true;
@@ -297,6 +303,7 @@ export default defineComponent({
         enableComment: enableComment.value.checked,
         enableAutoSave: enableAutoSave.value.checked,
         repeat: readInputAsNumber(repeat.value),
+        autoRelogin: autoRelogin.value.checked,
         autoFlip: autoFlip.value.checked,
       };
       const error = validateCSAGameSetting(csaGameSetting);
@@ -389,6 +396,7 @@ export default defineComponent({
       enableComment,
       enableAutoSave,
       repeat,
+      autoRelogin,
       autoFlip,
       engineSettings,
       playerURI,

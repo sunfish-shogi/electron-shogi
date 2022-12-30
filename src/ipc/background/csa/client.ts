@@ -7,7 +7,7 @@ import {
   CSAGameResult,
   CSASpecialMove,
 } from "@/ipc/csa";
-import { CSAServerSetting } from "@/settings/csa";
+import { CSAProtocolVersion, CSAServerSetting } from "@/settings/csa";
 import { Socket } from "./socket";
 import { Logger } from "log4js";
 
@@ -107,15 +107,27 @@ export class Client {
   }
 
   logout(): void {
-    if (
-      this.state === State.WAITING_GAME_SUMMARY ||
-      this.state === State.GAME_SUMMARY ||
-      this.state === State.GAME_TIME ||
-      this.state === State.GAME_POSITION ||
-      this.state === State.READY
-    ) {
-      this.send("LOGOUT");
-      this.state = State.WAITING_LOGOUT;
+    switch (this.setting.protocolVersion) {
+      case CSAProtocolVersion.V121_FLOODGATE:
+        // Floodgate では LOGOUT コマンドを使用しない。
+        if (this.socket) {
+          this.logger.info("sid=%d: disconnect", this.sessionID);
+          this.socket.end();
+          this.state = State.WAITING_CLOSE;
+        }
+        break;
+      default:
+        if (
+          this.state === State.WAITING_GAME_SUMMARY ||
+          this.state === State.GAME_SUMMARY ||
+          this.state === State.GAME_TIME ||
+          this.state === State.GAME_POSITION ||
+          this.state === State.READY
+        ) {
+          this.send("LOGOUT");
+          this.state = State.WAITING_LOGOUT;
+        }
+        break;
     }
   }
 

@@ -344,6 +344,9 @@ export default defineComponent({
   padding-right: 5px;
   text-align: right;
   vertical-align: baseline;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 .move-text {
   min-width: 100px;
@@ -351,6 +354,9 @@ export default defineComponent({
   padding-right: 5px;
   text-align: left;
   vertical-align: baseline;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 .move-time {
   min-width: 90px;
@@ -360,10 +366,10 @@ export default defineComponent({
   vertical-align: baseline;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
 }
 .move-comment {
-  min-width: 0px;
+  flex-grow: 1;
   height: 100%;
   text-align: left;
   vertical-align: baseline;

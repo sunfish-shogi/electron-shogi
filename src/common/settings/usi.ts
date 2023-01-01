@@ -1,4 +1,5 @@
 import { issueEngineURI } from "@/common/uri";
+import * as uri from "@/common/uri";
 
 // reserved option names
 export const USIPonder = "USI_Ponder";
@@ -57,6 +58,17 @@ export type USIEngineSetting = {
   options: { [name: string]: USIEngineOption };
 };
 
+export function emptyUSIEngineSetting(): USIEngineSetting {
+  return {
+    uri: "",
+    name: "",
+    defaultName: "",
+    author: "",
+    path: "",
+    options: {},
+  };
+}
+
 export function duplicateEngineSetting(
   src: USIEngineSetting
 ): USIEngineSetting {
@@ -86,8 +98,14 @@ export class USIEngineSettings {
   constructor(json?: string) {
     if (json) {
       const src = JSON.parse(json);
-      if (src.engines instanceof Object) {
-        this.engines = src.engines;
+      for (const engineURI in src.engines) {
+        if (uri.isUSIEngine(engineURI)) {
+          this.engines[engineURI] = {
+            ...emptyUSIEngineSetting(),
+            ...src.engines[engineURI],
+            uri: engineURI,
+          };
+        }
       }
     }
   }

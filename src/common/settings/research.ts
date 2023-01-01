@@ -7,3 +7,12 @@ export type ResearchSetting = {
 export function defaultResearchSetting(): ResearchSetting {
   return {};
 }
+
+export function normalizeResearchSetting(
+  setting: ResearchSetting
+): ResearchSetting {
+  return {
+    ...defaultResearchSetting(),
+    ...setting,
+  };
+}

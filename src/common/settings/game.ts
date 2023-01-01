@@ -1,12 +1,19 @@
 import { InitialPositionType } from "@/common/shogi";
-import * as uri from "@/common/uri";
-import { PlayerSetting } from "./player";
+import { PlayerSetting, defaultPlayerSetting } from "./player";
 
 export type TimeLimitSetting = {
   timeSeconds: number;
   byoyomi: number;
   increment: number;
 };
+
+export function defaultTimeLimitSetting(): TimeLimitSetting {
+  return {
+    timeSeconds: 0,
+    byoyomi: 0,
+    increment: 0,
+  };
+}
 
 export type GameSetting = {
   black: PlayerSetting;
@@ -24,14 +31,8 @@ export type GameSetting = {
 
 export function defaultGameSetting(): GameSetting {
   return {
-    black: {
-      name: "人",
-      uri: uri.ES_HUMAN,
-    },
-    white: {
-      name: "人",
-      uri: uri.ES_HUMAN,
-    },
+    black: defaultPlayerSetting(),
+    white: defaultPlayerSetting(),
     timeLimit: {
       timeSeconds: 0,
       byoyomi: 30,
@@ -44,6 +45,25 @@ export function defaultGameSetting(): GameSetting {
     repeat: 1,
     swapPlayers: false,
     maxMoves: 1000,
+  };
+}
+
+export function normalizeGameSetting(setting: GameSetting): GameSetting {
+  return {
+    ...defaultGameSetting(),
+    ...setting,
+    black: {
+      ...defaultPlayerSetting(),
+      ...setting.black,
+    },
+    white: {
+      ...defaultPlayerSetting(),
+      ...setting.white,
+    },
+    timeLimit: {
+      ...defaultTimeLimitSetting(),
+      ...setting.timeLimit,
+    },
   };
 }
 

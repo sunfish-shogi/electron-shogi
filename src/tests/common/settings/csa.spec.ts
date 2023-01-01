@@ -4,6 +4,7 @@ import {
   CSAProtocolVersion,
   decryptCSAGameSettingHistory,
   encryptCSAGameSettingHistory,
+  normalizeSecureCSAGameSettingHistory,
   validateCSAGameSetting,
 } from "@/common/settings/csa";
 import { csaGameSetting, emptyCSAGameSettingHistory } from "../../mock/csa";
@@ -12,7 +13,7 @@ describe("settings/csa", () => {
   it("validate/noError", () => {
     const result = validateCSAGameSetting({
       player: {
-        name: "人",
+        name: "参加者",
         uri: uri.ES_HUMAN,
       },
       server: {
@@ -95,6 +96,30 @@ describe("settings/csa", () => {
       autoRelogin: true,
     });
     expect(result).toBeInstanceOf(Error);
+  });
+
+  it("normalize", () => {
+    const setting = {
+      player: {
+        name: "人",
+        uri: uri.ES_HUMAN,
+      },
+      serverHistory: [
+        {
+          protocolVersion: CSAProtocolVersion.V121_FLOODGATE,
+          host: "test-server",
+          port: 1234,
+          id: "test-user",
+        },
+      ],
+      autoFlip: false,
+      enableComment: false,
+      enableAutoSave: false,
+      repeat: 3,
+      autoRelogin: false,
+    };
+    const result = normalizeSecureCSAGameSettingHistory(setting);
+    expect(result).toStrictEqual(setting);
   });
 
   it("appendCSAGameSettingHistory", () => {

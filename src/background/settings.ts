@@ -2,24 +2,38 @@ import fs from "fs";
 import { app, shell } from "electron";
 import path from "path";
 import { USIEngineSettings } from "@/common/settings/usi";
-import { AppSetting, defaultAppSetting } from "@/common/settings/app";
-import { defaultWindowSetting, WindowSetting } from "@/common/settings/window";
-import { defaultGameSetting, GameSetting } from "@/common/settings/game";
+import {
+  AppSetting,
+  defaultAppSetting,
+  normalizeAppSetting,
+} from "@/common/settings/app";
+import {
+  defaultWindowSetting,
+  normalizeWindowSetting,
+  WindowSetting,
+} from "@/common/settings/window";
+import {
+  defaultGameSetting,
+  GameSetting,
+  normalizeGameSetting,
+} from "@/common/settings/game";
 import {
   defaultResearchSetting,
+  normalizeResearchSetting,
   ResearchSetting,
 } from "@/common/settings/research";
 import {
   AnalysisSetting,
   defaultAnalysisSetting,
+  normalizeAnalysisSetting,
 } from "@/common/settings/analysis";
 import { getAppLogger } from "@/background/log";
 import {
   CSAGameSettingHistory,
   decryptCSAGameSettingHistory,
   defaultCSAGameSettingHistory,
-  defaultSecureCSAGameSettingHistory,
   encryptCSAGameSettingHistory,
+  normalizeSecureCSAGameSettingHistory,
 } from "@/common/settings/csa";
 import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
 import { isTest } from "./environment";
@@ -54,10 +68,9 @@ export function saveWindowSetting(setting: WindowSetting): void {
 
 export function loadWindowSetting(): WindowSetting {
   try {
-    return {
-      ...defaultWindowSetting(),
-      ...JSON.parse(fs.readFileSync(windowSettingPath, "utf8")),
-    };
+    return normalizeWindowSetting(
+      JSON.parse(fs.readFileSync(windowSettingPath, "utf8"))
+    );
   } catch (e) {
     getAppLogger().error("failed to read window setting: %s", e);
     return defaultWindowSetting();
@@ -95,13 +108,13 @@ export function loadAppSetting(): AppSetting {
       autoSaveDirectory: docDir,
     });
   }
-  return {
-    ...defaultAppSetting({
+  return normalizeAppSetting(
+    JSON.parse(fs.readFileSync(appSettingPath, "utf8")),
+    {
       returnCode: defautlReturnCode,
       autoSaveDirectory: docDir,
-    }),
-    ...JSON.parse(fs.readFileSync(appSettingPath, "utf8")),
-  };
+    }
+  );
 }
 
 const gameSettingPath = path.join(rootDir, "game_setting.json");
@@ -118,10 +131,9 @@ export function loadGameSetting(): GameSetting {
   if (!fs.existsSync(gameSettingPath)) {
     return defaultGameSetting();
   }
-  return {
-    ...defaultGameSetting(),
-    ...JSON.parse(fs.readFileSync(gameSettingPath, "utf8")),
-  };
+  return normalizeGameSetting(
+    JSON.parse(fs.readFileSync(gameSettingPath, "utf8"))
+  );
 }
 
 const csaGameSettingHistoryPath = path.join(
@@ -151,10 +163,7 @@ export function loadCSAGameSettingHistory(): CSAGameSettingHistory {
     fs.readFileSync(csaGameSettingHistoryPath, "utf8")
   );
   return decryptCSAGameSettingHistory(
-    {
-      ...defaultSecureCSAGameSettingHistory(),
-      ...encrypted,
-    },
+    normalizeSecureCSAGameSettingHistory(encrypted),
     isEncryptionAvailable() ? DecryptString : undefined
   );
 }
@@ -173,10 +182,9 @@ export function loadResearchSetting(): ResearchSetting {
   if (!fs.existsSync(researchSettingPath)) {
     return defaultResearchSetting();
   }
-  return {
-    ...defaultResearchSetting(),
-    ...JSON.parse(fs.readFileSync(researchSettingPath, "utf8")),
-  };
+  return normalizeResearchSetting(
+    JSON.parse(fs.readFileSync(researchSettingPath, "utf8"))
+  );
 }
 
 const analysisSettingPath = path.join(rootDir, "analysis_setting.json");
@@ -193,8 +201,7 @@ export function loadAnalysisSetting(): AnalysisSetting {
   if (!fs.existsSync(analysisSettingPath)) {
     return defaultAnalysisSetting();
   }
-  return {
-    ...defaultAnalysisSetting(),
-    ...JSON.parse(fs.readFileSync(analysisSettingPath, "utf8")),
-  };
+  return normalizeAnalysisSetting(
+    JSON.parse(fs.readFileSync(analysisSettingPath, "utf8"))
+  );
 }

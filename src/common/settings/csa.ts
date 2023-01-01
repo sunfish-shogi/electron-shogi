@@ -1,5 +1,5 @@
 import * as uri from "@/common/uri";
-import { PlayerSetting } from "./player";
+import { PlayerSetting, defaultPlayerSetting } from "./player";
 
 export enum CSAProtocolVersion {
   V121 = "v121",
@@ -154,6 +154,15 @@ export type SecureCSAServerSetting = {
   password?: string;
 };
 
+export function emptySecureCSAServerSetting(): SecureCSAServerSetting {
+  return {
+    protocolVersion: CSAProtocolVersion.V121,
+    host: "",
+    port: 0,
+    id: "",
+  };
+}
+
 export type SecureCSAGameSettingHistory = {
   player: PlayerSetting;
   serverHistory: SecureCSAServerSetting[];
@@ -176,6 +185,27 @@ export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistor
     enableAutoSave: true,
     repeat: 1,
     autoRelogin: true,
+  };
+}
+
+export function normalizeSecureCSAGameSettingHistory(
+  history: SecureCSAGameSettingHistory
+): SecureCSAGameSettingHistory {
+  const serverHistory = [] as SecureCSAServerSetting[];
+  for (const setting of history.serverHistory) {
+    serverHistory.push({
+      ...emptySecureCSAServerSetting(),
+      ...setting,
+    });
+  }
+  return {
+    ...defaultSecureCSAGameSettingHistory(),
+    ...history,
+    player: {
+      ...defaultPlayerSetting(),
+      ...history.player,
+    },
+    serverHistory: serverHistory,
   };
 }
 

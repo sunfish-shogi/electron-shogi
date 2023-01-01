@@ -1,5 +1,5 @@
-import { GameSetting } from "@/settings/game";
-import { InitialPositionType } from "@/shogi";
+import { GameSetting } from "@/common/settings/game";
+import { InitialPositionType } from "@/common/shogi";
 
 export const playerURI01 = "es://usi/test-engine-01";
 export const playerURI02 = "es://usi/test-engine-02";

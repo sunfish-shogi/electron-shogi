@@ -1,8 +1,8 @@
-import { parseUSIPV } from "@/ipc/usi";
-import { Player, SearchHandler } from "@/players/player";
-import { TimeLimitSetting } from "@/settings/game";
-import { PlayerSetting } from "@/settings/player";
-import { ImmutableRecord, Move } from "@/shogi";
+import { parseUSIPV } from "@/common/usi";
+import { Player, SearchHandler } from "@/renderer/players/player";
+import { TimeLimitSetting } from "@/common/settings/game";
+import { PlayerSetting } from "@/common/settings/player";
+import { ImmutableRecord, Move } from "@/common/shogi";
 
 export type MoveWithOption = {
   usi: string;

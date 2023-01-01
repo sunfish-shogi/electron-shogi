@@ -482,6 +482,12 @@ export class Store {
   }
 
   onGameEnd(gameResults?: GameResults, specialMove?: SpecialMove): void {
+    // TODO:
+    //   確認ダイアログ表示中に対局が終了した場合に appState が更新されない問題のワークアラウンド
+    //   確認ダイアログの取り扱いについて、マイナーバージョンアップデートで根本的な解決を検討
+    if (this.appState === AppState.TEMPORARY && this._confirmation) {
+      this.confirmationCancel();
+    }
     if (
       this.appState !== AppState.GAME &&
       this.appState !== AppState.CSA_GAME

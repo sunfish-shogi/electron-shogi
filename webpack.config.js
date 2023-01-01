@@ -16,7 +16,7 @@ const optimization = {
 
 module.exports = [{
   mode: 'production',
-  entry:'./dist/src/background.js',
+  entry:'./dist/src/background/index.js',
   target: 'node',
   output: {
     filename: 'background.js',
@@ -27,7 +27,7 @@ module.exports = [{
   optimization,
 }, {
   mode: 'production',
-  entry: './dist/src/ipc/preload.js',
+  entry: './dist/src/renderer/ipc/preload.js',
   output: {
     filename: 'preload.js',
     path: __dirname + '/dist/packed',

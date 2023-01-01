@@ -1,4 +1,4 @@
-import { USIEngineSetting } from "@/settings/usi";
+import { USIEngineSetting } from "@/common/settings/usi";
 
 export const usiEngineSetting: USIEngineSetting = {
   uri: "es://usi/test-engine",

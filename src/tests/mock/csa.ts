@@ -1,11 +1,11 @@
-import { CSAGameSummary } from "@/ipc/csa";
+import { CSAGameSummary } from "@/common/csa";
 import {
   CSAGameSetting,
   CSAGameSettingHistory,
   CSAProtocolVersion,
   CSAServerSetting,
-} from "@/settings/csa";
-import { Color } from "@/shogi";
+} from "@/common/settings/csa";
+import { Color } from "@/common/shogi";
 
 export const playerURI = "es://usi/test-engine";
 

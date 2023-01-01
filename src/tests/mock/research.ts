@@ -1,4 +1,4 @@
-import { ResearchSetting } from "@/settings/research";
+import { ResearchSetting } from "@/common/settings/research";
 import { usiEngineSetting } from "./usi";
 
 export const researchSetting: ResearchSetting = {

@@ -18,7 +18,7 @@
     "electron:preview": "npm run compile && npm run electron:compile && electron .",
     "report:license": "node scripts/report-license.mjs"
   },
-  "main": "dist/src/background.js",
+  "main": "dist/src/background/index.js",
   "dependencies": {
     "@github/hotkey": "^2.0.1",
     "chart.js": "^4.0.1",

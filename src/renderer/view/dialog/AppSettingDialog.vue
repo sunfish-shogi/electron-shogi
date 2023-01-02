@@ -53,14 +53,16 @@
             />
           </div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">画面レイアウト</div>
+            <div class="dialog-form-item-label-wide">コメント画面</div>
             <select
               ref="commentLayoutType"
               :value="appSetting.commentLayoutType"
             >
-              <option :value="CommentLayoutType.STANDARD">標準</option>
-              <option :value="CommentLayoutType.RIGHT">コメント分離(右)</option>
-              <option :value="CommentLayoutType.LEFT">コメント分離(左)</option>
+              <option :value="CommentLayoutType.STANDARD">
+                タブビューに配置
+              </option>
+              <option :value="CommentLayoutType.RIGHT">右に配置</option>
+              <option :value="CommentLayoutType.LEFT">左に配置</option>
             </select>
           </div>
         </div>

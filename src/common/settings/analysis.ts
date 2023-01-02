@@ -5,14 +5,34 @@ type StartCriteria = {
   number: number;
 };
 
+function defaultStartCriteria(): StartCriteria {
+  return {
+    enableNumber: false,
+    number: 20,
+  };
+}
+
 type EndCriteria = {
   enableNumber: boolean;
   number: number;
 };
 
+function defaultEndCriteria(): EndCriteria {
+  return {
+    enableNumber: false,
+    number: 100,
+  };
+}
+
 type PerMoveCriteria = {
   maxSeconds: number;
 };
+
+function defaultPerMoveCriteria(): PerMoveCriteria {
+  return {
+    maxSeconds: 5,
+  };
+}
 
 export enum CommentBehavior {
   NONE = "none",
@@ -31,17 +51,30 @@ export type AnalysisSetting = {
 
 export function defaultAnalysisSetting(): AnalysisSetting {
   return {
+    startCriteria: defaultStartCriteria(),
+    endCriteria: defaultEndCriteria(),
+    perMoveCriteria: defaultPerMoveCriteria(),
+    commentBehavior: CommentBehavior.INSERT,
+  };
+}
+
+export function normalizeAnalysisSetting(
+  setting: AnalysisSetting
+): AnalysisSetting {
+  return {
+    ...defaultAnalysisSetting(),
+    ...setting,
     startCriteria: {
-      enableNumber: false,
-      number: 20,
+      ...defaultStartCriteria(),
+      ...setting.startCriteria,
     },
     endCriteria: {
-      enableNumber: false,
-      number: 100,
+      ...defaultEndCriteria(),
+      ...setting.endCriteria,
     },
     perMoveCriteria: {
-      maxSeconds: 5,
+      ...defaultPerMoveCriteria(),
+      ...setting.perMoveCriteria,
     },
-    commentBehavior: CommentBehavior.INSERT,
   };
 }

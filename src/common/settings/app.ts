@@ -127,6 +127,19 @@ export function defaultAppSetting(opt?: {
   };
 }
 
+export function normalizeAppSetting(
+  setting: AppSetting,
+  opt?: {
+    returnCode?: string;
+    autoSaveDirectory?: string;
+  }
+): AppSetting {
+  return {
+    ...defaultAppSetting(opt),
+    ...setting,
+  };
+}
+
 export function validateAppSetting(setting: AppSetting): Error | undefined {
   if (setting.pieceVolume < 0 || setting.pieceVolume > 100) {
     return new Error("駒音の大きさには0%～100%の値を指定してください。");

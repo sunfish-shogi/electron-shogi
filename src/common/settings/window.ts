@@ -14,6 +14,13 @@ export function defaultWindowSetting(): WindowSetting {
   };
 }
 
+export function normalizeWindowSetting(setting: WindowSetting): WindowSetting {
+  return {
+    ...defaultWindowSetting(),
+    ...setting,
+  };
+}
+
 interface Window {
   isMaximized(): boolean;
   isFullScreen(): boolean;

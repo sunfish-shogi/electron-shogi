@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="root">
+    <div class="root" :style="`width: ${size.width}px;`">
       <div
         v-if="activeTab === 'invisible'"
         :style="`height: calc(100% - ${headerHeight}px);`"
@@ -15,6 +15,7 @@
           棋譜情報
         </span>
         <span
+          v-if="commentTabEnabled"
           class="tab"
           :class="{ selected: activeTab === Tab.COMMENT }"
           @click="changeSelect(Tab.COMMENT)"
@@ -113,7 +114,7 @@ import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
 import { useStore } from "@/renderer/store";
 import { RectSize } from "@/renderer/view/primitive/Types";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Tab } from "@/common/settings/app";
+import { CommentLayoutType, Tab } from "@/common/settings/app";
 import { Icon } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log.js";
@@ -156,10 +157,19 @@ export default defineComponent({
     const contentSize = computed(() =>
       props.size.reduce(new RectSize(0, headerHeight))
     );
+    const commentTabEnabled = computed(() => {
+      switch (store.appSetting.commentLayoutType) {
+        case CommentLayoutType.RIGHT:
+        case CommentLayoutType.LEFT:
+          return false;
+      }
+      return true;
+    });
     return {
       activeTab,
       contentSize,
       headerHeight,
+      commentTabEnabled,
       changeSelect,
       Icon,
       Tab,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TimeoutChain } from "@/common/helpers/testing";
 import api, { API } from "@/renderer/ipc/api";
-import { Thema } from "@/common/settings/app";
+import { CommentLayoutType, Tab, Thema } from "@/common/settings/app";
 import { Move } from "@/common/shogi";
 import { Store } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
@@ -169,26 +169,39 @@ describe("store/index", () => {
     expect(store.errors).toHaveLength(0);
   });
 
-  it("updateAppSetting", async () => {
+  it("updateAppSetting/success", async () => {
     mockAPI.saveAppSetting.mockResolvedValue();
     const store = new Store();
     expect(store.appSetting.thema).toBe(Thema.STANDARD);
     expect(store.appSetting.pieceVolume).toBe(30);
     expect(store.appSetting.clockVolume).toBe(30);
+    expect(store.appSetting.tab).toBe(Tab.RECORD_INFO);
     await store.updateAppSetting({
       thema: Thema.DARK,
       pieceVolume: 0,
+      tab: Tab.COMMENT,
     });
     expect(store.appSetting.thema).toBe(Thema.DARK);
     expect(store.appSetting.pieceVolume).toBe(0);
     expect(store.appSetting.clockVolume).toBe(30);
+    expect(store.appSetting.tab).toBe(Tab.COMMENT);
+    expect(store.appSetting.commentLayoutType).toBe(CommentLayoutType.STANDARD);
+    await store.updateAppSetting({
+      commentLayoutType: CommentLayoutType.RIGHT,
+    });
+    expect(store.appSetting.tab).toBe(Tab.RECORD_INFO); // コメントタブの選択が自動で解除される。
+    expect(store.appSetting.commentLayoutType).toBe(CommentLayoutType.RIGHT);
+  });
+
+  it("updateAppSetting/error", async () => {
+    const store = new Store();
     try {
       await store.updateAppSetting({
         pieceVolume: -1,
       });
       throw new Error("updateAppSetting must be rejected");
     } catch {
-      expect(store.appSetting.pieceVolume).toBe(0);
+      expect(store.appSetting.pieceVolume).toBe(30);
     }
   });
 

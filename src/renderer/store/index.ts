@@ -20,7 +20,7 @@ import {
   ClockSoundTarget,
   Tab,
   defaultAppSetting,
-  validateAppSetting,
+  buildUpdatedAppSetting,
 } from "@/common/settings/app";
 import {
   AudioEventHandler,
@@ -170,16 +170,12 @@ export class Store {
   }
 
   async updateAppSetting(update: AppSettingUpdate): Promise<void> {
-    const newAppSetting = {
-      ...this.appSetting,
-      ...update,
-    };
-    const error = validateAppSetting(newAppSetting);
-    if (error) {
-      throw error;
+    const updated = buildUpdatedAppSetting(this.appSetting, update);
+    if (updated instanceof Error) {
+      throw updated;
     }
-    await api.saveAppSetting(newAppSetting);
-    this._appSetting = newAppSetting;
+    await api.saveAppSetting(updated);
+    this._appSetting = updated;
   }
 
   flipBoard(): void {

@@ -9,7 +9,11 @@
         />
         <RecordPane class="top-right-pane" :style="recordPaneStyle" />
       </div>
-      <TabPane class="bottom-pane" :size="bottomPaneSize" />
+      <div class="bottom-pane">
+        <RecordComment v-if="leftCommentEnabled" class="comment-pane" />
+        <TabPane class="tab-pane" :size="tabPaneSize" />
+        <RecordComment v-if="rightCommentEnabled" class="comment-pane" />
+      </div>
     </div>
   </div>
 </template>
@@ -31,7 +35,8 @@ import TabPane, {
 } from "./TabPane.vue";
 import { RectSize } from "@/renderer/view/primitive/Types";
 import { useStore } from "@/renderer/store";
-import { Tab } from "@/common/settings/app";
+import { CommentLayoutType, Tab } from "@/common/settings/app";
+import RecordComment from "../tab/RecordComment.vue";
 
 export default defineComponent({
   name: "StandardLayout",
@@ -39,8 +44,10 @@ export default defineComponent({
     BoardPane,
     RecordPane,
     TabPane,
+    RecordComment,
   },
   setup() {
+    const store = useStore();
     const windowSize = reactive(new RectSize(0, 0));
     const boardPaneSize = ref(new RectSize(0, 0));
 
@@ -64,7 +71,7 @@ export default defineComponent({
 
     const boardPaneMaxSize = computed(() => {
       const minTabPaneHeight =
-        useStore().appSetting.tab !== Tab.INVISIBLE
+        store.appSetting.tab !== Tab.INVISIBLE
           ? minTabHeight
           : informationHeaderHeight;
       return new RectSize(
@@ -80,17 +87,35 @@ export default defineComponent({
       };
     });
 
-    const bottomPaneSize = computed(() => {
+    const tabPaneSize = computed(() => {
+      const ratio =
+        store.appSetting.tab === Tab.INVISIBLE ||
+        store.appSetting.commentLayoutType === CommentLayoutType.STANDARD
+          ? 1.0
+          : 0.6;
       return new RectSize(
-        windowSize.width,
+        windowSize.width * ratio,
         windowSize.height - boardPaneSize.value.height
       );
     });
 
+    const rightCommentEnabled = computed(
+      () =>
+        store.appSetting.tab !== Tab.INVISIBLE &&
+        store.appSetting.commentLayoutType === CommentLayoutType.RIGHT
+    );
+    const leftCommentEnabled = computed(
+      () =>
+        store.appSetting.tab !== Tab.INVISIBLE &&
+        store.appSetting.commentLayoutType === CommentLayoutType.LEFT
+    );
+
     return {
       boardPaneMaxSize,
       recordPaneStyle,
-      bottomPaneSize,
+      tabPaneSize,
+      leftCommentEnabled,
+      rightCommentEnabled,
       onBoardPaneResize,
     };
   },
@@ -111,12 +136,21 @@ export default defineComponent({
 }
 .bottom-pane {
   flex: 1;
+  display: flex;
+  flex-direction: row;
   width: 100vw;
 }
 .top-left-pane {
   height: 100%;
 }
 .top-right-pane {
+  flex: 1;
+  height: 100%;
+}
+.tab-pane {
+  height: 100%;
+}
+.comment-pane {
   flex: 1;
   height: 100%;
 }

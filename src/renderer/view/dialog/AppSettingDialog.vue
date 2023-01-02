@@ -52,6 +52,17 @@
               type="checkbox"
             />
           </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">画面レイアウト</div>
+            <select
+              ref="commentLayoutType"
+              :value="appSetting.commentLayoutType"
+            >
+              <option :value="CommentLayoutType.STANDARD">標準</option>
+              <option :value="CommentLayoutType.RIGHT">コメント分離(右)</option>
+              <option :value="CommentLayoutType.LEFT">コメント分離(左)</option>
+            </select>
+          </div>
         </div>
         <hr />
         <div class="section">
@@ -263,6 +274,7 @@ import {
   PieceImageType,
   BoardImageType,
   BoardLabelType,
+  CommentLayoutType,
 } from "@/common/settings/app";
 import { AppSettingUpdate, Thema } from "@/common/settings/app";
 import { useStore } from "@/renderer/store";
@@ -303,6 +315,7 @@ export default defineComponent({
     const pieceImage: Ref = ref(null);
     const boardImage: Ref = ref(null);
     const displayBoardLabels: Ref = ref(null);
+    const commentLayoutType: Ref = ref(null);
     const pieceVolume: Ref = ref(null);
     const clockVolume: Ref = ref(null);
     const clockPitch: Ref = ref(null);
@@ -336,6 +349,7 @@ export default defineComponent({
         boardLabelType: displayBoardLabels.value.checked
           ? BoardLabelType.STANDARD
           : BoardLabelType.NONE,
+        commentLayoutType: commentLayoutType.value.value,
         pieceVolume: readInputAsNumber(pieceVolume.value),
         clockVolume: readInputAsNumber(clockVolume.value),
         clockPitch: readInputAsNumber(clockPitch.value),
@@ -395,11 +409,13 @@ export default defineComponent({
       PieceImageType,
       BoardImageType,
       BoardLabelType,
+      CommentLayoutType,
       dialog,
       thema,
       pieceImage,
       boardImage,
       displayBoardLabels,
+      commentLayoutType,
       pieceVolume,
       clockVolume,
       clockPitch,

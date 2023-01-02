@@ -29,6 +29,12 @@ export enum BoardLabelType {
   STANDARD = "standard",
 }
 
+export enum CommentLayoutType {
+  STANDARD = "standard",
+  RIGHT = "right",
+  LEFT = "left",
+}
+
 export enum Tab {
   RECORD_INFO = "recordInfo",
   COMMENT = "comment",
@@ -49,6 +55,7 @@ export type AppSetting = {
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
   boardLabelType: BoardLabelType;
+  commentLayoutType: CommentLayoutType;
   pieceVolume: number;
   clockVolume: number;
   clockPitch: number;
@@ -75,6 +82,7 @@ export type AppSettingUpdate = {
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
   boardLabelType?: BoardLabelType;
+  commentLayoutType?: CommentLayoutType;
   pieceVolume?: number;
   clockVolume?: number;
   clockPitch?: number;
@@ -96,6 +104,24 @@ export type AppSettingUpdate = {
   enableCSALog?: boolean;
 };
 
+export function buildUpdatedAppSetting(
+  org: AppSetting,
+  update: AppSettingUpdate
+): AppSetting | Error {
+  const updated = {
+    ...org,
+    ...update,
+  };
+  if (
+    updated.tab === Tab.COMMENT &&
+    updated.commentLayoutType !== CommentLayoutType.STANDARD
+  ) {
+    updated.tab = Tab.RECORD_INFO;
+  }
+  const error = validateAppSetting(updated);
+  return error || updated;
+}
+
 export function defaultAppSetting(opt?: {
   returnCode?: string;
   autoSaveDirectory?: string;
@@ -105,6 +131,7 @@ export function defaultAppSetting(opt?: {
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.LIGHT,
     boardLabelType: BoardLabelType.STANDARD,
+    commentLayoutType: CommentLayoutType.STANDARD,
     pieceVolume: 30,
     clockVolume: 30,
     clockPitch: 500,

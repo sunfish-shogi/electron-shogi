@@ -6,6 +6,7 @@ import {
   BoardLabelType,
   ClockSoundTarget,
   Tab,
+  CommentLayoutType,
 } from "@/common/settings/app";
 
 describe("settings/csa", () => {
@@ -15,6 +16,7 @@ describe("settings/csa", () => {
       pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       boardImage: BoardImageType.WARM,
       boardLabelType: BoardLabelType.NONE,
+      commentLayoutType: CommentLayoutType.STANDARD,
       pieceVolume: 10,
       clockVolume: 20,
       clockPitch: 300,

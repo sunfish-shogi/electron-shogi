@@ -9,7 +9,12 @@ import { getAppLogger, shutdownLoggers } from "@/background/log";
 import { quitAll as usiQuitAll } from "@/background/usi";
 import { AppState } from "@/common/control/state";
 import { validateHTTPRequest } from "./security";
-import { isDevelopment, isProduction, isTest } from "@/background/environment";
+import {
+  isDevelopment,
+  isPreview,
+  isProduction,
+  isTest,
+} from "@/background/environment";
 
 getAppLogger().info("start main process");
 getAppLogger().info("process argv: %s", process.argv.join(" "));
@@ -69,6 +74,13 @@ function createWindow() {
         getAppLogger().error(`failed to load dev server URL: ${e}`);
         throw e;
       });
+  } else if (isPreview()) {
+    // Preview
+    getAppLogger().info("load app URL");
+    win.loadFile(path.join(__dirname, "../../index.html")).catch((e) => {
+      getAppLogger().error(`failed to load app URL: ${e}`);
+      throw e;
+    });
   } else {
     // Production
     getAppLogger().info("load app URL");

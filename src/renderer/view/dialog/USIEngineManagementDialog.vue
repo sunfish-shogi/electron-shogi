@@ -3,11 +3,11 @@
     <dialog ref="dialog">
       <div class="dialog-title">エンジン管理</div>
       <div class="dialog-form-area engine-list">
-        <div v-if="engines.length === 0" class="engine">
+        <div v-if="setting.engineList.length === 0" class="engine">
           エンジンが登録されていません。
         </div>
         <div
-          v-for="engine in engines"
+          v-for="engine in setting.engineList"
           :key="engine.uri"
           class="engine"
           :value="engine.uri"
@@ -50,14 +50,7 @@ import {
   USIEngineSettings,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
-import {
-  ref,
-  onMounted,
-  defineComponent,
-  Ref,
-  computed,
-  onBeforeUnmount,
-} from "vue";
+import { ref, onMounted, defineComponent, Ref, onBeforeUnmount } from "vue";
 import USIEngineOptionDialog from "@/renderer/view/dialog/USIEngineOptionDialog.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import {
@@ -152,12 +145,10 @@ export default defineComponent({
       optionDialog.value = null;
     };
 
-    const engines = computed(() => setting.value.engineList);
-
     return {
       optionDialog,
       dialog,
-      engines,
+      setting,
       add,
       remove,
       openOptions,

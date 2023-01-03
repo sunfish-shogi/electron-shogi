@@ -7,8 +7,8 @@
           <div class="notice">
             {{ errors.length }} 件のエラーが発生しました。
           </div>
-          <div v-for="error in errors" :key="error.index" class="item">
-            <p class="index">{{ error.index + 1 }} 件目</p>
+          <div v-for="(error, index) in errors" :key="index" class="item">
+            <p class="index">{{ index + 1 }} 件目</p>
             <p class="message">{{ error.message }}</p>
           </div>
         </div>
@@ -58,14 +58,7 @@ export default defineComponent({
       uninstallHotKeyForDialog(dialog.value);
     });
 
-    const errors = computed(() => {
-      return store.errors.map((error, index) => {
-        return {
-          message: error.message,
-          index,
-        };
-      });
-    });
+    const errors = computed(() => store.errors);
 
     const onClose = () => {
       store.clearErrors();

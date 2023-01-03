@@ -5,7 +5,7 @@
         <div class="key">ファイル</div>
         <div class="value">{{ filePath || "（新規棋譜）" }}</div>
       </div>
-      <div v-for="element of list" :key="element.key" class="element">
+      <div v-for="element in list" :key="element.key" class="element">
         <div class="key">{{ element.displayName }}</div>
         <input
           class="value"

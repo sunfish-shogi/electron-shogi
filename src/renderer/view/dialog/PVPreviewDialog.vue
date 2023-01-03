@@ -66,11 +66,11 @@
         </template>
       </BoardView>
       <div class="informations">
-        <div v-for="info in infos" :key="info" class="information">
+        <div v-for="(info, index) in infos" :key="index" class="information">
           {{ info }}
         </div>
         <div class="information">
-          <span v-for="move in displayPV" :key="move.number">
+          <span v-for="(move, index) in displayPV" :key="index">
             <span class="move-element" :class="{ selected: move.selected }"
               >&nbsp;{{ move.text }}&nbsp;</span
             >
@@ -202,7 +202,6 @@ export default defineComponent({
     const displayPV = computed(() => {
       return record.moves.slice(1).map((move) => {
         return {
-          number: move.number,
           text: move.displayText,
           selected: move.number === record.current.number,
         };

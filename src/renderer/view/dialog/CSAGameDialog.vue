@@ -27,13 +27,13 @@
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">履歴から選ぶ</div>
             <select class="long-text" value="0" @change="onChangeHistory">
-              <option v-if="serverHistory.length === 0" value="0">
+              <option v-if="history.serverHistory.length === 0" value="0">
                 履歴がありません
               </option>
               <option
-                v-for="server of serverHistory"
-                :key="server.index"
-                :value="server.index"
+                v-for="(server, index) in history.serverHistory"
+                :key="index"
+                :value="index"
               >
                 {{ server.host }}:{{ server.port }} {{ server.id }}
               </option>
@@ -373,15 +373,6 @@ export default defineComponent({
       ];
     });
 
-    const serverHistory = computed(() => {
-      return history.value.serverHistory.map((serverSetting, index) => {
-        return {
-          index,
-          ...serverSetting,
-        };
-      });
-    });
-
     const logEnabled = computed(() => {
       return (
         store.appSetting.enableCSALog &&
@@ -408,7 +399,7 @@ export default defineComponent({
       engineSettings,
       playerURI,
       players,
-      serverHistory,
+      history,
       selectedProtocolVersion,
       onChangeProtocolVersion,
       logEnabled,

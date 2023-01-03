@@ -6,20 +6,20 @@
         <div class="message">{{ message.text }}</div>
       </div>
       <div
-        v-for="(attachment, aidx) of message.attachments"
+        v-for="(attachment, aidx) in message.attachments"
         :key="aidx"
         class="attachment"
       >
         <ul v-if="attachment.type === 'list'" class="list">
           <li
-            v-for="(item, iidx) of attachment.items"
+            v-for="(item, iidx) in attachment.items"
             :key="iidx"
             class="list-item"
           >
             {{ item.text }}
             <ul>
               <li
-                v-for="(child, cidx) of item.children"
+                v-for="(child, cidx) in item.children"
                 :key="cidx"
                 class="list-child-item"
               >

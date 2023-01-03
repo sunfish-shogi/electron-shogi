@@ -1,11 +1,5 @@
 import { ImmutablePosition, Move } from "@/common/shogi";
 
-export enum USIInfoSender {
-  BLACK_PLAYER = "blackPlayer",
-  WHITE_PLAYER = "whitePlayer",
-  RESEARCHER = "researcher",
-}
-
 export type USIInfoCommand = {
   depth?: number;
   seldepth?: number;

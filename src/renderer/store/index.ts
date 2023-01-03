@@ -51,7 +51,7 @@ import {
   appendCSAGameSettingHistory,
 } from "@/common/settings/csa";
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
-import { USIInfoCommand, USIInfoSender } from "@/common/usi";
+import { USIInfoCommand } from "@/common/usi";
 
 export class Store {
   private _bussy = new BussyStore();
@@ -303,22 +303,13 @@ export class Store {
     this._isAppSettingDialogVisible = false;
   }
 
-  get usiBlackPlayerMonitor(): USIPlayerMonitor | undefined {
-    return this.usiMonitor.blackPlayer;
-  }
-
-  get usiWhitePlayerMonitor(): USIPlayerMonitor | undefined {
-    return this.usiMonitor.whitePlayer;
-  }
-
-  get usiResearcherMonitor(): USIPlayerMonitor | undefined {
-    return this.usiMonitor.researcher;
+  get usiMonitors(): USIPlayerMonitor[] {
+    return this.usiMonitor.sessions;
   }
 
   updateUSIInfo(
     sessionID: number,
     usi: string,
-    sender: USIInfoSender,
     name: string,
     info: USIInfoCommand
   ): void {
@@ -328,7 +319,6 @@ export class Store {
     this.usiMonitor.update(
       sessionID,
       this.recordManager.record.position,
-      sender,
       name,
       info
     );
@@ -337,7 +327,6 @@ export class Store {
   updateUSIPonderInfo(
     sessionID: number,
     usi: string,
-    sender: USIInfoSender,
     name: string,
     info: USIInfoCommand
   ): void {
@@ -350,14 +339,7 @@ export class Store {
     if (!(ponderMove instanceof Move)) {
       return;
     }
-    this.usiMonitor.update(
-      sessionID,
-      record.position,
-      sender,
-      name,
-      info,
-      ponderMove
-    );
+    this.usiMonitor.update(sessionID, record.position, name, info, ponderMove);
   }
 
   get blackTime(): number {
@@ -644,6 +626,7 @@ export class Store {
       })
       .then(() => {
         this._appState = AppState.RESEARCH;
+        this.usiMonitor.clear();
         this.onUpdatePosition();
         if (
           this.appSetting.tab !== Tab.SEARCH &&
@@ -692,6 +675,7 @@ export class Store {
       })
       .then(() => {
         this._appState = AppState.ANALYSIS;
+        this.usiMonitor.clear();
       })
       .catch((e) => {
         this.analysisManager = undefined;

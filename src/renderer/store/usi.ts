@@ -1,4 +1,4 @@
-import { USIInfoCommand, USIInfoSender } from "@/common/usi";
+import { USIInfoCommand } from "@/common/usi";
 import { ImmutablePosition, Move, Position } from "@/common/shogi";
 
 export type USIIteration = {
@@ -35,6 +35,7 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
 }
 
 export class USIPlayerMonitor {
+  public sfen = "";
   public nodes?: number;
   public nps?: number;
   public iterates: USIIteration[] = [];
@@ -43,11 +44,7 @@ export class USIPlayerMonitor {
   public currentMoveText?: string;
   public ponderMove?: string;
 
-  constructor(
-    public sessionID: number,
-    public name: string,
-    public sfen: string
-  ) {}
+  constructor(public sessionID: number, public name: string) {}
 
   get latestIteration(): USIIteration[] {
     const result: USIIteration[] = [];
@@ -67,6 +64,16 @@ export class USIPlayerMonitor {
   }
 
   update(sfen: string, update: USIInfoCommand, ponderMove?: Move): void {
+    if (this.sfen !== sfen) {
+      this.sfen = sfen;
+      this.nodes = undefined;
+      this.nps = undefined;
+      this.iterates = [];
+      this.hashfull = undefined;
+      this.currentMove = undefined;
+      this.currentMoveText = undefined;
+      this.ponderMove = undefined;
+    }
     const position = Position.newBySFEN(sfen);
     const iterate: USIIteration = {
       position: sfen,
@@ -133,42 +140,32 @@ export class USIPlayerMonitor {
 type USIUpdate = {
   sessionID: number;
   sfen: string;
-  sender: USIInfoSender;
   name: string;
   info: USIInfoCommand;
   ponderMove?: Move;
 };
 
 export class USIMonitor {
-  private _blackPlayer?: USIPlayerMonitor;
-  private _whitePlayer?: USIPlayerMonitor;
-  private _researcher?: USIPlayerMonitor;
+  private _sessions: USIPlayerMonitor[] = [];
   private updateQueue: USIUpdate[] = [];
   private timeoutHandle?: number;
 
-  get blackPlayer(): USIPlayerMonitor | undefined {
-    return this._blackPlayer;
-  }
-
-  get whitePlayer(): USIPlayerMonitor | undefined {
-    return this._whitePlayer;
-  }
-
-  get researcher(): USIPlayerMonitor | undefined {
-    return this._researcher;
+  get sessions(): USIPlayerMonitor[] {
+    return this._sessions;
   }
 
   clear(): void {
-    this._blackPlayer = undefined;
-    this._whitePlayer = undefined;
-    this._researcher = undefined;
+    this._sessions = [];
     this.updateQueue = [];
+    if (this.timeoutHandle) {
+      window.clearTimeout(this.timeoutHandle);
+      this.timeoutHandle = undefined;
+    }
   }
 
   update(
     sessionID: number,
     position: ImmutablePosition,
-    sender: USIInfoSender,
     name: string,
     info: USIInfoCommand,
     ponderMove?: Move
@@ -176,7 +173,6 @@ export class USIMonitor {
     this.updateQueue.push({
       sessionID,
       sfen: position.sfen,
-      sender,
       name,
       info,
       ponderMove,
@@ -189,7 +185,7 @@ export class USIMonitor {
     }
   }
 
-  private dequeue() {
+  private async dequeue() {
     for (const update of this.updateQueue) {
       this._update(update);
     }
@@ -198,53 +194,21 @@ export class USIMonitor {
   }
 
   private _update(update: USIUpdate) {
-    switch (update.sender) {
-      case USIInfoSender.BLACK_PLAYER:
-        if (
-          !this._blackPlayer ||
-          this._blackPlayer.sessionID !== update.sessionID ||
-          this._blackPlayer.sfen !== update.sfen
-        ) {
-          this._blackPlayer = new USIPlayerMonitor(
-            update.sessionID,
-            update.name,
-            update.sfen
-          );
-        }
-        this._blackPlayer.update(update.sfen, update.info, update.ponderMove);
-        this._researcher = undefined;
-        break;
-      case USIInfoSender.WHITE_PLAYER:
-        if (
-          !this._whitePlayer ||
-          this._whitePlayer.sessionID !== update.sessionID ||
-          this._whitePlayer.sfen !== update.sfen
-        ) {
-          this._whitePlayer = new USIPlayerMonitor(
-            update.sessionID,
-            update.name,
-            update.sfen
-          );
-        }
-        this._whitePlayer.update(update.sfen, update.info, update.ponderMove);
-        this._researcher = undefined;
-        break;
-      case USIInfoSender.RESEARCHER:
-        if (
-          !this._researcher ||
-          this._researcher.sessionID !== update.sessionID ||
-          this._researcher.sfen !== update.sfen
-        ) {
-          this._researcher = new USIPlayerMonitor(
-            update.sessionID,
-            update.name,
-            update.sfen
-          );
-        }
-        this._researcher.update(update.sfen, update.info);
-        this._blackPlayer = undefined;
-        this._whitePlayer = undefined;
-        break;
+    let monitor = this._sessions.find(
+      (session) => session.sessionID === update.sessionID
+    );
+    if (!monitor) {
+      monitor = this.addSession(update.sessionID, update.name);
     }
+    monitor.update(update.sfen, update.info, update.ponderMove);
+  }
+
+  private addSession(sessionID: number, name: string): USIPlayerMonitor {
+    const monitor = new USIPlayerMonitor(sessionID, name);
+    this.sessions.push(monitor);
+    this.sessions.sort((a, b) => {
+      return a.sessionID - b.sessionID;
+    });
+    return monitor;
   }
 }

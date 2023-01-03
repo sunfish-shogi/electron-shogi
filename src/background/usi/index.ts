@@ -6,8 +6,6 @@ import {
 } from "./engine";
 import * as uri from "@/common/uri";
 import { onUSIBestMove, onUSIInfo, onUSIPonderInfo } from "@/background/ipc";
-import { Color, getNextColorFromUSI } from "@/common/shogi";
-import { USIInfoSender } from "@/common/usi";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/player";
 
@@ -164,11 +162,7 @@ export function go(
   const session = getSession(sessionID);
   session.process.go(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
   session.process.on("info", (usi, info) => {
-    const sender =
-      getNextColorFromUSI(usi) === Color.BLACK
-        ? USIInfoSender.BLACK_PLAYER
-        : USIInfoSender.WHITE_PLAYER;
-    onUSIInfo(sessionID, usi, sender, session.name, info);
+    onUSIInfo(sessionID, usi, session.name, info);
   });
 }
 
@@ -185,11 +179,7 @@ export function goPonder(
     buildTimeState(timeLimit, blackTimeMs, whiteTimeMs)
   );
   session.process.on("ponderInfo", (usi, info) => {
-    const sender =
-      getNextColorFromUSI(usi) === Color.BLACK
-        ? USIInfoSender.BLACK_PLAYER
-        : USIInfoSender.WHITE_PLAYER;
-    onUSIPonderInfo(sessionID, usi, sender, session.name, info);
+    onUSIPonderInfo(sessionID, usi, session.name, info);
   });
 }
 
@@ -197,7 +187,7 @@ export function goInfinite(sessionID: number, usi: string): void {
   const session = getSession(sessionID);
   session.process.go(usi);
   session.process.on("info", (usi, info) => {
-    onUSIInfo(sessionID, usi, USIInfoSender.RESEARCHER, session.name, info);
+    onUSIInfo(sessionID, usi, session.name, info);
   });
 }
 

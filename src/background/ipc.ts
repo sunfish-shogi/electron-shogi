@@ -19,7 +19,7 @@ import {
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { setupMenu, updateMenuState } from "@/background/menu";
 import { MenuEvent } from "@/common/control/menu";
-import { USIInfoCommand, USIInfoSender } from "@/common/usi";
+import { USIInfoCommand } from "@/common/usi";
 import { AppState } from "@/common/control/state";
 import {
   gameover as usiGameover,
@@ -456,7 +456,6 @@ export function onUSIBestMove(
 export function onUSIInfo(
   sessionID: number,
   usi: string,
-  sender: USIInfoSender,
   name: string,
   info: USIInfoCommand
 ): void {
@@ -464,7 +463,6 @@ export function onUSIInfo(
     Renderer.USI_INFO,
     sessionID,
     usi,
-    sender,
     name,
     JSON.stringify(info)
   );
@@ -473,7 +471,6 @@ export function onUSIInfo(
 export function onUSIPonderInfo(
   sessionID: number,
   usi: string,
-  sender: USIInfoSender,
   name: string,
   info: USIInfoCommand
 ): void {
@@ -481,7 +478,6 @@ export function onUSIPonderInfo(
     Renderer.USI_PONDER_INFO,
     sessionID,
     usi,
-    sender,
     name,
     JSON.stringify(info)
   );

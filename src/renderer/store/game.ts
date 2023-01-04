@@ -4,7 +4,11 @@ import { Player, SearchInfo } from "@/renderer/players/player";
 import { defaultGameSetting, GameSetting } from "@/common/settings/game";
 import { Color, Move, reverseColor, SpecialMove } from "@/common/shogi";
 import { CommentBehavior } from "@/common/settings/analysis";
-import { buildSearchComment, RecordManager, SearchEngineType } from "./record";
+import {
+  buildSearchComment,
+  RecordManager,
+  SearchInfoSenderType,
+} from "./record";
 import { Clock } from "./clock";
 import {
   defaultPlayerBuilder,
@@ -138,11 +142,13 @@ export class GameManager {
     try {
       this.blackPlayer = await this.playerBuilder.build(
         this.setting.black,
-        (info) => this.recordManager.updateEnemySearchInfo(info)
+        (info) =>
+          this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
       );
       this.whitePlayer = await this.playerBuilder.build(
         this.setting.white,
-        (info) => this.recordManager.updateEnemySearchInfo(info)
+        (info) =>
+          this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
       );
     } catch (e) {
       try {
@@ -244,10 +250,10 @@ export class GameManager {
       elapsedMs: this.getActiveClock().elapsedMs,
     });
     if (info) {
-      this.recordManager.updateSearchInfo(SearchEngineType.PLAYER, info);
+      this.recordManager.updateSearchInfo(SearchInfoSenderType.PLAYER, info);
     }
     if (info && this.setting.enableComment) {
-      const comment = buildSearchComment(SearchEngineType.PLAYER, info);
+      const comment = buildSearchComment(SearchInfoSenderType.PLAYER, info);
       this.recordManager.appendComment(comment, CommentBehavior.APPEND);
     }
     this.handlers.onPieceBeat();

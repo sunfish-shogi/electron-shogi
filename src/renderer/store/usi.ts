@@ -185,7 +185,7 @@ export class USIMonitor {
     }
   }
 
-  private async dequeue() {
+  private dequeue() {
     for (const update of this.updateQueue) {
       this._update(update);
     }

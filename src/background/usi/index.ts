@@ -94,6 +94,10 @@ function issueSessionID(): number {
 
 const sessions = new Map<number, Session>();
 
+function isSessionExists(sessionID: number): boolean {
+  return sessions.has(sessionID);
+}
+
 function getSession(sessionID: number): Session {
   const session = sessions.get(sessionID);
   if (!session) {
@@ -217,6 +221,9 @@ export function gameover(sessionID: number, result: GameResult): void {
 }
 
 export function quit(sessionID: number): void {
+  if (!isSessionExists(sessionID)) {
+    return;
+  }
   const session = getSession(sessionID);
   session.process.quit();
   sessions.delete(sessionID);

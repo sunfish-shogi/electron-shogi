@@ -391,9 +391,9 @@ describe("store/index", () => {
   });
 
   it("startResearch/success", () => {
-    mockAPI.saveResearchSetting.mockResolvedValue(Promise.resolve());
-    mockUSIPlayer.prototype.launch.mockResolvedValue(Promise.resolve());
-    mockUSIPlayer.prototype.startResearch.mockResolvedValue(Promise.resolve());
+    mockAPI.saveResearchSetting.mockResolvedValue();
+    mockUSIPlayer.prototype.launch.mockResolvedValue();
+    mockUSIPlayer.prototype.startResearch.mockResolvedValue();
     const store = new Store();
     store.showResearchDialog();
     store.startResearch(researchSetting);
@@ -406,6 +406,15 @@ describe("store/index", () => {
         expect(mockUSIPlayer.mock.calls[0][0]).toBe(researchSetting.usi);
         expect(mockUSIPlayer.prototype.launch).toBeCalledTimes(1);
         expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
+      })
+      .next(() => {
+        mockUSIPlayer.prototype.close.mockResolvedValue();
+        store.stopResearch();
+      })
+      .next(() => {
+        expect(store.isBussy).toBeFalsy();
+        expect(store.appState).toBe(AppState.NORMAL);
+        expect(mockUSIPlayer.prototype.close).toBeCalledTimes(1);
       })
       .invoke();
   });

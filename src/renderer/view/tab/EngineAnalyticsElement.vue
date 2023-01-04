@@ -3,29 +3,29 @@
     <div class="root">
       <div class="headers">
         <div class="header">
-          <span class="label">エンジン名: </span>
+          <span class="label">名前: </span>
           <span class="value">{{ name }}</span>
         </div>
         <div class="header">
-          <span class="label">予想手: </span>
+          <span class="label">予想: </span>
           <span class="value">
             {{ info.ponderMove ? info.ponderMove : "---" }}
           </span>
         </div>
         <div class="header">
-          <span class="label">最善手: </span>
+          <span class="label">最善: </span>
           <span class="value">{{ info.currentMoveText || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">秒間探索ノード(NPS): </span>
+          <span class="label">NPS: </span>
           <span class="value">{{ info.nps || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">探索ノード数: </span>
+          <span class="label">Node数: </span>
           <span class="value">{{ info.nodes || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">ハッシュ使用率: </span>
+          <span class="label">Hash使用率: </span>
           <span class="value">
             {{ info.hashfull ? (info.hashfull * 100).toFixed(1) : "---" }} %
           </span>
@@ -213,9 +213,11 @@ export default defineComponent({
 }
 .label {
   font-size: 13px;
+  white-space: nowrap;
 }
 .value {
   font-size: 13px;
+  white-space: nowrap;
 }
 .list-header {
   height: 16px;

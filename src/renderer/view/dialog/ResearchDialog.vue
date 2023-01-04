@@ -4,9 +4,8 @@
       <div class="dialog-title">検討</div>
       <div class="dialog-form-area">
         <PlayerSelector
-          :players="engines"
           :player-uri="engineURI"
-          :engine-settings="engineSettings.json"
+          :engine-settings="engineSettings"
           :display-thread-state="true"
           :display-multi-pv-state="true"
           @update-engine-setting="onUpdatePlayerSetting"
@@ -37,16 +36,9 @@ import {
   defaultResearchSetting,
   ResearchSetting,
 } from "@/common/settings/research";
-import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  Ref,
-} from "vue";
+import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import {
   installHotKeyForDialog,
@@ -86,8 +78,6 @@ export default defineComponent({
       uninstallHotKeyForDialog(dialog.value);
     });
 
-    const engines = computed(() => engineSettings.value.engineList);
-
     const onStart = () => {
       if (
         !engineURI.value ||
@@ -107,18 +97,8 @@ export default defineComponent({
       store.closeModalDialog();
     };
 
-    const onUpdatePlayerSetting = async (setting: USIEngineSetting) => {
-      const clone = new USIEngineSettings(engineSettings.value.json);
-      clone.updateEngine(setting);
-      store.retainBussyState();
-      try {
-        await api.saveUSIEngineSetting(clone);
-        engineSettings.value = clone;
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
+    const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
+      engineSettings.value = settings;
     };
 
     const onSelectPlayer = (uri: string) => {
@@ -129,7 +109,6 @@ export default defineComponent({
       dialog,
       engineSettings,
       engineURI,
-      engines,
       onStart,
       onCancel,
       onUpdatePlayerSetting,

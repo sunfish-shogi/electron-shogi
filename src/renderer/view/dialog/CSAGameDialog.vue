@@ -13,9 +13,9 @@
         <div class="dialog-form-area">
           <div>プレイヤー</div>
           <PlayerSelector
-            :players="players"
             :player-uri="playerURI"
-            :engine-settings="engineSettings.json"
+            :contains-human="true"
+            :engine-settings="engineSettings"
             :display-ponder-state="true"
             :display-thread-state="true"
             :display-multi-pv-state="true"
@@ -327,18 +327,8 @@ export default defineComponent({
       store.closeModalDialog();
     };
 
-    const onUpdatePlayerSetting = async (setting: USIEngineSetting) => {
-      const clone = new USIEngineSettings(engineSettings.value.json);
-      clone.updateEngine(setting);
-      store.retainBussyState();
-      try {
-        await api.saveUSIEngineSetting(clone);
-        engineSettings.value = clone;
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
+    const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
+      engineSettings.value = settings;
     };
 
     const onSelectPlayer = (uri: string) => {
@@ -366,13 +356,6 @@ export default defineComponent({
       selectedProtocolVersion.value = protocolVersion.value.value;
     };
 
-    const players = computed(() => {
-      return [
-        { name: "人", uri: uri.ES_HUMAN },
-        ...engineSettings.value.engineList,
-      ];
-    });
-
     const logEnabled = computed(() => {
       return (
         store.appSetting.enableCSALog &&
@@ -398,7 +381,6 @@ export default defineComponent({
       autoFlip,
       engineSettings,
       playerURI,
-      players,
       history,
       selectedProtocolVersion,
       onChangeProtocolVersion,

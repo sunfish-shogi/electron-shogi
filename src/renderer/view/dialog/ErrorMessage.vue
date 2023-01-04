@@ -102,9 +102,17 @@ dialog.error {
 
 dialog.error button {
   color: var(--error-dialog-button-color);
-  background-color: var(--error-dialog-button-bg-color);
+  background: linear-gradient(
+    to top,
+    var(--error-dialog-button-bg-color) 78%,
+    white 125%
+  );
 }
 dialog.error button:hover {
-  background-color: var(--hovered-error-dialog-button-bg-color);
+  background: linear-gradient(
+    to top,
+    var(--hovered-error-dialog-button-bg-color) 78%,
+    white 125%
+  );
 }
 </style>

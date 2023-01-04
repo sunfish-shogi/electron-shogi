@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TimeoutChain } from "@/common/helpers/testing";
 import api, { API } from "@/renderer/ipc/api";
-import { CommentLayoutType, Tab, Thema } from "@/common/settings/app";
+import { Tab, TabPaneType, Thema } from "@/common/settings/app";
 import { Move } from "@/common/shogi";
 import { Store } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
@@ -185,12 +185,12 @@ describe("store/index", () => {
     expect(store.appSetting.pieceVolume).toBe(0);
     expect(store.appSetting.clockVolume).toBe(30);
     expect(store.appSetting.tab).toBe(Tab.COMMENT);
-    expect(store.appSetting.commentLayoutType).toBe(CommentLayoutType.STANDARD);
+    expect(store.appSetting.tabPaneType).toBe(TabPaneType.SINGLE);
     await store.updateAppSetting({
-      commentLayoutType: CommentLayoutType.RIGHT,
+      tabPaneType: TabPaneType.DOUBLE,
     });
     expect(store.appSetting.tab).toBe(Tab.RECORD_INFO); // コメントタブの選択が自動で解除される。
-    expect(store.appSetting.commentLayoutType).toBe(CommentLayoutType.RIGHT);
+    expect(store.appSetting.tabPaneType).toBe(TabPaneType.DOUBLE);
   });
 
   it("updateAppSetting/error", async () => {

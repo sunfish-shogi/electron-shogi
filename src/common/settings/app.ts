@@ -29,10 +29,9 @@ export enum BoardLabelType {
   STANDARD = "standard",
 }
 
-export enum CommentLayoutType {
-  STANDARD = "standard",
-  RIGHT = "right",
-  LEFT = "left",
+export enum TabPaneType {
+  SINGLE = "single",
+  DOUBLE = "double",
 }
 
 export enum Tab {
@@ -42,7 +41,7 @@ export enum Tab {
   PV = "pv",
   CHART = "chart",
   PERCENTAGE_CHART = "percentageChart",
-  INVISIBLE = "invisible",
+  INVISIBLE = "invisible", // Deprecated
 }
 
 export enum ClockSoundTarget {
@@ -55,13 +54,15 @@ export type AppSetting = {
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
   boardLabelType: BoardLabelType;
-  commentLayoutType: CommentLayoutType;
   pieceVolume: number;
   clockVolume: number;
   clockPitch: number;
   clockSoundTarget: ClockSoundTarget;
   boardFlipping: boolean;
+  tabPaneType: TabPaneType;
   tab: Tab;
+  tab2: Tab;
+  tabMinimized: boolean;
   returnCode: string;
   autoSaveDirectory: string;
   engineTimeoutSeconds: number;
@@ -82,13 +83,15 @@ export type AppSettingUpdate = {
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
   boardLabelType?: BoardLabelType;
-  commentLayoutType?: CommentLayoutType;
   pieceVolume?: number;
   clockVolume?: number;
   clockPitch?: number;
   clockSoundTarget?: ClockSoundTarget;
   boardFlipping?: boolean;
+  tabPaneType?: TabPaneType;
   tab?: Tab;
+  tab2?: Tab;
+  tabMinimized?: boolean;
   returnCode?: string;
   autoSaveDirectory?: string;
   engineTimeoutSeconds?: number;
@@ -112,11 +115,19 @@ export function buildUpdatedAppSetting(
     ...org,
     ...update,
   };
-  if (
-    updated.tab === Tab.COMMENT &&
-    updated.commentLayoutType !== CommentLayoutType.STANDARD
-  ) {
-    updated.tab = Tab.RECORD_INFO;
+  switch (updated.tabPaneType) {
+    case TabPaneType.DOUBLE:
+      // 2カラムの場合に選択できないタブが選ばれていたら代替のタブへ切り替える。
+      switch (updated.tab) {
+        case Tab.COMMENT:
+          updated.tab = Tab.RECORD_INFO;
+          break;
+        case Tab.CHART:
+        case Tab.PERCENTAGE_CHART:
+          updated.tab = Tab.PV;
+          break;
+      }
+      break;
   }
   const error = validateAppSetting(updated);
   return error || updated;
@@ -131,13 +142,15 @@ export function defaultAppSetting(opt?: {
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.LIGHT,
     boardLabelType: BoardLabelType.STANDARD,
-    commentLayoutType: CommentLayoutType.STANDARD,
     pieceVolume: 30,
     clockVolume: 30,
     clockPitch: 500,
     clockSoundTarget: ClockSoundTarget.ONLY_USER,
     boardFlipping: false,
+    tabPaneType: TabPaneType.SINGLE,
     tab: Tab.RECORD_INFO,
+    tab2: Tab.COMMENT,
+    tabMinimized: false,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
     engineTimeoutSeconds: 10,
@@ -161,10 +174,16 @@ export function normalizeAppSetting(
     autoSaveDirectory?: string;
   }
 ): AppSetting {
-  return {
+  const result = {
     ...defaultAppSetting(opt),
     ...setting,
   };
+  // 旧バージョンではタブの非表示を Tab.INDISIBLE で表していたが tabMinimized へ移行した。
+  if (result.tab === Tab.INVISIBLE) {
+    result.tab = Tab.RECORD_INFO;
+    result.tabMinimized = true;
+  }
+  return result;
 }
 
 export function validateAppSetting(setting: AppSetting): Error | undefined {

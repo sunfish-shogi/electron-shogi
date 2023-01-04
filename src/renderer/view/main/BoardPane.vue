@@ -484,10 +484,4 @@ export default defineComponent({
   height: 68%;
   vertical-align: top;
 }
-.control select {
-  width: 100%;
-  height: 15%;
-  color: var(--control-button-color);
-  background-color: var(--control-button-bg-color);
-}
 </style>

@@ -114,11 +114,11 @@ export default defineComponent({
       required: true,
     },
     pv: {
-      type: Object as PropType<string[]>,
+      type: Array as PropType<string[]>,
       required: true,
     },
     infos: {
-      type: Object as PropType<string[]>,
+      type: Array as PropType<string[]>,
       default: [] as string[],
       required: false,
     },

@@ -7,9 +7,9 @@
           <div class="player">
             <div class="top-label">先手（下手）</div>
             <PlayerSelector
-              :players="players"
               :player-uri="blackPlayerURI"
-              :engine-settings="engineSettings.json"
+              :contains-human="true"
+              :engine-settings="engineSettings"
               :display-ponder-state="true"
               :display-thread-state="true"
               :display-multi-pv-state="true"
@@ -21,9 +21,9 @@
             <div class="top-label">後手（上手）</div>
             <PlayerSelector
               v-if="whitePlayerURI"
-              :players="players"
               :player-uri="whitePlayerURI"
-              :engine-settings="engineSettings.json"
+              :contains-human="true"
+              :engine-settings="engineSettings"
               :display-ponder-state="true"
               :display-thread-state="true"
               :display-multi-pv-state="true"
@@ -164,7 +164,6 @@ import {
   onMounted,
   defineComponent,
   Ref,
-  computed,
   onUpdated,
   onBeforeUnmount,
 } from "vue";
@@ -321,18 +320,8 @@ export default defineComponent({
       store.closeModalDialog();
     };
 
-    const onUpdatePlayerSetting = async (setting: USIEngineSetting) => {
-      const clone = new USIEngineSettings(engineSettings.value.json);
-      clone.updateEngine(setting);
-      store.retainBussyState();
-      try {
-        await api.saveUSIEngineSetting(clone);
-        engineSettings.value = clone;
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
+    const onUpdatePlayerSetting = (settings: USIEngineSettings) => {
+      engineSettings.value = settings;
     };
 
     const onSelectBlackPlayer = (uri: string) => {
@@ -348,13 +337,6 @@ export default defineComponent({
         blackPlayerURI.value,
       ];
     };
-
-    const players = computed(() => {
-      return [
-        { name: "人", uri: uri.ES_HUMAN },
-        ...engineSettings.value.engineList,
-      ];
-    });
 
     return {
       CommentBehavior,
@@ -374,7 +356,6 @@ export default defineComponent({
       engineSettings,
       blackPlayerURI,
       whitePlayerURI,
-      players,
       onStart,
       onCancel,
       onUpdatePlayerSetting,

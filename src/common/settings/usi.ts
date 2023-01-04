@@ -92,6 +92,15 @@ export function mergeUSIEngineSetting(
   });
 }
 
+export interface ImmutableUSIEngineSettings {
+  hasEngine(uri: string): boolean;
+  getEngine(uri: string): USIEngineSetting | undefined;
+  get engineList(): USIEngineSetting[];
+  get json(): string;
+  get jsonWithIndent(): string;
+  getClone(): USIEngineSettings;
+}
+
 export class USIEngineSettings {
   private engines: { [uri: string]: USIEngineSetting } = {};
 
@@ -156,5 +165,9 @@ export class USIEngineSettings {
 
   get jsonWithIndent(): string {
     return JSON.stringify(this, undefined, 2);
+  }
+
+  getClone(): USIEngineSettings {
+    return new USIEngineSettings(this.json);
   }
 }

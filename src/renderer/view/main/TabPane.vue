@@ -2,99 +2,68 @@
   <div>
     <div class="root" :style="`width: ${size.width}px;`">
       <div
-        v-if="activeTab === 'invisible'"
+        v-if="minimized"
         :style="`height: calc(100% - ${headerHeight}px);`"
       />
       <div class="tabs">
-        <span
+        <div
+          v-for="tab in visibleTabs"
+          :key="tab"
           class="tab"
-          :class="{ selected: activeTab === Tab.RECORD_INFO }"
-          @click="changeSelect(Tab.RECORD_INFO)"
+          :class="{ selected: activeTab === tab }"
+          @click="changeSelect(tab)"
         >
-          <ButtonIcon class="icon" :icon="Icon.DESCRIPTION" />
-          棋譜情報
-        </span>
-        <span
-          v-if="commentTabEnabled"
-          class="tab"
-          :class="{ selected: activeTab === Tab.COMMENT }"
-          @click="changeSelect(Tab.COMMENT)"
-        >
-          <ButtonIcon class="icon" :icon="Icon.COMMENT" />
-          コメント
-        </span>
-        <span
-          class="tab"
-          :class="{ selected: activeTab === Tab.SEARCH }"
-          @click="changeSelect(Tab.SEARCH)"
-        >
-          <ButtonIcon class="icon" :icon="Icon.BRAIN" />
-          思考
-        </span>
-        <span
-          class="tab"
-          :class="{ selected: activeTab === Tab.PV }"
-          @click="changeSelect(Tab.PV)"
-        >
-          <ButtonIcon class="icon" :icon="Icon.PV" />
-          読み筋
-        </span>
-        <span
-          class="tab"
-          :class="{ selected: activeTab === Tab.CHART }"
-          @click="changeSelect(Tab.CHART)"
-        >
-          <ButtonIcon class="icon" :icon="Icon.CHART" />
-          評価値
-        </span>
-        <span
-          class="tab"
-          :class="{ selected: activeTab === Tab.PERCENTAGE_CHART }"
-          @click="changeSelect(Tab.PERCENTAGE_CHART)"
-        >
-          <ButtonIcon class="icon" :icon="Icon.PERCENT" />
-          期待勝率
-        </span>
-        <span
-          class="tab"
-          :class="{ selected: activeTab === Tab.INVISIBLE }"
-          @click="changeSelect(Tab.INVISIBLE)"
+          <ButtonIcon class="icon" :icon="tabs[tab].icon" />
+          {{ tabs[tab].title }}
+        </div>
+        <div
+          v-if="displayMinimizeToggle && !minimized"
+          class="tab end"
+          @click="minimize"
         >
           <ButtonIcon class="icon" :icon="Icon.ARROW_DROP" />
           最小化
-        </span>
+        </div>
+        <div
+          v-if="displayMinimizeToggle && minimized"
+          class="tab end"
+          @click="display"
+        >
+          <ButtonIcon class="icon" :icon="Icon.ARROW_UP" />
+          表示
+        </div>
       </div>
       <div class="tab-contents">
         <RecordInfo
+          v-if="!minimized && activeTab === Tab.RECORD_INFO"
           class="tab-content"
-          :class="{ selected: activeTab === Tab.RECORD_INFO }"
           :size="contentSize"
         />
         <RecordComment
+          v-if="!minimized && activeTab === Tab.COMMENT"
           class="tab-content"
-          :class="{ selected: activeTab === Tab.COMMENT }"
         />
         <EngineAnalytics
+          v-if="!minimized && activeTab === Tab.SEARCH"
           class="tab-content"
-          :class="{ selected: activeTab === Tab.SEARCH }"
           :size="contentSize"
           :history-mode="true"
         />
         <EngineAnalytics
+          v-if="!minimized && activeTab === Tab.PV"
           class="tab-content"
-          :class="{ selected: activeTab === Tab.PV }"
           :size="contentSize"
           :history-mode="false"
         />
         <EvaluationChart
+          v-if="!minimized && activeTab === Tab.CHART"
           class="tab-content"
-          :class="{ selected: activeTab === Tab.CHART }"
           :size="contentSize"
           :type="EvaluationChartType.RAW"
         />
         <EvaluationChart
+          v-if="!minimized && activeTab === Tab.PERCENTAGE_CHART"
           class="tab-content"
-          :class="{ selected: activeTab === Tab.PERCENTAGE_CHART }"
           :size="contentSize"
           :type="EvaluationChartType.WIN_RATE"
         />
@@ -104,25 +73,52 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { PropType, computed, defineComponent } from "vue";
 import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import EngineAnalytics from "@/renderer/view/tab/EngineAnalytics.vue";
 import EvaluationChart, {
   EvaluationChartType,
 } from "@/renderer/view/tab/EvaluationChart.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
-import { useStore } from "@/renderer/store";
 import { RectSize } from "@/renderer/view/primitive/Types";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { CommentLayoutType, Tab } from "@/common/settings/app";
+import { Tab } from "@/common/settings/app";
 import { Icon } from "@/renderer/assets/icons";
-import api from "@/renderer/ipc/api";
-import { LogLevel } from "@/common/log.js";
-import { toString } from "@/common/helpers/string";
 
 export const headerHeight = 30;
 
 export const minHeight = 240 + headerHeight;
+
+const tabs = {
+  [Tab.RECORD_INFO]: {
+    title: "棋譜情報",
+    icon: Icon.DESCRIPTION,
+  },
+  [Tab.COMMENT]: {
+    title: "コメント",
+    icon: Icon.COMMENT,
+  },
+  [Tab.SEARCH]: {
+    title: "思考",
+    icon: Icon.BRAIN,
+  },
+  [Tab.PV]: {
+    title: "読み筋",
+    icon: Icon.PV,
+  },
+  [Tab.CHART]: {
+    title: "評価値",
+    icon: Icon.CHART,
+  },
+  [Tab.PERCENTAGE_CHART]: {
+    title: "期待勝率",
+    icon: Icon.PERCENT,
+  },
+  [Tab.INVISIBLE]: {
+    title: "最小化",
+    icon: Icon.ARROW_DROP,
+  },
+};
 
 export default defineComponent({
   name: "TabPane",
@@ -138,41 +134,40 @@ export default defineComponent({
       type: RectSize,
       required: true,
     },
+    visibleTabs: {
+      type: Array as PropType<Tab[]>,
+      required: true,
+    },
+    activeTab: {
+      type: String as PropType<Tab>,
+      required: true,
+    },
+    minimized: {
+      type: Boolean,
+      required: false,
+    },
+    displayMinimizeToggle: {
+      type: Boolean,
+      required: false,
+    },
   },
-  setup(props) {
-    const store = useStore();
-    const changeSelect = (id: Tab) => {
-      store
-        .updateAppSetting({
-          tab: id,
-        })
-        .catch((e) => {
-          api.log(
-            LogLevel.WARN,
-            "TabPane: failed to update app setting: " + toString(e)
-          );
-        });
-    };
-    const activeTab = computed(() => store.appSetting.tab);
+  emits: ["onChangeTab", "onMinimize", "onDisplay"],
+  setup(props, { emit }) {
+    const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
+    const minimize = () => emit("onMinimize");
+    const display = () => emit("onDisplay");
     const contentSize = computed(() =>
       props.size.reduce(new RectSize(0, headerHeight))
     );
-    const commentTabEnabled = computed(() => {
-      switch (store.appSetting.commentLayoutType) {
-        case CommentLayoutType.RIGHT:
-        case CommentLayoutType.LEFT:
-          return false;
-      }
-      return true;
-    });
     return {
-      activeTab,
       contentSize,
       headerHeight,
-      commentTabEnabled,
       changeSelect,
-      Icon,
+      minimize,
+      display,
+      tabs,
       Tab,
+      Icon,
       EvaluationChartType,
     };
   },
@@ -187,16 +182,16 @@ export default defineComponent({
   flex-direction: column;
 }
 .tabs {
+  width: 100%;
   display: flex;
   flex-direction: row;
   user-select: none;
-  background-color: var(--tab-bg-color);
+  background: linear-gradient(to top, var(--tab-bg-color) 75%, white 125%);
   padding-bottom: 2px;
 }
 .tab {
   height: 23px;
   color: var(--tab-color);
-  background-color: var(--tab-bg-color);
   border-bottom: solid 3px transparent;
   padding: 0px 20px 0px 10px;
   line-height: 28px;
@@ -206,6 +201,9 @@ export default defineComponent({
 .tab.selected {
   border-bottom: solid 3px var(--tab-highlight-color);
 }
+.tab.end {
+  margin-left: auto;
+}
 .tab .icon {
   height: 100%;
   vertical-align: top;
@@ -214,13 +212,9 @@ export default defineComponent({
   flex: 1;
 }
 .tab-contents .tab-content {
-  display: none;
   color: var(--text-color);
   background-color: var(--tab-content-bg-color);
   width: 100%;
   height: 100%;
-}
-.tab-contents .tab-content.selected {
-  display: block;
 }
 </style>

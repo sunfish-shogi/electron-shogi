@@ -6,7 +6,7 @@ import {
   BoardLabelType,
   ClockSoundTarget,
   Tab,
-  CommentLayoutType,
+  TabPaneType,
 } from "@/common/settings/app";
 
 describe("settings/csa", () => {
@@ -16,13 +16,15 @@ describe("settings/csa", () => {
       pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       boardImage: BoardImageType.WARM,
       boardLabelType: BoardLabelType.NONE,
-      commentLayoutType: CommentLayoutType.STANDARD,
       pieceVolume: 10,
       clockVolume: 20,
       clockPitch: 300,
       clockSoundTarget: ClockSoundTarget.ONLY_USER,
       boardFlipping: true,
+      tabPaneType: TabPaneType.SINGLE,
       tab: Tab.PV,
+      tab2: Tab.COMMENT,
+      tabMinimized: false,
       returnCode: "\r",
       autoSaveDirectory: "/tmp/electron-shogi",
       engineTimeoutSeconds: 60,

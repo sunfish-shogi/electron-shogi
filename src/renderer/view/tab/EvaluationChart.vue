@@ -317,26 +317,26 @@ export default defineComponent({
         },
       });
       chart.draw();
+      updateChart(store.record, store.appSetting),
+        watch(
+          () => [store.record, store.appSetting],
+          ([record, appSetting]) =>
+            updateChart(record as ImmutableRecord, appSetting as AppSetting),
+          { deep: true }
+        );
+
+      watch(
+        () => [props.size],
+        ([size]) => {
+          chart.resize(size.width, size.height);
+        },
+        { deep: true }
+      );
     });
 
     onUnmounted(() => {
       chart.destroy();
     });
-
-    watch(
-      () => [store.record, store.appSetting],
-      ([record, appSetting]) =>
-        updateChart(record as ImmutableRecord, appSetting as AppSetting),
-      { deep: true }
-    );
-
-    watch(
-      () => [props.size],
-      ([size]) => {
-        chart.resize(size.width, size.height);
-      },
-      { deep: true }
-    );
 
     return {
       canvas: canvasRef,

@@ -576,7 +576,10 @@ export function exportCSA(
       ret += "T" + Math.floor(node.elapsedMs / 1e3) + returnCode;
     }
     if (node.comment) {
-      node.comment.split("\n").forEach((line) => {
+      const comment = node.comment.endsWith("\n")
+        ? node.comment.slice(0, -1)
+        : node.comment;
+      comment.split("\n").forEach((line) => {
         ret += "'*" + line + returnCode;
       });
     }

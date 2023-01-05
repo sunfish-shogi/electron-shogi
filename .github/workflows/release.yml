@@ -11,9 +11,11 @@ jobs:
         include:
           - os: windows
             os_short: win
+            os_version: latest
           - os: macos
             os_short: mac
-    runs-on: ${{ matrix.os }}-latest
+            os_version: 11
+    runs-on: ${{ matrix.os }}-${{ matrix.os_version }}
     steps:
       - run: git config --global core.autocrlf false
         if: matrix.os == 'windows'

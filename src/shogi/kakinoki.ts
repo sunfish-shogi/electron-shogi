@@ -714,7 +714,10 @@ export function exportKakinoki(
       ret += returnCode;
     }
     if (node.comment.length !== 0) {
-      ret += "*" + node.comment.replaceAll("\n", returnCode + "*") + returnCode;
+      const comment = node.comment.endsWith("\n")
+        ? node.comment.slice(0, -1)
+        : node.comment;
+      ret += "*" + comment.replaceAll("\n", returnCode + "*") + returnCode;
     }
   });
   return ret;

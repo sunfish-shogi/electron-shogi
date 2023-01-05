@@ -540,9 +540,9 @@ describe("store/index", () => {
     store.pasteRecord(sampleKIF);
     const moves = store.record.moves;
     expect(moves.length).toBe(11);
-    expect(moves[1].comment).toBe("通常コメント");
+    expect(moves[1].comment).toBe("通常コメント\n");
     expect(moves[1].customData).toStrictEqual({});
-    expect(moves[2].comment).toBe("#評価値=108");
+    expect(moves[2].comment).toBe("#評価値=108\n");
     const customData = moves[2].customData as RecordCustomData;
     expect(customData.researchInfo?.score).toBe(108);
     expect(store.hasError).toBeFalsy();
@@ -554,11 +554,13 @@ describe("store/index", () => {
     const moves = store.record.moves;
     expect(moves.length).toBe(13);
     store.changePly(1);
-    expect(store.record.current.comment).toBe("初手へのコメント\n* 30011 2b2a");
+    expect(store.record.current.comment).toBe(
+      "初手へのコメント\n* 30011 2b2a\n"
+    );
     const customData1 = store.record.current.customData as RecordCustomData;
     expect(customData1.playerSearchInfo?.score).toBe(30011);
     store.changePly(2);
-    expect(store.record.current.comment).toBe("* 30010");
+    expect(store.record.current.comment).toBe("* 30010\n");
     const customData2 = store.record.current.customData as RecordCustomData;
     expect(customData2.playerSearchInfo?.score).toBe(30010);
     expect(store.hasError).toBeFalsy();
@@ -587,9 +589,9 @@ describe("store/index", () => {
         expect(store.recordFilePath).toBe("/test/sample.kif");
         const moves = store.record.moves;
         expect(moves.length).toBe(11);
-        expect(moves[1].comment).toBe("通常コメント");
+        expect(moves[1].comment).toBe("通常コメント\n");
         expect(moves[1].customData).toStrictEqual({});
-        expect(moves[2].comment).toBe("#評価値=108");
+        expect(moves[2].comment).toBe("#評価値=108\n");
         const customData = moves[2].customData as RecordCustomData;
         expect(customData.researchInfo?.score).toBe(108);
         expect(store.hasError).toBeFalsy();

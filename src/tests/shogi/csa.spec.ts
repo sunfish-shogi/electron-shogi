@@ -62,7 +62,7 @@ T40
     record.goto(1);
     expect((record.current.move as Move).getDisplayText()).toBe("☗７六歩(77)");
     expect(record.current.comment).toBe(
-      "初手に対するコメント\n初手に対するコメント2\n* 読み筋と評価値"
+      "初手に対するコメント\n初手に対するコメント2\n* 読み筋と評価値\n"
     );
     record.goto(2);
     expect((record.current.move as Move).getDisplayText()).toBe("☖３四歩(33)");
@@ -79,7 +79,7 @@ T40
     expect(record.current.elapsedMs).toBe(30000);
     record.goto(6);
     expect(record.current.move).toBe(SpecialMove.RESIGN);
-    expect(record.current.comment).toBe("特殊な手に対するコメント");
+    expect(record.current.comment).toBe("特殊な手に対するコメント\n");
     expect(record.current.elapsedMs).toBe(40000);
   });
 
@@ -673,7 +673,7 @@ PI
     );
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     record.append(record.position.createMoveByUSI("3c3d") as Move);
-    record.current.comment = "2手目へのコメント\n2手目へのコメント2";
+    record.current.comment = "2手目へのコメント\n2手目へのコメント2\n";
     record.append(record.position.createMoveByUSI("8h2b+") as Move);
     record.append(record.position.createMoveByUSI("3a2b") as Move);
     record.current.setElapsedMs(12345); // 12.345 seconds

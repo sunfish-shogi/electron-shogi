@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="root" :style="`width: ${size.width}px;`">
+    <div class="root" :style="{ width: `${size.width}px` }">
       <div
         v-if="minimized"
-        :style="`height: calc(100% - ${headerHeight}px);`"
+        :style="{ height: `calc(100% - ${headerHeight}px` }"
       />
       <div class="tabs">
         <div

@@ -298,8 +298,8 @@ describe("store/index", () => {
   });
 
   it("startGame/success", () => {
-    mockAPI.saveGameSetting.mockResolvedValue(Promise.resolve());
-    mockGameManager.prototype.startGame.mockResolvedValue(Promise.resolve());
+    mockAPI.saveGameSetting.mockResolvedValue();
+    mockGameManager.prototype.startGame.mockResolvedValue();
     const store = new Store();
     store.showGameDialog();
     store.startGame(gameSetting10m30s);
@@ -334,8 +334,8 @@ describe("store/index", () => {
     mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
       Promise.resolve(emptyCSAGameSettingHistory)
     );
-    mockAPI.saveCSAGameSettingHistory.mockResolvedValue(Promise.resolve());
-    mockCSAGameManager.prototype.login.mockResolvedValue(Promise.resolve());
+    mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
+    mockCSAGameManager.prototype.login.mockResolvedValue();
     const store = new Store();
     store.showCSAGameDialog();
     store.loginCSAGame(csaGameSetting, { saveHistory: true });
@@ -360,8 +360,8 @@ describe("store/index", () => {
     mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
       Promise.resolve(emptyCSAGameSettingHistory)
     );
-    mockAPI.saveCSAGameSettingHistory.mockResolvedValue(Promise.resolve());
-    mockCSAGameManager.prototype.login.mockResolvedValue(Promise.resolve());
+    mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
+    mockCSAGameManager.prototype.login.mockResolvedValue();
     const store = new Store();
     store.showCSAGameDialog();
     store.loginCSAGame(csaGameSetting, { saveHistory: false });
@@ -431,8 +431,8 @@ describe("store/index", () => {
   });
 
   it("startAnalysis/success", () => {
-    mockAPI.saveAnalysisSetting.mockResolvedValue(Promise.resolve());
-    mockAnalysisManager.prototype.start.mockResolvedValue(Promise.resolve());
+    mockAPI.saveAnalysisSetting.mockResolvedValue();
+    mockAnalysisManager.prototype.start.mockResolvedValue();
     const store = new Store();
     store.showAnalysisDialog();
     store.startAnalysis(analysisSetting);
@@ -651,7 +651,7 @@ describe("store/index", () => {
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
       new Promise((resolve) => resolve("/test/sample.csa"))
     );
-    mockAPI.saveRecord.mockResolvedValueOnce(Promise.resolve());
+    mockAPI.saveRecord.mockResolvedValueOnce();
     const store = new Store();
     store.saveRecord();
     return new TimeoutChain()
@@ -708,7 +708,7 @@ describe("store/index", () => {
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
       new Promise((resolve) => resolve("/test/sample2.csa"))
     );
-    mockAPI.saveRecord.mockResolvedValueOnce(Promise.resolve());
+    mockAPI.saveRecord.mockResolvedValueOnce();
     const store = new Store();
     store.openRecord("/test/sample1.csa");
     return new TimeoutChain()
@@ -732,7 +732,7 @@ describe("store/index", () => {
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
       new Promise((resolve) => resolve("/test/sample2.csa"))
     );
-    mockAPI.saveRecord.mockResolvedValueOnce(Promise.resolve());
+    mockAPI.saveRecord.mockResolvedValueOnce();
     const store = new Store();
     store.openRecord("/test/sample1.csa");
     return new TimeoutChain()

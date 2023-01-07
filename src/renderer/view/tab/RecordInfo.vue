@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="root" class="root" :style="`height:${size.height}px`">
+    <div ref="root" class="root" :style="{ height: `${size.height}px` }">
       <div class="element">
         <div class="key">ファイル</div>
         <div class="value">{{ filePath || "（新規棋譜）" }}</div>

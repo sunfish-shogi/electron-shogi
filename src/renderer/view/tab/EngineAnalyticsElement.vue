@@ -38,7 +38,7 @@
         <div class="list-column nodes">探索局面数</div>
         <div class="list-column score">評価値</div>
       </div>
-      <div class="list" :style="`height:${height - 37}px`">
+      <div class="list" :style="{ height: `${height - 37}px` }">
         <div
           v-for="(iterate, index) in historyMode
             ? info.iterates

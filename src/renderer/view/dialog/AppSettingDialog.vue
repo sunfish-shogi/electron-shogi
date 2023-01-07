@@ -55,8 +55,8 @@
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">タブビューの形式</div>
             <select ref="tabPaneType" :value="appSetting.tabPaneType">
-              <option :value="TabPaneType.SINGLE">シングル</option>
-              <option :value="TabPaneType.DOUBLE">ダブル</option>
+              <option :value="TabPaneType.SINGLE">1列</option>
+              <option :value="TabPaneType.DOUBLE">2列</option>
             </select>
           </div>
         </div>

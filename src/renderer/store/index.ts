@@ -169,6 +169,10 @@ export class Store {
     return this._appSetting;
   }
 
+  async reloadAppSetting(): Promise<void> {
+    this._appSetting = await api.loadAppSetting();
+  }
+
   async updateAppSetting(update: AppSettingUpdate): Promise<void> {
     const updated = buildUpdatedAppSetting(this.appSetting, update);
     if (updated instanceof Error) {
@@ -526,10 +530,12 @@ export class Store {
     }
   }
 
-  onSaveRecord(): Promise<void> {
+  onSaveRecord(): void {
     const fname = defaultRecordFileName(this.recordManager.record.metadata);
     const path = `${this.appSetting.autoSaveDirectory}/${fname}`;
-    return this.saveRecordByPath(path);
+    this.saveRecordByPath(path).catch((e) => {
+      this.pushError(`棋譜の保存に失敗しました: ${e}`);
+    });
   }
 
   onPieceBeat(): void {

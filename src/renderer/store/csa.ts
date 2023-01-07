@@ -40,7 +40,7 @@ export enum CSAGameState {
 }
 
 export interface CSAGameHandlers {
-  onSaveRecord(): Promise<void>;
+  onSaveRecord(): void;
   onGameNext(): void;
   onGameEnd(): void;
   onFlipBoard(flip: boolean): void;
@@ -263,9 +263,7 @@ export class CSAGameManager {
     });
     // 自動保存が有効な場合は棋譜を保存する。
     if (this.setting.enableAutoSave) {
-      this.handlers.onSaveRecord().catch((e) => {
-        this.handlers.onError(`棋譜の保存に失敗しました: ${e}`);
-      });
+      this.handlers.onSaveRecord();
     }
     // セッションを終了する。
     this.close();

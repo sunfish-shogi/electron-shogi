@@ -1,7 +1,6 @@
 import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
 import { GameResult } from "@/common/player";
-import { USIInfoSender } from "@/common/usi";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "../../common/ipc/channel";
 import { Bridge } from "./api";
@@ -225,31 +224,26 @@ const api: Bridge = {
     callback: (
       sessionID: number,
       usi: string,
-      sender: USIInfoSender,
       name: string,
       json: string
     ) => void
   ): void {
-    ipcRenderer.on(
-      Renderer.USI_INFO,
-      (_, sessionID, usi, sender, name, json) => {
-        callback(sessionID, usi, sender, name, json);
-      }
-    );
+    ipcRenderer.on(Renderer.USI_INFO, (_, sessionID, usi, name, json) => {
+      callback(sessionID, usi, name, json);
+    });
   },
   onUSIPonderInfo(
     callback: (
       sessionID: number,
       usi: string,
-      sender: USIInfoSender,
       name: string,
       json: string
     ) => void
   ): void {
     ipcRenderer.on(
       Renderer.USI_PONDER_INFO,
-      (_, sessionID, usi, sender, name, json) => {
-        callback(sessionID, usi, sender, name, json);
+      (_, sessionID, usi, name, json) => {
+        callback(sessionID, usi, name, json);
       }
     );
   },

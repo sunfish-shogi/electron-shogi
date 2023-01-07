@@ -5,7 +5,6 @@ import { Tab, TabPaneType, Thema } from "@/common/settings/app";
 import { Move } from "@/common/shogi";
 import { Store } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
-import { USIInfoSender } from "@/common/usi";
 import iconv from "iconv-lite";
 import * as audio from "@/renderer/audio";
 import { gameSetting10m30s } from "../../mock/game";
@@ -246,51 +245,34 @@ describe("store/index", () => {
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f";
     const store = new Store();
     store.pasteRecord(usi);
-    store.updateUSIInfo(1000, usi, USIInfoSender.BLACK_PLAYER, "Engine A", {
+    store.updateUSIInfo(101, usi, "Engine A", {
       depth: 8,
       scoreCP: 138,
     });
     jest.runOnlyPendingTimers();
-    expect(store.usiBlackPlayerMonitor?.sfen).toBe(
+    expect(store.usiMonitors).toHaveLength(1);
+    expect(store.usiMonitors[0].sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
-    expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(1);
-    expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(8);
-    expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);
-    expect(store.usiWhitePlayerMonitor).toBeUndefined();
-    expect(store.usiResearcherMonitor).toBeUndefined();
-    store.updateUSIInfo(1000, usi, USIInfoSender.BLACK_PLAYER, "Engine A", {
+    expect(store.usiMonitors[0].iterates.length).toBe(1);
+    expect(store.usiMonitors[0].iterates[0].depth).toBe(8);
+    expect(store.usiMonitors[0].iterates[0].score).toBe(138);
+    store.updateUSIInfo(101, usi, "Engine A", {
       depth: 10,
       scoreCP: 213,
     });
-    store.updateUSIPonderInfo(
-      1000,
-      usi,
-      USIInfoSender.WHITE_PLAYER,
-      "Engine B",
-      {
-        depth: 9,
-        scoreCP: -89,
-      }
-    );
-    jest.runOnlyPendingTimers();
-    expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(2);
-    expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(10);
-    expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(213);
-    expect(store.usiWhitePlayerMonitor?.iterates.length).toBe(1);
-    expect(store.usiWhitePlayerMonitor?.iterates[0].depth).toBe(9);
-    expect(store.usiWhitePlayerMonitor?.iterates[0].score).toBe(-89);
-    expect(store.usiResearcherMonitor).toBeUndefined();
-    store.updateUSIInfo(1000, usi, USIInfoSender.RESEARCHER, "Engine C", {
-      depth: 12,
-      scoreCP: 721,
+    store.updateUSIPonderInfo(102, usi, "Engine B", {
+      depth: 9,
+      scoreCP: -89,
     });
     jest.runOnlyPendingTimers();
-    expect(store.usiBlackPlayerMonitor).toBeUndefined();
-    expect(store.usiWhitePlayerMonitor).toBeUndefined();
-    expect(store.usiResearcherMonitor?.iterates.length).toBe(1);
-    expect(store.usiResearcherMonitor?.iterates[0].depth).toBe(12);
-    expect(store.usiResearcherMonitor?.iterates[0].score).toBe(721);
+    expect(store.usiMonitors).toHaveLength(2);
+    expect(store.usiMonitors[0].iterates.length).toBe(2);
+    expect(store.usiMonitors[0].iterates[0].depth).toBe(10);
+    expect(store.usiMonitors[0].iterates[0].score).toBe(213);
+    expect(store.usiMonitors[1].iterates.length).toBe(1);
+    expect(store.usiMonitors[1].iterates[0].depth).toBe(9);
+    expect(store.usiMonitors[1].iterates[0].score).toBe(-89);
   });
 
   it("updateUSIPonderInfo", () => {
@@ -301,24 +283,18 @@ describe("store/index", () => {
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d";
     const store = new Store();
     store.pasteRecord(usi);
-    store.updateUSIPonderInfo(
-      1000,
-      usi2,
-      USIInfoSender.BLACK_PLAYER,
-      "Engine A",
-      {
-        depth: 8,
-        scoreCP: 138,
-      }
-    );
+    store.updateUSIPonderInfo(101, usi2, "Engine A", {
+      depth: 8,
+      scoreCP: 138,
+    });
     jest.runOnlyPendingTimers();
-    expect(store.usiBlackPlayerMonitor?.sfen).toBe(
+    expect(store.usiMonitors[0].sfen).toBe(
       "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1"
     );
-    expect(store.usiBlackPlayerMonitor?.ponderMove).toBe("☖３四歩(33)");
-    expect(store.usiBlackPlayerMonitor?.iterates.length).toBe(1);
-    expect(store.usiBlackPlayerMonitor?.iterates[0].depth).toBe(8);
-    expect(store.usiBlackPlayerMonitor?.iterates[0].score).toBe(138);
+    expect(store.usiMonitors[0].ponderMove).toBe("☖３四歩(33)");
+    expect(store.usiMonitors[0].iterates.length).toBe(1);
+    expect(store.usiMonitors[0].iterates[0].depth).toBe(8);
+    expect(store.usiMonitors[0].iterates[0].score).toBe(138);
   });
 
   it("startGame/success", () => {
@@ -415,9 +391,9 @@ describe("store/index", () => {
   });
 
   it("startResearch/success", () => {
-    mockAPI.saveResearchSetting.mockResolvedValue(Promise.resolve());
-    mockUSIPlayer.prototype.launch.mockResolvedValue(Promise.resolve());
-    mockUSIPlayer.prototype.startResearch.mockResolvedValue(Promise.resolve());
+    mockAPI.saveResearchSetting.mockResolvedValue();
+    mockUSIPlayer.prototype.launch.mockResolvedValue();
+    mockUSIPlayer.prototype.startResearch.mockResolvedValue();
     const store = new Store();
     store.showResearchDialog();
     store.startResearch(researchSetting);
@@ -430,6 +406,15 @@ describe("store/index", () => {
         expect(mockUSIPlayer.mock.calls[0][0]).toBe(researchSetting.usi);
         expect(mockUSIPlayer.prototype.launch).toBeCalledTimes(1);
         expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
+      })
+      .next(() => {
+        mockUSIPlayer.prototype.close.mockResolvedValue();
+        store.stopResearch();
+      })
+      .next(() => {
+        expect(store.isBussy).toBeFalsy();
+        expect(store.appState).toBe(AppState.NORMAL);
+        expect(mockUSIPlayer.prototype.close).toBeCalledTimes(1);
       })
       .invoke();
   });

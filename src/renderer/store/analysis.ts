@@ -4,7 +4,11 @@ import { AnalysisSetting } from "@/common/settings/analysis";
 import { AppSetting } from "@/common/settings/app";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { Color, Move, reverseColor } from "@/common/shogi";
-import { buildSearchComment, RecordManager, SearchEngineType } from "./record";
+import {
+  buildSearchComment,
+  RecordManager,
+  SearchInfoSenderType,
+} from "./record";
 import { scoreToPercentage } from "./score";
 
 export interface AnalysisHandler {
@@ -149,7 +153,10 @@ export class AnalysisManager {
         comment += `【${text}】\n`;
       }
     }
-    comment += buildSearchComment(SearchEngineType.RESEARCHER, this.searchInfo);
+    comment += buildSearchComment(
+      SearchInfoSenderType.RESEARCHER,
+      this.searchInfo
+    );
     this.recordManager.appendComment(comment, this.setting.commentBehavior);
   }
 
@@ -161,7 +168,7 @@ export class AnalysisManager {
   }
 
   updateSearchInfo(info: SearchInfo): void {
-    this.recordManager.updateSearchInfo(SearchEngineType.RESEARCHER, info);
+    this.recordManager.updateSearchInfo(SearchInfoSenderType.RESEARCHER, info);
     this.searchInfo = info;
   }
 }

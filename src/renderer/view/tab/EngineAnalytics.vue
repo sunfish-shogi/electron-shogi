@@ -2,24 +2,11 @@
   <div>
     <div class="root">
       <EngineAnalyticsElement
-        v-if="blackPlayer"
+        v-for="monitor in monitors"
+        :key="monitor.sessionID"
         :history-mode="historyMode"
-        :name="blackPlayer.name"
-        :info="blackPlayer"
-        :height="elementHeight"
-      />
-      <EngineAnalyticsElement
-        v-if="whitePlayer"
-        :history-mode="historyMode"
-        :name="whitePlayer.name"
-        :info="whitePlayer"
-        :height="elementHeight"
-      />
-      <EngineAnalyticsElement
-        v-if="researcher"
-        :history-mode="historyMode"
-        :name="researcher.name"
-        :info="researcher"
+        :name="monitor.name"
+        :info="monitor"
         :height="elementHeight"
       />
     </div>
@@ -49,20 +36,13 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const blackPlayer = computed(() => store.usiBlackPlayerMonitor);
-    const whitePlayer = computed(() => store.usiWhitePlayerMonitor);
-    const researcher = computed(() => store.usiResearcherMonitor);
+    const monitors = computed(() => store.usiMonitors);
     const elementHeight = computed(() => {
-      const n =
-        (store.usiBlackPlayerMonitor ? 1 : 0) +
-        (store.usiWhitePlayerMonitor ? 1 : 0) +
-        (store.usiResearcherMonitor ? 1 : 0);
-      return n !== 0 ? props.size.height / n : 0;
+      const rows = store.usiMonitors.length;
+      return rows !== 0 ? props.size.height / rows : 0;
     });
     return {
-      blackPlayer,
-      whitePlayer,
-      researcher,
+      monitors,
       elementHeight,
     };
   },

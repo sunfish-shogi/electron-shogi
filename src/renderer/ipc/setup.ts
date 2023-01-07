@@ -5,7 +5,7 @@ import { onUSIBestMove, onUSIInfo } from "@/renderer/players/usi";
 import { humanPlayer } from "@/renderer/players/human";
 import { bridge } from "./api";
 import { MenuEvent } from "../../common/control/menu";
-import { USIInfoCommand, USIInfoSender } from "@/common/usi";
+import { USIInfoCommand } from "@/common/usi";
 import { AppState } from "@/common/control/state";
 import {
   onCSAClose,
@@ -188,28 +188,16 @@ export function setup(): void {
     }
   );
   bridge.onUSIInfo(
-    (
-      sessionID: number,
-      usi: string,
-      sender: USIInfoSender,
-      name: string,
-      json: string
-    ) => {
+    (sessionID: number, usi: string, name: string, json: string) => {
       const info = JSON.parse(json) as USIInfoCommand;
-      store.updateUSIInfo(sessionID, usi, sender, name, info);
+      store.updateUSIInfo(sessionID, usi, name, info);
       onUSIInfo(sessionID, usi, info);
     }
   );
   bridge.onUSIPonderInfo(
-    (
-      sessionID: number,
-      usi: string,
-      sender: USIInfoSender,
-      name: string,
-      json: string
-    ) => {
+    (sessionID: number, usi: string, name: string, json: string) => {
       const info = JSON.parse(json) as USIInfoCommand;
-      store.updateUSIPonderInfo(sessionID, usi, sender, name, info);
+      store.updateUSIPonderInfo(sessionID, usi, name, info);
       onUSIInfo(sessionID, usi, info);
     }
   );

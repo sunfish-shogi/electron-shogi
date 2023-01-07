@@ -26,7 +26,11 @@ import {
 } from "@/common/shogi";
 import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
-import { buildSearchComment, RecordManager, SearchEngineType } from "./record";
+import {
+  buildSearchComment,
+  RecordManager,
+  SearchInfoSenderType,
+} from "./record";
 
 export enum CSAGameState {
   OFFLINE,
@@ -97,7 +101,8 @@ export class CSAGameManager {
       // プレイヤーを初期化する。
       this.player = await this.playerBuilder.build(
         this._setting.player,
-        (info) => this.recordManager.updateEnemySearchInfo(info)
+        (info) =>
+          this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
       );
       // CSA サーバーにログインする。
       this.sessionID = await api.csaLogin(this._setting.server);
@@ -233,14 +238,14 @@ export class CSAGameManager {
     // 探索情報を記録する。
     if (isMyMove && this.searchInfo) {
       this.recordManager.updateSearchInfo(
-        SearchEngineType.PLAYER,
+        SearchInfoSenderType.PLAYER,
         this.searchInfo
       );
     }
     // コメントを記録する。
     if (isMyMove && this.searchInfo && this.setting.enableComment) {
       const comment = buildSearchComment(
-        SearchEngineType.PLAYER,
+        SearchInfoSenderType.PLAYER,
         this.searchInfo
       );
       this.recordManager.appendComment(comment, CommentBehavior.APPEND);

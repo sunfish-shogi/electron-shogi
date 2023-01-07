@@ -43,6 +43,9 @@ enum Series {
   BLACK_PLAYER,
   WHITE_PLAYER,
   RESEARCHER,
+  RESEARCHER_2,
+  RESEARCHER_3,
+  RESEARCHER_4,
 }
 
 function getSeriesName(series: Series): string {
@@ -53,6 +56,12 @@ function getSeriesName(series: Series): string {
       return "後手";
     case Series.RESEARCHER:
       return "検討";
+    case Series.RESEARCHER_2:
+      return "検討2";
+    case Series.RESEARCHER_3:
+      return "検討3";
+    case Series.RESEARCHER_4:
+      return "検討4";
   }
 }
 
@@ -77,6 +86,12 @@ function getSearchInfo(
       return data.playerSearchInfo;
     case Series.RESEARCHER:
       return data.researchInfo;
+    case Series.RESEARCHER_2:
+      return data.researchInfo2;
+    case Series.RESEARCHER_3:
+      return data.researchInfo3;
+    case Series.RESEARCHER_4:
+      return data.researchInfo4;
   }
 }
 
@@ -112,6 +127,9 @@ type ColorPalette = {
   blackPlayer: string;
   whitePlayer: string;
   researcher: string;
+  researcher2: string;
+  researcher3: string;
+  researcher4: string;
 };
 
 function getColorPalette(thema: Thema): ColorPalette {
@@ -122,9 +140,12 @@ function getColorPalette(thema: Thema): ColorPalette {
         ticks: "dimgray",
         grid: "lightgray",
         head: "red",
-        blackPlayer: "royalblue",
-        whitePlayer: "darkorange",
-        researcher: "darkgreen",
+        blackPlayer: "#1480C9",
+        whitePlayer: "#FB7D00",
+        researcher: "#349393",
+        researcher2: "#FF1F4E",
+        researcher3: "#6C22FF",
+        researcher4: "#FFB912",
       };
     case Thema.DARK:
       return {
@@ -132,9 +153,12 @@ function getColorPalette(thema: Thema): ColorPalette {
         ticks: "darkgray",
         grid: "dimgray",
         head: "red",
-        blackPlayer: "deepskyblue",
-        whitePlayer: "orange",
-        researcher: "mediumseagreen",
+        blackPlayer: "#36A2EB",
+        whitePlayer: "#FF9F40",
+        researcher: "#4BC0C0",
+        researcher2: "#FF6384",
+        researcher3: "#9966FF",
+        researcher4: "#FFCD56",
       };
   }
 }
@@ -255,6 +279,24 @@ export default defineComponent({
           appSetting
         ),
         buildDataset(palette.researcher, Series.RESEARCHER, record, appSetting),
+        buildDataset(
+          palette.researcher2,
+          Series.RESEARCHER_2,
+          record,
+          appSetting
+        ),
+        buildDataset(
+          palette.researcher3,
+          Series.RESEARCHER_3,
+          record,
+          appSetting
+        ),
+        buildDataset(
+          palette.researcher4,
+          Series.RESEARCHER_4,
+          record,
+          appSetting
+        ),
       ];
     };
 

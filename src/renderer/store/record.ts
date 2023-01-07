@@ -24,15 +24,22 @@ import { getSituationText } from "./score";
 import { SearchInfo } from "@/renderer/players/player";
 import { CommentBehavior } from "@/common/settings/analysis";
 
-export enum SearchEngineType {
+export enum SearchInfoSenderType {
   PLAYER,
+  ENEMY,
   RESEARCHER,
+  RESEARCHER_2,
+  RESEARCHER_3,
+  RESEARCHER_4,
 }
 
 export type RecordCustomData = {
   playerSearchInfo?: SearchInfo;
   enemySearchInfo?: SearchInfo;
   researchInfo?: SearchInfo;
+  researchInfo2?: SearchInfo;
+  researchInfo3?: SearchInfo;
+  researchInfo4?: SearchInfo;
 };
 
 function parsePlayerScoreComment(line: string): number | undefined {
@@ -75,17 +82,17 @@ function restoreCustomData(record: Record): void {
   });
 }
 
-function searchCommentKeyPrefix(type: SearchEngineType): string {
+function searchCommentKeyPrefix(type: SearchInfoSenderType): string {
   switch (type) {
-    case SearchEngineType.PLAYER:
+    case SearchInfoSenderType.PLAYER:
       return "*";
-    case SearchEngineType.RESEARCHER:
+    default:
       return "#";
   }
 }
 
 export function buildSearchComment(
-  type: SearchEngineType,
+  type: SearchInfoSenderType,
   searchInfo: SearchInfo
 ): string {
   const prefix = searchCommentKeyPrefix(type);
@@ -362,24 +369,36 @@ export class RecordManager {
     );
   }
 
-  updateSearchInfo(type: SearchEngineType, searchInfo: SearchInfo): void {
+  updateSearchInfo(type: SearchInfoSenderType, searchInfo: SearchInfo): void {
     const data = (this.record.current.customData || {}) as RecordCustomData;
     switch (type) {
-      case SearchEngineType.PLAYER:
+      case SearchInfoSenderType.PLAYER:
         data.playerSearchInfo = searchInfo;
         break;
-      case SearchEngineType.RESEARCHER:
+      case SearchInfoSenderType.ENEMY:
+        data.enemySearchInfo = searchInfo;
+        break;
+      case SearchInfoSenderType.RESEARCHER:
         if ((searchInfo.depth || 0) >= (data.researchInfo?.depth || 0)) {
           data.researchInfo = searchInfo;
         }
         break;
+      case SearchInfoSenderType.RESEARCHER_2:
+        if ((searchInfo.depth || 0) >= (data.researchInfo2?.depth || 0)) {
+          data.researchInfo2 = searchInfo;
+        }
+        break;
+      case SearchInfoSenderType.RESEARCHER_3:
+        if ((searchInfo.depth || 0) >= (data.researchInfo3?.depth || 0)) {
+          data.researchInfo3 = searchInfo;
+        }
+        break;
+      case SearchInfoSenderType.RESEARCHER_4:
+        if ((searchInfo.depth || 0) >= (data.researchInfo4?.depth || 0)) {
+          data.researchInfo4 = searchInfo;
+        }
+        break;
     }
-    this._record.current.customData = data;
-  }
-
-  updateEnemySearchInfo(searchInfo: SearchInfo): void {
-    const data = (this.record.current.customData || {}) as RecordCustomData;
-    data.enemySearchInfo = searchInfo;
     this._record.current.customData = data;
   }
 

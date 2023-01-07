@@ -28,7 +28,7 @@ import {
   beepUnlimited,
   playPieceBeat,
 } from "@/renderer/audio";
-import { RecordManager, SearchEngineType } from "./record";
+import { RecordManager } from "./record";
 import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
@@ -41,7 +41,6 @@ import * as uri from "@/common/uri";
 import { Confirmation } from "./confirm";
 import { AnalysisManager } from "./analysis";
 import { AnalysisSetting } from "@/common/settings/analysis";
-import { USIPlayer } from "@/renderer/players/usi";
 import { LogLevel } from "@/common/log";
 import { formatPercentage, toString } from "@/common/helpers/string";
 import { CSAGameManager, CSAGameState } from "./csa";
@@ -51,7 +50,8 @@ import {
   appendCSAGameSettingHistory,
 } from "@/common/settings/csa";
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
-import { USIInfoCommand, USIInfoSender } from "@/common/usi";
+import { USIInfoCommand } from "@/common/usi";
+import { ResearchManager } from "./research";
 
 export class Store {
   private _bussy = new BussyStore();
@@ -78,7 +78,7 @@ export class Store {
     this.whiteClock,
     this
   );
-  private researcher?: USIPlayer;
+  private researchManager?: ResearchManager;
   private analysisManager?: AnalysisManager;
   private unlimitedBeepHandler?: AudioEventHandler;
 
@@ -303,22 +303,13 @@ export class Store {
     this._isAppSettingDialogVisible = false;
   }
 
-  get usiBlackPlayerMonitor(): USIPlayerMonitor | undefined {
-    return this.usiMonitor.blackPlayer;
-  }
-
-  get usiWhitePlayerMonitor(): USIPlayerMonitor | undefined {
-    return this.usiMonitor.whitePlayer;
-  }
-
-  get usiResearcherMonitor(): USIPlayerMonitor | undefined {
-    return this.usiMonitor.researcher;
+  get usiMonitors(): USIPlayerMonitor[] {
+    return this.usiMonitor.sessions;
   }
 
   updateUSIInfo(
     sessionID: number,
     usi: string,
-    sender: USIInfoSender,
     name: string,
     info: USIInfoCommand
   ): void {
@@ -328,7 +319,6 @@ export class Store {
     this.usiMonitor.update(
       sessionID,
       this.recordManager.record.position,
-      sender,
       name,
       info
     );
@@ -337,7 +327,6 @@ export class Store {
   updateUSIPonderInfo(
     sessionID: number,
     usi: string,
-    sender: USIInfoSender,
     name: string,
     info: USIInfoCommand
   ): void {
@@ -350,14 +339,7 @@ export class Store {
     if (!(ponderMove instanceof Move)) {
       return;
     }
-    this.usiMonitor.update(
-      sessionID,
-      record.position,
-      sender,
-      name,
-      info,
-      ponderMove
-    );
+    this.usiMonitor.update(sessionID, record.position, name, info, ponderMove);
   }
 
   get blackTime(): number {
@@ -626,24 +608,21 @@ export class Store {
       this.pushError(new Error("エンジンが設定されていません。"));
       return;
     }
-    const usiSetting = researchSetting.usi;
     api
       .saveResearchSetting(researchSetting)
       .then(() => {
-        this.researcher = new USIPlayer(
-          usiSetting,
-          this.appSetting.engineTimeoutSeconds,
-          (info) => {
-            this.recordManager.updateSearchInfo(
-              SearchEngineType.RESEARCHER,
-              info
-            );
-          }
+        this.researchManager = new ResearchManager(
+          researchSetting,
+          this.appSetting
         );
-        return this.researcher.launch();
+        this.researchManager.on("updateSearchInfo", (type, info) =>
+          this.recordManager.updateSearchInfo(type, info)
+        );
+        return this.researchManager.launch();
       })
       .then(() => {
         this._appState = AppState.RESEARCH;
+        this.usiMonitor.clear();
         this.onUpdatePosition();
         if (
           this.appSetting.tab !== Tab.SEARCH &&
@@ -655,7 +634,7 @@ export class Store {
         }
       })
       .catch((e) => {
-        this.researcher = undefined;
+        this.researchManager = undefined;
         this.pushError("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
@@ -667,9 +646,9 @@ export class Store {
     if (this.appState !== AppState.RESEARCH) {
       return;
     }
-    if (this.researcher) {
-      this.researcher.close();
-      this.researcher = undefined;
+    if (this.researchManager) {
+      this.researchManager.close();
+      this.researchManager = undefined;
     }
     this._appState = AppState.NORMAL;
   }
@@ -692,6 +671,7 @@ export class Store {
       })
       .then(() => {
         this._appState = AppState.ANALYSIS;
+        this.usiMonitor.clear();
       })
       .catch((e) => {
         this.analysisManager = undefined;
@@ -714,8 +694,8 @@ export class Store {
   }
 
   onUpdatePosition(): void {
-    if (this.researcher) {
-      this.researcher.startResearch(this.recordManager.record);
+    if (this.researchManager) {
+      this.researchManager.updatePosition(this.recordManager.record);
     }
   }
 

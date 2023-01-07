@@ -3,14 +3,47 @@
     <dialog ref="dialog" class="root">
       <div class="dialog-title">検討</div>
       <div class="dialog-form-area">
-        <PlayerSelector
-          :player-uri="engineURI"
-          :engine-settings="engineSettings"
-          :display-thread-state="true"
-          :display-multi-pv-state="true"
-          @update-engine-setting="onUpdatePlayerSetting"
-          @select-player="onSelectPlayer"
-        />
+        <div class="dialog-form-area">
+          <PlayerSelector
+            :player-uri="engineURI"
+            :engine-settings="engineSettings"
+            :display-thread-state="true"
+            :display-multi-pv-state="true"
+            @update-engine-setting="onUpdatePlayerSetting"
+            @select-player="
+              (uri) => {
+                engineURI = uri;
+              }
+            "
+          />
+        </div>
+        <div
+          v-for="(uri, index) in secondaryEngineURIs"
+          :key="index"
+          class="dialog-form-area"
+        >
+          <PlayerSelector
+            :player-uri="uri"
+            :engine-settings="engineSettings"
+            :display-thread-state="true"
+            :display-multi-pv-state="true"
+            @update-engine-setting="onUpdatePlayerSetting"
+            @select-player="
+              (uri) => {
+                secondaryEngineURIs[index] = uri;
+              }
+            "
+          />
+          <button
+            class="remove-button"
+            @click="secondaryEngineURIs.splice(index, 1)"
+          >
+            削除
+          </button>
+        </div>
+        <button @click="secondaryEngineURIs.push('')">
+          {{ secondaryEngineURIs.length + 2 }} 個目のエンジンを追加
+        </button>
       </div>
       <div class="dialog-main-buttons">
         <button
@@ -35,6 +68,7 @@ import api from "@/renderer/ipc/api";
 import {
   defaultResearchSetting,
   ResearchSetting,
+  validateResearchSetting,
 } from "@/common/settings/research";
 import { USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
@@ -56,6 +90,7 @@ export default defineComponent({
     const researchSetting = ref(defaultResearchSetting());
     const engineSettings = ref(new USIEngineSettings());
     const engineURI = ref("");
+    const secondaryEngineURIs = ref([] as string[]);
 
     store.retainBussyState();
 
@@ -66,6 +101,10 @@ export default defineComponent({
         researchSetting.value = await api.loadResearchSetting();
         engineSettings.value = await api.loadUSIEngineSetting();
         engineURI.value = researchSetting.value.usi?.uri || "";
+        secondaryEngineURIs.value =
+          researchSetting.value.secondaries?.map(
+            (setting) => setting.usi?.uri || ""
+          ) || [];
       } catch (e) {
         store.pushError(e);
         store.destroyModalDialog();
@@ -79,17 +118,23 @@ export default defineComponent({
     });
 
     const onStart = () => {
-      if (
-        !engineURI.value ||
-        !engineSettings.value.hasEngine(engineURI.value)
-      ) {
-        store.pushError("エンジンを選択してください。");
-        return;
-      }
       const engineSetting = engineSettings.value.getEngine(engineURI.value);
+      const secondaries = [];
+      for (const uri of secondaryEngineURIs.value) {
+        const engineSetting = engineSettings.value.getEngine(uri);
+        secondaries.push({
+          usi: engineSetting,
+        });
+      }
       const researchSetting: ResearchSetting = {
         usi: engineSetting,
+        secondaries: secondaries,
       };
+      const e = validateResearchSetting(researchSetting);
+      if (e) {
+        store.pushError(e);
+        return;
+      }
       store.startResearch(researchSetting);
     };
 
@@ -101,18 +146,14 @@ export default defineComponent({
       engineSettings.value = settings;
     };
 
-    const onSelectPlayer = (uri: string) => {
-      engineURI.value = uri;
-    };
-
     return {
       dialog,
       engineSettings,
       engineURI,
+      secondaryEngineURIs,
       onStart,
       onCancel,
       onUpdatePlayerSetting,
-      onSelectPlayer,
     };
   },
 });
@@ -121,5 +162,8 @@ export default defineComponent({
 <style scoped>
 .root {
   width: 380px;
+}
+.remove-button {
+  margin-top: 5px;
 }
 </style>

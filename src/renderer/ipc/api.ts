@@ -2,7 +2,6 @@ import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { GameSetting, TimeLimitSetting } from "@/common/settings/game";
 import { AppSetting } from "@/common/settings/app";
 import { MenuEvent } from "@/common/control/menu";
-import { USIInfoSender } from "../../common/usi";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/common/settings/research";
 import { AppState } from "@/common/control/state";
@@ -92,7 +91,6 @@ export interface Bridge {
     callback: (
       sessionID: number,
       usi: string,
-      sender: USIInfoSender,
       name: string,
       json: string
     ) => void
@@ -101,7 +99,6 @@ export interface Bridge {
     callback: (
       sessionID: number,
       usi: string,
-      sender: USIInfoSender,
       name: string,
       json: string
     ) => void

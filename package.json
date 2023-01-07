@@ -24,10 +24,12 @@
     "chart.js": "^4.0.1",
     "iconv-lite": "^0.6.3",
     "log4js": "^6.7.0",
+    "splitpanes": "^3.1.5",
     "vue": "^3.2.25"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
+    "@types/splitpanes": "^2.2.1",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "@vitejs/plugin-vue": "^4.0.0",

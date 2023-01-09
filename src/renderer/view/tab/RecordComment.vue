@@ -22,7 +22,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const comment = computed(() => store.record.current.comment);
-    const readonly = computed(() => store.appState != AppState.NORMAL);
+    const readonly = computed(
+      () =>
+        store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH
+    );
     const textarea: Ref = ref(null);
 
     const change = (event: Event) => {

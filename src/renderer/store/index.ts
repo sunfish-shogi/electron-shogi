@@ -36,7 +36,7 @@ import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { AppState } from "../../common/control/state";
 import { Message, MessageStore } from "./message";
-import { ErrorStore } from "./error";
+import { ErrorEntry, ErrorStore } from "./error";
 import * as uri from "@/common/uri";
 import { Confirmation } from "./confirm";
 import { AnalysisManager } from "./analysis";
@@ -133,7 +133,7 @@ export class Store {
     this._message.dequeue();
   }
 
-  get errors(): Error[] {
+  get errors(): ErrorEntry[] {
     return this._error.errors;
   }
 
@@ -143,7 +143,7 @@ export class Store {
 
   pushError(e: unknown): void {
     api.log(LogLevel.ERROR, toString(e));
-    this._error.push(e);
+    this._error.add(e);
   }
 
   clearErrors(): void {

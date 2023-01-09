@@ -62,7 +62,9 @@ export type AppSetting = {
   tabPaneType: TabPaneType;
   tab: Tab;
   tab2: Tab;
-  tabMinimized: boolean;
+  topPaneHeightPercentage: number;
+  topPanePreviousHeightPercentage: number;
+  bottomLeftPaneWidthPercentage: number;
   returnCode: string;
   autoSaveDirectory: string;
   engineTimeoutSeconds: number;
@@ -91,7 +93,9 @@ export type AppSettingUpdate = {
   tabPaneType?: TabPaneType;
   tab?: Tab;
   tab2?: Tab;
-  tabMinimized?: boolean;
+  topPaneHeightPercentage?: number;
+  topPanePreviousHeightPercentage?: number;
+  bottomLeftPaneWidthPercentage?: number;
   returnCode?: string;
   autoSaveDirectory?: string;
   engineTimeoutSeconds?: number;
@@ -115,9 +119,10 @@ export function buildUpdatedAppSetting(
     ...org,
     ...update,
   };
+
+  // カラム構成に合わせて選択可能なタブを制限する。
   switch (updated.tabPaneType) {
     case TabPaneType.DOUBLE:
-      // 2カラムの場合に選択できないタブが選ばれていたら代替のタブへ切り替える。
       switch (updated.tab) {
         case Tab.COMMENT:
           updated.tab = Tab.RECORD_INFO;
@@ -129,6 +134,15 @@ export function buildUpdatedAppSetting(
       }
       break;
   }
+
+  // 以前のサイズ比率を記憶する。
+  if (
+    org.topPaneHeightPercentage !== 0 &&
+    org.topPaneHeightPercentage !== 100
+  ) {
+    updated.topPanePreviousHeightPercentage = org.topPaneHeightPercentage;
+  }
+
   const error = validateAppSetting(updated);
   return error || updated;
 }
@@ -150,7 +164,9 @@ export function defaultAppSetting(opt?: {
     tabPaneType: TabPaneType.SINGLE,
     tab: Tab.RECORD_INFO,
     tab2: Tab.COMMENT,
-    tabMinimized: false,
+    topPaneHeightPercentage: 60,
+    topPanePreviousHeightPercentage: 60,
+    bottomLeftPaneWidthPercentage: 60,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
     engineTimeoutSeconds: 10,
@@ -178,10 +194,9 @@ export function normalizeAppSetting(
     ...defaultAppSetting(opt),
     ...setting,
   };
-  // 旧バージョンではタブの非表示を Tab.INDISIBLE で表していたが tabMinimized へ移行した。
+  // 旧バージョンではタブの最小化を Tab.INDISIBLE で表していたが廃止した。
   if (result.tab === Tab.INVISIBLE) {
     result.tab = Tab.RECORD_INFO;
-    result.tabMinimized = true;
   }
   return result;
 }

@@ -386,16 +386,15 @@ export default defineComponent({
     });
 
     const layout = computed(() => {
-      const margin = new RectSize(20, 20);
       const layout = layoutBuilder.value.build(
-        props.maxSize.reduce(margin),
+        props.maxSize,
         props.position,
         props.lastMove,
         state.pointer,
         state.reservedMove,
         props.flip
       );
-      context.emit("resize", layout.frame.size.add(margin));
+      context.emit("resize", layout.frame.size);
       return layout;
     });
 
@@ -458,7 +457,6 @@ export default defineComponent({
 <style scoped>
 .frame {
   color: var(--text-color);
-  margin: 10px;
   user-select: none;
   position: relative;
 }

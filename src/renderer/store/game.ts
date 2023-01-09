@@ -17,7 +17,7 @@ import {
 import { GameResult } from "@/common/player";
 
 export interface GameHandlers {
-  onSaveRecord(): Promise<void>;
+  onSaveRecord(): void;
   onGameNext(): void;
   onGameEnd(gameResults: GameResults, specialMove: SpecialMove): void;
   onPieceBeat(): void;
@@ -356,9 +356,7 @@ export class GameManager {
         this.updateGameResults(color, specialMove);
         this.state = GameState.IDLE;
         if (this._setting.enableAutoSave) {
-          this.handlers.onSaveRecord().catch((e) => {
-            this.handlers.onError(`棋譜の保存に失敗しました: ${e}`);
-          });
+          this.handlers.onSaveRecord();
         }
         const complete =
           specialMove === SpecialMove.INTERRUPT ||

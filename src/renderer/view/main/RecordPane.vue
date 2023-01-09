@@ -157,7 +157,6 @@ export default defineComponent({
 <style scoped>
 .record-pane {
   box-sizing: border-box;
-  padding: 10px;
   width: 100%;
   height: 100%;
   display: flex;

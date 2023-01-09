@@ -14,21 +14,21 @@ setupIPC();
 
 const store = useStore();
 Promise.allSettled([
+  store.reloadAppSetting().catch((e) => {
+    store.pushError(
+      new Error("アプリ設定の読み込み中にエラーが発生しました: " + e)
+    );
+  }),
   api
-    .loadAppSetting()
-    .then((setting) => {
-      store.updateAppSetting(setting);
+    .getRecordPathFromProcArg()
+    .then((path) => {
+      if (path) {
+        store.openRecord(path);
+      }
     })
     .catch((e) => {
-      store.pushError(
-        new Error("アプリ設定の読み込み中にエラーが発生しました :" + e)
-      );
+      store.pushError(new Error("起動パラメーターの取得に失敗しました: " + e));
     }),
-  api.getRecordPathFromProcArg().then((path) => {
-    if (path) {
-      store.openRecord(path);
-    }
-  }),
 ]).finally(() => {
   api.log(LogLevel.INFO, "mount app");
   createApp(App).mount("#app");

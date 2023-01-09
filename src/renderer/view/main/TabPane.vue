@@ -1,10 +1,6 @@
 <template>
   <div>
     <div class="root" :style="{ width: `${size.width}px` }">
-      <div
-        v-if="minimized"
-        :style="{ height: `calc(100% - ${headerHeight}px` }"
-      />
       <div class="tabs">
         <div
           v-for="tab in visibleTabs"
@@ -16,53 +12,38 @@
           <ButtonIcon class="icon" :icon="tabs[tab].icon" />
           {{ tabs[tab].title }}
         </div>
-        <div
-          v-if="displayMinimizeToggle && !minimized"
-          class="tab end"
-          @click="minimize"
-        >
+        <div v-if="displayMinimizeToggle" class="tab end" @click="minimize">
           <ButtonIcon class="icon" :icon="Icon.ARROW_DROP" />
           最小化
-        </div>
-        <div
-          v-if="displayMinimizeToggle && minimized"
-          class="tab end"
-          @click="display"
-        >
-          <ButtonIcon class="icon" :icon="Icon.ARROW_UP" />
-          表示
         </div>
       </div>
       <div class="tab-contents">
         <RecordInfo
-          v-if="!minimized && activeTab === Tab.RECORD_INFO"
+          v-if="activeTab === Tab.RECORD_INFO"
           class="tab-content"
           :size="contentSize"
         />
-        <RecordComment
-          v-if="!minimized && activeTab === Tab.COMMENT"
-          class="tab-content"
-        />
+        <RecordComment v-if="activeTab === Tab.COMMENT" class="tab-content" />
         <EngineAnalytics
-          v-if="!minimized && activeTab === Tab.SEARCH"
+          v-if="activeTab === Tab.SEARCH"
           class="tab-content"
           :size="contentSize"
           :history-mode="true"
         />
         <EngineAnalytics
-          v-if="!minimized && activeTab === Tab.PV"
+          v-if="activeTab === Tab.PV"
           class="tab-content"
           :size="contentSize"
           :history-mode="false"
         />
         <EvaluationChart
-          v-if="!minimized && activeTab === Tab.CHART"
+          v-if="activeTab === Tab.CHART"
           class="tab-content"
           :size="contentSize"
           :type="EvaluationChartType.RAW"
         />
         <EvaluationChart
-          v-if="!minimized && activeTab === Tab.PERCENTAGE_CHART"
+          v-if="activeTab === Tab.PERCENTAGE_CHART"
           class="tab-content"
           :size="contentSize"
           :type="EvaluationChartType.WIN_RATE"
@@ -86,8 +67,6 @@ import { Tab } from "@/common/settings/app";
 import { Icon } from "@/renderer/assets/icons";
 
 export const headerHeight = 30;
-
-export const minHeight = 240 + headerHeight;
 
 const tabs = {
   [Tab.RECORD_INFO]: {
@@ -142,20 +121,15 @@ export default defineComponent({
       type: String as PropType<Tab>,
       required: true,
     },
-    minimized: {
-      type: Boolean,
-      required: false,
-    },
     displayMinimizeToggle: {
       type: Boolean,
       required: false,
     },
   },
-  emits: ["onChangeTab", "onMinimize", "onDisplay"],
+  emits: ["onChangeTab", "onMinimize"],
   setup(props, { emit }) {
     const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
     const minimize = () => emit("onMinimize");
-    const display = () => emit("onDisplay");
     const contentSize = computed(() =>
       props.size.reduce(new RectSize(0, headerHeight))
     );
@@ -164,7 +138,6 @@ export default defineComponent({
       headerHeight,
       changeSelect,
       minimize,
-      display,
       tabs,
       Tab,
       Icon,

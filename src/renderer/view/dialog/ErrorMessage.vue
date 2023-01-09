@@ -5,10 +5,13 @@
         <ButtonIcon class="icon" :icon="Icon.ERROR" />
         <div class="items">
           <div class="notice">
-            {{ errors.length }} 件のエラーが発生しました。
+            {{ errors.length }} 種類のエラーが発生しました。
           </div>
           <div v-for="(error, index) in errors" :key="index" class="item">
-            <p class="index">{{ index + 1 }} 件目</p>
+            <p class="index">
+              {{ index + 1 }}
+              <span v-if="error.count >= 2">({{ error.count }} 回)</span>
+            </p>
             <p class="message">{{ error.message }}</p>
           </div>
         </div>

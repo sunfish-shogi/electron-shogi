@@ -161,7 +161,7 @@ export function defaultAppSetting(opt?: {
     clockPitch: 500,
     clockSoundTarget: ClockSoundTarget.ONLY_USER,
     boardFlipping: false,
-    tabPaneType: TabPaneType.SINGLE,
+    tabPaneType: TabPaneType.DOUBLE,
     tab: Tab.RECORD_INFO,
     tab2: Tab.COMMENT,
     topPaneHeightPercentage: 60,

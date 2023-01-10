@@ -178,6 +178,7 @@ describe("store/index", () => {
     await store.updateAppSetting({
       thema: Thema.DARK,
       pieceVolume: 0,
+      tabPaneType: TabPaneType.SINGLE,
       tab: Tab.COMMENT,
     });
     expect(store.appSetting.thema).toBe(Thema.DARK);

@@ -1,6 +1,6 @@
 button {
   color: var(--control-button-color);
-  background: linear-gradient(to top, var(--control-button-bg-color) 78%, white 125%);
+  background: linear-gradient(to top, var(--control-button-bg-color) 80%, white 140%);
   border-color: var(--control-button-border-color);
   border-style: solid;
   border-width: 0px 1px 1px 0px;
@@ -12,16 +12,16 @@ button:active {
   border-width: 1px 0px 0px 1px;
 }
 button:disabled {
-  background: linear-gradient(to top, var(--disabled-control-button-bg-color) 78%, white 125%);
+  background: linear-gradient(to top, var(--disabled-control-button-bg-color) 80%, white 140%);
 }
 button:hover:enabled {
-  background: linear-gradient(to top, var(--hovered-control-button-bg-color) 78%, white 125%);
+  background: linear-gradient(to top, var(--hovered-control-button-bg-color) 80%, white 140%);
 }
 button.close:enabled {
-  background: linear-gradient(to top, var(--close-button-bg-color) 78%, white 125%);
+  background: linear-gradient(to top, var(--close-button-bg-color) 80%, white 140%);
 }
 button.close:hover:enabled {
-  background: linear-gradient(to top, var(--hovered-close-button-bg-color) 78%, white 125%);
+  background: linear-gradient(to top, var(--hovered-close-button-bg-color) 80%, white 140%);
 }
 
 button .icon {

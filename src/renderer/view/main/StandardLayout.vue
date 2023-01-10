@@ -28,32 +28,27 @@
         </div>
       </Pane>
       <Pane :size="bottomPaneHeightPercentage">
-        <div
+        <TabPane
           v-if="appSetting.tabPaneType === TabPaneType.SINGLE"
-          class="bottom-pane"
-        >
-          <TabPane
-            class="tab-pane"
-            :size="tabPaneSize"
-            :visible-tabs="[
-              Tab.RECORD_INFO,
-              Tab.COMMENT,
-              Tab.SEARCH,
-              Tab.PV,
-              Tab.CHART,
-              Tab.PERCENTAGE_CHART,
-            ]"
-            :active-tab="appSetting.tab"
-            :display-minimize-toggle="true"
-            @on-change-tab="onChangeTab"
-            @on-minimize="onMinimizeTab"
-          />
-        </div>
+          class="tab-pane"
+          :size="tabPaneSize"
+          :visible-tabs="[
+            Tab.RECORD_INFO,
+            Tab.COMMENT,
+            Tab.SEARCH,
+            Tab.PV,
+            Tab.CHART,
+            Tab.PERCENTAGE_CHART,
+          ]"
+          :active-tab="appSetting.tab"
+          :display-minimize-toggle="true"
+          @on-change-tab="onChangeTab"
+          @on-minimize="onMinimizeTab"
+        />
         <Splitpanes
           v-else
           vertical
           :dbl-click-splitter="false"
-          class="bottom-frame"
           @resize="onResizeBottom"
           @resized="onResizedBottom"
         >

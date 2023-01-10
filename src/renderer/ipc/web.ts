@@ -23,22 +23,22 @@ export const webAPI: Bridge = {
     // DO NOTHING
   },
   async showOpenRecordDialog(): Promise<string> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async openRecord(): Promise<Uint8Array> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async showSaveRecordDialog(): Promise<string> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async saveRecord(): Promise<void> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async showSelectFileDialog(): Promise<string> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async showSelectDirectoryDialog(): Promise<string> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async loadAppSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.APP_SETTING);
@@ -93,7 +93,7 @@ export const webAPI: Bridge = {
     localStorage.setItem(STORAGE_KEY.GAME_SETTING, json);
   },
   async loadCSAGameSettingHistory(): Promise<string> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async saveCSAGameSettingHistory(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY, json);
@@ -105,16 +105,16 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   async showSelectUSIEngineDialog(): Promise<string> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async getUSIEngineInfo(): Promise<string> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async sendUSISetOption(): Promise<void> {
     // Do Nothing
   },
   async usiLaunch(): Promise<number> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async usiGo(): Promise<void> {
     // Do Nothing
@@ -138,7 +138,7 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   async csaLogin(): Promise<number> {
-    throw "Web版では利用できない機能です。";
+    throw new Error("Web版では利用できない機能です。");
   },
   async csaLogout(): Promise<void> {
     // Do Nothing

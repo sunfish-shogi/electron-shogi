@@ -101,7 +101,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw "予期せぬエラーでダイアログを表示せきません。";
+      throw new Error("予期せぬエラーでダイアログを表示せきません。");
     }
     const results = dialog.showOpenDialogSync(win, {
       properties: ["openFile"],
@@ -128,7 +128,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw "予期せぬエラーでダイアログを表示せきません。";
+      throw new Error("予期せぬエラーでダイアログを表示せきません。");
     }
     const result = dialog.showSaveDialogSync(win, {
       defaultPath: defaultPath,
@@ -162,7 +162,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw "予期せぬエラーでダイアログを表示せきません。";
+      throw new Error("予期せぬエラーでダイアログを表示せきません。");
     }
     const results = dialog.showOpenDialogSync(win, {
       properties: ["openFile"],
@@ -177,7 +177,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw "予期せぬエラーでダイアログを表示せきません。";
+      throw new Error("予期せぬエラーでダイアログを表示せきません。");
     }
     const results = dialog.showOpenDialogSync(win, {
       properties: ["createDirectory", "openDirectory"],
@@ -263,7 +263,7 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
   validateIPCSender(event.senderFrame);
   const win = BrowserWindow.getFocusedWindow();
   if (!win) {
-    throw "予期せぬエラーでダイアログを表示せきません。";
+    throw new Error("予期せぬエラーでダイアログを表示せきません。");
   }
   const results = dialog.showOpenDialogSync(win, {
     properties: ["openFile", "noResolveAliases"],

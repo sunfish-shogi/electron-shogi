@@ -159,7 +159,7 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   user-select: none;
-  background: linear-gradient(to top, var(--tab-bg-color) 75%, white 125%);
+  background: linear-gradient(to top, var(--tab-bg-color) 80%, white 140%);
   padding-bottom: 2px;
 }
 .tab {

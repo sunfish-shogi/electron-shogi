@@ -179,7 +179,7 @@ export default defineComponent({
     const onUnhideTabView = () => {
       const newValue = Math.min(
         store.appSetting.topPanePreviousHeightPercentage,
-        ((windowSize.height - tabHeaderHeight * 2 - splitterWidth / 2) /
+        ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) /
           windowSize.height) *
           100
       );
@@ -226,11 +226,8 @@ export default defineComponent({
       return new RectSize(
         Math.max(windowSize.width - minRecordWidth - margin * 2, 0),
         Math.max(
-          Math.min(
-            (windowSize.height * topPaneHeightPercentage.value) / 100 -
-              splitterWidth / 2,
-            windowSize.height - splitterWidth
-          ) -
+          (windowSize.height - splitterWidth) *
+            (topPaneHeightPercentage.value / 100) -
             margin -
             (isBottomPaneVisible.value ? 0 : tabHeaderHeight + margin),
           0
@@ -262,8 +259,8 @@ export default defineComponent({
       return new RectSize(
         store.appSetting.tabPaneType === TabPaneType.SINGLE
           ? windowSize.width
-          : (windowSize.width * bottomLeftPaneWidthPercentage.value) / 100 -
-            splitterWidth / 2,
+          : (windowSize.width - splitterWidth) *
+            (bottomLeftPaneWidthPercentage.value / 100),
         (windowSize.height * bottomPaneHeightPercentage.value) / 100
       );
     });
@@ -341,7 +338,10 @@ export default defineComponent({
 .unhide-tabview-button {
   width: 100%;
   height: 30px;
+  font-size: 100%;
   text-align: center;
+  line-height: 180%;
+  padding: 0 5% 0 5%;
 }
 .tab-pane {
   height: 100%;

@@ -47,6 +47,7 @@
         />
         <Splitpanes
           v-else
+          class="bottom-frame"
           vertical
           :dbl-click-splitter="false"
           @resize="onResizeBottom"

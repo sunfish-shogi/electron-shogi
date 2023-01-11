@@ -1,6 +1,7 @@
 :root {
   --main-color: white;
   --main-bg-color: #5f8f5f;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --tab-color: white;
   --tab-bg-color: #4b704b;
   --tab-highlight-color: white;
@@ -47,6 +48,7 @@
 .cherry-blossom {
   --main-color: black;
   --main-bg-color: #efc4c4;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --tab-color: white;
   --tab-bg-color: #d06868;
   --tab-highlight-color: white;
@@ -93,6 +95,7 @@
 .autumn {
   --main-color: black;
   --main-bg-color: #dbb579;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --tab-color: white;
   --tab-bg-color: #720f13;
   --tab-highlight-color: white;
@@ -139,6 +142,7 @@
 .snow {
   --main-color: black;
   --main-bg-color: #e9e8ef;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --tab-color: white;
   --tab-bg-color: #567ac5;
   --tab-highlight-color: white;
@@ -185,6 +189,7 @@
 .dark {
   --main-color: white;
   --main-bg-color: black;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --tab-color: white;
   --tab-bg-color: #3c3c3c;
   --tab-highlight-color: white;
@@ -198,7 +203,7 @@
   --text-separator-color: gainsboro;
   --text-dashed-separator-color: lightgray;
   --input-border-color: gray;
-  --chart-bg-color: black;
+  --chart-bg-color: #202020;
   --promote-bg-color: dimgray;
   --not-promote-bg-color: black;
   --turn-label-color: lightyellow;

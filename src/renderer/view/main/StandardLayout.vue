@@ -224,8 +224,8 @@ export default defineComponent({
         Math.max(
           (windowSize.height - splitterWidth) *
             (topPaneHeightPercentage.value / 100) -
-            margin -
-            (isBottomPaneVisible.value ? 0 : tabHeaderHeight + margin),
+            margin * 2 -
+            (isBottomPaneVisible.value ? 0 : tabHeaderHeight),
           0
         )
       );
@@ -233,7 +233,7 @@ export default defineComponent({
 
     const boardPaneStyle = computed(() => {
       return {
-        margin: `${margin}px ${margin}px 0 ${margin}px`,
+        margin: `${margin}px`,
       };
     });
 
@@ -241,7 +241,7 @@ export default defineComponent({
       const width = windowSize.width - boardPaneSize.width - margin * 3;
       const height = boardPaneSize.height;
       return {
-        margin: `${margin}px ${margin}px 0 0`,
+        margin: `${margin}px ${margin}px ${margin}px 0`,
         width: `${width}px`,
         height: `${height}px`,
       };
@@ -299,19 +299,22 @@ export default defineComponent({
 </script>
 
 <style>
-.main-frame > .splitpanes__splitter {
+.main-frame.splitpanes--horizontal > .splitpanes__splitter {
   height: 8px;
   cursor: ns-resize;
 }
-.bottom-frame > .splitpanes__splitter {
+.bottom-frame.splitpanes--vertical > .splitpanes__splitter {
   width: 8px;
   cursor: ew-resize;
 }
-.splitpanes__splitter {
+.main-frame .splitpanes__splitter {
   background-color: transparent;
 }
-.splitpanes__splitter:hover {
+.main-frame .splitpanes__splitter:hover {
   background-color: #1e90ff;
+}
+.bottom-frame.splitpanes--vertical > .splitpanes__pane {
+  box-shadow: 6px 0px 6px -3px var(--shadow-color);
 }
 </style>
 

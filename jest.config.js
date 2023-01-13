@@ -20,4 +20,8 @@ module.exports = {
   setupFilesAfterEnv: ["./scripts/jest.setup.js"],
   coverageDirectory: "coverage",
   coverageProvider: "v8",
+  coveragePathIgnorePatterns: [
+    "<rootDir>/node_modules/",
+    "<rootDir>/src/tests/mock/",
+  ],
 };

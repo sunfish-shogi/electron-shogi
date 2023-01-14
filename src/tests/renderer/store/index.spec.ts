@@ -219,25 +219,21 @@ describe("store/index", () => {
     const confirmation1 = {
       message: "Are you ready?",
       onOk: jest.fn(),
-      onCancel: jest.fn(),
     };
     store.showConfirmation(confirmation1);
     expect(store.confirmation).toBe("Are you ready?");
     store.confirmationOk();
     expect(store.confirmation).toBeUndefined();
     expect(confirmation1.onOk).toBeCalledTimes(1);
-    expect(confirmation1.onCancel).toBeCalledTimes(0);
     const confirmation2 = {
       message: "Do you really want to delete?",
       onOk: jest.fn(),
-      onCancel: jest.fn(),
     };
     store.showConfirmation(confirmation2);
     expect(store.confirmation).toBe("Do you really want to delete?");
     store.confirmationCancel();
     expect(store.confirmation).toBeUndefined();
     expect(confirmation2.onOk).toBeCalledTimes(0);
-    expect(confirmation2.onCancel).toBeCalledTimes(1);
   });
 
   it("updateUSIInfo", () => {

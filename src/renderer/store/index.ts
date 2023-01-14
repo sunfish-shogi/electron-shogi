@@ -60,9 +60,8 @@ export class Store {
   private recordManager = new RecordManager();
   private _appSetting = defaultAppSetting();
   private _appState = AppState.NORMAL;
-  private lastAppState?: AppState;
   private _isAppSettingDialogVisible = false;
-  private _confirmation?: Confirmation;
+  private _confirmation?: Confirmation & { appState: AppState };
   private usiMonitor = new USIMonitor();
   private blackClock = new Clock();
   private whiteClock = new Clock();
@@ -195,49 +194,45 @@ export class Store {
     return this._confirmation?.message;
   }
 
+  /**
+   * 確認ダイアログを表示します。既に表示されているものは消えます。
+   * @param confirmation 確認ダイアログの情報とハンドラーを指定します。
+   */
   showConfirmation(confirmation: Confirmation): void {
-    if (this.appState == AppState.TEMPORARY) {
+    if (this._confirmation) {
       api.log(
-        LogLevel.ERROR,
+        LogLevel.WARN,
         "Store#showConfirmation: 確認ダイアログを多重に表示しようとしました。" +
-          ` lastAppState=${this.lastAppState}` +
-          (this._confirmation
-            ? ` currentMessage=${this._confirmation.message}`
-            : "") +
+          ` appState=${this.appState}` +
+          ` currentMessage=${this._confirmation.message}` +
           ` newMessage=${confirmation.message}`
       );
-      if (confirmation.onCancel) {
-        confirmation.onCancel();
-      }
-      return;
     }
-    this._confirmation = confirmation;
-    this.lastAppState = this.appState;
-    this._appState = AppState.TEMPORARY;
+    this._confirmation = {
+      ...confirmation,
+      appState: this.appState,
+    };
   }
 
   confirmationOk(): void {
-    const onOk = this._confirmation?.onOk;
-    this._confirmation = undefined;
-    if (this.lastAppState) {
-      this._appState = this.lastAppState;
-      this.lastAppState = undefined;
+    if (!this._confirmation) {
+      return;
     }
-    if (onOk) {
-      onOk();
+    const confirmation = this._confirmation;
+    this._confirmation = undefined;
+    if (this.appState !== confirmation.appState) {
+      this.pushError(
+        "確認ダイアログ表示中に他の操作が行われたため処理が中止されました。"
+      );
+      return;
+    }
+    if (confirmation.onOk) {
+      confirmation.onOk();
     }
   }
 
   confirmationCancel(): void {
-    const onCancel = this._confirmation?.onCancel;
     this._confirmation = undefined;
-    if (this.lastAppState) {
-      this._appState = this.lastAppState;
-      this.lastAppState = undefined;
-    }
-    if (onCancel) {
-      onCancel();
-    }
   }
 
   showPasteDialog(): void {
@@ -450,15 +445,19 @@ export class Store {
   }
 
   stopGame(): void {
-    if (this.appState === AppState.GAME) {
-      this.gameManager.endGame(SpecialMove.INTERRUPT);
-    } else if (this.appState === AppState.CSA_GAME) {
-      this.showConfirmation({
-        message: "中断を要求すると負けになる可能性があります。よろしいですか？",
-        onOk: () => {
-          this.csaGameManager.stop();
-        },
-      });
+    switch (this.appState) {
+      case AppState.GAME:
+        this.gameManager.endGame(SpecialMove.INTERRUPT);
+        break;
+      case AppState.CSA_GAME:
+        this.showConfirmation({
+          message:
+            "中断を要求すると負けになる可能性があります。よろしいですか？",
+          onOk: () => {
+            this.csaGameManager.stop();
+          },
+        });
+        break;
     }
   }
 
@@ -467,12 +466,6 @@ export class Store {
   }
 
   onGameEnd(gameResults?: GameResults, specialMove?: SpecialMove): void {
-    // TODO:
-    //   確認ダイアログ表示中に対局が終了した場合に appState が更新されない問題のワークアラウンド
-    //   確認ダイアログの取り扱いについて、マイナーバージョンアップデートで根本的な解決を検討
-    if (this.appState === AppState.TEMPORARY && this._confirmation) {
-      this.confirmationCancel();
-    }
     if (
       this.appState !== AppState.GAME &&
       this.appState !== AppState.CSA_GAME

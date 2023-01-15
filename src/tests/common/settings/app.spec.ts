@@ -7,6 +7,7 @@ import {
   ClockSoundTarget,
   Tab,
   TabPaneType,
+  EvaluationViewFrom,
 } from "@/common/settings/app";
 
 describe("settings/csa", () => {
@@ -30,6 +31,7 @@ describe("settings/csa", () => {
       returnCode: "\r",
       autoSaveDirectory: "/tmp/electron-shogi",
       engineTimeoutSeconds: 60,
+      evaluationViewFrom: EvaluationViewFrom.EACH,
       coefficientInSigmoid: 1000,
       badMoveLevelThreshold1: 1,
       badMoveLevelThreshold2: 2,

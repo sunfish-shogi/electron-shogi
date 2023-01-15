@@ -154,7 +154,7 @@ export function defaultAppSetting(opt?: {
   return {
     thema: Thema.STANDARD,
     pieceImage: PieceImageType.HITOMOJI,
-    boardImage: BoardImageType.LIGHT,
+    boardImage: BoardImageType.RESIN2,
     boardLabelType: BoardLabelType.STANDARD,
     pieceVolume: 30,
     clockVolume: 30,

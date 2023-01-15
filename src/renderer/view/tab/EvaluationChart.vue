@@ -1,12 +1,7 @@
 <template>
   <div>
-    <div class="root">
-      <canvas
-        ref="canvas"
-        :width="size.width.toFixed(0)"
-        :height="size.height.toFixed(0)"
-      >
-      </canvas>
+    <div class="root" :style="style">
+      <canvas ref="canvas"></canvas>
     </div>
   </div>
 </template>
@@ -16,6 +11,7 @@ import { RectSize } from "@/renderer/view/primitive/Types";
 import { useStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
 import {
+  computed,
   defineComponent,
   onMounted,
   onUnmounted,
@@ -29,6 +25,7 @@ import {
   Chart,
   ChartEvent,
   Color as ChartColor,
+  ChartDataset,
 } from "chart.js";
 import { Color, ImmutableNode, ImmutableRecord } from "@/common/shogi";
 import { scoreToPercentage } from "@/renderer/store/score";
@@ -181,7 +178,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const canvasRef: Ref = ref(null);
+    const canvas: Ref = ref(null);
     const store = useStore();
     let chart: Chart;
     let maxScore = MAX_SCORE;
@@ -264,40 +261,22 @@ export default defineComponent({
       appSetting: AppSetting,
       palette: ColorPalette
     ) => {
-      return [
-        verticalLine(record, palette),
-        buildDataset(
-          palette.blackPlayer,
-          Series.BLACK_PLAYER,
-          record,
-          appSetting
-        ),
-        buildDataset(
-          palette.whitePlayer,
-          Series.WHITE_PLAYER,
-          record,
-          appSetting
-        ),
-        buildDataset(palette.researcher, Series.RESEARCHER, record, appSetting),
-        buildDataset(
-          palette.researcher2,
-          Series.RESEARCHER_2,
-          record,
-          appSetting
-        ),
-        buildDataset(
-          palette.researcher3,
-          Series.RESEARCHER_3,
-          record,
-          appSetting
-        ),
-        buildDataset(
-          palette.researcher4,
-          Series.RESEARCHER_4,
-          record,
-          appSetting
-        ),
+      const series = [
+        { borderColor: palette.blackPlayer, type: Series.BLACK_PLAYER },
+        { borderColor: palette.whitePlayer, type: Series.WHITE_PLAYER },
+        { borderColor: palette.researcher, type: Series.RESEARCHER },
+        { borderColor: palette.researcher2, type: Series.RESEARCHER_2 },
+        { borderColor: palette.researcher3, type: Series.RESEARCHER_3 },
+        { borderColor: palette.researcher4, type: Series.RESEARCHER_4 },
       ];
+      const datasets: ChartDataset[] = [verticalLine(record, palette)];
+      for (const s of series) {
+        const dataset = buildDataset(s.borderColor, s.type, record, appSetting);
+        if (dataset.data.length > 0) {
+          datasets.push(dataset);
+        }
+      }
+      return datasets;
     };
 
     const buildScalesOption = (
@@ -342,8 +321,8 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      const canvas = canvasRef.value as HTMLCanvasElement;
-      const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+      const element = canvas.value as HTMLCanvasElement;
+      const context = element.getContext("2d") as CanvasRenderingContext2D;
       chart = new Chart(context, {
         type: "scatter",
         data: {
@@ -353,6 +332,7 @@ export default defineComponent({
           animation: {
             duration: 0,
           },
+          responsive: true,
           maintainAspectRatio: false,
           events: ["click"],
           onClick,
@@ -367,22 +347,22 @@ export default defineComponent({
           updateChart(record as ImmutableRecord, appSetting as AppSetting),
         { deep: true }
       );
-
-      watch(
-        () => [props.size],
-        ([size]) => {
-          chart.resize(size.width, size.height);
-        },
-        { deep: true }
-      );
     });
 
     onUnmounted(() => {
       chart.destroy();
     });
 
+    const style = computed(() => {
+      return {
+        height: `${props.size.height}px`,
+        width: `${props.size.width}px`,
+      };
+    });
+
     return {
-      canvas: canvasRef,
+      canvas,
+      style,
     };
   },
 });

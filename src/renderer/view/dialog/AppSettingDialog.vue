@@ -147,6 +147,20 @@
         <div class="section">
           <div class="section-title">評価値・期待勝率</div>
           <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">評価値の符号</div>
+            <select
+              ref="evaluationViewFrom"
+              :value="appSetting.evaluationViewFrom"
+            >
+              <option :value="EvaluationViewFrom.EACH">
+                手番側有利がプラスの値
+              </option>
+              <option :value="EvaluationViewFrom.BLACK">
+                先手有利がプラスの値
+              </option>
+            </select>
+          </div>
+          <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">勝率換算係数</div>
             <input
               ref="coefficientInSigmoid"
@@ -271,8 +285,10 @@ import {
   BoardImageType,
   BoardLabelType,
   TabPaneType,
+  EvaluationViewFrom,
+  AppSettingUpdate,
+  Thema,
 } from "@/common/settings/app";
-import { AppSettingUpdate, Thema } from "@/common/settings/app";
 import { useStore } from "@/renderer/store";
 import {
   ref,
@@ -319,6 +335,7 @@ export default defineComponent({
     const returnCode: Ref = ref(null);
     const autoSaveDirectory: Ref = ref(null);
     const engineTimeoutSeconds: Ref = ref(null);
+    const evaluationViewFrom: Ref = ref(null);
     const coefficientInSigmoid: Ref = ref(null);
     const badMoveLevelThreshold1: Ref = ref(null);
     const badMoveLevelThreshold2: Ref = ref(null);
@@ -353,6 +370,7 @@ export default defineComponent({
         returnCode: nameToReturnCode[returnCode.value.value],
         autoSaveDirectory: autoSaveDirectory.value.value,
         engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
+        evaluationViewFrom: evaluationViewFrom.value.value,
         coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
         badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
         badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
@@ -406,6 +424,7 @@ export default defineComponent({
       BoardImageType,
       BoardLabelType,
       TabPaneType,
+      EvaluationViewFrom,
       dialog,
       thema,
       pieceImage,
@@ -419,6 +438,7 @@ export default defineComponent({
       returnCode,
       autoSaveDirectory,
       engineTimeoutSeconds,
+      evaluationViewFrom,
       coefficientInSigmoid,
       badMoveLevelThreshold1,
       badMoveLevelThreshold2,

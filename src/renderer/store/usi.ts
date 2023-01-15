@@ -1,8 +1,10 @@
 import { USIInfoCommand } from "@/common/usi";
 import { ImmutablePosition, Move, Position } from "@/common/shogi";
+import { Color } from "@/common/shogi";
 
 export type USIIteration = {
   position: string;
+  color: Color;
   depth?: number;
   selectiveDepth?: number;
   timeMs?: number;
@@ -75,8 +77,12 @@ export class USIPlayerMonitor {
       this.ponderMove = undefined;
     }
     const position = Position.newBySFEN(sfen);
+    if (!position) {
+      return;
+    }
     const iterate: USIIteration = {
       position: sfen,
+      color: position.color,
     };
     if (update.depth !== undefined) {
       iterate.depth = update.depth;
@@ -92,7 +98,7 @@ export class USIPlayerMonitor {
     }
     if (update.pv) {
       iterate.pv = update.pv;
-      iterate.text = position ? formatPV(position, update.pv) : "";
+      iterate.text = formatPV(position, update.pv);
     }
     if (update.multipv !== undefined) {
       iterate.multiPV = update.multipv;

@@ -62,8 +62,21 @@
             {{ iterate.nodes }}
           </div>
           <div class="list-column score">
-            {{ iterate.score }}
-            {{ iterate.scoreMate ? iterate.scoreMate : "" }}
+            {{
+              iterate.scoreMate
+                ? getDisplayScore(
+                    iterate.scoreMate,
+                    iterate.color,
+                    evaluationViewFrom
+                  )
+                : iterate.score
+                ? getDisplayScore(
+                    iterate.score,
+                    iterate.color,
+                    evaluationViewFrom
+                  )
+                : ""
+            }}
           </div>
           <div class="list-column score-flag">
             {{ iterate.lowerBound ? "++" : "" }}
@@ -99,6 +112,9 @@ import { computed, defineComponent, ref } from "vue";
 import { Icon } from "@/renderer/assets/icons";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import PVPreviewDialog from "@/renderer/view/dialog/PVPreviewDialog.vue";
+import { useStore } from "@/renderer/store";
+import { EvaluationViewFrom } from "@/common/settings/app";
+import { Color } from "@/common/shogi";
 
 type Preview = {
   position: string;
@@ -145,6 +161,20 @@ export default defineComponent({
 
     const preview = ref<Preview | null>(null);
 
+    const evaluationViewFrom = computed(() => {
+      return useStore().appSetting.evaluationViewFrom;
+    });
+    const getDisplayScore = (
+      score: number,
+      color: Color,
+      evaluationViewFrom: EvaluationViewFrom
+    ) => {
+      return evaluationViewFrom === EvaluationViewFrom.EACH ||
+        color == Color.BLACK
+        ? score
+        : -score;
+    };
+
     const showPreview = (ite: USIIteration) => {
       const infos = [];
       if (ite.depth !== undefined) {
@@ -154,7 +184,13 @@ export default defineComponent({
         infos.push(`選択的深さ=${ite.selectiveDepth}`);
       }
       if (ite.score) {
-        infos.push(`評価値=${ite.score}`);
+        infos.push(
+          `評価値=${getDisplayScore(
+            ite.score,
+            ite.color,
+            evaluationViewFrom.value
+          )}`
+        );
         if (ite.lowerBound) {
           infos.push("（下界値）");
         }
@@ -163,7 +199,13 @@ export default defineComponent({
         }
       }
       if (ite.scoreMate) {
-        infos.push(`詰み手数=${ite.scoreMate}`);
+        infos.push(
+          `詰み手数=${getDisplayScore(
+            ite.scoreMate,
+            ite.color,
+            evaluationViewFrom.value
+          )}`
+        );
       }
       if (ite.multiPV) {
         infos.push(`順位=${ite.multiPV}`);
@@ -183,6 +225,8 @@ export default defineComponent({
       Icon,
       enableHighlight,
       preview,
+      evaluationViewFrom,
+      getDisplayScore,
       showPreview,
       closePreview,
     };

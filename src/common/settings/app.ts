@@ -44,6 +44,11 @@ export enum Tab {
   INVISIBLE = "invisible", // Deprecated
 }
 
+export enum EvaluationViewFrom {
+  BLACK = "black",
+  EACH = "each",
+}
+
 export enum ClockSoundTarget {
   ALL = "all",
   ONLY_USER = "onlyUser",
@@ -68,6 +73,7 @@ export type AppSetting = {
   returnCode: string;
   autoSaveDirectory: string;
   engineTimeoutSeconds: number;
+  evaluationViewFrom: EvaluationViewFrom;
   coefficientInSigmoid: number;
   badMoveLevelThreshold1: number;
   badMoveLevelThreshold2: number;
@@ -99,6 +105,7 @@ export type AppSettingUpdate = {
   returnCode?: string;
   autoSaveDirectory?: string;
   engineTimeoutSeconds?: number;
+  evaluationViewFrom?: EvaluationViewFrom;
   coefficientInSigmoid?: number;
   badMoveLevelThreshold1?: number;
   badMoveLevelThreshold2?: number;
@@ -170,6 +177,7 @@ export function defaultAppSetting(opt?: {
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
     engineTimeoutSeconds: 10,
+    evaluationViewFrom: EvaluationViewFrom.EACH,
     coefficientInSigmoid: 600,
     badMoveLevelThreshold1: 5,
     badMoveLevelThreshold2: 10,

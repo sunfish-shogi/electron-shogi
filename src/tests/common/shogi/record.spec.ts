@@ -6,7 +6,6 @@ import {
   Move,
   Record,
   SpecialMove,
-  specialMoveToDisplayString,
   Square,
 } from "@/common/shogi";
 
@@ -35,11 +34,6 @@ describe("shogi/record", () => {
     expect(record.first.comment).toBe("");
     expect(record.first.customData).toBeUndefined();
     expect(record.current).toBe(record.first);
-  });
-
-  it("displayString", () => {
-    expect(specialMoveToDisplayString(SpecialMove.RESIGN)).toBe("投了");
-    expect(specialMoveToDisplayString(SpecialMove.TIMEOUT)).toBe("切れ負け");
   });
 
   it("usi", () => {

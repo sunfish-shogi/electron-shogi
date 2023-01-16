@@ -26,11 +26,7 @@ import {
 } from "@/common/shogi";
 import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
-import {
-  buildSearchComment,
-  RecordManager,
-  SearchInfoSenderType,
-} from "./record";
+import { RecordManager, SearchInfoSenderType } from "./record";
 
 export enum CSAGameState {
   OFFLINE,
@@ -244,11 +240,11 @@ export class CSAGameManager {
     }
     // コメントを記録する。
     if (isMyMove && this.searchInfo && this.setting.enableComment) {
-      const comment = buildSearchComment(
+      this.recordManager.appendSearchComment(
         SearchInfoSenderType.PLAYER,
-        this.searchInfo
+        this.searchInfo,
+        CommentBehavior.APPEND
       );
-      this.recordManager.appendComment(comment, CommentBehavior.APPEND);
     }
     // 効果音を鳴らす。
     this.handlers.onPieceBeat();

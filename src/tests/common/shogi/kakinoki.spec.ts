@@ -336,8 +336,7 @@ describe("shogi/kakinoki", () => {
       new Piece(Color.WHITE, PieceType.ROOK)
     );
     record.goto(104);
-    const move = record.current.move as Move;
-    expect(move.getDisplayText()).toBe("☗９一角成(64)");
+    expect(record.current.displayText).toBe("☗９一角成");
     expect(record.current.elapsedMs).toBe(21000);
     expect(record.current.totalElapsedMs).toBe(670000);
     record.goto(999);

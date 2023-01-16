@@ -95,13 +95,13 @@ describe("store/game", () => {
           "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
         );
         expect(recordManager.record.moves[1].comment).toBe(
-          "互角\n*評価値=82\n*読み筋=△３四歩(33)▲２六歩(27)△８四歩(83)\n"
+          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n"
         );
         expect(recordManager.record.moves[2].comment).toBe(
-          "互角\n*評価値=64\n*読み筋=▲２六歩(27)△８四歩(83)\n"
+          "互角\n*評価値=64\n*読み筋=▲２六歩△８四歩\n"
         );
         expect(recordManager.record.moves[3].comment).toBe(
-          "互角\n*評価値=78\n*読み筋=△８四歩(83)▲２五歩(26)△８五歩(84)\n"
+          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n"
         );
       })
       .invoke();

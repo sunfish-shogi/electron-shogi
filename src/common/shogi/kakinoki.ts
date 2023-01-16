@@ -21,6 +21,17 @@ import {
   ImmutableRecordMetadata,
   SpecialMove,
 } from "./record";
+import {
+  charToNumber,
+  fileToMultiByteChar,
+  kanjiToNumber,
+  multiByteCharToNumber,
+  numberToKanji,
+  pieceTypeToStringForBoard,
+  pieceTypeToStringForMove,
+  rankToKanji,
+  stringToPieceType,
+} from "./text";
 
 const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
   先手: RecordMetadataKey.BLACK_NAME,
@@ -228,85 +239,6 @@ function readHandicap(position: Position, data: string): Error | undefined {
   return new Error("不正なデータ:" + data);
 }
 
-const fileStringToNumber: { [file: string]: number } = {
-  "１": 1,
-  "２": 2,
-  "３": 3,
-  "４": 4,
-  "５": 5,
-  "６": 6,
-  "７": 7,
-  "８": 8,
-  "９": 9,
-};
-
-const rankStringToNumber: { [rank: string]: number } = {
-  一: 1,
-  二: 2,
-  三: 3,
-  四: 4,
-  五: 5,
-  六: 6,
-  七: 7,
-  八: 8,
-  九: 9,
-};
-
-const kansujiStringToNumber: { [kansuji: string]: number } = {
-  一: 1,
-  二: 2,
-  三: 3,
-  四: 4,
-  五: 5,
-  六: 6,
-  七: 7,
-  八: 8,
-  九: 9,
-  十: 10,
-  十一: 11,
-  十二: 12,
-  十三: 13,
-  十四: 14,
-  十五: 15,
-  十六: 16,
-  十七: 17,
-  十八: 18,
-};
-
-const stringToNumber: { [number: string]: number } = {
-  "1": 1,
-  "2": 2,
-  "3": 3,
-  "4": 4,
-  "5": 5,
-  "6": 6,
-  "7": 7,
-  "8": 8,
-  "9": 9,
-};
-
-const stringToPieceType: { [kanji: string]: PieceType } = {
-  王: PieceType.KING,
-  玉: PieceType.KING,
-  飛: PieceType.ROOK,
-  龍: PieceType.DRAGON,
-  竜: PieceType.DRAGON,
-  角: PieceType.BISHOP,
-  馬: PieceType.HORSE,
-  金: PieceType.GOLD,
-  銀: PieceType.SILVER,
-  成銀: PieceType.PROM_SILVER,
-  全: PieceType.PROM_SILVER,
-  桂: PieceType.KNIGHT,
-  成桂: PieceType.PROM_KNIGHT,
-  圭: PieceType.PROM_KNIGHT,
-  香: PieceType.LANCE,
-  成香: PieceType.PROM_LANCE,
-  杏: PieceType.PROM_LANCE,
-  歩: PieceType.PAWN,
-  と: PieceType.PROM_PAWN,
-};
-
 const stringToSpecialMove: { [move: string]: SpecialMove } = {
   中断: SpecialMove.INTERRUPT,
   投了: SpecialMove.RESIGN,
@@ -334,7 +266,7 @@ function readBoard(board: Board, data: string): Error | undefined {
     return new Error("不正な盤面:" + data);
   }
   const rankStr = data[20];
-  const rank = rankStringToNumber[rankStr];
+  const rank = kanjiToNumber(rankStr);
   if (!rank) {
     return new Error("不正な盤面:" + data);
   }
@@ -343,7 +275,7 @@ function readBoard(board: Board, data: string): Error | undefined {
     const square = new Square(file, rank);
     const index = x * 2 + 1;
     const pieceStr = data[index + 1];
-    const pieceType = stringToPieceType[pieceStr];
+    const pieceType = stringToPieceType(pieceStr);
     if (!pieceType) {
       board.remove(square);
       continue;
@@ -361,8 +293,8 @@ function readHand(hand: Hand, data: string): Error | undefined {
     }
     const pieceStr = section[0];
     const numberStr = section.substring(1);
-    const pieceType = stringToPieceType[pieceStr];
-    const n = kansujiStringToNumber[numberStr] || 1;
+    const pieceType = stringToPieceType(pieceStr);
+    const n = kanjiToNumber(numberStr) || 1;
     if (!pieceType) {
       return new Error("不正な持ち駒: " + section);
     }
@@ -418,15 +350,15 @@ function readMove(record: Record, data: string): Error | undefined {
     }
     to = record.current.move.to;
   } else {
-    const file = fileStringToNumber[toStr[0]];
-    const rank = rankStringToNumber[toStr[1]];
+    const file = multiByteCharToNumber(toStr[0]);
+    const rank = kanjiToNumber(toStr[1]);
     to = new Square(file, rank);
   }
   if (fromStr === "打") {
-    from = stringToPieceType[pieceTypeStr];
+    from = stringToPieceType(pieceTypeStr);
   } else {
-    const file = stringToNumber[fromStr[1]];
-    const rank = stringToNumber[fromStr[2]];
+    const file = charToNumber(fromStr[1]);
+    const rank = charToNumber(fromStr[2]);
     from = new Square(file, rank);
   }
   let move = record.position.createMove(from, to);
@@ -524,63 +456,6 @@ export function importKakinoki(data: string): Record | Error {
   return record;
 }
 
-const kanjiNumberStrings = [
-  "一",
-  "二",
-  "三",
-  "四",
-  "五",
-  "六",
-  "七",
-  "八",
-  "九",
-  "十",
-  "十一",
-  "十二",
-  "十三",
-  "十四",
-  "十五",
-  "十六",
-  "十七",
-  "十八",
-];
-const fileStrings = ["１", "２", "３", "４", "５", "６", "７", "８", "９"];
-const rankStrings = kanjiNumberStrings;
-
-const pieceTypeToStringForMove = {
-  king: "玉",
-  rook: "飛",
-  dragon: "龍",
-  bishop: "角",
-  horse: "馬",
-  gold: "金",
-  silver: "銀",
-  promSilver: "成銀",
-  knight: "桂",
-  promKnight: "成桂",
-  lance: "香",
-  promLance: "成香",
-  pawn: "歩",
-  promPawn: "と",
-};
-
-const pieceTypeToStringForBoard = {
-  king: "玉",
-  rook: "飛",
-  dragon: "龍",
-  bishop: "角",
-  horse: "馬",
-  gold: "金",
-  silver: "銀",
-  promSilver: "全",
-  knight: "桂",
-  promKnight: "圭",
-  lance: "香",
-  promLance: "杏",
-  pawn: "歩",
-  promPawn: "と",
-};
-
 const specialMoveToString = {
   start: "",
   resign: "投了",
@@ -637,12 +512,12 @@ function formatPosition(
       if (!piece) {
         ret += " ・";
       } else if (piece.color === Color.BLACK) {
-        ret += " " + pieceTypeToStringForBoard[piece.type];
+        ret += " " + pieceTypeToStringForBoard(piece.type);
       } else {
-        ret += "v" + pieceTypeToStringForBoard[piece.type];
+        ret += "v" + pieceTypeToStringForBoard(piece.type);
       }
     }
-    ret += "|" + rankStrings[y] + returnCode;
+    ret += "|" + rankToKanji(y + 1) + returnCode;
   }
   ret += "+---------------------------+" + returnCode;
   ret += "先手の持駒：" + formatHand(position.blackHand) + returnCode;
@@ -656,9 +531,9 @@ function formatPosition(
 
 function formatMove(move: Move): string {
   let ret = "";
-  ret += fileStrings[move.to.file - 1];
-  ret += rankStrings[move.to.rank - 1];
-  ret += pieceTypeToStringForMove[move.pieceType];
+  ret += fileToMultiByteChar(move.to.file);
+  ret += rankToKanji(move.to.rank);
+  ret += pieceTypeToStringForMove(move.pieceType);
   if (move.promote) {
     ret += "成";
   }
@@ -674,9 +549,9 @@ function formatHand(hand: ImmutableHand): string {
   let ret = "";
   hand.forEach((pieceType, n) => {
     if (n >= 1) {
-      ret += pieceTypeToStringForBoard[pieceType];
+      ret += pieceTypeToStringForBoard(pieceType);
       if (n >= 2) {
-        ret += kanjiNumberStrings[n - 1];
+        ret += numberToKanji(n);
       }
       ret += "　";
     }

@@ -2,13 +2,15 @@ import { LogLevel } from "@/common/log";
 import api from "@/renderer/ipc/api";
 import { Player, SearchInfo } from "@/renderer/players/player";
 import { defaultGameSetting, GameSetting } from "@/common/settings/game";
-import { Color, Move, reverseColor, SpecialMove } from "@/common/shogi";
-import { CommentBehavior } from "@/common/settings/analysis";
 import {
-  buildSearchComment,
-  RecordManager,
-  SearchInfoSenderType,
-} from "./record";
+  Color,
+  getMoveDisplayText,
+  Move,
+  reverseColor,
+  SpecialMove,
+} from "@/common/shogi";
+import { CommentBehavior } from "@/common/settings/analysis";
+import { RecordManager, SearchInfoSenderType } from "./record";
 import { Clock } from "./clock";
 import {
   defaultPlayerBuilder,
@@ -239,7 +241,10 @@ export class GameManager {
       return;
     }
     if (!this.recordManager.record.position.isValidMove(move)) {
-      this.handlers.onError("反則手: " + move.getDisplayText());
+      this.handlers.onError(
+        "反則手: " +
+          getMoveDisplayText(this.recordManager.record.position, move)
+      );
       this.endGame(SpecialMove.FOUL_LOSE);
       return;
     }
@@ -253,8 +258,11 @@ export class GameManager {
       this.recordManager.updateSearchInfo(SearchInfoSenderType.PLAYER, info);
     }
     if (info && this.setting.enableComment) {
-      const comment = buildSearchComment(SearchInfoSenderType.PLAYER, info);
-      this.recordManager.appendComment(comment, CommentBehavior.APPEND);
+      this.recordManager.appendSearchComment(
+        SearchInfoSenderType.PLAYER,
+        info,
+        CommentBehavior.APPEND
+      );
     }
     this.handlers.onPieceBeat();
     const faulColor = this.recordManager.record.perpetualCheck;

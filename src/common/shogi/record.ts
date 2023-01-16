@@ -8,6 +8,7 @@ import {
   parseUSIMove,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
+import { getMoveDisplayText, getSpecialMoveDisplayString } from "./text";
 
 export enum RecordMetadataKey {
   // 柿木形式で規定されている項目
@@ -155,26 +156,6 @@ export enum SpecialMove {
   LOSS_BY_DEFAULT = "lossByDefault",
 }
 
-const specialMoveToDisplayStringMap = {
-  start: "開始局面",
-  resign: "投了",
-  interrupt: "中断",
-  impass: "持将棋",
-  draw: "引き分け",
-  repetitionDraw: "千日手",
-  mate: "詰み",
-  timeout: "切れ負け",
-  foulWin: "反則勝ち",
-  foulLose: "反則負け",
-  enteringOfKing: "入玉",
-  winByDefault: "不戦勝",
-  lossByDefault: "不戦敗",
-};
-
-export function specialMoveToDisplayString(move: SpecialMove): string {
-  return specialMoveToDisplayStringMap[move];
-}
-
 export interface ImmutableNode {
   readonly number: number;
   readonly prev: Node | null;
@@ -217,16 +198,9 @@ class NodeImpl implements Node {
     public activeBranch: boolean,
     public nextColor: Color,
     public move: Move | SpecialMove,
-    public isCheck: boolean
+    public isCheck: boolean,
+    public displayText: string
   ) {}
-
-  get displayText(): string {
-    const prev =
-      this.prev && this.prev.move instanceof Move ? this.prev.move : null;
-    return this.move instanceof Move
-      ? this.move.getDisplayText({ prev })
-      : specialMoveToDisplayString(this.move);
-  }
 
   get timeText(): string {
     const elapsed = millisecondsToMSS(this.elapsedMs);
@@ -287,7 +261,8 @@ class NodeImpl implements Node {
       true, // activeBranch
       color, // color
       SpecialMove.START, // move
-      false // isCheck
+      false, // isCheck
+      "開始局面" // displayText
     );
   }
 }
@@ -503,6 +478,15 @@ export class Record {
   }
 
   append(move: Move | SpecialMove, opt?: DoMoveOption): boolean {
+    // 指し手を表す文字列を取得する。
+    const prevMove =
+      this.current.move instanceof Move ? this.current.move : undefined;
+    const displayText =
+      move instanceof Move
+        ? getMoveDisplayText(this.position, move, { prev: prevMove })
+        : getSpecialMoveDisplayString(move);
+
+    // 局面を動かす。
     let isCheck = false;
     if (move instanceof Move) {
       if (!this._position.doMove(move, opt)) {
@@ -511,9 +495,13 @@ export class Record {
       this.incrementRepetition();
       isCheck = this.position.checked;
     }
+
+    // 特殊な指し手のノードの場合は前のノードに戻る。
     if (this._current !== this.first && !(this._current.move instanceof Move)) {
       this.goBack();
     }
+
+    // 最終ノードの場合は単に新しいノードを追加する。
     if (!this._current.next) {
       this._current.next = new NodeImpl(
         this._current.number + 1, // number
@@ -522,17 +510,22 @@ export class Record {
         true, // activeBranch
         this.position.color, // nextColor
         move,
-        isCheck
+        isCheck,
+        displayText
       );
       this._current = this._current.next;
       this._current.setElapsedMs(0);
       this.onChangePosition();
       return true;
     }
+
+    // 既存の兄弟ノードから選択を解除する。
     let p: NodeImpl | null;
     for (p = this._current.next; p; p = p.branch) {
       p.activeBranch = false;
     }
+
+    // 同じ指し手が既に存在する場合はそのノードへ移動して終わる。
     let lastBranch = this._current.next;
     for (p = this._current.next; p; p = p.branch) {
       if (
@@ -548,6 +541,8 @@ export class Record {
       }
       lastBranch = p;
     }
+
+    // 兄弟ノードを追加する。
     this._current = new NodeImpl(
       this._current.number + 1, // number
       this._current, // prev
@@ -555,7 +550,8 @@ export class Record {
       true, // activeBranch
       this.position.color, // nextColor
       move,
-      isCheck
+      isCheck,
+      displayText
     );
     this._current.setElapsedMs(0);
     lastBranch.branch = this._current;

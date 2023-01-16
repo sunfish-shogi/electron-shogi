@@ -342,3 +342,53 @@ export function vectorToDirectionAndDistance(
   }
   return { direction: "" as Direction, distance: 0, ok: false };
 }
+
+export enum VDirection {
+  UP = "up",
+  NONE = "none",
+  DOWN = "down",
+}
+
+export function directionToVDirection(direction: Direction): VDirection {
+  switch (direction) {
+    case Direction.UP:
+    case Direction.LEFT_UP:
+    case Direction.RIGHT_UP:
+    case Direction.LEFT_UP_KNIGHT:
+    case Direction.RIGHT_UP_KNIGHT:
+      return VDirection.UP;
+    case Direction.DOWN:
+    case Direction.LEFT_DOWN:
+    case Direction.RIGHT_DOWN:
+    case Direction.LEFT_DOWN_KNIGHT:
+    case Direction.RIGHT_DOWN_KNIGHT:
+      return VDirection.DOWN;
+    default:
+      return VDirection.NONE;
+  }
+}
+
+export enum HDirection {
+  LEFT = "left",
+  NONE = "none",
+  RIGHT = "right",
+}
+
+export function directionToHDirection(direction: Direction): HDirection {
+  switch (direction) {
+    case Direction.LEFT:
+    case Direction.LEFT_UP:
+    case Direction.LEFT_DOWN:
+    case Direction.LEFT_UP_KNIGHT:
+    case Direction.LEFT_DOWN_KNIGHT:
+      return HDirection.LEFT;
+    case Direction.RIGHT:
+    case Direction.RIGHT_UP:
+    case Direction.RIGHT_DOWN:
+    case Direction.RIGHT_UP_KNIGHT:
+    case Direction.RIGHT_DOWN_KNIGHT:
+      return HDirection.RIGHT;
+    default:
+      return HDirection.NONE;
+  }
+}

@@ -8,7 +8,7 @@ import {
   PositionChange,
   Record,
   SpecialMove,
-  specialMoveToDisplayString,
+  getSpecialMoveDisplayString,
   exportKakinoki,
   RecordMetadataKey,
 } from "@/common/shogi";
@@ -511,7 +511,7 @@ export class Store {
       });
     } else if (specialMove) {
       this.enqueueMessage({
-        text: `対局終了（${specialMoveToDisplayString(specialMove)})`,
+        text: `対局終了（${getSpecialMoveDisplayString(specialMove)})`,
       });
     }
     this._appState = AppState.NORMAL;

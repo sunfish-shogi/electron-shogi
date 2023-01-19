@@ -6,6 +6,8 @@ import {
   DoMoveOption,
   exportCSA,
   exportKakinoki,
+  getMoveDisplayText,
+  ImmutablePosition,
   ImmutableRecord,
   importCSA,
   importKakinoki,
@@ -91,7 +93,8 @@ function searchCommentKeyPrefix(type: SearchInfoSenderType): string {
   }
 }
 
-export function buildSearchComment(
+function buildSearchComment(
+  position: ImmutablePosition,
   type: SearchInfoSenderType,
   searchInfo: SearchInfo
 ): string {
@@ -106,8 +109,15 @@ export function buildSearchComment(
   }
   if (searchInfo.pv && searchInfo.pv.length !== 0) {
     comment += `${prefix}読み筋=`;
+    let prev: Move | undefined;
+    const p = position.clone();
     for (const move of searchInfo.pv) {
-      comment += `${move.getDisplayText({ legacy: true })}`;
+      comment += `${getMoveDisplayText(p, move, {
+        prev,
+        compatible: true,
+      })}`;
+      p.doMove(move, { ignoreValidation: true });
+      prev = move;
     }
     comment += "\n";
   }
@@ -325,6 +335,16 @@ export class RecordManager {
         this._record.current.comment = add;
         break;
     }
+  }
+
+  appendSearchComment(
+    type: SearchInfoSenderType,
+    searchInfo: SearchInfo,
+    behavior: CommentBehavior,
+    head?: string
+  ): void {
+    const comment = buildSearchComment(this.record.position, type, searchInfo);
+    this.appendComment((head ? head + "\n" : "") + comment, behavior);
   }
 
   setGameStartMetadata(metadata: GameStartMetadata): void {

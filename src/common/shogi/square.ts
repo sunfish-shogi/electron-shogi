@@ -1,4 +1,4 @@
-import { Direction } from "./direction";
+import { Direction, vectorToDirectionAndDistance } from "./direction";
 
 function sfenFileToNumber(sfen: string): number | null {
   switch (sfen) {
@@ -103,6 +103,11 @@ export class Square {
     const dx = arg0 as number;
     const dy = arg1 as number;
     return new Square(this.file - dx, this.rank + dy);
+  }
+
+  directionTo(square: Square): Direction {
+    return vectorToDirectionAndDistance(square.x - this.x, square.y - this.y)
+      .direction;
   }
 
   get valid(): boolean {

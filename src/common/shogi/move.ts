@@ -1,9 +1,6 @@
 import { Color } from "./color";
-import { Piece, PieceType, pieceTypeToSFEN, standardPieceName } from "./piece";
+import { Piece, PieceType, pieceTypeToSFEN } from "./piece";
 import { Square } from "./square";
-
-const fileDisplayTexts = ["１", "２", "３", "４", "５", "６", "７", "８", "９"];
-const rankDisplayTexts = ["一", "二", "三", "四", "五", "六", "七", "八", "九"];
 
 export class Move {
   constructor(
@@ -43,45 +40,6 @@ export class Move {
       this.pieceType,
       this.capturedPieceType
     );
-  }
-
-  getDisplayText(opt?: {
-    /**
-     * 前の指し手を指定します。
-     * 指定することで「同　歩」のような表記になります。
-     */
-    prev?: Move | null;
-    /**
-     * 古いファイルフォーマットでの文字化けを防ぐ場合に指定します。
-     */
-    legacy?: boolean;
-  }): string {
-    let text = "";
-    text +=
-      this.color === Color.BLACK
-        ? opt?.legacy
-          ? "▲"
-          : "☗"
-        : opt?.legacy
-        ? "△"
-        : "☖";
-    if (opt?.prev && opt?.prev.to.equals(this.to)) {
-      text += "同　";
-    } else {
-      text += fileDisplayTexts[this.to.file - 1];
-      text += rankDisplayTexts[this.to.rank - 1];
-    }
-    text += standardPieceName(this.pieceType);
-    if (this.promote) {
-      text += "成";
-    }
-    if (this.from instanceof Square) {
-      const square = this.from;
-      text += `(${square.file}${square.rank})`;
-    } else {
-      text += "打";
-    }
-    return text;
   }
 
   get usi(): string {

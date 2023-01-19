@@ -39,7 +39,7 @@ function isInvalidRank(color: Color, type: PieceType, rank: number): boolean {
   return rule ? rule[rank] : false;
 }
 
-function isPromotableRank(color: Color, rank: number): boolean {
+export function isPromotableRank(color: Color, rank: number): boolean {
   if (color === Color.BLACK) {
     return rank <= 3;
   }
@@ -74,6 +74,7 @@ export interface ImmutablePosition {
   createMove(from: Square | PieceType, to: Square): Move | null;
   createMoveByUSI(usiMove: string): Move | null;
   isPawnDropMate(move: Move): boolean;
+  listAttackersByPiece(to: Square, piece: Piece): Square[];
   isValidMove(move: Move): boolean;
   isValidEditing(from: Square | Piece, to: Square | Color): boolean;
   readonly sfen: string;
@@ -233,6 +234,12 @@ export class Position {
           ignore: from,
         })
       );
+    });
+  }
+
+  listAttackersByPiece(to: Square, piece: Piece): Square[] {
+    return this.board.listSquaresByPiece(piece).filter((from) => {
+      return this.isMovable(from, to);
     });
   }
 

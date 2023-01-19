@@ -57,7 +57,7 @@ type PowerDetectionOption = {
 
 export interface ImmutableBoard {
   at(square: Square): Piece | null;
-  listNonEmptySquares(): Array<Square>;
+  listNonEmptySquares(): Square[];
   hasPower(
     target: Square,
     color: Color,
@@ -98,25 +98,24 @@ export class Board {
     return removed;
   }
 
-  listNonEmptySquares(): Array<Square> {
-    const squares = new Array<Square>();
-    Square.all.forEach((square) => {
-      if (this.squares[square.index]) {
-        squares.push(square);
-      }
+  listNonEmptySquares(): Square[] {
+    return Square.all.filter((square) => {
+      return this.squares[square.index];
     });
-    return squares;
   }
 
-  listSquaresByColor(color: Color): Array<Square> {
-    const squares = new Array<Square>();
-    Square.all.forEach((square) => {
+  listSquaresByColor(color: Color): Square[] {
+    return Square.all.filter((square) => {
       const piece = this.squares[square.index];
-      if (piece && piece.color === color) {
-        squares.push(square);
-      }
+      return piece && piece.color === color;
     });
-    return squares;
+  }
+
+  listSquaresByPiece(target: Piece): Square[] {
+    return Square.all.filter((square) => {
+      const piece = this.squares[square.index];
+      return piece && target.equals(piece);
+    });
   }
 
   clear(): void {

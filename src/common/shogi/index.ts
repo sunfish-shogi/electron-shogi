@@ -5,6 +5,7 @@ export * from "./move";
 export * from "./board";
 export * from "./hand";
 export * from "./position";
+export * from "./text";
 export * from "./record";
 export * from "./kakinoki";
 export * from "./csa";

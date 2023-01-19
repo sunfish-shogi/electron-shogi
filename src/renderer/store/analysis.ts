@@ -4,11 +4,7 @@ import { AnalysisSetting } from "@/common/settings/analysis";
 import { AppSetting } from "@/common/settings/app";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { Color, Move, reverseColor } from "@/common/shogi";
-import {
-  buildSearchComment,
-  RecordManager,
-  SearchInfoSenderType,
-} from "./record";
+import { RecordManager, SearchInfoSenderType } from "./record";
 import { scoreToPercentage } from "./score";
 
 export interface AnalysisHandler {
@@ -142,7 +138,7 @@ export class AnalysisManager {
       this.actualMove && this.lastSearchInfo.pv
         ? this.actualMove.equals(this.lastSearchInfo.pv[0])
         : undefined;
-    let comment = "";
+    let head = "";
     if (scoreDelta !== undefined && negaScore !== undefined && !isBestMove) {
       const text = getMoveAccuracyText(
         negaScore - scoreDelta,
@@ -150,14 +146,15 @@ export class AnalysisManager {
         this.appSetting
       );
       if (text) {
-        comment += `【${text}】\n`;
+        head = `【${text}】`;
       }
     }
-    comment += buildSearchComment(
+    this.recordManager.appendSearchComment(
       SearchInfoSenderType.RESEARCHER,
-      this.searchInfo
+      this.searchInfo,
+      this.setting.commentBehavior,
+      head
     );
-    this.recordManager.appendComment(comment, this.setting.commentBehavior);
   }
 
   private async closeEngine(): Promise<void> {

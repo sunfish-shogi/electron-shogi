@@ -60,22 +60,20 @@ T40
     expect(record.current.number).toBe(0);
     expect(record.current.move).toBe(SpecialMove.START);
     record.goto(1);
-    expect((record.current.move as Move).getDisplayText()).toBe("☗７六歩(77)");
+    expect(record.current.displayText).toBe("☗７六歩");
     expect(record.current.comment).toBe(
       "初手に対するコメント\n初手に対するコメント2\n* 読み筋と評価値\n"
     );
     record.goto(2);
-    expect((record.current.move as Move).getDisplayText()).toBe("☖３四歩(33)");
+    expect(record.current.displayText).toBe("☖３四歩");
     record.goto(3);
-    expect((record.current.move as Move).getDisplayText()).toBe(
-      "☗２二角成(88)"
-    );
+    expect(record.current.displayText).toBe("☗２二角成");
     expect(record.current.elapsedMs).toBe(10000);
     record.goto(4);
-    expect((record.current.move as Move).getDisplayText()).toBe("☖２二銀(31)");
+    expect(record.current.displayText).toBe("☖同　銀");
     expect(record.current.elapsedMs).toBe(20000);
     record.goto(5);
-    expect((record.current.move as Move).getDisplayText()).toBe("☗４五角打");
+    expect(record.current.displayText).toBe("☗４五角");
     expect(record.current.elapsedMs).toBe(30000);
     record.goto(6);
     expect(record.current.move).toBe(SpecialMove.RESIGN);
@@ -236,13 +234,11 @@ P-00AL
     expect(record.current.number).toBe(0);
     expect(record.current.move).toBe(SpecialMove.START);
     record.goto(1);
-    expect((record.current.move as Move).getDisplayText()).toBe(
-      "☗２一桂成(13)"
-    );
+    expect(record.current.displayText).toBe("☗２一桂成");
     record.goto(10);
-    expect((record.current.move as Move).getDisplayText()).toBe("☖１二玉(11)");
+    expect(record.current.displayText).toBe("☖１二玉");
     record.goto(11);
-    expect((record.current.move as Move).getDisplayText()).toBe("☗１一飛打");
+    expect(record.current.displayText).toBe("☗１一飛");
     record.goto(12);
     expect(record.current.move).toBe(SpecialMove.MATE);
   });

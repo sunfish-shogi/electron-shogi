@@ -135,7 +135,6 @@ export default defineComponent({
     );
     return {
       contentSize,
-      headerHeight,
       changeSelect,
       minimize,
       tabs,

@@ -68,7 +68,10 @@ export default defineComponent({
         paste: store.appState === AppState.PASTE_DIALOG,
         bussy: store.isBussy,
         confirm: store.confirmation !== undefined,
-        csaGameReady: store.csaGameState === CSAGameState.READY,
+        csaGameReady:
+          store.csaGameState === CSAGameState.WAITING_LOGIN ||
+          store.csaGameState === CSAGameState.READY ||
+          store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL,
       };
     });
 

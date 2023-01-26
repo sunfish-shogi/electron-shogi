@@ -412,12 +412,14 @@ export class Store {
       });
   }
 
-  logoutCSAGame(): void {
+  cancelCSAGame(): void {
     if (this.appState !== AppState.CSA_GAME) {
       return;
     }
     if (this.csaGameManager.state === CSAGameState.GAME) {
-      this.pushError("ログアウトするには対局を終了してください。");
+      this.pushError(
+        "対局が始まっているため通信対局をキャンセルできませんでした。"
+      );
       return;
     }
     this.csaGameManager.logout();

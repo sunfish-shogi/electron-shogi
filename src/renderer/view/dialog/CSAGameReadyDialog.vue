@@ -3,11 +3,29 @@
     <dialog ref="dialog" class="bussy">
       <div class="message-box">
         <ButtonIcon class="icon" :icon="Icon.BUSSY" />
-        <div class="message">対局の開始を待っています。</div>
+        <div class="message">
+          <span v-if="state === CSAGameState.READY">
+            対局の開始を待っています。
+          </span>
+          <span v-if="state === CSAGameState.LOGIN_RETRY_INTERVAL">
+            CSAサーバーへのログインを{{
+              loginRetryIntervalSeconds
+            }}秒後に再試行します。
+          </span>
+          <span v-if="state === CSAGameState.WAITING_LOGIN">
+            CSAサーバーへの接続とログインを試みています。メッセージボックスが表示されている場合は閉じてください。
+          </span>
+        </div>
       </div>
-      <div class="dialog-main-buttons">
+      <div
+        v-if="
+          state === CSAGameState.READY ||
+          state === CSAGameState.LOGIN_RETRY_INTERVAL
+        "
+        class="dialog-main-buttons"
+      >
         <button autofocus data-hotkey="Escape" @click="onLogout()">
-          ログアウト
+          対局をキャンセル
         </button>
       </div>
     </dialog>
@@ -16,7 +34,14 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
+import {
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  Ref,
+} from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { Icon } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
@@ -24,6 +49,7 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { CSAGameState, loginRetryIntervalSeconds } from "@/renderer/store/csa";
 
 export default defineComponent({
   name: "CSAGameReadyDialog",
@@ -44,12 +70,17 @@ export default defineComponent({
     });
 
     const onLogout = () => {
-      store.logoutCSAGame();
+      store.cancelCSAGame();
     };
+
+    const state = computed(() => store.csaGameState);
 
     return {
       dialog,
       Icon,
+      state,
+      CSAGameState,
+      loginRetryIntervalSeconds,
       onLogout,
     };
   },

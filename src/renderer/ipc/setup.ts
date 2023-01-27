@@ -157,7 +157,7 @@ export function setup(): void {
         humanPlayer.win();
         break;
       case MenuEvent.LOGOUT:
-        store.logoutCSAGame();
+        store.cancelCSAGame();
         break;
       case MenuEvent.START_RESEARCH:
         store.showResearchDialog();

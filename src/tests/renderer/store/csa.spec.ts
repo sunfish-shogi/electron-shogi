@@ -35,6 +35,7 @@ function createMockHandlers() {
 
 describe("store/csa", () => {
   afterEach(() => {
+    jest.useRealTimers();
     jest.clearAllMocks();
   });
 
@@ -142,6 +143,7 @@ describe("store/csa", () => {
   });
 
   it("CSAManager/resign/twice", () => {
+    jest.useFakeTimers();
     mockAPI.csaLogin.mockResolvedValue(123);
     mockAPI.csaAgree.mockResolvedValue();
     mockAPI.csaMove.mockResolvedValue();
@@ -171,17 +173,15 @@ describe("store/csa", () => {
       new Clock(),
       mockHandlers
     );
-    return new TimeoutChain()
-      .next(() =>
-        manager.login(
-          {
-            ...csaGameSetting,
-            repeat: 2,
-          },
-          mockPlayerBuilder
-        )
+    return manager
+      .login(
+        {
+          ...csaGameSetting,
+          repeat: 2,
+        },
+        mockPlayerBuilder
       )
-      .next(() => {
+      .then(() => {
         expect(mockHandlers.onGameNext).toBeCalledTimes(1);
         onCSAGameSummary(123, csaGameSummary);
         onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
@@ -204,8 +204,12 @@ describe("store/csa", () => {
         expect(mockAPI.csaLogin).toBeCalledTimes(1);
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
         expect(mockAPI.csaLogin).toBeCalledTimes(1);
+        jest.runOnlyPendingTimers();
       })
-      .next(() => {
+      .then(() => {
+        // waiting login
+      })
+      .then(() => {
         expect(mockHandlers.onGameNext).toBeCalledTimes(2);
         expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
@@ -232,16 +236,14 @@ describe("store/csa", () => {
           white: { time: 560 },
         });
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
-      })
-      .next(() => {
+        jest.runOnlyPendingTimers();
         expect(mockAPI.csaLogout).toBeCalledTimes(2);
         expect(mockPlayer.close).toBeCalledTimes(2);
         expect(mockHandlers.onGameNext).toBeCalledTimes(2);
         expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
-      })
-      .invoke();
+      });
   });
 
   describe("CSAManager/onPlayerMove", () => {

@@ -28,9 +28,13 @@ import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 
+export const loginRetryIntervalSeconds = 5;
+
 export enum CSAGameState {
   OFFLINE,
   WAITING_LOGIN,
+  LOGIN_FAILED,
+  LOGIN_RETRY_INTERVAL,
   READY,
   GAME,
 }
@@ -47,6 +51,12 @@ export interface CSAGameHandlers {
   onError(e: unknown): void;
 }
 
+enum ReloginBehavior {
+  DO_NOT_RELOGIN,
+  RELOGIN_WITH_INTERVAL,
+  RELOGIN_IMMEDIATELY,
+}
+
 export class CSAGameManager {
   private _state = CSAGameState.OFFLINE;
   private _setting = defaultCSAGameSetting();
@@ -57,6 +67,7 @@ export class CSAGameManager {
   private gameSummary = emptyCSAGameSummary();
   private searchInfo?: SearchInfo;
   private playerBuilder = defaultPlayerBuilder();
+  private retryTimer?: NodeJS.Timeout;
 
   constructor(
     private recordManager: RecordManager,
@@ -83,7 +94,14 @@ export class CSAGameManager {
    */
   login(setting: CSAGameSetting, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.sessionID) {
-      throw new Error("CSAGameManager#start: session already exists");
+      return Promise.reject(
+        new Error("CSAGameManager#start: session already exists")
+      );
+    }
+    if (this._state !== CSAGameState.OFFLINE) {
+      return Promise.reject(
+        new Error("CSAGameManager#start: unexpected state")
+      );
     }
     this._setting = setting;
     this.playerBuilder = playerBuilder;
@@ -101,13 +119,16 @@ export class CSAGameManager {
           this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
       );
       // CSA サーバーにログインする。
-      this.sessionID = await api.csaLogin(this._setting.server);
+      const sessionID = await api.csaLogin(this._setting.server);
+      // セッション ID を記憶する。
+      this.sessionID = sessionID;
       // ステータスを更新する。
       this._state = CSAGameState.READY;
       entrySession(this.sessionID, this);
       this.handlers.onGameNext();
     } catch (e) {
-      this.close(true);
+      this._state = CSAGameState.LOGIN_FAILED;
+      this.close(ReloginBehavior.RELOGIN_WITH_INTERVAL);
       throw e;
     }
   }
@@ -126,15 +147,21 @@ export class CSAGameManager {
    * CSA サーバーからログアウトする。
    */
   logout(): void {
-    this.close(true);
+    this.close(ReloginBehavior.DO_NOT_RELOGIN);
   }
 
-  private close(doNotRepeat?: boolean): void {
-    if (this._state === CSAGameState.OFFLINE) {
+  private close(reloginBehavior: ReloginBehavior): void {
+    // 既に停止済みであるかログインの非同期処理を待っている場合は何もしない。
+    if (
+      this._state === CSAGameState.OFFLINE ||
+      this._state === CSAGameState.WAITING_LOGIN
+    ) {
       return;
     }
+    // 停止が要求されている場合は連続対局や再試行をしない。
     if (this.stopRequested) {
-      doNotRepeat = true;
+      reloginBehavior = ReloginBehavior.DO_NOT_RELOGIN;
+      this.stopRequested = false;
     }
     // CSA プロトコルのセッションが存在する場合は切断する。
     if (this.sessionID) {
@@ -143,7 +170,6 @@ export class CSAGameManager {
         this.handlers.onError(e);
       });
       this.sessionID = 0;
-      this.stopRequested = false;
     }
     // プレイヤーが起動している場合は終了する。
     if (this.player) {
@@ -157,15 +183,31 @@ export class CSAGameManager {
     this.whiteClock.stop();
     // ステータスをオフラインに戻す。
     this._state = CSAGameState.OFFLINE;
+    // リトライを待っている場合はタイマーを解除する。
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = undefined;
+    }
     // 連続対局の条件を満たしていない場合はハンドラーを呼んで終了する。
-    if (doNotRepeat || this.repeat >= this.setting.repeat) {
+    if (
+      reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN ||
+      this.repeat >= this.setting.repeat
+    ) {
       this.handlers.onGameEnd();
       return;
     }
     // 連続対局の条件を満たしている場合は再ログインする。
-    this.relogin().catch((e) => {
-      this.handlers.onError(e);
-    });
+    const doRelogin = () => {
+      this.relogin().catch((e) => {
+        this.handlers.onError(e);
+      });
+    };
+    if (reloginBehavior === ReloginBehavior.RELOGIN_IMMEDIATELY) {
+      doRelogin();
+    } else {
+      this._state = CSAGameState.LOGIN_RETRY_INTERVAL;
+      this.retryTimer = setTimeout(doRelogin, loginRetryIntervalSeconds * 1e3);
+    }
   }
 
   onGameSummary(gameSummary: CSAGameSummary): void {
@@ -174,7 +216,7 @@ export class CSAGameManager {
   }
 
   onReject(): void {
-    this.close();
+    this.close(ReloginBehavior.RELOGIN_WITH_INTERVAL);
   }
 
   onStart(playerStates: CSAPlayerStates): void {
@@ -262,7 +304,7 @@ export class CSAGameManager {
       this.handlers.onSaveRecord();
     }
     // セッションを終了する。
-    this.close();
+    this.close(ReloginBehavior.RELOGIN_IMMEDIATELY);
   }
 
   private gameResultToSpecialMove(
@@ -304,7 +346,11 @@ export class CSAGameManager {
   }
 
   onClose(): void {
-    this.close(!this.setting.autoRelogin);
+    this.close(
+      this.setting.autoRelogin
+        ? ReloginBehavior.RELOGIN_WITH_INTERVAL
+        : ReloginBehavior.DO_NOT_RELOGIN
+    );
   }
 
   private next(playerStates: CSAPlayerStates): void {

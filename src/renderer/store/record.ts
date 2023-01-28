@@ -28,7 +28,7 @@ import { CommentBehavior } from "@/common/settings/analysis";
 
 export enum SearchInfoSenderType {
   PLAYER,
-  ENEMY,
+  OPPONENT,
   RESEARCHER,
   RESEARCHER_2,
   RESEARCHER_3,
@@ -37,7 +37,7 @@ export enum SearchInfoSenderType {
 
 export type RecordCustomData = {
   playerSearchInfo?: SearchInfo;
-  enemySearchInfo?: SearchInfo;
+  opponentSearchInfo?: SearchInfo;
   researchInfo?: SearchInfo;
   researchInfo2?: SearchInfo;
   researchInfo3?: SearchInfo;
@@ -395,8 +395,8 @@ export class RecordManager {
       case SearchInfoSenderType.PLAYER:
         data.playerSearchInfo = searchInfo;
         break;
-      case SearchInfoSenderType.ENEMY:
-        data.enemySearchInfo = searchInfo;
+      case SearchInfoSenderType.OPPONENT:
+        data.opponentSearchInfo = searchInfo;
         break;
       case SearchInfoSenderType.RESEARCHER:
         if ((searchInfo.depth || 0) >= (data.researchInfo?.depth || 0)) {

@@ -220,9 +220,9 @@ export default defineComponent({
         (series === Series.WHITE_PLAYER && lastNode.nextColor === Color.WHITE)
       ) {
         const data = lastNode.customData as RecordCustomData;
-        if (data && data.enemySearchInfo) {
+        if (data && data.opponentSearchInfo) {
           const score = getScore(
-            data.enemySearchInfo,
+            data.opponentSearchInfo,
             props.type,
             appSetting.coefficientInSigmoid
           );

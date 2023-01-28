@@ -151,12 +151,18 @@ export class GameManager {
       this.blackPlayer = await this.playerBuilder.build(
         this.setting.black,
         (info) =>
-          this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
+          this.recordManager.updateSearchInfo(
+            SearchInfoSenderType.OPPONENT,
+            info
+          )
       );
       this.whitePlayer = await this.playerBuilder.build(
         this.setting.white,
         (info) =>
-          this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
+          this.recordManager.updateSearchInfo(
+            SearchInfoSenderType.OPPONENT,
+            info
+          )
       );
     } catch (e) {
       try {

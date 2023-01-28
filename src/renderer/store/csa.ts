@@ -116,7 +116,10 @@ export class CSAGameManager {
       this.player = await this.playerBuilder.build(
         this._setting.player,
         (info) =>
-          this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
+          this.recordManager.updateSearchInfo(
+            SearchInfoSenderType.OPPONENT,
+            info
+          )
       );
       // CSA サーバーにログインする。
       const sessionID = await api.csaLogin(this._setting.server);

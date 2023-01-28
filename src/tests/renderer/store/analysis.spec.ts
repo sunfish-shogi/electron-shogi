@@ -31,16 +31,15 @@ describe("store/analysis", () => {
     analysisSetting.startCriteria.enableNumber = false;
     analysisSetting.endCriteria.enableNumber = false;
     const appSetting = defaultAppSetting();
-    const handler = {
-      onFinish: jest.fn(),
-      onError: jest.fn(),
-    };
+    const onFinish = jest.fn();
+    const onError = jest.fn();
     const manager = new AnalysisManager(
       recordManager,
       analysisSetting,
-      appSetting,
-      handler
-    );
+      appSetting
+    )
+      .on("finish", onFinish)
+      .on("error", onError);
     return manager.start().then(() => {
       expect(mockUSIPlayer).toBeCalledTimes(1);
       expect(mockUSIPlayer.prototype.launch).toBeCalled();
@@ -72,7 +71,7 @@ describe("store/analysis", () => {
       jest.runOnlyPendingTimers();
       expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(5);
       expect(mockUSIPlayer.prototype.close).not.toBeCalled();
-      expect(handler.onFinish).not.toBeCalled();
+      expect(onFinish).not.toBeCalled();
       manager.updateSearchInfo({
         usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d",
         score: 50,
@@ -81,8 +80,8 @@ describe("store/analysis", () => {
       expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(5);
       expect(mockUSIPlayer.prototype.stop).not.toBeCalled();
       expect(mockUSIPlayer.prototype.close).toBeCalledTimes(1);
-      expect(handler.onFinish).toBeCalledTimes(1);
-      expect(handler.onError).not.toBeCalled();
+      expect(onFinish).toBeCalledTimes(1);
+      expect(onError).not.toBeCalled();
       recordManager.changePly(0);
       expect(recordManager.record.current.comment).toBe("");
       recordManager.changePly(1);

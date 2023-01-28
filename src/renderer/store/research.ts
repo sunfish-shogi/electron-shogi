@@ -21,6 +21,11 @@ function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
   }
 }
 
+type UpdateSearchInfoCallback = (
+  type: SearchInfoSenderType,
+  info: SearchInfo
+) => void;
+
 export class ResearchManager {
   private engines: USIPlayer[];
   private onUpdateSearchInfo?: (
@@ -47,17 +52,11 @@ export class ResearchManager {
     });
   }
 
-  on(
-    event: "updateSearchInfo",
-    callback: (type: SearchInfoSenderType, info: SearchInfo) => void
-  ): void;
+  on(event: "updateSearchInfo", callback: UpdateSearchInfoCallback): void;
   on(event: string, callback: unknown): void {
     switch (event) {
       case "updateSearchInfo":
-        this.onUpdateSearchInfo = callback as (
-          type: SearchInfoSenderType,
-          info: SearchInfo
-        ) => void;
+        this.onUpdateSearchInfo = callback as UpdateSearchInfoCallback;
     }
   }
 

@@ -23,10 +23,10 @@ import {
   buildUpdatedAppSetting,
 } from "@/common/settings/app";
 import {
-  AudioEventHandler,
   beepShort,
   beepUnlimited,
   playPieceBeat,
+  stopBeep,
 } from "@/renderer/audio";
 import { RecordManager } from "./record";
 import { GameManager, GameResults } from "./game";
@@ -53,7 +53,7 @@ import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
 
-export class Store {
+class Store {
   private _bussy = new BussyStore();
   private _message = new MessageStore();
   private _error = new ErrorStore();
@@ -68,18 +68,16 @@ export class Store {
   private gameManager = new GameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock,
-    this
+    this.whiteClock
   );
   private csaGameManager = new CSAGameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock,
-    this
+    this.whiteClock
   );
   private researchManager?: ResearchManager;
   private analysisManager?: AnalysisManager;
-  private unlimitedBeepHandler?: AudioEventHandler;
+  private _reactive: UnwrapNestedRefs<Store>;
 
   constructor() {
     this.updateAppTitle();
@@ -89,6 +87,31 @@ export class Store {
     this.recordManager.on("changePosition", () => {
       this.onUpdatePosition();
     });
+    const refs = reactive(this);
+    this.gameManager
+      .on("saveRecord", refs.onSaveRecord.bind(refs))
+      .on("gameNext", refs.onGameNext.bind(refs))
+      .on("gameEnd", refs.onGameEnd.bind(refs))
+      .on("pieceBeat", () => playPieceBeat(refs.appSetting.pieceVolume))
+      .on("beepShort", this.onBeepShort.bind(this))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("stopBeep", stopBeep)
+      .on("error", refs.pushError.bind(refs));
+    this.csaGameManager
+      .on("saveRecord", refs.onSaveRecord.bind(refs))
+      .on("gameNext", refs.onGameNext.bind(refs))
+      .on("gameEnd", refs.onCSAGameEnd.bind(refs))
+      .on("flipBoard", refs.onFlipBoard.bind(refs))
+      .on("pieceBeat", () => playPieceBeat(refs.appSetting.pieceVolume))
+      .on("beepShort", this.onBeepShort.bind(this))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("stopBeep", stopBeep)
+      .on("error", refs.pushError.bind(refs));
+    this._reactive = refs;
+  }
+
+  get reactive(): UnwrapNestedRefs<Store> {
+    return this._reactive;
   }
 
   private updateAppTitle(path?: string): void {
@@ -467,11 +490,8 @@ export class Store {
     this.usiMonitor.clear();
   }
 
-  onGameEnd(gameResults?: GameResults, specialMove?: SpecialMove): void {
-    if (
-      this.appState !== AppState.GAME &&
-      this.appState !== AppState.CSA_GAME
-    ) {
+  onGameEnd(gameResults: GameResults, specialMove: SpecialMove): void {
+    if (this.appState !== AppState.GAME) {
       return;
     }
     if (gameResults && gameResults.total >= 2) {
@@ -519,6 +539,13 @@ export class Store {
     this._appState = AppState.NORMAL;
   }
 
+  onCSAGameEnd(): void {
+    if (this.appState !== AppState.CSA_GAME) {
+      return;
+    }
+    this._appState = AppState.NORMAL;
+  }
+
   onFlipBoard(flip: boolean): void {
     if (this._appSetting.boardFlipping !== flip) {
       this.flipBoard();
@@ -533,18 +560,11 @@ export class Store {
     });
   }
 
-  onPieceBeat(): void {
-    playPieceBeat(this.appSetting.pieceVolume);
-  }
-
-  onBeepShort(): void {
+  private onBeepShort(): void {
     if (
       this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
-      return;
-    }
-    if (this.unlimitedBeepHandler) {
       return;
     }
     beepShort({
@@ -553,27 +573,17 @@ export class Store {
     });
   }
 
-  onBeepUnlimited(): void {
+  private onBeepUnlimited(): void {
     if (
       this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
       return;
     }
-    if (this.unlimitedBeepHandler) {
-      return;
-    }
-    this.unlimitedBeepHandler = beepUnlimited({
+    beepUnlimited({
       frequency: this.appSetting.clockPitch,
       volume: this.appSetting.clockVolume,
     });
-  }
-
-  onStopBeep(): void {
-    if (this.unlimitedBeepHandler) {
-      this.unlimitedBeepHandler.stop();
-      this.unlimitedBeepHandler = undefined;
-    }
   }
 
   doMove(move: Move): void {
@@ -596,10 +606,6 @@ export class Store {
     }
   }
 
-  onError(e: unknown): void {
-    this.pushError(e);
-  }
-
   startResearch(researchSetting: ResearchSetting): void {
     if (this.appState !== AppState.RESEARCH_DIALOG || this.isBussy) {
       return;
@@ -616,8 +622,9 @@ export class Store {
           researchSetting,
           this.appSetting
         );
-        this.researchManager.on("updateSearchInfo", (type, info) =>
-          this.recordManager.updateSearchInfo(type, info)
+        this.researchManager.on(
+          "updateSearchInfo",
+          this.recordManager.updateSearchInfo.bind(this.recordManager)
         );
         return this.researchManager.launch();
       })
@@ -659,15 +666,17 @@ export class Store {
       return;
     }
     this.retainBussyState();
+    const manager = new AnalysisManager(
+      this.recordManager,
+      analysisSetting,
+      this.appSetting
+    )
+      .on("finish", this.onFinish.bind(this))
+      .on("error", this.pushError.bind(this));
     api
       .saveAnalysisSetting(analysisSetting)
       .then(() => {
-        this.analysisManager = new AnalysisManager(
-          this.recordManager,
-          analysisSetting,
-          this.appSetting,
-          this
-        );
+        this.analysisManager = manager;
         return this.analysisManager.start();
       })
       .then(() => {
@@ -951,8 +960,15 @@ export class Store {
   }
 }
 
-const store = reactive<Store>(new Store());
+export function createStore(): UnwrapNestedRefs<Store> {
+  return new Store().reactive;
+}
+
+let store: UnwrapNestedRefs<Store>;
 
 export function useStore(): UnwrapNestedRefs<Store> {
+  if (!store) {
+    store = createStore();
+  }
   return store;
 }

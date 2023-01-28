@@ -191,13 +191,13 @@ export class EngineProcess {
     return this._options;
   }
 
-  on(event: "timeout", callback: TimeoutCallback): void;
-  on(event: "error", callback: ErrorCallback): void;
-  on(event: "usiok", callback: USIOKCallback): void;
-  on(event: "ready", callback: ReadyCallback): void;
-  on(event: "bestmove", callback: BestmoveCallback): void;
-  on(event: "info", callback: InfoCallback): void;
-  on(event: "ponderInfo", callback: InfoCallback): void;
+  on(event: "timeout", callback: TimeoutCallback): this;
+  on(event: "error", callback: ErrorCallback): this;
+  on(event: "usiok", callback: USIOKCallback): this;
+  on(event: "ready", callback: ReadyCallback): this;
+  on(event: "bestmove", callback: BestmoveCallback): this;
+  on(event: "info", callback: InfoCallback): this;
+  on(event: "ponderInfo", callback: InfoCallback): this;
   on(
     event: string,
     callback:
@@ -207,7 +207,7 @@ export class EngineProcess {
       | ReadyCallback
       | BestmoveCallback
       | InfoCallback
-  ): void {
+  ): this {
     switch (event) {
       case "timeout":
         this.timeoutCallback = callback as TimeoutCallback;
@@ -231,6 +231,7 @@ export class EngineProcess {
         this.ponderInfoCallback = callback as InfoCallback;
         break;
     }
+    return this;
   }
 
   launch(): void {

@@ -18,17 +18,6 @@ import {
 } from "@/renderer/players/builder";
 import { GameResult } from "@/common/player";
 
-export interface GameHandlers {
-  onSaveRecord(): void;
-  onGameNext(): void;
-  onGameEnd(gameResults: GameResults, specialMove: SpecialMove): void;
-  onPieceBeat(): void;
-  onBeepShort(): void;
-  onBeepUnlimited(): void;
-  onStopBeep(): void;
-  onError(e: unknown): void;
-}
-
 enum GameState {
   IDLE = "idle",
   ACTIVE = "active",
@@ -48,6 +37,18 @@ export type GameResults = {
   invalid: number;
   total: number;
 };
+
+type SaveRecordCallback = () => void;
+type GameNextCallback = () => void;
+type GameEndCallback = (
+  gameResults: GameResults,
+  specialMove: SpecialMove
+) => void;
+type PieceBeatCallback = () => void;
+type BeepShortCallback = () => void;
+type BeepUnlimitedCallback = () => void;
+type StopBeepCallback = () => void;
+type ErrorCallback = (e: unknown) => void;
 
 function newGameResults(name1: string, name2: string): GameResults {
   return {
@@ -69,16 +70,77 @@ export class GameManager {
   private playerBuilder = defaultPlayerBuilder();
   private gameResults: GameResults = newGameResults("", "");
   private lastEventID: number;
+  private onSaveRecord: SaveRecordCallback = () => {
+    /* noop */
+  };
+  private onGameNext: GameNextCallback = () => {
+    /* noop */
+  };
+  private onGameEnd: GameEndCallback = () => {
+    /* noop */
+  };
+  private onPieceBeat: PieceBeatCallback = () => {
+    /* noop */
+  };
+  private onBeepShort: BeepShortCallback = () => {
+    /* noop */
+  };
+  private onBeepUnlimited: BeepUnlimitedCallback = () => {
+    /* noop */
+  };
+  private onStopBeep: StopBeepCallback = () => {
+    /* noop */
+  };
+  private onError: ErrorCallback = () => {
+    /* noop */
+  };
 
   constructor(
     private recordManager: RecordManager,
     private blackClock: Clock,
-    private whiteClock: Clock,
-    private handlers: GameHandlers
+    private whiteClock: Clock
   ) {
     this.state = GameState.IDLE;
     this._setting = defaultGameSetting();
     this.lastEventID = 0;
+  }
+
+  on(event: "saveRecord", handler: SaveRecordCallback): this;
+  on(event: "gameNext", handler: GameNextCallback): this;
+  on(event: "gameEnd", handler: GameEndCallback): this;
+  on(event: "pieceBeat", handler: PieceBeatCallback): this;
+  on(event: "beepShort", handler: BeepShortCallback): this;
+  on(event: "beepUnlimited", handler: BeepUnlimitedCallback): this;
+  on(event: "stopBeep", handler: StopBeepCallback): this;
+  on(event: "error", handler: ErrorCallback): this;
+  on(event: string, handler: unknown): this {
+    switch (event) {
+      case "saveRecord":
+        this.onSaveRecord = handler as SaveRecordCallback;
+        break;
+      case "gameNext":
+        this.onGameNext = handler as GameNextCallback;
+        break;
+      case "gameEnd":
+        this.onGameEnd = handler as GameEndCallback;
+        break;
+      case "pieceBeat":
+        this.onPieceBeat = handler as PieceBeatCallback;
+        break;
+      case "beepShort":
+        this.onBeepShort = handler as BeepShortCallback;
+        break;
+      case "beepUnlimited":
+        this.onBeepUnlimited = handler as BeepUnlimitedCallback;
+        break;
+      case "stopBeep":
+        this.onStopBeep = handler as StopBeepCallback;
+        break;
+      case "error":
+        this.onError = handler as ErrorCallback;
+        break;
+    }
+    return this;
   }
 
   get setting(): GameSetting {
@@ -130,9 +192,9 @@ export class GameManager {
       timeMs: this.setting.timeLimit.timeSeconds * 1e3,
       byoyomi: this.setting.timeLimit.byoyomi,
       increment: this.setting.timeLimit.increment,
-      onBeepShort: () => this.handlers.onBeepShort(),
-      onBeepUnlimited: () => this.handlers.onBeepUnlimited(),
-      onStopBeep: () => this.handlers.onStopBeep(),
+      onBeepShort: () => this.onBeepShort(),
+      onBeepUnlimited: () => this.onBeepUnlimited(),
+      onStopBeep: () => this.onStopBeep(),
     };
     this.blackClock.setup({
       ...clockSetting,
@@ -168,14 +230,14 @@ export class GameManager {
       try {
         await this.closePlayers();
       } catch (errorOnClose) {
-        this.handlers.onError(errorOnClose);
+        this.onError(errorOnClose);
       }
       throw e;
     }
     // State を更新する。
     this.state = GameState.ACTIVE;
     // ハンドラーを呼び出す。
-    this.handlers.onGameNext();
+    this.onGameNext();
     // 最初の手番へ移る。
     setTimeout(() => this.nextMove());
   }
@@ -199,7 +261,7 @@ export class GameManager {
     const player = this.getPlayer(color);
     const ponderPlayer = this.getPlayer(reverseColor(color));
     if (!player || !ponderPlayer) {
-      this.handlers.onError(
+      this.onError(
         new Error("GameManager#nextMove: プレイヤーが初期化されていません。")
       );
       return;
@@ -217,11 +279,11 @@ export class GameManager {
           onMove: (move, info) => this.onMove(eventID, move, info),
           onResign: () => this.onResign(eventID),
           onWin: () => this.onWin(eventID),
-          onError: (e) => this.handlers.onError(e),
+          onError: (e) => this.onError(e),
         }
       )
       .catch((e) => {
-        this.handlers.onError(
+        this.onError(
           new Error(
             "GameManager#nextMove: プレイヤーにコマンドを送信できませんでした: " +
               e
@@ -237,7 +299,7 @@ export class GameManager {
         this.whiteClock.timeMs
       )
       .catch((e) => {
-        this.handlers.onError(
+        this.onError(
           new Error(
             "GameManager#nextMove: プレイヤーにPonderコマンドを送信できませんでした: " +
               e
@@ -260,7 +322,7 @@ export class GameManager {
     }
     // 合法手かどうかをチェックする。
     if (!this.recordManager.record.position.isValidMove(move)) {
-      this.handlers.onError(
+      this.onError(
         "反則手: " +
           getMoveDisplayText(this.recordManager.record.position, move)
       );
@@ -288,7 +350,7 @@ export class GameManager {
       );
     }
     // 駒音を鳴らす。
-    this.handlers.onPieceBeat();
+    this.onPieceBeat();
     // 千日手をチェックする。
     const faulColor = this.recordManager.record.perpetualCheck;
     if (faulColor) {
@@ -344,12 +406,12 @@ export class GameManager {
 
   private timeout(color: Color): void {
     // 時計音を止める。
-    this.handlers.onStopBeep();
+    this.onStopBeep();
     // エンジンの時間切れが無効の場合は通知を送って対局を継続する。
     const player = this.getPlayer(color);
     if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
-        this.handlers.onError(
+        this.onError(
           new Error(
             "GameManager#timeout: プレイヤーにコマンドを送信できませんでした: " +
               e
@@ -392,14 +454,14 @@ export class GameManager {
         this.state = GameState.IDLE;
         // 自動保存が有効な場合は棋譜を保存する。
         if (this._setting.enableAutoSave) {
-          this.handlers.onSaveRecord();
+          this.onSaveRecord();
         }
         // 連続対局の終了条件を満たしているか中断が要求されていれば終了する。
         const complete =
           specialMove === SpecialMove.INTERRUPT ||
           this.repeat >= this.setting.repeat;
         if (complete) {
-          this.handlers.onGameEnd(this.gameResults, specialMove);
+          this.onGameEnd(this.gameResults, specialMove);
           return;
         }
         // 連続対局時の手番入れ替えが有効ならプレイヤーを入れ替える。
@@ -408,11 +470,11 @@ export class GameManager {
         }
         // 次の対局を開始する。
         this.nextGame().catch((e) => {
-          this.handlers.onError(e);
+          this.onError(e);
         });
       })
       .catch((e) => {
-        this.handlers.onError(e);
+        this.onError(e);
         this.state = GameState.PENDING;
       });
   }

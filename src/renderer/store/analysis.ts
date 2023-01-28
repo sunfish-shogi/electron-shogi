@@ -7,12 +7,8 @@ import { Color, Move, reverseColor } from "@/common/shogi";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { scoreToPercentage } from "./score";
 
-export interface AnalysisHandler {
-  // 終了した際に呼び出されます。
-  onFinish(): void;
-  // エラーを通知します。
-  onError(e: unknown): void;
-}
+type FinishCallback = () => void;
+type ErrorCallback = (e: unknown) => void;
 
 export class AnalysisManager {
   private researcher?: USIPlayer;
@@ -22,16 +18,35 @@ export class AnalysisManager {
   private lastSearchInfo?: SearchInfo;
   private searchInfo?: SearchInfo;
   private timerHandle?: number;
+  private onFinish: FinishCallback = () => {
+    /* noop */
+  };
+  private onError: ErrorCallback = () => {
+    /* noop */
+  };
 
   constructor(
     private recordManager: RecordManager,
     private _setting: AnalysisSetting,
-    private appSetting: AppSetting,
-    private handler: AnalysisHandler
+    private appSetting: AppSetting
   ) {
     if (!_setting.usi) {
       throw new Error("エンジンが設定されていません。");
     }
+  }
+
+  on(event: "finish", handler: FinishCallback): this;
+  on(event: "error", handler: ErrorCallback): this;
+  on(event: string, handler: unknown): this {
+    switch (event) {
+      case "finish":
+        this.onFinish = handler as FinishCallback;
+        break;
+      case "error":
+        this.onError = handler as ErrorCallback;
+        break;
+    }
+    return this;
   }
 
   get setting(): AnalysisSetting {
@@ -46,7 +61,7 @@ export class AnalysisManager {
   close(): void {
     this.clearTimer();
     this.closeEngine().catch((e) => {
-      this.handler.onError(e);
+      this.onError(e);
     });
   }
 
@@ -63,7 +78,7 @@ export class AnalysisManager {
 
   private next(): void {
     if (!this.researcher) {
-      this.handler.onError(new Error("エンジンが初期化されていません。"));
+      this.onError(new Error("エンジンが初期化されていません。"));
       this.finish();
       return;
     }
@@ -104,12 +119,12 @@ export class AnalysisManager {
       this.next();
     }, this.setting.perMoveCriteria.maxSeconds * 1e3);
     this.researcher.startResearch(record).catch((e) => {
-      this.handler.onError(e);
+      this.onError(e);
     });
   }
 
   private finish(): void {
-    this.handler.onFinish();
+    this.onFinish();
     this.close();
   }
 

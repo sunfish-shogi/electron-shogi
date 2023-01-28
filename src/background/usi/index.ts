@@ -11,8 +11,7 @@ import { GameResult } from "@/common/player";
 
 function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(
-    timeoutSeconds +
-      "秒以内にエンジンから応答がありませんでした。エンジンの起動が重い場合はアプリ設定で待ち時間を延長してください。"
+    `${timeoutSeconds}秒以内にエンジンから応答がありませんでした。エンジンの起動が重い場合はアプリ設定で待ち時間を延長してください。`
   );
 }
 
@@ -25,24 +24,20 @@ export async function getUSIEngineInfo(
     const process = new EngineProcess(path, sessionID, {
       setupOnly: true,
       timeout: timeoutSeconds * 1e3,
-    });
-    process.on("error", (e) => {
-      reject(e);
-    });
-    process.on("timeout", () => {
-      reject(newTimeoutError(timeoutSeconds));
-    });
-    process.on("usiok", () => {
-      resolve({
-        uri: uri.issueEngineURI(),
-        name: process.name,
-        defaultName: process.name,
-        author: process.author,
-        path,
-        options: process.engineOptions,
+    })
+      .on("error", reject)
+      .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
+      .on("usiok", () => {
+        resolve({
+          uri: uri.issueEngineURI(),
+          name: process.name,
+          defaultName: process.name,
+          author: process.author,
+          path,
+          options: process.engineOptions,
+        });
+        process.quit();
       });
-      process.quit();
-    });
     process.launch();
   });
 }
@@ -57,18 +52,16 @@ export function sendSetOptionCommand(
     const process = new EngineProcess(path, sessionID, {
       setupOnly: true,
       timeout: timeoutSeconds * 1e3,
-    });
-    process.on("error", (e) => {
-      reject(e);
-    });
-    process.on("timeout", () => {
-      reject(newTimeoutError(timeoutSeconds));
-    });
-    process.on("usiok", () => {
-      process.setOption(name);
-      resolve();
-      process.quit();
-    });
+    })
+      .on("error", reject)
+      .on("timeout", () => {
+        reject(newTimeoutError(timeoutSeconds));
+      })
+      .on("usiok", () => {
+        process.setOption(name);
+        resolve();
+        process.quit();
+      });
     process.launch();
   });
 }
@@ -124,18 +117,13 @@ export function setupPlayer(
     sessionType: SessionType.GAME,
   });
   return new Promise<number>((resolve, reject) => {
-    process.on("error", (e) => {
-      reject(e);
-    });
-    process.on("timeout", () => {
-      reject(newTimeoutError(timeoutSeconds));
-    });
-    process.on("bestmove", (usi, sfen, ponder) => {
-      onUSIBestMove(sessionID, usi, sfen, ponder);
-    });
-    process.on("ready", () => {
-      resolve(sessionID);
-    });
+    process
+      .on("error", reject)
+      .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
+      .on("bestmove", (usi, sfen, ponder) =>
+        onUSIBestMove(sessionID, usi, sfen, ponder)
+      )
+      .on("ready", () => resolve(sessionID));
     process.launch();
   });
 }
@@ -165,9 +153,9 @@ export function go(
 ): void {
   const session = getSession(sessionID);
   session.process.go(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
-  session.process.on("info", (usi, info) => {
-    onUSIInfo(sessionID, usi, session.name, info);
-  });
+  session.process.on("info", (usi, info) =>
+    onUSIInfo(sessionID, usi, session.name, info)
+  );
 }
 
 export function goPonder(
@@ -190,9 +178,9 @@ export function goPonder(
 export function goInfinite(sessionID: number, usi: string): void {
   const session = getSession(sessionID);
   session.process.go(usi);
-  session.process.on("info", (usi, info) => {
-    onUSIInfo(sessionID, usi, session.name, info);
-  });
+  session.process.on("info", (usi, info) =>
+    onUSIInfo(sessionID, usi, session.name, info)
+  );
 }
 
 export function ponderHit(sessionID: number): void {

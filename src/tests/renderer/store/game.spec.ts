@@ -41,20 +41,22 @@ function invoke(
   interrupt?: (manager: GameManager) => void
 ) {
   return new Promise<void>((resolve, reject) => {
-    const manager = new GameManager(recordManager, new Clock(), new Clock(), {
-      ...handlers,
-      onGameEnd(gameResults, specialMove) {
+    const manager = new GameManager(recordManager, new Clock(), new Clock())
+      .on("gameEnd", (gameResults, specialMove) => {
         try {
           assert(gameResults, specialMove);
           resolve();
         } catch (e) {
           reject(e);
         }
-      },
-      onError(e) {
-        reject(e);
-      },
-    });
+      })
+      .on("error", reject)
+      .on("saveRecord", handlers.onSaveRecord)
+      .on("gameNext", handlers.onGameNext)
+      .on("pieceBeat", handlers.onPieceBeat)
+      .on("beepShort", handlers.onBeepShort)
+      .on("beepUnlimited", handlers.onBeepUnlimited)
+      .on("stopBeep", handlers.onStopBeep);
     manager
       .startGame(gameSetting, playerBuilder)
       .then(() => {

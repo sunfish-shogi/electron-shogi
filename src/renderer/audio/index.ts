@@ -1,13 +1,14 @@
-export interface AudioEventHandler {
-  stop(): void;
-}
+let lastLongBeep: OscillatorNode | undefined;
 
 function beep(options?: {
   type?: OscillatorType;
   frequency?: number;
   time?: number;
   volume?: number;
-}): AudioEventHandler {
+}): void {
+  if (lastLongBeep) {
+    return;
+  }
   const type = options?.type || "sine";
   const frequency = options?.frequency || 440;
   const volume = options?.volume || 2;
@@ -27,13 +28,9 @@ function beep(options?: {
   if (options?.time) {
     oscillator.stop(context.currentTime + options.time);
   }
-  return {
-    stop: () => {
-      if (!options?.time) {
-        oscillator.stop();
-      }
-    },
-  };
+  if (!options?.time) {
+    lastLongBeep = oscillator;
+  }
 }
 
 export function beepShort(options: {
@@ -51,12 +48,19 @@ export function beepShort(options: {
 export function beepUnlimited(options: {
   frequency?: number;
   volume?: number;
-}): AudioEventHandler {
-  return beep({
+}): void {
+  beep({
     type: "sine",
     frequency: options.frequency,
     volume: options.volume,
   });
+}
+
+export function stopBeep(): void {
+  if (lastLongBeep) {
+    lastLongBeep.stop();
+    lastLongBeep = undefined;
+  }
 }
 
 let lastPieceBeatTime: number;

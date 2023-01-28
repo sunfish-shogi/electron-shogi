@@ -18,8 +18,8 @@ jest.mock("@/renderer/ipc/api");
 
 const mockAPI = api as jest.Mocked<API>;
 
-function createMockHandlers() {
-  return {
+function applyMockHandlers(manager: CSAGameManager) {
+  const handlers = {
     onSaveRecord: jest.fn().mockReturnValue(Promise.resolve()),
     onGameNext: jest.fn(),
     onGameEnd: jest.fn(),
@@ -30,6 +30,17 @@ function createMockHandlers() {
     onStopBeep: jest.fn(),
     onError: jest.fn(),
   };
+  manager
+    .on("saveRecord", handlers.onSaveRecord)
+    .on("gameNext", handlers.onGameNext)
+    .on("gameEnd", handlers.onGameEnd)
+    .on("flipBoard", handlers.onFlipBoard)
+    .on("pieceBeat", handlers.onPieceBeat)
+    .on("beepShort", handlers.onBeepShort)
+    .on("beepUnlimited", handlers.onBeepUnlimited)
+    .on("stopBeep", handlers.onStopBeep)
+    .on("error", handlers.onError);
+  return handlers;
 }
 
 describe("store/csa", () => {
@@ -64,14 +75,9 @@ describe("store/csa", () => {
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
     });
-    const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
-    const manager = new CSAGameManager(
-      recordManager,
-      new Clock(),
-      new Clock(),
-      mockHandlers
-    );
+    const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+    const mockHandlers = applyMockHandlers(manager);
     return manager.login(csaGameSetting, mockPlayerBuilder).then(() => {
       expect(mockAPI.csaLogin).toBeCalledTimes(1);
       expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
@@ -163,14 +169,9 @@ describe("store/csa", () => {
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
     });
-    const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
-    const manager = new CSAGameManager(
-      recordManager,
-      new Clock(),
-      new Clock(),
-      mockHandlers
-    );
+    const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+    const mockHandlers = applyMockHandlers(manager);
     return manager
       .login(
         {
@@ -246,7 +247,6 @@ describe("store/csa", () => {
 
   describe("CSAManager/onPlayerMove", () => {
     mockAPI.csaMove.mockResolvedValue();
-    const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
     const move = new Move(
       new Square(7, 7),
@@ -291,8 +291,7 @@ describe("store/csa", () => {
       const manager = new CSAGameManager(
         recordManager,
         new Clock(),
-        new Clock(),
-        mockHandlers
+        new Clock()
       );
       manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121;
       manager["onPlayerMove"](move, info);
@@ -309,8 +308,7 @@ describe("store/csa", () => {
       const manager = new CSAGameManager(
         recordManager,
         new Clock(),
-        new Clock(),
-        mockHandlers
+        new Clock()
       );
       manager["_setting"].server.protocolVersion =
         CSAProtocolVersion.V121_FLOODGATE;

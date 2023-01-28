@@ -9,13 +9,16 @@ jest.mock("@/renderer/players/usi");
 const mockUSIPlayer = USIPlayer as jest.MockedClass<typeof USIPlayer>;
 
 describe("store/analysis", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
   afterEach(() => {
     jest.useRealTimers();
     jest.clearAllMocks();
   });
 
   it("open-end", () => {
-    jest.useFakeTimers();
     mockUSIPlayer.prototype.launch.mockResolvedValue();
     mockUSIPlayer.prototype.startResearch.mockResolvedValue();
     mockUSIPlayer.prototype.stop.mockResolvedValue();

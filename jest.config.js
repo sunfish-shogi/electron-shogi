@@ -23,5 +23,6 @@ module.exports = {
   coveragePathIgnorePatterns: [
     "<rootDir>/node_modules/",
     "<rootDir>/src/tests/mock/",
+    "<rootDir>/src/tests/helpers/",
   ],
 };

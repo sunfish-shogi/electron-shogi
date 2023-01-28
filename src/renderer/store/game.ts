@@ -98,6 +98,7 @@ export class GameManager {
     this.playerBuilder = playerBuilder;
     this.repeat = 0;
     if (!setting.startPosition) {
+      // 連続対局用に何手目から開始するかを記憶する。
       this.startPly = this.recordManager.record.current.number;
     }
     this.gameResults = newGameResults(setting.black.name, setting.white.name);
@@ -105,13 +106,16 @@ export class GameManager {
   }
 
   private async nextGame(): Promise<void> {
+    // 連続対局の回数をカウントアップする。
     this.repeat++;
+    // 初期局面を設定する。
     if (this.setting.startPosition) {
       this.recordManager.reset(this.setting.startPosition);
     } else if (this.recordManager.record.current.number !== this.startPly) {
       this.recordManager.changePly(this.startPly);
       this.recordManager.removeNextMove();
     }
+    // 対局のメタデータを設定する。
     this.recordManager.setGameStartMetadata({
       gameTitle:
         this.setting.repeat >= 2
@@ -121,6 +125,7 @@ export class GameManager {
       whiteName: this.setting.white.name,
       timeLimit: this.setting.timeLimit,
     });
+    // 対局時計を設定する。
     const clockSetting = {
       timeMs: this.setting.timeLimit.timeSeconds * 1e3,
       byoyomi: this.setting.timeLimit.byoyomi,
@@ -141,6 +146,7 @@ export class GameManager {
         this.timeout(Color.WHITE);
       },
     });
+    // プレイヤーを初期化する。
     try {
       this.blackPlayer = await this.playerBuilder.build(
         this.setting.black,
@@ -160,8 +166,11 @@ export class GameManager {
       }
       throw e;
     }
+    // State を更新する。
     this.state = GameState.ACTIVE;
+    // ハンドラーを呼び出す。
     this.handlers.onGameNext();
+    // 最初の手番へ移る。
     setTimeout(() => this.nextMove());
   }
 
@@ -169,6 +178,7 @@ export class GameManager {
     if (this.state !== GameState.ACTIVE) {
       return;
     }
+    // 最大手数に到達したら終了する。
     if (
       this._setting.maxMoves &&
       this.recordManager.record.current.number >= this._setting.maxMoves
@@ -176,8 +186,10 @@ export class GameManager {
       this.endGame(SpecialMove.IMPASS);
       return;
     }
-    const color = this.recordManager.record.position.color;
+    // 手番側の時計をスタートする。
     this.getActiveClock().start();
+    // プレイヤーを取得する。
+    const color = this.recordManager.record.position.color;
     const player = this.getPlayer(color);
     const ponderPlayer = this.getPlayer(reverseColor(color));
     if (!player || !ponderPlayer) {
@@ -186,7 +198,9 @@ export class GameManager {
       );
       return;
     }
+    // イベント ID を発行する。
     const eventID = this.issueEventID();
+    // 手番側のプレイヤーの思考を開始する。
     player
       .startSearch(
         this.recordManager.record,
@@ -208,6 +222,7 @@ export class GameManager {
           )
         );
       });
+    // Ponder を開始する。
     ponderPlayer
       .startPonder(
         this.recordManager.record,
@@ -237,6 +252,7 @@ export class GameManager {
       );
       return;
     }
+    // 合法手かどうかをチェックする。
     if (!this.recordManager.record.position.isValidMove(move)) {
       this.handlers.onError(
         "反則手: " +
@@ -245,15 +261,19 @@ export class GameManager {
       this.endGame(SpecialMove.FOUL_LOSE);
       return;
     }
+    // 手番側の時計をストップする。
     this.getActiveClock().stop();
+    // 指し手を追加して局面を進める。
     this.recordManager.appendMove({
       move,
       moveOption: { ignoreValidation: true },
       elapsedMs: this.getActiveClock().elapsedMs,
     });
+    // 評価値を記録する。
     if (info) {
       this.recordManager.updateSearchInfo(SearchInfoSenderType.PLAYER, info);
     }
+    // コメントを追加する。
     if (info && this.setting.enableComment) {
       this.recordManager.appendSearchComment(
         SearchInfoSenderType.PLAYER,
@@ -261,9 +281,12 @@ export class GameManager {
         CommentBehavior.APPEND
       );
     }
+    // 駒音を鳴らす。
     this.handlers.onPieceBeat();
+    // 千日手をチェックする。
     const faulColor = this.recordManager.record.perpetualCheck;
     if (faulColor) {
+      // 連続王手の場合は王手した側を反則負けとする。
       if (faulColor === this.recordManager.record.position.color) {
         this.endGame(SpecialMove.FOUL_LOSE);
         return;
@@ -272,9 +295,11 @@ export class GameManager {
         return;
       }
     } else if (this.recordManager.record.repetition) {
+      // シンプルな千日手の場合は引き分けとする。
       this.endGame(SpecialMove.REPETITION_DRAW);
       return;
     }
+    // 次の手番へ移る。
     this.nextMove();
   }
 
@@ -312,7 +337,9 @@ export class GameManager {
   }
 
   private timeout(color: Color): void {
+    // 時計音を止める。
     this.handlers.onStopBeep();
+    // エンジンの時間切れが無効の場合は通知を送って対局を継続する。
     const player = this.getPlayer(color);
     if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
@@ -325,6 +352,7 @@ export class GameManager {
       });
       return;
     }
+    // 時間切れ負けで対局を終了する。
     this.endGame(SpecialMove.TIMEOUT);
   }
 
@@ -336,23 +364,31 @@ export class GameManager {
     const color = this.recordManager.record.position.color;
     Promise.resolve()
       .then(() => {
+        // プレイヤーに対局結果を通知する。
         return this.sendGameResults(color, specialMove);
       })
       .then(() => {
+        // プレイヤーを解放する。
         return this.closePlayers();
       })
       .then(() => {
+        // インクリメントせずに時計を停止する。
         this.getActiveClock().pause();
+        // 終局理由を棋譜に記録する。
         this.recordManager.appendMove({
           move: specialMove,
           elapsedMs: this.getActiveClock().elapsedMs,
         });
         this.recordManager.setGameEndMetadata();
-        this.updateGameResults(color, specialMove);
+        // 連続対局の記録に追加する。
+        this.addGameResults(color, specialMove);
+        // State を更新する。
         this.state = GameState.IDLE;
+        // 自動保存が有効な場合は棋譜を保存する。
         if (this._setting.enableAutoSave) {
           this.handlers.onSaveRecord();
         }
+        // 連続対局の終了条件を満たしているか中断が要求されていれば終了する。
         const complete =
           specialMove === SpecialMove.INTERRUPT ||
           this.repeat >= this.setting.repeat;
@@ -360,9 +396,11 @@ export class GameManager {
           this.handlers.onGameEnd(this.gameResults, specialMove);
           return;
         }
+        // 連続対局時の手番入れ替えが有効ならプレイヤーを入れ替える。
         if (this.setting.swapPlayers) {
           this.swapPlayers();
         }
+        // 次の対局を開始する。
         this.nextGame().catch((e) => {
           this.handlers.onError(e);
         });
@@ -373,7 +411,7 @@ export class GameManager {
       });
   }
 
-  private updateGameResults(color: Color, specialMove: SpecialMove): void {
+  private addGameResults(color: Color, specialMove: SpecialMove): void {
     const gameResult = specialMoveToPlayerGameResult(
       color,
       Color.BLACK,

@@ -167,9 +167,6 @@ export class GameManager {
 
   private nextMove(): void {
     if (this.state !== GameState.ACTIVE) {
-      this.handlers.onError(
-        "GameManager#nextMove: 予期せぬステータスです:" + this.state
-      );
       return;
     }
     if (
@@ -185,7 +182,7 @@ export class GameManager {
     const ponderPlayer = this.getPlayer(reverseColor(color));
     if (!player || !ponderPlayer) {
       this.handlers.onError(
-        "GameManager#nextMove: プレイヤーが初期化されていません。"
+        new Error("GameManager#nextMove: プレイヤーが初期化されていません。")
       );
       return;
     }
@@ -314,16 +311,6 @@ export class GameManager {
     this.endGame(SpecialMove.ENTERING_OF_KING);
   }
 
-  private onTimeout(): void {
-    if (this.state !== GameState.ACTIVE) {
-      this.handlers.onError(
-        "GameManager#onTimeout: 予期せぬステータスです: " + this.state
-      );
-      return;
-    }
-    this.endGame(SpecialMove.TIMEOUT);
-  }
-
   private timeout(color: Color): void {
     this.handlers.onStopBeep();
     const player = this.getPlayer(color);
@@ -338,7 +325,7 @@ export class GameManager {
       });
       return;
     }
-    this.onTimeout();
+    this.endGame(SpecialMove.TIMEOUT);
   }
 
   endGame(specialMove: SpecialMove): void {

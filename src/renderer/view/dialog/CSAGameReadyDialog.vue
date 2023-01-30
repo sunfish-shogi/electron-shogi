@@ -4,23 +4,23 @@
       <div class="message-box">
         <ButtonIcon class="icon" :icon="Icon.BUSSY" />
         <div class="message">
-          <span v-if="state === CSAGameState.READY">
+          <span v-if="store.csaGameState === CSAGameState.READY">
             対局の開始を待っています。
           </span>
-          <span v-if="state === CSAGameState.LOGIN_RETRY_INTERVAL">
+          <span v-if="store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL">
             CSAサーバーへのログインを{{
               loginRetryIntervalSeconds
             }}秒後に再試行します。
           </span>
-          <span v-if="state === CSAGameState.WAITING_LOGIN">
+          <span v-if="store.csaGameState === CSAGameState.WAITING_LOGIN">
             CSAサーバーへの接続とログインを試みています。メッセージボックスが表示されている場合は閉じてください。
           </span>
         </div>
       </div>
       <div
         v-if="
-          state === CSAGameState.READY ||
-          state === CSAGameState.LOGIN_RETRY_INTERVAL
+          store.csaGameState === CSAGameState.READY ||
+          store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL
         "
         class="dialog-main-buttons"
       >
@@ -34,14 +34,7 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  Ref,
-} from "vue";
+import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { Icon } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
@@ -73,12 +66,10 @@ export default defineComponent({
       store.cancelCSAGame();
     };
 
-    const state = computed(() => store.csaGameState);
-
     return {
       dialog,
       Icon,
-      state,
+      store,
       CSAGameState,
       loginRetryIntervalSeconds,
       onLogout,

@@ -7,7 +7,7 @@
         :board-image-type="appSetting.boardImage"
         :board-label-type="appSetting.boardLabelType"
         :max-size="maxSize"
-        :position="pos"
+        :position="record.position"
         :last-move="lastMove"
         :flip="flip"
       >
@@ -194,7 +194,6 @@ export default defineComponent({
       flip.value = !flip.value;
     };
 
-    const pos = computed(() => record.position);
     const lastMove = computed(() =>
       record.current.move instanceof Move ? record.current.move : null
     );
@@ -211,7 +210,7 @@ export default defineComponent({
     return {
       dialog,
       appSetting,
-      pos,
+      record,
       lastMove,
       maxSize,
       flip,

@@ -2,10 +2,10 @@
   <div ref="root" class="record-pane">
     <div class="record">
       <RecordView
-        :record="record"
+        :record="store.record"
         :operational="isRecordOperational"
-        :show-comment="showComment"
-        :show-elapsed-time="showElapsedTime"
+        :show-comment="appSetting.showCommentInRecordView"
+        :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
         @go-begin="goBegin"
         @go-back="goBack"
         @go-forward="goForward"
@@ -21,7 +21,7 @@
         <input
           id="show-elapsed-time"
           type="checkbox"
-          :checked="showElapsedTime"
+          :checked="appSetting.showElapsedTimeInRecordView"
           @change="onToggleElapsedTime"
         />
         <label for="show-elapsed-time">消費時間</label>
@@ -30,7 +30,7 @@
         <input
           id="show-comment"
           type="checkbox"
-          :checked="showComment"
+          :checked="appSetting.showCommentInRecordView"
           @change="onToggleComment"
         />
         <label for="show-comment">コメント</label>
@@ -126,19 +126,12 @@ export default defineComponent({
         store.appState === AppState.RESEARCH
       );
     });
-    const showComment = computed(() => appSetting.showCommentInRecordView);
-    const showElapsedTime = computed(
-      () => appSetting.showElapsedTimeInRecordView
-    );
-
-    const record = computed(() => store.record);
 
     return {
+      store,
+      appSetting,
       root,
       isRecordOperational,
-      showElapsedTime,
-      showComment,
-      record: record,
       goBegin,
       goBack,
       goForward,

@@ -5,11 +5,11 @@
       :board-image-type="appSetting.boardImage"
       :board-label-type="appSetting.boardLabelType"
       :max-size="maxSize"
-      :position="position"
+      :position="store.record.position"
       :last-move="lastMove"
       :flip="appSetting.boardFlipping"
-      :allow-move="allowMove"
-      :allow-edit="allowEdit"
+      :allow-move="store.isMovableByUser"
+      :allow-edit="store.appState === AppState.POSITION_EDITING"
       :black-player-name="blackPlayerName"
       :white-player-name="whitePlayerName"
       :black-player-time="clock?.black.time"
@@ -343,14 +343,6 @@ export default defineComponent({
       store.removeCurrentMove();
     };
 
-    const allowEdit = computed(
-      () => store.appState === AppState.POSITION_EDITING
-    );
-
-    const allowMove = computed(() => store.isMovableByUser);
-
-    const position = computed(() => store.record.position);
-
     const lastMove = computed(() => {
       const move = store.record.current.move;
       return move instanceof Move ? move : undefined;
@@ -413,13 +405,13 @@ export default defineComponent({
     });
 
     return {
+      store,
       rightControl,
       leftControl,
       isGameMenuVisible,
       isFileMenuVisible,
       isInitialPositionMenuVisible,
       appSetting,
-      position,
       lastMove,
       blackPlayerName,
       whitePlayerName,
@@ -445,9 +437,8 @@ export default defineComponent({
       onFlip,
       onFileAction,
       onRemoveCurrentMove,
-      allowEdit,
-      allowMove,
       Icon,
+      AppState,
     };
   },
 });

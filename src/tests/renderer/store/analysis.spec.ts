@@ -33,14 +33,10 @@ describe("store/analysis", () => {
     const appSetting = defaultAppSetting();
     const onFinish = jest.fn();
     const onError = jest.fn();
-    const manager = new AnalysisManager(
-      recordManager,
-      analysisSetting,
-      appSetting
-    )
+    const manager = new AnalysisManager(recordManager)
       .on("finish", onFinish)
       .on("error", onError);
-    return manager.start().then(() => {
+    return manager.start(analysisSetting, appSetting).then(() => {
       expect(mockUSIPlayer).toBeCalledTimes(1);
       expect(mockUSIPlayer.prototype.launch).toBeCalled();
       expect(mockUSIPlayer.prototype.startResearch).not.toBeCalled();

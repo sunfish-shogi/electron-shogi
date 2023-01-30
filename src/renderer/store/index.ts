@@ -28,7 +28,7 @@ import {
   playPieceBeat,
   stopBeep,
 } from "@/renderer/audio";
-import { RecordManager } from "./record";
+import { RecordManager, SearchInfoSenderType } from "./record";
 import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
@@ -52,6 +52,7 @@ import {
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
+import { SearchInfo } from "../players/player";
 
 class Store {
   private _bussy = new BussyStore();
@@ -75,8 +76,8 @@ class Store {
     this.blackClock,
     this.whiteClock
   );
-  private researchManager?: ResearchManager;
-  private analysisManager?: AnalysisManager;
+  private researchManager = new ResearchManager();
+  private analysisManager = new AnalysisManager(this.recordManager);
   private _reactive: UnwrapNestedRefs<Store>;
 
   constructor() {
@@ -107,6 +108,13 @@ class Store {
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
       .on("error", refs.pushError.bind(refs));
+    this.researchManager.on(
+      "updateSearchInfo",
+      this.onUpdateSearchInfo.bind(refs)
+    );
+    this.analysisManager
+      .on("finish", this.onFinish.bind(refs))
+      .on("error", this.pushError.bind(refs));
     this._reactive = refs;
   }
 
@@ -617,17 +625,7 @@ class Store {
     }
     api
       .saveResearchSetting(researchSetting)
-      .then(() => {
-        this.researchManager = new ResearchManager(
-          researchSetting,
-          this.appSetting
-        );
-        this.researchManager.on(
-          "updateSearchInfo",
-          this.recordManager.updateSearchInfo.bind(this.recordManager)
-        );
-        return this.researchManager.launch();
-      })
+      .then(() => this.researchManager.launch(researchSetting, this.appSetting))
       .then(() => {
         this._appState = AppState.RESEARCH;
         this.usiMonitor.clear();
@@ -642,7 +640,6 @@ class Store {
         }
       })
       .catch((e) => {
-        this.researchManager = undefined;
         this.pushError("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
@@ -654,11 +651,12 @@ class Store {
     if (this.appState !== AppState.RESEARCH) {
       return;
     }
-    if (this.researchManager) {
-      this.researchManager.close();
-      this.researchManager = undefined;
-    }
+    this.researchManager.close();
     this._appState = AppState.NORMAL;
+  }
+
+  onUpdateSearchInfo(type: SearchInfoSenderType, info: SearchInfo): void {
+    this.recordManager.updateSearchInfo(type, info);
   }
 
   startAnalysis(analysisSetting: AnalysisSetting): void {
@@ -666,25 +664,14 @@ class Store {
       return;
     }
     this.retainBussyState();
-    const manager = new AnalysisManager(
-      this.recordManager,
-      analysisSetting,
-      this.appSetting
-    )
-      .on("finish", this.onFinish.bind(this))
-      .on("error", this.pushError.bind(this));
     api
       .saveAnalysisSetting(analysisSetting)
-      .then(() => {
-        this.analysisManager = manager;
-        return this.analysisManager.start();
-      })
+      .then(() => this.analysisManager.start(analysisSetting, this.appSetting))
       .then(() => {
         this._appState = AppState.ANALYSIS;
         this.usiMonitor.clear();
       })
       .catch((e) => {
-        this.analysisManager = undefined;
         this.pushError("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
@@ -696,10 +683,7 @@ class Store {
     if (this.appState !== AppState.ANALYSIS) {
       return;
     }
-    if (this.analysisManager) {
-      this.analysisManager.close();
-      this.analysisManager = undefined;
-    }
+    this.analysisManager.close();
     this._appState = AppState.NORMAL;
   }
 

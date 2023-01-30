@@ -117,6 +117,7 @@ describe("store/index", () => {
   beforeEach(() => {
     mockGameManager.prototype.on.mockReturnThis();
     mockCSAGameManager.prototype.on.mockReturnThis();
+    mockAnalysisManager.prototype.on.mockReturnThis();
   });
 
   afterEach(() => {
@@ -411,7 +412,6 @@ describe("store/index", () => {
 
   it("startAnalysis/success", () => {
     mockAPI.saveAnalysisSetting.mockResolvedValue();
-    mockAnalysisManager.prototype.on.mockReturnThis();
     mockAnalysisManager.prototype.start.mockResolvedValue();
     const store = createStore();
     store.showAnalysisDialog();
@@ -424,8 +424,10 @@ describe("store/index", () => {
         analysisSetting
       );
       expect(mockAnalysisManager).toBeCalledTimes(1);
-      expect(mockAnalysisManager.mock.calls[0][1]).toBe(analysisSetting);
       expect(mockAnalysisManager.prototype.start).toBeCalledTimes(1);
+      expect(mockAnalysisManager.prototype.start.mock.calls[0][0]).toBe(
+        analysisSetting
+      );
     });
   });
 

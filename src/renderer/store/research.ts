@@ -27,30 +27,11 @@ type UpdateSearchInfoCallback = (
 ) => void;
 
 export class ResearchManager {
-  private engines: USIPlayer[];
+  private engines: USIPlayer[] = [];
   private onUpdateSearchInfo?: (
     type: SearchInfoSenderType,
     info: SearchInfo
   ) => void;
-
-  constructor(setting: ResearchSetting, private appSetting: AppSetting) {
-    const engineSettings = [
-      setting.usi,
-      ...(setting.secondaries?.map((s) => s.usi) || []),
-    ].filter((usi) => !!usi);
-    this.engines = engineSettings.map((usi, index) => {
-      const type = getSenderTypeByIndex(index);
-      return new USIPlayer(
-        usi as USIEngineSetting,
-        this.appSetting.engineTimeoutSeconds,
-        (info) => {
-          if (this.onUpdateSearchInfo && type !== undefined) {
-            this.onUpdateSearchInfo(type, info);
-          }
-        }
-      );
-    });
-  }
 
   on(event: "updateSearchInfo", callback: UpdateSearchInfoCallback): void;
   on(event: string, callback: unknown): void {
@@ -60,15 +41,55 @@ export class ResearchManager {
     }
   }
 
-  launch() {
-    return Promise.all(this.engines.map((engine) => engine.launch()));
+  async launch(setting: ResearchSetting, appSetting: AppSetting) {
+    // Validation
+    if (setting.usi === undefined) {
+      throw new Error("ResearchManager#launch: USIエンジンの設定は必須です。");
+    }
+    for (const s of setting.secondaries || []) {
+      if (s.usi === undefined) {
+        throw new Error(
+          "ResearchManager#launch: USIエンジンの設定は必須です。"
+        );
+      }
+    }
+    if (this.engines.length > 0) {
+      throw new Error(
+        "ResearchManager#launch: 前回のエンジンが終了していません。数秒待ってからもう一度試してください。"
+      );
+    }
+    // エンジンを設定する。
+    const engineSettings = [
+      setting.usi,
+      ...(setting.secondaries?.map((s) => s.usi) || []),
+    ].filter((usi) => !!usi);
+    this.engines = engineSettings.map((usi, index) => {
+      const type = getSenderTypeByIndex(index);
+      return new USIPlayer(
+        usi as USIEngineSetting,
+        appSetting.engineTimeoutSeconds,
+        (info) => {
+          if (this.onUpdateSearchInfo && type !== undefined) {
+            this.onUpdateSearchInfo(type, info);
+          }
+        }
+      );
+    });
+    // エンジンを起動する。
+    try {
+      await Promise.all(this.engines.map((engine) => engine.launch()));
+    } catch (e) {
+      this.close();
+      throw e;
+    }
   }
 
   updatePosition(record: ImmutableRecord) {
     this.engines.forEach((engine) => engine.startResearch(record));
   }
 
-  close() {
-    return Promise.allSettled(this.engines.map((engine) => engine.close()));
+  async close() {
+    await Promise.allSettled(this.engines.map((engine) => engine.close()));
+    this.engines = [];
   }
 }

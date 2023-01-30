@@ -610,7 +610,7 @@ describe("store/index", () => {
     });
   });
 
-  it("saveRecord/noOverwrite", () => {
+  it("saveRecord/noOverwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       iconv.encode(sampleKIF, "Shift_JIS")
     );
@@ -620,18 +620,17 @@ describe("store/index", () => {
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();
     store.openRecord("/test/sample1.csa");
-    return promisedTimeout(() => store.saveRecord()).then(() =>
-      promisedTimeout(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBe("/test/sample2.csa");
-        expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
-        expect(mockAPI.saveRecord).toBeCalledTimes(1);
-      })
-    );
+    await promisedTimeout(() => store.saveRecord());
+    return await promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBe("/test/sample2.csa");
+      expect(store.hasError).toBeFalsy();
+      expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+      expect(mockAPI.saveRecord).toBeCalledTimes(1);
+    });
   });
 
-  it("saveRecord/overwrite", () => {
+  it("saveRecord/overwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       iconv.encode(sampleKIF, "Shift_JIS")
     );
@@ -641,15 +640,13 @@ describe("store/index", () => {
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();
     store.openRecord("/test/sample1.csa");
-    return promisedTimeout(() => store.saveRecord({ overwrite: true })).then(
-      () =>
-        promisedTimeout(() => {
-          expect(store.isBussy).toBeFalsy();
-          expect(store.recordFilePath).toBe("/test/sample1.csa");
-          expect(store.hasError).toBeFalsy();
-          expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(0);
-          expect(mockAPI.saveRecord).toBeCalledTimes(1);
-        })
-    );
+    await promisedTimeout(() => store.saveRecord({ overwrite: true }));
+    return await promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBe("/test/sample1.csa");
+      expect(store.hasError).toBeFalsy();
+      expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(0);
+      expect(mockAPI.saveRecord).toBeCalledTimes(1);
+    });
   });
 });

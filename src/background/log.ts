@@ -16,57 +16,80 @@ const datetime = getDateTimeString()
   .replaceAll("/", "")
   .replaceAll(":", "");
 
+enum LogType {
+  APP = "app",
+  USI = "usi",
+  CSA = "csa",
+}
+
 const appLogPath = path.join(rootDir, `app-${datetime}.log`);
 const usiLogPath = path.join(rootDir, `usi-${datetime}.log`);
 const csaLogPath = path.join(rootDir, `csa-${datetime}.log`);
 
-const defaultAppenders = !isTest() ? ["stdout"] : [];
-let config: log4js.Log4js;
+const config: log4js.Configuration = {
+  appenders: {
+    stdout: { type: "stdout" },
+  },
+  categories: {
+    default: { appenders: ["stdout"], level: "info" },
+  },
+};
 
-function getLogger(category: string): log4js.Logger {
-  if (!config) {
-    const appSetting = loadAppSetting();
-    config = log4js.configure({
-      appenders: {
-        stdout: { type: "stdout" },
-        app: { type: "file", filename: appLogPath },
-        usi: { type: "file", filename: usiLogPath },
-        csa: { type: "file", filename: csaLogPath },
-      },
-      categories: {
-        default: { appenders: defaultAppenders, level: "info" },
-        app: {
-          appenders: appSetting.enableAppLog ? ["app"] : defaultAppenders,
-          level: "info",
-        },
-        usi: {
-          appenders: appSetting.enableUSILog ? ["usi"] : defaultAppenders,
-          level: "info",
-        },
-        csa: {
-          appenders: appSetting.enableCSALog ? ["csa"] : defaultAppenders,
-          level: "info",
-        },
-      },
-    });
+function getFilePath(type: LogType): string {
+  switch (type) {
+    case LogType.APP:
+      return appLogPath;
+    case LogType.USI:
+      return usiLogPath;
+    case LogType.CSA:
+      return csaLogPath;
   }
-  return config.getLogger(category);
+}
+
+function isLogEnabled(type: LogType): boolean {
+  const appSetting = loadAppSetting();
+  switch (type) {
+    case LogType.APP:
+      return appSetting.enableAppLog;
+    case LogType.USI:
+      return appSetting.enableUSILog;
+    case LogType.CSA:
+      return appSetting.enableCSALog;
+  }
+}
+
+const loggers: { [key: string]: log4js.Logger } = {};
+
+function getLogger(type: LogType): log4js.Logger {
+  if (loggers[type]) {
+    return loggers[type];
+  }
+  if (!config.appenders[type]) {
+    config.appenders[type] = { type: "file", filename: getFilePath(type) };
+    config.categories[type] = {
+      appenders: isLogEnabled(type) ? [type] : !isTest() ? ["stdout"] : [],
+      level: "info",
+    };
+  }
+  const logger = log4js.configure(config).getLogger(type);
+  loggers[type] = logger;
+  return logger;
 }
 
 export function getAppLogger(): log4js.Logger {
-  return getLogger("app");
+  return getLogger(LogType.APP);
 }
 
 export function getUSILogger(): log4js.Logger {
-  return getLogger("usi");
+  return getLogger(LogType.USI);
 }
 
 export function getCSALogger(): log4js.Logger {
-  return getLogger("csa");
+  return getLogger(LogType.CSA);
 }
 
 export function shutdownLoggers(): void {
-  config.shutdown((e) => {
-    console.error("failed to shutdown logger:", e);
+  log4js.shutdown((e) => {
+    console.error("failed to shutdown app logger:", e);
   });
 }

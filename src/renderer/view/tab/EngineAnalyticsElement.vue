@@ -112,9 +112,9 @@ import { computed, defineComponent, ref } from "vue";
 import { Icon } from "@/renderer/assets/icons";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import PVPreviewDialog from "@/renderer/view/dialog/PVPreviewDialog.vue";
-import { useStore } from "@/renderer/store";
 import { EvaluationViewFrom } from "@/common/settings/app";
 import { Color } from "@/common/shogi";
+import { useAppSetting } from "@/renderer/store/setting";
 
 type Preview = {
   position: string;
@@ -162,7 +162,7 @@ export default defineComponent({
     const preview = ref<Preview | null>(null);
 
     const evaluationViewFrom = computed(() => {
-      return useStore().appSetting.evaluationViewFrom;
+      return useAppSetting().evaluationViewFrom;
     });
     const getDisplayScore = (
       score: number,

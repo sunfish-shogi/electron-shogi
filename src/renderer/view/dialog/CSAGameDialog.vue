@@ -207,6 +207,7 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "CSAGameDialog",
@@ -357,10 +358,11 @@ export default defineComponent({
     };
 
     const logEnabled = computed(() => {
+      const appSetting = useAppSetting();
       return (
-        store.appSetting.enableCSALog &&
-        store.appSetting.enableAppLog &&
-        store.appSetting.enableUSILog
+        appSetting.enableCSALog &&
+        appSetting.enableAppLog &&
+        appSetting.enableUSILog
       );
     });
 

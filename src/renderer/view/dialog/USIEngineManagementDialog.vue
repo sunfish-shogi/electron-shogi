@@ -57,6 +57,7 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "USIEngineManagementDialog",
@@ -95,7 +96,8 @@ export default defineComponent({
         if (!path) {
           return;
         }
-        const timeoutSeconds = store.appSetting.engineTimeoutSeconds;
+        const appSetting = useAppSetting();
+        const timeoutSeconds = appSetting.engineTimeoutSeconds;
         setting.value.addEngine(
           await api.getUSIEngineInfo(path, timeoutSeconds)
         );

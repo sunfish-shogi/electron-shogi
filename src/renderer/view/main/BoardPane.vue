@@ -209,6 +209,7 @@ import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "BoardPane",
@@ -228,6 +229,7 @@ export default defineComponent({
   emits: ["resize"],
   setup(_, context) {
     const store = useStore();
+    const appSetting = useAppSetting();
     const rightControl = ref();
     const leftControl = ref();
     const isGameMenuVisible = ref(false);
@@ -330,7 +332,7 @@ export default defineComponent({
     };
 
     const onFlip = () => {
-      useStore().flipBoard();
+      appSetting.flipBoard();
     };
 
     const onFileAction = () => {
@@ -346,8 +348,6 @@ export default defineComponent({
     );
 
     const allowMove = computed(() => store.isMovableByUser);
-
-    const appSetting = computed(() => store.appSetting);
 
     const position = computed(() => store.record.position);
 

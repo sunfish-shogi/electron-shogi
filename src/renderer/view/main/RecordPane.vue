@@ -48,6 +48,7 @@ import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export const minWidth = 200;
 
@@ -58,6 +59,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const appSetting = useAppSetting();
     const root = ref();
 
     onMounted(() => {
@@ -106,14 +108,14 @@ export default defineComponent({
 
     const onToggleElapsedTime = (event: Event) => {
       const checkbox = event.target as HTMLInputElement;
-      store.updateAppSetting({
+      appSetting.updateAppSetting({
         showElapsedTimeInRecordView: checkbox.checked,
       });
     };
 
     const onToggleComment = (event: Event) => {
       const checkbox = event.target as HTMLInputElement;
-      store.updateAppSetting({
+      appSetting.updateAppSetting({
         showCommentInRecordView: checkbox.checked,
       });
     };
@@ -124,11 +126,9 @@ export default defineComponent({
         store.appState === AppState.RESEARCH
       );
     });
-    const showComment = computed(
-      () => store.appSetting.showCommentInRecordView
-    );
+    const showComment = computed(() => appSetting.showCommentInRecordView);
     const showElapsedTime = computed(
-      () => store.appSetting.showElapsedTimeInRecordView
+      () => appSetting.showElapsedTimeInRecordView
     );
 
     const record = computed(() => store.record);

@@ -1,4 +1,3 @@
-import { defaultAppSetting } from "@/common/settings/app";
 import { AnalysisManager } from "@/renderer/store/analysis";
 import { RecordManager } from "@/renderer/store/record";
 import { analysisSetting as baseAnalysisSetting } from "@/tests/mock/analysis";
@@ -30,13 +29,12 @@ describe("store/analysis", () => {
     const analysisSetting = baseAnalysisSetting;
     analysisSetting.startCriteria.enableNumber = false;
     analysisSetting.endCriteria.enableNumber = false;
-    const appSetting = defaultAppSetting();
     const onFinish = jest.fn();
     const onError = jest.fn();
     const manager = new AnalysisManager(recordManager)
       .on("finish", onFinish)
       .on("error", onError);
-    return manager.start(analysisSetting, appSetting).then(() => {
+    return manager.start(analysisSetting).then(() => {
       expect(mockUSIPlayer).toBeCalledTimes(1);
       expect(mockUSIPlayer.prototype.launch).toBeCalled();
       expect(mockUSIPlayer.prototype.startResearch).not.toBeCalled();

@@ -128,6 +128,7 @@ import {
   ref,
   Ref,
 } from "vue";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "USIEngineOptionDialog",
@@ -145,6 +146,7 @@ export default defineComponent({
   emits: ["ok", "cancel"],
   setup(props, context) {
     const store = useStore();
+    const appSetting = useAppSetting();
     const dialog: Ref = ref(null);
     const engineNameInput: Ref = ref(null);
     const latest = props.latestEngineSetting as USIEngineSetting;
@@ -174,7 +176,7 @@ export default defineComponent({
       showModalDialog(dialog.value);
       installHotKeyForDialog(dialog.value);
       try {
-        const timeoutSeconds = store.appSetting.engineTimeoutSeconds;
+        const timeoutSeconds = appSetting.engineTimeoutSeconds;
         engine.value = await api.getUSIEngineInfo(latest.path, timeoutSeconds);
         mergeUSIEngineSetting(engine.value, latest);
         engineNameInput.value.value = engine.value.name;
@@ -214,7 +216,7 @@ export default defineComponent({
     const sendOption = async (name: string) => {
       store.retainBussyState();
       try {
-        const timeoutSeconds = store.appSetting.engineTimeoutSeconds;
+        const timeoutSeconds = appSetting.engineTimeoutSeconds;
         await api.sendUSISetOption(engine.value.path, name, timeoutSeconds);
       } catch (e) {
         store.pushError(e);

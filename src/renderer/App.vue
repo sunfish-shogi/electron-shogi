@@ -34,6 +34,7 @@ import { AppState } from "@/common/control/state.js";
 import AnalysisDialog from "@/renderer/view/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";
+import { useAppSetting } from "./store/setting";
 
 export default defineComponent({
   name: "App",
@@ -53,9 +54,10 @@ export default defineComponent({
     CSAGameReadyDialog,
   },
   setup() {
+    const appSetting = useAppSetting();
     const store = useStore();
 
-    const thema = computed(() => store.appSetting.thema);
+    const thema = computed(() => appSetting.thema);
 
     const dialogVisibilities = computed(() => {
       return {

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import api, { API } from "@/renderer/ipc/api";
-import { Tab, TabPaneType, Thema } from "@/common/settings/app";
 import { Move } from "@/common/shogi";
 import { createStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
@@ -172,52 +171,6 @@ describe("store/index", () => {
     store.clearErrors();
     expect(store.hasError).toBeFalsy();
     expect(store.errors).toHaveLength(0);
-  });
-
-  it("updateAppSetting/success", async () => {
-    mockAPI.saveAppSetting.mockResolvedValue();
-    const store = createStore();
-    expect(store.appSetting.thema).toBe(Thema.STANDARD);
-    expect(store.appSetting.pieceVolume).toBe(30);
-    expect(store.appSetting.clockVolume).toBe(30);
-    expect(store.appSetting.tab).toBe(Tab.RECORD_INFO);
-    await store.updateAppSetting({
-      thema: Thema.DARK,
-      pieceVolume: 0,
-      tabPaneType: TabPaneType.SINGLE,
-      tab: Tab.COMMENT,
-    });
-    expect(store.appSetting.thema).toBe(Thema.DARK);
-    expect(store.appSetting.pieceVolume).toBe(0);
-    expect(store.appSetting.clockVolume).toBe(30);
-    expect(store.appSetting.tab).toBe(Tab.COMMENT);
-    expect(store.appSetting.tabPaneType).toBe(TabPaneType.SINGLE);
-    await store.updateAppSetting({
-      tabPaneType: TabPaneType.DOUBLE,
-    });
-    expect(store.appSetting.tab).toBe(Tab.RECORD_INFO); // コメントタブの選択が自動で解除される。
-    expect(store.appSetting.tabPaneType).toBe(TabPaneType.DOUBLE);
-  });
-
-  it("updateAppSetting/error", async () => {
-    const store = createStore();
-    try {
-      await store.updateAppSetting({
-        pieceVolume: -1,
-      });
-      throw new Error("updateAppSetting must be rejected");
-    } catch {
-      expect(store.appSetting.pieceVolume).toBe(30);
-    }
-  });
-
-  it("flipBoard", () => {
-    const store = createStore();
-    expect(store.appSetting.boardFlipping).toBeFalsy();
-    store.flipBoard();
-    expect(store.appSetting.boardFlipping).toBeTruthy();
-    store.flipBoard();
-    expect(store.appSetting.boardFlipping).toBeFalsy();
   });
 
   it("showConfirmation", () => {

@@ -1,10 +1,10 @@
 import { ResearchSetting } from "@/common/settings/research";
 import { USIPlayer } from "../players/usi";
-import { AppSetting } from "@/common/settings/app";
 import { SearchInfo } from "../players/player";
 import { ImmutableRecord } from "@/common/shogi";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { SearchInfoSenderType } from "./record";
+import { useAppSetting } from "./setting";
 
 function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
   switch (index) {
@@ -41,7 +41,7 @@ export class ResearchManager {
     }
   }
 
-  async launch(setting: ResearchSetting, appSetting: AppSetting) {
+  async launch(setting: ResearchSetting) {
     // Validation
     if (setting.usi === undefined) {
       throw new Error("ResearchManager#launch: USIエンジンの設定は必須です。");
@@ -59,6 +59,7 @@ export class ResearchManager {
       );
     }
     // エンジンを設定する。
+    const appSetting = useAppSetting();
     const engineSettings = [
       setting.usi,
       ...(setting.secondaries?.map((s) => s.usi) || []),

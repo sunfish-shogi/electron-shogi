@@ -14,14 +14,7 @@ import {
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
-import {
-  AppSetting,
-  AppSettingUpdate,
-  ClockSoundTarget,
-  Tab,
-  defaultAppSetting,
-  buildUpdatedAppSetting,
-} from "@/common/settings/app";
+import { ClockSoundTarget, Tab } from "@/common/settings/app";
 import {
   beepShort,
   beepUnlimited,
@@ -53,13 +46,13 @@ import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
 import { SearchInfo } from "../players/player";
+import { useAppSetting } from "./setting";
 
 class Store {
   private _bussy = new BussyStore();
   private _message = new MessageStore();
   private _error = new ErrorStore();
   private recordManager = new RecordManager();
-  private _appSetting = defaultAppSetting();
   private _appState = AppState.NORMAL;
   private _isAppSettingDialogVisible = false;
   private _confirmation?: Confirmation & { appState: AppState };
@@ -89,11 +82,12 @@ class Store {
       this.onUpdatePosition();
     });
     const refs = reactive(this);
+    const appSetting = useAppSetting();
     this.gameManager
       .on("saveRecord", refs.onSaveRecord.bind(refs))
       .on("gameNext", refs.onGameNext.bind(refs))
       .on("gameEnd", refs.onGameEnd.bind(refs))
-      .on("pieceBeat", () => playPieceBeat(refs.appSetting.pieceVolume))
+      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
@@ -103,7 +97,7 @@ class Store {
       .on("gameNext", refs.onGameNext.bind(refs))
       .on("gameEnd", refs.onCSAGameEnd.bind(refs))
       .on("flipBoard", refs.onFlipBoard.bind(refs))
-      .on("pieceBeat", () => playPieceBeat(refs.appSetting.pieceVolume))
+      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
@@ -193,28 +187,6 @@ class Store {
     value: string;
   }): void {
     this.recordManager.updateStandardMetadata(update);
-  }
-
-  get appSetting(): AppSetting {
-    return this._appSetting;
-  }
-
-  async reloadAppSetting(): Promise<void> {
-    this._appSetting = await api.loadAppSetting();
-  }
-
-  async updateAppSetting(update: AppSettingUpdate): Promise<void> {
-    const updated = buildUpdatedAppSetting(this.appSetting, update);
-    if (updated instanceof Error) {
-      throw updated;
-    }
-    await api.saveAppSetting(updated);
-    this._appSetting = updated;
-  }
-
-  flipBoard(): void {
-    this._appSetting.boardFlipping = !this.appSetting.boardFlipping;
-    api.saveAppSetting(this.appSetting);
   }
 
   get appState(): AppState {
@@ -397,9 +369,8 @@ class Store {
       .saveGameSetting(setting)
       .then(() => {
         this.initializeDisplaySettingForGame(setting);
-        const builder = defaultPlayerBuilder(
-          this.appSetting.engineTimeoutSeconds
-        );
+        const appSetting = useAppSetting();
+        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
         return this.gameManager.startGame(setting, builder);
       })
       .then(() => (this._appState = AppState.GAME))
@@ -429,9 +400,8 @@ class Store {
         }
       })
       .then(() => {
-        const builder = defaultPlayerBuilder(
-          this.appSetting.engineTimeoutSeconds
-        );
+        const appSetting = useAppSetting();
+        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
         return this.csaGameManager.login(setting, builder);
       })
       .then(() => (this._appState = AppState.CSA_GAME))
@@ -459,7 +429,8 @@ class Store {
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
     if (setting.humanIsFront) {
-      let flip = this.appSetting.boardFlipping;
+      const appSetting = useAppSetting();
+      let flip = appSetting.boardFlipping;
       if (
         setting.black.uri === uri.ES_HUMAN &&
         setting.white.uri !== uri.ES_HUMAN
@@ -471,8 +442,8 @@ class Store {
       ) {
         flip = true;
       }
-      if (flip !== this.appSetting.boardFlipping) {
-        this.flipBoard();
+      if (flip !== appSetting.boardFlipping) {
+        appSetting.flipBoard();
       }
     }
   }
@@ -555,42 +526,46 @@ class Store {
   }
 
   onFlipBoard(flip: boolean): void {
-    if (this._appSetting.boardFlipping !== flip) {
-      this.flipBoard();
+    const appSetting = useAppSetting();
+    if (appSetting.boardFlipping !== flip) {
+      useAppSetting().flipBoard();
     }
   }
 
   onSaveRecord(): void {
     const fname = defaultRecordFileName(this.recordManager.record.metadata);
-    const path = `${this.appSetting.autoSaveDirectory}/${fname}`;
+    const appSetting = useAppSetting();
+    const path = `${appSetting.autoSaveDirectory}/${fname}`;
     this.saveRecordByPath(path).catch((e) => {
       this.pushError(`棋譜の保存に失敗しました: ${e}`);
     });
   }
 
   private onBeepShort(): void {
+    const appSetting = useAppSetting();
     if (
-      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
       return;
     }
     beepShort({
-      frequency: this.appSetting.clockPitch,
-      volume: this.appSetting.clockVolume,
+      frequency: appSetting.clockPitch,
+      volume: appSetting.clockVolume,
     });
   }
 
   private onBeepUnlimited(): void {
+    const appSetting = useAppSetting();
     if (
-      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
       return;
     }
     beepUnlimited({
-      frequency: this.appSetting.clockPitch,
-      volume: this.appSetting.clockVolume,
+      frequency: appSetting.clockPitch,
+      volume: appSetting.clockVolume,
     });
   }
 
@@ -604,7 +579,8 @@ class Store {
     if (!this.recordManager.appendMove({ move })) {
       return;
     }
-    playPieceBeat(this.appSetting.pieceVolume);
+    const appSetting = useAppSetting();
+    playPieceBeat(appSetting.pieceVolume);
   }
 
   onFinish(): void {
@@ -625,18 +601,19 @@ class Store {
     }
     api
       .saveResearchSetting(researchSetting)
-      .then(() => this.researchManager.launch(researchSetting, this.appSetting))
+      .then(() => this.researchManager.launch(researchSetting))
       .then(() => {
         this._appState = AppState.RESEARCH;
         this.usiMonitor.clear();
         this.onUpdatePosition();
+        const appSetting = useAppSetting();
         if (
-          this.appSetting.tab !== Tab.SEARCH &&
-          this.appSetting.tab !== Tab.PV &&
-          this.appSetting.tab !== Tab.CHART &&
-          this.appSetting.tab !== Tab.PERCENTAGE_CHART
+          appSetting.tab !== Tab.SEARCH &&
+          appSetting.tab !== Tab.PV &&
+          appSetting.tab !== Tab.CHART &&
+          appSetting.tab !== Tab.PERCENTAGE_CHART
         ) {
-          this.updateAppSetting({ tab: Tab.PV });
+          useAppSetting().updateAppSetting({ tab: Tab.PV });
         }
       })
       .catch((e) => {
@@ -666,7 +643,7 @@ class Store {
     this.retainBussyState();
     api
       .saveAnalysisSetting(analysisSetting)
-      .then(() => this.analysisManager.start(analysisSetting, this.appSetting))
+      .then(() => this.analysisManager.start(analysisSetting))
       .then(() => {
         this._appState = AppState.ANALYSIS;
         this.usiMonitor.clear();
@@ -808,15 +785,17 @@ class Store {
   }
 
   copyRecordKIF(): void {
+    const appSetting = useAppSetting();
     const str = exportKakinoki(this.recordManager.record, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordCSA(): void {
+    const appSetting = useAppSetting();
     const str = exportCSA(this.recordManager.record, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
@@ -907,8 +886,9 @@ class Store {
   }
 
   private async saveRecordByPath(path: string): Promise<void> {
+    const appSetting = useAppSetting();
     const dataOrError = this.recordManager.exportRecordAsBuffer(path, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     if (dataOrError instanceof Error) {
       throw dataOrError;

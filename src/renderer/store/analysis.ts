@@ -4,17 +4,17 @@ import {
   AnalysisSetting,
   defaultAnalysisSetting,
 } from "@/common/settings/analysis";
-import { AppSetting, defaultAppSetting } from "@/common/settings/app";
+import { AppSetting } from "@/common/settings/app";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { Color, Move, reverseColor } from "@/common/shogi";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { scoreToPercentage } from "./score";
+import { useAppSetting } from "./setting";
 
 type FinishCallback = () => void;
 type ErrorCallback = (e: unknown) => void;
 
 export class AnalysisManager {
-  private appSetting = defaultAppSetting();
   private researcher?: USIPlayer;
   private setting = defaultAnalysisSetting();
   private number?: number;
@@ -45,11 +45,10 @@ export class AnalysisManager {
     return this;
   }
 
-  async start(setting: AnalysisSetting, appSetting: AppSetting): Promise<void> {
+  async start(setting: AnalysisSetting): Promise<void> {
     if (!setting.usi) {
       throw new Error("エンジンが設定されていません。");
     }
-    this.appSetting = appSetting;
     await this.setupEngine(setting.usi as USIEngineSetting);
     this.setting = setting;
     this.number = undefined;
@@ -72,9 +71,10 @@ export class AnalysisManager {
         "AnalysisManager#setupEngine: 前回のエンジンが終了していません。数秒待ってからもう一度試してください。"
       );
     }
+    const appSetting = useAppSetting();
     const researcher = new USIPlayer(
       setting,
-      this.appSetting.engineTimeoutSeconds,
+      appSetting.engineTimeoutSeconds,
       this.updateSearchInfo.bind(this)
     );
     await researcher.launch();
@@ -186,12 +186,13 @@ export class AnalysisManager {
         ? this.actualMove.equals(this.lastSearchInfo.pv[0])
         : undefined;
     // コメントの先頭に付与するヘッダーを作成する。
+    const appSetting = useAppSetting();
     let head = "";
     if (scoreDelta !== undefined && negaScore !== undefined && !isBestMove) {
       const text = getMoveAccuracyText(
         negaScore - scoreDelta,
         negaScore,
-        this.appSetting
+        appSetting
       );
       if (text) {
         head = `【${text}】`;

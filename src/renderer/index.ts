@@ -5,6 +5,7 @@ import { setup as setupIPC } from "@/renderer/ipc/setup";
 import { useStore } from "@/renderer/store";
 import { Chart, registerables } from "chart.js";
 import { LogLevel } from "@/common/log";
+import { useAppSetting } from "./store/setting";
 
 api.log(LogLevel.INFO, "start renderer process");
 
@@ -14,11 +15,13 @@ setupIPC();
 
 const store = useStore();
 Promise.allSettled([
-  store.reloadAppSetting().catch((e) => {
-    store.pushError(
-      new Error("アプリ設定の読み込み中にエラーが発生しました: " + e)
-    );
-  }),
+  useAppSetting()
+    .reloadAppSetting()
+    .catch((e) => {
+      store.pushError(
+        new Error("アプリ設定の読み込み中にエラーが発生しました: " + e)
+      );
+    }),
   api
     .getRecordPathFromProcArg()
     .then((path) => {

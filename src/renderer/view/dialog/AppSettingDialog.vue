@@ -109,7 +109,10 @@
           <div class="section-title">ファイル</div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">改行文字</div>
-            <select ref="returnCode" :value="appSetting.returnCode">
+            <select
+              ref="returnCode"
+              :value="returnCodeToName[appSetting.returnCode]"
+            >
               <option value="crlf">CR + LF (Windows)</option>
               <option value="lf">LF (UNIX/Mac)</option>
               <option value="cr">CR (90年代Mac)</option>
@@ -290,14 +293,7 @@ import {
   Thema,
 } from "@/common/settings/app";
 import { useStore } from "@/renderer/store";
-import {
-  ref,
-  defineComponent,
-  onMounted,
-  Ref,
-  computed,
-  onBeforeUnmount,
-} from "vue";
+import { ref, defineComponent, onMounted, Ref, onBeforeUnmount } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api, { isNative } from "@/renderer/ipc/api";
@@ -305,6 +301,7 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -322,6 +319,7 @@ export default defineComponent({
   name: "AppSettingDialog",
   setup() {
     const store = useStore();
+    const appSetting = useAppSetting();
     const dialog: Ref = ref(null);
     const thema: Ref = ref(null);
     const pieceImage: Ref = ref(null);
@@ -382,7 +380,7 @@ export default defineComponent({
       };
       store.retainBussyState();
       try {
-        await store.updateAppSetting(update);
+        await useAppSetting().updateAppSetting(update);
         store.closeAppSettingDialog();
       } catch (e) {
         store.pushError(e);
@@ -410,13 +408,6 @@ export default defineComponent({
     const cancel = () => {
       store.closeAppSettingDialog();
     };
-
-    const appSetting = computed(() => {
-      return {
-        ...store.appSetting,
-        returnCode: returnCodeToName[store.appSetting.returnCode],
-      };
-    });
 
     return {
       Thema,
@@ -448,6 +439,7 @@ export default defineComponent({
       enableUSILog,
       enableCSALog,
       appSetting,
+      returnCodeToName,
       isNative: isNative(),
       selectAutoSaveDirectory,
       saveAndClose,

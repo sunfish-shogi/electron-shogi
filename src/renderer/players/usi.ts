@@ -207,7 +207,7 @@ export class USIPlayer implements Player {
   }
 }
 
-export const usiPlayers: { [sessionID: number]: USIPlayer } = {};
+const usiPlayers: { [sessionID: number]: USIPlayer } = {};
 
 export function onUSIBestMove(
   sessionID: number,

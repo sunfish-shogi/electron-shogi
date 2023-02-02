@@ -2,7 +2,7 @@
   <div>
     <div class="root">
       <EngineAnalyticsElement
-        v-for="monitor in monitors"
+        v-for="monitor in store.usiMonitors"
         :key="monitor.sessionID"
         :history-mode="historyMode"
         :name="monitor.name"
@@ -36,13 +36,12 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const monitors = computed(() => store.usiMonitors);
     const elementHeight = computed(() => {
       const rows = store.usiMonitors.length;
       return rows !== 0 ? props.size.height / rows : 0;
     });
     return {
-      monitors,
+      store,
       elementHeight,
     };
   },

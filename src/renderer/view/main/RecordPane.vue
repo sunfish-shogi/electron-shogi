@@ -2,10 +2,10 @@
   <div ref="root" class="record-pane">
     <div class="record">
       <RecordView
-        :record="record"
+        :record="store.record"
         :operational="isRecordOperational"
-        :show-comment="showComment"
-        :show-elapsed-time="showElapsedTime"
+        :show-comment="appSetting.showCommentInRecordView"
+        :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
         @go-begin="goBegin"
         @go-back="goBack"
         @go-forward="goForward"
@@ -21,7 +21,7 @@
         <input
           id="show-elapsed-time"
           type="checkbox"
-          :checked="showElapsedTime"
+          :checked="appSetting.showElapsedTimeInRecordView"
           @change="onToggleElapsedTime"
         />
         <label for="show-elapsed-time">消費時間</label>
@@ -30,7 +30,7 @@
         <input
           id="show-comment"
           type="checkbox"
-          :checked="showComment"
+          :checked="appSetting.showCommentInRecordView"
           @change="onToggleComment"
         />
         <label for="show-comment">コメント</label>
@@ -48,6 +48,7 @@ import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export const minWidth = 200;
 
@@ -58,6 +59,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const appSetting = useAppSetting();
     const root = ref();
 
     onMounted(() => {
@@ -106,14 +108,14 @@ export default defineComponent({
 
     const onToggleElapsedTime = (event: Event) => {
       const checkbox = event.target as HTMLInputElement;
-      store.updateAppSetting({
+      appSetting.updateAppSetting({
         showElapsedTimeInRecordView: checkbox.checked,
       });
     };
 
     const onToggleComment = (event: Event) => {
       const checkbox = event.target as HTMLInputElement;
-      store.updateAppSetting({
+      appSetting.updateAppSetting({
         showCommentInRecordView: checkbox.checked,
       });
     };
@@ -124,21 +126,12 @@ export default defineComponent({
         store.appState === AppState.RESEARCH
       );
     });
-    const showComment = computed(
-      () => store.appSetting.showCommentInRecordView
-    );
-    const showElapsedTime = computed(
-      () => store.appSetting.showElapsedTimeInRecordView
-    );
-
-    const record = computed(() => store.record);
 
     return {
+      store,
+      appSetting,
       root,
       isRecordOperational,
-      showElapsedTime,
-      showComment,
-      record: record,
       goBegin,
       goBack,
       goForward,

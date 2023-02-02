@@ -14,21 +14,14 @@ import {
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
+import { ClockSoundTarget, Tab } from "@/common/settings/app";
 import {
-  AppSetting,
-  AppSettingUpdate,
-  ClockSoundTarget,
-  Tab,
-  defaultAppSetting,
-  buildUpdatedAppSetting,
-} from "@/common/settings/app";
-import {
-  AudioEventHandler,
   beepShort,
   beepUnlimited,
   playPieceBeat,
+  stopBeep,
 } from "@/renderer/audio";
-import { RecordManager } from "./record";
+import { RecordManager, SearchInfoSenderType } from "./record";
 import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
@@ -52,13 +45,14 @@ import {
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
+import { SearchInfo } from "../players/player";
+import { useAppSetting } from "./setting";
 
-export class Store {
+class Store {
   private _bussy = new BussyStore();
   private _message = new MessageStore();
   private _error = new ErrorStore();
   private recordManager = new RecordManager();
-  private _appSetting = defaultAppSetting();
   private _appState = AppState.NORMAL;
   private _isAppSettingDialogVisible = false;
   private _confirmation?: Confirmation & { appState: AppState };
@@ -68,18 +62,16 @@ export class Store {
   private gameManager = new GameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock,
-    this
+    this.whiteClock
   );
   private csaGameManager = new CSAGameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock,
-    this
+    this.whiteClock
   );
-  private researchManager?: ResearchManager;
-  private analysisManager?: AnalysisManager;
-  private unlimitedBeepHandler?: AudioEventHandler;
+  private researchManager = new ResearchManager();
+  private analysisManager = new AnalysisManager(this.recordManager);
+  private _reactive: UnwrapNestedRefs<Store>;
 
   constructor() {
     this.updateAppTitle();
@@ -89,6 +81,39 @@ export class Store {
     this.recordManager.on("changePosition", () => {
       this.onUpdatePosition();
     });
+    const refs = reactive(this);
+    const appSetting = useAppSetting();
+    this.gameManager
+      .on("saveRecord", refs.onSaveRecord.bind(refs))
+      .on("gameNext", refs.onGameNext.bind(refs))
+      .on("gameEnd", refs.onGameEnd.bind(refs))
+      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
+      .on("beepShort", this.onBeepShort.bind(this))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("stopBeep", stopBeep)
+      .on("error", refs.pushError.bind(refs));
+    this.csaGameManager
+      .on("saveRecord", refs.onSaveRecord.bind(refs))
+      .on("gameNext", refs.onGameNext.bind(refs))
+      .on("gameEnd", refs.onCSAGameEnd.bind(refs))
+      .on("flipBoard", refs.onFlipBoard.bind(refs))
+      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
+      .on("beepShort", this.onBeepShort.bind(this))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("stopBeep", stopBeep)
+      .on("error", refs.pushError.bind(refs));
+    this.researchManager.on(
+      "updateSearchInfo",
+      this.onUpdateSearchInfo.bind(refs)
+    );
+    this.analysisManager
+      .on("finish", this.onFinish.bind(refs))
+      .on("error", this.pushError.bind(refs));
+    this._reactive = refs;
+  }
+
+  get reactive(): UnwrapNestedRefs<Store> {
+    return this._reactive;
   }
 
   private updateAppTitle(path?: string): void {
@@ -162,28 +187,6 @@ export class Store {
     value: string;
   }): void {
     this.recordManager.updateStandardMetadata(update);
-  }
-
-  get appSetting(): AppSetting {
-    return this._appSetting;
-  }
-
-  async reloadAppSetting(): Promise<void> {
-    this._appSetting = await api.loadAppSetting();
-  }
-
-  async updateAppSetting(update: AppSettingUpdate): Promise<void> {
-    const updated = buildUpdatedAppSetting(this.appSetting, update);
-    if (updated instanceof Error) {
-      throw updated;
-    }
-    await api.saveAppSetting(updated);
-    this._appSetting = updated;
-  }
-
-  flipBoard(): void {
-    this._appSetting.boardFlipping = !this.appSetting.boardFlipping;
-    api.saveAppSetting(this.appSetting);
   }
 
   get appState(): AppState {
@@ -366,9 +369,8 @@ export class Store {
       .saveGameSetting(setting)
       .then(() => {
         this.initializeDisplaySettingForGame(setting);
-        const builder = defaultPlayerBuilder(
-          this.appSetting.engineTimeoutSeconds
-        );
+        const appSetting = useAppSetting();
+        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
         return this.gameManager.startGame(setting, builder);
       })
       .then(() => (this._appState = AppState.GAME))
@@ -398,9 +400,8 @@ export class Store {
         }
       })
       .then(() => {
-        const builder = defaultPlayerBuilder(
-          this.appSetting.engineTimeoutSeconds
-        );
+        const appSetting = useAppSetting();
+        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
         return this.csaGameManager.login(setting, builder);
       })
       .then(() => (this._appState = AppState.CSA_GAME))
@@ -428,7 +429,8 @@ export class Store {
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
     if (setting.humanIsFront) {
-      let flip = this.appSetting.boardFlipping;
+      const appSetting = useAppSetting();
+      let flip = appSetting.boardFlipping;
       if (
         setting.black.uri === uri.ES_HUMAN &&
         setting.white.uri !== uri.ES_HUMAN
@@ -440,8 +442,8 @@ export class Store {
       ) {
         flip = true;
       }
-      if (flip !== this.appSetting.boardFlipping) {
-        this.flipBoard();
+      if (flip !== appSetting.boardFlipping) {
+        appSetting.flipBoard();
       }
     }
   }
@@ -467,11 +469,8 @@ export class Store {
     this.usiMonitor.clear();
   }
 
-  onGameEnd(gameResults?: GameResults, specialMove?: SpecialMove): void {
-    if (
-      this.appState !== AppState.GAME &&
-      this.appState !== AppState.CSA_GAME
-    ) {
+  onGameEnd(gameResults: GameResults, specialMove: SpecialMove): void {
+    if (this.appState !== AppState.GAME) {
       return;
     }
     if (gameResults && gameResults.total >= 2) {
@@ -519,61 +518,55 @@ export class Store {
     this._appState = AppState.NORMAL;
   }
 
+  onCSAGameEnd(): void {
+    if (this.appState !== AppState.CSA_GAME) {
+      return;
+    }
+    this._appState = AppState.NORMAL;
+  }
+
   onFlipBoard(flip: boolean): void {
-    if (this._appSetting.boardFlipping !== flip) {
-      this.flipBoard();
+    const appSetting = useAppSetting();
+    if (appSetting.boardFlipping !== flip) {
+      useAppSetting().flipBoard();
     }
   }
 
   onSaveRecord(): void {
     const fname = defaultRecordFileName(this.recordManager.record.metadata);
-    const path = `${this.appSetting.autoSaveDirectory}/${fname}`;
+    const appSetting = useAppSetting();
+    const path = `${appSetting.autoSaveDirectory}/${fname}`;
     this.saveRecordByPath(path).catch((e) => {
       this.pushError(`棋譜の保存に失敗しました: ${e}`);
     });
   }
 
-  onPieceBeat(): void {
-    playPieceBeat(this.appSetting.pieceVolume);
-  }
-
-  onBeepShort(): void {
+  private onBeepShort(): void {
+    const appSetting = useAppSetting();
     if (
-      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
-      return;
-    }
-    if (this.unlimitedBeepHandler) {
       return;
     }
     beepShort({
-      frequency: this.appSetting.clockPitch,
-      volume: this.appSetting.clockVolume,
+      frequency: appSetting.clockPitch,
+      volume: appSetting.clockVolume,
     });
   }
 
-  onBeepUnlimited(): void {
+  private onBeepUnlimited(): void {
+    const appSetting = useAppSetting();
     if (
-      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
       return;
     }
-    if (this.unlimitedBeepHandler) {
-      return;
-    }
-    this.unlimitedBeepHandler = beepUnlimited({
-      frequency: this.appSetting.clockPitch,
-      volume: this.appSetting.clockVolume,
+    beepUnlimited({
+      frequency: appSetting.clockPitch,
+      volume: appSetting.clockVolume,
     });
-  }
-
-  onStopBeep(): void {
-    if (this.unlimitedBeepHandler) {
-      this.unlimitedBeepHandler.stop();
-      this.unlimitedBeepHandler = undefined;
-    }
   }
 
   doMove(move: Move): void {
@@ -586,7 +579,8 @@ export class Store {
     if (!this.recordManager.appendMove({ move })) {
       return;
     }
-    playPieceBeat(this.appSetting.pieceVolume);
+    const appSetting = useAppSetting();
+    playPieceBeat(appSetting.pieceVolume);
   }
 
   onFinish(): void {
@@ -594,10 +588,6 @@ export class Store {
       this._message.enqueue({ text: "棋譜解析が終了しました。" });
       this._appState = AppState.NORMAL;
     }
-  }
-
-  onError(e: unknown): void {
-    this.pushError(e);
   }
 
   startResearch(researchSetting: ResearchSetting): void {
@@ -611,31 +601,22 @@ export class Store {
     }
     api
       .saveResearchSetting(researchSetting)
-      .then(() => {
-        this.researchManager = new ResearchManager(
-          researchSetting,
-          this.appSetting
-        );
-        this.researchManager.on("updateSearchInfo", (type, info) =>
-          this.recordManager.updateSearchInfo(type, info)
-        );
-        return this.researchManager.launch();
-      })
+      .then(() => this.researchManager.launch(researchSetting))
       .then(() => {
         this._appState = AppState.RESEARCH;
         this.usiMonitor.clear();
         this.onUpdatePosition();
+        const appSetting = useAppSetting();
         if (
-          this.appSetting.tab !== Tab.SEARCH &&
-          this.appSetting.tab !== Tab.PV &&
-          this.appSetting.tab !== Tab.CHART &&
-          this.appSetting.tab !== Tab.PERCENTAGE_CHART
+          appSetting.tab !== Tab.SEARCH &&
+          appSetting.tab !== Tab.PV &&
+          appSetting.tab !== Tab.CHART &&
+          appSetting.tab !== Tab.PERCENTAGE_CHART
         ) {
-          this.updateAppSetting({ tab: Tab.PV });
+          useAppSetting().updateAppSetting({ tab: Tab.PV });
         }
       })
       .catch((e) => {
-        this.researchManager = undefined;
         this.pushError("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
@@ -647,11 +628,12 @@ export class Store {
     if (this.appState !== AppState.RESEARCH) {
       return;
     }
-    if (this.researchManager) {
-      this.researchManager.close();
-      this.researchManager = undefined;
-    }
+    this.researchManager.close();
     this._appState = AppState.NORMAL;
+  }
+
+  onUpdateSearchInfo(type: SearchInfoSenderType, info: SearchInfo): void {
+    this.recordManager.updateSearchInfo(type, info);
   }
 
   startAnalysis(analysisSetting: AnalysisSetting): void {
@@ -661,21 +643,12 @@ export class Store {
     this.retainBussyState();
     api
       .saveAnalysisSetting(analysisSetting)
-      .then(() => {
-        this.analysisManager = new AnalysisManager(
-          this.recordManager,
-          analysisSetting,
-          this.appSetting,
-          this
-        );
-        return this.analysisManager.start();
-      })
+      .then(() => this.analysisManager.start(analysisSetting))
       .then(() => {
         this._appState = AppState.ANALYSIS;
         this.usiMonitor.clear();
       })
       .catch((e) => {
-        this.analysisManager = undefined;
         this.pushError("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
@@ -687,10 +660,7 @@ export class Store {
     if (this.appState !== AppState.ANALYSIS) {
       return;
     }
-    if (this.analysisManager) {
-      this.analysisManager.close();
-      this.analysisManager = undefined;
-    }
+    this.analysisManager.close();
     this._appState = AppState.NORMAL;
   }
 
@@ -815,15 +785,17 @@ export class Store {
   }
 
   copyRecordKIF(): void {
+    const appSetting = useAppSetting();
     const str = exportKakinoki(this.recordManager.record, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordCSA(): void {
+    const appSetting = useAppSetting();
     const str = exportCSA(this.recordManager.record, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
@@ -914,8 +886,9 @@ export class Store {
   }
 
   private async saveRecordByPath(path: string): Promise<void> {
+    const appSetting = useAppSetting();
     const dataOrError = this.recordManager.exportRecordAsBuffer(path, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     if (dataOrError instanceof Error) {
       throw dataOrError;
@@ -951,8 +924,15 @@ export class Store {
   }
 }
 
-const store = reactive<Store>(new Store());
+export function createStore(): UnwrapNestedRefs<Store> {
+  return new Store().reactive;
+}
+
+let store: UnwrapNestedRefs<Store>;
 
 export function useStore(): UnwrapNestedRefs<Store> {
+  if (!store) {
+    store = createStore();
+  }
   return store;
 }

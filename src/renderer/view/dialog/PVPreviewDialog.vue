@@ -7,7 +7,7 @@
         :board-image-type="appSetting.boardImage"
         :board-label-type="appSetting.boardLabelType"
         :max-size="maxSize"
-        :position="pos"
+        :position="record.position"
         :last-move="lastMove"
         :flip="flip"
       >
@@ -83,7 +83,6 @@
 
 <script lang="ts">
 import { Move, Position, Record } from "@/common/shogi";
-import { useStore } from "@/renderer/store";
 import {
   defineComponent,
   onMounted,
@@ -104,6 +103,7 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "PVPreviewDialog",
@@ -125,11 +125,11 @@ export default defineComponent({
   },
   emits: ["close"],
   setup(props, context) {
-    const store = useStore();
+    const appSetting = useAppSetting();
     const dialog: Ref = ref(null);
     const maxSize = reactive(new RectSize(0, 0));
     const record = reactive(new Record());
-    const flip: Ref<boolean> = ref(store.appSetting.boardFlipping);
+    const flip: Ref<boolean> = ref(appSetting.boardFlipping);
 
     const updateSize = () => {
       maxSize.width = window.innerWidth * 0.8;
@@ -194,7 +194,6 @@ export default defineComponent({
       flip.value = !flip.value;
     };
 
-    const pos = computed(() => record.position);
     const lastMove = computed(() =>
       record.current.move instanceof Move ? record.current.move : null
     );
@@ -210,8 +209,8 @@ export default defineComponent({
 
     return {
       dialog,
-      appSetting: store.appSetting,
-      pos,
+      appSetting,
+      record,
       lastMove,
       maxSize,
       flip,

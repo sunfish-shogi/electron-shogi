@@ -39,17 +39,15 @@ export enum CSAGameState {
   GAME,
 }
 
-export interface CSAGameHandlers {
-  onSaveRecord(): void;
-  onGameNext(): void;
-  onGameEnd(): void;
-  onFlipBoard(flip: boolean): void;
-  onPieceBeat(): void;
-  onBeepShort(): void;
-  onBeepUnlimited(): void;
-  onStopBeep(): void;
-  onError(e: unknown): void;
-}
+type SaveRecordCallback = () => void;
+type GameNextCallback = () => void;
+type GameEndCallback = () => void;
+type FlipBoardCallback = (flip: boolean) => void;
+type PieceBeatCallback = () => void;
+type BeepShortCallback = () => void;
+type BeepUnlimitedCallback = () => void;
+type StopBeepCallback = () => void;
+type ErrorCallback = (e: unknown) => void;
 
 enum ReloginBehavior {
   DO_NOT_RELOGIN,
@@ -68,13 +66,81 @@ export class CSAGameManager {
   private searchInfo?: SearchInfo;
   private playerBuilder = defaultPlayerBuilder();
   private retryTimer?: NodeJS.Timeout;
+  private onSaveRecord: SaveRecordCallback = () => {
+    /* noop */
+  };
+  private onGameNext: GameNextCallback = () => {
+    /* noop */
+  };
+  private onGameEnd: GameEndCallback = () => {
+    /* noop */
+  };
+  private onFlipBoard: FlipBoardCallback = () => {
+    /* noop */
+  };
+  private onPieceBeat: PieceBeatCallback = () => {
+    /* noop */
+  };
+  private onBeepShort: BeepShortCallback = () => {
+    /* noop */
+  };
+  private onBeepUnlimited: BeepUnlimitedCallback = () => {
+    /* noop */
+  };
+  private onStopBeep: StopBeepCallback = () => {
+    /* noop */
+  };
+  private onError: ErrorCallback = () => {
+    /* noop */
+  };
 
   constructor(
     private recordManager: RecordManager,
     private blackClock: Clock,
-    private whiteClock: Clock,
-    private handlers: CSAGameHandlers
+    private whiteClock: Clock
   ) {}
+
+  on(event: "saveRecord", handler: SaveRecordCallback): this;
+  on(event: "gameNext", handler: GameNextCallback): this;
+  on(event: "gameEnd", handler: GameEndCallback): this;
+  on(event: "flipBoard", handler: FlipBoardCallback): this;
+  on(event: "pieceBeat", handler: PieceBeatCallback): this;
+  on(event: "beepShort", handler: BeepShortCallback): this;
+  on(event: "beepUnlimited", handler: BeepUnlimitedCallback): this;
+  on(event: "stopBeep", handler: StopBeepCallback): this;
+  on(event: "error", handler: ErrorCallback): this;
+  on(event: string, handler: unknown): this {
+    switch (event) {
+      case "saveRecord":
+        this.onSaveRecord = handler as SaveRecordCallback;
+        break;
+      case "gameNext":
+        this.onGameNext = handler as GameNextCallback;
+        break;
+      case "gameEnd":
+        this.onGameEnd = handler as GameEndCallback;
+        break;
+      case "flipBoard":
+        this.onFlipBoard = handler as FlipBoardCallback;
+        break;
+      case "pieceBeat":
+        this.onPieceBeat = handler as PieceBeatCallback;
+        break;
+      case "beepShort":
+        this.onBeepShort = handler as BeepShortCallback;
+        break;
+      case "beepUnlimited":
+        this.onBeepUnlimited = handler as BeepUnlimitedCallback;
+        break;
+      case "stopBeep":
+        this.onStopBeep = handler as StopBeepCallback;
+        break;
+      case "error":
+        this.onError = handler as ErrorCallback;
+        break;
+    }
+    return this;
+  }
 
   get state(): CSAGameState {
     return this._state;
@@ -116,7 +182,10 @@ export class CSAGameManager {
       this.player = await this.playerBuilder.build(
         this._setting.player,
         (info) =>
-          this.recordManager.updateSearchInfo(SearchInfoSenderType.ENEMY, info)
+          this.recordManager.updateSearchInfo(
+            SearchInfoSenderType.OPPONENT,
+            info
+          )
       );
       // CSA サーバーにログインする。
       const sessionID = await api.csaLogin(this._setting.server);
@@ -125,7 +194,7 @@ export class CSAGameManager {
       // ステータスを更新する。
       this._state = CSAGameState.READY;
       entrySession(this.sessionID, this);
-      this.handlers.onGameNext();
+      this.onGameNext();
     } catch (e) {
       this._state = CSAGameState.LOGIN_FAILED;
       this.close(ReloginBehavior.RELOGIN_WITH_INTERVAL);
@@ -167,14 +236,14 @@ export class CSAGameManager {
     if (this.sessionID) {
       releaseSession(this.sessionID);
       api.csaLogout(this.sessionID).catch((e) => {
-        this.handlers.onError(e);
+        this.onError(e);
       });
       this.sessionID = 0;
     }
     // プレイヤーが起動している場合は終了する。
     if (this.player) {
       this.player.close().catch((e) => {
-        this.handlers.onError(e);
+        this.onError(e);
       });
       this.player = undefined;
     }
@@ -193,13 +262,13 @@ export class CSAGameManager {
       reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN ||
       this.repeat >= this.setting.repeat
     ) {
-      this.handlers.onGameEnd();
+      this.onGameEnd();
       return;
     }
     // 連続対局の条件を満たしている場合は再ログインする。
     const doRelogin = () => {
       this.relogin().catch((e) => {
-        this.handlers.onError(e);
+        this.onError(e);
       });
     };
     if (reloginBehavior === ReloginBehavior.RELOGIN_IMMEDIATELY) {
@@ -241,8 +310,8 @@ export class CSAGameManager {
       },
     });
     // 将棋盤の向きを調整する。
-    if (this.setting.autoFlip && this.handlers.onFlipBoard) {
-      this.handlers.onFlipBoard(this.gameSummary.myColor === Color.WHITE);
+    if (this.setting.autoFlip && this.onFlipBoard) {
+      this.onFlipBoard(this.gameSummary.myColor === Color.WHITE);
     }
     // ステータスを更新する。
     this._state = CSAGameState.GAME;
@@ -255,7 +324,7 @@ export class CSAGameManager {
     // 指し手を読み取る。
     const move = parseCSAMove(this.recordManager.record.position, data);
     if (move instanceof Error) {
-      this.handlers.onError(
+      this.onError(
         `CSAGameManager#onMove: 解釈できない指し手 [${data}]: ${move.message}`
       );
       return;
@@ -289,7 +358,7 @@ export class CSAGameManager {
       );
     }
     // 効果音を鳴らす。
-    this.handlers.onPieceBeat();
+    this.onPieceBeat();
     // 次の処理を開始する。
     this.next(playerStates);
   }
@@ -301,7 +370,7 @@ export class CSAGameManager {
     });
     // 自動保存が有効な場合は棋譜を保存する。
     if (this.setting.enableAutoSave) {
-      this.handlers.onSaveRecord();
+      this.onSaveRecord();
     }
     // セッションを終了する。
     this.close(ReloginBehavior.RELOGIN_IMMEDIATELY);
@@ -360,9 +429,9 @@ export class CSAGameManager {
     // 時計をサーバーと同期する。
     const clockSetting = {
       byoyomi: (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3,
-      onBeepShort: () => this.handlers.onBeepShort(),
-      onBeepUnlimited: () => this.handlers.onBeepUnlimited(),
-      onStopBeep: () => this.handlers.onStopBeep(),
+      onBeepShort: () => this.onBeepShort(),
+      onBeepUnlimited: () => this.onBeepUnlimited(),
+      onStopBeep: () => this.onStopBeep(),
     };
     this.blackClock.setup({
       ...clockSetting,
@@ -381,7 +450,7 @@ export class CSAGameManager {
     }
     // プレイヤーの状態を確認する。
     if (!this.player) {
-      this.handlers.onError(
+      this.onError(
         "想定されない問題が発生しました。CSA サーバーからデータを受信しましたが、プレイヤーが初期化されていません。"
       );
       return;
@@ -410,7 +479,7 @@ export class CSAGameManager {
           }
         )
         .catch((e) => {
-          this.handlers.onError(
+          this.onError(
             new Error(
               "CSAGameManager#next: プレイヤーにコマンドを送信できませんでした: " +
                 e
@@ -427,7 +496,7 @@ export class CSAGameManager {
           this.whiteClock.timeMs
         )
         .catch((e) => {
-          this.handlers.onError(
+          this.onError(
             new Error(
               "CSAGameManager#next: プレイヤーにPonderコマンドを送信できませんでした: " +
                 e
@@ -469,7 +538,7 @@ export class CSAGameManager {
   }
 
   private onPlayerError(e: unknown): void {
-    this.handlers.onError(e);
+    this.onError(e);
   }
 }
 

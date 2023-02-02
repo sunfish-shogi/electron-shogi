@@ -31,6 +31,7 @@ import { Color, ImmutableNode, ImmutableRecord } from "@/common/shogi";
 import { scoreToPercentage } from "@/renderer/store/score";
 import { AppSetting, Thema } from "@/common/settings/app";
 import { SearchInfo } from "@/renderer/players/player";
+import { useAppSetting } from "@/renderer/store/setting";
 
 const MATE_SCORE = 1000000;
 const MAX_SCORE = 2000;
@@ -220,9 +221,9 @@ export default defineComponent({
         (series === Series.WHITE_PLAYER && lastNode.nextColor === Color.WHITE)
       ) {
         const data = lastNode.customData as RecordCustomData;
-        if (data && data.enemySearchInfo) {
+        if (data && data.opponentSearchInfo) {
           const score = getScore(
-            data.enemySearchInfo,
+            data.opponentSearchInfo,
             props.type,
             appSetting.coefficientInSigmoid
           );
@@ -321,6 +322,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      const appSetting = useAppSetting();
       const element = canvas.value as HTMLCanvasElement;
       const context = element.getContext("2d") as CanvasRenderingContext2D;
       chart = new Chart(context, {
@@ -339,10 +341,10 @@ export default defineComponent({
         },
       });
       chart.draw();
-      updateChart(store.record, store.appSetting);
+      updateChart(store.record, appSetting);
 
       watch(
-        () => [store.record, store.appSetting],
+        () => [store.record, appSetting],
         ([record, appSetting]) =>
           updateChart(record as ImmutableRecord, appSetting as AppSetting),
         { deep: true }

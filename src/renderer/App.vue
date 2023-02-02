@@ -1,5 +1,5 @@
 <template>
-  <div class="root" :class="thema">
+  <div class="root" :class="appSetting.thema">
     <StandardLayout class="main" />
     <GameDialog v-if="dialogVisibilities.game" />
     <CSAGameDialog v-if="dialogVisibilities.csaGame" />
@@ -11,8 +11,8 @@
     <BussyMessage v-if="dialogVisibilities.bussy" />
     <ConfirmDialog v-if="dialogVisibilities.confirm" />
     <CSAGameReadyDialog v-if="dialogVisibilities.csaGameReady" />
-    <InfoMessage v-if="hasMessage" />
-    <ErrorMessage v-if="hasErrors" />
+    <InfoMessage v-if="store.hasMessage" />
+    <ErrorMessage v-if="store.hasError" />
   </div>
 </template>
 
@@ -34,6 +34,7 @@ import { AppState } from "@/common/control/state.js";
 import AnalysisDialog from "@/renderer/view/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";
+import { useAppSetting } from "./store/setting";
 
 export default defineComponent({
   name: "App",
@@ -53,9 +54,8 @@ export default defineComponent({
     CSAGameReadyDialog,
   },
   setup() {
+    const appSetting = useAppSetting();
     const store = useStore();
-
-    const thema = computed(() => store.appSetting.thema);
 
     const dialogVisibilities = computed(() => {
       return {
@@ -74,10 +74,6 @@ export default defineComponent({
           store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL,
       };
     });
-
-    const hasMessage = computed(() => store.hasMessage);
-
-    const hasErrors = computed(() => store.hasError);
 
     onMounted(() => {
       const body = document.getElementsByTagName("body")[0];
@@ -102,10 +98,9 @@ export default defineComponent({
     });
 
     return {
-      thema,
+      appSetting,
+      store,
       dialogVisibilities,
-      hasMessage,
-      hasErrors,
     };
   },
 });

@@ -4,8 +4,8 @@
       <textarea
         ref="textarea"
         class="text"
-        :value="comment"
-        :readonly="!!readonly"
+        :value="store.record.current.comment"
+        :readonly="readonly"
         @input="change"
       />
     </div>
@@ -21,7 +21,6 @@ export default defineComponent({
   name: "RecordComment",
   setup() {
     const store = useStore();
-    const comment = computed(() => store.record.current.comment);
     const readonly = computed(
       () =>
         store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH
@@ -43,8 +42,8 @@ export default defineComponent({
     });
 
     return {
+      store,
       textarea,
-      comment,
       readonly,
       change,
     };

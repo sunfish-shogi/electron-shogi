@@ -16,6 +16,7 @@ import {
   onCSAStart,
 } from "@/renderer/store/csa";
 import { CSAGameResult, CSASpecialMove } from "../../common/csa";
+import { useAppSetting } from "../store/setting";
 
 export function setup(): void {
   const store = useStore();
@@ -172,7 +173,7 @@ export function setup(): void {
         store.stopAnalysis();
         break;
       case MenuEvent.FLIP_BOARD:
-        store.flipBoard();
+        useAppSetting().flipBoard();
         break;
       case MenuEvent.APP_SETTING_DIALOG:
         store.showAppSettingDialog();

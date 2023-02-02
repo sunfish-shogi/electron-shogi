@@ -3,7 +3,7 @@
     <div ref="root" class="root" :style="{ height: `${size.height}px` }">
       <div class="element">
         <div class="key">ファイル</div>
-        <div class="value">{{ filePath || "（新規棋譜）" }}</div>
+        <div class="value">{{ store.recordFilePath || "（新規棋譜）" }}</div>
       </div>
       <div v-for="element in list" :key="element.key" class="element">
         <div class="key">{{ element.displayName }}</div>
@@ -37,7 +37,6 @@ export default defineComponent({
   setup() {
     const root: Ref = ref(null);
     const store = useStore();
-    const filePath = computed(() => store.recordFilePath);
     const list = computed(() => {
       return Object.values(RecordMetadataKey).map((key) => {
         const metadata = store.record.metadata;
@@ -68,7 +67,7 @@ export default defineComponent({
 
     return {
       root,
-      filePath,
+      store,
       list,
       change,
     };

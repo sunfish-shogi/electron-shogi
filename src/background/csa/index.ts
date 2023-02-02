@@ -1,4 +1,3 @@
-import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAServerSetting } from "@/common/settings/csa";
 import {
   onCSAClose,
@@ -23,32 +22,23 @@ const clients = new Map<number, Client>();
 
 export function login(setting: CSAServerSetting): number {
   const sessionID = issueSessionID();
-  const client = new Client(sessionID, setting, getCSALogger());
-  client.on("gameSummary", (gameSummary) => {
-    onCSAGameSummary(sessionID, gameSummary);
-  });
-  client.on("reject", () => {
-    onCSAReject(sessionID);
-  });
-  client.on("start", (playerStates) => {
-    onCSAStart(sessionID, playerStates);
-  });
-  client.on("move", (move, playerStates) => {
-    onCSAMove(sessionID, move, playerStates);
-  });
-  client.on(
-    "gameResult",
-    (specialMove: CSASpecialMove, gameResult: CSAGameResult) => {
-      onCSAGameResult(sessionID, specialMove, gameResult);
-    }
-  );
-  client.on("close", () => {
-    clients.delete(sessionID);
-    onCSAClose(sessionID);
-  });
-  client.on("error", (e) => {
-    sendError(e);
-  });
+  const client = new Client(sessionID, setting, getCSALogger())
+    .on("gameSummary", (gameSummary) =>
+      onCSAGameSummary(sessionID, gameSummary)
+    )
+    .on("reject", () => onCSAReject(sessionID))
+    .on("start", (playerStates) => onCSAStart(sessionID, playerStates))
+    .on("move", (move, playerStates) =>
+      onCSAMove(sessionID, move, playerStates)
+    )
+    .on("gameResult", (specialMove, gameResult) =>
+      onCSAGameResult(sessionID, specialMove, gameResult)
+    )
+    .on("close", () => {
+      clients.delete(sessionID);
+      onCSAClose(sessionID);
+    })
+    .on("error", sendError);
   clients.set(sessionID, client);
   client.login();
   return sessionID;

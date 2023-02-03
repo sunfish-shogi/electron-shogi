@@ -235,11 +235,7 @@ export class EngineProcess {
   }
 
   launch(): void {
-    getUSILogger().info(
-      "sid=%d: launch: %s",
-      this.sessionID,
-      path.dirname(this.path)
-    );
+    getUSILogger().info("sid=%d: launch: %s", this.sessionID, this.path);
     this.timeout = setTimeout(() => {
       if (this.timeoutCallback) {
         this.timeoutCallback();

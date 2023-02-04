@@ -224,15 +224,15 @@
           <div class="section-title">開発者向け</div>
           <div class="dialog-form-area dialog-form-warning">
             <div v-if="!isNative" class="dialog-form-note">
-              ※ブラウザ版でログは出力されません。
+              ※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。
             </div>
-            <div class="dialog-form-note">
-              ※ログの有効化にはアプリの再起動が必要です。
+            <div v-if="isNative" class="dialog-form-note">
+              ※ログ設定の変更を反映するにはアプリの再起動が必要です。
             </div>
-            <div class="dialog-form-note">
+            <div v-if="isNative" class="dialog-form-note">
               ※ログの出力先は「デバッグ」-「ログファイルの場所を開く」で開きます。
             </div>
-            <div class="dialog-form-note">
+            <div v-if="isNative" class="dialog-form-note">
               ※現在、古いログファイルの自動削除機能はありません。
             </div>
           </div>
@@ -262,6 +262,15 @@
               :checked="appSetting.enableCSALog"
               type="checkbox"
             />
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">ログレベル</div>
+            <select ref="logLevel" :value="appSetting.logLevel">
+              <option :value="LogLevel.DEBUG">DEBUG</option>
+              <option :value="LogLevel.INFO">INFO</option>
+              <option :value="LogLevel.WARN">WARN</option>
+              <option :value="LogLevel.ERROR">ERROR</option>
+            </select>
           </div>
         </div>
       </div>
@@ -302,6 +311,7 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
+import { LogLevel } from "@/common/log";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -342,6 +352,7 @@ export default defineComponent({
     const enableAppLog: Ref = ref(null);
     const enableUSILog: Ref = ref(null);
     const enableCSALog: Ref = ref(null);
+    const logLevel: Ref = ref(null);
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -377,6 +388,7 @@ export default defineComponent({
         enableAppLog: enableAppLog.value.checked,
         enableUSILog: enableUSILog.value.checked,
         enableCSALog: enableCSALog.value.checked,
+        logLevel: logLevel.value.value,
       };
       store.retainBussyState();
       try {
@@ -416,6 +428,7 @@ export default defineComponent({
       BoardLabelType,
       TabPaneType,
       EvaluationViewFrom,
+      LogLevel,
       dialog,
       thema,
       pieceImage,
@@ -438,6 +451,7 @@ export default defineComponent({
       enableAppLog,
       enableUSILog,
       enableCSALog,
+      logLevel,
       appSetting,
       returnCodeToName,
       isNative: isNative(),

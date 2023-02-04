@@ -13,7 +13,12 @@
         </div>
         <div class="option">
           <div class="option-name">場所</div>
-          <div class="option-unchangeable">{{ engine.path }}</div>
+          <div class="option-unchangeable">
+            <div>{{ engine.path }}</div>
+            <button class="dialog-button" @click="openEngineDir">
+              フォルダを開く
+            </button>
+          </div>
         </div>
         <div class="option">
           <div class="option-name">表示名</div>
@@ -198,6 +203,10 @@ export default defineComponent({
       uninstallHotKeyForDialog(dialog.value);
     });
 
+    const openEngineDir = () => {
+      api.openExplorer(engine.value.path);
+    };
+
     const selectFile = async (id: string) => {
       store.retainBussyState();
       try {
@@ -263,6 +272,7 @@ export default defineComponent({
       dialog,
       engineNameInput,
       options,
+      openEngineDir,
       selectFile,
       sendOption,
       reset,

@@ -20,6 +20,9 @@ const api: Bridge = {
   updateAppState(appState: AppState, bussy: boolean): void {
     ipcRenderer.send(Background.UPDATE_APP_STATE, appState, bussy);
   },
+  openExplorer(path: string) {
+    ipcRenderer.send(Background.OPEN_EXPLORER, path);
+  },
   async showOpenRecordDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);
   },

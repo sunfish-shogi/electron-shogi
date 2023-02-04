@@ -231,8 +231,8 @@ export function setup(): void {
   watch(
     () => [store.appState, store.isBussy],
     ([appState, bussy]) => {
-      bridge.updateMenuState(appState as AppState, bussy as boolean);
+      bridge.updateAppState(appState as AppState, bussy as boolean);
     }
   );
-  bridge.updateMenuState(store.appState, store.isBussy);
+  bridge.updateAppState(store.appState, store.isBussy);
 }

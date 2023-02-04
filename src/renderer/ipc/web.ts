@@ -19,7 +19,7 @@ export const webAPI: Bridge = {
   async getRecordPathFromProcArg(): Promise<string> {
     return "";
   },
-  updateMenuState(): void {
+  updateAppState(): void {
     // DO NOTHING
   },
   async showOpenRecordDialog(): Promise<string> {

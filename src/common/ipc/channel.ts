@@ -1,6 +1,6 @@
 export enum Background {
   GET_RECORD_PATH_FROM_PROC_ARG = "getRecordPathFromProcArg",
-  UPDATE_MENU_STATE = "updateMenuState",
+  UPDATE_APP_STATE = "updateAppState",
   SHOW_OPEN_RECORD_DIALOG = "showOpenRecordDialog",
   OPEN_RECORD = "openRecord",
   SHOW_SAVE_RECORD_DIALOG = "showSaveRecordDialog",

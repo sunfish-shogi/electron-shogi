@@ -354,7 +354,7 @@ export function setupMenu(): void {
   Menu.setApplicationMenu(menu);
 }
 
-export function updateMenuState(appState: AppState, bussy: boolean): void {
+export function updateAppState(appState: AppState, bussy: boolean): void {
   Array.from(stateChangeCallbacks).forEach((callback) =>
     callback(appState, bussy)
   );

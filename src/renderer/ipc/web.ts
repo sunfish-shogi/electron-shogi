@@ -22,6 +22,9 @@ export const webAPI: Bridge = {
   updateAppState(): void {
     // DO NOTHING
   },
+  openExplorer() {
+    // DO NOTHING
+  },
   async showOpenRecordDialog(): Promise<string> {
     throw new Error("Web版では利用できない機能です。");
   },

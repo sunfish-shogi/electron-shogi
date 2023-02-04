@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, ipcMain, WebContents } from "electron";
+import { BrowserWindow, dialog, ipcMain, shell, WebContents } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import path from "path";
 import fs from "fs";
@@ -92,6 +92,19 @@ ipcMain.on(
     updateAppState(state, bussy);
   }
 );
+
+ipcMain.on(Background.OPEN_EXPLORER, (_, target: string) => {
+  const stats = fs.statSync(target, { throwIfNoEntry: false });
+  if (!stats) {
+    sendError(new Error(`ファイルの場所を開けませんでした: ${target}`));
+    return;
+  }
+  if (stats.isDirectory()) {
+    shell.openPath(target);
+  } else {
+    shell.openPath(path.dirname(target));
+  }
+});
 
 function isValidRecordFilePath(path: string) {
   return (

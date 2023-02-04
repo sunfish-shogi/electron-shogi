@@ -1,13 +1,16 @@
 import { createApp } from "vue";
 import App from "@/renderer/App.vue";
-import api from "@/renderer/ipc/api";
+import api, { appInfo } from "@/renderer/ipc/api";
 import { setup as setupIPC } from "@/renderer/ipc/setup";
 import { useStore } from "@/renderer/store";
 import { Chart, registerables } from "chart.js";
 import { LogLevel } from "@/common/log";
 import { useAppSetting } from "./store/setting";
 
-api.log(LogLevel.INFO, "start renderer process");
+api.log(
+  LogLevel.INFO,
+  `start renderer process: APP_VERSION=${appInfo.appVersion}`
+);
 
 Chart.register(...registerables);
 

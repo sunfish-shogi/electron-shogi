@@ -17,8 +17,8 @@ const api: Bridge = {
   async getRecordPathFromProcArg(): Promise<string> {
     return await ipcRenderer.invoke(Background.GET_RECORD_PATH_FROM_PROC_ARG);
   },
-  updateMenuState(appState: AppState, bussy: boolean): void {
-    ipcRenderer.send(Background.UPDATE_MENU_STATE, appState, bussy);
+  updateAppState(appState: AppState, bussy: boolean): void {
+    ipcRenderer.send(Background.UPDATE_APP_STATE, appState, bussy);
   },
   async showOpenRecordDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);

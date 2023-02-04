@@ -14,6 +14,7 @@ import {
 } from "@/common/settings/app";
 import { UnwrapNestedRefs, reactive } from "vue";
 import api from "../ipc/api";
+import { LogLevel } from "@/common/log";
 
 class AppSettingStore {
   private setting = defaultAppSetting();
@@ -108,6 +109,9 @@ class AppSettingStore {
   }
   get enableCSALog(): boolean {
     return this.setting.enableCSALog;
+  }
+  get logLevel(): LogLevel {
+    return this.setting.logLevel;
   }
 
   async reloadAppSetting(): Promise<void> {

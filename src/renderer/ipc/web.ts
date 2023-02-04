@@ -19,7 +19,7 @@ export const webAPI: Bridge = {
   async getRecordPathFromProcArg(): Promise<string> {
     return "";
   },
-  updateMenuState(): void {
+  updateAppState(): void {
     // DO NOTHING
   },
   async showOpenRecordDialog(): Promise<string> {
@@ -163,6 +163,9 @@ export const webAPI: Bridge = {
   },
   log(level: LogLevel, message: string): void {
     switch (level) {
+      case LogLevel.DEBUG:
+        console.debug(message);
+        break;
       case LogLevel.INFO:
         console.log(message);
         break;

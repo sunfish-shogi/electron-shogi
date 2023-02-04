@@ -1,3 +1,4 @@
+import { LogLevel } from "@/common/log";
 import {
   Thema,
   PieceImageType,
@@ -42,6 +43,7 @@ describe("settings/csa", () => {
       enableAppLog: true,
       enableUSILog: true,
       enableCSALog: true,
+      logLevel: LogLevel.INFO,
     };
     const result = normalizeAppSetting(setting, {
       returnCode: "\r\n",

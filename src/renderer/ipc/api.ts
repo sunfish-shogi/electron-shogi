@@ -17,7 +17,7 @@ type AppInfo = {
 
 export interface Bridge {
   getRecordPathFromProcArg(): Promise<string>;
-  updateMenuState(appState: AppState, bussy: boolean): void;
+  updateAppState(appState: AppState, bussy: boolean): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;
@@ -123,7 +123,7 @@ export interface Bridge {
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
-  updateMenuState(appState: AppState, bussy: boolean): void;
+  updateAppState(appState: AppState, bussy: boolean): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;

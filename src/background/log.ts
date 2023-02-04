@@ -4,6 +4,7 @@ import log4js from "log4js";
 import { loadAppSetting } from "@/background/settings";
 import { getDateTimeString } from "@/common/helpers/datetime";
 import { isTest } from "./environment";
+import { AppSetting } from "@/common/settings/app";
 
 const rootDir = !isTest() ? app.getPath("logs") : "";
 
@@ -46,8 +47,7 @@ function getFilePath(type: LogType): string {
   }
 }
 
-function isLogEnabled(type: LogType): boolean {
-  const appSetting = loadAppSetting();
+function isLogEnabled(type: LogType, appSetting: AppSetting): boolean {
   switch (type) {
     case LogType.APP:
       return appSetting.enableAppLog;
@@ -65,10 +65,15 @@ function getLogger(type: LogType): log4js.Logger {
     return loggers[type];
   }
   if (!config.appenders[type]) {
+    const appSetting = loadAppSetting();
     config.appenders[type] = { type: "file", filename: getFilePath(type) };
     config.categories[type] = {
-      appenders: isLogEnabled(type) ? [type] : !isTest() ? ["stdout"] : [],
-      level: "info",
+      appenders: isLogEnabled(type, appSetting)
+        ? [type]
+        : !isTest()
+        ? ["stdout"]
+        : [],
+      level: appSetting.logLevel,
     };
   }
   const logger = log4js.configure(config).getLogger(type);

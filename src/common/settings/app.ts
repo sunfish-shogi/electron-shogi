@@ -1,3 +1,5 @@
+import { LogLevel } from "../log";
+
 export enum Thema {
   STANDARD = "standard",
   CHERRY_BLOSSOM = "cherry-blossom",
@@ -84,6 +86,7 @@ export type AppSetting = {
   enableAppLog: boolean;
   enableUSILog: boolean;
   enableCSALog: boolean;
+  logLevel: LogLevel;
 };
 
 export type AppSettingUpdate = {
@@ -116,6 +119,7 @@ export type AppSettingUpdate = {
   enableAppLog?: boolean;
   enableUSILog?: boolean;
   enableCSALog?: boolean;
+  logLevel?: LogLevel;
 };
 
 export function buildUpdatedAppSetting(
@@ -188,6 +192,7 @@ export function defaultAppSetting(opt?: {
     enableAppLog: false,
     enableUSILog: false,
     enableCSALog: false,
+    logLevel: LogLevel.INFO,
   };
 }
 

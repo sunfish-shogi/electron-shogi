@@ -27,3 +27,22 @@ export function formatPercentage(
   }
   return ((numerator / denominator) * 100).toFixed(fractionDigits) + "%";
 }
+
+export function ordinal(n: number): string {
+  switch (n % 100) {
+    case 11:
+    case 12:
+    case 13:
+      return n + "th";
+  }
+  switch (n % 10) {
+    case 1:
+      return n + "st";
+    case 2:
+      return n + "nd";
+    case 3:
+      return n + "rd";
+    default:
+      return n + "th";
+  }
+}

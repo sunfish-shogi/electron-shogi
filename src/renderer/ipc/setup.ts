@@ -91,8 +91,8 @@ export function setup(): void {
       case MenuEvent.INSERT_WIN_BY_DEFAULT:
         store.insertSpecialMove(SpecialMove.WIN_BY_DEFAULT);
         break;
-      case MenuEvent.INSERT_LOSS_BY_DEFAULT:
-        store.insertSpecialMove(SpecialMove.LOSS_BY_DEFAULT);
+      case MenuEvent.INSERT_LOSE_BY_DEFAULT:
+        store.insertSpecialMove(SpecialMove.LOSE_BY_DEFAULT);
         break;
       case MenuEvent.REMOVE_CURRENT_MOVE:
         store.removeCurrentMove();

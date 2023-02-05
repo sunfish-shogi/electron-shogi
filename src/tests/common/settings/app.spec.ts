@@ -9,11 +9,13 @@ import {
   Tab,
   TabPaneType,
   EvaluationViewFrom,
+  Language,
 } from "@/common/settings/app";
 
 describe("settings/csa", () => {
   it("normalize", () => {
     const setting = {
+      language: Language.JA,
       thema: Thema.DARK,
       pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       boardImage: BoardImageType.WARM,

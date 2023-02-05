@@ -3,11 +3,13 @@
     <dialog ref="dialog">
       <div ref="content">
         <div class="dialog-form-area">
-          <div class="message">以下の棋譜(または局面)を取り込みます。</div>
-          <div class="message">※KIF形式/CSA形式/SFENに対応しています。</div>
+          <div class="message">{{ t.importingFollowingRecordOrPosition }}</div>
+          <div class="message">{{ t.supportsKIFCSAUSI }}</div>
           <div v-if="!isNative" class="message">
-            ※テキストエリアに棋譜を貼り付けてください。<br />
-            ※インストールアプリ版では自動的に貼り付けられます。
+            {{ t.plesePasteRecordIntoTextArea }}
+          </div>
+          <div v-if="!isNative" class="message">
+            {{ t.desktopVersionPastesAutomatically }}
           </div>
           <textarea ref="textarea" />
         </div>
@@ -19,10 +21,10 @@
           class="dialog-button"
           @click="onOk"
         >
-          取り込む
+          {{ t.import }}
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="onCancel">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -30,6 +32,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { isNative } from "@/renderer/ipc/api";
 import {
@@ -78,6 +81,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       dialog,
       textarea,
       onOk,

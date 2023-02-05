@@ -1,5 +1,5 @@
 export enum MenuEvent {
-  NEW_RECORD = "resetRecord",
+  NEW_RECORD = "newRecord",
   OPEN_RECORD = "openRecord",
   SAVE_RECORD = "saveRecord",
   SAVE_RECORD_AS = "saveRecordAs",
@@ -20,7 +20,7 @@ export enum MenuEvent {
   INSERT_FOUL_LOSE = "insertFoulLose",
   INSERT_ENTERING_OF_KING = "insertEnteringOfKing",
   INSERT_WIN_BY_DEFAULT = "insertWinByDefault",
-  INSERT_LOSS_BY_DEFAULT = "insertLossByDefault",
+  INSERT_LOSE_BY_DEFAULT = "insertLossByDefault",
   REMOVE_CURRENT_MOVE = "remvoeCurrentMove",
   START_POSITION_EDITING = "startPositionEditing",
   END_POSITION_EDITING = "endPositionEditing",

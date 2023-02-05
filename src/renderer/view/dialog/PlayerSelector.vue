@@ -18,15 +18,15 @@
         </option>
       </select>
       <div v-if="displayPonderState" class="player-info">
-        <span class="player-info-key">先読み(Ponder):</span>
+        <span class="player-info-key">{{ t.ponder }}:</span>
         <span class="player-info-value">{{ ponderState || "---" }}</span>
       </div>
       <div v-if="displayThreadState" class="player-info">
-        <span class="player-info-key">スレッド数:</span>
+        <span class="player-info-key">{{ t.numberOfThreads }}:</span>
         <span class="player-info-value">{{ threadState || "---" }}</span>
       </div>
       <div v-if="displayMultiPvState" class="player-info">
-        <span class="player-info-key">マルチPV:</span>
+        <span class="player-info-key">{{ t.multiPV }}:</span>
         <span class="player-info-value">{{ multiPVState || "---" }}</span>
       </div>
       <button
@@ -35,20 +35,21 @@
         @click="openPlayerSetting"
       >
         <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
-        設定
+        {{ t.settings }}
       </button>
     </div>
   </div>
   <USIEngineOptionDialog
     v-if="engineSettingDialog"
     :latest-engine-setting="engineSettingDialog"
-    ok-button-text="保存"
+    :ok-button-text="t.save"
     @ok="savePlayerSetting"
     @cancel="closePlayerSetting"
   />
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { computed, defineComponent, PropType, Ref, ref } from "vue";
 import * as uri from "@/common/uri.js";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
@@ -183,6 +184,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       playerSelect,
       ponderState,
       threadState,

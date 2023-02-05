@@ -6,6 +6,7 @@ import { useStore } from "@/renderer/store";
 import { Chart, registerables } from "chart.js";
 import { LogLevel } from "@/common/log";
 import { useAppSetting } from "./store/setting";
+import { setLanguage } from "@/common/i18n";
 
 api.log(
   LogLevel.INFO,
@@ -36,6 +37,9 @@ Promise.allSettled([
       store.pushError(new Error("起動パラメーターの取得に失敗しました: " + e));
     }),
 ]).finally(() => {
+  const language = useAppSetting().language;
+  api.log(LogLevel.INFO, `set language: ${language}`);
+  setLanguage(language);
   api.log(LogLevel.INFO, "mount app");
   createApp(App).mount("#app");
 });

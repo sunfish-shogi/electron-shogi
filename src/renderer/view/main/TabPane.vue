@@ -14,7 +14,7 @@
         </div>
         <div v-if="displayMinimizeToggle" class="tab end" @click="minimize">
           <ButtonIcon class="icon" :icon="Icon.ARROW_DROP" />
-          最小化
+          {{ t.hideTabView }}
         </div>
       </div>
       <div class="tab-contents">
@@ -65,39 +65,9 @@ import { RectSize } from "@/renderer/view/primitive/Types";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { Tab } from "@/common/settings/app";
 import { Icon } from "@/renderer/assets/icons";
+import { t } from "@/common/i18n";
 
 export const headerHeight = 30;
-
-const tabs = {
-  [Tab.RECORD_INFO]: {
-    title: "棋譜情報",
-    icon: Icon.DESCRIPTION,
-  },
-  [Tab.COMMENT]: {
-    title: "コメント",
-    icon: Icon.COMMENT,
-  },
-  [Tab.SEARCH]: {
-    title: "思考",
-    icon: Icon.BRAIN,
-  },
-  [Tab.PV]: {
-    title: "読み筋",
-    icon: Icon.PV,
-  },
-  [Tab.CHART]: {
-    title: "評価値",
-    icon: Icon.CHART,
-  },
-  [Tab.PERCENTAGE_CHART]: {
-    title: "期待勝率",
-    icon: Icon.PERCENT,
-  },
-  [Tab.INVISIBLE]: {
-    title: "最小化",
-    icon: Icon.ARROW_DROP,
-  },
-};
 
 export default defineComponent({
   name: "TabPane",
@@ -133,7 +103,40 @@ export default defineComponent({
     const contentSize = computed(() =>
       props.size.reduce(new RectSize(0, headerHeight))
     );
+
+    const tabs = {
+      [Tab.RECORD_INFO]: {
+        title: t.recordProperties,
+        icon: Icon.DESCRIPTION,
+      },
+      [Tab.COMMENT]: {
+        title: t.comments,
+        icon: Icon.COMMENT,
+      },
+      [Tab.SEARCH]: {
+        title: t.searchLog,
+        icon: Icon.BRAIN,
+      },
+      [Tab.PV]: {
+        title: t.pv,
+        icon: Icon.PV,
+      },
+      [Tab.CHART]: {
+        title: t.evaluation,
+        icon: Icon.CHART,
+      },
+      [Tab.PERCENTAGE_CHART]: {
+        title: t.estimatedWinRate,
+        icon: Icon.PERCENT,
+      },
+      [Tab.INVISIBLE]: {
+        title: t.hideTabView,
+        icon: Icon.ARROW_DROP,
+      },
+    };
+
     return {
+      t,
       contentSize,
       changeSelect,
       minimize,
@@ -169,6 +172,9 @@ export default defineComponent({
   line-height: 28px;
   font-size: 1em;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .tab.selected {
   border-bottom: solid 3px var(--tab-highlight-color);

@@ -16,6 +16,7 @@
       :black-player-byoyomi="clock?.black.byoyomi"
       :white-player-time="clock?.white.time"
       :white-player-byoyomi="clock?.white.byoyomi"
+      :next-move-label="t.nextTurn"
       @resize="onResize"
       @move="onMove"
       @edit="onEdit"
@@ -28,7 +29,7 @@
             @click="onGame"
           >
             <ButtonIcon class="icon" :icon="Icon.GAME" />
-            対局
+            {{ t.game }}
           </button>
           <button
             v-if="controlStates.showGameResults"
@@ -36,7 +37,7 @@
             @click="onShowGameResults"
           >
             <ButtonIcon class="icon" :icon="Icon.SCORE" />
-            戦績確認
+            {{ t.displayGameResults }}
           </button>
           <button
             v-if="controlStates.stop"
@@ -44,11 +45,11 @@
             @click="onStop"
           >
             <ButtonIcon class="icon" :icon="Icon.STOP" data-hotkey="Escape" />
-            対局中断
+            {{ t.stopGame }}
           </button>
           <button v-if="controlStates.win" class="control-item" @click="onWin">
             <ButtonIcon class="icon" :icon="Icon.CALL" />
-            勝ち宣言
+            {{ t.declareWinning }}
           </button>
           <button
             v-if="controlStates.resign"
@@ -56,7 +57,7 @@
             @click="onResign"
           >
             <ButtonIcon class="icon" :icon="Icon.RESIGN" />
-            投了
+            {{ t.resign }}
           </button>
           <button
             v-if="controlStates.research"
@@ -68,7 +69,7 @@
               :icon="Icon.RESEARCH"
               data-hotkey="Control+r"
             />
-            検討
+            {{ t.research }}
           </button>
           <button
             v-if="controlStates.endResearch"
@@ -77,7 +78,7 @@
             @click="onEndResearch"
           >
             <ButtonIcon class="icon" :icon="Icon.END" />
-            検討終了
+            {{ t.endResearch }}
           </button>
           <button
             v-if="controlStates.analysis"
@@ -89,7 +90,7 @@
               :icon="Icon.ANALYSIS"
               data-hotkey="Control+a"
             />
-            解析
+            {{ t.analysis }}
           </button>
           <button
             v-if="controlStates.endAnalysis"
@@ -98,7 +99,7 @@
             @click="onEndAnalysis"
           >
             <ButtonIcon class="icon" :icon="Icon.STOP" />
-            解析中断
+            {{ t.stopAnalysis }}
           </button>
           <button
             v-if="controlStates.startEditPosition"
@@ -106,7 +107,7 @@
             @click="onStartEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.EDIT" />
-            局面編集
+            {{ t.setupPosition }}
           </button>
           <button
             v-if="controlStates.endEditPosition"
@@ -114,7 +115,7 @@
             @click="onEndEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.CHECK" />
-            局面編集終了
+            {{ t.completePositionSetup }}
           </button>
           <button
             v-if="controlStates.initPosition"
@@ -122,14 +123,14 @@
             @click="onChangeTurn"
           >
             <ButtonIcon class="icon" :icon="Icon.SWAP" />
-            手番変更
+            {{ t.changeTurn }}
           </button>
           <button
             v-if="controlStates.initPosition"
             class="control-item"
             @click="onInitPosition"
           >
-            局面の初期化
+            {{ t.initializePosition }}
           </button>
         </div>
       </template>
@@ -141,7 +142,7 @@
               :icon="Icon.SETTINGS"
               data-hotkey="Control+,"
             />
-            アプリ設定
+            {{ t.appSettings }}
           </button>
           <button
             class="control-item"
@@ -153,7 +154,7 @@
               :icon="Icon.ENGINE_SETTINGS"
               data-hotkey="Control+."
             />
-            エンジン設定
+            {{ t.engineSettings }}
           </button>
           <button class="control-item" @click="onFlip">
             <ButtonIcon
@@ -161,11 +162,11 @@
               :icon="Icon.FLIP"
               data-hotkey="Control+t"
             />
-            盤面反転
+            {{ t.flipBoard }}
           </button>
           <button class="control-item" @click="onFileAction">
             <ButtonIcon class="icon" :icon="Icon.FILE" />
-            ファイル
+            {{ t.file }}
           </button>
           <button
             class="control-item"
@@ -177,7 +178,7 @@
               :icon="Icon.DELETE"
               data-hotkey="Control+d"
             />
-            指し手削除
+            {{ t.deleteMove }}
           </button>
         </div>
       </template>
@@ -192,6 +193,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import {
   computed,
   defineComponent,
@@ -361,14 +363,18 @@ export default defineComponent({
     });
 
     const blackPlayerName = computed(() => {
-      return store.record.metadata.getStandardMetadata(
-        RecordMetadataKey.BLACK_NAME
+      return (
+        store.record.metadata.getStandardMetadata(
+          RecordMetadataKey.BLACK_NAME
+        ) || t.sente
       );
     });
 
     const whitePlayerName = computed(() => {
-      return store.record.metadata.getStandardMetadata(
-        RecordMetadataKey.WHITE_NAME
+      return (
+        store.record.metadata.getStandardMetadata(
+          RecordMetadataKey.WHITE_NAME
+        ) || t.gote
       );
     });
 
@@ -419,6 +425,7 @@ export default defineComponent({
     });
 
     return {
+      t,
       store,
       rightControl,
       leftControl,

@@ -1,9 +1,9 @@
 <template>
   <div>
     <dialog ref="dialog" class="root">
-      <div class="dialog-title">棋譜解析</div>
+      <div class="dialog-title">{{ t.recordAnalysis }}</div>
       <div class="dialog-form-area">
-        <div>エンジン</div>
+        <div>{{ t.searchEngine }}</div>
         <PlayerSelector
           :player-uri="engineURI"
           :engine-settings="engineSettings"
@@ -14,7 +14,7 @@
         />
       </div>
       <div class="dialog-form-area">
-        <div>開始条件</div>
+        <div>{{ t.startCriteria }}</div>
         <div class="dialog-form-item">
           <input
             ref="enableStartNumber"
@@ -23,6 +23,7 @@
             :checked="defaultValues.enableStartNumber"
             @change="updateToggle"
           />
+          <div class="dialog-form-item-unit">{{ t.fromPrefix }}</div>
           <input
             ref="startNumber"
             class="small"
@@ -32,11 +33,13 @@
             :disabled="!defaultValues.enableStartNumber"
             :value="defaultValues.startNumber"
           />
-          <div class="dialog-form-item-unit">手目から</div>
+          <div class="dialog-form-item-unit">
+            {{ t.plySuffix }}{{ t.fromSuffix }}
+          </div>
         </div>
       </div>
       <div class="dialog-form-area">
-        <div>終了条件</div>
+        <div>{{ t.endCriteria }}</div>
         <div class="dialog-form-item">
           <input
             ref="enableEndNumber"
@@ -45,6 +48,7 @@
             :checked="defaultValues.enableEndNumber"
             @change="updateToggle"
           />
+          <div class="dialog-form-item-unit">{{ t.toPrefix }}</div>
           <input
             ref="endNumber"
             class="small"
@@ -54,12 +58,15 @@
             :disabled="!defaultValues.enableEndNumber"
             :value="defaultValues.endNumber"
           />
-          <div class="dialog-form-item-unit">手目まで</div>
+          <div class="dialog-form-item-unit">
+            {{ t.plySuffix }}{{ t.toSuffix }}
+          </div>
         </div>
       </div>
       <div class="dialog-form-area">
-        <div>局面ごとの終了条件</div>
+        <div>{{ t.endCriteria1Move }}</div>
         <div class="dialog-form-item">
+          <div class="dialog-form-item-unit">{{ t.toPrefix }}</div>
           <input
             ref="maxSecondsPerMove"
             class="small"
@@ -68,22 +75,30 @@
             step="1"
             :value="defaultValues.maxSecondsPerMove"
           />
-          <div class="dialog-form-item-unit">秒まで</div>
+          <div class="dialog-form-item-unit">
+            {{ t.secondsSuffix }}{{ t.toSuffix }}
+          </div>
         </div>
       </div>
       <div class="dialog-form-area">
-        <div>出力設定</div>
+        <div>{{ t.outputSettings }}</div>
         <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">指し手コメント</div>
+          <div class="dialog-form-item-label-wide">{{ t.moveComments }}</div>
           <select
             ref="commentBehavior"
             size="1"
             :value="defaultValues.commentBehavior"
           >
-            <option :value="CommentBehavior.NONE">出力しない</option>
-            <option :value="CommentBehavior.INSERT">前方に加筆する</option>
-            <option :value="CommentBehavior.APPEND">末尾に加筆する</option>
-            <option :value="CommentBehavior.OVERWRITE">上書きする</option>
+            <option :value="CommentBehavior.NONE">{{ t.noOutputs }}</option>
+            <option :value="CommentBehavior.INSERT">
+              {{ t.insertCommentToTop }}
+            </option>
+            <option :value="CommentBehavior.APPEND">
+              {{ t.appendCommentToBottom }}
+            </option>
+            <option :value="CommentBehavior.OVERWRITE">
+              {{ t.overwrite }}
+            </option>
           </select>
         </div>
       </div>
@@ -105,6 +120,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
@@ -224,6 +240,7 @@ export default defineComponent({
     });
 
     return {
+      t,
       CommentBehavior,
       dialog,
       engineSettings,

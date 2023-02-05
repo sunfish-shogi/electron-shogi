@@ -23,7 +23,7 @@
             @click="onUnhideTabView"
           >
             <ButtonIcon class="icon" :icon="Icon.ARROW_UP" />
-            タブビューを再表示
+            {{ t.expandTabView }}
           </button>
         </div>
       </Pane>
@@ -80,6 +80,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import {
   reactive,
   onMounted,
@@ -267,6 +268,7 @@ export default defineComponent({
     });
 
     return {
+      t,
       topPaneHeightPercentage,
       bottomPaneHeightPercentage,
       bottomLeftPaneWidthPercentage,

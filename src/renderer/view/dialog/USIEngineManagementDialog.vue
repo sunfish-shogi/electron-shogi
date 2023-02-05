@@ -1,10 +1,10 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">エンジン管理</div>
+      <div class="dialog-title">{{ t.engineManagement }}</div>
       <div class="dialog-form-area engine-list">
         <div v-if="setting.engineList.length === 0" class="engine">
-          エンジンが登録されていません。
+          {{ t.noEngineRegistered }}
         </div>
         <div
           v-for="engine in setting.engineList"
@@ -13,12 +13,12 @@
           :value="engine.uri"
         >
           <div class="engine-name">{{ engine.name }}</div>
-          <button @click="openOptions(engine.uri)">設定</button>
-          <button @click="duplicate(engine.uri)">複製</button>
-          <button @click="remove(engine.uri)">削除</button>
+          <button @click="openOptions(engine.uri)">{{ t.config }}</button>
+          <button @click="duplicate(engine.uri)">{{ t.duplicate }}</button>
+          <button @click="remove(engine.uri)">{{ t.remove }}</button>
         </div>
       </div>
-      <button class="dialog-wide-button" @click="add()">追加</button>
+      <button class="dialog-wide-button" @click="add()">{{ t.add }}</button>
       <div class="dialog-main-buttons">
         <button
           data-hotkey="Enter"
@@ -26,10 +26,10 @@
           class="dialog-button"
           @click="saveAndClose()"
         >
-          保存して閉じる
+          {{ t.saveAndClose }}
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="cancel()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -43,6 +43,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import api from "@/renderer/ipc/api";
 import {
   duplicateEngineSetting,
@@ -148,6 +149,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       optionDialog,
       dialog,
       setting,

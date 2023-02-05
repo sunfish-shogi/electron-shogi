@@ -153,7 +153,7 @@ export enum SpecialMove {
   FOUL_LOSE = "foulLose", // 手番側の負け
   ENTERING_OF_KING = "enteringOfKing",
   WIN_BY_DEFAULT = "winByDefault",
-  LOSS_BY_DEFAULT = "lossByDefault",
+  LOSE_BY_DEFAULT = "loseByDefault",
 }
 
 export interface ImmutableNode {

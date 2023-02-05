@@ -1,5 +1,11 @@
 import { LogLevel } from "../log";
 
+export enum Language {
+  // ISO 639-1
+  JA = "ja",
+  EN = "en",
+}
+
 export enum Thema {
   STANDARD = "standard",
   CHERRY_BLOSSOM = "cherry-blossom",
@@ -57,6 +63,7 @@ export enum ClockSoundTarget {
 }
 
 export type AppSetting = {
+  language: Language;
   thema: Thema;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
@@ -90,6 +97,7 @@ export type AppSetting = {
 };
 
 export type AppSettingUpdate = {
+  language?: Language;
   thema?: Thema;
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
@@ -163,6 +171,7 @@ export function defaultAppSetting(opt?: {
   autoSaveDirectory?: string;
 }): AppSetting {
   return {
+    language: Language.JA,
     thema: Thema.STANDARD,
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.RESIN2,

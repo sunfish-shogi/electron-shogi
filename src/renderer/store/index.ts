@@ -47,6 +47,7 @@ import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
 import { SearchInfo } from "../players/player";
 import { useAppSetting } from "./setting";
+import { t } from "@/common/i18n";
 
 function getMessageAttachmentsByGameResults(
   results: GameResults
@@ -150,7 +151,7 @@ class Store {
     if (!document) {
       return;
     }
-    const appName = "Electron将棋";
+    const appName = t.electronShogi;
     const appVersion = appInfo.appVersion;
     if (path) {
       document.title = `${appName} Version ${appVersion} - ${path}`;
@@ -492,7 +493,7 @@ class Store {
         // 連続対局の場合は確認ダイアログを表示する。
         if (this.gameManager.setting.repeat >= 2) {
           this.showConfirmation({
-            message: "連続対局を中断しますか？",
+            message: t.areYouSureWantToQuitGames,
             onOk: () => this.gameManager.endGame(SpecialMove.INTERRUPT),
           });
         } else {
@@ -502,8 +503,7 @@ class Store {
       case AppState.CSA_GAME:
         // 確認ダイアログを表示する。
         this.showConfirmation({
-          message:
-            "中断を要求すると負けになる可能性があります。よろしいですか？",
+          message: t.areYouSureWantToRequestQuit,
           onOk: () => this.csaGameManager.stop(),
         });
         break;
@@ -516,7 +516,7 @@ class Store {
     }
     const results = this.gameManager.results;
     this.enqueueMessage({
-      text: "対局の経過",
+      text: t.gameProgress,
       attachments: getMessageAttachmentsByGameResults(results),
     });
   }
@@ -531,12 +531,12 @@ class Store {
     }
     if (results && results.total >= 2) {
       this.enqueueMessage({
-        text: "連続対局終了",
+        text: t.allGamesCompleted,
         attachments: getMessageAttachmentsByGameResults(results),
       });
     } else if (specialMove) {
       this.enqueueMessage({
-        text: `対局終了（${getSpecialMoveDisplayString(specialMove)})`,
+        text: `${t.gameEnded}（${getSpecialMoveDisplayString(specialMove)})`,
       });
     }
     this._appState = AppState.NORMAL;
@@ -699,7 +699,7 @@ class Store {
       return;
     }
     this.showConfirmation({
-      message: "現在の棋譜は削除されます。よろしいですか？",
+      message: t.areYouSureWantToClearRecord,
       onOk: () => {
         this.recordManager.reset();
       },
@@ -725,7 +725,7 @@ class Store {
       return;
     }
     this.showConfirmation({
-      message: "現在の棋譜は削除されます。よろしいですか？",
+      message: t.areYouSureWantToClearRecord,
       onOk: () => {
         this._appState = AppState.POSITION_EDITING;
         this.recordManager.resetByCurrentPosition();
@@ -744,7 +744,7 @@ class Store {
       return;
     }
     this.showConfirmation({
-      message: "現在の局面は破棄されます。よろしいですか？",
+      message: t.areYouSureWantToDiscardPosition,
       onOk: () => {
         this.recordManager.reset(initialPositionType);
       },
@@ -801,7 +801,9 @@ class Store {
       return;
     }
     this.showConfirmation({
-      message: `${this.recordManager.record.current.number}手目以降を削除します。よろしいですか？`,
+      message: t.areYouSureWantToDeleteFollowingMove(
+        this.recordManager.record.current.number
+      ),
       onOk: () => {
         this.recordManager.removeCurrentMove();
       },

@@ -5,7 +5,7 @@
         <div class="group">
           <button class="close" @click="onClose">
             <ButtonIcon class="icon" :icon="Icon.CLOSE" />
-            <div class="label">戻る</div>
+            <div class="label">{{ t.back }}</div>
           </button>
         </div>
         <div class="group">
@@ -64,6 +64,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { defineComponent, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
@@ -135,6 +136,7 @@ export default defineComponent({
       context.emit("close");
     };
     return {
+      t,
       dialog,
       Icon,
       onClose,

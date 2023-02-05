@@ -40,10 +40,7 @@ export type GameResults = {
 
 type SaveRecordCallback = () => void;
 type GameNextCallback = () => void;
-type GameEndCallback = (
-  gameResults: GameResults,
-  specialMove: SpecialMove
-) => void;
+type GameEndCallback = (results: GameResults, specialMove: SpecialMove) => void;
 type PieceBeatCallback = () => void;
 type BeepShortCallback = () => void;
 type BeepUnlimitedCallback = () => void;
@@ -68,7 +65,7 @@ export class GameManager {
   private blackPlayer?: Player;
   private whitePlayer?: Player;
   private playerBuilder = defaultPlayerBuilder();
-  private gameResults: GameResults = newGameResults("", "");
+  private _results: GameResults = newGameResults("", "");
   private lastEventID: number;
   private onSaveRecord: SaveRecordCallback = () => {
     /* noop */
@@ -147,6 +144,10 @@ export class GameManager {
     return this._setting;
   }
 
+  get results(): GameResults {
+    return this._results;
+  }
+
   async startGame(
     setting: GameSetting,
     playerBuilder: PlayerBuilder
@@ -163,7 +164,7 @@ export class GameManager {
       // 連続対局用に何手目から開始するかを記憶する。
       this.startPly = this.recordManager.record.current.number;
     }
-    this.gameResults = newGameResults(setting.black.name, setting.white.name);
+    this._results = newGameResults(setting.black.name, setting.white.name);
     await this.nextGame();
   }
 
@@ -461,7 +462,7 @@ export class GameManager {
           specialMove === SpecialMove.INTERRUPT ||
           this.repeat >= this.setting.repeat;
         if (complete) {
-          this.onGameEnd(this.gameResults, specialMove);
+          this.onGameEnd(this.results, specialMove);
           return;
         }
         // 連続対局時の手番入れ替えが有効ならプレイヤーを入れ替える。
@@ -487,19 +488,19 @@ export class GameManager {
     );
     switch (gameResult) {
       case GameResult.WIN:
-        this.gameResults.player1.win++;
+        this._results.player1.win++;
         break;
       case GameResult.LOSE:
-        this.gameResults.player2.win++;
+        this._results.player2.win++;
         break;
       case GameResult.DRAW:
-        this.gameResults.draw++;
+        this._results.draw++;
         break;
       default:
-        this.gameResults.invalid++;
+        this._results.invalid++;
         break;
     }
-    this.gameResults.total++;
+    this._results.total++;
   }
 
   private swapPlayers(): void {
@@ -508,10 +509,10 @@ export class GameManager {
       black: this.setting.white,
       white: this.setting.black,
     };
-    this.gameResults = {
-      ...this.gameResults,
-      player1: this.gameResults.player2,
-      player2: this.gameResults.player1,
+    this._results = {
+      ...this.results,
+      player1: this.results.player2,
+      player2: this.results.player1,
     };
   }
 

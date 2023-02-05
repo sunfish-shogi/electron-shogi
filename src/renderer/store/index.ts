@@ -28,7 +28,7 @@ import { ResearchSetting } from "@/common/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { AppState } from "../../common/control/state";
-import { Message, MessageStore } from "./message";
+import { Message, MessageStore, Attachment } from "./message";
 import { ErrorEntry, ErrorStore } from "./error";
 import * as uri from "@/common/uri";
 import { Confirmation } from "./confirm";
@@ -47,6 +47,36 @@ import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
 import { SearchInfo } from "../players/player";
 import { useAppSetting } from "./setting";
+
+function getMessageAttachmentsByGameResults(
+  results: GameResults
+): Attachment[] {
+  const validTotal = results.total - results.invalid;
+  return [
+    {
+      type: "list",
+      items: [
+        {
+          text: results.player1.name,
+          children: [
+            `勝ち数: ${results.player1.win}`,
+            `勝率: ${formatPercentage(results.player1.win, validTotal, 1)}`,
+          ],
+        },
+        {
+          text: results.player2.name,
+          children: [
+            `勝ち数: ${results.player2.win}`,
+            `勝率: ${formatPercentage(results.player2.win, validTotal, 1)}`,
+          ],
+        },
+        { text: `引き分け: ${results.draw}` },
+        { text: `有効対局数: ${validTotal}` },
+        { text: `無効対局数: ${results.invalid}` },
+      ],
+    },
+  ];
+}
 
 class Store {
   private _bussy = new BussyStore();
@@ -382,6 +412,14 @@ class Store {
       });
   }
 
+  get gameSetting(): GameSetting {
+    return this.gameManager.setting;
+  }
+
+  get gameResults(): GameResults {
+    return this.gameManager.results;
+  }
+
   get csaGameState(): CSAGameState {
     return this.csaGameManager.state;
   }
@@ -451,64 +489,50 @@ class Store {
   stopGame(): void {
     switch (this.appState) {
       case AppState.GAME:
-        this.gameManager.endGame(SpecialMove.INTERRUPT);
+        // 連続対局の場合は確認ダイアログを表示する。
+        if (this.gameManager.setting.repeat >= 2) {
+          this.showConfirmation({
+            message: "連続対局を中断しますか？",
+            onOk: () => this.gameManager.endGame(SpecialMove.INTERRUPT),
+          });
+        } else {
+          this.gameManager.endGame(SpecialMove.INTERRUPT);
+        }
         break;
       case AppState.CSA_GAME:
+        // 確認ダイアログを表示する。
         this.showConfirmation({
           message:
             "中断を要求すると負けになる可能性があります。よろしいですか？",
-          onOk: () => {
-            this.csaGameManager.stop();
-          },
+          onOk: () => this.csaGameManager.stop(),
         });
         break;
     }
+  }
+
+  showGameResults(): void {
+    if (this.appState !== AppState.GAME) {
+      return;
+    }
+    const results = this.gameManager.results;
+    this.enqueueMessage({
+      text: "対局の経過",
+      attachments: getMessageAttachmentsByGameResults(results),
+    });
   }
 
   onGameNext(): void {
     this.usiMonitor.clear();
   }
 
-  onGameEnd(gameResults: GameResults, specialMove: SpecialMove): void {
+  onGameEnd(results: GameResults, specialMove: SpecialMove): void {
     if (this.appState !== AppState.GAME) {
       return;
     }
-    if (gameResults && gameResults.total >= 2) {
-      const validTotal = gameResults.total - gameResults.invalid;
+    if (results && results.total >= 2) {
       this.enqueueMessage({
         text: "連続対局終了",
-        attachments: [
-          {
-            type: "list",
-            items: [
-              {
-                text: gameResults.player1.name,
-                children: [
-                  `勝ち数: ${gameResults.player1.win}`,
-                  `勝率: ${formatPercentage(
-                    gameResults.player1.win,
-                    validTotal,
-                    1
-                  )}`,
-                ],
-              },
-              {
-                text: gameResults.player2.name,
-                children: [
-                  `勝ち数: ${gameResults.player2.win}`,
-                  `勝率: ${formatPercentage(
-                    gameResults.player2.win,
-                    validTotal,
-                    1
-                  )}`,
-                ],
-              },
-              { text: `引き分け: ${gameResults.draw}` },
-              { text: `有効対局数: ${validTotal}` },
-              { text: `無効対局数: ${gameResults.invalid}` },
-            ],
-          },
-        ],
+        attachments: getMessageAttachmentsByGameResults(results),
       });
     } else if (specialMove) {
       this.enqueueMessage({

@@ -31,6 +31,14 @@
             対局
           </button>
           <button
+            v-if="controlStates.showGameResults"
+            class="control-item"
+            @click="onShowGameResults"
+          >
+            <ButtonIcon class="icon" :icon="Icon.SCORE" />
+            戦績確認
+          </button>
+          <button
             v-if="controlStates.stop"
             class="control-item"
             @click="onStop"
@@ -279,6 +287,10 @@ export default defineComponent({
       isGameMenuVisible.value = true;
     };
 
+    const onShowGameResults = () => {
+      store.showGameResults();
+    };
+
     const onStop = () => {
       store.stopGame();
     };
@@ -382,6 +394,8 @@ export default defineComponent({
     const controlStates = computed(() => {
       return {
         game: store.appState === AppState.NORMAL,
+        showGameResults:
+          store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
         stop:
           store.appState === AppState.GAME ||
           store.appState === AppState.CSA_GAME,
@@ -421,6 +435,7 @@ export default defineComponent({
       onMove,
       onEdit,
       onGame,
+      onShowGameResults,
       onStop,
       onWin,
       onResign,

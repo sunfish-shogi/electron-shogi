@@ -22,5 +22,8 @@ export function formatPercentage(
   denominator: number,
   fractionDigits: number
 ): string {
+  if (denominator === 0) {
+    return "0%";
+  }
   return ((numerator / denominator) * 100).toFixed(fractionDigits) + "%";
 }

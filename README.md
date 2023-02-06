@@ -48,8 +48,7 @@ https://github.com/sunfish-shogi/electron-shogi/wiki
 
 ## ダウンロード
 
-[Releases](https://github.com/sunfish-shogi/electron-shogi/releases) から Windows 版、Mac 版をダウンロードできます。
-Linux 版のバイナリはありませんので、後述のコマンドでビルドしてください。
+[Releases](https://github.com/sunfish-shogi/electron-shogi/releases) からダウンロードできます。
 
 ## エンジン開発者の方へ
 

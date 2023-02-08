@@ -1,0 +1,223 @@
+<html>
+  <head>
+    <title>Electron Shogi</title>
+    <link href="css/style.css?202204272252" rel="stylesheet">
+    <link rel="icon" href="webapp/favicon.ico">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:url" content="https://sunfish-shogi.github.io/electron-shogi/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Electron Shogi" />
+    <meta property="og:description" content="Desktop Shogi App" />
+    <meta property="og:image" content="https://sunfish-shogi.github.io/electron-shogi/screenshots/screenshot001.png" />
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v13.0" nonce="sNEMN02W"></script>
+    <header>
+      <div class="link-buttons">
+        <div>
+          <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-url="https://sunfish-shogi.github.io/electron-shogi/" data-hashtags="ElectronShogi" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+        <div>
+          <div class="fb-share-button" data-href="https://sunfish-shogi.github.io/electron-shogi/" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsunfish-shogi.github.io%2Felectron-shogi%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
+        </div>
+        <div>
+          <a href="https://github.com/sunfish-shogi/electron-shogi">
+            <img class="large-icon" src="./icons/github.png" alt="GitHub" />
+            GitHub
+          </a>
+        </div>
+        <div>
+          <a href="./index.html">
+            <img class="large-icon" src="./icons/language_white.svg" alt="Language" />
+            日本語
+          </a>
+        </div>
+      </div>
+      <h1>
+        <img class="icon" src="icon.png" alt="" />
+        Electron Shogi
+      </h1>
+      <nav>
+        <ul>
+          <li><a href="#whatis">What's Electron Shogi</a></li>
+          <li><a href="#screenshot">Screenshots</a></li>
+          <li><a href="#license">License</a></li>
+          <li><a href="#pcapp">Desktop App</a></li>
+          <li><a href="#webapp">Web App</a></li>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9">How to Use</a></li>
+          <li><a href="#milestones">Milestones</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#support">Support</a></li>
+          <li><a href="#images">Image Assets</a></li>
+        </ul>
+      </nav>
+    </header>
+    <article>
+      <section id="whatis">
+        <h2>What's Electron Shogi</h2>
+        <div class="long-text">
+          Electron Shogi is an open source desktop shogi app which developed by
+          <a href="https://www.electronjs.org/" target="_blank">Electron<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+          framework and runs on Windows, macOS, and Linux.
+          Anyone can participate in development or create their own version and distribute it.
+        </div>
+        <div class="long-text">
+          Most of the shogi AI are using
+          <a href="http://shogidokoro.starfree.jp/usi.html" target="_blank">USI protocol<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+          for integrating with GUI app.
+          Electron Shogi is a frontend app which can play shogi with USI protocol compatible AI.
+        </div>
+        <div class="long-text">
+          These days, 2-in-1 tablet and convertible PC are becoming popular.
+          So, it is possible to play shogi on PC with touch screen.
+          This app is designed to be operated with touch screen too.
+          And also, Electron framework get this app minimize OS dependency.
+        </div>
+      </section>
+      <hr>
+      <section id="screenshot">
+        <h2>Screenshots</h2>
+        <div class="images">
+          <a href="./screenshots/screenshot001.png"><img class="shadow wide" src="./screenshots/screenshot001.png?202301211733" alt="Screenshot001" /></a>
+          <a href="./screenshots/screenshot002.png"><img class="shadow" src="./screenshots/screenshot002.png?202301211733" alt="Screenshot002" /></a>
+          <a href="./screenshots/screenshot003.png"><img class="shadow" src="./screenshots/screenshot003.png?202301211733" alt="Screenshot003" /></a>
+        </div>
+      </section>
+      <hr>
+      <section id="license">
+        <h2>License</h2>
+        <div class="long-text">
+          You can use this app for commercial or non-commercial purpose.
+          Developers are not responsible for any damage or loss.
+          If you modify or redistribute this app, please follow the license terms.
+        </div>
+        <div class="long-text">
+          <a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE">MIT License</a>
+          is applied to this app.
+          However,
+          <a href="https://google.github.io/material-design-icons/">Material Icons</a>
+          used in this app is under the terms of the
+          <a href="https://www.apache.org/licenses/LICENSE-2.0.txt" target="_blank">Apache License 2.0<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>.
+        </div>
+        <div class="long-text">
+          See
+          <a href="./third-party-licenses.html">THIRD PARTY LICENSES</a>
+          for the licenses of the third party libraries used in this app.
+          However, this list does not include the licenses of Electron, Electron Builder, and Chromium.
+          Those licenses are included in the desktop app.
+        </div>
+      </section>
+      <hr>
+      <section id="pcapp">
+        <h2>Desktop App</h2>
+        <ul>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.5.0">Latest (Version 1.5.0)</a></li>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.4.2">Stable (Version 1.4.2)</a></li>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases">All</a></li>
+        </ul>
+        <div class="long-text">
+          Please download the file with the suffix <b>-win.zip</b> for Windows, <b>-mac.zip</b> for macOS, and <b>-linux.zip</b> for Linux.
+        </div>
+        <div class="long-text">
+          See <a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E7%95%AA%E5%8F%B7%E3%81%AE%E8%AA%AD%E3%81%BF%E6%96%B9">"How to read version numbers"</a> for the version number format.
+        </div>
+        <div class="long-text">
+          See <a href="#milestones">Milestones</a> for the development plan.
+        </div>
+      </section>
+      <hr>
+      <section id="webapp">
+        <h2>Web App</h2>
+        <div>
+          <a href="webapp/index.html?202301211733" target="_blank">Open Web App<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+        </div>
+        <div class="long-text">
+          You can not use AI and file I/O etc. on the web app.<br />
+          And it not support vertical screen like smartphone and tablet. (We are considering to support it.)<br />
+          We recommend to use on Chrome, however, welcome to report bugs on other browsers.
+        </div>
+      </section>
+      <hr>
+      <section id="howtouse">
+        <h2>How to Use</h2>
+        <div>
+          <a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9">See "How to Use"</a>
+        </div>
+      </section>
+      <hr>
+      <section id="milestones">
+        <h2>Milestones</h2>
+        <div class="long-text">
+          See below for the development plan. The schedule and contents are tentative.
+        </div>
+        <ul>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/issues?q=milestone%3Av1.6.0+">v1.6.0 （around 2023 Mar.）</a></li>
+          <li><a href="https://github.com/sunfish-shogi/electron-shogi/issues?q=milestone%3Av1.7.0+">v1.7.0 （around 2023 May）</a></li>
+        </ul>
+        <div class="long-text">
+          You can see the progress of the development on <a href="https://github.com/users/sunfish-shogi/projects/1/views/1">Project Board</a>.
+        </div>
+      </section>
+      <hr>
+      <section id="faq">
+        <h2>FAQ</h2>
+        <ul class="faq">
+          <li>
+            Q. What's CSA protocol?
+            <ul>
+              <li>
+                A. CSA protocol is TCP based communication protocol for shogi AI. It is mainly used by shogi engine developers. To play a game with CSA protocol, you need a CSA server in addition to Electron Shogi.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Q. Where is the log file of CSA protocol and USI protocol?
+            <ul>
+              <li>
+                A. Logging is disabled by default. Please refer to <a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%AD%E3%82%B0%E5%87%BA%E5%8A%9B">the document</a> and enable logging.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Q. I can not register a shell script or an interpreter language engine.
+            <ul>
+              <li>
+                A. Please refer to <a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E3%82%B7%E3%82%A7%E3%83%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%82%84%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%97%E3%83%AA%E3%82%BF%E5%9E%8B%E8%A8%80%E8%AA%9E%E3%81%A7%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%9F%E3%81%84%E6%96%B9%E3%81%B8">this page</a>.
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+      <hr>
+      <section id="support">
+        <h2>Support</h2>
+        <h3>If you have a GitHub account</h3>
+        <div class="long-text">
+          Please report bugs and feature requests on
+          <a href="https://github.com/sunfish-shogi/electron-shogi/issues">GitHub Issues</a>.
+          We also welcome proposals for design and
+          <a href="https://github.com/sunfish-shogi/electron-shogi/pulls">Pull Request</a>.<br />
+          If you want to create large Pull Request, please create an Issue before implementation.
+        </div>
+        <h3>If you have no GitHub account</h3>
+        <div class="long-text">
+          Please contact us by
+          <a href="https://form.run/@sunfish-shogi-1650819491">the form</a>.
+        </div>
+      </section>
+      <hr>
+      <section id="images">
+        <h2>Image Assets</h2>
+        <div>
+          The images of the pieces and the board used in Electron Shogi are released under a license with fewer restrictions.
+        </div>
+        <div>
+          <a href="https://sunfish-shogi.github.io/shogi-images/" target="_blank">Shogi Images<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+        </div>
+      </section>
+    </article>
+  </body>
+</html>

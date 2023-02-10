@@ -181,7 +181,7 @@ const specialMoveToDisplayStringMap = {
   foulLose: "反則負け",
   enteringOfKing: "入玉",
   winByDefault: "不戦勝",
-  lossByDefault: "不戦敗",
+  loseByDefault: "不戦敗",
 };
 
 export function getSpecialMoveDisplayString(move: SpecialMove): string {

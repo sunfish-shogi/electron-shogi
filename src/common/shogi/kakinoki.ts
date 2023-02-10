@@ -250,7 +250,7 @@ const stringToSpecialMove: { [move: string]: SpecialMove } = {
   反則負け: SpecialMove.FOUL_LOSE,
   入玉勝ち: SpecialMove.ENTERING_OF_KING,
   不戦勝: SpecialMove.WIN_BY_DEFAULT,
-  不戦敗: SpecialMove.LOSS_BY_DEFAULT,
+  不戦敗: SpecialMove.LOSE_BY_DEFAULT,
 };
 
 const moveRegExp =
@@ -469,7 +469,7 @@ const specialMoveToString = {
   foulLose: "反則負け",
   enteringOfKing: "入玉勝ち",
   winByDefault: "不戦勝",
-  lossByDefault: "不戦敗",
+  loseByDefault: "不戦敗",
 };
 
 type KakinokiExportOptions = {

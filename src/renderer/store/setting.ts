@@ -5,6 +5,7 @@ import {
   BoardLabelType,
   ClockSoundTarget,
   EvaluationViewFrom,
+  Language,
   PieceImageType,
   Tab,
   TabPaneType,
@@ -22,7 +23,9 @@ class AppSettingStore {
   get raw(): AppSetting {
     return this.setting;
   }
-
+  get language(): Language {
+    return this.setting.language;
+  }
   get thema(): Thema {
     return this.setting.thema;
   }

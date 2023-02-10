@@ -32,6 +32,7 @@ import { scoreToPercentage } from "@/renderer/store/score";
 import { AppSetting, Thema } from "@/common/settings/app";
 import { SearchInfo } from "@/renderer/players/player";
 import { useAppSetting } from "@/renderer/store/setting";
+import { t } from "@/common/i18n";
 
 const MATE_SCORE = 1000000;
 const MAX_SCORE = 2000;
@@ -49,17 +50,17 @@ enum Series {
 function getSeriesName(series: Series): string {
   switch (series) {
     case Series.BLACK_PLAYER:
-      return "先手";
+      return t.sente;
     case Series.WHITE_PLAYER:
-      return "後手";
+      return t.gote;
     case Series.RESEARCHER:
-      return "検討";
+      return t.research;
     case Series.RESEARCHER_2:
-      return "検討2";
+      return t.research + "2";
     case Series.RESEARCHER_3:
-      return "検討3";
+      return t.research + "3";
     case Series.RESEARCHER_4:
-      return "検討4";
+      return t.research + "4";
   }
 }
 
@@ -245,7 +246,7 @@ export default defineComponent({
 
     const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
       return {
-        label: "現在の局面",
+        label: t.currentPosition,
         borderColor: palette.head,
         data: [
           { x: record.current.number, y: maxScore },

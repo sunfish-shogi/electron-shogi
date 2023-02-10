@@ -15,7 +15,7 @@
           OK
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="onClose()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
@@ -60,6 +61,7 @@ export default defineComponent({
     });
 
     return {
+      t,
       dialog,
       store,
       onOk,

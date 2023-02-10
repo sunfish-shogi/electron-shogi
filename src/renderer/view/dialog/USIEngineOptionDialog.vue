@@ -1,27 +1,27 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">エンジン設定</div>
+      <div class="dialog-title">{{ t.engineSettings }}</div>
       <div class="dialog-form-area option-list">
         <div class="option">
-          <div class="option-name">エンジン名</div>
+          <div class="option-name">{{ t.engineName }}</div>
           <div class="option-unchangeable">{{ engine.defaultName }}</div>
         </div>
         <div class="option">
-          <div class="option-name">作者</div>
+          <div class="option-name">{{ t.author }}</div>
           <div class="option-unchangeable">{{ engine.author }}</div>
         </div>
         <div class="option">
-          <div class="option-name">場所</div>
+          <div class="option-name">{{ t.enginePath }}</div>
           <div class="option-unchangeable">
             <div>{{ engine.path }}</div>
             <button class="dialog-button" @click="openEngineDir">
-              フォルダを開く
+              {{ t.openDirectory }}
             </button>
           </div>
         </div>
         <div class="option">
-          <div class="option-name">表示名</div>
+          <div class="option-name">{{ t.displayName }}</div>
           <input
             ref="engineNameInput"
             class="option-value-text"
@@ -60,14 +60,14 @@
             class="dialog-button"
             @click="selectFile(option.inputId)"
           >
-            選択
+            {{ t.select }}
           </button>
           <select
             v-if="option.type === 'check'"
             :id="option.inputId"
             class="option-value-check"
           >
-            <option value="">既定値</option>
+            <option value="">{{ t.defaultValue }}</option>
             <option value="true">ON</option>
             <option value="false">OFF</option>
           </select>
@@ -76,7 +76,7 @@
             :id="option.inputId"
             class="option-value-combo"
           >
-            <option value="">既定値</option>
+            <option value="">{{ t.defaultValue }}</option>
             <option v-for="v in option.vars" :key="v" :value="v">
               {{ v }}
             </option>
@@ -86,12 +86,12 @@
             class="dialog-button"
             @click="sendOption(option.name)"
           >
-            実行
+            {{ t.invoke }}
           </button>
         </div>
       </div>
       <button class="dialog-wide-button" @click="reset()">
-        エンジンの既定値に戻す
+        {{ t.resetToEngineDefaultValues }}
       </button>
       <div class="dialog-main-buttons">
         <button
@@ -103,7 +103,7 @@
           {{ okButtonText }}
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="cancel()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -111,6 +111,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { getFormItemByID, showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
@@ -268,6 +269,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       engine,
       dialog,
       engineNameInput,

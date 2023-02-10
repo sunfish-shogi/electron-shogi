@@ -2,8 +2,10 @@
   <div>
     <div ref="root" class="root" :style="{ height: `${size.height}px` }">
       <div class="element">
-        <div class="key">ファイル</div>
-        <div class="value">{{ store.recordFilePath || "（新規棋譜）" }}</div>
+        <div class="key">{{ t.file }}</div>
+        <div class="value">
+          {{ store.recordFilePath || t.newRecordWithBrackets }}
+        </div>
       </div>
       <div v-for="element in list" :key="element.key" class="element">
         <div class="key">{{ element.displayName }}</div>
@@ -18,6 +20,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import {
   getStandardMetadataDisplayName,
   RecordMetadataKey,
@@ -66,6 +69,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       root,
       store,
       list,

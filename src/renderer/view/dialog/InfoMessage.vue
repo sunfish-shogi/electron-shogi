@@ -31,7 +31,7 @@
       </div>
       <div class="dialog-main-buttons">
         <button autofocus data-hotkey="Escape" @click="onClose()">
-          閉じる
+          {{ t.close }}
         </button>
       </div>
     </dialog>
@@ -39,6 +39,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { useStore } from "@/renderer/store";
 import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
@@ -72,6 +73,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       dialog,
       store,
       onClose,

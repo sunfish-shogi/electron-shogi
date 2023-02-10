@@ -24,7 +24,7 @@
           :checked="appSetting.showElapsedTimeInRecordView"
           @change="onToggleElapsedTime"
         />
-        <label for="show-elapsed-time">消費時間</label>
+        <label for="show-elapsed-time">{{ t.elapsedTime }}</label>
       </div>
       <div class="option">
         <input
@@ -33,13 +33,14 @@
           :checked="appSetting.showCommentInRecordView"
           @change="onToggleComment"
         />
-        <label for="show-comment">コメント</label>
+        <label for="show-comment">{{ t.comments }}</label>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import RecordView from "@/renderer/view/primitive/RecordView.vue";
 import { useStore } from "@/renderer/store";
@@ -128,6 +129,7 @@ export default defineComponent({
     });
 
     return {
+      t,
       store,
       appSetting,
       root,

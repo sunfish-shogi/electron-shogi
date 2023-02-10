@@ -3,17 +3,17 @@
     <div class="root">
       <div class="headers">
         <div class="header">
-          <span class="label">名前: </span>
+          <span class="label">{{ t.name }}: </span>
           <span class="value">{{ name }}</span>
         </div>
         <div class="header">
-          <span class="label">予想: </span>
+          <span class="label">{{ t.prediction }}: </span>
           <span class="value">
             {{ info.ponderMove ? info.ponderMove : "---" }}
           </span>
         </div>
         <div class="header">
-          <span class="label">最善: </span>
+          <span class="label">{{ t.best }}: </span>
           <span class="value">{{ info.currentMoveText || "---" }}</span>
         </div>
         <div class="header">
@@ -21,22 +21,22 @@
           <span class="value">{{ info.nps || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">Node数: </span>
+          <span class="label">{{ t.nodes }}: </span>
           <span class="value">{{ info.nodes || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">Hash使用率: </span>
+          <span class="label">{{ t.hashUsage }}: </span>
           <span class="value">
             {{ info.hashfull ? (info.hashfull * 100).toFixed(1) : "---" }} %
           </span>
         </div>
       </div>
       <div class="list-header">
-        <div class="list-column time">経過時間</div>
-        <div class="list-column multipv-index">順位</div>
-        <div class="list-column depth">深さ</div>
-        <div class="list-column nodes">探索局面数</div>
-        <div class="list-column score">評価値</div>
+        <div class="list-column time">{{ t.elapsed }}</div>
+        <div class="list-column multipv-index">{{ t.rank }}</div>
+        <div class="list-column depth">{{ t.depth }}</div>
+        <div class="list-column nodes">{{ t.nodes }}</div>
+        <div class="list-column score">{{ t.eval }}</div>
       </div>
       <div class="list" :style="{ height: `${height - 37}px` }">
         <div
@@ -81,7 +81,7 @@
           <div class="list-column score-flag">
             {{ iterate.lowerBound ? "++" : "" }}
             {{ iterate.upperBound ? "--" : "" }}
-            {{ iterate.scoreMate ? "詰" : "" }}
+            {{ iterate.scoreMate ? t.mateShort : "" }}
           </div>
           <div class="list-column text">
             <button
@@ -89,7 +89,7 @@
               @click="showPreview(iterate)"
             >
               <ButtonIcon class="icon" :icon="Icon.PLAY" />
-              再現
+              {{ t.displayPVShort }}
             </button>
             {{ iterate.text }}
           </div>
@@ -107,6 +107,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { USIIteration, USIPlayerMonitor } from "@/renderer/store/usi";
 import { computed, defineComponent, ref } from "vue";
 import { Icon } from "@/renderer/assets/icons";
@@ -222,6 +223,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       Icon,
       enableHighlight,
       preview,

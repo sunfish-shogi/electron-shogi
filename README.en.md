@@ -47,7 +47,7 @@ https://github.com/sunfish-shogi/electron-shogi/wiki
 
 ## Downloads
 
-[Releases](https://github.com/sunfish-shogi/electron-shogi/releases) からダウンロードできます。
+You can download any versions from [Releases](https://github.com/sunfish-shogi/electron-shogi/releases).
 
 ## Feature Requests/Suggestions/Bug Reports
 

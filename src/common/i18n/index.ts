@@ -233,7 +233,7 @@ type Texts = {
   sixPiecesHandicap: string;
   eightPiecesHandicap: string;
   tsumeShogi: string;
-  reciprocalKingTsumeShogi: string;
+  doubleKingTsumeShogi: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
   canOpenLogDirectoryFromMenu: string;
@@ -497,7 +497,7 @@ const languages: { [key: string]: Texts } = {
     sixPiecesHandicap: "六枚落ち",
     eightPiecesHandicap: "八枚落ち",
     tsumeShogi: "詰将棋",
-    reciprocalKingTsumeShogi: "双玉詰将棋",
+    doubleKingTsumeShogi: "双玉詰将棋",
     inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
       "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
     shouldRestartToApplyLogSettings:
@@ -776,14 +776,15 @@ const languages: { [key: string]: Texts } = {
     sixPiecesHandicap: "6 Pieces Handicap",
     eightPiecesHandicap: "8 Pieces Handicap",
     tsumeShogi: "Tsume Shogi",
-    reciprocalKingTsumeShogi: "Reciprocal King Tsume Shogi",
+    doubleKingTsumeShogi: "2-Kings Tsume Shogi",
     inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
       "*In web browser version, it will output logs to console and ignore this setting.",
     shouldRestartToApplyLogSettings:
       "*You should restart this app to apply log settings.",
     canOpenLogDirectoryFromMenu:
       '*You can open log directory from "Debug" - "Open Log Directory" menu.',
-    hasNoOldLogCleanUpFeature: "* This app has no old log clean-up feature.",
+    hasNoOldLogCleanUpFeature:
+      "*This app has no clean-up feature. Please remove old logs manually.",
     processingPleaseWait: "Processing, please wait.",
     importingFollowingRecordOrPosition:
       "Importing the following record(or position).",

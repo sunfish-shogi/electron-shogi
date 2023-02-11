@@ -1,4 +1,4 @@
-import api, { appInfo } from "@/renderer/ipc/api";
+import api from "@/renderer/ipc/api";
 import {
   Color,
   exportCSA,
@@ -79,7 +79,10 @@ function getMessageAttachmentsByGameResults(
   ];
 }
 
+type OnChangeFilePath = (path?: string) => void;
+
 class Store {
+  private onChangeFilePath: OnChangeFilePath[] = [];
   private _bussy = new BussyStore();
   private _message = new MessageStore();
   private _error = new ErrorStore();
@@ -105,9 +108,10 @@ class Store {
   private _reactive: UnwrapNestedRefs<Store>;
 
   constructor() {
-    this.updateAppTitle();
     this.recordManager.on("changeFilePath", (path?: string) => {
-      this.updateAppTitle(path);
+      for (const listener of this.onChangeFilePath) {
+        listener(path);
+      }
     });
     this.recordManager.on("changePosition", () => {
       this.onUpdatePosition();
@@ -143,21 +147,18 @@ class Store {
     this._reactive = refs;
   }
 
-  get reactive(): UnwrapNestedRefs<Store> {
-    return this._reactive;
+  addListener(event: "changeFilePath", listener: OnChangeFilePath): this;
+  addListener(event: string, listener: unknown): this {
+    switch (event) {
+      case "changeFilePath":
+        this.onChangeFilePath.push(listener as OnChangeFilePath);
+        break;
+    }
+    return this;
   }
 
-  private updateAppTitle(path?: string): void {
-    if (!document) {
-      return;
-    }
-    const appName = t.electronShogi;
-    const appVersion = appInfo.appVersion;
-    if (path) {
-      document.title = `${appName} Version ${appVersion} - ${path}`;
-    } else {
-      document.title = `${appName} Version ${appVersion}`;
-    }
+  get reactive(): UnwrapNestedRefs<Store> {
+    return this._reactive;
   }
 
   get isBussy(): boolean {

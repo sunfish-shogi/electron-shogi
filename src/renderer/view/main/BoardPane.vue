@@ -42,9 +42,10 @@
           <button
             v-if="controlStates.stop"
             class="control-item"
+            data-hotkey="Escape"
             @click="onStop"
           >
-            <ButtonIcon class="icon" :icon="Icon.STOP" data-hotkey="Escape" />
+            <ButtonIcon class="icon" :icon="Icon.STOP" />
             {{ t.stopGame }}
           </button>
           <button v-if="controlStates.win" class="control-item" @click="onWin">
@@ -62,13 +63,10 @@
           <button
             v-if="controlStates.research"
             class="control-item"
+            data-hotkey="Control+r"
             @click="onResearch"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.RESEARCH"
-              data-hotkey="Control+r"
-            />
+            <ButtonIcon class="icon" :icon="Icon.RESEARCH" />
             {{ t.research }}
           </button>
           <button
@@ -83,13 +81,10 @@
           <button
             v-if="controlStates.analysis"
             class="control-item"
+            data-hotkey="Control+a"
             @click="onAnalysis"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.ANALYSIS"
-              data-hotkey="Control+a"
-            />
+            <ButtonIcon class="icon" :icon="Icon.ANALYSIS" />
             {{ t.analysis }}
           </button>
           <button
@@ -136,32 +131,25 @@
       </template>
       <template #left-control>
         <div ref="leftControl" class="control bottom">
-          <button class="control-item" @click="onOpenAppSettings">
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.SETTINGS"
-              data-hotkey="Control+,"
-            />
+          <button
+            class="control-item"
+            data-hotkey="Control+,"
+            @click="onOpenAppSettings"
+          >
+            <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
             {{ t.appSettings }}
           </button>
           <button
             class="control-item"
+            data-hotkey="Control+."
             :disabled="!controlStates.engineSettings"
             @click="onOpenEngineSettings"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.ENGINE_SETTINGS"
-              data-hotkey="Control+."
-            />
+            <ButtonIcon class="icon" :icon="Icon.ENGINE_SETTINGS" />
             {{ t.engineSettings }}
           </button>
-          <button class="control-item" @click="onFlip">
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.FLIP"
-              data-hotkey="Control+t"
-            />
+          <button class="control-item" data-hotkey="Control+t" @click="onFlip">
+            <ButtonIcon class="icon" :icon="Icon.FLIP" />
             {{ t.flipBoard }}
           </button>
           <button class="control-item" @click="onFileAction">
@@ -170,14 +158,11 @@
           </button>
           <button
             class="control-item"
+            data-hotkey="Control+d"
             :disabled="!controlStates.removeCurrentMove"
             @click="onRemoveCurrentMove"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.DELETE"
-              data-hotkey="Control+d"
-            />
+            <ButtonIcon class="icon" :icon="Icon.DELETE" />
             {{ t.deleteMove }}
           </button>
         </div>

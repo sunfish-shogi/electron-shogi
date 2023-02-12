@@ -117,7 +117,7 @@ class AppSettingStore {
     return this.setting.logLevel;
   }
 
-  async reloadAppSetting(): Promise<void> {
+  async loadAppSetting(): Promise<void> {
     this.setting = await api.loadAppSetting();
   }
 

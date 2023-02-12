@@ -6,7 +6,7 @@ import { useStore } from "@/renderer/store";
 import { Chart, registerables } from "chart.js";
 import { LogLevel } from "@/common/log";
 import { useAppSetting } from "./store/setting";
-import { setLanguage } from "@/common/i18n";
+import { setLanguage, t } from "@/common/i18n";
 
 api.log(
   LogLevel.INFO,
@@ -17,10 +17,24 @@ Chart.register(...registerables);
 
 setupIPC();
 
-const store = useStore();
+function updateTitle(path?: string) {
+  if (!document) {
+    return;
+  }
+  const appName = t.electronShogi;
+  const appVersion = appInfo.appVersion;
+  if (path) {
+    document.title = `${appName} Version ${appVersion} - ${path}`;
+  } else {
+    document.title = `${appName} Version ${appVersion}`;
+  }
+}
+
+const store = useStore().addListener("changeFilePath", updateTitle);
+
 Promise.allSettled([
   useAppSetting()
-    .reloadAppSetting()
+    .loadAppSetting()
     .catch((e) => {
       store.pushError(
         new Error("アプリ設定の読み込み中にエラーが発生しました: " + e)
@@ -40,6 +54,7 @@ Promise.allSettled([
   const language = useAppSetting().language;
   api.log(LogLevel.INFO, `set language: ${language}`);
   setLanguage(language);
+  updateTitle(store.recordFilePath);
   api.log(LogLevel.INFO, "mount app");
   createApp(App).mount("#app");
 });

@@ -232,7 +232,7 @@ function createMenuTemplate() {
               AppState.POSITION_EDITING,
             ]),
             menuItem(
-              t.reciprocalKingTsumeShogi,
+              t.doubleKingTsumeShogi,
               MenuEvent.INIT_POSITION_TSUME_SHOGI_2KINGS,
               [AppState.POSITION_EDITING]
             ),

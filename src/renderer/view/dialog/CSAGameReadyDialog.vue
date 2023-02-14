@@ -8,9 +8,7 @@
             対局の開始を待っています。
           </span>
           <span v-if="store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL">
-            CSAサーバーへのログインを{{
-              loginRetryIntervalSeconds
-            }}秒後に再試行します。
+            CSAサーバーへのログインを{{ remainingSeconds }}秒後に再試行します。
           </span>
           <span v-if="store.csaGameState === CSAGameState.WAITING_LOGIN">
             CSAサーバーへの接続とログインを試みています。メッセージボックスが表示されている場合は閉じてください。
@@ -34,7 +32,14 @@
 
 <script lang="ts">
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
+import {
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  Ref,
+  watch,
+} from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { Icon } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
@@ -52,6 +57,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
+    const remainingSeconds = ref(0);
+    let remainingTimer = 0;
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -60,7 +67,21 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       uninstallHotKeyForDialog(dialog.value);
+      window.clearInterval(remainingTimer);
     });
+
+    watch(
+      () => store.csaGameState,
+      (newState) => {
+        window.clearInterval(remainingTimer);
+        if (newState === CSAGameState.LOGIN_RETRY_INTERVAL) {
+          remainingSeconds.value = loginRetryIntervalSeconds;
+          remainingTimer = window.setInterval(() => {
+            remainingSeconds.value--;
+          }, 1000);
+        }
+      }
+    );
 
     const onLogout = () => {
       store.cancelCSAGame();
@@ -71,7 +92,7 @@ export default defineComponent({
       Icon,
       store,
       CSAGameState,
-      loginRetryIntervalSeconds,
+      remainingSeconds,
       onLogout,
     };
   },

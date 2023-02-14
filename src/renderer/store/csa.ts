@@ -28,7 +28,7 @@ import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 
-export const loginRetryIntervalSeconds = 5;
+export const loginRetryIntervalSeconds = 10;
 
 export enum CSAGameState {
   OFFLINE,

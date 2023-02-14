@@ -27,6 +27,7 @@ import {
 import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
+import { TimeLimitSetting } from "@/common/settings/game";
 
 export const loginRetryIntervalSeconds = 10;
 
@@ -227,36 +228,39 @@ export class CSAGameManager {
     ) {
       return;
     }
+
     // 停止が要求されている場合は連続対局や再試行をしない。
     if (this.stopRequested) {
       reloginBehavior = ReloginBehavior.DO_NOT_RELOGIN;
       this.stopRequested = false;
     }
+
     // CSA プロトコルのセッションが存在する場合は切断する。
     if (this.sessionID) {
       releaseSession(this.sessionID);
-      api.csaLogout(this.sessionID).catch((e) => {
-        this.onError(e);
-      });
+      api.csaLogout(this.sessionID).catch(this.onError);
       this.sessionID = 0;
     }
+
     // プレイヤーが起動している場合は終了する。
     if (this.player) {
-      this.player.close().catch((e) => {
-        this.onError(e);
-      });
+      this.player.close().catch(this.onError);
       this.player = undefined;
     }
+
     // 時計を停止する。
     this.blackClock.stop();
     this.whiteClock.stop();
+
     // ステータスをオフラインに戻す。
     this._state = CSAGameState.OFFLINE;
+
     // リトライを待っている場合はタイマーを解除する。
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
       this.retryTimer = undefined;
     }
+
     // 連続対局の条件を満たしていない場合はハンドラーを呼んで終了する。
     if (
       reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN ||
@@ -265,17 +269,16 @@ export class CSAGameManager {
       this.onGameEnd();
       return;
     }
+
     // 連続対局の条件を満たしている場合は再ログインする。
-    const doRelogin = () => {
-      this.relogin().catch((e) => {
-        this.onError(e);
-      });
-    };
     if (reloginBehavior === ReloginBehavior.RELOGIN_IMMEDIATELY) {
-      doRelogin();
+      this.relogin().catch(this.onError);
     } else {
       this._state = CSAGameState.LOGIN_RETRY_INTERVAL;
-      this.retryTimer = setTimeout(doRelogin, loginRetryIntervalSeconds * 1e3);
+      this.retryTimer = setTimeout(
+        () => this.relogin().catch(this.onError),
+        loginRetryIntervalSeconds * 1e3
+      );
     }
   }
 
@@ -291,11 +294,13 @@ export class CSAGameManager {
   onStart(playerStates: CSAPlayerStates): void {
     // 対局数をカウントアップする。
     this.repeat++;
+
     // 局面を初期化する。
     this.recordManager.importRecord(
       this.gameSummary.position,
       RecordFormatType.CSA
     );
+
     // 対局情報を初期化する。
     this.recordManager.setGameStartMetadata({
       gameTitle: this.gameSummary.id,
@@ -309,18 +314,20 @@ export class CSAGameManager {
           (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3,
       },
     });
+
     // 将棋盤の向きを調整する。
     if (this.setting.autoFlip && this.onFlipBoard) {
       this.onFlipBoard(this.gameSummary.myColor === Color.WHITE);
     }
-    // ステータスを更新する。
+
     this._state = CSAGameState.GAME;
-    // 次の処理を開始する。
     this.next(playerStates);
   }
 
   onMove(data: string, playerStates: CSAPlayerStates) {
+    // 自分の指し手か？（着手後だと反転してしまうので注意）
     const isMyMove = this.isMyTurn;
+
     // 指し手を読み取る。
     const move = parseCSAMove(this.recordManager.record.position, data);
     if (move instanceof Error) {
@@ -329,19 +336,16 @@ export class CSAGameManager {
       );
       return;
     }
-    // 消費時間を読み取る。
-    const parsed = /^.*,T([0-9]+)$/.exec(data);
-    const elapsedMs = parsed
-      ? Number(parseInt(parsed[1])) * this.gameSummary.timeUnitMs
-      : 0;
+
     // 局面を進める。
     this.recordManager.appendMove({
       move,
       moveOption: {
         ignoreValidation: true,
       },
-      elapsedMs,
+      elapsedMs: this.parseElapsedMs(data),
     });
+
     // 探索情報を記録する。
     if (isMyMove && this.searchInfo) {
       this.recordManager.updateSearchInfo(
@@ -349,6 +353,7 @@ export class CSAGameManager {
         this.searchInfo
       );
     }
+
     // コメントを記録する。
     if (isMyMove && this.searchInfo && this.setting.enableComment) {
       this.recordManager.appendSearchComment(
@@ -357,10 +362,16 @@ export class CSAGameManager {
         CommentBehavior.APPEND
       );
     }
-    // 効果音を鳴らす。
+
     this.onPieceBeat();
-    // 次の処理を開始する。
     this.next(playerStates);
+  }
+
+  private parseElapsedMs(data: string): number {
+    const parsed = /^.*,T([0-9]+)$/.exec(data);
+    return parsed
+      ? Number(parseInt(parsed[1])) * this.gameSummary.timeUnitMs
+      : 0;
   }
 
   onGameResult(move: CSASpecialMove, gameResult: CSAGameResult): void {
@@ -423,10 +434,20 @@ export class CSAGameManager {
   }
 
   private next(playerStates: CSAPlayerStates): void {
-    // 時計を一時停止する。
     this.blackClock.stop();
     this.whiteClock.stop();
-    // 時計をサーバーと同期する。
+    this.syncClock(playerStates);
+    this.startClock();
+
+    const color = this.recordManager.record.position.color;
+    if (color === this.gameSummary.myColor) {
+      this.startSearch(playerStates);
+    } else {
+      this.startPonder();
+    }
+  }
+
+  private syncClock(playerStates: CSAPlayerStates): void {
     const clockSetting = {
       byoyomi: (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3,
       onBeepShort: () => this.onBeepShort(),
@@ -441,73 +462,83 @@ export class CSAGameManager {
       ...clockSetting,
       timeMs: playerStates.white.time * this.gameSummary.timeUnitMs,
     });
-    // 時計をスタートする。
+  }
+
+  private startClock(): void {
     const color = this.recordManager.record.position.color;
     if (color === Color.BLACK) {
       this.blackClock.start();
     } else {
       this.whiteClock.start();
     }
-    // プレイヤーの状態を確認する。
+  }
+
+  private startSearch(playerStates: CSAPlayerStates): void {
     if (!this.player) {
-      this.onError(
-        "想定されない問題が発生しました。CSA サーバーからデータを受信しましたが、プレイヤーが初期化されていません。"
-      );
+      this.onError("CSAGameManager#startSearch: player is not initialized");
       return;
     }
-    // 次の指し手に適用される残り時間
-    const timeLimit = {
-      timeSeconds:
-        (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3,
-      byoyomi: (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3,
-      increment:
-        (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3,
-    };
-    if (color === this.gameSummary.myColor) {
-      // 自分の手番の場合は探索を開始する。
-      this.player
-        .startSearch(
-          this.recordManager.record,
-          timeLimit,
-          playerStates.black.time * this.gameSummary.timeUnitMs,
-          playerStates.white.time * this.gameSummary.timeUnitMs,
-          {
-            onMove: this.onPlayerMove.bind(this),
-            onResign: this.onPlayerResign.bind(this),
-            onWin: this.onPlayerWin.bind(this),
-            onError: this.onPlayerError.bind(this),
-          }
-        )
-        .catch((e) => {
-          this.onError(
-            new Error(
-              "CSAGameManager#next: プレイヤーにコマンドを送信できませんでした: " +
-                e
-            )
-          );
-        });
-    } else {
-      // 相手の手番の場合は Ponder を開始する。
-      this.player
-        .startPonder(
-          this.recordManager.record,
-          timeLimit,
-          this.blackClock.timeMs,
-          this.whiteClock.timeMs
-        )
-        .catch((e) => {
-          this.onError(
-            new Error(
-              "CSAGameManager#next: プレイヤーにPonderコマンドを送信できませんでした: " +
-                e
-            )
-          );
-        });
+    this.player
+      .startSearch(
+        this.recordManager.record,
+        this.buildTimeLimitSetting(),
+        playerStates.black.time * this.gameSummary.timeUnitMs,
+        playerStates.white.time * this.gameSummary.timeUnitMs,
+        {
+          onMove: this.onPlayerMove.bind(this),
+          onResign: this.onPlayerResign.bind(this),
+          onWin: this.onPlayerWin.bind(this),
+          onError: this.onPlayerError.bind(this),
+        }
+      )
+      .catch((e) => {
+        this.onError(
+          new Error(
+            `CSAGameManager#next: goコマンドを送信できませんでした: ${e}`
+          )
+        );
+      });
+  }
+
+  private startPonder(): void {
+    if (!this.player) {
+      this.onError("CSAGameManager#startPonder: player is not initialized");
+      return;
     }
+    this.player
+      .startPonder(
+        this.recordManager.record,
+        this.buildTimeLimitSetting(),
+        this.blackClock.timeMs,
+        this.whiteClock.timeMs
+      )
+      .catch((e) => {
+        this.onError(
+          new Error(
+            `CSAGameManager#next: ponderコマンドを送信できませんでした: ${e}`
+          )
+        );
+      });
+  }
+
+  private buildTimeLimitSetting(): TimeLimitSetting {
+    const timeSeconds =
+      (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3;
+    const byoyomi =
+      (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3;
+    const increment =
+      (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3;
+    return {
+      timeSeconds,
+      byoyomi,
+      increment,
+    };
   }
 
   private onPlayerMove(move: Move, info?: SearchInfo): void {
+    // 着手がサーバーで承認されるまで情報を保持しておく。
     this.searchInfo = info;
+
     let score: number | undefined = undefined;
     let pv: string | undefined = undefined;
     switch (this._setting.server.protocolVersion) {
@@ -525,6 +556,7 @@ export class CSAGameManager {
         }
         break;
     }
+
     // 指し手をサーバーに送信する。
     api.csaMove(this.sessionID, formatCSAMove(move), score, pv);
   }

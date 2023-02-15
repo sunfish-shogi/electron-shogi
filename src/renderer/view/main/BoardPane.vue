@@ -469,6 +469,9 @@ export default defineComponent({
   height: 19%;
   font-size: 100%;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
   line-height: 200%;
   padding: 0 5% 0 5%;
 }

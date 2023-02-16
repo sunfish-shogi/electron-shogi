@@ -69,7 +69,7 @@ export default defineComponent({
     const onOk = () => {
       const data = textarea.value.value;
       if (!data) {
-        store.pushError(new Error("棋譜が入力されていません。"));
+        store.pushError(new Error(t.emptyRecordInput));
         return;
       }
       store.closeModalDialog();

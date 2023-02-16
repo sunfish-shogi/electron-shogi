@@ -8,11 +8,10 @@ import * as uri from "@/common/uri";
 import { onUSIBestMove, onUSIInfo, onUSIPonderInfo } from "@/background/ipc";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/player";
+import { t } from "@/common/i18n";
 
 function newTimeoutError(timeoutSeconds: number): Error {
-  return new Error(
-    `${timeoutSeconds}秒以内にエンジンから応答がありませんでした。エンジンの起動が重い場合はアプリ設定で待ち時間を延長してください。`
-  );
+  return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
 }
 
 export async function getUSIEngineInfo(
@@ -94,9 +93,7 @@ function isSessionExists(sessionID: number): boolean {
 function getSession(sessionID: number): Session {
   const session = sessions.get(sessionID);
   if (!session) {
-    throw new Error(
-      "エンジンのセッションが見つかりません: SessionID=" + sessionID
-    );
+    throw new Error("No engine session: SessionID=" + sessionID);
   }
   return session;
 }

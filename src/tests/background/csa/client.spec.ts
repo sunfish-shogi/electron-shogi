@@ -423,7 +423,7 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onClose(true);
     expect(clientHandlers.mockOnError).toBeCalledTimes(1);
     expect(clientHandlers.mockOnError.mock.calls[0][0].toString()).toBe(
-      "Error: CSAサーバーへ接続できませんでした。"
+      "Error: CSAサーバーに接続できませんでした。"
     );
     expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
   });

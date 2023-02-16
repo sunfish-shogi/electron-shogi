@@ -924,7 +924,7 @@ class Store {
     try {
       await api.saveRecord(path, dataOrError);
     } catch (e) {
-      throw new Error(`棋譜の保存に失敗しました: ${e}`);
+      throw new Error(`${t.failedToSaveRecord}: ${e}`);
     } finally {
       this.releaseBussyState();
     }

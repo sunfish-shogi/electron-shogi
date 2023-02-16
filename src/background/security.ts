@@ -1,6 +1,7 @@
 import { WebFrameMain } from "electron";
 import { getAppLogger } from "./log";
 import { isDevelopment } from "./environment";
+import { t } from "@/common/i18n";
 
 const allowedIPCSenders = [
   { protocol: "http:", host: /^localhost:[0-9]+$/ },
@@ -14,9 +15,7 @@ export function validateIPCSender(frame: WebFrameMain) {
       return;
     }
   }
-  const e = new Error(
-    `予期せぬイベントの送信元です。このエラーメッセージを開発者に報告してください。 [${frame.url}]`
-  );
+  const e = new Error(t.unexpectedEventSenderPleaseReport(frame.url));
   getAppLogger().error(e);
   throw e;
 }
@@ -25,9 +24,7 @@ function validateHTTPRequestMethod(method: string) {
   if (method === "GET") {
     return;
   }
-  const e = new Error(
-    `予期せぬHTTPメソッドです。このエラーメッセージを開発者に報告してください。 [${method}]`
-  );
+  const e = new Error(t.unexpectedHTTPMethodPleaseReport(method));
   getAppLogger().error(e);
   throw e;
 }
@@ -49,9 +46,7 @@ function validateHTTPRequestURL(url: string) {
       return;
     }
   }
-  const e = new Error(
-    `予期せぬURLへのリクエストです。このエラーメッセージを開発者に報告してください。 [${url}]`
-  );
+  const e = new Error(t.unexpectedRequestURLPleaseReport(url));
   getAppLogger().error(e);
   throw e;
 }

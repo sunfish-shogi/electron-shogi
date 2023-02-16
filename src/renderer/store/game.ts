@@ -17,6 +17,7 @@ import {
   PlayerBuilder,
 } from "@/renderer/players/builder";
 import { GameResult } from "@/common/player";
+import { t } from "@/common/i18n";
 
 enum GameState {
   IDLE = "idle",
@@ -285,10 +286,7 @@ export class GameManager {
       )
       .catch((e) => {
         this.onError(
-          new Error(
-            "GameManager#nextMove: プレイヤーにコマンドを送信できませんでした: " +
-              e
-          )
+          new Error(`GameManager#nextMove: ${t.failedToSendGoCommand}: ${e}`)
         );
       });
     // Ponder を開始する。
@@ -302,8 +300,7 @@ export class GameManager {
       .catch((e) => {
         this.onError(
           new Error(
-            "GameManager#nextMove: プレイヤーにPonderコマンドを送信できませんでした: " +
-              e
+            `GameManager#nextMove: ${t.failedToSendPonderCommand}: ${e}`
           )
         );
       });
@@ -413,10 +410,7 @@ export class GameManager {
     if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
         this.onError(
-          new Error(
-            "GameManager#timeout: プレイヤーにコマンドを送信できませんでした: " +
-              e
-          )
+          new Error(`GameManager#timeout: ${t.failedToSendStopCommand}: ${e}`)
         );
       });
       return;

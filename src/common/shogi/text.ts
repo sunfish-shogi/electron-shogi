@@ -182,6 +182,7 @@ const specialMoveToDisplayStringMap = {
   enteringOfKing: "入玉",
   winByDefault: "不戦勝",
   loseByDefault: "不戦敗",
+  sealNextMove: "封じ手",
 };
 
 export function getSpecialMoveDisplayString(move: SpecialMove): string {

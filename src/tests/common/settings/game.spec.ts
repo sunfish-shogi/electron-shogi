@@ -19,7 +19,7 @@ describe("settings/game", () => {
           author: "test author",
           path: "/path/to/test-engine",
           options: {
-            USI_Hash: { name: "USI_Hash", type: "spin", vars: [] },
+            USI_Hash: { name: "USI_Hash", type: "spin", order: 1, vars: [] },
           },
         },
       },

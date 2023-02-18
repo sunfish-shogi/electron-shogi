@@ -151,11 +151,15 @@ enum State {
 
 const DefaultTimeout = 10 * 1e3;
 
+const USIHashOptionOrder = 1;
+const USIPonderOptionOrder = 2;
+const UserDefinedOptionOrderStart = 100;
+
 export class EngineProcess {
   private handle: ChildProcessWithoutNullStreams | null = null;
   private _name = "NO NAME";
   private _author = "";
-  private _options = {} as USIEngineOptions;
+  private _engineOptions = {} as USIEngineOptions;
   private state = State.WaitingForReadyOK;
   private currentPosition = "";
   private reservedGoCommand?: ReservedGoCommand;
@@ -188,7 +192,7 @@ export class EngineProcess {
   }
 
   get engineOptions(): USIEngineOptions {
-    return this._options;
+    return this._engineOptions;
   }
 
   on(event: "timeout", callback: TimeoutCallback): this;
@@ -418,6 +422,8 @@ export class EngineProcess {
     const option: USIEngineOption = {
       name: args[1],
       type: args[3] as USIEngineOptionType,
+      order:
+        UserDefinedOptionOrderStart + Object.keys(this._engineOptions).length,
       vars: [],
     };
     for (let i = 4; i + 1 < args.length; i = i + 1) {
@@ -437,22 +443,24 @@ export class EngineProcess {
           break;
       }
     }
-    this._options[option.name] = option;
+    this._engineOptions[option.name] = option;
   }
 
   private onUSIOk(): void {
     if (!this.engineOptions[USIHash]) {
-      this.engineOptions[USIHash] = {
+      this._engineOptions[USIHash] = {
         name: USIHash,
         type: "spin",
+        order: USIHashOptionOrder,
         default: 32,
         vars: [],
       };
     }
     if (!this.engineOptions[USIPonder]) {
-      this.engineOptions[USIPonder] = {
+      this._engineOptions[USIPonder] = {
         name: USIPonder,
         type: "check",
+        order: USIPonderOptionOrder,
         default: "true",
         vars: [],
       };

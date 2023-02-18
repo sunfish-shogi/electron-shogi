@@ -33,7 +33,7 @@
           <div class="option-name">{{ option.name }}</div>
           <input
             v-if="option.type === 'spin'"
-            :id="option.inputId"
+            :id="inputElementID(option)"
             class="option-value-number"
             type="number"
             :min="option.min"
@@ -43,14 +43,14 @@
           />
           <input
             v-if="option.type === 'string'"
-            :id="option.inputId"
+            :id="inputElementID(option)"
             class="option-value-text"
             type="text"
             :name="option.name"
           />
           <input
             v-if="option.type === 'filename'"
-            :id="option.inputId"
+            :id="inputElementID(option)"
             class="option-value-filename"
             type="text"
             :name="option.name"
@@ -58,13 +58,13 @@
           <button
             v-if="option.type === 'filename'"
             class="dialog-button"
-            @click="selectFile(option.inputId)"
+            @click="selectFile(inputElementID(option))"
           >
             {{ t.select }}
           </button>
           <select
             v-if="option.type === 'check'"
-            :id="option.inputId"
+            :id="inputElementID(option)"
             class="option-value-check"
           >
             <option value="">{{ t.defaultValue }}</option>
@@ -73,7 +73,7 @@
           </select>
           <select
             v-if="option.type === 'combo'"
-            :id="option.inputId"
+            :id="inputElementID(option)"
             class="option-value-combo"
           >
             <option value="">{{ t.defaultValue }}</option>
@@ -120,21 +120,27 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import {
+  emptyUSIEngineSetting,
   getUSIEngineOptionCurrentValue,
   mergeUSIEngineSetting,
+  USIEngineOption,
   USIEngineSetting,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import {
-  computed,
   defineComponent,
   onBeforeUnmount,
   onMounted,
+  onUpdated,
   PropType,
   ref,
   Ref,
 } from "vue";
 import { useAppSetting } from "@/renderer/store/setting";
+
+function inputElementID(option: USIEngineOption) {
+  return `USI_ENGINE_OPTION_DIALOG_OPTION_${option.name}`;
+}
 
 export default defineComponent({
   name: "USIEngineOptionDialog",
@@ -155,27 +161,8 @@ export default defineComponent({
     const appSetting = useAppSetting();
     const dialog: Ref = ref(null);
     const engineNameInput: Ref = ref(null);
-    const latest = props.latestEngineSetting as USIEngineSetting;
-    const engine = ref(latest);
-
-    const options = computed(() => {
-      return Object.values(engine.value.options)
-        .sort((a, b): number => {
-          const aIsUSI = a.name.startsWith("USI_");
-          const bIsUSI = b.name.startsWith("USI_");
-          if (aIsUSI !== bIsUSI) {
-            return aIsUSI ? -1 : 1;
-          }
-          return a.name < b.name ? -1 : 1;
-        })
-        .map((option, index) => {
-          return {
-            ...option,
-            inputId: "usiEngineOptionDialogOption" + index,
-            value: getUSIEngineOptionCurrentValue(option),
-          };
-        });
-    });
+    const engine = ref(emptyUSIEngineSetting());
+    const options = ref([] as USIEngineOption[]);
 
     store.retainBussyState();
     onMounted(async () => {
@@ -183,20 +170,36 @@ export default defineComponent({
       installHotKeyForDialog(dialog.value);
       try {
         const timeoutSeconds = appSetting.engineTimeoutSeconds;
-        engine.value = await api.getUSIEngineInfo(latest.path, timeoutSeconds);
-        mergeUSIEngineSetting(engine.value, latest);
+        engine.value = await api.getUSIEngineInfo(
+          props.latestEngineSetting.path,
+          timeoutSeconds
+        );
+        mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
         engineNameInput.value.value = engine.value.name;
-        for (const option of options.value) {
-          const elem = getFormItemByID(option.inputId);
-          if (elem && option.value !== undefined) {
-            elem.value = option.value + "";
-          }
-        }
+        options.value = Object.values(engine.value.options)
+          .sort((a, b): number => {
+            return a.order < b.order ? -1 : 1;
+          })
+          .map((option) => {
+            return {
+              ...option,
+              value: getUSIEngineOptionCurrentValue(option),
+            };
+          });
       } catch (e) {
         store.pushError(e);
         context.emit("cancel");
       } finally {
         store.releaseBussyState();
+      }
+    });
+
+    onUpdated(() => {
+      for (const option of options.value) {
+        const elem = getFormItemByID(inputElementID(option));
+        if (elem && option.value !== undefined) {
+          elem.value = option.value + "";
+        }
       }
     });
 
@@ -238,7 +241,7 @@ export default defineComponent({
     const reset = () => {
       engineNameInput.value.value = engine.value.defaultName;
       for (const option of options.value) {
-        const elem = getFormItemByID(option.inputId);
+        const elem = getFormItemByID(inputElementID(option));
         if (elem) {
           if (engine.value.options[option.name].default !== undefined) {
             elem.value = engine.value.options[option.name].default + "";
@@ -252,7 +255,7 @@ export default defineComponent({
     const ok = () => {
       engine.value.name = engineNameInput.value.value;
       for (const option of options.value) {
-        const elem = getFormItemByID(option.inputId);
+        const elem = getFormItemByID(inputElementID(option));
         if (elem) {
           engine.value.options[option.name].value = !elem.value
             ? undefined
@@ -274,6 +277,7 @@ export default defineComponent({
       dialog,
       engineNameInput,
       options,
+      inputElementID,
       openEngineDir,
       selectFile,
       sendOption,

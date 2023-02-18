@@ -23,6 +23,7 @@ export type USIEngineOptionType =
 export type USIEngineOption = {
   name: string;
   type: USIEngineOptionType;
+  order: number;
   default?: string | number;
   min?: number;
   max?: number;

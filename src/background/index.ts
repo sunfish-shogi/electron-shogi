@@ -19,7 +19,7 @@ import {
   isProduction,
   isTest,
 } from "@/background/environment";
-import { setLanguage } from "@/common/i18n";
+import { setLanguage, t } from "@/common/i18n";
 
 getAppLogger().info("start main process");
 getAppLogger().info("process argv: %s", process.argv.join(" "));
@@ -58,7 +58,7 @@ function createWindow() {
   win.on("close", (event) => {
     if (getAppState() === AppState.CSA_GAME) {
       event.preventDefault();
-      sendError(new Error("CSAプロトコル使用中はアプリを終了できません。"));
+      sendError(new Error(t.youCanNotCloseAppWhileCSAOnlineGame));
       return;
     }
     setting = buildWindowSetting(setting, win);

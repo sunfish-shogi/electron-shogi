@@ -10,6 +10,7 @@ import {
 import { CSAProtocolVersion, CSAServerSetting } from "@/common/settings/csa";
 import { Socket } from "./socket";
 import { Logger } from "log4js";
+import { t } from "@/common/i18n";
 
 type GameSummaryCallback = (gameSummary: CSAGameSummary) => void;
 type RejectCallback = () => void;
@@ -250,15 +251,15 @@ export class Client {
           this.logger.info("sid=%d: socket closed", this.sessionID);
         } else {
           this.onError(
-            new Error("CSAサーバーからの切断中にエラーが発生しました。")
+            new Error(t.errorOccuredWhileDisconnectingFromCSAServer)
           );
         }
         break;
       case State.CONNECTING:
-        this.onError(new Error("CSAサーバーへ接続できませんでした。"));
+        this.onError(new Error(t.failedToConnectToCSAServer));
         break;
       default:
-        this.onError(new Error("CSAサーバーへの接続が切れました。"));
+        this.onError(new Error(t.disconnectedFromCSAServer));
         break;
     }
     this.state = State.CLOSED;
@@ -300,7 +301,7 @@ export class Client {
   }
 
   private onLoginIncorrect(): void {
-    this.onError(new Error("CSAサーバーへのログインが拒否されました。"));
+    this.onError(new Error(t.csaServerLoginDenied));
     if (!this.socket) {
       return;
     }

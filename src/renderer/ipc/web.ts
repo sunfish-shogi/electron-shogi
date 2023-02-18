@@ -5,6 +5,7 @@ import { defaultResearchSetting } from "@/common/settings/research";
 import { USIEngineSettings } from "@/common/settings/usi";
 import { LogLevel } from "../../common/log";
 import { Bridge } from "./api";
+import { t } from "@/common/i18n";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
@@ -26,22 +27,22 @@ export const webAPI: Bridge = {
     // DO NOTHING
   },
   async showOpenRecordDialog(): Promise<string> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async openRecord(): Promise<Uint8Array> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async showSaveRecordDialog(): Promise<string> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async saveRecord(): Promise<void> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async showSelectFileDialog(): Promise<string> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async showSelectDirectoryDialog(): Promise<string> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async loadAppSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.APP_SETTING);
@@ -96,7 +97,7 @@ export const webAPI: Bridge = {
     localStorage.setItem(STORAGE_KEY.GAME_SETTING, json);
   },
   async loadCSAGameSettingHistory(): Promise<string> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async saveCSAGameSettingHistory(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY, json);
@@ -108,16 +109,16 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   async showSelectUSIEngineDialog(): Promise<string> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async getUSIEngineInfo(): Promise<string> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async sendUSISetOption(): Promise<void> {
     // Do Nothing
   },
   async usiLaunch(): Promise<number> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async usiGo(): Promise<void> {
     // Do Nothing
@@ -141,7 +142,7 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   async csaLogin(): Promise<number> {
-    throw new Error("Web版では利用できない機能です。");
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async csaLogout(): Promise<void> {
     // Do Nothing

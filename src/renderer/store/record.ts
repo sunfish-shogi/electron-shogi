@@ -25,6 +25,7 @@ import iconv from "iconv-lite";
 import { getSituationText } from "./score";
 import { SearchInfo } from "@/renderer/players/player";
 import { CommentBehavior } from "@/common/settings/analysis";
+import { t } from "@/common/i18n";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -210,7 +211,7 @@ export class RecordManager {
         const position = Position.newBySFEN(data);
         recordOrError = position
           ? new Record(position)
-          : new Error("局面を読み込めませんでした。");
+          : new Error(t.failedToParseSFEN);
         break;
       }
       case RecordFormatType.USI:
@@ -223,7 +224,7 @@ export class RecordManager {
         recordOrError = importCSA(data);
         break;
       default:
-        recordOrError = new Error("棋譜フォーマットの検出ができませんでした。");
+        recordOrError = new Error(t.failedToDetectRecordFormat);
         break;
     }
     if (recordOrError instanceof Error) {
@@ -246,7 +247,7 @@ export class RecordManager {
     } else if (path.match(/\.csa$/)) {
       recordOrError = importCSA(new TextDecoder().decode(data));
     } else {
-      recordOrError = new Error("不明なファイル形式: " + path);
+      recordOrError = new Error(`${t.unknownFileExtension}: ${path}`);
     }
     if (recordOrError instanceof Error) {
       return recordOrError;
@@ -268,7 +269,7 @@ export class RecordManager {
     } else if (path.match(/\.csa$/)) {
       data = new TextEncoder().encode(exportCSA(this.record, opt));
     } else {
-      return new Error("不明なファイル形式: " + path);
+      return new Error(`${t.unknownFileExtension}: ${path}`);
     }
     this.updateRecordFilePath(path);
     return data as Buffer;

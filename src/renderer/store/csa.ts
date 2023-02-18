@@ -28,6 +28,7 @@ import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { TimeLimitSetting } from "@/common/settings/game";
+import { t } from "@/common/i18n";
 
 export const loginRetryIntervalSeconds = 10;
 
@@ -493,9 +494,7 @@ export class CSAGameManager {
       )
       .catch((e) => {
         this.onError(
-          new Error(
-            `CSAGameManager#next: goコマンドを送信できませんでした: ${e}`
-          )
+          new Error(`CSAGameManager#next: ${t.failedToSendGoCommand}: ${e}`)
         );
       });
   }
@@ -514,9 +513,7 @@ export class CSAGameManager {
       )
       .catch((e) => {
         this.onError(
-          new Error(
-            `CSAGameManager#next: ponderコマンドを送信できませんでした: ${e}`
-          )
+          new Error(`CSAGameManager#next: ${t.failedToSendPonderCommand}: ${e}`)
         );
       });
   }

@@ -54,6 +54,7 @@ import {
 import { CSAServerSetting } from "@/common/settings/csa";
 import { isEncryptionAvailable } from "./encrypt";
 import { validateIPCSender } from "./security";
+import { t } from "@/common/i18n";
 
 const isWindows = process.platform === "win32";
 
@@ -96,7 +97,7 @@ ipcMain.on(
 ipcMain.on(Background.OPEN_EXPLORER, (_, target: string) => {
   const stats = fs.statSync(target, { throwIfNoEntry: false });
   if (!stats) {
-    sendError(new Error(`ファイルの場所を開けませんでした: ${target}`));
+    sendError(new Error(t.failedToOpenDirectory(target)));
     return;
   }
   if (stats.isDirectory()) {
@@ -118,12 +119,12 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("Failed to open dialog by unexpected error.");
     }
     getAppLogger().debug(`show open-record dialog`);
     const results = dialog.showOpenDialogSync(win, {
       properties: ["openFile"],
-      filters: [{ name: "棋譜ファイル", extensions: ["kif", "kifu", "csa"] }],
+      filters: [{ name: t.recordFile, extensions: ["kif", "kifu", "csa"] }],
     });
     getAppLogger().debug(`open-record dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
@@ -135,7 +136,7 @@ ipcMain.handle(
   async (event, path: string): Promise<Uint8Array> => {
     validateIPCSender(event.senderFrame);
     if (!isValidRecordFilePath(path)) {
-      throw new Error("取り扱いできないファイル拡張子です。");
+      throw new Error(t.fileExtensionNotSupported);
     }
     getAppLogger().debug(`open record: ${path}`);
     return fs.promises.readFile(path);
@@ -148,16 +149,16 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("failed to open dialog by unexpected error.");
     }
     getAppLogger().debug("show save-record dialog");
     const result = dialog.showSaveDialogSync(win, {
       defaultPath: defaultPath,
       properties: ["createDirectory", "showOverwriteConfirmation"],
       filters: [
-        { name: "KIF形式 (Shift-JIS)", extensions: ["kif"] },
-        { name: "KIF形式 (UTF-8)", extensions: ["kifu"] },
-        { name: "CSA形式", extensions: ["csa"] },
+        { name: "KIF (Shift-JIS)", extensions: ["kif"] },
+        { name: "KIF (UTF-8)", extensions: ["kifu"] },
+        { name: "CSA", extensions: ["csa"] },
       ],
     });
     getAppLogger().debug(`save-record dialog result: ${result}`);
@@ -170,7 +171,7 @@ ipcMain.handle(
   async (event, filePath: string, data: Uint8Array): Promise<void> => {
     validateIPCSender(event.senderFrame);
     if (!isValidRecordFilePath(filePath)) {
-      throw new Error("取り扱いできないファイル拡張子です。");
+      throw new Error(t.fileExtensionNotSupported);
     }
     getAppLogger().debug(`save record: ${filePath} (${data.length} bytes)`);
     const dir = path.dirname(filePath);
@@ -185,7 +186,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("failed to open dialog by unexpected error.");
     }
     getAppLogger().debug("show select-file dialog");
     const results = dialog.showOpenDialogSync(win, {
@@ -202,7 +203,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("failed to open dialog by unexpected error.");
     }
     getAppLogger().debug("show select-directory dialog");
     const results = dialog.showOpenDialogSync(win, {
@@ -302,13 +303,13 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
   validateIPCSender(event.senderFrame);
   const win = BrowserWindow.getFocusedWindow();
   if (!win) {
-    throw new Error("予期せぬエラーでダイアログを表示せきません。");
+    throw new Error("failed to open dialog by unexpected error.");
   }
   getAppLogger().debug("show select-USI-engine dialog");
   const results = dialog.showOpenDialogSync(win, {
     properties: ["openFile", "noResolveAliases"],
     filters: isWindows
-      ? [{ name: "実行可能ファイル", extensions: ["exe", "cmd", "bat"] }]
+      ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }]
       : undefined,
   });
   return results && results.length === 1 ? results[0] : "";

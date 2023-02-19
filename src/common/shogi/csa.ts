@@ -436,7 +436,7 @@ function formatMetadata(
     metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT) ||
     metadata.getStandardMetadata(RecordMetadataKey.TITLE) ||
     metadata.getStandardMetadata(RecordMetadataKey.OPUS_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.PUBLISHED_ON);
+    metadata.getStandardMetadata(RecordMetadataKey.PUBLISHED_BY);
   if (event) {
     ret += "$EVENT:" + event + returnCode;
   }

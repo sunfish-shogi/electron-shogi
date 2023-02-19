@@ -20,11 +20,8 @@
 </template>
 
 <script lang="ts">
-import { t } from "@/common/i18n";
-import {
-  getStandardMetadataDisplayName,
-  RecordMetadataKey,
-} from "@/common/shogi";
+import { getRecordMetadataName, t } from "@/common/i18n";
+import { RecordMetadataKey } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { computed, defineComponent, onMounted, Ref, ref } from "vue";
 import { RectSize } from "@/renderer/view/primitive/Types";
@@ -45,7 +42,7 @@ export default defineComponent({
         const metadata = store.record.metadata;
         return {
           key: key,
-          displayName: getStandardMetadataDisplayName(key),
+          displayName: getRecordMetadataName(key),
           value: metadata.getStandardMetadata(key) || "",
         };
       });
@@ -95,12 +92,12 @@ export default defineComponent({
   flex-direction: row;
 }
 .key {
-  width: 100px;
+  width: 150px;
 }
 div.value {
-  width: calc(100% - 100px);
+  width: calc(100% - 150px);
 }
 input.value {
-  width: min(500px, calc(100% - 150px));
+  width: min(500px, calc(100% - 200px));
 }
 </style>

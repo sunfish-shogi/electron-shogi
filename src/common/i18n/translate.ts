@@ -258,6 +258,7 @@ type Texts = {
   integrity: string;
   recordCategory: string;
   award: string;
+  filterByOptionName: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
   canOpenLogDirectoryFromMenu: string;
@@ -576,6 +577,7 @@ const ja: Texts = {
   integrity: "完全性",
   recordCategory: "分類",
   award: "受賞",
+  filterByOptionName: "オプション名で検索",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
   shouldRestartToApplyLogSettings:
@@ -919,6 +921,7 @@ const en: Texts = {
   integrity: "Integrity",
   recordCategory: "Category",
   award: "Award",
+  filterByOptionName: "Filter by Option Name",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
   shouldRestartToApplyLogSettings:

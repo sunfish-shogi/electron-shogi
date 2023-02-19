@@ -29,7 +29,20 @@
             name="ElectronShogiEngineName"
           />
         </div>
-        <div v-for="option in options" :key="option.name" class="option">
+        <div class="option">
+          <input
+            ref="filter"
+            class="filter"
+            :placeholder="t.filterByOptionName"
+            @input="updateFilter"
+          />
+        </div>
+        <div
+          v-for="option in options"
+          :key="option.name"
+          class="option"
+          :class="{ hidden: !option.visible }"
+        >
           <div class="option-name">
             {{ option.displayName || option.name }}
             <span v-if="option.displayName" class="option-name-original">
@@ -117,6 +130,7 @@
 
 <script lang="ts">
 import { t, usiOptionNameMap } from "@/common/i18n";
+import { filter as filterString } from "@/common/helpers/string";
 import { getFormItemByID, showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
@@ -144,6 +158,11 @@ import {
 } from "vue";
 import { useAppSetting } from "@/renderer/store/setting";
 
+type Option = USIEngineOption & {
+  displayName?: string;
+  visible: boolean;
+};
+
 function inputElementID(option: USIEngineOption) {
   return `USI_ENGINE_OPTION_DIALOG_OPTION_${option.name}`;
 }
@@ -167,6 +186,8 @@ export default defineComponent({
     const appSetting = useAppSetting();
     const dialog: Ref = ref(null);
     const engineNameInput: Ref = ref(null);
+    const filter: Ref = ref(null);
+    const filterWords: Ref<string[]> = ref([]);
     const engine = ref(emptyUSIEngineSetting());
 
     store.retainBussyState();
@@ -191,17 +212,24 @@ export default defineComponent({
 
     const options = computed(() =>
       Object.values(engine.value.options)
-        .sort((a, b): number => {
-          return a.order < b.order ? -1 : 1;
-        })
+        .sort((a, b): number => (a.order < b.order ? -1 : 1))
         .map((option) => {
-          return {
+          const enableFilter = filterWords.value.length > 0;
+          const ret: Option = {
             ...option,
             value: getUSIEngineOptionCurrentValue(option),
-            displayName: appSetting.translateEngineOptionName
-              ? usiOptionNameMap[option.name]
-              : undefined,
+            visible: !enableFilter,
           };
+          if (appSetting.translateEngineOptionName) {
+            ret.displayName = usiOptionNameMap[option.name];
+          }
+          if (enableFilter) {
+            ret.visible =
+              (ret.displayName &&
+                filterString(ret.displayName, filterWords.value)) ||
+              filterString(ret.name, filterWords.value);
+          }
+          return ret;
         })
     );
 
@@ -217,6 +245,10 @@ export default defineComponent({
     onBeforeUnmount(() => {
       uninstallHotKeyForDialog(dialog.value);
     });
+
+    const updateFilter = () => {
+      filterWords.value = String(filter.value.value).trim().split(/ +/);
+    };
 
     const openEngineDir = () => {
       api.openExplorer(engine.value.path);
@@ -287,8 +319,10 @@ export default defineComponent({
       engine,
       dialog,
       engineNameInput,
+      filter,
       options,
       inputElementID,
+      updateFilter,
       openEngineDir,
       selectFile,
       sendOption,
@@ -314,6 +348,12 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   border-bottom: 1px solid var(--text-separator-color);
+}
+.option.hidden {
+  display: none;
+}
+.filter {
+  width: 220px;
 }
 .option-name {
   width: 240px;

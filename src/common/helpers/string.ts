@@ -46,3 +46,8 @@ export function ordinal(n: number): string {
       return n + "th";
   }
 }
+
+export function filter(target: string, filters: string[]): boolean {
+  const lowerCase = target.toLowerCase();
+  return filters.every((filter) => lowerCase.includes(filter.toLowerCase()));
+}

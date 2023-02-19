@@ -1,7 +1,7 @@
-import { ordinal } from "@/common/helpers/string";
+import { filter, ordinal } from "@/common/helpers/string";
 
 describe("helpers/string", () => {
-  it("ordinal", async () => {
+  it("ordinal", () => {
     expect(ordinal(1)).toBe("1st");
     expect(ordinal(2)).toBe("2nd");
     expect(ordinal(3)).toBe("3rd");
@@ -20,5 +20,12 @@ describe("helpers/string", () => {
     expect(ordinal(122)).toBe("122nd");
     expect(ordinal(123)).toBe("123rd");
     expect(ordinal(124)).toBe("124th");
+  });
+
+  it("filter", () => {
+    expect(filter("Foo Bar Baz", ["Foo"])).toBeTruthy();
+    expect(filter("Foo Bar Baz", ["ar"])).toBeTruthy();
+    expect(filter("Foo Bar Baz", ["Foo", "Baz"])).toBeTruthy();
+    expect(filter("Foo Bar Baz", ["Foo", "Qux"])).toBeFalsy();
   });
 });

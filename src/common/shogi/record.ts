@@ -6,6 +6,8 @@ import {
   Color,
   reverseColor,
   parseUSIMove,
+  InvalidUSIError,
+  InvalidMoveError,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
 import { getMoveDisplayText, getSpecialMoveDisplayString } from "./text";
@@ -762,18 +764,18 @@ export class Record {
     } else if (data.startsWith(prefixMoves)) {
       return Record.newByUSIFromMoves(new Position(), data);
     } else {
-      return new Error("不正なUSI(1): " + data);
+      return new InvalidUSIError(data);
     }
   }
 
   private static newByUSIFromSFEN(data: string): Record | Error {
     const sections = data.split(" ");
     if (sections.length < 4) {
-      return new Error("不正なUSI(2): " + data);
+      return new InvalidUSIError(data);
     }
     const position = Position.newBySFEN(sections.slice(0, 4).join(" "));
     if (!position) {
-      return new Error("不正なUSI(3): " + data);
+      return new InvalidUSIError(data);
     }
     return Record.newByUSIFromMoves(position, sections.slice(4).join(" "));
   }
@@ -788,7 +790,7 @@ export class Record {
     }
     const sections = data.split(" ");
     if (sections[0] !== "moves") {
-      return new Error("不正なUSI(4): " + data);
+      return new InvalidUSIError(data);
     }
     for (let i = 1; i < sections.length; i++) {
       const parsed = parseUSIMove(sections[i]);
@@ -797,7 +799,7 @@ export class Record {
       }
       let move = record.position.createMove(parsed.from, parsed.to);
       if (!move) {
-        return new Error("不正な指し手: " + sections[i]);
+        return new InvalidMoveError(sections[i]);
       }
       if (parsed.promote) {
         move = move.withPromote();

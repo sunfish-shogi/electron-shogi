@@ -1,10 +1,5 @@
+import { Language } from "../i18n";
 import { LogLevel } from "../log";
-
-export enum Language {
-  // ISO 639-1
-  JA = "ja",
-  EN = "en",
-}
 
 export enum Thema {
   STANDARD = "standard",

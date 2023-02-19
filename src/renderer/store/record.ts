@@ -25,7 +25,7 @@ import iconv from "iconv-lite";
 import { getSituationText } from "./score";
 import { SearchInfo } from "@/renderer/players/player";
 import { CommentBehavior } from "@/common/settings/analysis";
-import { t } from "@/common/i18n";
+import { t, translateError } from "@/common/i18n";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -228,7 +228,7 @@ export class RecordManager {
         break;
     }
     if (recordOrError instanceof Error) {
-      return recordOrError;
+      return translateError(recordOrError);
     }
     this._record = recordOrError;
     this.setupRecordHandler();
@@ -250,7 +250,7 @@ export class RecordManager {
       recordOrError = new Error(`${t.unknownFileExtension}: ${path}`);
     }
     if (recordOrError instanceof Error) {
-      return recordOrError;
+      return translateError(recordOrError);
     }
     this._record = recordOrError;
     this.setupRecordHandler();

@@ -9,8 +9,8 @@ import {
   Tab,
   TabPaneType,
   EvaluationViewFrom,
-  Language,
 } from "@/common/settings/app";
+import { Language } from "@/common/i18n";
 
 describe("settings/csa", () => {
   it("normalize", () => {

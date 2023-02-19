@@ -1,17 +1,4 @@
 import { ordinal } from "../helpers/string";
-import {
-  InvalidBoardError,
-  InvalidDestinationError,
-  InvalidHandPieceError,
-  InvalidHandicapError,
-  InvalidLineError,
-  InvalidMoveError,
-  InvalidMoveNumberError,
-  InvalidPieceNameError,
-  InvalidTurnError,
-  InvalidUSIError,
-  PieceNotExistsError,
-} from "../shogi";
 import { Language } from "./language";
 
 type Texts = {
@@ -249,6 +236,27 @@ type Texts = {
   eightPiecesHandicap: string;
   tsumeShogi: string;
   doubleKingTsumeShogi: string;
+  startDateTime: string;
+  endDateTime: string;
+  gameDate: string;
+  tournament: string;
+  strategy: string;
+  gameTitle: string;
+  timeLimit: string;
+  place: string;
+  postedOn: string;
+  note: string;
+  senteShortName: string;
+  goteShortName: string;
+  opusNo: string;
+  opusName: string;
+  publishedBy: string;
+  publishedOn: string;
+  source: string;
+  numberOfMoves: string;
+  integrity: string;
+  recordCategory: string;
+  award: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
   canOpenLogDirectoryFromMenu: string;
@@ -545,6 +553,27 @@ const ja: Texts = {
   eightPiecesHandicap: "八枚落ち",
   tsumeShogi: "詰将棋",
   doubleKingTsumeShogi: "双玉詰将棋",
+  startDateTime: "開始日時",
+  endDateTime: "終了日時",
+  gameDate: "対局日",
+  tournament: "棋戦",
+  strategy: "戦型",
+  gameTitle: "表題",
+  timeLimit: "持ち時間",
+  place: "場所",
+  postedOn: "掲載",
+  note: "備考",
+  senteShortName: "先手省略名",
+  goteShortName: "後手省略名",
+  opusNo: "作品番号",
+  opusName: "作品名",
+  publishedBy: "発表誌",
+  publishedOn: "発表年月",
+  source: "出典",
+  numberOfMoves: "手数",
+  integrity: "完全性",
+  recordCategory: "分類",
+  award: "受賞",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
   shouldRestartToApplyLogSettings:
@@ -796,7 +825,7 @@ const en: Texts = {
   enableEngineTimeout: "Enable Engine Timeout",
   others: "Others",
   nextTurn: "Next Move",
-  elapsedTime: "Time",
+  elapsedTime: "Elapsed Time",
   elapsed: "Elapsed",
   rank: "Rank",
   depth: "Depth",
@@ -866,6 +895,27 @@ const en: Texts = {
   eightPiecesHandicap: "8 Pieces Handicap",
   tsumeShogi: "Tsume Shogi",
   doubleKingTsumeShogi: "2-Kings Tsume Shogi",
+  startDateTime: "Start",
+  endDateTime: "End",
+  gameDate: "Date",
+  tournament: "Tournament",
+  strategy: "Strategy",
+  gameTitle: "Title",
+  timeLimit: "Time Limit",
+  place: "Place",
+  postedOn: "Posted On",
+  note: "Note",
+  senteShortName: "Sente(short)",
+  goteShortName: "Gote(short)",
+  opusNo: "Opus No.",
+  opusName: "Opus Name",
+  publishedBy: "Published By",
+  publishedOn: "Published On",
+  source: "Source",
+  numberOfMoves: "Number of Moves",
+  integrity: "Integrity",
+  recordCategory: "Category",
+  award: "Award",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
   shouldRestartToApplyLogSettings:
@@ -974,31 +1024,4 @@ export function setLanguage(lang: Language) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (t as any)[key] = value;
   });
-}
-
-export function translateError(err: Error): Error {
-  if (err instanceof InvalidPieceNameError) {
-    return new Error(`${t.invalidPieceName}: ${err.data}`);
-  } else if (err instanceof InvalidTurnError) {
-    return new Error(`${t.invalidTurn}: ${err.data}`);
-  } else if (err instanceof InvalidMoveError) {
-    return new Error(`${t.invalidMove}: ${err.data}`);
-  } else if (err instanceof InvalidMoveNumberError) {
-    return new Error(`${t.invalidMoveNumber}: ${err.data}`);
-  } else if (err instanceof InvalidDestinationError) {
-    return new Error(`${t.invalidDestination}: ${err.data}`);
-  } else if (err instanceof PieceNotExistsError) {
-    return new Error(`${t.pieceNotExists}: ${err.data}`);
-  } else if (err instanceof InvalidLineError) {
-    return new Error(`${t.invalidLine}: ${err.data}`);
-  } else if (err instanceof InvalidHandicapError) {
-    return new Error(`${t.invalidHandicap}: ${err.data}`);
-  } else if (err instanceof InvalidBoardError) {
-    return new Error(`${t.invalidBoard}: ${err.data}`);
-  } else if (err instanceof InvalidHandPieceError) {
-    return new Error(`${t.invalidHandPiece}: ${err.data}`);
-  } else if (err instanceof InvalidUSIError) {
-    return new Error(`${t.invalidUSI}: ${err.data}`);
-  }
-  return err;
 }

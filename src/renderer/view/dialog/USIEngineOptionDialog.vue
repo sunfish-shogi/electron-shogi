@@ -30,7 +30,12 @@
           />
         </div>
         <div v-for="option in options" :key="option.name" class="option">
-          <div class="option-name">{{ option.name }}</div>
+          <div class="option-name">
+            {{ option.displayName || option.name }}
+            <span v-if="option.displayName" class="option-name-original">
+              {{ option.name }}
+            </span>
+          </div>
           <input
             v-if="option.type === 'spin'"
             :id="inputElementID(option)"
@@ -111,7 +116,7 @@
 </template>
 
 <script lang="ts">
-import { t } from "@/common/i18n";
+import { t, usiOptionNameMap } from "@/common/i18n";
 import { getFormItemByID, showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
@@ -128,6 +133,7 @@ import {
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import {
+  computed,
   defineComponent,
   onBeforeUnmount,
   onMounted,
@@ -162,7 +168,6 @@ export default defineComponent({
     const dialog: Ref = ref(null);
     const engineNameInput: Ref = ref(null);
     const engine = ref(emptyUSIEngineSetting());
-    const options = ref([] as USIEngineOption[]);
 
     store.retainBussyState();
     onMounted(async () => {
@@ -176,16 +181,6 @@ export default defineComponent({
         );
         mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
         engineNameInput.value.value = engine.value.name;
-        options.value = Object.values(engine.value.options)
-          .sort((a, b): number => {
-            return a.order < b.order ? -1 : 1;
-          })
-          .map((option) => {
-            return {
-              ...option,
-              value: getUSIEngineOptionCurrentValue(option),
-            };
-          });
       } catch (e) {
         store.pushError(e);
         context.emit("cancel");
@@ -193,6 +188,22 @@ export default defineComponent({
         store.releaseBussyState();
       }
     });
+
+    const options = computed(() =>
+      Object.values(engine.value.options)
+        .sort((a, b): number => {
+          return a.order < b.order ? -1 : 1;
+        })
+        .map((option) => {
+          return {
+            ...option,
+            value: getUSIEngineOptionCurrentValue(option),
+            displayName: appSetting.translateEngineOptionName
+              ? usiOptionNameMap[option.name]
+              : undefined,
+          };
+        })
+    );
 
     onUpdated(() => {
       for (const option of options.value) {
@@ -309,6 +320,10 @@ export default defineComponent({
   text-align: left;
   border-right: 1px solid var(--text-separator-color);
   margin-right: 10px;
+}
+.option-name .option-name-original {
+  font-size: 0.7em;
+  width: 100%;
 }
 .option-unchangeable {
   width: 340px;

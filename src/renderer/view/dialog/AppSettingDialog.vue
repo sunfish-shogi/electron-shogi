@@ -172,6 +172,17 @@
           <div class="section-title">{{ t.usiProtocol }}</div>
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
+              {{ t.translateOptionName }}
+            </div>
+            <input
+              ref="translateEngineOptionName"
+              class="toggle"
+              :checked="appSetting.translateEngineOptionName"
+              type="checkbox"
+            />
+          </div>
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">
               {{ t.maxStartupTime }}
             </div>
             <input
@@ -394,6 +405,7 @@ export default defineComponent({
     const clockSoundTarget: Ref = ref(null);
     const returnCode: Ref = ref(null);
     const autoSaveDirectory: Ref = ref(null);
+    const translateEngineOptionName: Ref = ref(null);
     const engineTimeoutSeconds: Ref = ref(null);
     const evaluationViewFrom: Ref = ref(null);
     const coefficientInSigmoid: Ref = ref(null);
@@ -431,6 +443,7 @@ export default defineComponent({
         clockSoundTarget: clockSoundTarget.value.value,
         returnCode: nameToReturnCode[returnCode.value.value],
         autoSaveDirectory: autoSaveDirectory.value.value,
+        translateEngineOptionName: translateEngineOptionName.value.checked,
         engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
         evaluationViewFrom: evaluationViewFrom.value.value,
         coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
@@ -497,6 +510,7 @@ export default defineComponent({
       clockSoundTarget,
       returnCode,
       autoSaveDirectory,
+      translateEngineOptionName,
       engineTimeoutSeconds,
       evaluationViewFrom,
       coefficientInSigmoid,

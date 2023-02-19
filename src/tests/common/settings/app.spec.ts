@@ -33,6 +33,7 @@ describe("settings/csa", () => {
       bottomLeftPaneWidthPercentage: 80,
       returnCode: "\r",
       autoSaveDirectory: "/tmp/electron-shogi",
+      translateEngineOptionName: true,
       engineTimeoutSeconds: 60,
       evaluationViewFrom: EvaluationViewFrom.EACH,
       coefficientInSigmoid: 1000,

@@ -1,3 +1,4 @@
+export * from "./errors";
 export * from "./piece";
 export * from "./color";
 export * from "./square";

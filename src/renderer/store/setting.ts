@@ -5,7 +5,6 @@ import {
   BoardLabelType,
   ClockSoundTarget,
   EvaluationViewFrom,
-  Language,
   PieceImageType,
   Tab,
   TabPaneType,
@@ -16,6 +15,7 @@ import {
 import { UnwrapNestedRefs, reactive } from "vue";
 import api from "../ipc/api";
 import { LogLevel } from "@/common/log";
+import { Language } from "@/common/i18n";
 
 class AppSettingStore {
   private setting = defaultAppSetting();

@@ -342,9 +342,8 @@
 </template>
 
 <script lang="ts">
-import { t } from "@/common/i18n";
+import { t, Language } from "@/common/i18n";
 import {
-  Language,
   PieceImageType,
   BoardImageType,
   BoardLabelType,

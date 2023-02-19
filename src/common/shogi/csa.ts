@@ -2,7 +2,14 @@
 // See http://www2.computer-shogi.org/protocol/record_v22.html
 
 import { appendLine } from "@/common/helpers/string";
-import { Record } from ".";
+import {
+  InvalidLineError,
+  InvalidMoveError,
+  InvalidPieceNameError,
+  InvalidTurnError,
+  PieceNotExistsError,
+  Record,
+} from ".";
 import { InitialPositionType } from "./board";
 import { Color } from "./color";
 import { ImmutableHand } from "./hand";
@@ -186,7 +193,7 @@ function parseRank(line: string, position: Position): Error | undefined {
     const color = section[0] === "+" ? Color.BLACK : Color.WHITE;
     const pieceType = csaNameToPieceType[section.slice(1)];
     if (!pieceType) {
-      return new Error("不正な駒: " + section);
+      return new InvalidPieceNameError(section);
     }
     position.board.set(new Square(file, rank), new Piece(color, pieceType));
   }
@@ -213,7 +220,7 @@ function parsePieces(line: string, position: Position): Error | undefined {
     const rank = Number(section[1]);
     const pieceType = csaNameToPieceType[section.slice(2)];
     if (!pieceType) {
-      return new Error("不正な駒: " + section);
+      return new InvalidPieceNameError(section);
     }
     if (file !== 0 && rank !== 0) {
       position.board.set(new Square(file, rank), new Piece(color, pieceType));
@@ -228,7 +235,7 @@ function parsePieces(line: string, position: Position): Error | undefined {
 function parseMove(line: string, position: ImmutablePosition): Move | Error {
   const color = line[0] === "+" ? Color.BLACK : Color.WHITE;
   if (color != position.color) {
-    return new Error("不正な手番: " + line);
+    return new InvalidTurnError(line);
   }
   const fromFile = Number(line[1]);
   const fromRank = Number(line[2]);
@@ -236,7 +243,7 @@ function parseMove(line: string, position: ImmutablePosition): Move | Error {
   const toRank = Number(line[4]);
   const pieceType = csaNameToPieceType[line.slice(5, 7)];
   if (!pieceType) {
-    return new Error("不正な駒の種類: " + line);
+    return new InvalidPieceNameError(line);
   }
   const from =
     fromFile === 0 && fromRank === 0
@@ -245,18 +252,18 @@ function parseMove(line: string, position: ImmutablePosition): Move | Error {
   const to = new Square(toFile, toRank);
   let move = position.createMove(from, to);
   if (!move) {
-    return new Error("不正な指し手: " + line);
+    return new InvalidMoveError(line);
   }
   if (from instanceof Square) {
     const basePiece = position.board.at(from);
     if (!basePiece) {
-      return new Error("存在しない駒: " + line);
+      return new PieceNotExistsError(line);
     }
     if (basePiece.type !== pieceType) {
       if (basePiece.promoted().type === pieceType) {
         move = move.withPromote();
       } else {
-        return new Error("存在しない駒: " + line);
+        return new PieceNotExistsError(line);
       }
     }
   }
@@ -307,7 +314,7 @@ export function importCSA(data: string): Record | Error {
         (parsed.sectionType === SectionType.HEADER && inMoveSection) ||
         (parsed.sectionType === SectionType.MOVE && !inMoveSection)
       ) {
-        return new Error("不正な行が検出されました: " + parsed.line);
+        return new InvalidLineError(parsed.line);
       }
       switch (parsed.type) {
         case LineType.VERSION:

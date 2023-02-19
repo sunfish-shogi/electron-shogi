@@ -76,6 +76,7 @@ export type AppSetting = {
   bottomLeftPaneWidthPercentage: number;
   returnCode: string;
   autoSaveDirectory: string;
+  translateEngineOptionName: boolean;
   engineTimeoutSeconds: number;
   evaluationViewFrom: EvaluationViewFrom;
   coefficientInSigmoid: number;
@@ -110,6 +111,7 @@ export type AppSettingUpdate = {
   bottomLeftPaneWidthPercentage?: number;
   returnCode?: string;
   autoSaveDirectory?: string;
+  translateEngineOptionName?: boolean;
   engineTimeoutSeconds?: number;
   evaluationViewFrom?: EvaluationViewFrom;
   coefficientInSigmoid?: number;
@@ -184,6 +186,7 @@ export function defaultAppSetting(opt?: {
     bottomLeftPaneWidthPercentage: 60,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
+    translateEngineOptionName: true,
     engineTimeoutSeconds: 10,
     evaluationViewFrom: EvaluationViewFrom.EACH,
     coefficientInSigmoid: 600,

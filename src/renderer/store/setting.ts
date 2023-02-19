@@ -77,6 +77,9 @@ class AppSettingStore {
   get autoSaveDirectory(): string {
     return this.setting.autoSaveDirectory;
   }
+  get translateEngineOptionName(): boolean {
+    return this.setting.translateEngineOptionName;
+  }
   get engineTimeoutSeconds(): number {
     return this.setting.engineTimeoutSeconds;
   }

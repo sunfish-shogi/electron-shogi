@@ -126,6 +126,7 @@ type Texts = {
   autoSavingDirectory: string;
   select: string;
   usiProtocol: string;
+  translateOptionName: string;
   maxStartupTime: string;
   forDevelopers: string;
   enableAppLog: string;
@@ -443,6 +444,7 @@ const ja: Texts = {
   autoSavingDirectory: "棋譜の自動保存先",
   select: "選択",
   usiProtocol: "USIプロトコル",
+  translateOptionName: "オプション名を翻訳",
   maxStartupTime: "最大起動待ち時間",
   forDevelopers: "開発者向け",
   enableAppLog: "アプリログを出力",
@@ -785,6 +787,7 @@ const en: Texts = {
   autoSavingDirectory: "Auto-Saving Directory",
   select: "Select",
   usiProtocol: "USI Protocol",
+  translateOptionName: "Translate Option Name",
   maxStartupTime: "Max Startup Time",
   forDevelopers: "For Developers",
   enableAppLog: "Enable App Log",

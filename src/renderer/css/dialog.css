@@ -100,6 +100,11 @@ dialog::backdrop {
   padding: 5px 25px 5px 25px;
 }
 
+.dialog-thin-button {
+  margin: 0px 5px 0px 5px;
+  padding: 2px 25px 2px 25px;
+}
+
 .dialog-wide-button {
   width: 100%;
   margin: 5px 0px 5px 0px;

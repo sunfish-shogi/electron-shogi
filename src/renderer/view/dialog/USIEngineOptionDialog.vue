@@ -2,34 +2,8 @@
   <div>
     <dialog ref="dialog">
       <div class="dialog-title">{{ t.engineSettings }}</div>
-      <div class="dialog-form-area option-list">
-        <div class="option">
-          <div class="option-name">{{ t.engineName }}</div>
-          <div class="option-unchangeable">{{ engine.defaultName }}</div>
-        </div>
-        <div class="option">
-          <div class="option-name">{{ t.author }}</div>
-          <div class="option-unchangeable">{{ engine.author }}</div>
-        </div>
-        <div class="option">
-          <div class="option-name">{{ t.enginePath }}</div>
-          <div class="option-unchangeable">
-            <div>{{ engine.path }}</div>
-            <button class="dialog-button" @click="openEngineDir">
-              {{ t.openDirectory }}
-            </button>
-          </div>
-        </div>
-        <div class="option">
-          <div class="option-name">{{ t.displayName }}</div>
-          <input
-            ref="engineNameInput"
-            class="option-value-text"
-            type="text"
-            name="ElectronShogiEngineName"
-          />
-        </div>
-        <div class="option">
+      <div class="dialog-form-area">
+        <div class="option-filter">
           <input
             ref="filter"
             class="filter"
@@ -37,75 +11,108 @@
             @input="updateFilter"
           />
         </div>
-        <div
-          v-for="option in options"
-          :key="option.name"
-          class="option"
-          :class="{ hidden: !option.visible }"
-        >
-          <div class="option-name">
-            {{ option.displayName || option.name }}
-            <span v-if="option.displayName" class="option-name-original">
-              {{ option.name }}
-            </span>
+        <div class="option-list">
+          <!-- 名前 -->
+          <div class="option">
+            <div class="option-name">{{ t.engineName }}</div>
+            <div class="option-unchangeable">{{ engine.defaultName }}</div>
           </div>
-          <input
-            v-if="option.type === 'spin'"
-            :id="inputElementID(option)"
-            class="option-value-number"
-            type="number"
-            :min="option.min"
-            :max="option.max"
-            step="1"
-            :name="option.name"
-          />
-          <input
-            v-if="option.type === 'string'"
-            :id="inputElementID(option)"
-            class="option-value-text"
-            type="text"
-            :name="option.name"
-          />
-          <input
-            v-if="option.type === 'filename'"
-            :id="inputElementID(option)"
-            class="option-value-filename"
-            type="text"
-            :name="option.name"
-          />
-          <button
-            v-if="option.type === 'filename'"
-            class="dialog-button"
-            @click="selectFile(inputElementID(option))"
+          <!-- 作者 -->
+          <div class="option" :class="{ hidden: filterWords.length }">
+            <div class="option-name">{{ t.author }}</div>
+            <div class="option-unchangeable">{{ engine.author }}</div>
+          </div>
+          <!-- 場所 -->
+          <div class="option" :class="{ hidden: filterWords.length }">
+            <div class="option-name">{{ t.enginePath }}</div>
+            <div class="option-unchangeable">
+              <div>{{ engine.path }}</div>
+              <button class="dialog-thin-button" @click="openEngineDir">
+                {{ t.openDirectory }}
+              </button>
+            </div>
+          </div>
+          <!-- 表示名 -->
+          <div class="option" :class="{ hidden: filterWords.length }">
+            <div class="option-name">{{ t.displayName }}</div>
+            <input
+              ref="engineNameInput"
+              class="option-value-text"
+              type="text"
+              name="ElectronShogiEngineName"
+            />
+          </div>
+          <!-- オプション -->
+          <div
+            v-for="option in options"
+            :key="option.name"
+            class="option"
+            :class="{ hidden: !option.visible }"
           >
-            {{ t.select }}
-          </button>
-          <select
-            v-if="option.type === 'check'"
-            :id="inputElementID(option)"
-            class="option-value-check"
-          >
-            <option value="">{{ t.defaultValue }}</option>
-            <option value="true">ON</option>
-            <option value="false">OFF</option>
-          </select>
-          <select
-            v-if="option.type === 'combo'"
-            :id="inputElementID(option)"
-            class="option-value-combo"
-          >
-            <option value="">{{ t.defaultValue }}</option>
-            <option v-for="v in option.vars" :key="v" :value="v">
-              {{ v }}
-            </option>
-          </select>
-          <button
-            v-if="option.type === 'button'"
-            class="dialog-button"
-            @click="sendOption(option.name)"
-          >
-            {{ t.invoke }}
-          </button>
+            <div class="option-name">
+              {{ option.displayName || option.name }}
+              <span v-if="option.displayName" class="option-name-original">
+                {{ option.name }}
+              </span>
+            </div>
+            <input
+              v-if="option.type === 'spin'"
+              :id="inputElementID(option)"
+              class="option-value-number"
+              type="number"
+              :min="option.min"
+              :max="option.max"
+              step="1"
+              :name="option.name"
+            />
+            <input
+              v-if="option.type === 'string'"
+              :id="inputElementID(option)"
+              class="option-value-text"
+              type="text"
+              :name="option.name"
+            />
+            <input
+              v-if="option.type === 'filename'"
+              :id="inputElementID(option)"
+              class="option-value-filename"
+              type="text"
+              :name="option.name"
+            />
+            <button
+              v-if="option.type === 'filename'"
+              class="dialog-thin-button"
+              @click="selectFile(inputElementID(option))"
+            >
+              {{ t.select }}
+            </button>
+            <select
+              v-if="option.type === 'check'"
+              :id="inputElementID(option)"
+              class="option-value-check"
+            >
+              <option value="">{{ t.defaultValue }}</option>
+              <option value="true">ON</option>
+              <option value="false">OFF</option>
+            </select>
+            <select
+              v-if="option.type === 'combo'"
+              :id="inputElementID(option)"
+              class="option-value-combo"
+            >
+              <option value="">{{ t.defaultValue }}</option>
+              <option v-for="v in option.vars" :key="v" :value="v">
+                {{ v }}
+              </option>
+            </select>
+            <button
+              v-if="option.type === 'button'"
+              class="dialog-thin-button"
+              @click="sendOption(option.name)"
+            >
+              {{ t.invoke }}
+            </button>
+          </div>
         </div>
       </div>
       <button class="dialog-wide-button" @click="reset()">
@@ -247,7 +254,10 @@ export default defineComponent({
     });
 
     const updateFilter = () => {
-      filterWords.value = String(filter.value.value).trim().split(/ +/);
+      filterWords.value = String(filter.value.value)
+        .trim()
+        .split(/ +/)
+        .filter((s) => s);
     };
 
     const openEngineDir = () => {
@@ -320,6 +330,7 @@ export default defineComponent({
       dialog,
       engineNameInput,
       filter,
+      filterWords,
       options,
       inputElementID,
       updateFilter,
@@ -352,8 +363,11 @@ export default defineComponent({
 .option.hidden {
   display: none;
 }
+.option-filter {
+  margin: 0px 5px 5px 5px;
+}
 .filter {
-  width: 220px;
+  width: 100%;
 }
 .option-name {
   width: 240px;
@@ -371,6 +385,7 @@ export default defineComponent({
 }
 .option-value-text {
   width: 340px;
+  height: 1.167em;
   text-align: left;
 }
 .option-value-filename {
@@ -379,6 +394,15 @@ export default defineComponent({
 }
 .option-value-number {
   width: 100px;
+  height: 1.167em;
   text-align: right;
+}
+.option-value-combo {
+  height: 1.667em;
+  text-align: left;
+}
+.option-value-check {
+  height: 1.667em;
+  text-align: left;
 }
 </style>

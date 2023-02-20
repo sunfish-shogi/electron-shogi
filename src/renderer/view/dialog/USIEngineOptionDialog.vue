@@ -197,7 +197,10 @@ export default defineComponent({
     const filterWords: Ref<string[]> = ref([]);
     const engine = ref(emptyUSIEngineSetting());
 
+    let defaultValueLoaded = false;
+    let defaultValueApplied = false;
     store.retainBussyState();
+
     onMounted(async () => {
       showModalDialog(dialog.value);
       installHotKeyForDialog(dialog.value);
@@ -209,6 +212,7 @@ export default defineComponent({
         );
         mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
         engineNameInput.value.value = engine.value.name;
+        defaultValueLoaded = true;
       } catch (e) {
         store.pushError(e);
         context.emit("cancel");
@@ -241,12 +245,16 @@ export default defineComponent({
     );
 
     onUpdated(() => {
+      if (!defaultValueLoaded || defaultValueApplied) {
+        return;
+      }
       for (const option of options.value) {
         const elem = getFormItemByID(inputElementID(option));
         if (elem && option.value !== undefined) {
           elem.value = option.value + "";
         }
       }
+      defaultValueApplied = true;
     });
 
     onBeforeUnmount(() => {
@@ -348,7 +356,7 @@ export default defineComponent({
 <style scoped>
 .option-list {
   width: 640px;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 220px);
   overflow: auto;
   display: flex;
   flex-direction: column;

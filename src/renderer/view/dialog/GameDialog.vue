@@ -230,6 +230,8 @@ export default defineComponent({
     const blackPlayerURI = ref("");
     const whitePlayerURI = ref("");
 
+    let defaultValueLoaded = false;
+    let defaultValueApplied = false;
     store.retainBussyState();
 
     onMounted(async () => {
@@ -240,6 +242,7 @@ export default defineComponent({
         whitePlayerURI.value = gameSetting.value.white.uri;
         showModalDialog(dialog.value);
         installHotKeyForDialog(dialog.value);
+        defaultValueLoaded = true;
       } catch (e) {
         store.pushError(e);
         store.destroyModalDialog();
@@ -252,30 +255,29 @@ export default defineComponent({
       uninstallHotKeyForDialog(dialog.value);
     });
 
-    let defaultValueApplied = false;
     onUpdated(() => {
-      if (!defaultValueApplied) {
-        hours.value.value = Math.floor(
-          gameSetting.value.timeLimit.timeSeconds / 3600
-        );
-        minutes.value.value =
-          Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
-        byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
-        increment.value.value = gameSetting.value.timeLimit.increment;
-        startPosition.value.value =
-          gameSetting.value.startPosition !== undefined
-            ? gameSetting.value.startPosition
-            : "current";
-        enableEngineTimeout.value.checked =
-          gameSetting.value.enableEngineTimeout;
-        maxMoves.value.value = gameSetting.value.maxMoves;
-        humanIsFront.value.checked = gameSetting.value.humanIsFront;
-        repeat.value.value = gameSetting.value.repeat;
-        swapPlayers.value.checked = gameSetting.value.swapPlayers;
-        enableComment.value.checked = gameSetting.value.enableComment;
-        enableAutoSave.value.checked = gameSetting.value.enableAutoSave;
-        defaultValueApplied = true;
+      if (!defaultValueLoaded || defaultValueApplied) {
+        return;
       }
+      hours.value.value = Math.floor(
+        gameSetting.value.timeLimit.timeSeconds / 3600
+      );
+      minutes.value.value =
+        Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
+      byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
+      increment.value.value = gameSetting.value.timeLimit.increment;
+      startPosition.value.value =
+        gameSetting.value.startPosition !== undefined
+          ? gameSetting.value.startPosition
+          : "current";
+      enableEngineTimeout.value.checked = gameSetting.value.enableEngineTimeout;
+      maxMoves.value.value = gameSetting.value.maxMoves;
+      humanIsFront.value.checked = gameSetting.value.humanIsFront;
+      repeat.value.value = gameSetting.value.repeat;
+      swapPlayers.value.checked = gameSetting.value.swapPlayers;
+      enableComment.value.checked = gameSetting.value.enableComment;
+      enableAutoSave.value.checked = gameSetting.value.enableAutoSave;
+      defaultValueApplied = true;
     });
 
     const buildPlayerSetting = (playerURI: string): PlayerSetting => {

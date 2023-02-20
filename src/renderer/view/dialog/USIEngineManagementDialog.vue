@@ -2,20 +2,31 @@
   <div>
     <dialog ref="dialog">
       <div class="dialog-title">{{ t.engineManagement }}</div>
-      <div class="dialog-form-area engine-list">
-        <div v-if="setting.engineList.length === 0" class="engine">
-          {{ t.noEngineRegistered }}
+      <div class="dialog-form-area">
+        <div class="engine-filter">
+          <input
+            ref="filter"
+            class="filter"
+            :placeholder="t.filterByEngineName"
+            @input="updateFilter"
+          />
         </div>
-        <div
-          v-for="engine in setting.engineList"
-          :key="engine.uri"
-          class="engine"
-          :value="engine.uri"
-        >
-          <div class="engine-name">{{ engine.name }}</div>
-          <button @click="openOptions(engine.uri)">{{ t.config }}</button>
-          <button @click="duplicate(engine.uri)">{{ t.duplicate }}</button>
-          <button @click="remove(engine.uri)">{{ t.remove }}</button>
+        <div class="engine-list">
+          <div v-if="setting.engineList.length === 0" class="engine">
+            {{ t.noEngineRegistered }}
+          </div>
+          <div
+            v-for="engine in engines"
+            :key="engine.uri"
+            class="engine"
+            :class="{ hidden: !engine.visible }"
+            :value="engine.uri"
+          >
+            <div class="engine-name">{{ engine.name }}</div>
+            <button @click="openOptions(engine.uri)">{{ t.config }}</button>
+            <button @click="duplicate(engine.uri)">{{ t.duplicate }}</button>
+            <button @click="remove(engine.uri)">{{ t.remove }}</button>
+          </div>
         </div>
       </div>
       <button class="dialog-wide-button" @click="add()">{{ t.add }}</button>
@@ -44,6 +55,7 @@
 
 <script lang="ts">
 import { t } from "@/common/i18n";
+import { filter as filterString } from "@/common/helpers/string";
 import api from "@/renderer/ipc/api";
 import {
   duplicateEngineSetting,
@@ -51,7 +63,14 @@ import {
   USIEngineSettings,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
-import { ref, onMounted, defineComponent, Ref, onBeforeUnmount } from "vue";
+import {
+  ref,
+  onMounted,
+  defineComponent,
+  Ref,
+  onBeforeUnmount,
+  computed,
+} from "vue";
 import USIEngineOptionDialog from "@/renderer/view/dialog/USIEngineOptionDialog.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import {
@@ -70,6 +89,8 @@ export default defineComponent({
     const dialog: Ref = ref(null);
     const optionDialog: Ref<USIEngineSetting | null> = ref(null);
     const setting = ref(new USIEngineSettings());
+    const filter: Ref = ref(null);
+    const filterWords: Ref<string[]> = ref([]);
 
     store.retainBussyState();
 
@@ -89,6 +110,26 @@ export default defineComponent({
     onBeforeUnmount(() => {
       uninstallHotKeyForDialog(dialog.value);
     });
+
+    const engines = computed(() =>
+      setting.value.engineList.map((engine) => {
+        return {
+          uri: engine.uri,
+          name: engine.name,
+          visible:
+            filterWords.value.length == 0 ||
+            filterString(engine.name, filterWords.value) ||
+            filterString(engine.defaultName, filterWords.value),
+        };
+      })
+    );
+
+    const updateFilter = () => {
+      filterWords.value = String(filter.value.value)
+        .trim()
+        .split(/ +/)
+        .filter((s) => s);
+    };
 
     const add = async () => {
       try {
@@ -153,6 +194,9 @@ export default defineComponent({
       optionDialog,
       dialog,
       setting,
+      filter,
+      engines,
+      updateFilter,
       add,
       remove,
       openOptions,
@@ -174,12 +218,21 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
 }
+.engine-filter {
+  margin: 0px 5px 5px 5px;
+}
+.filter {
+  width: 100%;
+}
 .engine {
   margin: 0px 5px 0px 5px;
   padding: 5px;
   border-bottom: 1px solid gray;
   display: flex;
   flex-direction: row;
+}
+.engine.hidden {
+  display: none;
 }
 .engine-name {
   text-align: left;

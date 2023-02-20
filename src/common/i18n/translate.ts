@@ -259,6 +259,7 @@ type Texts = {
   recordCategory: string;
   award: string;
   filterByOptionName: string;
+  filterByEngineName: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
   canOpenLogDirectoryFromMenu: string;
@@ -578,6 +579,7 @@ const ja: Texts = {
   recordCategory: "分類",
   award: "受賞",
   filterByOptionName: "オプション名で検索",
+  filterByEngineName: "エンジン名で検索",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
   shouldRestartToApplyLogSettings:
@@ -922,6 +924,7 @@ const en: Texts = {
   recordCategory: "Category",
   award: "Award",
   filterByOptionName: "Filter by Option Name",
+  filterByEngineName: "Filter by Engine Name",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
   shouldRestartToApplyLogSettings:

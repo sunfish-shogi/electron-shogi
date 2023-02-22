@@ -12,6 +12,8 @@ type Texts = {
   saveRecord: string;
   saveRecordAs: string;
   openAutoSavingDirectory: string;
+  exportPositionImage: string;
+  positionImage: string;
   close: string;
   quit: string;
   editing: string;
@@ -332,6 +334,8 @@ const ja: Texts = {
   saveRecord: "棋譜を上書き保存",
   saveRecordAs: "棋譜を名前を付けて保存",
   openAutoSavingDirectory: "自動保存先を開く",
+  exportPositionImage: "局面図を出力",
+  positionImage: "局面図",
   close: "閉じる",
   quit: "終了",
   editing: "編集",
@@ -677,6 +681,8 @@ const en: Texts = {
   saveRecord: "Save Record",
   saveRecordAs: "Save Record As",
   openAutoSavingDirectory: "Open Auto-Saving Directory",
+  exportPositionImage: "Export Position Image",
+  positionImage: "Position Image",
   close: "Close",
   quit: "Quit",
   editing: "Edit",

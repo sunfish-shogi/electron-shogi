@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
 import {

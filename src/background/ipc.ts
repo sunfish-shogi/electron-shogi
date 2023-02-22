@@ -55,10 +55,12 @@ import { CSAServerSetting } from "@/common/settings/csa";
 import { isEncryptionAvailable } from "./encrypt";
 import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
+import { Rect } from "@/common/graphics";
+import { exportCaptureJPEG, exportCapturePNG } from "./image";
 
 const isWindows = process.platform === "win32";
 
-let mainWindow: BrowserWindow;
+let mainWindow: BrowserWindow; // TODO: refactoring
 let appState = AppState.NORMAL;
 
 export function setup(win: BrowserWindow): void {
@@ -212,6 +214,22 @@ ipcMain.handle(
     });
     getAppLogger().debug(`select-directory dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
+  }
+);
+
+ipcMain.handle(
+  Background.EXPORT_CAPTURE_AS_PNG,
+  async (event, json: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    await exportCapturePNG(new Rect(json));
+  }
+);
+
+ipcMain.handle(
+  Background.EXPORT_CAPTURE_AS_JPEG,
+  async (event, json: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    await exportCaptureJPEG(new Rect(json));
   }
 );
 

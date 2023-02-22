@@ -24,7 +24,7 @@ import { getRecordMetadataName, t } from "@/common/i18n";
 import { RecordMetadataKey } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { computed, defineComponent, onMounted, Ref, ref } from "vue";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 
 export default defineComponent({
   name: "RecordComment",

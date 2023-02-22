@@ -78,6 +78,13 @@ function createMenuTemplate() {
           "CmdOrCtrl+Shift+S"
         ),
         { type: "separator" },
+        menuItem(
+          t.exportPositionImage,
+          MenuEvent.EXPORT_POSITION_IMAGE,
+          [AppState.NORMAL],
+          "CmdOrCtrl+Shift+E"
+        ),
+        { type: "separator" },
         {
           label: t.openAutoSavingDirectory,
           click: openAutoSaveDirectory,

@@ -47,6 +47,12 @@ const api: Bridge = {
       defaultPath
     );
   },
+  async exportCaptureAsPNG(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);
+  },
+  async exportCaptureAsJPEG(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_JPEG, json);
+  },
   async loadAppSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_APP_SETTING);
   },

@@ -95,7 +95,7 @@ import {
 } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 import { computed } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { Icon } from "@/renderer/assets/icons";

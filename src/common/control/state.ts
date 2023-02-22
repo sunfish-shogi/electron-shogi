@@ -2,6 +2,7 @@ export enum AppState {
   NORMAL = "normal",
   PASTE_DIALOG = "pasteDialog",
   POSITION_EDITING = "positionEditing",
+  EXPORT_POSITION_IMAGE_DIALOG = "exportBoardImageDialog",
   GAME_DIALOG = "gameDialog",
   GAME = "game",
   CSA_GAME_DIALOG = "csaGameDialog",

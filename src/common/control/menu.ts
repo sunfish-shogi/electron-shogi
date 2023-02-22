@@ -3,6 +3,7 @@ export enum MenuEvent {
   OPEN_RECORD = "openRecord",
   SAVE_RECORD = "saveRecord",
   SAVE_RECORD_AS = "saveRecordAs",
+  EXPORT_POSITION_IMAGE = "exportPositionImage",
   COPY_RECORD = "copyRecord",
   COPY_RECORD_CSA = "copyRecordCsa",
   COPY_RECORD_USI_BEFORE = "copyRecordUsiBefore",

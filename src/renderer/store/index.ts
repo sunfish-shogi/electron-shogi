@@ -306,6 +306,12 @@ class Store {
     }
   }
 
+  showExportBoardImageDialog() {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.EXPORT_POSITION_IMAGE_DIALOG;
+    }
+  }
+
   destroyModalDialog(): void {
     if (
       this.appState === AppState.PASTE_DIALOG ||
@@ -313,7 +319,8 @@ class Store {
       this.appState === AppState.CSA_GAME_DIALOG ||
       this.appState === AppState.RESEARCH_DIALOG ||
       this.appState === AppState.ANALYSIS_DIALOG ||
-      this.appState === AppState.USI_ENGINE_SETTING_DIALOG
+      this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
+      this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG
     ) {
       this._appState = AppState.NORMAL;
     }

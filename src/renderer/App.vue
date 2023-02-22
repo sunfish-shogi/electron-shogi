@@ -6,6 +6,7 @@
     <ResearchDialog v-if="dialogVisibilities.research" />
     <AnalysisDialog v-if="dialogVisibilities.analysis" />
     <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
+    <ExportBoardImageDialog v-if="dialogVisibilities.exportPositionImage" />
     <AppSettingDialog v-if="dialogVisibilities.appSetting" />
     <PasteDialog v-if="dialogVisibilities.paste" />
     <BussyMessage v-if="dialogVisibilities.bussy" />
@@ -23,6 +24,7 @@ import GameDialog from "@/renderer/view/dialog/GameDialog.vue";
 import CSAGameDialog from "@/renderer/view/dialog/CSAGameDialog.vue";
 import ResearchDialog from "@/renderer/view/dialog/ResearchDialog.vue";
 import USIEngineManagementDialog from "@/renderer/view/dialog/USIEngineManagementDialog.vue";
+import ExportBoardImageDialog from "@/renderer/view/dialog/ExportBoardImageDialog.vue";
 import AppSettingDialog from "@/renderer/view/dialog/AppSettingDialog.vue";
 import PasteDialog from "@/renderer/view/dialog/PasteDialog.vue";
 import BussyMessage from "@/renderer/view/dialog/BussyMessage.vue";
@@ -44,6 +46,7 @@ export default defineComponent({
     CSAGameDialog,
     ResearchDialog,
     USIEngineManagementDialog,
+    ExportBoardImageDialog,
     AppSettingDialog,
     PasteDialog,
     BussyMessage,
@@ -64,6 +67,8 @@ export default defineComponent({
         research: store.appState === AppState.RESEARCH_DIALOG,
         analysis: store.appState === AppState.ANALYSIS_DIALOG,
         usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
+        exportPositionImage:
+          store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG,
         appSetting: store.isAppSettingDialogVisible,
         paste: store.appState === AppState.PASTE_DIALOG,
         bussy: store.isBussy,

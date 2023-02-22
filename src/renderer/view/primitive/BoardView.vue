@@ -156,7 +156,7 @@ import {
   BoardLabelType,
   PieceImageType,
 } from "@/common/settings/app";
-import { RectSize } from "./Types";
+import { RectSize } from "@/common/graphics";
 import { secondsToHMMSS } from "@/common/helpers/time";
 import LayoutBuilder from "./BoardLayout";
 

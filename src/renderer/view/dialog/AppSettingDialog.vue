@@ -7,7 +7,7 @@
           <div class="section-title">{{ t.view }}</div>
           <div class="dialog-form-area dialog-form-warning">
             <div class="dialog-form-note">
-              多言語対応にご協力ください。 We'd like your help to translate.
+              翻訳の改善にご協力ください。 We'd like your help to translate.
             </div>
             <div class="dialog-form-note">
               言語の変更には再起動が必要です。 You should restart this app to

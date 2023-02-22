@@ -3,17 +3,19 @@
     <dialog ref="dialog">
       <div class="dialog-title">{{ t.appSettings }}</div>
       <div class="dialog-scroll-area settings">
+        <!-- 表示 -->
         <div class="section">
           <div class="section-title">{{ t.view }}</div>
           <div class="dialog-form-area dialog-form-warning">
             <div class="dialog-form-note">
-              多言語対応にご協力ください。 We'd like your help to translate.
+              翻訳の改善にご協力ください。 We'd like your help to translate.
             </div>
             <div class="dialog-form-note">
               言語の変更には再起動が必要です。 You should restart this app to
               change the language.
             </div>
           </div>
+          <!-- 言語 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.language }}</div>
             <select ref="language" :value="appSetting.language">
@@ -33,6 +35,7 @@
               <option :value="Thema.DARK">{{ t.dark }}</option>
             </select>
           </div>
+          <!-- 駒画像 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.pieceImages }}</div>
             <select ref="pieceImage" :value="appSetting.pieceImage">
@@ -50,6 +53,7 @@
               </option>
             </select>
           </div>
+          <!-- 盤画像 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.boardImage }}</div>
             <select ref="boardImage" :value="appSetting.boardImage">
@@ -69,6 +73,7 @@
               </option>
             </select>
           </div>
+          <!-- 段・筋の表示 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.displayFileAndRank }}
@@ -80,6 +85,7 @@
               type="checkbox"
             />
           </div>
+          <!-- タブビューの形式 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.tabViewStyle }}</div>
             <select ref="tabPaneType" :value="appSetting.tabPaneType">
@@ -89,8 +95,10 @@
           </div>
         </div>
         <hr />
+        <!-- 音 -->
         <div class="section">
           <div class="section-title">{{ t.sounds }}</div>
+          <!-- 駒音の大きさ -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.pieceLoudness }}</div>
             <input
@@ -102,6 +110,7 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 時計音の大きさ -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.clockLoudness }}</div>
             <input
@@ -113,6 +122,7 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 時計音の高さ -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.clockPitch }}</div>
             <input
@@ -126,6 +136,7 @@
               Hz ({{ t.between(220, 880) }})
             </div>
           </div>
+          <!-- 時計音の対象 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.clockSoundTarget }}
@@ -137,8 +148,10 @@
           </div>
         </div>
         <hr />
+        <!-- ファイル -->
         <div class="section">
           <div class="section-title">{{ t.file }}</div>
+          <!-- 改行文字 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.newlineCharacter }}
@@ -152,6 +165,7 @@
               <option value="cr">CR ({{ t.old90sMac }})</option>
             </select>
           </div>
+          <!-- 自動保存先 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.autoSavingDirectory }}
@@ -168,8 +182,10 @@
           </div>
         </div>
         <hr />
+        <!-- USI プロトコル -->
         <div class="section">
           <div class="section-title">{{ t.usiProtocol }}</div>
+          <!-- オプション名を翻訳 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.translateOptionName }}
@@ -181,6 +197,7 @@
               type="checkbox"
             />
           </div>
+          <!-- 最大起動待ち時間 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.maxStartupTime }}
@@ -198,8 +215,10 @@
           </div>
         </div>
         <hr />
+        <!-- 評価値と推定勝率 -->
         <div class="section">
           <div class="section-title">{{ t.evaluationAndEstimatedWinRate }}</div>
+          <!-- 評価値の符号 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.signOfEvaluation }}
@@ -216,6 +235,7 @@
               </option>
             </select>
           </div>
+          <!-- 勝率換算係数 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">
               {{ t.winRateCoefficient }}
@@ -231,6 +251,7 @@
               ({{ t.recommended }}: {{ t.between(600, 1500) }})
             </div>
           </div>
+          <!-- 緩手の閾値 -->
           <div class="dialog-form-item">
             <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">緩手の閾値</div>
@@ -243,6 +264,7 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 疑問手の閾値 -->
           <div class="dialog-form-item">
             <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">疑問手の閾値</div>
@@ -255,6 +277,7 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 悪手の閾値 -->
           <div class="dialog-form-item">
             <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">悪手の閾値</div>
@@ -267,6 +290,7 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 大悪手の閾値 -->
           <div class="dialog-form-item">
             <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">大悪手の閾値</div>
@@ -281,6 +305,7 @@
           </div>
         </div>
         <hr />
+        <!-- 開発者向け -->
         <div class="section">
           <div class="section-title">{{ t.forDevelopers }}</div>
           <div class="dialog-form-area dialog-form-warning">
@@ -297,6 +322,7 @@
               {{ t.hasNoOldLogCleanUpFeature }}
             </div>
           </div>
+          <!-- アプリログを出力 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.enableAppLog }}</div>
             <input
@@ -306,6 +332,7 @@
               type="checkbox"
             />
           </div>
+          <!-- USI通信ログを出力 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.enableUSILog }}</div>
             <input
@@ -315,6 +342,7 @@
               type="checkbox"
             />
           </div>
+          <!-- CSA通信ログを出力 -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.enableCSALog }}</div>
             <input
@@ -324,6 +352,7 @@
               type="checkbox"
             />
           </div>
+          <!-- ログレベル -->
           <div class="dialog-form-item">
             <div class="dialog-form-item-label-wide">{{ t.logLevel }}</div>
             <select ref="logLevel" :value="appSetting.logLevel">

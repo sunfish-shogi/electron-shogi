@@ -6,6 +6,7 @@ import {
   ClockSoundTarget,
   EvaluationViewFrom,
   PieceImageType,
+  PositionImageStyle,
   Tab,
   TabPaneType,
   Thema,
@@ -118,6 +119,15 @@ class AppSettingStore {
   }
   get logLevel(): LogLevel {
     return this.setting.logLevel;
+  }
+  get positionImageStyle(): PositionImageStyle {
+    return this.setting.positionImageStyle;
+  }
+  get positionImageSize(): number {
+    return this.setting.positionImageSize;
+  }
+  get positionImageHeader(): string {
+    return this.setting.positionImageHeader;
   }
 
   async loadAppSetting(): Promise<void> {

@@ -9,6 +9,7 @@ import {
   Tab,
   TabPaneType,
   EvaluationViewFrom,
+  PositionImageStyle,
 } from "@/common/settings/app";
 import { Language } from "@/common/i18n";
 
@@ -47,6 +48,9 @@ describe("settings/csa", () => {
       enableUSILog: true,
       enableCSALog: true,
       logLevel: LogLevel.INFO,
+      positionImageStyle: PositionImageStyle.GAME,
+      positionImageSize: 500,
+      positionImageHeader: "header",
     };
     const result = normalizeAppSetting(setting, {
       returnCode: "\r\n",

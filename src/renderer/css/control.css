@@ -29,6 +29,11 @@ button .icon {
   vertical-align: top;
 }
 
+button .icon + span {
+  margin-left: 5px;
+  line-height: 100%;
+}
+
 input {
   color: var(--text-color);
   background-color: var(--text-bg-color);

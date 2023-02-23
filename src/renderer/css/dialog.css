@@ -119,6 +119,9 @@ dialog .message-box {
 
 dialog .icon {
   width: 36px;
+}
+
+dialog .message-box .icon {
   margin-right: 15px;
 }
 
@@ -130,8 +133,12 @@ dialog button {
 
 dialog button .icon {
   width: 1.4em;
-  margin-right: 5px;
   vertical-align: top;
+}
+
+dialog button .icon + span {
+  margin-left: 5px;
+  line-height: 1.4em;
 }
 
 dialog.menu {

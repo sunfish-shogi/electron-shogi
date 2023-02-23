@@ -89,7 +89,7 @@
               @click="showPreview(iterate)"
             >
               <ButtonIcon class="icon" :icon="Icon.PLAY" />
-              {{ t.displayPVShort }}
+              <span>{{ t.displayPVShort }}</span>
             </button>
             {{ iterate.text }}
           </div>

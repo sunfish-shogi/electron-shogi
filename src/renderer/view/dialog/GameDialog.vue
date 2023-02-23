@@ -35,7 +35,7 @@
         <div class="players-control">
           <button @click="onSwapColor">
             <ButtonIcon class="icon" :icon="Icon.SWAP_H" />
-            {{ t.swapSenteGote }}
+            <span>{{ t.swapSenteGote }}</span>
           </button>
         </div>
       </div>

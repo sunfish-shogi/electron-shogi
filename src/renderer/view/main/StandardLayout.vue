@@ -23,7 +23,7 @@
             @click="onUnhideTabView"
           >
             <ButtonIcon class="icon" :icon="Icon.ARROW_UP" />
-            {{ t.expandTabView }}
+            <span>{{ t.expandTabView }}</span>
           </button>
         </div>
       </Pane>

@@ -35,7 +35,7 @@
         @click="openPlayerSetting"
       >
         <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
-        {{ t.settings }}
+        <span>{{ t.settings }}</span>
       </button>
     </div>
   </div>

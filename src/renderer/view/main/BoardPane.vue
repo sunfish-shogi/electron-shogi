@@ -29,7 +29,7 @@
             @click="onGame"
           >
             <ButtonIcon class="icon" :icon="Icon.GAME" />
-            {{ t.game }}
+            <span>{{ t.game }}</span>
           </button>
           <button
             v-if="controlStates.showGameResults"
@@ -37,7 +37,7 @@
             @click="onShowGameResults"
           >
             <ButtonIcon class="icon" :icon="Icon.SCORE" />
-            {{ t.displayGameResults }}
+            <span>{{ t.displayGameResults }}</span>
           </button>
           <button
             v-if="controlStates.stop"
@@ -46,11 +46,11 @@
             @click="onStop"
           >
             <ButtonIcon class="icon" :icon="Icon.STOP" />
-            {{ t.stopGame }}
+            <span>{{ t.stopGame }}</span>
           </button>
           <button v-if="controlStates.win" class="control-item" @click="onWin">
             <ButtonIcon class="icon" :icon="Icon.CALL" />
-            {{ t.declareWinning }}
+            <span>{{ t.declareWinning }}</span>
           </button>
           <button
             v-if="controlStates.resign"
@@ -58,7 +58,7 @@
             @click="onResign"
           >
             <ButtonIcon class="icon" :icon="Icon.RESIGN" />
-            {{ t.resign }}
+            <span>{{ t.resign }}</span>
           </button>
           <button
             v-if="controlStates.research"
@@ -67,7 +67,7 @@
             @click="onResearch"
           >
             <ButtonIcon class="icon" :icon="Icon.RESEARCH" />
-            {{ t.research }}
+            <span>{{ t.research }}</span>
           </button>
           <button
             v-if="controlStates.endResearch"
@@ -76,7 +76,7 @@
             @click="onEndResearch"
           >
             <ButtonIcon class="icon" :icon="Icon.END" />
-            {{ t.endResearch }}
+            <span>{{ t.endResearch }}</span>
           </button>
           <button
             v-if="controlStates.analysis"
@@ -85,7 +85,7 @@
             @click="onAnalysis"
           >
             <ButtonIcon class="icon" :icon="Icon.ANALYSIS" />
-            {{ t.analysis }}
+            <span>{{ t.analysis }}</span>
           </button>
           <button
             v-if="controlStates.endAnalysis"
@@ -94,7 +94,7 @@
             @click="onEndAnalysis"
           >
             <ButtonIcon class="icon" :icon="Icon.STOP" />
-            {{ t.stopAnalysis }}
+            <span>{{ t.stopAnalysis }}</span>
           </button>
           <button
             v-if="controlStates.startEditPosition"
@@ -102,7 +102,7 @@
             @click="onStartEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.EDIT" />
-            {{ t.setupPosition }}
+            <span>{{ t.setupPosition }}</span>
           </button>
           <button
             v-if="controlStates.endEditPosition"
@@ -110,7 +110,7 @@
             @click="onEndEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.CHECK" />
-            {{ t.completePositionSetup }}
+            <span>{{ t.completePositionSetup }}</span>
           </button>
           <button
             v-if="controlStates.initPosition"
@@ -118,14 +118,14 @@
             @click="onChangeTurn"
           >
             <ButtonIcon class="icon" :icon="Icon.SWAP" />
-            {{ t.changeTurn }}
+            <span>{{ t.changeTurn }}</span>
           </button>
           <button
             v-if="controlStates.initPosition"
             class="control-item"
             @click="onInitPosition"
           >
-            {{ t.initializePosition }}
+            <span>{{ t.initializePosition }}</span>
           </button>
         </div>
       </template>
@@ -137,7 +137,7 @@
             @click="onOpenAppSettings"
           >
             <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
-            {{ t.appSettings }}
+            <span>{{ t.appSettings }}</span>
           </button>
           <button
             class="control-item"
@@ -146,15 +146,15 @@
             @click="onOpenEngineSettings"
           >
             <ButtonIcon class="icon" :icon="Icon.ENGINE_SETTINGS" />
-            {{ t.engineSettings }}
+            <span>{{ t.engineSettings }}</span>
           </button>
           <button class="control-item" data-hotkey="Control+t" @click="onFlip">
             <ButtonIcon class="icon" :icon="Icon.FLIP" />
-            {{ t.flipBoard }}
+            <span>{{ t.flipBoard }}</span>
           </button>
           <button class="control-item" @click="onFileAction">
             <ButtonIcon class="icon" :icon="Icon.FILE" />
-            {{ t.file }}
+            <span>{{ t.file }}</span>
           </button>
           <button
             class="control-item"
@@ -163,7 +163,7 @@
             @click="onRemoveCurrentMove"
           >
             <ButtonIcon class="icon" :icon="Icon.DELETE" />
-            {{ t.deleteMove }}
+            <span>{{ t.deleteMove }}</span>
           </button>
         </div>
       </template>

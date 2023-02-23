@@ -10,11 +10,11 @@
           @click="changeSelect(tab)"
         >
           <ButtonIcon class="icon" :icon="tabs[tab].icon" />
-          {{ tabs[tab].title }}
+          <span>{{ tabs[tab].title }}</span>
         </div>
         <div v-if="displayMinimizeToggle" class="tab end" @click="minimize">
           <ButtonIcon class="icon" :icon="Icon.ARROW_DROP" />
-          {{ t.hideTabView }}
+          <span>{{ t.hideTabView }}</span>
         </div>
       </div>
       <div class="tab-contents">

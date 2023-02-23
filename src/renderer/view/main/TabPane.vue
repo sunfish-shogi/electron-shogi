@@ -61,7 +61,7 @@ import EvaluationChart, {
   EvaluationChartType,
 } from "@/renderer/view/tab/EvaluationChart.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { Tab } from "@/common/settings/app";
 import { Icon } from "@/renderer/assets/icons";

@@ -190,7 +190,7 @@ import {
 } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import { Move, PositionChange, RecordMetadataKey } from "@/common/shogi";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { AppState } from "@/common/control/state.js";

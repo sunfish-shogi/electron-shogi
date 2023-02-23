@@ -44,6 +44,12 @@ export const webAPI: Bridge = {
   async showSelectDirectoryDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
+  async exportCaptureAsPNG(): Promise<void> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async exportCaptureAsJPEG(): Promise<void> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   async loadAppSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.APP_SETTING);
     if (!json) {

@@ -17,7 +17,7 @@
 import { useStore } from "@/renderer/store";
 import { computed, defineComponent } from "vue";
 import EngineAnalyticsElement from "@/renderer/view/tab/EngineAnalyticsElement.vue";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 
 export default defineComponent({
   name: "EngineAnalytics",

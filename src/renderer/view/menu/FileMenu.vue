@@ -25,6 +25,10 @@
             <ButtonIcon class="icon" :icon="Icon.SAVE_AS" />
             <div class="label">{{ t.saveAs }}</div>
           </button>
+          <button :disabled="!states.exportImage" @click="onExportImage">
+            <ButtonIcon class="icon" :icon="Icon.GRID" />
+            <div class="label">{{ t.positionImage }}</div>
+          </button>
         </div>
         <div class="group">
           <button @click="onCopyKIF">
@@ -93,6 +97,10 @@ export default defineComponent({
       store.saveRecord();
       context.emit("close");
     };
+    const onExportImage = () => {
+      store.showExportBoardImageDialog();
+      context.emit("close");
+    };
     const onCopyKIF = () => {
       store.copyRecordKIF();
       context.emit("close");
@@ -119,6 +127,7 @@ export default defineComponent({
         open: store.appState === AppState.NORMAL,
         save: store.appState === AppState.NORMAL,
         saveAs: store.appState === AppState.NORMAL,
+        exportImage: store.appState === AppState.NORMAL,
         paste: store.appState === AppState.NORMAL,
       };
     });
@@ -131,6 +140,7 @@ export default defineComponent({
       onOpen,
       onSave,
       onSaveAs,
+      onExportImage,
       onCopyKIF,
       onCopyCSA,
       onCopyUSI,

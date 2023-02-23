@@ -43,6 +43,7 @@ export enum Icon {
   CLOSE = "close",
   CALL = "call",
   SCORE = "score",
+  GRID = "grid",
 }
 
 export const iconSourceMap = {
@@ -88,6 +89,7 @@ export const iconSourceMap = {
   [Icon.CLOSE]: "icon/close_FILL0_wght400_GRAD0_opsz48.svg",
   [Icon.CALL]: "icon/record_voice_over_FILL0_wght400_GRAD0_opsz48.svg",
   [Icon.SCORE]: "icon/scoreboard_FILL0_wght400_GRAD0_opsz48.svg",
+  [Icon.GRID]: "icon/grid_on_FILL0_wght400_GRAD0_opsz48.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

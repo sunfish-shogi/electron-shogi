@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import { Position } from "@/common/shogi";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics";
 import {
   BoardImageType,
   BoardLabelType,

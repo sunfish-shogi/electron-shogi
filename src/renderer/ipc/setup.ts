@@ -40,6 +40,9 @@ export function setup(): void {
       case MenuEvent.SAVE_RECORD_AS:
         store.saveRecord();
         break;
+      case MenuEvent.EXPORT_POSITION_IMAGE:
+        store.showExportBoardImageDialog();
+        break;
       case MenuEvent.COPY_RECORD:
         store.copyRecordKIF();
         break;

@@ -1,4 +1,4 @@
-import { RecordMetadataKey } from "../shogi";
+import { RecordMetadataKey } from "@/common/shogi";
 import { t } from "./translate";
 
 export function getRecordMetadataName(key: RecordMetadataKey): string {

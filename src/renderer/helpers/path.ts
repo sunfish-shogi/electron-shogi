@@ -1,6 +1,6 @@
 import { RecordMetadataKey } from "@/common/shogi";
 import { ImmutableRecordMetadata } from "@/common/shogi/record";
-import { getDateString } from "../../common/helpers/datetime";
+import { getDateString } from "@/common/helpers/datetime";
 
 export function defaultRecordFileName(
   metadata: ImmutableRecordMetadata

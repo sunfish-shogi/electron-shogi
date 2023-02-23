@@ -3,7 +3,7 @@ import { Socket } from "@/background/csa/socket";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { Color } from "@/common/shogi";
 import * as log4js from "log4js";
-import { csaServerSetting } from "../../mock/csa";
+import { csaServerSetting } from "@/tests/mock/csa";
 
 jest.mock("@/background/csa/socket");
 

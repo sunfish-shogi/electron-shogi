@@ -1,6 +1,6 @@
 import { ResearchSetting } from "@/common/settings/research";
-import { USIPlayer } from "../players/usi";
-import { SearchInfo } from "../players/player";
+import { USIPlayer } from "@/renderer/players/usi";
+import { SearchInfo } from "@/renderer/players/player";
 import { ImmutableRecord } from "@/common/shogi";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { SearchInfoSenderType } from "./record";

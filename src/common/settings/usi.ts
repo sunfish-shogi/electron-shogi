@@ -1,6 +1,6 @@
 import { issueEngineURI } from "@/common/uri";
 import * as uri from "@/common/uri";
-import { t } from "../i18n";
+import { t } from "@/common/i18n";
 
 // reserved option names
 export const USIPonder = "USI_Ponder";

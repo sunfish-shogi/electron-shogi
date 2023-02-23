@@ -5,18 +5,18 @@ import { createStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
 import iconv from "iconv-lite";
 import * as audio from "@/renderer/audio";
-import { gameSetting10m30s } from "../../mock/game";
+import { gameSetting10m30s } from "@/tests/mock/game";
 import { GameManager } from "@/renderer/store/game";
 import { AppState } from "@/common/control/state";
 import { AnalysisManager } from "@/renderer/store/analysis";
-import { analysisSetting } from "../../mock/analysis";
+import { analysisSetting } from "@/tests/mock/analysis";
 import { USIPlayer } from "@/renderer/players/usi";
-import { researchSetting } from "../../mock/research";
+import { researchSetting } from "@/tests/mock/research";
 import {
   csaGameSetting,
   emptyCSAGameSettingHistory,
   singleCSAGameSettingHistory,
-} from "../../mock/csa";
+} from "@/tests/mock/csa";
 import { CSAGameManager } from "@/renderer/store/csa";
 import { promisedTimeout } from "@/tests/helpers/timeout";
 

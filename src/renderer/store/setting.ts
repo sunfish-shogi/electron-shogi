@@ -13,7 +13,7 @@ import {
   defaultAppSetting,
 } from "@/common/settings/app";
 import { UnwrapNestedRefs, reactive } from "vue";
-import api from "../ipc/api";
+import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
 import { Language } from "@/common/i18n";
 

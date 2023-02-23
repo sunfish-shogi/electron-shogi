@@ -27,7 +27,7 @@ import { defaultRecordFileName } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
-import { AppState } from "../../common/control/state";
+import { AppState } from "@/common/control/state";
 import { Message, MessageStore, Attachment } from "./message";
 import { ErrorEntry, ErrorStore } from "./error";
 import * as uri from "@/common/uri";
@@ -45,7 +45,7 @@ import {
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
-import { SearchInfo } from "../players/player";
+import { SearchInfo } from "@/renderer/players/player";
 import { useAppSetting } from "./setting";
 import { t } from "@/common/i18n";
 

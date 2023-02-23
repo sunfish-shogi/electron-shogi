@@ -7,8 +7,8 @@ import { ResearchSetting } from "@/common/settings/research";
 import { AppState } from "@/common/control/state";
 import { GameResult } from "@/common/player";
 import { AnalysisSetting } from "@/common/settings/analysis";
-import { LogLevel } from "../../common/log";
-import { CSAGameResult, CSASpecialMove } from "../../common/csa";
+import { LogLevel } from "@/common/log";
+import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAGameSettingHistory, CSAServerSetting } from "@/common/settings/csa";
 import { Rect } from "@/common/graphics";
 

@@ -4,7 +4,7 @@ import { useStore } from "@/renderer/store";
 import { onUSIBestMove, onUSIInfo } from "@/renderer/players/usi";
 import { humanPlayer } from "@/renderer/players/human";
 import { bridge } from "./api";
-import { MenuEvent } from "../../common/control/menu";
+import { MenuEvent } from "@/common/control/menu";
 import { USIInfoCommand } from "@/common/usi";
 import { AppState } from "@/common/control/state";
 import {
@@ -15,8 +15,8 @@ import {
   onCSAReject,
   onCSAStart,
 } from "@/renderer/store/csa";
-import { CSAGameResult, CSASpecialMove } from "../../common/csa";
-import { useAppSetting } from "../store/setting";
+import { CSAGameResult, CSASpecialMove } from "@/common/csa";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export function setup(): void {
   const store = useStore();

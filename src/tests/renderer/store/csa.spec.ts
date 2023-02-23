@@ -11,8 +11,8 @@ import {
   onCSAStart,
 } from "@/renderer/store/csa";
 import { RecordManager } from "@/renderer/store/record";
-import { csaGameSetting, csaGameSummary, playerURI } from "../../mock/csa";
-import { createMockPlayer, createMockPlayerBuilder } from "../../mock/player";
+import { csaGameSetting, csaGameSummary, playerURI } from "@/tests/mock/csa";
+import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
 
 jest.mock("@/renderer/ipc/api");
 

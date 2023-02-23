@@ -1,4 +1,4 @@
-import { ordinal } from "../helpers/string";
+import { ordinal } from "@/common/helpers/string";
 import { Language } from "./language";
 
 type Texts = {

@@ -10,7 +10,7 @@ import {
   InvalidTurnError,
   InvalidUSIError,
   PieceNotExistsError,
-} from "../shogi";
+} from "@/common/shogi";
 import { t } from "./translate";
 
 export function localizeError(err: Error): Error {

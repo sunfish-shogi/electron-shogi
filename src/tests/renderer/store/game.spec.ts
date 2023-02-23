@@ -7,8 +7,8 @@ import {
 import { Clock } from "@/renderer/store/clock";
 import { GameManager, GameResults } from "@/renderer/store/game";
 import { RecordManager } from "@/renderer/store/record";
-import { playerURI01, playerURI02, gameSetting10m30s } from "../../mock/game";
-import { createMockPlayer, createMockPlayerBuilder } from "../../mock/player";
+import { playerURI01, playerURI02, gameSetting10m30s } from "@/tests/mock/game";
+import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
 import { GameSetting } from "@/common/settings/game";
 import { PlayerBuilder } from "@/renderer/players/builder";
 

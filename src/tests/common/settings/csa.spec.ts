@@ -7,7 +7,7 @@ import {
   normalizeSecureCSAGameSettingHistory,
   validateCSAGameSetting,
 } from "@/common/settings/csa";
-import { csaGameSetting, emptyCSAGameSettingHistory } from "../../mock/csa";
+import { csaGameSetting, emptyCSAGameSettingHistory } from "@/tests/mock/csa";
 
 describe("settings/csa", () => {
   it("validate/noError", () => {

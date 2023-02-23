@@ -1,5 +1,5 @@
-import { Language } from "../i18n";
-import { LogLevel } from "../log";
+import { Language } from "@/common/i18n";
+import { LogLevel } from "@/common/log";
 
 export enum Thema {
   STANDARD = "standard",

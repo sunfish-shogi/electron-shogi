@@ -3,7 +3,7 @@ import { defaultAppSetting } from "@/common/settings/app";
 import { defaultGameSetting } from "@/common/settings/game";
 import { defaultResearchSetting } from "@/common/settings/research";
 import { USIEngineSettings } from "@/common/settings/usi";
-import { LogLevel } from "../../common/log";
+import { LogLevel } from "@/common/log";
 import { Bridge } from "./api";
 import { t } from "@/common/i18n";
 

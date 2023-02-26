@@ -5,6 +5,7 @@ extends: null
 files:
   - dist/assets
   - dist/board
+  - dist/character
   - dist/icon
   - dist/piece
   - dist/sound

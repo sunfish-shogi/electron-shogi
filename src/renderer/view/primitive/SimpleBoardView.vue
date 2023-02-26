@@ -9,7 +9,7 @@
       </div>
       <div v-if="layout.lastMoveStyle" :style="layout.lastMoveStyle" />
       <div class="board-grid" :style="layout.boardStyle">
-        <img src="board/grid_square.svg" :style="layout.boardImageStyle" />
+        <img src="/board/grid_square.svg" :style="layout.boardImageStyle" />
       </div>
       <div v-for="file of layout.files" :key="file.image" :style="file.style">
         <img :src="file.image" :style="layout.fileImageStyle" />

@@ -57,6 +57,11 @@ export enum ClockSoundTarget {
   ONLY_USER = "onlyUser",
 }
 
+export enum PositionImageStyle {
+  BOOK = "book",
+  GAME = "game",
+}
+
 export type AppSetting = {
   language: Language;
   thema: Thema;
@@ -90,6 +95,9 @@ export type AppSetting = {
   enableUSILog: boolean;
   enableCSALog: boolean;
   logLevel: LogLevel;
+  positionImageStyle: PositionImageStyle;
+  positionImageSize: number;
+  positionImageHeader: string;
 };
 
 export type AppSettingUpdate = {
@@ -125,6 +133,9 @@ export type AppSettingUpdate = {
   enableUSILog?: boolean;
   enableCSALog?: boolean;
   logLevel?: LogLevel;
+  positionImageStyle?: PositionImageStyle;
+  positionImageSize?: number;
+  positionImageHeader?: string;
 };
 
 export function buildUpdatedAppSetting(
@@ -200,6 +211,9 @@ export function defaultAppSetting(opt?: {
     enableUSILog: false,
     enableCSALog: false,
     logLevel: LogLevel.INFO,
+    positionImageStyle: PositionImageStyle.BOOK,
+    positionImageSize: 500,
+    positionImageHeader: "",
   };
 }
 

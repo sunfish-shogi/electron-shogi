@@ -214,6 +214,10 @@ class Store {
     return this.recordManager.recordFilePath;
   }
 
+  get inCommentPVs(): Move[][] {
+    return this.recordManager.inCommentPVs;
+  }
+
   updateStandardRecordMetadata(update: {
     key: RecordMetadataKey;
     value: string;

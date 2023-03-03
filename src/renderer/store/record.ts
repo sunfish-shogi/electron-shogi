@@ -6,13 +6,14 @@ import {
   DoMoveOption,
   exportCSA,
   exportKakinoki,
-  getMoveDisplayText,
+  getPVText,
   ImmutablePosition,
   ImmutableRecord,
   importCSA,
   importKakinoki,
   InitialPositionType,
   Move,
+  parsePVText,
   Position,
   PositionChange,
   Record,
@@ -110,20 +111,21 @@ function buildSearchComment(
     comment += `${prefix}評価値=${searchInfo.score}\n`;
   }
   if (searchInfo.pv && searchInfo.pv.length !== 0) {
-    comment += `${prefix}読み筋=`;
-    let prev: Move | undefined;
-    const p = position.clone();
-    for (const move of searchInfo.pv) {
-      comment += `${getMoveDisplayText(p, move, {
-        prev,
-        compatible: true,
-      })}`;
-      p.doMove(move, { ignoreValidation: true });
-      prev = move;
-    }
-    comment += "\n";
+    comment += `${prefix}読み筋=${getPVText(position, searchInfo.pv)}\n`;
   }
   return comment;
+}
+
+function getPVsFromSearchComment(
+  position: ImmutablePosition,
+  comment: string
+): Move[][] {
+  return comment
+    .split("\n")
+    .filter((line) => line.match(/^[#*]読み筋=/))
+    .map((line) => {
+      return parsePVText(position, line.split("=", 2)[1]);
+    });
 }
 
 function formatTimeLimitCSA(setting: TimeLimitSetting): string {
@@ -347,6 +349,13 @@ export class RecordManager {
   ): void {
     const comment = buildSearchComment(this.record.position, type, searchInfo);
     this.appendComment((head ? head + "\n" : "") + comment, behavior);
+  }
+
+  get inCommentPVs(): Move[][] {
+    return getPVsFromSearchComment(
+      this.record.position,
+      this.record.current.comment
+    );
   }
 
   setGameStartMetadata(metadata: GameStartMetadata): void {

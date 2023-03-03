@@ -333,4 +333,7 @@ export default defineComponent({
   height: 18px;
   vertical-align: top;
 }
+.list-column button span {
+  line-height: 19px;
+}
 </style>

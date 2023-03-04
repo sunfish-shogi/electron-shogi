@@ -113,6 +113,7 @@ export default defineComponent({
   width: 100%;
   flex-grow: 1;
   resize: none;
+  box-sizing: border-box;
 }
 .play-buttons {
   height: 28px;

@@ -256,14 +256,17 @@ export default defineComponent({
           ? windowSize.width
           : (windowSize.width - splitterWidth) *
             (bottomLeftPaneWidthPercentage.value / 100),
-        (windowSize.height * bottomPaneHeightPercentage.value) / 100
+        (windowSize.height - splitterWidth) *
+          (bottomPaneHeightPercentage.value / 100)
       );
     });
 
     const tabPaneSize2 = computed(() => {
       return new RectSize(
-        windowSize.width * (1.0 - bottomLeftPaneWidthPercentage.value / 100),
-        (windowSize.height * bottomPaneHeightPercentage.value) / 100
+        (windowSize.width - splitterWidth) *
+          (1.0 - bottomLeftPaneWidthPercentage.value / 100),
+        (windowSize.height - splitterWidth) *
+          (bottomPaneHeightPercentage.value / 100)
       );
     });
 

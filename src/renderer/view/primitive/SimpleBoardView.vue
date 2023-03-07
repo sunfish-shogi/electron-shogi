@@ -269,7 +269,7 @@ export default defineComponent({
                   param.blackHandTop + param.handSize * (list.length + 1)
                 }px`,
               },
-              image: `./piece/mincho/${type}.png`,
+              image: `./piece/gothic/${type}.png`,
             });
             if (count === 1) {
               continue;
@@ -327,7 +327,7 @@ export default defineComponent({
                 }px`,
                 transform: "translate(0%, -100%)",
               },
-              image: `./piece/mincho/${type}.png`,
+              image: `./piece/gothic/${type}.png`,
             });
             if (count === 1) {
               continue;

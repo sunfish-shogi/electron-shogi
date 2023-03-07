@@ -65,21 +65,21 @@ import {
 import { RectSize } from "@/common/graphics";
 
 const pieceImageMap = {
-  pawn: "./piece/mincho/pawn.png",
-  lance: "./piece/mincho/lance.png",
-  knight: "./piece/mincho/knight.png",
-  silver: "./piece/mincho/silver.png",
-  gold: "./piece/mincho/gold.png",
-  bishop: "./piece/mincho/bishop.png",
-  rook: "./piece/mincho/rook.png",
-  king: "./piece/mincho/king.png",
-  king2: "./piece/mincho/king2.png",
-  promPawn: "./piece/mincho/prom_pawn.png",
-  promLance: "./piece/mincho/prom_lance.png",
-  promKnight: "./piece/mincho/prom_knight.png",
-  promSilver: "./piece/mincho/prom_silver.png",
-  horse: "./piece/mincho/horse.png",
-  dragon: "./piece/mincho/dragon.png",
+  pawn: "./piece/gothic/pawn.png",
+  lance: "./piece/gothic/lance.png",
+  knight: "./piece/gothic/knight.png",
+  silver: "./piece/gothic/silver.png",
+  gold: "./piece/gothic/gold.png",
+  bishop: "./piece/gothic/bishop.png",
+  rook: "./piece/gothic/rook.png",
+  king: "./piece/gothic/king.png",
+  king2: "./piece/gothic/king2.png",
+  promPawn: "./piece/gothic/prom_pawn.png",
+  promLance: "./piece/gothic/prom_lance.png",
+  promKnight: "./piece/gothic/prom_knight.png",
+  promSilver: "./piece/gothic/prom_silver.png",
+  horse: "./piece/gothic/horse.png",
+  dragon: "./piece/gothic/dragon.png",
 };
 
 function buildParams(size: number) {

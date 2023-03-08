@@ -383,7 +383,7 @@ export default defineComponent({
   white-space: nowrap;
 }
 .footer {
-  white-space: pre;
+  white-space: pre-wrap;
   text-align: left;
 }
 </style>

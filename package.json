@@ -10,7 +10,7 @@
     "serve": "vite",
     "build": "npm run compile -- --outDir docs/webapp && npm run report:license",
     "preview": "vite preview",
-    "test:unit": "jest",
+    "test": "jest",
     "lint": "eslint --fix -c .eslintrc.js ./src",
     "electron:compile": "tsc && tsc-alias && webpack",
     "electron:serve": "npm run electron:compile && concurrently --kill-others vite \"electron .\" \"tsc --sourceMap -w\" \"tsc-alias -w\"",

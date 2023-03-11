@@ -14,7 +14,7 @@
     "lint": "eslint --fix -c .eslintrc.js ./src",
     "electron:compile": "tsc && tsc-alias && webpack",
     "electron:serve": "npm run electron:compile && concurrently --kill-others vite \"electron .\" \"tsc --sourceMap -w\" \"tsc-alias -w\"",
-    "electron:build": "npm run compile && npm run electron:compile && electron-builder",
+    "electron:build": "npm run compile && npm run electron:compile && node scripts/build.mjs",
     "electron:preview": "npm run compile && npm run electron:compile && electron .",
     "report:license": "node scripts/report-license.mjs"
   },

@@ -13,9 +13,11 @@
     "test": "jest",
     "lint": "eslint --fix -c .eslintrc.js ./src",
     "electron:compile": "tsc && tsc-alias && webpack",
+    "electron:compile-all": "npm run compile && npm run electron:compile",
     "electron:serve": "npm run electron:compile && concurrently --kill-others vite \"electron .\" \"tsc --sourceMap -w\" \"tsc-alias -w\"",
-    "electron:build": "npm run compile && npm run electron:compile && node scripts/build.mjs",
-    "electron:preview": "npm run compile && npm run electron:compile && electron .",
+    "electron:build": "npm run electron:compile-all && node scripts/build.mjs",
+    "electron:portable": "npm run electron:compile-all && node scripts/build.mjs portable",
+    "electron:preview": "npm run electron:compile-all && electron .",
     "report:license": "node scripts/report-license.mjs"
   },
   "main": "dist/src/background/index.js",

@@ -3,6 +3,8 @@
 import builder from "electron-builder";
 import fs from "fs";
 
+const target = process.argv[2];
+
 /**
 * @type {import('electron-builder').Configuration}
 * @see https://www.electron.build/configuration/configuration
@@ -49,6 +51,12 @@ const config = {
     electronLanguages: ["en", "ja"],
   },
 };
+
+switch (target) {
+  case "portable":
+    config.win.target = "portable";
+    break;
+}
 
 builder.build({ config })
 .then((result) => {

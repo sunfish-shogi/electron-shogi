@@ -57,6 +57,7 @@ import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
 import { Rect } from "@/common/graphics";
 import { exportCaptureJPEG, exportCapturePNG } from "./image";
+import { getRelativePath, resolvePath } from "./path";
 
 const isWindows = process.platform === "win32";
 
@@ -96,16 +97,17 @@ ipcMain.on(
   }
 );
 
-ipcMain.on(Background.OPEN_EXPLORER, (_, target: string) => {
-  const stats = fs.statSync(target, { throwIfNoEntry: false });
+ipcMain.on(Background.OPEN_EXPLORER, (_, targetPath: string) => {
+  const fullPath = resolvePath(targetPath);
+  const stats = fs.statSync(fullPath, { throwIfNoEntry: false });
   if (!stats) {
-    sendError(new Error(t.failedToOpenDirectory(target)));
+    sendError(new Error(t.failedToOpenDirectory(targetPath)));
     return;
   }
   if (stats.isDirectory()) {
-    shell.openPath(target);
+    shell.openPath(fullPath);
   } else {
-    shell.openPath(path.dirname(target));
+    shell.openPath(path.dirname(fullPath));
   }
 });
 
@@ -330,7 +332,7 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
       ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }]
       : undefined,
   });
-  return results && results.length === 1 ? results[0] : "";
+  return results && results.length === 1 ? getRelativePath(results[0]) : "";
 });
 
 ipcMain.handle(

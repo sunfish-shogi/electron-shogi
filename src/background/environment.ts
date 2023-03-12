@@ -13,3 +13,11 @@ export function isTest(): boolean {
 export function isProduction(): boolean {
   return !isDevelopment() && !isPreview() && !isTest();
 }
+
+export function isPortable(): boolean {
+  return process.env.PORTABLE_EXECUTABLE_DIR !== undefined;
+}
+
+export function getPortableExeDir(): string | undefined {
+  return process.env.PORTABLE_EXECUTABLE_DIR;
+}

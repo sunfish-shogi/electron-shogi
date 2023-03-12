@@ -9,6 +9,7 @@ import { onUSIBestMove, onUSIInfo, onUSIPonderInfo } from "@/background/ipc";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/player";
 import { t } from "@/common/i18n";
+import { resolvePath } from "../path";
 
 function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
@@ -20,7 +21,7 @@ export async function getUSIEngineInfo(
 ): Promise<USIEngineSetting> {
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
-    const process = new EngineProcess(path, sessionID, {
+    const process = new EngineProcess(resolvePath(path), sessionID, {
       setupOnly: true,
       timeout: timeoutSeconds * 1e3,
     })
@@ -48,7 +49,7 @@ export function sendSetOptionCommand(
 ): Promise<void> {
   const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
-    const process = new EngineProcess(path, sessionID, {
+    const process = new EngineProcess(resolvePath(path), sessionID, {
       setupOnly: true,
       timeout: timeoutSeconds * 1e3,
     })
@@ -103,7 +104,7 @@ export function setupPlayer(
   timeoutSeconds: number
 ): Promise<number> {
   const sessionID = issueSessionID();
-  const process = new EngineProcess(setting.path, sessionID, {
+  const process = new EngineProcess(resolvePath(setting.path), sessionID, {
     timeout: timeoutSeconds * 1e3,
     engineOptions: Object.values(setting.options),
   });

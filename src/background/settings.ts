@@ -36,9 +36,10 @@ import {
   normalizeSecureCSAGameSettingHistory,
 } from "@/common/settings/csa";
 import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
-import { isTest } from "./environment";
+import { getPortableExeDir, isTest } from "./environment";
 
-const rootDir = !isTest() ? app.getPath("userData") : "";
+const userDir = !isTest() ? app.getPath("userData") : "";
+const rootDir = !isTest() ? getPortableExeDir() || app.getPath("userData") : "";
 const docDir = !isTest()
   ? path.join(app.getPath("documents"), "ElectronShogi")
   : "";
@@ -52,7 +53,7 @@ export function openAutoSaveDirectory(): void {
   shell.openPath(appSetting.autoSaveDirectory || docDir);
 }
 
-const windowSettingPath = path.join(rootDir, "window.json");
+const windowSettingPath = path.join(userDir, "window.json");
 
 export function saveWindowSetting(setting: WindowSetting): void {
   try {
@@ -90,7 +91,7 @@ export function loadUSIEngineSetting(): USIEngineSettings {
   return new USIEngineSettings(fs.readFileSync(usiEngineSettingPath, "utf8"));
 }
 
-const appSettingPath = path.join(rootDir, "app_setting.json");
+const appSettingPath = path.join(userDir, "app_setting.json");
 
 export function saveAppSetting(setting: AppSetting): void {
   fs.writeFileSync(

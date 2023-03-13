@@ -776,7 +776,7 @@ const en: Texts = {
   appSettings: "Preferences",
   language: "Languages",
   theme: "Theme",
-  standardGreen: "Green (Standard)",
+  standardGreen: "Standard (Green)",
   green: "Green",
   cherryBlossom: "Cherry Blossom",
   autumn: "Autumn",

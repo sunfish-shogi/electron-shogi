@@ -4,51 +4,51 @@
       <div class="groups">
         <div class="group">
           <button class="close" @click="onClose">
-            <ButtonIcon class="icon" :icon="Icon.CLOSE" />
+            <Icon :icon="IconType.CLOSE" />
             <div class="label">{{ t.back }}</div>
           </button>
         </div>
         <div class="group">
           <button :disabled="!states.newFile" @click="onNewFile">
-            <ButtonIcon class="icon" :icon="Icon.FILE" />
+            <Icon :icon="IconType.FILE" />
             <div class="label">{{ t.clear }}</div>
           </button>
           <button :disabled="!states.open" @click="onOpen">
-            <ButtonIcon class="icon" :icon="Icon.OPEN" />
+            <Icon :icon="IconType.OPEN" />
             <div class="label">{{ t.open }}</div>
           </button>
           <button :disabled="!states.save" @click="onSave">
-            <ButtonIcon class="icon" :icon="Icon.SAVE" />
+            <Icon :icon="IconType.SAVE" />
             <div class="label">{{ t.saveOverwrite }}</div>
           </button>
           <button :disabled="!states.saveAs" @click="onSaveAs">
-            <ButtonIcon class="icon" :icon="Icon.SAVE_AS" />
+            <Icon :icon="IconType.SAVE_AS" />
             <div class="label">{{ t.saveAs }}</div>
           </button>
           <button :disabled="!states.exportImage" @click="onExportImage">
-            <ButtonIcon class="icon" :icon="Icon.GRID" />
+            <Icon :icon="IconType.GRID" />
             <div class="label">{{ t.positionImage }}</div>
           </button>
         </div>
         <div class="group">
           <button @click="onCopyKIF">
-            <ButtonIcon class="icon" :icon="Icon.COPY" />
+            <Icon :icon="IconType.COPY" />
             <div class="label">{{ t.copyAsKIF }}</div>
           </button>
           <button @click="onCopyCSA">
-            <ButtonIcon class="icon" :icon="Icon.COPY" />
+            <Icon :icon="IconType.COPY" />
             <div class="label">{{ t.copyAsCSA }}</div>
           </button>
           <button @click="onCopyUSI">
-            <ButtonIcon class="icon" :icon="Icon.COPY" />
+            <Icon :icon="IconType.COPY" />
             <div class="label">{{ t.copyAsUSI }}</div>
           </button>
           <button @click="onCopySFEN">
-            <ButtonIcon class="icon" :icon="Icon.COPY" />
+            <Icon :icon="IconType.COPY" />
             <div class="label">{{ t.copyAsSFEN }}</div>
           </button>
           <button :disabled="!states.paste" @click="onPaste">
-            <ButtonIcon class="icon" :icon="Icon.PASTE" />
+            <Icon :icon="IconType.PASTE" />
             <div class="label">{{ t.paste }}</div>
           </button>
         </div>
@@ -61,15 +61,15 @@
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
 
 export default defineComponent({
   name: "FileMenu",
   components: {
-    ButtonIcon,
+    Icon,
   },
   emits: ["close"],
   setup(_, context) {
@@ -134,7 +134,7 @@ export default defineComponent({
     return {
       t,
       dialog,
-      Icon,
+      IconType,
       onClose,
       onNewFile,
       onOpen,

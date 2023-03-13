@@ -264,8 +264,6 @@ type Texts = {
   filterByEngineName: string;
   bookStyle: string;
   gameStyle: string;
-  size: string;
-  title: string;
   typeCustomTitleHere: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
@@ -591,8 +589,6 @@ const ja: Texts = {
   filterByEngineName: "エンジン名で検索",
   bookStyle: "書籍風",
   gameStyle: "対局画面風",
-  size: "サイズ",
-  title: "見出し",
   typeCustomTitleHere: "ここに見出しを入力",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
@@ -943,8 +939,6 @@ const en: Texts = {
   filterByEngineName: "Filter by Engine Name",
   bookStyle: "Book Style",
   gameStyle: "Game Style",
-  size: "Size",
-  title: "Title",
   typeCustomTitleHere: "Type custom title here",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",

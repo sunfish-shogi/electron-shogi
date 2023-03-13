@@ -22,13 +22,13 @@
       @edit="onEdit"
     >
       <template #right-control>
-        <div ref="rightControl" class="control top">
+        <div ref="rightControl" class="full column top-control">
           <button
             v-if="controlStates.game"
             class="control-item"
             @click="onGame"
           >
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <span>{{ t.game }}</span>
           </button>
           <button
@@ -36,7 +36,7 @@
             class="control-item"
             @click="onShowGameResults"
           >
-            <ButtonIcon class="icon" :icon="Icon.SCORE" />
+            <Icon :icon="IconType.SCORE" />
             <span>{{ t.displayGameResults }}</span>
           </button>
           <button
@@ -45,11 +45,11 @@
             data-hotkey="Escape"
             @click="onStop"
           >
-            <ButtonIcon class="icon" :icon="Icon.STOP" />
+            <Icon :icon="IconType.STOP" />
             <span>{{ t.stopGame }}</span>
           </button>
           <button v-if="controlStates.win" class="control-item" @click="onWin">
-            <ButtonIcon class="icon" :icon="Icon.CALL" />
+            <Icon :icon="IconType.CALL" />
             <span>{{ t.declareWinning }}</span>
           </button>
           <button
@@ -57,7 +57,7 @@
             class="control-item"
             @click="onResign"
           >
-            <ButtonIcon class="icon" :icon="Icon.RESIGN" />
+            <Icon :icon="IconType.RESIGN" />
             <span>{{ t.resign }}</span>
           </button>
           <button
@@ -66,7 +66,7 @@
             data-hotkey="Control+r"
             @click="onResearch"
           >
-            <ButtonIcon class="icon" :icon="Icon.RESEARCH" />
+            <Icon :icon="IconType.RESEARCH" />
             <span>{{ t.research }}</span>
           </button>
           <button
@@ -75,7 +75,7 @@
             data-hotkey="Escape"
             @click="onEndResearch"
           >
-            <ButtonIcon class="icon" :icon="Icon.END" />
+            <Icon :icon="IconType.END" />
             <span>{{ t.endResearch }}</span>
           </button>
           <button
@@ -84,7 +84,7 @@
             data-hotkey="Control+a"
             @click="onAnalysis"
           >
-            <ButtonIcon class="icon" :icon="Icon.ANALYSIS" />
+            <Icon :icon="IconType.ANALYSIS" />
             <span>{{ t.analysis }}</span>
           </button>
           <button
@@ -93,7 +93,7 @@
             data-hotkey="Escape"
             @click="onEndAnalysis"
           >
-            <ButtonIcon class="icon" :icon="Icon.STOP" />
+            <Icon :icon="IconType.STOP" />
             <span>{{ t.stopAnalysis }}</span>
           </button>
           <button
@@ -101,7 +101,7 @@
             class="control-item"
             @click="onStartEditPosition"
           >
-            <ButtonIcon class="icon" :icon="Icon.EDIT" />
+            <Icon :icon="IconType.EDIT" />
             <span>{{ t.setupPosition }}</span>
           </button>
           <button
@@ -109,7 +109,7 @@
             class="control-item"
             @click="onEndEditPosition"
           >
-            <ButtonIcon class="icon" :icon="Icon.CHECK" />
+            <Icon :icon="IconType.CHECK" />
             <span>{{ t.completePositionSetup }}</span>
           </button>
           <button
@@ -117,7 +117,7 @@
             class="control-item"
             @click="onChangeTurn"
           >
-            <ButtonIcon class="icon" :icon="Icon.SWAP" />
+            <Icon :icon="IconType.SWAP" />
             <span>{{ t.changeTurn }}</span>
           </button>
           <button
@@ -130,13 +130,13 @@
         </div>
       </template>
       <template #left-control>
-        <div ref="leftControl" class="control bottom">
+        <div ref="leftControl" class="full column reverse bottom-control">
           <button
             class="control-item"
             data-hotkey="Control+,"
             @click="onOpenAppSettings"
           >
-            <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
+            <Icon :icon="IconType.SETTINGS" />
             <span>{{ t.appSettings }}</span>
           </button>
           <button
@@ -145,15 +145,15 @@
             :disabled="!controlStates.engineSettings"
             @click="onOpenEngineSettings"
           >
-            <ButtonIcon class="icon" :icon="Icon.ENGINE_SETTINGS" />
+            <Icon :icon="IconType.ENGINE_SETTINGS" />
             <span>{{ t.engineSettings }}</span>
           </button>
           <button class="control-item" data-hotkey="Control+t" @click="onFlip">
-            <ButtonIcon class="icon" :icon="Icon.FLIP" />
+            <Icon :icon="IconType.FLIP" />
             <span>{{ t.flipBoard }}</span>
           </button>
           <button class="control-item" @click="onFileAction">
-            <ButtonIcon class="icon" :icon="Icon.FILE" />
+            <Icon :icon="IconType.FILE" />
             <span>{{ t.file }}</span>
           </button>
           <button
@@ -162,7 +162,7 @@
             :disabled="!controlStates.removeCurrentMove"
             @click="onRemoveCurrentMove"
           >
-            <ButtonIcon class="icon" :icon="Icon.DELETE" />
+            <Icon :icon="IconType.DELETE" />
             <span>{{ t.deleteMove }}</span>
           </button>
         </div>
@@ -192,10 +192,10 @@ import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import { Move, PositionChange, RecordMetadataKey } from "@/common/shogi";
 import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import { AppState } from "@/common/control/state.js";
 import { humanPlayer } from "@/renderer/players/human";
-import { Icon } from "@/renderer/assets/icons";
+import { IconType } from "@/renderer/assets/icons";
 import GameMenu from "@/renderer/view/menu/GameMenu.vue";
 import FileMenu from "@/renderer/view/menu/FileMenu.vue";
 import InitialPositionMenu from "@/renderer/view/menu/InitialPositionMenu.vue";
@@ -210,7 +210,7 @@ export default defineComponent({
   name: "BoardPane",
   components: {
     BoardView,
-    ButtonIcon,
+    Icon,
     GameMenu,
     FileMenu,
     InitialPositionMenu,
@@ -444,7 +444,7 @@ export default defineComponent({
       onFlip,
       onFileAction,
       onRemoveCurrentMove,
-      Icon,
+      IconType,
       AppState,
     };
   },
@@ -452,19 +452,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.control {
-  width: 100%;
-  height: 100%;
-}
-.control.top {
-  display: flex;
-  flex-direction: column;
-}
-.control.bottom {
-  display: flex;
-  flex-direction: column-reverse;
-}
-.control .control-item {
+.control-item {
   width: 100%;
   height: 19%;
   font-size: 100%;
@@ -475,14 +463,13 @@ export default defineComponent({
   line-height: 200%;
   padding: 0 5% 0 5%;
 }
-.control.top .control-item:not(:last-child) {
+.top-control .control-item:not(:last-child) {
   margin-bottom: 1%;
 }
-.control.bottom .control-item:not(:last-child) {
+.bottom-control .control-item:not(:last-child) {
   margin-top: 1%;
 }
-.control .control-item .icon {
+.control-item .icon {
   height: 68%;
-  vertical-align: top;
 }
 </style>

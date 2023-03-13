@@ -1,9 +1,9 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">{{ t.game }}</div>
-      <div class="dialog-form-area">
-        <div class="players">
+      <div class="title">{{ t.game }}</div>
+      <div class="form-group players">
+        <div class="row regular-interval">
           <div class="player">
             <div class="top-label">{{ t.senteOrShitate }}</div>
             <PlayerSelector
@@ -34,17 +34,17 @@
         </div>
         <div class="players-control">
           <button @click="onSwapColor">
-            <ButtonIcon class="icon" :icon="Icon.SWAP_H" />
+            <Icon :icon="IconType.SWAP_H" />
             <span>{{ t.swapSenteGote }}</span>
           </button>
         </div>
       </div>
-      <div class="dialog-form-areas-h">
-        <div class="dialog-form-area time-limit">
+      <div class="row regular-interval">
+        <div class="form-group time-limit">
           <div class="top-label">{{ t.time }}</div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <!-- TODO: Translate -->
-            <div class="dialog-form-item-label">持ち時間</div>
+            <div class="form-item-label">持ち時間</div>
             <input
               ref="hours"
               class="time"
@@ -53,7 +53,7 @@
               max="99"
               step="1"
             />
-            <div class="dialog-form-item-unit">{{ t.hoursSuffix }}</div>
+            <div class="form-item-unit">{{ t.hoursSuffix }}</div>
             <input
               ref="minutes"
               class="time"
@@ -62,11 +62,11 @@
               max="59"
               step="1"
             />
-            <div class="dialog-form-item-unit">{{ t.minutesSuffix }}</div>
+            <div class="form-item-unit">{{ t.minutesSuffix }}</div>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <!-- TODO: Translate -->
-            <div class="dialog-form-item-label">秒読み</div>
+            <div class="form-item-label">秒読み</div>
             <input
               ref="byoyomi"
               class="time"
@@ -75,11 +75,11 @@
               max="60"
               step="1"
             />
-            <div class="dialog-form-item-unit">{{ t.secondsSuffix }}</div>
+            <div class="form-item-unit">{{ t.secondsSuffix }}</div>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <!-- TODO: Translate -->
-            <div class="dialog-form-item-label">増加</div>
+            <div class="form-item-label">増加</div>
             <input
               ref="increment"
               class="time"
@@ -88,9 +88,9 @@
               max="99"
               step="1"
             />
-            <div class="dialog-form-item-unit">{{ t.secondsSuffix }}</div>
+            <div class="form-item-unit">{{ t.secondsSuffix }}</div>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input
               id="enable-engine-timeout"
               ref="enableEngineTimeout"
@@ -101,10 +101,10 @@
             }}</label>
           </div>
         </div>
-        <div class="dialog-form-area flags">
+        <div class="form-group others">
           <div class="top-label">{{ t.others }}</div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label">{{ t.startPosition }}</div>
+          <div class="form-item">
+            <div class="form-item-label">{{ t.startPosition }}</div>
             <select ref="startPosition">
               <option value="current">{{ t.currentPosition }}</option>
               <option value="standard">{{ t.nonHandicap }}</option>
@@ -127,44 +127,39 @@
               </option>
             </select>
           </div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label">{{ t.maxMoves }}</div>
+          <div class="form-item">
+            <div class="form-item-label">{{ t.maxMoves }}</div>
             <input ref="maxMoves" class="number" type="number" min="1" />
           </div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label">{{ t.gameRepetition }}</div>
+          <div class="form-item">
+            <div class="form-item-label">{{ t.gameRepetition }}</div>
             <input ref="repeat" class="number" type="number" min="1" />
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="swap-players" ref="swapPlayers" type="checkbox" />
             <label for="swap-players">{{ t.swapTurnWhenGameRepetition }}</label>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="enable-comment" ref="enableComment" type="checkbox" />
             <label for="enable-comment">{{ t.outputComments }}</label>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
             <label for="enable-auto-save">{{
               t.saveRecordAutomatically
             }}</label>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="human-is-front" ref="humanIsFront" type="checkbox" />
             <label for="human-is-front">{{ t.adjustBoardToHumanPlayer }}</label>
           </div>
         </div>
       </div>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="onStart()"
-        >
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="onStart()">
           {{ t.startGame }}
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
+        <button data-hotkey="Escape" @click="onCancel()">
           {{ t.cancel }}
         </button>
       </div>
@@ -195,8 +190,8 @@ import {
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
-import { Icon } from "@/renderer/assets/icons";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import { IconType } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
 import {
@@ -207,7 +202,7 @@ import {
 export default defineComponent({
   name: "GameDialog",
   components: {
-    ButtonIcon,
+    Icon,
     PlayerSelector,
   },
   setup() {
@@ -381,7 +376,7 @@ export default defineComponent({
       onSelectBlackPlayer,
       onSelectWhitePlayer,
       onSwapColor,
-      Icon,
+      IconType,
     };
   },
 });
@@ -391,19 +386,11 @@ export default defineComponent({
 .top-label {
   text-align: center;
 }
-.dialog-form-area {
-  width: 520px;
-  display: flex;
-  flex-direction: column;
-}
 .players {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  width: 100%;
+  width: 580px;
 }
 .player {
-  width: 250px;
+  width: 280px;
 }
 .players-control {
   width: 100%;
@@ -411,8 +398,8 @@ export default defineComponent({
 .players-control > * {
   margin-top: 5px;
 }
-.dialog-form-area.time-limit {
-  width: 260px;
+.time-limit {
+  width: 265px;
 }
 input.time {
   text-align: right;
@@ -422,7 +409,7 @@ input.number {
   text-align: right;
   width: 80px;
 }
-.dialog-form-area.flags {
-  width: 225px;
+.others {
+  width: 280px;
 }
 </style>

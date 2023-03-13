@@ -1,15 +1,11 @@
 <template>
   <div>
     <div class="frame" :style="layout.frame.style" @click="clickFrame()">
-      <div
-        v-if="layout.board.textureImagePath"
-        class="board-texture"
-        :style="layout.board.style"
-      >
-        <img class="board-image" :src="layout.board.textureImagePath" />
+      <div v-if="layout.board.textureImagePath" :style="layout.board.style">
+        <img class="full" :src="layout.board.textureImagePath" />
       </div>
-      <div class="board-grid" :style="layout.board.style">
-        <img class="board-image" :src="layout.board.gridImagePath" />
+      <div :style="layout.board.style">
+        <img class="full" :src="layout.board.gridImagePath" />
       </div>
       <div
         class="player-name"
@@ -42,29 +38,17 @@
       <div
         v-for="square in layout.square"
         :key="square.id"
-        class="square"
         :style="square.backgroundStyle"
       />
-      <div
-        v-for="piece in layout.piece"
-        :key="piece.id"
-        class="piece"
-        :style="piece.style"
-      >
-        <img class="piece-image" :src="piece.imagePath" />
+      <div v-for="piece in layout.piece" :key="piece.id" :style="piece.style">
+        <img class="full" :src="piece.imagePath" />
       </div>
-      <div
-        v-for="label in layout.labels"
-        :key="label.id"
-        class="label"
-        :style="label.style"
-      >
+      <div v-for="label in layout.labels" :key="label.id" :style="label.style">
         {{ label.character }}
       </div>
       <div
         v-for="square in layout.square"
         :key="square.id"
-        class="square"
         :style="square.style"
         @click="clickSquare($event, square.file, square.rank)"
         @contextmenu="clickSquareR($event, square.file, square.rank)"
@@ -73,21 +57,18 @@
         <div
           v-for="pointer in layout.blackHand.pointers"
           :key="pointer.id"
-          class="hand-pointer"
           :style="pointer.backgroundStyle"
         />
         <div
           v-for="piece in layout.blackHand.pieces"
           :key="piece.id"
-          class="piece"
           :style="piece.style"
         >
-          <img class="piece-image" :src="piece.imagePath" />
+          <img class="full" :src="piece.imagePath" />
         </div>
         <div
           v-for="pointer in layout.blackHand.pointers"
           :key="pointer.id"
-          class="hand-pointer"
           :style="pointer.style"
           @click="clickHand($event, Color.BLACK, pointer.type)"
         />
@@ -96,21 +77,18 @@
         <div
           v-for="pointer in layout.whiteHand.pointers"
           :key="pointer.id"
-          class="hand-pointer"
           :style="pointer.backgroundStyle"
         />
         <div
           v-for="piece in layout.whiteHand.pieces"
           :key="piece.id"
-          class="piece"
           :style="piece.style"
         >
-          <img class="piece-image" :src="piece.imagePath" />
+          <img class="full" :src="piece.imagePath" />
         </div>
         <div
           v-for="pointer in layout.whiteHand.pointers"
           :key="pointer.id"
-          class="hand-pointer"
           :style="pointer.style"
           @click="clickHand($event, Color.WHITE, pointer.type)"
         />
@@ -121,13 +99,10 @@
         :style="layout.promotion.style"
       >
         <div class="select-button promote" @click="clickPromote($event)">
-          <img class="piece-image" :src="layout.promotion.promoteImagePath" />
+          <img class="full" :src="layout.promotion.promoteImagePath" />
         </div>
         <div class="select-button not-promote" @click="clickNotPromote($event)">
-          <img
-            class="piece-image"
-            :src="layout.promotion.notPromoteImagePath"
-          />
+          <img class="full" :src="layout.promotion.notPromoteImagePath" />
         </div>
       </div>
       <div class="turn" :style="layout.turn.style">{{ nextMoveLabel }}</div>
@@ -503,14 +478,6 @@ export default defineComponent({
 .clock-text {
   vertical-align: middle;
 }
-.board-image {
-  width: 100%;
-  height: 100%;
-}
-.piece-image {
-  width: 100%;
-  height: 100%;
-}
 .promotion-selector {
   overflow: hidden;
 }
@@ -518,12 +485,6 @@ export default defineComponent({
   float: left;
   width: 50%;
   height: 100%;
-  font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
 }
 .promote {
   background-color: var(--promote-bg-color);

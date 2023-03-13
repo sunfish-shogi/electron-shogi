@@ -1,16 +1,16 @@
 <template>
   <div>
     <dialog ref="dialog" class="root">
-      <div class="dialog-title">{{ t.csaProtocolOnlineGame }}</div>
-      <div class="dialog-scroll-area">
-        <div v-if="!logEnabled" class="dialog-form-area dialog-form-warning">
-          <div class="dialog-form-note">
+      <div class="title">{{ t.csaProtocolOnlineGame }}</div>
+      <div class="form-group scroll">
+        <div v-if="!logEnabled" class="form-group warning">
+          <div class="note">
             {{ t.someLogsDisabled }}
             {{ t.logsRecommendedForCSAProtocol }}
             {{ t.pleaseEnableLogsAndRestart }}
           </div>
         </div>
-        <div class="dialog-form-area">
+        <div class="form-group">
           <div>{{ t.player }}</div>
           <PlayerSelector
             :player-uri="playerURI"
@@ -23,9 +23,9 @@
             @select-player="onSelectPlayer"
           />
         </div>
-        <div class="dialog-form-area">
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+        <div class="form-group">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.selectFromHistory }}
             </div>
             <select class="long-text" value="0" @change="onChangeHistory">
@@ -42,8 +42,8 @@
             </select>
           </div>
           <hr />
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.version }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.version }}</div>
             <select
               ref="protocolVersion"
               class="long-text"
@@ -60,22 +60,22 @@
           </div>
           <div
             v-if="selectedProtocolVersion === CSAProtocolVersion.V121"
-            class="dialog-form-area dialog-form-item dialog-form-warning"
+            class="form-group warning"
           >
-            <div class="dialog-form-note">
+            <div class="note">
               {{ t.notSendPVOnStandardCSAProtocol }}
             </div>
           </div>
           <div
             v-if="selectedProtocolVersion === CSAProtocolVersion.V121_FLOODGATE"
-            class="dialog-form-area dialog-form-item dialog-form-warning"
+            class="form-group warning"
           >
-            <div class="dialog-form-note">
+            <div class="note">
               {{ t.sendPVDoNotUseOnWCSC }}
             </div>
           </div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.hostToConnect }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.hostToConnect }}</div>
             <input
               ref="host"
               class="long-text"
@@ -88,8 +88,8 @@
               <option value="localhost" />
             </datalist>
           </div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.portNumber }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.portNumber }}</div>
             <input
               ref="port"
               class="number"
@@ -100,15 +100,15 @@
               <option value="4081" />
             </datalist>
           </div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">ID</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">ID</div>
             <input ref="id" class="long-text" type="text" />
           </div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.password }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.password }}</div>
             <input ref="password" class="long-text" type="password" />
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input
               id="show-password"
               type="checkbox"
@@ -116,11 +116,11 @@
             />
             <label for="show-password">{{ t.showPassword }}</label>
           </div>
-          <div class="dialog-form-area dialog-form-item dialog-form-warning">
-            <div v-if="isEncryptionAvailable" class="dialog-form-note">
+          <div class="form-group warning">
+            <div v-if="isEncryptionAvailable" class="note">
               {{ t.csaProtocolSendPlaintextPassword }}
             </div>
-            <div v-else class="dialog-form-note">
+            <div v-else class="note">
               {{
                 t.passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable
               }}
@@ -128,7 +128,7 @@
               {{ t.csaProtocolSendPlaintextPasswordRegardlessOfHistory }}
             </div>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input
               id="save-history"
               ref="saveHistory"
@@ -140,43 +140,38 @@
             </label>
           </div>
         </div>
-        <div class="dialog-form-area">
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide number">
+        <div class="form-group">
+          <div class="form-item">
+            <div class="form-item-label-wide number">
               {{ t.gameRepetition }}
             </div>
             <input ref="repeat" class="number" type="number" min="1" />
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="auto-relogin" ref="autoRelogin" type="checkbox" />
             <label for="auto-relogin">{{ t.autoRelogin }}</label>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="enable-comment" ref="enableComment" type="checkbox" />
             <label for="enable-comment">{{ t.outputComments }}</label>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
             <label for="enable-auto-save">{{
               t.saveRecordAutomatically
             }}</label>
           </div>
-          <div class="dialog-form-item">
+          <div class="form-item">
             <input id="auto-flip" ref="autoFlip" type="checkbox" />
             <label for="auto-flip">{{ t.adjustBoardAutomatically }}</label>
           </div>
         </div>
       </div>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="onStart()"
-        >
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="onStart()">
           {{ t.startGame }}
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
+        <button data-hotkey="Escape" @click="onCancel()">
           {{ t.cancel }}
         </button>
       </div>
@@ -208,7 +203,7 @@ import {
 } from "@/common/settings/csa";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
-import { Icon } from "@/renderer/assets/icons";
+import { IconType } from "@/renderer/assets/icons";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
@@ -404,7 +399,7 @@ export default defineComponent({
       onSelectPlayer,
       onTogglePasswordVisibility,
       onChangeHistory,
-      Icon,
+      IconType,
     };
   },
 });

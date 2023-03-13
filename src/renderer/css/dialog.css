@@ -13,81 +13,111 @@ dialog::backdrop {
   background: rgba(0, 0, 0, 0.5);
 }
 
-.dialog-title {
+dialog button {
+  font-size: 0.8em;
+  margin: 0px 5px 0px 5px;
+  padding: 5px 15px 5px 15px;
+}
+
+dialog hr {
+  width: 100%;
+  border: none;
+  border-top: 1px dashed var(--dialog-border-color);
+}
+
+dialog select {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: auto;
+}
+
+dialog .title {
   text-align: center;
   margin-bottom: 5px;
   font-weight: bold;
   font-size: 1.2em;
 }
 
-.dialog-scroll-area {
+dialog .form-group {
   border: 1px dashed var(--dialog-border-color);
   border-radius: 10px 10px 10px 10px;
-  margin-bottom: 10px;
   padding: 10px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
 }
 
-.dialog-form-areas-h {
-  display: flex;
-  flex-direction: row;
+dialog .form-group + * {
+  margin-top: 10px;
 }
-.dialog-form-areas-h > :nth-of-type(n+2) {
+
+dialog .row > .form-group + * {
+  margin-top: 0px;
   margin-left: 10px;
 }
 
-.dialog-form-area {
-  border: 1px dashed var(--dialog-border-color);
-  border-radius: 10px 10px 10px 10px;
-  margin-bottom: 10px;
-  padding: 10px;
+dialog .form-item {
+  text-align: left;
 }
 
-.dialog-form-item {
-  display: flex;
-  flex-direction: row;
-}
-.dialog-form-item:nth-of-type(n+2) {
+dialog .form-item:nth-child(n+2) {
   margin-top: 5px;
 }
 
-.dialog-form-item label {
+dialog .form-item > * {
+  vertical-align: middle;
+}
+
+dialog .form-item.center {
+  text-align: center;
+}
+
+dialog .form-item.center > *:nth-child(n+2) {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+dialog .form-item label {
   font-size: 0.8em;
 }
 
-.dialog-form-item-label {
+dialog .form-item-label {
+  display: inline-block;
   text-align: left;
   margin-right: 5px;
   width: 90px;
 }
 
-.dialog-form-item-label-wide {
+dialog .form-item-label-wide {
+  display: inline-block;
   text-align: left;
   margin-right: 5px;
-  width: 150px;
+  width: 160px;
 }
 
-.dialog-form-item-unit {
+dialog .center .form-item-label {
+  display: inline-block;
+  text-align: center;
+  margin-right: 5px;
+  width: auto;
+}
+
+dialog .form-item-unit {
+  display: inline-block;
   text-align: left;
   font-size: 0.8em;
   margin: 0px 5px 0px 5px;
   padding-top: 0.2em;
-  align-items: center;
 }
 
-.dialog-form-note {
+dialog .note {
   text-align: left;
   font-size: 0.8em;
+}
+
+dialog .note:nth-child(n+2) {
   margin-top: 5px;
 }
 
-.dialog-form-warning {
-  background-color: var(--text-bg-color-warning);
-}
-
-.dialog-main-buttons {
+dialog .main-buttons {
   display: flex;
   flex-direction: row;
   margin-top: 5px;
@@ -95,20 +125,21 @@ dialog::backdrop {
   margin-right: auto;
 }
 
-.dialog-button {
-  margin: 0px 5px 0px 5px;
+dialog .main-buttons button {
   padding: 5px 25px 5px 25px;
 }
 
-.dialog-thin-button {
-  margin: 0px 5px 0px 5px;
-  padding: 2px 25px 2px 25px;
+dialog .icon {
+  width: 36px;
 }
 
-.dialog-wide-button {
-  width: 100%;
-  margin: 5px 0px 5px 0px;
-  padding: 5px 0px 5px 0px;
+dialog button .icon {
+  width: 1.4em;
+}
+
+dialog button .icon + span {
+  margin-left: 5px;
+  line-height: 1.4em;
 }
 
 dialog .message-box {
@@ -117,28 +148,8 @@ dialog .message-box {
   align-items: center;
 }
 
-dialog .icon {
-  width: 36px;
-}
-
 dialog .message-box .icon {
   margin-right: 15px;
-}
-
-dialog button {
-  font-size: 0.8em;
-  margin: 0px 5px 0px 5px;
-  padding: 5px 15px 5px 15px;
-}
-
-dialog button .icon {
-  width: 1.4em;
-  vertical-align: top;
-}
-
-dialog button .icon + span {
-  margin-left: 5px;
-  line-height: 1.4em;
 }
 
 dialog.menu {
@@ -188,17 +199,4 @@ dialog.menu .label {
   display: block;
   font-size: 14px;
   margin-top: 0.5em;
-}
-
-dialog hr {
-  width: 100%;
-  border: none;
-  border-top: 1px dashed var(--dialog-border-color);
-}
-
-dialog select {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-right: auto;
 }

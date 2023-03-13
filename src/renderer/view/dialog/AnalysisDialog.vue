@@ -1,8 +1,8 @@
 <template>
   <div>
     <dialog ref="dialog" class="root">
-      <div class="dialog-title">{{ t.recordAnalysis }}</div>
-      <div class="dialog-form-area">
+      <div class="title">{{ t.recordAnalysis }}</div>
+      <div class="form-group">
         <div>{{ t.searchEngine }}</div>
         <PlayerSelector
           :player-uri="engineURI"
@@ -13,9 +13,9 @@
           @select-player="onSelectPlayer"
         />
       </div>
-      <div class="dialog-form-area">
+      <div class="form-group">
         <div>{{ t.startCriteria }}</div>
-        <div class="dialog-form-item">
+        <div class="form-item">
           <input
             ref="enableStartNumber"
             class="toggle"
@@ -23,7 +23,7 @@
             :checked="defaultValues.enableStartNumber"
             @change="updateToggle"
           />
-          <div class="dialog-form-item-unit">{{ t.fromPrefix }}</div>
+          <div class="form-item-unit">{{ t.fromPrefix }}</div>
           <input
             ref="startNumber"
             class="small"
@@ -33,14 +33,12 @@
             :disabled="!defaultValues.enableStartNumber"
             :value="defaultValues.startNumber"
           />
-          <div class="dialog-form-item-unit">
-            {{ t.plySuffix }}{{ t.fromSuffix }}
-          </div>
+          <div class="form-item-unit">{{ t.plySuffix }}{{ t.fromSuffix }}</div>
         </div>
       </div>
-      <div class="dialog-form-area">
+      <div class="form-group">
         <div>{{ t.endCriteria }}</div>
-        <div class="dialog-form-item">
+        <div class="form-item">
           <input
             ref="enableEndNumber"
             class="toggle"
@@ -48,7 +46,7 @@
             :checked="defaultValues.enableEndNumber"
             @change="updateToggle"
           />
-          <div class="dialog-form-item-unit">{{ t.toPrefix }}</div>
+          <div class="form-item-unit">{{ t.toPrefix }}</div>
           <input
             ref="endNumber"
             class="small"
@@ -58,15 +56,13 @@
             :disabled="!defaultValues.enableEndNumber"
             :value="defaultValues.endNumber"
           />
-          <div class="dialog-form-item-unit">
-            {{ t.plySuffix }}{{ t.toSuffix }}
-          </div>
+          <div class="form-item-unit">{{ t.plySuffix }}{{ t.toSuffix }}</div>
         </div>
       </div>
-      <div class="dialog-form-area">
+      <div class="form-group">
         <div>{{ t.endCriteria1Move }}</div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-unit">{{ t.toPrefix }}</div>
+        <div class="form-item">
+          <div class="form-item-unit">{{ t.toPrefix }}</div>
           <input
             ref="maxSecondsPerMove"
             class="small"
@@ -75,15 +71,15 @@
             step="1"
             :value="defaultValues.maxSecondsPerMove"
           />
-          <div class="dialog-form-item-unit">
+          <div class="form-item-unit">
             {{ t.secondsSuffix }}{{ t.toSuffix }}
           </div>
         </div>
       </div>
-      <div class="dialog-form-area">
+      <div class="form-group">
         <div>{{ t.outputSettings }}</div>
-        <div class="dialog-form-item">
-          <div class="dialog-form-item-label-wide">{{ t.moveComments }}</div>
+        <div class="form-item">
+          <div class="form-item-label-wide">{{ t.moveComments }}</div>
           <select
             ref="commentBehavior"
             size="1"
@@ -102,18 +98,11 @@
           </select>
         </div>
       </div>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="onStart()"
-        >
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="onStart()">
           解析実行
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
-          キャンセル
-        </button>
+        <button data-hotkey="Escape" @click="onCancel()">キャンセル</button>
       </div>
     </dialog>
   </div>

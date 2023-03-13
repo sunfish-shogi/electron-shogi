@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog">
       <div ref="content">
-        <div class="dialog-form-area">
+        <div class="form-group">
           <div class="message">{{ t.importingFollowingRecordOrPosition }}</div>
           <div class="message">{{ t.supportsKIFCSAUSI }}</div>
           <div v-if="!isNative" class="message">
@@ -14,16 +14,11 @@
           <textarea ref="textarea" />
         </div>
       </div>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="onOk"
-        >
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="onOk">
           {{ t.import }}
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="onCancel">
+        <button data-hotkey="Escape" @click="onCancel">
           {{ t.cancel }}
         </button>
       </div>

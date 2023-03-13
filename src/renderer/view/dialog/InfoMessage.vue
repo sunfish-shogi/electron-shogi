@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog" class="info">
       <div class="message-box">
-        <ButtonIcon class="icon" :icon="Icon.INFO" />
+        <Icon :icon="IconType.INFO" />
         <div class="message">{{ store.message.text }}</div>
       </div>
       <div
@@ -29,7 +29,7 @@
           </li>
         </ul>
       </div>
-      <div class="dialog-main-buttons">
+      <div class="main-buttons">
         <button autofocus data-hotkey="Escape" @click="onClose()">
           {{ t.close }}
         </button>
@@ -43,8 +43,8 @@ import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { useStore } from "@/renderer/store";
 import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
@@ -53,7 +53,7 @@ import {
 export default defineComponent({
   name: "InfoMessage",
   components: {
-    ButtonIcon,
+    Icon,
   },
   setup() {
     const store = useStore();
@@ -77,7 +77,7 @@ export default defineComponent({
       dialog,
       store,
       onClose,
-      Icon,
+      IconType,
     };
   },
 });

@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog" class="bussy">
       <div class="message-box">
-        <ButtonIcon class="icon" :icon="Icon.BUSSY" />
+        <Icon :icon="IconType.BUSSY" />
         <div class="message">{{ t.processingPleaseWait }}</div>
       </div>
     </dialog>
@@ -13,13 +13,13 @@
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { defineComponent, onMounted, ref, Ref } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 
 export default defineComponent({
   name: "BussyMessage",
   components: {
-    ButtonIcon,
+    Icon,
   },
   setup() {
     const dialog: Ref = ref(null);
@@ -29,7 +29,7 @@ export default defineComponent({
     return {
       t,
       dialog,
-      Icon,
+      IconType,
     };
   },
 });

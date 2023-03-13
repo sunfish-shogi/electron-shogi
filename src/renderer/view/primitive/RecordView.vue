@@ -1,44 +1,36 @@
 <template>
-  <div class="record-view">
-    <div class="controller">
+  <div class="full column record-view">
+    <div class="row control">
       <button
-        class="control-button"
         :disabled="!operational"
         data-hotkey="ArrowLeft"
         @click="goBegin()"
       >
-        <ButtonIcon class="icon" :icon="Icon.FIRST" />
+        <Icon :icon="IconType.FIRST" />
+      </button>
+      <button :disabled="!operational" data-hotkey="ArrowUp" @click="goBack()">
+        <Icon :icon="IconType.BACK" />
       </button>
       <button
-        class="control-button"
-        :disabled="!operational"
-        data-hotkey="ArrowUp"
-        @click="goBack()"
-      >
-        <ButtonIcon class="icon" :icon="Icon.BACK" />
-      </button>
-      <button
-        class="control-button"
         :disabled="!operational"
         data-hotkey="ArrowDown"
         @click="goForward()"
       >
-        <ButtonIcon class="icon" :icon="Icon.NEXT" />
+        <Icon :icon="IconType.NEXT" />
       </button>
       <button
-        class="control-button"
         :disabled="!operational"
         data-hotkey="ArrowRight"
         @click="goEnd()"
       >
-        <ButtonIcon class="icon" :icon="Icon.LAST" />
+        <Icon :icon="IconType.LAST" />
       </button>
     </div>
     <div ref="moveList" class="move-list">
       <div
         v-for="move in moves"
         :key="move.number"
-        class="move-element"
+        class="row move-element"
         :class="{ 'has-branch': move.hasBranch, selected: move.selected }"
         :value="move.number"
         @click="changeNumber(move.number)"
@@ -51,7 +43,7 @@
         <div v-if="showComment" class="move-comment">{{ move.comment }}</div>
       </div>
     </div>
-    <div class="branch-list-area">
+    <div class="row branch-list-area">
       <div ref="branchList" class="branch-list">
         <div
           v-for="branch in branches"
@@ -67,20 +59,12 @@
           </div>
         </div>
       </div>
-      <div class="branch-list-control">
-        <button
-          class="branch-list-control-button"
-          :disabled="!operational"
-          @click="swapWithPreviousBranch()"
-        >
-          <ButtonIcon class="icon" :icon="Icon.ARROW_UP" />
+      <div class="column branch-list-control">
+        <button :disabled="!operational" @click="swapWithPreviousBranch()">
+          <Icon :icon="IconType.ARROW_UP" />
         </button>
-        <button
-          class="branch-list-control-button"
-          :disabled="!operational"
-          @click="swapWithNextBranch()"
-        >
-          <ButtonIcon class="icon" :icon="Icon.ARROW_DROP" />
+        <button :disabled="!operational" @click="swapWithNextBranch()">
+          <Icon :icon="IconType.ARROW_DROP" />
         </button>
       </div>
     </div>
@@ -90,13 +74,13 @@
 <script lang="ts">
 import { ImmutableRecord, ImmutableNode } from "@/common/shogi";
 import { computed, ref, defineComponent, Ref, PropType, onUpdated } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 
 export default defineComponent({
   name: "RecordView",
   components: {
-    ButtonIcon,
+    Icon,
   },
   props: {
     record: {
@@ -256,7 +240,7 @@ export default defineComponent({
       changeBranch,
       swapWithPreviousBranch,
       swapWithNextBranch,
-      Icon,
+      IconType,
     };
   },
 });
@@ -265,19 +249,13 @@ export default defineComponent({
 <style scoped>
 .record-view {
   max-width: 600px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
   user-select: none;
 }
-.controller {
+.control {
   width: 100%;
   height: 40px;
-  display: flex;
-  flex-direction: row;
 }
-.control-button {
+.control button {
   height: 100%;
   width: 25%;
   padding: 0px;
@@ -295,8 +273,6 @@ export default defineComponent({
   margin-top: 2px;
   width: 100%;
   height: calc(30% - 10px);
-  display: flex;
-  flex-direction: row;
 }
 .branch-list {
   flex: auto;
@@ -310,22 +286,18 @@ export default defineComponent({
 .branch-list-control {
   width: 40px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
-.branch-list-control-button {
+.branch-list-control button {
   height: 50%;
   width: 100%;
   padding: 0;
 }
-.branch-list-control-button .icon {
+.branch-list-control button .icon {
   height: 40px;
 }
 .move-element {
   height: 1.4em;
   width: 100%;
-  display: flex;
-  flex-direction: row;
   line-height: 1.4em;
   font-size: 0.85em;
 }

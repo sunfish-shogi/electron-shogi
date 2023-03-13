@@ -1,6 +1,6 @@
 <template>
-  <div class="root" :class="appSetting.thema">
-    <StandardLayout class="main" />
+  <div class="root full" :class="appSetting.thema">
+    <StandardLayout class="full" />
     <GameDialog v-if="dialogVisibilities.game" />
     <CSAGameDialog v-if="dialogVisibilities.csaGame" />
     <ResearchDialog v-if="dialogVisibilities.research" />
@@ -114,6 +114,7 @@ export default defineComponent({
 <style>
 @import "./css/font.css";
 @import "./css/color.css";
+@import "./css/basic.css";
 @import "./css/control.css";
 @import "./css/dialog.css";
 
@@ -138,11 +139,5 @@ body::-webkit-scrollbar {
 .root {
   color: var(--main-color);
   background-color: var(--main-bg-color);
-  height: 100%;
-  width: 100%;
-}
-.main {
-  height: 100%;
-  width: 100%;
 }
 </style>

@@ -20,18 +20,31 @@ describe("BoardView", () => {
         position,
       },
     });
-    const boardTexture = wrapper.get("div.board-texture img");
-    expect(boardTexture.attributes()["src"]).toBe("./board/wood_light.png");
-    const pieces = wrapper.findAll("div.piece img");
-    expect(pieces[10].attributes()["src"]).toBe(
-      "./piece/hitomoji/white_bishop.png"
-    );
-    expect(pieces[30].attributes()["src"]).toBe(
-      "./piece/hitomoji/black_rook.png"
-    );
-    expect(pieces[34].attributes()["src"]).toBe(
-      "./piece/hitomoji/black_gold.png"
-    );
+    const imgs = wrapper.findAll("img");
+    expect(
+      imgs.filter((img) => img.attributes()["src"] === "./board/wood_light.png")
+    ).toHaveLength(1);
+    expect(
+      imgs.filter(
+        (img) => img.attributes()["src"] === "./piece/hitomoji/white_bishop.png"
+      )
+    ).toHaveLength(1);
+    expect(
+      imgs.filter(
+        (img) => img.attributes()["src"] === "./piece/hitomoji/black_rook.png"
+      )
+    ).toHaveLength(1);
+    expect(
+      imgs.filter(
+        (img) => img.attributes()["src"] === "./piece/hitomoji/black_gold.png"
+      )
+    ).toHaveLength(2);
+    expect(
+      imgs.filter(
+        (img) =>
+          img.attributes()["src"] === "./piece/hitomoji_gothic/black_gold.png"
+      )
+    ).toHaveLength(0);
   });
 
   it("hitomoji_gothic", () => {
@@ -45,14 +58,32 @@ describe("BoardView", () => {
         position,
       },
     });
-    const boardTexture = wrapper.get("div.board-texture img");
-    expect(boardTexture.attributes()["src"]).toBe("./board/wood_warm.png");
-    const pieces = wrapper.findAll("div.piece img");
-    expect(pieces[10].attributes()["src"]).toBe(
-      "./piece/hitomoji_gothic/white_bishop.png"
-    );
-    expect(pieces[30].attributes()["src"]).toBe(
-      "./piece/hitomoji_gothic/black_rook.png"
-    );
+    const imgs = wrapper.findAll("img");
+    expect(
+      imgs.filter((img) => img.attributes()["src"] === "./board/wood_warm.png")
+    ).toHaveLength(1);
+    expect(
+      imgs.filter(
+        (img) =>
+          img.attributes()["src"] === "./piece/hitomoji_gothic/white_bishop.png"
+      )
+    ).toHaveLength(1);
+    expect(
+      imgs.filter(
+        (img) =>
+          img.attributes()["src"] === "./piece/hitomoji_gothic/black_rook.png"
+      )
+    ).toHaveLength(1);
+    expect(
+      imgs.filter(
+        (img) =>
+          img.attributes()["src"] === "./piece/hitomoji_gothic/black_gold.png"
+      )
+    ).toHaveLength(2);
+    expect(
+      imgs.filter(
+        (img) => img.attributes()["src"] === "./piece/hitomoji/black_gold.png"
+      )
+    ).toHaveLength(0);
   });
 });

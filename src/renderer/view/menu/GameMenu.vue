@@ -4,17 +4,17 @@
       <div class="groups">
         <div class="group">
           <button class="close" @click="onClose">
-            <ButtonIcon class="icon" :icon="Icon.CLOSE" />
+            <Icon :icon="IconType.CLOSE" />
             <div class="label">{{ t.back }}</div>
           </button>
         </div>
         <div class="group">
           <button @click="onLocalGame">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.offlineGame }}</div>
           </button>
           <button @click="onCSAGame">
-            <ButtonIcon class="icon" :icon="Icon.INTERNET" />
+            <Icon :icon="IconType.INTERNET" />
             <div class="label">{{ t.csaOnlineGame }}</div>
           </button>
         </div>
@@ -27,14 +27,14 @@
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { defineComponent, onMounted, ref, Ref } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 
 export default defineComponent({
   name: "GameMenu",
   components: {
-    ButtonIcon,
+    Icon,
   },
   emits: ["close"],
   setup(_, context) {
@@ -57,7 +57,7 @@ export default defineComponent({
     return {
       t,
       dialog,
-      Icon,
+      IconType,
       onClose,
       onLocalGame,
       onCSAGame,

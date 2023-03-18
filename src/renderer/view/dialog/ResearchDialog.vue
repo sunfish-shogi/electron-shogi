@@ -1,9 +1,9 @@
 <template>
   <div>
     <dialog ref="dialog" class="root">
-      <div class="dialog-title">{{ t.research }}</div>
-      <div class="dialog-form-area">
-        <div class="dialog-form-area">
+      <div class="title">{{ t.research }}</div>
+      <div class="form-group">
+        <div class="form-group">
           <PlayerSelector
             :player-uri="engineURI"
             :engine-settings="engineSettings"
@@ -20,7 +20,7 @@
         <div
           v-for="(uri, index) in secondaryEngineURIs"
           :key="index"
-          class="dialog-form-area"
+          class="form-group"
         >
           <PlayerSelector
             :player-uri="uri"
@@ -41,20 +41,17 @@
             {{ t.remove }}
           </button>
         </div>
-        <button @click="secondaryEngineURIs.push('')">
-          {{ t.addNthEngine(secondaryEngineURIs.length + 2) }}
-        </button>
+        <div class="form-item center">
+          <button @click="secondaryEngineURIs.push('')">
+            {{ t.addNthEngine(secondaryEngineURIs.length + 2) }}
+          </button>
+        </div>
       </div>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="onStart()"
-        >
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="onStart()">
           {{ t.startResearch }}
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
+        <button data-hotkey="Escape" @click="onCancel()">
           {{ t.cancel }}
         </button>
       </div>

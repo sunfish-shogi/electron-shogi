@@ -1,30 +1,30 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">{{ t.appSettings }}</div>
-      <div class="dialog-scroll-area settings">
+      <div class="title">{{ t.appSettings }}</div>
+      <div class="form-group scroll settings">
         <!-- 表示 -->
         <div class="section">
           <div class="section-title">{{ t.view }}</div>
-          <div class="dialog-form-area dialog-form-warning">
-            <div class="dialog-form-note">
+          <div class="form-group warning">
+            <div class="note">
               翻訳の改善にご協力ください。 We'd like your help to translate.
             </div>
-            <div class="dialog-form-note">
+            <div class="note">
               言語の変更には再起動が必要です。 You should restart this app to
               change the language.
             </div>
           </div>
           <!-- 言語 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.language }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.language }}</div>
             <select ref="language" :value="appSetting.language">
               <option :value="Language.JA">日本語</option>
               <option :value="Language.EN">English</option>
             </select>
           </div>
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.theme }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.theme }}</div>
             <select ref="thema" :value="appSetting.thema">
               <option :value="Thema.STANDARD">{{ t.standardGreen }}</option>
               <option :value="Thema.CHERRY_BLOSSOM">
@@ -36,8 +36,8 @@
             </select>
           </div>
           <!-- 駒画像 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.pieceImages }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.pieceImages }}</div>
             <select ref="pieceImage" :value="appSetting.pieceImage">
               <option :value="PieceImageType.HITOMOJI">
                 {{ t.singleKanjiPiece }}
@@ -54,8 +54,8 @@
             </select>
           </div>
           <!-- 盤画像 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.boardImage }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.boardImage }}</div>
             <select ref="boardImage" :value="appSetting.boardImage">
               <option :value="BoardImageType.LIGHT">
                 {{ t.lightWoodyTexture }}
@@ -74,8 +74,8 @@
             </select>
           </div>
           <!-- 段・筋の表示 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.displayFileAndRank }}
             </div>
             <input
@@ -86,8 +86,8 @@
             />
           </div>
           <!-- タブビューの形式 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.tabViewStyle }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.tabViewStyle }}</div>
             <select ref="tabPaneType" :value="appSetting.tabPaneType">
               <option :value="TabPaneType.SINGLE">{{ t.oneColumn }}</option>
               <option :value="TabPaneType.DOUBLE">{{ t.twoColumns }}</option>
@@ -99,8 +99,8 @@
         <div class="section">
           <div class="section-title">{{ t.sounds }}</div>
           <!-- 駒音の大きさ -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.pieceLoudness }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.pieceLoudness }}</div>
             <input
               ref="pieceVolume"
               :value="appSetting.pieceVolume"
@@ -108,11 +108,11 @@
               max="100"
               min="0"
             />
-            <div class="dialog-form-item-unit">%</div>
+            <div class="form-item-unit">%</div>
           </div>
           <!-- 時計音の大きさ -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.clockLoudness }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.clockLoudness }}</div>
             <input
               ref="clockVolume"
               :value="appSetting.clockVolume"
@@ -120,11 +120,11 @@
               max="100"
               min="0"
             />
-            <div class="dialog-form-item-unit">%</div>
+            <div class="form-item-unit">%</div>
           </div>
           <!-- 時計音の高さ -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.clockPitch }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.clockPitch }}</div>
             <input
               ref="clockPitch"
               :value="appSetting.clockPitch"
@@ -132,13 +132,11 @@
               max="880"
               min="220"
             />
-            <div class="dialog-form-item-unit">
-              Hz ({{ t.between(220, 880) }})
-            </div>
+            <div class="form-item-unit">Hz ({{ t.between(220, 880) }})</div>
           </div>
           <!-- 時計音の対象 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.clockSoundTarget }}
             </div>
             <select ref="clockSoundTarget" :value="appSetting.clockSoundTarget">
@@ -152,8 +150,8 @@
         <div class="section">
           <div class="section-title">{{ t.file }}</div>
           <!-- 改行文字 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.newlineCharacter }}
             </div>
             <select
@@ -166,8 +164,8 @@
             </select>
           </div>
           <!-- 自動保存先 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.autoSavingDirectory }}
             </div>
             <input
@@ -176,7 +174,7 @@
               :value="appSetting.autoSaveDirectory"
               type="text"
             />
-            <button class="dialog-button" @click="selectAutoSaveDirectory">
+            <button @click="selectAutoSaveDirectory">
               {{ t.select }}
             </button>
           </div>
@@ -186,8 +184,8 @@
         <div class="section">
           <div class="section-title">{{ t.usiProtocol }}</div>
           <!-- オプション名を翻訳 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.translateOptionName }}
             </div>
             <input
@@ -196,10 +194,11 @@
               :checked="appSetting.translateEngineOptionName"
               type="checkbox"
             />
+            <div class="form-item-unit">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
           <!-- 最大起動待ち時間 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.maxStartupTime }}
             </div>
             <input
@@ -209,7 +208,7 @@
               max="300"
               min="1"
             />
-            <div class="dialog-form-item-unit">
+            <div class="form-item-unit">
               {{ t.secondsSuffix }} ({{ t.between(1, 300) }})
             </div>
           </div>
@@ -219,8 +218,8 @@
         <div class="section">
           <div class="section-title">{{ t.evaluationAndEstimatedWinRate }}</div>
           <!-- 評価値の符号 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.signOfEvaluation }}
             </div>
             <select
@@ -236,8 +235,8 @@
             </select>
           </div>
           <!-- 勝率換算係数 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">
+          <div class="form-item">
+            <div class="form-item-label-wide">
               {{ t.winRateCoefficient }}
             </div>
             <input
@@ -247,14 +246,14 @@
               max="10000"
               min="1"
             />
-            <div class="dialog-form-item-unit">
+            <div class="form-item-unit">
               ({{ t.recommended }}: {{ t.between(600, 1500) }})
             </div>
           </div>
           <!-- 緩手の閾値 -->
-          <div class="dialog-form-item">
+          <div class="form-item">
             <!-- TODO: Translate -->
-            <div class="dialog-form-item-label-wide">緩手の閾値</div>
+            <div class="form-item-label-wide">緩手の閾値</div>
             <input
               ref="badMoveLevelThreshold1"
               :value="appSetting.badMoveLevelThreshold1"
@@ -262,12 +261,12 @@
               max="100"
               min="0"
             />
-            <div class="dialog-form-item-unit">%</div>
+            <div class="form-item-unit">%</div>
           </div>
           <!-- 疑問手の閾値 -->
-          <div class="dialog-form-item">
+          <div class="form-item">
             <!-- TODO: Translate -->
-            <div class="dialog-form-item-label-wide">疑問手の閾値</div>
+            <div class="form-item-label-wide">疑問手の閾値</div>
             <input
               ref="badMoveLevelThreshold2"
               :value="appSetting.badMoveLevelThreshold2"
@@ -275,12 +274,12 @@
               max="100"
               min="0"
             />
-            <div class="dialog-form-item-unit">%</div>
+            <div class="form-item-unit">%</div>
           </div>
           <!-- 悪手の閾値 -->
-          <div class="dialog-form-item">
+          <div class="form-item">
             <!-- TODO: Translate -->
-            <div class="dialog-form-item-label-wide">悪手の閾値</div>
+            <div class="form-item-label-wide">悪手の閾値</div>
             <input
               ref="badMoveLevelThreshold3"
               :value="appSetting.badMoveLevelThreshold3"
@@ -288,12 +287,12 @@
               max="100"
               min="0"
             />
-            <div class="dialog-form-item-unit">%</div>
+            <div class="form-item-unit">%</div>
           </div>
           <!-- 大悪手の閾値 -->
-          <div class="dialog-form-item">
+          <div class="form-item">
             <!-- TODO: Translate -->
-            <div class="dialog-form-item-label-wide">大悪手の閾値</div>
+            <div class="form-item-label-wide">大悪手の閾値</div>
             <input
               ref="badMoveLevelThreshold4"
               :value="appSetting.badMoveLevelThreshold4"
@@ -301,30 +300,30 @@
               max="100"
               min="0"
             />
-            <div class="dialog-form-item-unit">%</div>
+            <div class="form-item-unit">%</div>
           </div>
         </div>
         <hr />
         <!-- 開発者向け -->
         <div class="section">
           <div class="section-title">{{ t.forDevelopers }}</div>
-          <div class="dialog-form-area dialog-form-warning">
-            <div v-if="!isNative" class="dialog-form-note">
+          <div class="form-group warning">
+            <div v-if="!isNative" class="note">
               {{ t.inBrowserLogsOutputToConsoleAndIgnoreThisSetting }}
             </div>
-            <div v-if="isNative" class="dialog-form-note">
+            <div v-if="isNative" class="note">
               {{ t.shouldRestartToApplyLogSettings }}
             </div>
-            <div v-if="isNative" class="dialog-form-note">
+            <div v-if="isNative" class="note">
               {{ t.canOpenLogDirectoryFromMenu }}
             </div>
-            <div v-if="isNative" class="dialog-form-note">
+            <div v-if="isNative" class="note">
               {{ t.hasNoOldLogCleanUpFeature }}
             </div>
           </div>
           <!-- アプリログを出力 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.enableAppLog }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.enableAppLog }}</div>
             <input
               ref="enableAppLog"
               class="toggle"
@@ -333,8 +332,8 @@
             />
           </div>
           <!-- USI通信ログを出力 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.enableUSILog }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.enableUSILog }}</div>
             <input
               ref="enableUSILog"
               class="toggle"
@@ -343,8 +342,8 @@
             />
           </div>
           <!-- CSA通信ログを出力 -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.enableCSALog }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.enableCSALog }}</div>
             <input
               ref="enableCSALog"
               class="toggle"
@@ -353,8 +352,8 @@
             />
           </div>
           <!-- ログレベル -->
-          <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">{{ t.logLevel }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.logLevel }}</div>
             <select ref="logLevel" :value="appSetting.logLevel">
               <option :value="LogLevel.DEBUG">DEBUG</option>
               <option :value="LogLevel.INFO">INFO</option>
@@ -364,16 +363,11 @@
           </div>
         </div>
       </div>
-      <div class="dialog-main-buttons">
-        <button
-          class="dialog-button"
-          data-hotkey="Enter"
-          autofocus
-          @click="saveAndClose()"
-        >
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="saveAndClose()">
           {{ t.saveAndClose }}
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="cancel()">
+        <button data-hotkey="Escape" @click="cancel()">
           {{ t.cancel }}
         </button>
       </div>

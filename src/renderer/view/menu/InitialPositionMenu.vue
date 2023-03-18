@@ -4,57 +4,57 @@
       <div class="groups">
         <div class="group">
           <button class="close" @click="onClose">
-            <ButtonIcon class="icon" :icon="Icon.CLOSE" />
+            <Icon :icon="IconType.CLOSE" />
             <div class="label">{{ t.back }}</div>
           </button>
         </div>
         <div class="group">
           <button @click="onStandard">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.nonHandicap }}</div>
           </button>
           <button @click="onHandicapLance">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.lanceHandicap }}</div>
           </button>
           <button @click="onHandicapRightLance">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.rightLanceHandicap }}</div>
           </button>
           <button @click="onHandicapBishop">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.bishopHandicap }}</div>
           </button>
           <button @click="onHandicapRook">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.rookHandicap }}</div>
           </button>
           <button @click="onHandicapRookLance">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.rookLanceHandicap }}</div>
           </button>
           <button @click="onHandicap2Pieces">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.twoPiecesHandicap }}</div>
           </button>
           <button @click="onHandicap4Pieces">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.fourPiecesHandicap }}</div>
           </button>
           <button @click="onHandicap6Pieces">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.sixPiecesHandicap }}</div>
           </button>
           <button @click="onHandicap8Pieces">
-            <ButtonIcon class="icon" :icon="Icon.GAME" />
+            <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.eightPiecesHandicap }}</div>
           </button>
           <button @click="onTsumeShogi">
-            <ButtonIcon class="icon" :icon="Icon.QUIZ" />
+            <Icon :icon="IconType.QUIZ" />
             <div class="label">{{ t.tsumeShogi }}</div>
           </button>
           <button @click="onTsumeShogi2Kings">
-            <ButtonIcon class="icon" :icon="Icon.QUIZ" />
+            <Icon :icon="IconType.QUIZ" />
             <div class="label">{{ t.doubleKingTsumeShogi }}</div>
           </button>
         </div>
@@ -67,15 +67,15 @@
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { defineComponent, onMounted, ref, Ref } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { InitialPositionType } from "@/common/shogi";
 
 export default defineComponent({
   name: "InitialPositionMenu",
   components: {
-    ButtonIcon,
+    Icon,
   },
   emits: ["close"],
   setup(_, context) {
@@ -138,7 +138,7 @@ export default defineComponent({
     return {
       t,
       dialog,
-      Icon,
+      IconType,
       onClose,
       onStandard,
       onHandicapLance,

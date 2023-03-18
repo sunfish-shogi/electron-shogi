@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="root" :style="style">
-      <canvas ref="canvas"></canvas>
+    <div class="full root" :style="style">
+      <canvas ref="canvas" class="full"></canvas>
     </div>
   </div>
 </template>
@@ -373,12 +373,6 @@ export default defineComponent({
 
 <style scoped>
 .root {
-  width: 100%;
-  height: 100%;
   background-color: var(--chart-bg-color);
-}
-canvas {
-  width: 100%;
-  height: 100%;
 }
 </style>

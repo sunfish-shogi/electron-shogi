@@ -607,9 +607,9 @@ export default class LayoutBuilder {
             ratio;
         const y =
           boardLayout.y -
-          fontSize * 0.5 +
+          fontSize * 0.6 +
           (flip ? layoutTemplate.board.height : 0) * ratio +
-          layoutTemplate.board.topSquarePadding * 0.5 * ratio * (flip ? -1 : 1);
+          layoutTemplate.board.topSquarePadding * 0.7 * ratio * (flip ? -1 : 1);
         layouts.push({
           id: "file" + file,
           character: String(file),

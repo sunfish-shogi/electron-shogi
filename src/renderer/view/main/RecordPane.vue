@@ -1,5 +1,5 @@
 <template>
-  <div ref="root" class="record-pane">
+  <div ref="root" class="full column record-pane">
     <div class="record">
       <RecordView
         :record="store.record"
@@ -16,7 +16,7 @@
         @swap-with-next-branch="swapWithNextBranch"
       />
     </div>
-    <div class="options">
+    <div class="row options">
       <div class="option">
         <input
           id="show-elapsed-time"
@@ -152,10 +152,6 @@ export default defineComponent({
 <style scoped>
 .record-pane {
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 .record {
   width: 100%;
@@ -165,8 +161,6 @@ export default defineComponent({
 .options {
   width: 100%;
   margin-top: 2px;
-  display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
 }

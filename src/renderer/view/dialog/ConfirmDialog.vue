@@ -2,19 +2,12 @@
   <div>
     <dialog ref="dialog" class="confirm">
       <div class="message-box">
-        <ButtonIcon class="icon" :icon="Icon.QUESTION" />
+        <Icon :icon="IconType.QUESTION" />
         <div class="message">{{ store.confirmation }}</div>
       </div>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="onOk()"
-        >
-          OK
-        </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="onClose()">
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="onOk()">OK</button>
+        <button data-hotkey="Escape" @click="onClose()">
           {{ t.cancel }}
         </button>
       </div>
@@ -26,9 +19,9 @@
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import { useStore } from "@/renderer/store";
-import { Icon } from "@/renderer/assets/icons";
+import { IconType } from "@/renderer/assets/icons";
 import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
@@ -37,7 +30,7 @@ import {
 export default defineComponent({
   name: "InfoMessage",
   components: {
-    ButtonIcon,
+    Icon,
   },
   setup() {
     const store = useStore();
@@ -66,7 +59,7 @@ export default defineComponent({
       store,
       onOk,
       onClose,
-      Icon,
+      IconType,
     };
   },
 });

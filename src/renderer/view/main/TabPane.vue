@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="root" :style="{ width: `${size.width}px` }">
-      <div class="tabs">
+    <div class="full column" :style="{ width: `${size.width}px` }">
+      <div class="row tabs">
         <div
           v-for="tab in visibleTabs"
           :key="tab"
@@ -9,42 +9,45 @@
           :class="{ selected: activeTab === tab }"
           @click="changeSelect(tab)"
         >
-          <ButtonIcon class="icon" :icon="tabs[tab].icon" />
+          <Icon :icon="tabs[tab].icon" />
           <span>{{ tabs[tab].title }}</span>
         </div>
         <div v-if="displayMinimizeToggle" class="tab end" @click="minimize">
-          <ButtonIcon class="icon" :icon="Icon.ARROW_DROP" />
+          <Icon :icon="IconType.ARROW_DROP" />
           <span>{{ t.hideTabView }}</span>
         </div>
       </div>
       <div class="tab-contents">
         <RecordInfo
           v-if="activeTab === Tab.RECORD_INFO"
-          class="tab-content"
+          class="full tab-content"
           :size="contentSize"
         />
-        <RecordComment v-if="activeTab === Tab.COMMENT" class="tab-content" />
+        <RecordComment
+          v-if="activeTab === Tab.COMMENT"
+          class="full tab-content"
+        />
         <EngineAnalytics
           v-if="activeTab === Tab.SEARCH"
-          class="tab-content"
+          class="full tab-content"
           :size="contentSize"
           :history-mode="true"
         />
         <EngineAnalytics
           v-if="activeTab === Tab.PV"
-          class="tab-content"
+          class="full tab-content"
           :size="contentSize"
           :history-mode="false"
         />
         <EvaluationChart
           v-if="activeTab === Tab.CHART"
-          class="tab-content"
+          class="full tab-content"
           :size="contentSize"
           :type="EvaluationChartType.RAW"
         />
         <EvaluationChart
           v-if="activeTab === Tab.PERCENTAGE_CHART"
-          class="tab-content"
+          class="full tab-content"
           :size="contentSize"
           :type="EvaluationChartType.WIN_RATE"
         />
@@ -62,9 +65,9 @@ import EvaluationChart, {
 } from "@/renderer/view/tab/EvaluationChart.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
 import { RectSize } from "@/common/graphics.js";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import { Tab } from "@/common/settings/app";
-import { Icon } from "@/renderer/assets/icons";
+import { IconType } from "@/renderer/assets/icons";
 import { t } from "@/common/i18n";
 
 export const headerHeight = 30;
@@ -76,7 +79,7 @@ export default defineComponent({
     EngineAnalytics,
     EvaluationChart,
     RecordInfo,
-    ButtonIcon,
+    Icon,
   },
   props: {
     size: {
@@ -107,31 +110,31 @@ export default defineComponent({
     const tabs = {
       [Tab.RECORD_INFO]: {
         title: t.recordProperties,
-        icon: Icon.DESCRIPTION,
+        icon: IconType.DESCRIPTION,
       },
       [Tab.COMMENT]: {
         title: t.comments,
-        icon: Icon.COMMENT,
+        icon: IconType.COMMENT,
       },
       [Tab.SEARCH]: {
         title: t.searchLog,
-        icon: Icon.BRAIN,
+        icon: IconType.BRAIN,
       },
       [Tab.PV]: {
         title: t.pv,
-        icon: Icon.PV,
+        icon: IconType.PV,
       },
       [Tab.CHART]: {
         title: t.evaluation,
-        icon: Icon.CHART,
+        icon: IconType.CHART,
       },
       [Tab.PERCENTAGE_CHART]: {
         title: t.estimatedWinRate,
-        icon: Icon.PERCENT,
+        icon: IconType.PERCENT,
       },
       [Tab.INVISIBLE]: {
         title: t.hideTabView,
-        icon: Icon.ARROW_DROP,
+        icon: IconType.ARROW_DROP,
       },
     };
 
@@ -142,7 +145,7 @@ export default defineComponent({
       minimize,
       tabs,
       Tab,
-      Icon,
+      IconType,
       EvaluationChartType,
     };
   },
@@ -150,16 +153,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.root {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
 .tabs {
   width: 100%;
-  display: flex;
-  flex-direction: row;
   user-select: none;
   background: linear-gradient(to top, var(--tab-bg-color) 80%, white 140%);
   padding-bottom: 2px;
@@ -182,17 +177,11 @@ export default defineComponent({
 .tab.end {
   margin-left: auto;
 }
-.tab .icon {
-  height: 100%;
-  vertical-align: top;
-}
 .tab-contents {
   flex: 1;
 }
 .tab-contents .tab-content {
   color: var(--text-color);
   background-color: var(--tab-content-bg-color);
-  width: 100%;
-  height: 100%;
 }
 </style>

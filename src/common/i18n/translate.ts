@@ -129,6 +129,7 @@ type Texts = {
   select: string;
   usiProtocol: string;
   translateOptionName: string;
+  functionalOnJapaneseOnly: string;
   maxStartupTime: string;
   forDevelopers: string;
   enableAppLog: string;
@@ -264,8 +265,6 @@ type Texts = {
   filterByEngineName: string;
   bookStyle: string;
   gameStyle: string;
-  size: string;
-  title: string;
   typeCustomTitleHere: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
@@ -456,6 +455,7 @@ const ja: Texts = {
   select: "選択",
   usiProtocol: "USIプロトコル",
   translateOptionName: "オプション名を翻訳",
+  functionalOnJapaneseOnly: "日本語選択時のみ有効",
   maxStartupTime: "最大起動待ち時間",
   forDevelopers: "開発者向け",
   enableAppLog: "アプリログを出力",
@@ -591,8 +591,6 @@ const ja: Texts = {
   filterByEngineName: "エンジン名で検索",
   bookStyle: "書籍風",
   gameStyle: "対局画面風",
-  size: "サイズ",
-  title: "見出し",
   typeCustomTitleHere: "ここに見出しを入力",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
@@ -776,7 +774,7 @@ const en: Texts = {
   appSettings: "Preferences",
   language: "Languages",
   theme: "Theme",
-  standardGreen: "Green (Standard)",
+  standardGreen: "Standard (Green)",
   green: "Green",
   cherryBlossom: "Cherry Blossom",
   autumn: "Autumn",
@@ -808,6 +806,7 @@ const en: Texts = {
   select: "Select",
   usiProtocol: "USI Protocol",
   translateOptionName: "Translate Option Name",
+  functionalOnJapaneseOnly: "Functional on Japanese Only",
   maxStartupTime: "Max Startup Time",
   forDevelopers: "For Developers",
   enableAppLog: "Enable App Log",
@@ -943,8 +942,6 @@ const en: Texts = {
   filterByEngineName: "Filter by Engine Name",
   bookStyle: "Book Style",
   gameStyle: "Game Style",
-  size: "Size",
-  title: "Title",
   typeCustomTitleHere: "Type custom title here",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",

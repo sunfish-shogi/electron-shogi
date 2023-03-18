@@ -194,6 +194,7 @@
               :checked="appSetting.translateEngineOptionName"
               type="checkbox"
             />
+            <div class="form-item-unit">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
           <!-- 最大起動待ち時間 -->
           <div class="form-item">

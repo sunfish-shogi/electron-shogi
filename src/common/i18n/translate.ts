@@ -129,6 +129,7 @@ type Texts = {
   select: string;
   usiProtocol: string;
   translateOptionName: string;
+  functionalOnJapaneseOnly: string;
   maxStartupTime: string;
   forDevelopers: string;
   enableAppLog: string;
@@ -454,6 +455,7 @@ const ja: Texts = {
   select: "選択",
   usiProtocol: "USIプロトコル",
   translateOptionName: "オプション名を翻訳",
+  functionalOnJapaneseOnly: "日本語選択時のみ有効",
   maxStartupTime: "最大起動待ち時間",
   forDevelopers: "開発者向け",
   enableAppLog: "アプリログを出力",
@@ -804,6 +806,7 @@ const en: Texts = {
   select: "Select",
   usiProtocol: "USI Protocol",
   translateOptionName: "Translate Option Name",
+  functionalOnJapaneseOnly: "Functional on Japanese Only",
   maxStartupTime: "Max Startup Time",
   forDevelopers: "For Developers",
   enableAppLog: "Enable App Log",

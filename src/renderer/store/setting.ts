@@ -129,6 +129,18 @@ class AppSettingStore {
   get positionImageHeader(): string {
     return this.setting.positionImageHeader;
   }
+  get lastRecordFilePath(): string {
+    return this.setting.lastRecordFilePath;
+  }
+  get lastUSIEngineFilePath(): string {
+    return this.setting.lastUSIEngineFilePath;
+  }
+  get lastImageExportFilePath(): string {
+    return this.setting.lastImageExportFilePath;
+  }
+  get lastOtherFilePath(): string {
+    return this.setting.lastOtherFilePath;
+  }
 
   async loadAppSetting(): Promise<void> {
     this.setting = await api.loadAppSetting();

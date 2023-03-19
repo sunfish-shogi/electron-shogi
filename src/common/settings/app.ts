@@ -98,6 +98,10 @@ export type AppSetting = {
   positionImageStyle: PositionImageStyle;
   positionImageSize: number;
   positionImageHeader: string;
+  lastRecordFilePath: string;
+  lastUSIEngineFilePath: string;
+  lastImageExportFilePath: string;
+  lastOtherFilePath: string;
 };
 
 export type AppSettingUpdate = {
@@ -136,6 +140,10 @@ export type AppSettingUpdate = {
   positionImageStyle?: PositionImageStyle;
   positionImageSize?: number;
   positionImageHeader?: string;
+  lastRecordFilePath?: string;
+  lastUSIEngineFilePath?: string;
+  lastImageExportFilePath?: string;
+  lastOtherFilePath?: string;
 };
 
 export function buildUpdatedAppSetting(
@@ -214,6 +222,10 @@ export function defaultAppSetting(opt?: {
     positionImageStyle: PositionImageStyle.BOOK,
     positionImageSize: 500,
     positionImageHeader: "",
+    lastRecordFilePath: "",
+    lastUSIEngineFilePath: "",
+    lastImageExportFilePath: "",
+    lastOtherFilePath: "",
   };
 }
 
@@ -228,6 +240,12 @@ export function normalizeAppSetting(
     ...defaultAppSetting(opt),
     ...setting,
   };
+  if (
+    result.autoSaveDirectory.endsWith("\\") ||
+    result.autoSaveDirectory.endsWith("/")
+  ) {
+    result.autoSaveDirectory = result.autoSaveDirectory.slice(0, -1);
+  }
   // 旧バージョンではタブの最小化を Tab.INDISIBLE で表していたが廃止した。
   if (result.tab === Tab.INVISIBLE) {
     result.tab = Tab.RECORD_INFO;

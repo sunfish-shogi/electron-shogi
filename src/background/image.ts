@@ -1,8 +1,10 @@
 import { BrowserWindow, dialog } from "electron";
 import { getWebContents } from "./ipc";
 import fs from "fs";
+import path from "path";
 import { Rect } from "@/common/graphics";
 import { getAppLogger } from "./log";
+import { loadAppSetting, saveAppSetting } from "./settings";
 
 const jpegQuality = 85;
 
@@ -27,13 +29,19 @@ async function exportCaptureImage(rect: Rect, ext: string): Promise<void> {
   if (!win) {
     throw new Error("Failed to open dialog by unexpected error.");
   }
+  const appSetting = loadAppSetting();
   const filePath = dialog.showSaveDialogSync(win, {
+    defaultPath: path.dirname(appSetting.lastImageExportFilePath),
     properties: ["createDirectory", "showOverwriteConfirmation"],
     filters: [{ name: ext.toUpperCase(), extensions: [ext] }],
   });
   if (!filePath) {
     return;
   }
+  saveAppSetting({
+    ...appSetting,
+    lastImageExportFilePath: filePath,
+  });
   switch (ext) {
     case "png":
       fs.promises.writeFile(filePath, image.toPNG());

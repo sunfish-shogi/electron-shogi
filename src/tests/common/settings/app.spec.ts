@@ -51,6 +51,10 @@ describe("settings/csa", () => {
       positionImageStyle: PositionImageStyle.GAME,
       positionImageSize: 500,
       positionImageHeader: "header",
+      lastRecordFilePath: "",
+      lastUSIEngineFilePath: "",
+      lastImageExportFilePath: "",
+      lastOtherFilePath: "",
     };
     const result = normalizeAppSetting(setting, {
       returnCode: "\r\n",

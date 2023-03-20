@@ -123,13 +123,22 @@ ipcMain.handle(
     if (!win) {
       throw new Error("Failed to open dialog by unexpected error.");
     }
+    const appSetting = loadAppSetting();
     getAppLogger().debug(`show open-record dialog`);
     const results = dialog.showOpenDialogSync(win, {
+      defaultPath: appSetting.lastRecordFilePath,
       properties: ["openFile"],
       filters: [{ name: t.recordFile, extensions: ["kif", "kifu", "csa"] }],
     });
     getAppLogger().debug(`open-record dialog result: ${results}`);
-    return results && results.length === 1 ? results[0] : "";
+    if (!results || results.length !== 1) {
+      return "";
+    }
+    saveAppSetting({
+      ...appSetting,
+      lastRecordFilePath: results[0],
+    });
+    return results[0];
   }
 );
 
@@ -153,9 +162,10 @@ ipcMain.handle(
     if (!win) {
       throw new Error("failed to open dialog by unexpected error.");
     }
+    const appSetting = loadAppSetting();
     getAppLogger().debug("show save-record dialog");
     const result = dialog.showSaveDialogSync(win, {
-      defaultPath: defaultPath,
+      defaultPath: path.resolve(appSetting.lastRecordFilePath, defaultPath),
       properties: ["createDirectory", "showOverwriteConfirmation"],
       filters: [
         { name: "KIF (Shift-JIS)", extensions: ["kif"] },
@@ -164,7 +174,14 @@ ipcMain.handle(
       ],
     });
     getAppLogger().debug(`save-record dialog result: ${result}`);
-    return result ? result : "";
+    if (!result) {
+      return "";
+    }
+    saveAppSetting({
+      ...appSetting,
+      lastRecordFilePath: result,
+    });
+    return result;
   }
 );
 
@@ -190,12 +207,21 @@ ipcMain.handle(
     if (!win) {
       throw new Error("failed to open dialog by unexpected error.");
     }
+    const appSetting = loadAppSetting();
     getAppLogger().debug("show select-file dialog");
     const results = dialog.showOpenDialogSync(win, {
+      defaultPath: appSetting.lastOtherFilePath,
       properties: ["openFile"],
     });
     getAppLogger().debug(`select-file dialog result: ${results}`);
-    return results && results.length === 1 ? results[0] : "";
+    if (!results || results.length !== 1) {
+      return "";
+    }
+    saveAppSetting({
+      ...appSetting,
+      lastOtherFilePath: results[0],
+    });
+    return results[0];
   }
 );
 
@@ -210,7 +236,7 @@ ipcMain.handle(
     getAppLogger().debug("show select-directory dialog");
     const results = dialog.showOpenDialogSync(win, {
       properties: ["createDirectory", "openDirectory"],
-      defaultPath: defaultPath,
+      defaultPath,
     });
     getAppLogger().debug(`select-directory dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
@@ -323,14 +349,23 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
   if (!win) {
     throw new Error("failed to open dialog by unexpected error.");
   }
+  const appSetting = loadAppSetting();
   getAppLogger().debug("show select-USI-engine dialog");
   const results = dialog.showOpenDialogSync(win, {
+    defaultPath: appSetting.lastUSIEngineFilePath,
     properties: ["openFile", "noResolveAliases"],
     filters: isWindows
       ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }]
       : undefined,
   });
-  return results && results.length === 1 ? results[0] : "";
+  if (!results || results.length !== 1) {
+    return "";
+  }
+  saveAppSetting({
+    ...appSetting,
+    lastUSIEngineFilePath: results[0],
+  });
+  return results[0];
 });
 
 ipcMain.handle(

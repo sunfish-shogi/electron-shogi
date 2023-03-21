@@ -6,6 +6,7 @@ import {
   ClockSoundTarget,
   EvaluationViewFrom,
   PieceImageType,
+  PieceStandImageType,
   PositionImageStyle,
   Tab,
   TabPaneType,
@@ -35,6 +36,15 @@ class AppSettingStore {
   }
   get boardImage(): BoardImageType {
     return this.setting.boardImage;
+  }
+  get boardImageFileURL(): string | undefined {
+    return this.setting.boardImageFileURL;
+  }
+  get pieceStandImage(): PieceStandImageType {
+    return this.setting.pieceStandImage;
+  }
+  get pieceStandImageFileURL(): string | undefined {
+    return this.setting.pieceStandImageFileURL;
   }
   get boardLabelType(): BoardLabelType {
     return this.setting.boardLabelType;

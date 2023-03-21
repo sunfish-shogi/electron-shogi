@@ -53,6 +53,12 @@
         @click="clickSquare($event, square.file, square.rank)"
         @contextmenu="clickSquareR($event, square.file, square.rank)"
       />
+      <div
+        v-if="layout.blackHand.textureImagePath"
+        :style="layout.blackHand.style"
+      >
+        <img class="full" :src="layout.blackHand.textureImagePath" />
+      </div>
       <div class="hand" :style="layout.blackHand.style">
         <div
           v-for="pointer in layout.blackHand.pointers"
@@ -72,6 +78,12 @@
           :style="pointer.style"
           @click="clickHand($event, Color.BLACK, pointer.type)"
         />
+      </div>
+      <div
+        v-if="layout.whiteHand.textureImagePath"
+        :style="layout.whiteHand.style"
+      >
+        <img class="full" :src="layout.whiteHand.textureImagePath" />
       </div>
       <div class="hand" :style="layout.whiteHand.style">
         <div
@@ -130,6 +142,7 @@ import {
   BoardImageType,
   BoardLabelType,
   PieceImageType,
+  PieceStandImageType,
 } from "@/common/settings/app";
 import { RectSize } from "@/common/graphics";
 import { secondsToHMMSS } from "@/common/helpers/time";
@@ -150,6 +163,20 @@ export default defineComponent({
     boardImageType: {
       type: String as PropType<BoardImageType>,
       required: true,
+    },
+    customBoardImageUrl: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
+    pieceStandImageType: {
+      type: String as PropType<PieceStandImageType>,
+      required: true,
+    },
+    customPieceStandImageUrl: {
+      type: String,
+      required: false,
+      default: undefined,
     },
     boardLabelType: {
       type: String as PropType<BoardLabelType>,
@@ -359,7 +386,10 @@ export default defineComponent({
       const builder = new LayoutBuilder(
         props.pieceImageType,
         props.boardImageType,
-        props.boardLabelType
+        props.pieceStandImageType,
+        props.boardLabelType,
+        props.customBoardImageUrl,
+        props.customPieceStandImageUrl
       );
       builder.preload();
       return builder;

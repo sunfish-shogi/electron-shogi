@@ -44,6 +44,9 @@ export const webAPI: Bridge = {
   async showSelectDirectoryDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
+  async showSelectImageDialog(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   async exportCaptureAsPNG(): Promise<void> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },

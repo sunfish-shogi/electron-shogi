@@ -37,7 +37,7 @@
           </div>
           <!-- 駒画像 -->
           <div class="form-item">
-            <div class="form-item-label-wide">{{ t.pieceImages }}</div>
+            <div class="form-item-label-wide">{{ t.piece }}</div>
             <select ref="pieceImage" :value="appSetting.pieceImage">
               <option :value="PieceImageType.HITOMOJI">
                 {{ t.singleKanjiPiece }}
@@ -55,8 +55,12 @@
           </div>
           <!-- 盤画像 -->
           <div class="form-item">
-            <div class="form-item-label-wide">{{ t.boardImage }}</div>
-            <select ref="boardImage" :value="appSetting.boardImage">
+            <div class="form-item-label-wide">{{ t.board }}</div>
+            <select
+              ref="boardImage"
+              :value="appSetting.boardImage"
+              @change="onChangeBoardImage"
+            >
               <option :value="BoardImageType.LIGHT">
                 {{ t.lightWoodyTexture }}
               </option>
@@ -71,7 +75,70 @@
               <option :value="BoardImageType.CHERRY_BLOSSOM">
                 {{ t.cherryBlossom }}
               </option>
+              <option :value="BoardImageType.CUSTOM_IMAGE">
+                {{ t.customImage }}
+              </option>
             </select>
+          </div>
+          <div
+            class="form-item"
+            :class="{
+              hidden: appSetting.boardImage !== BoardImageType.CUSTOM_IMAGE,
+            }"
+          >
+            <div class="form-item-label-wide"></div>
+            <input
+              ref="boardImageFileURL"
+              class="file-path"
+              :value="appSetting.boardImageFileURL"
+              type="text"
+            />
+            <button class="thin" @click="selectBoardImageFile">
+              {{ t.select }}
+            </button>
+          </div>
+          <!-- 駒台画像 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.pieceStand }}</div>
+            <select
+              ref="pieceStandImage"
+              :value="appSetting.pieceStandImage"
+              @change="onChangePieceStandImage"
+            >
+              <option :value="PieceStandImageType.STANDARD">
+                {{ t.standard }}
+              </option>
+              <option :value="PieceStandImageType.DARK">
+                {{ t.dark }}
+              </option>
+              <option :value="PieceStandImageType.GREEN">
+                {{ t.green }}
+              </option>
+              <option :value="PieceStandImageType.CHERRY_BLOSSOM">
+                {{ t.cherryBlossom }}
+              </option>
+              <option :value="PieceStandImageType.CUSTOM_IMAGE">
+                {{ t.customImage }}
+              </option>
+            </select>
+          </div>
+          <div
+            class="form-item"
+            :class="{
+              hidden:
+                appSetting.pieceStandImage !== PieceStandImageType.CUSTOM_IMAGE,
+            }"
+          >
+            <div class="form-item-label-wide"></div>
+            <input
+              ref="pieceStandImageFileURL"
+              class="file-path"
+              :value="appSetting.pieceStandImageFileURL"
+              type="text"
+            />
+            <button class="thin" @click="selectPieceStandImageFile">
+              {{ t.select }}
+            </button>
           </div>
           <!-- 段・筋の表示 -->
           <div class="form-item">
@@ -170,11 +237,11 @@
             </div>
             <input
               ref="autoSaveDirectory"
-              class="directory"
+              class="file-path"
               :value="appSetting.autoSaveDirectory"
               type="text"
             />
-            <button @click="selectAutoSaveDirectory">
+            <button class="thin" @click="selectAutoSaveDirectory">
               {{ t.select }}
             </button>
           </div>
@@ -380,6 +447,7 @@ import { t, Language } from "@/common/i18n";
 import {
   PieceImageType,
   BoardImageType,
+  PieceStandImageType,
   BoardLabelType,
   TabPaneType,
   EvaluationViewFrom,
@@ -420,6 +488,9 @@ export default defineComponent({
     const thema: Ref = ref(null);
     const pieceImage: Ref = ref(null);
     const boardImage: Ref = ref(null);
+    const boardImageFileURL: Ref = ref(null);
+    const pieceStandImage: Ref = ref(null);
+    const pieceStandImageFileURL: Ref = ref(null);
     const displayBoardLabels: Ref = ref(null);
     const tabPaneType: Ref = ref(null);
     const pieceVolume: Ref = ref(null);
@@ -456,6 +527,7 @@ export default defineComponent({
         thema: thema.value.value,
         pieceImage: pieceImage.value.value,
         boardImage: boardImage.value.value,
+        pieceStandImage: pieceStandImage.value.value,
         boardLabelType: displayBoardLabels.value.checked
           ? BoardLabelType.STANDARD
           : BoardLabelType.NONE,
@@ -479,10 +551,68 @@ export default defineComponent({
         enableCSALog: enableCSALog.value.checked,
         logLevel: logLevel.value.value,
       };
+      if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
+        update.boardImageFileURL = boardImageFileURL.value.value;
+      }
+      if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
+        update.pieceStandImageFileURL = pieceStandImageFileURL.value.value;
+      }
       store.retainBussyState();
       try {
         await useAppSetting().updateAppSetting(update);
         store.closeAppSettingDialog();
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
+      }
+    };
+
+    const onChangeBoardImage = () => {
+      const formItem = (boardImageFileURL.value as HTMLElement)
+        .parentElement as HTMLElement;
+      if (boardImage.value.value === BoardImageType.CUSTOM_IMAGE) {
+        formItem.classList.remove("hidden");
+      } else {
+        formItem.classList.add("hidden");
+      }
+    };
+
+    const selectBoardImageFile = async () => {
+      store.retainBussyState();
+      try {
+        const path = await api.showSelectImageDialog(
+          boardImageFileURL.value.value
+        );
+        if (path) {
+          boardImageFileURL.value.value = path;
+        }
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
+      }
+    };
+
+    const onChangePieceStandImage = () => {
+      const formItem = (pieceStandImageFileURL.value as HTMLElement)
+        .parentElement as HTMLElement;
+      if (pieceStandImage.value.value === PieceStandImageType.CUSTOM_IMAGE) {
+        formItem.classList.remove("hidden");
+      } else {
+        formItem.classList.add("hidden");
+      }
+    };
+
+    const selectPieceStandImageFile = async () => {
+      store.retainBussyState();
+      try {
+        const path = await api.showSelectImageDialog(
+          pieceStandImageFileURL.value.value
+        );
+        if (path) {
+          pieceStandImageFileURL.value.value = path;
+        }
       } catch (e) {
         store.pushError(e);
       } finally {
@@ -516,6 +646,7 @@ export default defineComponent({
       Thema,
       PieceImageType,
       BoardImageType,
+      PieceStandImageType,
       BoardLabelType,
       TabPaneType,
       EvaluationViewFrom,
@@ -525,6 +656,9 @@ export default defineComponent({
       thema,
       pieceImage,
       boardImage,
+      boardImageFileURL,
+      pieceStandImage,
+      pieceStandImageFileURL,
       displayBoardLabels,
       tabPaneType,
       pieceVolume,
@@ -548,6 +682,10 @@ export default defineComponent({
       appSetting,
       returnCodeToName,
       isNative: isNative(),
+      onChangeBoardImage,
+      selectBoardImageFile,
+      onChangePieceStandImage,
+      selectPieceStandImageFile,
       selectAutoSaveDirectory,
       saveAndClose,
       cancel,
@@ -572,7 +710,7 @@ input.toggle {
   width: 1em;
   margin-right: 10px;
 }
-input.directory {
+input.file-path {
   width: 250px;
 }
 </style>

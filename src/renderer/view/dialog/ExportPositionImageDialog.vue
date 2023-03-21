@@ -4,22 +4,20 @@
       <div ref="board" class="board" :class="appSetting.positionImageStyle">
         <SimpleBoardView
           v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK"
-          :piece-image-type="appSetting.pieceImage"
-          :board-image-type="appSetting.boardImage"
-          :board-label-type="appSetting.boardLabelType"
           :max-size="maxSize"
           :position="record.position"
           :header="appSetting.positionImageHeader || defaultHeader"
           :footer="record.current.comment"
           :last-move="lastMove"
-          :black-player-name="blackPlayerShortName"
-          :white-player-name="whitePlayerShortName"
         />
         <BoardView
           v-else
           :piece-image-type="appSetting.pieceImage"
           :board-image-type="appSetting.boardImage"
+          :piece-stand-image-type="appSetting.pieceStandImage"
           :board-label-type="appSetting.boardLabelType"
+          :custom-board-image-url="appSetting.boardImageFileURL"
+          :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
           :max-size="maxSize"
           :position="record.position"
           :last-move="lastMove"

@@ -1,4 +1,4 @@
-import { Language } from "@/common/i18n";
+import { Language, t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
 
 export enum Thema {
@@ -25,6 +25,15 @@ export enum BoardImageType {
   DARK = "dark",
   GREEN = "green",
   CHERRY_BLOSSOM = "cherry-blossom",
+  CUSTOM_IMAGE = "custom-image",
+}
+
+export enum PieceStandImageType {
+  STANDARD = "standard",
+  DARK = "dark",
+  GREEN = "green",
+  CHERRY_BLOSSOM = "cherry-blossom",
+  CUSTOM_IMAGE = "custom-image",
 }
 
 export enum BoardLabelType {
@@ -67,6 +76,9 @@ export type AppSetting = {
   thema: Thema;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
+  boardImageFileURL?: string;
+  pieceStandImage: PieceStandImageType;
+  pieceStandImageFileURL?: string;
   boardLabelType: BoardLabelType;
   pieceVolume: number;
   clockVolume: number;
@@ -109,6 +121,9 @@ export type AppSettingUpdate = {
   thema?: Thema;
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
+  boardImageFileURL?: string;
+  pieceStandImage?: PieceStandImageType;
+  pieceStandImageFileURL?: string;
   boardLabelType?: BoardLabelType;
   pieceVolume?: number;
   clockVolume?: number;
@@ -191,6 +206,7 @@ export function defaultAppSetting(opt?: {
     thema: Thema.STANDARD,
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.RESIN2,
+    pieceStandImage: PieceStandImageType.STANDARD,
     boardLabelType: BoardLabelType.STANDARD,
     pieceVolume: 30,
     clockVolume: 30,
@@ -246,6 +262,23 @@ export function normalizeAppSetting(
   ) {
     result.autoSaveDirectory = result.autoSaveDirectory.slice(0, -1);
   }
+  // 旧バージョンでは盤画像に合わせて自動で駒台の色が選ばれていた。
+  if (!setting.pieceStandImage) {
+    switch (setting.boardImage) {
+      default:
+        result.pieceStandImage = PieceStandImageType.STANDARD;
+        break;
+      case BoardImageType.DARK:
+        result.pieceStandImage = PieceStandImageType.DARK;
+        break;
+      case BoardImageType.GREEN:
+        result.pieceStandImage = PieceStandImageType.GREEN;
+        break;
+      case BoardImageType.CHERRY_BLOSSOM:
+        result.pieceStandImage = PieceStandImageType.CHERRY_BLOSSOM;
+        break;
+    }
+  }
   // 旧バージョンではタブの最小化を Tab.INDISIBLE で表していたが廃止した。
   if (result.tab === Tab.INVISIBLE) {
     result.tab = Tab.RECORD_INFO;
@@ -254,27 +287,36 @@ export function normalizeAppSetting(
 }
 
 export function validateAppSetting(setting: AppSetting): Error | undefined {
+  if (setting.boardImage === BoardImageType.CUSTOM_IMAGE) {
+    if (!setting.boardImageFileURL) {
+      return new Error(t.boardImageFileURLRequired);
+    }
+    if (!setting.boardImageFileURL.startsWith("file://")) {
+      return new Error(t.boardImageFileURLMustStartWithFile);
+    }
+  }
+  if (setting.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
+    if (!setting.pieceStandImageFileURL) {
+      return new Error(t.pieceStandImageFileURLRequired);
+    }
+    if (!setting.pieceStandImageFileURL.startsWith("file://")) {
+      return new Error(t.pieceStandImageFileURLMustStartWithFile);
+    }
+  }
   if (setting.pieceVolume < 0 || setting.pieceVolume > 100) {
-    return new Error("駒音の大きさには0%～100%の値を指定してください。");
+    return new Error(t.pieceVolumeMustBe0To100Percent);
   }
   if (setting.clockVolume < 0 || setting.clockVolume > 100) {
-    return new Error("時計音の大きさには0%～100%の値を指定してください。");
+    return new Error(t.clockVolumeMustBe0To100Percent);
   }
   if (setting.clockPitch < 220 || setting.clockPitch > 880) {
-    return new Error("時計音の高さには220Hz～880Hzの値を指定してください。");
+    return new Error(t.clockPitchMustBe220To880Hz);
   }
-  if (setting.engineTimeoutSeconds < 1) {
-    return new Error(
-      "エンジンのタイムアウト時間は 1 秒以上の値を指定してください。"
-    );
-  }
-  if (setting.engineTimeoutSeconds > 300) {
-    return new Error(
-      "エンジンのタイムアウト時間は 300 秒以下の値を指定してください。"
-    );
+  if (setting.engineTimeoutSeconds < 1 || setting.engineTimeoutSeconds > 300) {
+    return new Error(t.engineTimeoutMustBe1To300Seconds);
   }
   if (setting.coefficientInSigmoid <= 0) {
-    return new Error("勝率換算係数には0より大きい値を指定してください。");
+    return new Error(t.coefficientInSigmoidMustBeGreaterThan0);
   }
   if (
     setting.badMoveLevelThreshold1 < 1 ||

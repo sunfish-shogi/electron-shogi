@@ -1,7 +1,15 @@
-import { BrowserWindow, dialog, ipcMain, shell, WebContents } from "electron";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  shell,
+  WebContents,
+} from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import path from "path";
 import fs from "fs";
+import url from "url";
 import {
   loadAnalysisSetting,
   loadAppSetting,
@@ -57,6 +65,7 @@ import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
 import { Rect } from "@/common/graphics";
 import { exportCaptureJPEG, exportCapturePNG } from "./image";
+import { fileURLToPath } from "./helpers/url";
 
 const isWindows = process.platform === "win32";
 
@@ -235,11 +244,32 @@ ipcMain.handle(
     }
     getAppLogger().debug("show select-directory dialog");
     const results = dialog.showOpenDialogSync(win, {
-      properties: ["createDirectory", "openDirectory"],
       defaultPath,
+      properties: ["createDirectory", "openDirectory"],
     });
     getAppLogger().debug(`select-directory dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
+  }
+);
+
+ipcMain.handle(
+  Background.SHOW_SELECT_IMAGE_DIALOG,
+  async (event, defaultURL?: string): Promise<string> => {
+    validateIPCSender(event.senderFrame);
+    const win = BrowserWindow.getFocusedWindow();
+    if (!win) {
+      throw new Error("failed to open dialog by unexpected error.");
+    }
+    getAppLogger().debug("show select-image dialog");
+    const results = dialog.showOpenDialogSync(win, {
+      defaultPath:
+        defaultURL && fileURLToPath(defaultURL, app.getPath("pictures")),
+      properties: ["openFile"],
+    });
+    getAppLogger().debug(`select-image dialog result: ${results}`);
+    return results && results.length === 1
+      ? url.pathToFileURL(results[0]).toString()
+      : "";
   }
 );
 

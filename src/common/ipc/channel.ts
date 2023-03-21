@@ -8,6 +8,7 @@ export enum Background {
   SAVE_RECORD = "saveRecord",
   SHOW_SELECT_FILE_DIALOG = "showSelectFileDialog",
   SHOW_SELECT_DIRECTORY_DIALOG = "showSelectDirectoryDialog",
+  SHOW_SELECT_IMAGE_DIALOG = "showSelectImageDialog",
   EXPORT_CAPTURE_AS_PNG = "exportCaptureAsPNG",
   EXPORT_CAPTURE_AS_JPEG = "exportCaptureAsJPEG",
   LOAD_APP_SETTING = "loadAppSetting",

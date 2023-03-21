@@ -6,6 +6,7 @@ import {
   BoardImageType,
   BoardLabelType,
   PieceImageType,
+  PieceStandImageType,
 } from "@/common/settings/app";
 
 describe("BoardView", () => {
@@ -15,6 +16,7 @@ describe("BoardView", () => {
       props: {
         pieceImageType: PieceImageType.HITOMOJI,
         boardImageType: BoardImageType.LIGHT,
+        pieceStandImageType: PieceStandImageType.STANDARD,
         boardLabelType: BoardLabelType.STANDARD,
         maxSize: new RectSize(800, 600),
         position,
@@ -53,6 +55,7 @@ describe("BoardView", () => {
       props: {
         pieceImageType: PieceImageType.HITOMOJI_GOTHIC,
         boardImageType: BoardImageType.WARM,
+        pieceStandImageType: PieceStandImageType.STANDARD,
         boardLabelType: BoardLabelType.STANDARD,
         maxSize: new RectSize(800, 600),
         position,

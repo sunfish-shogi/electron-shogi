@@ -1,6 +1,7 @@
 import {
   AppSetting,
   AppSettingUpdate,
+  BackgroundImageType,
   BoardImageType,
   BoardLabelType,
   ClockSoundTarget,
@@ -33,6 +34,12 @@ class AppSettingStore {
   }
   get pieceImage(): PieceImageType {
     return this.setting.pieceImage;
+  }
+  get backgroundImageType(): BackgroundImageType {
+    return this.setting.backgroundImageType;
+  }
+  get backgroundImageFileURL(): string | undefined {
+    return this.setting.backgroundImageFileURL;
   }
   get boardImage(): BoardImageType {
     return this.setting.boardImage;

@@ -23,6 +23,7 @@
               <option :value="Language.EN">English</option>
             </select>
           </div>
+          <!-- テーマ -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.theme }}</div>
             <select ref="thema" :value="appSetting.thema">
@@ -34,6 +35,42 @@
               <option :value="Thema.SNOW">{{ t.snow }}</option>
               <option :value="Thema.DARK">{{ t.dark }}</option>
             </select>
+          </div>
+          <!-- 背景画像 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.backgroundImage }}</div>
+            <select
+              ref="backgroundImageType"
+              :value="appSetting.backgroundImageType"
+              @change="onChangeBackgroundImageType"
+            >
+              <option :value="BackgroundImageType.NONE">{{ t.none }}</option>
+              <option :value="BackgroundImageType.COVER">
+                {{ t.bgCover }}
+              </option>
+              <option :value="BackgroundImageType.CONTAIN">
+                {{ t.bgContain }}
+              </option>
+              <option :value="BackgroundImageType.TILE">{{ t.bgTile }}</option>
+            </select>
+          </div>
+          <div
+            class="form-item"
+            :class="{
+              hidden:
+                appSetting.backgroundImageType === BackgroundImageType.NONE,
+            }"
+          >
+            <div class="form-item-label-wide"></div>
+            <input
+              ref="backgroundImageFileURL"
+              class="file-path"
+              :value="appSetting.backgroundImageFileURL"
+              type="text"
+            />
+            <button class="thin" @click="selectBackgroundImageFile">
+              {{ t.select }}
+            </button>
           </div>
           <!-- 駒画像 -->
           <div class="form-item">
@@ -453,6 +490,7 @@ import {
   EvaluationViewFrom,
   AppSettingUpdate,
   Thema,
+  BackgroundImageType,
 } from "@/common/settings/app";
 import { useStore } from "@/renderer/store";
 import { ref, defineComponent, onMounted, Ref, onBeforeUnmount } from "vue";
@@ -486,6 +524,8 @@ export default defineComponent({
     const dialog: Ref = ref(null);
     const language: Ref = ref(null);
     const thema: Ref = ref(null);
+    const backgroundImageType: Ref = ref(null);
+    const backgroundImageFileURL: Ref = ref(null);
     const pieceImage: Ref = ref(null);
     const boardImage: Ref = ref(null);
     const boardImageFileURL: Ref = ref(null);
@@ -525,6 +565,7 @@ export default defineComponent({
       const update: AppSettingUpdate = {
         language: language.value.value,
         thema: thema.value.value,
+        backgroundImageType: backgroundImageType.value.value,
         pieceImage: pieceImage.value.value,
         boardImage: boardImage.value.value,
         pieceStandImage: pieceStandImage.value.value,
@@ -551,6 +592,9 @@ export default defineComponent({
         enableCSALog: enableCSALog.value.checked,
         logLevel: logLevel.value.value,
       };
+      if (update.backgroundImageType !== BackgroundImageType.NONE) {
+        update.backgroundImageFileURL = backgroundImageFileURL.value.value;
+      }
       if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
         update.boardImageFileURL = boardImageFileURL.value.value;
       }
@@ -561,6 +605,32 @@ export default defineComponent({
       try {
         await useAppSetting().updateAppSetting(update);
         store.closeAppSettingDialog();
+      } catch (e) {
+        store.pushError(e);
+      } finally {
+        store.releaseBussyState();
+      }
+    };
+
+    const onChangeBackgroundImageType = () => {
+      const formItem = (backgroundImageFileURL.value as HTMLElement)
+        .parentElement as HTMLElement;
+      if (backgroundImageType.value.value !== BackgroundImageType.NONE) {
+        formItem.classList.remove("hidden");
+      } else {
+        formItem.classList.add("hidden");
+      }
+    };
+
+    const selectBackgroundImageFile = async () => {
+      store.retainBussyState();
+      try {
+        const path = await api.showSelectImageDialog(
+          backgroundImageFileURL.value.value
+        );
+        if (path) {
+          backgroundImageFileURL.value.value = path;
+        }
       } catch (e) {
         store.pushError(e);
       } finally {
@@ -644,6 +714,7 @@ export default defineComponent({
       t,
       Language,
       Thema,
+      BackgroundImageType,
       PieceImageType,
       BoardImageType,
       PieceStandImageType,
@@ -654,6 +725,8 @@ export default defineComponent({
       dialog,
       language,
       thema,
+      backgroundImageType,
+      backgroundImageFileURL,
       pieceImage,
       boardImage,
       boardImageFileURL,
@@ -682,6 +755,8 @@ export default defineComponent({
       appSetting,
       returnCodeToName,
       isNative: isNative(),
+      onChangeBackgroundImageType,
+      selectBackgroundImageFile,
       onChangeBoardImage,
       selectBoardImageFile,
       onChangePieceStandImage,

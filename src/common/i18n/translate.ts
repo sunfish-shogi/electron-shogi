@@ -110,6 +110,7 @@ type Texts = {
   singleKanjiGothicPiece: string;
   singleKanjiDarkPiece: string;
   singleKanjiGothicDarkPiece: string;
+  backgroundImage: string;
   board: string;
   pieceStand: string;
   lightWoodyTexture: string;
@@ -144,6 +145,7 @@ type Texts = {
   file: string;
   recordFile: string;
   executableFile: string;
+  imageFile: string;
   remove: string;
   deleteMove: string;
   recordProperties: string;
@@ -268,6 +270,10 @@ type Texts = {
   filterByEngineName: string;
   bookStyle: string;
   gameStyle: string;
+  none: string;
+  bgCover: string;
+  bgContain: string;
+  bgTile: string;
   typeCustomTitleHere: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
@@ -448,6 +454,7 @@ const ja: Texts = {
   singleKanjiGothicPiece: "一文字駒（ゴシック体）",
   singleKanjiDarkPiece: "一文字駒（ダーク）",
   singleKanjiGothicDarkPiece: "一文字駒（ゴシック体・ダーク）",
+  backgroundImage: "背景画像",
   board: "盤",
   pieceStand: "駒台",
   lightWoodyTexture: "木目（明るい）",
@@ -482,6 +489,7 @@ const ja: Texts = {
   file: "ファイル",
   recordFile: "棋譜ファイル",
   executableFile: "実行可能ファイル",
+  imageFile: "画像ファイル",
   remove: "削除",
   deleteMove: "指し手削除",
   recordProperties: "棋譜情報",
@@ -606,6 +614,10 @@ const ja: Texts = {
   filterByEngineName: "エンジン名で検索",
   bookStyle: "書籍風",
   gameStyle: "対局画面風",
+  none: "なし",
+  bgCover: "1枚で表示",
+  bgContain: "拡大して表示",
+  bgTile: "タイル状に表示",
   typeCustomTitleHere: "ここに見出しを入力",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
@@ -818,6 +830,7 @@ const en: Texts = {
   singleKanjiGothicPiece: "Single Kanji (Gothic)",
   singleKanjiDarkPiece: "Single Kanji (Dark)",
   singleKanjiGothicDarkPiece: "Single Kanji (Gothic, Dark)",
+  backgroundImage: "Background Image",
   board: "Board Image",
   pieceStand: "Piece Stand",
   lightWoodyTexture: "Woody Texture (Light)",
@@ -852,6 +865,7 @@ const en: Texts = {
   file: "File",
   recordFile: "Record File",
   executableFile: "Executable",
+  imageFile: "Image",
   remove: "Remove",
   deleteMove: "Delete Move",
   recordProperties: "Record Properties",
@@ -976,6 +990,10 @@ const en: Texts = {
   filterByEngineName: "Filter by Engine Name",
   bookStyle: "Book Style",
   gameStyle: "Game Style",
+  none: "None",
+  bgCover: "Cover",
+  bgContain: "Contain",
+  bgTile: "Tile",
   typeCustomTitleHere: "Type custom title here",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",

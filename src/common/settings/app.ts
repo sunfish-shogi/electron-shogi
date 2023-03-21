@@ -9,6 +9,13 @@ export enum Thema {
   DARK = "dark",
 }
 
+export enum BackgroundImageType {
+  NONE = "none",
+  COVER = "cover",
+  CONTAIN = "contain",
+  TILE = "tile",
+}
+
 export enum PieceImageType {
   HITOMOJI = "hitomoji",
   HITOMOJI_DARK = "hitomojiDark",
@@ -74,6 +81,8 @@ export enum PositionImageStyle {
 export type AppSetting = {
   language: Language;
   thema: Thema;
+  backgroundImageType: BackgroundImageType;
+  backgroundImageFileURL?: string;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
   boardImageFileURL?: string;
@@ -119,6 +128,8 @@ export type AppSetting = {
 export type AppSettingUpdate = {
   language?: Language;
   thema?: Thema;
+  backgroundImageType?: BackgroundImageType;
+  backgroundImageFileURL?: string;
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
   boardImageFileURL?: string;
@@ -204,6 +215,7 @@ export function defaultAppSetting(opt?: {
   return {
     language: Language.JA,
     thema: Thema.STANDARD,
+    backgroundImageType: BackgroundImageType.NONE,
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.RESIN2,
     pieceStandImage: PieceStandImageType.STANDARD,

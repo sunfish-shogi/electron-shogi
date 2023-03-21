@@ -265,6 +265,7 @@ ipcMain.handle(
       defaultPath:
         defaultURL && fileURLToPath(defaultURL, app.getPath("pictures")),
       properties: ["openFile"],
+      filters: [{ name: t.imageFile, extensions: ["png", "jpg", "jpeg"] }],
     });
     getAppLogger().debug(`select-image dialog result: ${results}`);
     return results && results.length === 1

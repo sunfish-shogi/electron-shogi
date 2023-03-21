@@ -1,5 +1,5 @@
 <template>
-  <div class="root full" :class="appSetting.thema">
+  <div class="root full" :class="appSetting.thema" :style="style">
     <StandardLayout class="full" />
     <GameDialog v-if="dialogVisibilities.game" />
     <CSAGameDialog v-if="dialogVisibilities.csaGame" />
@@ -37,6 +37,7 @@ import AnalysisDialog from "@/renderer/view/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";
 import { useAppSetting } from "./store/setting";
+import { BackgroundImageType } from "@/common/settings/app";
 
 export default defineComponent({
   name: "App",
@@ -102,7 +103,33 @@ export default defineComponent({
       });
     });
 
+    const style = computed(() => {
+      if (
+        appSetting.backgroundImageType == BackgroundImageType.NONE ||
+        !appSetting.backgroundImageFileURL
+      ) {
+        return {};
+      }
+      let size = "";
+      switch (appSetting.backgroundImageType) {
+        case BackgroundImageType.COVER:
+          size = "cover";
+          break;
+        case BackgroundImageType.CONTAIN:
+          size = "contain";
+          break;
+        case BackgroundImageType.TILE:
+          size = "auto";
+          break;
+      }
+      return {
+        "background-image": `url("${appSetting.backgroundImageFileURL}")`,
+        "background-size": size,
+      };
+    });
+
     return {
+      style,
       appSetting,
       store,
       dialogVisibilities,

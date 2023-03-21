@@ -11,6 +11,7 @@ import {
   EvaluationViewFrom,
   PositionImageStyle,
   PieceStandImageType,
+  BackgroundImageType,
 } from "@/common/settings/app";
 import { Language } from "@/common/i18n";
 
@@ -19,6 +20,7 @@ describe("settings/csa", () => {
     const setting = {
       language: Language.JA,
       thema: Thema.DARK,
+      backgroundImageType: BackgroundImageType.NONE,
       pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       boardImage: BoardImageType.WARM,
       pieceStandImage: PieceStandImageType.GREEN,

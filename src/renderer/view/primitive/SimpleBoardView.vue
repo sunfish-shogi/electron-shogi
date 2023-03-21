@@ -57,11 +57,6 @@
 <script lang="ts">
 import { Move, ImmutablePosition, Piece } from "@/common/shogi";
 import { computed, defineComponent, PropType } from "vue";
-import {
-  BoardImageType,
-  BoardLabelType,
-  PieceImageType,
-} from "@/common/settings/app";
 import { RectSize } from "@/common/graphics";
 
 const pieceImageMap = {
@@ -110,18 +105,6 @@ function buildParams(size: number) {
 export default defineComponent({
   name: "SimpleBoardView",
   props: {
-    pieceImageType: {
-      type: String as PropType<PieceImageType>,
-      required: true,
-    },
-    boardImageType: {
-      type: String as PropType<BoardImageType>,
-      required: true,
-    },
-    boardLabelType: {
-      type: String as PropType<BoardLabelType>,
-      required: true,
-    },
     maxSize: {
       type: RectSize,
       required: true,
@@ -144,16 +127,6 @@ export default defineComponent({
       type: Object as PropType<Move | null>,
       required: false,
       default: null,
-    },
-    blackPlayerName: {
-      type: String,
-      required: false,
-      default: "先手",
-    },
-    whitePlayerName: {
-      type: String,
-      required: false,
-      default: "後手",
     },
   },
   emits: ["resize"],

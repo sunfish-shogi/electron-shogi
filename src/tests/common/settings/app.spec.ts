@@ -10,6 +10,7 @@ import {
   TabPaneType,
   EvaluationViewFrom,
   PositionImageStyle,
+  PieceStandImageType,
 } from "@/common/settings/app";
 import { Language } from "@/common/i18n";
 
@@ -20,6 +21,7 @@ describe("settings/csa", () => {
       thema: Thema.DARK,
       pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       boardImage: BoardImageType.WARM,
+      pieceStandImage: PieceStandImageType.GREEN,
       boardLabelType: BoardLabelType.NONE,
       pieceVolume: 10,
       clockVolume: 20,

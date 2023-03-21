@@ -97,18 +97,21 @@ type Texts = {
   appSettings: string;
   language: string;
   theme: string;
+  standard: string;
   standardGreen: string;
   green: string;
   cherryBlossom: string;
+  customImage: string;
   autumn: string;
   snow: string;
   dark: string;
-  pieceImages: string;
+  piece: string;
   singleKanjiPiece: string;
   singleKanjiGothicPiece: string;
   singleKanjiDarkPiece: string;
   singleKanjiGothicDarkPiece: string;
-  boardImage: string;
+  board: string;
+  pieceStand: string;
   lightWoodyTexture: string;
   warmWoodTexture: string;
   regin: string;
@@ -314,6 +317,15 @@ type Texts = {
   invalidBoard: string;
   invalidHandPiece: string;
   invalidUSI: string;
+  boardImageFileURLRequired: string;
+  boardImageFileURLMustStartWithFile: string;
+  pieceStandImageFileURLRequired: string;
+  pieceStandImageFileURLMustStartWithFile: string;
+  pieceVolumeMustBe0To100Percent: string;
+  clockVolumeMustBe0To100Percent: string;
+  clockPitchMustBe220To880Hz: string;
+  engineTimeoutMustBe1To300Seconds: string;
+  coefficientInSigmoidMustBeGreaterThan0: string;
   errorsOccurred: (n: number) => string;
   between: (a: unknown, b: unknown) => string;
   addNthEngine: (n: number) => string;
@@ -423,18 +435,21 @@ const ja: Texts = {
   appSettings: "アプリ設定",
   language: "言語",
   theme: "テーマ",
+  standard: "標準",
   standardGreen: "標準（緑）",
   green: "緑",
   cherryBlossom: "桜",
+  customImage: "カスタム画像",
   autumn: "紅葉",
   snow: "雪",
   dark: "ダーク",
-  pieceImages: "駒画像",
+  piece: "駒",
   singleKanjiPiece: "一文字駒",
   singleKanjiGothicPiece: "一文字駒（ゴシック体）",
   singleKanjiDarkPiece: "一文字駒（ダーク）",
   singleKanjiGothicDarkPiece: "一文字駒（ゴシック体・ダーク）",
-  boardImage: "盤画像",
+  board: "盤",
+  pieceStand: "駒台",
   lightWoodyTexture: "木目（明るい）",
   warmWoodTexture: "木目（暖かい）",
   regin: "レジン",
@@ -656,6 +671,22 @@ const ja: Texts = {
   invalidBoard: "不正な盤面",
   invalidHandPiece: "不正な持ち駒",
   invalidUSI: "不正なUSI",
+  boardImageFileURLRequired: "盤面画像のファイルURLを指定してください。",
+  boardImageFileURLMustStartWithFile:
+    "盤面画像のファイルURLはfile://で始まる必要があります。",
+  pieceStandImageFileURLRequired: "駒台画像のファイルURLを指定してください。",
+  pieceStandImageFileURLMustStartWithFile:
+    "駒台画像のファイルURLはfile://で始まる必要があります。",
+  pieceVolumeMustBe0To100Percent:
+    "駒音の大きさには0%～100%の値を指定してください。",
+  clockVolumeMustBe0To100Percent:
+    "時計音の大きさには0%～100%の値を指定してください。",
+  clockPitchMustBe220To880Hz:
+    "時計音の高さには220Hz～880Hzの値を指定してください。",
+  engineTimeoutMustBe1To300Seconds:
+    "エンジンのタイムアウト時間には1秒～300秒の値を指定してください。",
+  coefficientInSigmoidMustBeGreaterThan0:
+    "勝率換算係数には0より大きい値を指定してください。",
   errorsOccurred: (n) => `${n} 種類のエラーが発生しました。`,
   between: (a, b) => `${a} から ${b} まで`,
   addNthEngine: (n) => `${n} 個目のエンジンを追加`,
@@ -774,18 +805,21 @@ const en: Texts = {
   appSettings: "Preferences",
   language: "Languages",
   theme: "Theme",
+  standard: "Standard",
   standardGreen: "Standard (Green)",
   green: "Green",
   cherryBlossom: "Cherry Blossom",
+  customImage: "Custom Image",
   autumn: "Autumn",
   snow: "Snow",
   dark: "Dark",
-  pieceImages: "Piece Images",
+  piece: "Piece",
   singleKanjiPiece: "Single Kanji",
   singleKanjiGothicPiece: "Single Kanji (Gothic)",
   singleKanjiDarkPiece: "Single Kanji (Dark)",
   singleKanjiGothicDarkPiece: "Single Kanji (Gothic, Dark)",
-  boardImage: "Board Image",
+  board: "Board Image",
+  pieceStand: "Piece Stand",
   lightWoodyTexture: "Woody Texture (Light)",
   warmWoodTexture: "Woody Texture (Warm)",
   regin: "Regin",
@@ -1009,6 +1043,18 @@ const en: Texts = {
   invalidBoard: "Invalid board",
   invalidHandPiece: "Invalid hand piece",
   invalidUSI: "Invalid USI",
+  boardImageFileURLRequired: "Board image file URL is required.",
+  boardImageFileURLMustStartWithFile:
+    "Board image file URL must start with file:///",
+  pieceStandImageFileURLRequired: "Piece stand image file URL is required.",
+  pieceStandImageFileURLMustStartWithFile:
+    "Piece stand image file URL must start with file:///",
+  pieceVolumeMustBe0To100Percent: "Piece volume must be 0% to 100%.",
+  clockVolumeMustBe0To100Percent: "Clock volume must be 0% to 100%.",
+  clockPitchMustBe220To880Hz: "Clock pitch must be 220Hz to 880Hz.",
+  engineTimeoutMustBe1To300Seconds: "Engine timeout must be 1 to 300 seconds.",
+  coefficientInSigmoidMustBeGreaterThan0:
+    "Coefficient in sigmoid must be greater than 0.",
   errorsOccurred: (n) =>
     n >= 2 ? `${n} errors have occurred.` : `${n} error has occurred.`,
   between: (a, b) => `between ${a} and ${b}`,

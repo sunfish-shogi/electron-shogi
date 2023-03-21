@@ -26,6 +26,7 @@ export interface Bridge {
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
+  showSelectImageDialog(defaultURL?: string): Promise<string>;
   exportCaptureAsPNG(json: string): Promise<void>;
   exportCaptureAsJPEG(json: string): Promise<void>;
   loadAppSetting(): Promise<string>;
@@ -135,6 +136,7 @@ export interface API {
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
+  showSelectImageDialog(defaultURL?: string): Promise<string>;
   exportCaptureAsPNG(rect: Rect): Promise<void>;
   exportCaptureAsJPEG(rect: Rect): Promise<void>;
   loadAppSetting(): Promise<AppSetting>;

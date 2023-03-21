@@ -47,6 +47,8 @@ function createWindow() {
     fullscreen: setting.fullscreen,
     webPreferences: {
       preload: path.join(__dirname, preloadPath),
+      // on development, disable webSecurity to allow mix of "file://" and "http://localhost:5173"
+      webSecurity: !isDevelopment(),
     },
   });
   if (setting.maximized) {

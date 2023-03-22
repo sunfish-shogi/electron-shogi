@@ -174,7 +174,10 @@ ipcMain.handle(
     const appSetting = loadAppSetting();
     getAppLogger().debug("show save-record dialog");
     const result = dialog.showSaveDialogSync(win, {
-      defaultPath: path.resolve(appSetting.lastRecordFilePath, defaultPath),
+      defaultPath: path.resolve(
+        path.dirname(appSetting.lastRecordFilePath),
+        defaultPath
+      ),
       properties: ["createDirectory", "showOverwriteConfirmation"],
       filters: [
         { name: "KIF (Shift-JIS)", extensions: ["kif"] },

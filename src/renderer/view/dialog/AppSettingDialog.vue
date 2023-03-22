@@ -55,6 +55,7 @@
             </select>
           </div>
           <div
+            ref="backgroundImageSelector"
             class="form-item"
             :class="{
               hidden:
@@ -62,15 +63,11 @@
             }"
           >
             <div class="form-item-label-wide"></div>
-            <input
-              ref="backgroundImageFileURL"
-              class="file-path"
-              :value="appSetting.backgroundImageFileURL"
-              type="text"
+            <ImageSelector
+              class="image-selector"
+              :default-url="appSetting.backgroundImageFileURL"
+              @select="selectBackgroundImageFile"
             />
-            <button class="thin" @click="selectBackgroundImageFile">
-              {{ t.select }}
-            </button>
           </div>
           <!-- 駒画像 -->
           <div class="form-item">
@@ -118,21 +115,18 @@
             </select>
           </div>
           <div
+            ref="boardImageSelector"
             class="form-item"
             :class="{
               hidden: appSetting.boardImage !== BoardImageType.CUSTOM_IMAGE,
             }"
           >
             <div class="form-item-label-wide"></div>
-            <input
-              ref="boardImageFileURL"
-              class="file-path"
-              :value="appSetting.boardImageFileURL"
-              type="text"
+            <ImageSelector
+              class="image-selector"
+              :default-url="appSetting.boardImageFileURL"
+              @select="selectBoardImageFile"
             />
-            <button class="thin" @click="selectBoardImageFile">
-              {{ t.select }}
-            </button>
           </div>
           <!-- 駒台画像 -->
           <div class="form-item">
@@ -160,6 +154,7 @@
             </select>
           </div>
           <div
+            ref="pieceStandImageSelector"
             class="form-item"
             :class="{
               hidden:
@@ -167,15 +162,11 @@
             }"
           >
             <div class="form-item-label-wide"></div>
-            <input
-              ref="pieceStandImageFileURL"
-              class="file-path"
-              :value="appSetting.pieceStandImageFileURL"
-              type="text"
+            <ImageSelector
+              class="image-selector"
+              :default-url="appSetting.pieceStandImageFileURL"
+              @select="selectPieceStandImageFile"
             />
-            <button class="thin" @click="selectPieceStandImageFile">
-              {{ t.select }}
-            </button>
           </div>
           <!-- 段・筋の表示 -->
           <div class="form-item">
@@ -492,6 +483,7 @@ import {
   Thema,
   BackgroundImageType,
 } from "@/common/settings/app";
+import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
 import { useStore } from "@/renderer/store";
 import { ref, defineComponent, onMounted, Ref, onBeforeUnmount } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
@@ -518,6 +510,9 @@ const nameToReturnCode: { [name: string]: string } = {
 
 export default defineComponent({
   name: "AppSettingDialog",
+  components: {
+    ImageSelector,
+  },
   setup() {
     const store = useStore();
     const appSetting = useAppSetting();
@@ -525,12 +520,12 @@ export default defineComponent({
     const language: Ref = ref(null);
     const thema: Ref = ref(null);
     const backgroundImageType: Ref = ref(null);
-    const backgroundImageFileURL: Ref = ref(null);
+    const backgroundImageSelector: Ref = ref(null);
     const pieceImage: Ref = ref(null);
     const boardImage: Ref = ref(null);
-    const boardImageFileURL: Ref = ref(null);
+    const boardImageSelector: Ref = ref(null);
     const pieceStandImage: Ref = ref(null);
-    const pieceStandImageFileURL: Ref = ref(null);
+    const pieceStandImageSelector: Ref = ref(null);
     const displayBoardLabels: Ref = ref(null);
     const tabPaneType: Ref = ref(null);
     const pieceVolume: Ref = ref(null);
@@ -551,6 +546,9 @@ export default defineComponent({
     const enableUSILog: Ref = ref(null);
     const enableCSALog: Ref = ref(null);
     const logLevel: Ref = ref(null);
+    let backgroundImageFileURL = appSetting.backgroundImageFileURL;
+    let boardImageFileURL = appSetting.boardImageFileURL;
+    let pieceStandImageFileURL = appSetting.pieceStandImageFileURL;
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -593,13 +591,13 @@ export default defineComponent({
         logLevel: logLevel.value.value,
       };
       if (update.backgroundImageType !== BackgroundImageType.NONE) {
-        update.backgroundImageFileURL = backgroundImageFileURL.value.value;
+        update.backgroundImageFileURL = backgroundImageFileURL;
       }
       if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
-        update.boardImageFileURL = boardImageFileURL.value.value;
+        update.boardImageFileURL = boardImageFileURL;
       }
       if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
-        update.pieceStandImageFileURL = pieceStandImageFileURL.value.value;
+        update.pieceStandImageFileURL = pieceStandImageFileURL;
       }
       store.retainBussyState();
       try {
@@ -613,8 +611,7 @@ export default defineComponent({
     };
 
     const onChangeBackgroundImageType = () => {
-      const formItem = (backgroundImageFileURL.value as HTMLElement)
-        .parentElement as HTMLElement;
+      const formItem = backgroundImageSelector.value as HTMLElement;
       if (backgroundImageType.value.value !== BackgroundImageType.NONE) {
         formItem.classList.remove("hidden");
       } else {
@@ -622,25 +619,12 @@ export default defineComponent({
       }
     };
 
-    const selectBackgroundImageFile = async () => {
-      store.retainBussyState();
-      try {
-        const path = await api.showSelectImageDialog(
-          backgroundImageFileURL.value.value
-        );
-        if (path) {
-          backgroundImageFileURL.value.value = path;
-        }
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
+    const selectBackgroundImageFile = (url: string) => {
+      backgroundImageFileURL = url;
     };
 
     const onChangeBoardImage = () => {
-      const formItem = (boardImageFileURL.value as HTMLElement)
-        .parentElement as HTMLElement;
+      const formItem = boardImageSelector.value as HTMLElement;
       if (boardImage.value.value === BoardImageType.CUSTOM_IMAGE) {
         formItem.classList.remove("hidden");
       } else {
@@ -648,25 +632,12 @@ export default defineComponent({
       }
     };
 
-    const selectBoardImageFile = async () => {
-      store.retainBussyState();
-      try {
-        const path = await api.showSelectImageDialog(
-          boardImageFileURL.value.value
-        );
-        if (path) {
-          boardImageFileURL.value.value = path;
-        }
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
+    const selectBoardImageFile = (url: string) => {
+      boardImageFileURL = url;
     };
 
     const onChangePieceStandImage = () => {
-      const formItem = (pieceStandImageFileURL.value as HTMLElement)
-        .parentElement as HTMLElement;
+      const formItem = pieceStandImageSelector.value as HTMLElement;
       if (pieceStandImage.value.value === PieceStandImageType.CUSTOM_IMAGE) {
         formItem.classList.remove("hidden");
       } else {
@@ -674,20 +645,8 @@ export default defineComponent({
       }
     };
 
-    const selectPieceStandImageFile = async () => {
-      store.retainBussyState();
-      try {
-        const path = await api.showSelectImageDialog(
-          pieceStandImageFileURL.value.value
-        );
-        if (path) {
-          pieceStandImageFileURL.value.value = path;
-        }
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
+    const selectPieceStandImageFile = (url: string) => {
+      pieceStandImageFileURL = url;
     };
 
     const selectAutoSaveDirectory = async () => {
@@ -726,12 +685,12 @@ export default defineComponent({
       language,
       thema,
       backgroundImageType,
-      backgroundImageFileURL,
+      backgroundImageSelector,
       pieceImage,
       boardImage,
-      boardImageFileURL,
+      boardImageSelector,
       pieceStandImage,
-      pieceStandImageFileURL,
+      pieceStandImageSelector,
       displayBoardLabels,
       tabPaneType,
       pieceVolume,
@@ -787,5 +746,9 @@ input.toggle {
 }
 input.file-path {
   width: 250px;
+}
+.image-selector {
+  display: inline-block;
+  width: 200px;
 }
 </style>

@@ -299,21 +299,23 @@ export function normalizeAppSetting(
 }
 
 export function validateAppSetting(setting: AppSetting): Error | undefined {
-  if (setting.boardImage === BoardImageType.CUSTOM_IMAGE) {
-    if (!setting.boardImageFileURL) {
-      return new Error(t.boardImageFileURLRequired);
-    }
-    if (!setting.boardImageFileURL.startsWith("file://")) {
-      return new Error(t.boardImageFileURLMustStartWithFile);
-    }
+  if (
+    setting.backgroundImageType !== BackgroundImageType.NONE &&
+    !setting.backgroundImageFileURL
+  ) {
+    return new Error(t.backgroundImageFileNotSelected);
   }
-  if (setting.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
-    if (!setting.pieceStandImageFileURL) {
-      return new Error(t.pieceStandImageFileURLRequired);
-    }
-    if (!setting.pieceStandImageFileURL.startsWith("file://")) {
-      return new Error(t.pieceStandImageFileURLMustStartWithFile);
-    }
+  if (
+    setting.boardImage === BoardImageType.CUSTOM_IMAGE &&
+    !setting.boardImageFileURL
+  ) {
+    return new Error(t.boardImageFileNotSelected);
+  }
+  if (
+    setting.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE &&
+    !setting.pieceStandImageFileURL
+  ) {
+    return new Error(t.pieceStandImageFileNotSelected);
   }
   if (setting.pieceVolume < 0 || setting.pieceVolume > 100) {
     return new Error(t.pieceVolumeMustBe0To100Percent);

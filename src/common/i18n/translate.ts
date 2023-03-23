@@ -323,10 +323,9 @@ type Texts = {
   invalidBoard: string;
   invalidHandPiece: string;
   invalidUSI: string;
-  boardImageFileURLRequired: string;
-  boardImageFileURLMustStartWithFile: string;
-  pieceStandImageFileURLRequired: string;
-  pieceStandImageFileURLMustStartWithFile: string;
+  backgroundImageFileNotSelected: string;
+  boardImageFileNotSelected: string;
+  pieceStandImageFileNotSelected: string;
   pieceVolumeMustBe0To100Percent: string;
   clockVolumeMustBe0To100Percent: string;
   clockPitchMustBe220To880Hz: string;
@@ -683,12 +682,9 @@ const ja: Texts = {
   invalidBoard: "不正な盤面",
   invalidHandPiece: "不正な持ち駒",
   invalidUSI: "不正なUSI",
-  boardImageFileURLRequired: "盤面画像のファイルURLを指定してください。",
-  boardImageFileURLMustStartWithFile:
-    "盤面画像のファイルURLはfile://で始まる必要があります。",
-  pieceStandImageFileURLRequired: "駒台画像のファイルURLを指定してください。",
-  pieceStandImageFileURLMustStartWithFile:
-    "駒台画像のファイルURLはfile://で始まる必要があります。",
+  backgroundImageFileNotSelected: "背景画像のファイルが選択されていません。",
+  boardImageFileNotSelected: "盤面画像のファイルが選択されていません。",
+  pieceStandImageFileNotSelected: "駒台画像のファイルが選択されていません。",
   pieceVolumeMustBe0To100Percent:
     "駒音の大きさには0%～100%の値を指定してください。",
   clockVolumeMustBe0To100Percent:
@@ -1061,12 +1057,9 @@ const en: Texts = {
   invalidBoard: "Invalid board",
   invalidHandPiece: "Invalid hand piece",
   invalidUSI: "Invalid USI",
-  boardImageFileURLRequired: "Board image file URL is required.",
-  boardImageFileURLMustStartWithFile:
-    "Board image file URL must start with file:///",
-  pieceStandImageFileURLRequired: "Piece stand image file URL is required.",
-  pieceStandImageFileURLMustStartWithFile:
-    "Piece stand image file URL must start with file:///",
+  backgroundImageFileNotSelected: "Background image file is not selected.",
+  boardImageFileNotSelected: "Board image file is not selected.",
+  pieceStandImageFileNotSelected: "Piece stand image file is not selected.",
   pieceVolumeMustBe0To100Percent: "Piece volume must be 0% to 100%.",
   clockVolumeMustBe0To100Percent: "Clock volume must be 0% to 100%.",
   clockPitchMustBe220To880Hz: "Clock pitch must be 220Hz to 880Hz.",

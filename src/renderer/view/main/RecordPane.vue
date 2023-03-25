@@ -166,6 +166,12 @@ export default defineComponent({
 }
 .option {
   white-space: nowrap;
-  padding: 0 10px 0 10px;
+  padding: 0 6px 0 6px;
+  margin-right: 4px;
+  background-color: var(--main-bg-color);
+  text-shadow: 1px 1px 2px var(--main-bg-color), 1px 0 2px var(--main-bg-color),
+    1px -1px 2px var(--main-bg-color), 0 1px 2px var(--main-bg-color),
+    0 -1px 2px var(--main-bg-color), -1px 1px 2px var(--main-bg-color),
+    -1px 0 2px var(--main-bg-color), -1px -1px 2px var(--main-bg-color);
 }
 </style>

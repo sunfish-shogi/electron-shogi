@@ -117,6 +117,8 @@ type Texts = {
   warmWoodTexture: string;
   regin: string;
   displayFileAndRank: string;
+  displayLeftControls: string;
+  displayRightControls: string;
   tabViewStyle: string;
   oneColumn: string;
   twoColumns: string;
@@ -460,6 +462,8 @@ const ja: Texts = {
   warmWoodTexture: "木目（暖かい）",
   regin: "レジン",
   displayFileAndRank: "段・筋を表示",
+  displayLeftControls: "左側操作ボタンを表示",
+  displayRightControls: "右側操作ボタンを表示",
   tabViewStyle: "タブビューの形式",
   oneColumn: "1列",
   twoColumns: "2列",
@@ -833,6 +837,8 @@ const en: Texts = {
   warmWoodTexture: "Woody Texture (Warm)",
   regin: "Regin",
   displayFileAndRank: "Display File & Rank",
+  displayLeftControls: "Display Left Controls",
+  displayRightControls: "Display Right Controls",
   tabViewStyle: "Tab View Style",
   oneColumn: "1 Column",
   twoColumns: "2 Columns",

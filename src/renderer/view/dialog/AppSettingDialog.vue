@@ -180,6 +180,34 @@
               type="checkbox"
             />
           </div>
+          <!-- 左コントロールの表示 -->
+          <div :class="{ hidden: !isNative }" class="form-item">
+            <div class="form-item-label-wide">
+              {{ t.displayLeftControls }}
+            </div>
+            <input
+              ref="displayLeftSideControls"
+              class="toggle"
+              :checked="
+                appSetting.leftSideControlType != LeftSideControlType.NONE
+              "
+              type="checkbox"
+            />
+          </div>
+          <!-- 右コントロールの表示 -->
+          <div :class="{ hidden: !isNative }" class="form-item">
+            <div class="form-item-label-wide">
+              {{ t.displayRightControls }}
+            </div>
+            <input
+              ref="displayRightSideControls"
+              class="toggle"
+              :checked="
+                appSetting.rightSideControlType != RightSideControlType.NONE
+              "
+              type="checkbox"
+            />
+          </div>
           <!-- タブビューの形式 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.tabViewStyle }}</div>
@@ -477,6 +505,8 @@ import {
   BoardImageType,
   PieceStandImageType,
   BoardLabelType,
+  LeftSideControlType,
+  RightSideControlType,
   TabPaneType,
   EvaluationViewFrom,
   AppSettingUpdate,
@@ -527,6 +557,8 @@ export default defineComponent({
     const pieceStandImage: Ref = ref(null);
     const pieceStandImageSelector: Ref = ref(null);
     const displayBoardLabels: Ref = ref(null);
+    const displayLeftSideControls: Ref = ref(null);
+    const displayRightSideControls: Ref = ref(null);
     const tabPaneType: Ref = ref(null);
     const pieceVolume: Ref = ref(null);
     const clockVolume: Ref = ref(null);
@@ -570,6 +602,12 @@ export default defineComponent({
         boardLabelType: displayBoardLabels.value.checked
           ? BoardLabelType.STANDARD
           : BoardLabelType.NONE,
+        leftSideControlType: displayLeftSideControls.value.checked
+          ? LeftSideControlType.STANDARD
+          : LeftSideControlType.NONE,
+        rightSideControlType: displayRightSideControls.value.checked
+          ? RightSideControlType.STANDARD
+          : RightSideControlType.NONE,
         tabPaneType: tabPaneType.value.value,
         pieceVolume: readInputAsNumber(pieceVolume.value),
         clockVolume: readInputAsNumber(clockVolume.value),
@@ -678,6 +716,8 @@ export default defineComponent({
       BoardImageType,
       PieceStandImageType,
       BoardLabelType,
+      LeftSideControlType,
+      RightSideControlType,
       TabPaneType,
       EvaluationViewFrom,
       LogLevel,
@@ -692,6 +732,8 @@ export default defineComponent({
       pieceStandImage,
       pieceStandImageSelector,
       displayBoardLabels,
+      displayLeftSideControls,
+      displayRightSideControls,
       tabPaneType,
       pieceVolume,
       clockVolume,

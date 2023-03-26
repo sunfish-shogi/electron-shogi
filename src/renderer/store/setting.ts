@@ -6,9 +6,11 @@ import {
   BoardLabelType,
   ClockSoundTarget,
   EvaluationViewFrom,
+  LeftSideControlType,
   PieceImageType,
   PieceStandImageType,
   PositionImageStyle,
+  RightSideControlType,
   Tab,
   TabPaneType,
   Thema,
@@ -55,6 +57,12 @@ class AppSettingStore {
   }
   get boardLabelType(): BoardLabelType {
     return this.setting.boardLabelType;
+  }
+  get leftSideControlType(): LeftSideControlType {
+    return this.setting.leftSideControlType;
+  }
+  get rightSideControlType(): RightSideControlType {
+    return this.setting.rightSideControlType;
   }
   get pieceVolume(): number {
     return this.setting.pieceVolume;

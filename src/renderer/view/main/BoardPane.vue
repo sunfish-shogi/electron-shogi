@@ -25,7 +25,14 @@
       @edit="onEdit"
     >
       <template #right-control>
-        <div ref="rightControl" class="full column top-control">
+        <div
+          ref="rightControl"
+          class="full column top-control"
+          :class="{
+            hidden:
+              appSetting.rightSideControlType === RightSideControlType.NONE,
+          }"
+        >
           <button
             v-if="controlStates.game"
             class="control-item"
@@ -133,7 +140,13 @@
         </div>
       </template>
       <template #left-control>
-        <div ref="leftControl" class="full column reverse bottom-control">
+        <div
+          ref="leftControl"
+          class="full column reverse bottom-control"
+          :class="{
+            hidden: appSetting.leftSideControlType === LeftSideControlType.NONE,
+          }"
+        >
           <button
             class="control-item"
             data-hotkey="Control+,"
@@ -208,6 +221,10 @@ import {
   uninstallHotKeyForMainWindow,
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
+import {
+  RightSideControlType,
+  LeftSideControlType,
+} from "@/common/settings/app";
 
 export default defineComponent({
   name: "BoardPane",
@@ -449,6 +466,8 @@ export default defineComponent({
       onRemoveCurrentMove,
       IconType,
       AppState,
+      RightSideControlType,
+      LeftSideControlType,
     };
   },
 });

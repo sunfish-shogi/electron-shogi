@@ -48,6 +48,16 @@ export enum BoardLabelType {
   STANDARD = "standard",
 }
 
+export enum LeftSideControlType {
+  NONE = "none",
+  STANDARD = "standard",
+}
+
+export enum RightSideControlType {
+  NONE = "none",
+  STANDARD = "standard",
+}
+
 export enum TabPaneType {
   SINGLE = "single",
   DOUBLE = "double",
@@ -89,6 +99,8 @@ export type AppSetting = {
   pieceStandImage: PieceStandImageType;
   pieceStandImageFileURL?: string;
   boardLabelType: BoardLabelType;
+  leftSideControlType: LeftSideControlType;
+  rightSideControlType: RightSideControlType;
   pieceVolume: number;
   clockVolume: number;
   clockPitch: number;
@@ -136,6 +148,8 @@ export type AppSettingUpdate = {
   pieceStandImage?: PieceStandImageType;
   pieceStandImageFileURL?: string;
   boardLabelType?: BoardLabelType;
+  leftSideControlType?: LeftSideControlType;
+  rightSideControlType?: RightSideControlType;
   pieceVolume?: number;
   clockVolume?: number;
   clockPitch?: number;
@@ -220,6 +234,8 @@ export function defaultAppSetting(opt?: {
     boardImage: BoardImageType.RESIN2,
     pieceStandImage: PieceStandImageType.STANDARD,
     boardLabelType: BoardLabelType.STANDARD,
+    leftSideControlType: LeftSideControlType.STANDARD,
+    rightSideControlType: RightSideControlType.STANDARD,
     pieceVolume: 30,
     clockVolume: 30,
     clockPitch: 500,

@@ -12,6 +12,8 @@ import {
   PositionImageStyle,
   PieceStandImageType,
   BackgroundImageType,
+  LeftSideControlType,
+  RightSideControlType,
 } from "@/common/settings/app";
 import { Language } from "@/common/i18n";
 
@@ -25,6 +27,8 @@ describe("settings/csa", () => {
       boardImage: BoardImageType.WARM,
       pieceStandImage: PieceStandImageType.GREEN,
       boardLabelType: BoardLabelType.NONE,
+      leftSideControlType: LeftSideControlType.STANDARD,
+      rightSideControlType: RightSideControlType.STANDARD,
       pieceVolume: 10,
       clockVolume: 20,
       clockPitch: 300,

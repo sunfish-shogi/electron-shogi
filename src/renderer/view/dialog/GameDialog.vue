@@ -91,14 +91,15 @@
             <div class="form-item-unit">{{ t.secondsSuffix }}</div>
           </div>
           <div class="form-item">
-            <input
-              id="enable-engine-timeout"
-              ref="enableEngineTimeout"
-              type="checkbox"
+            <ToggleButton
+              :label="t.enableEngineTimeout"
+              :value="enableEngineTimeout"
+              @change="
+                (value) => {
+                  enableEngineTimeout = value;
+                }
+              "
             />
-            <label for="enable-engine-timeout">{{
-              t.enableEngineTimeout
-            }}</label>
           </div>
         </div>
         <div class="form-group others">
@@ -136,22 +137,48 @@
             <input ref="repeat" class="number" type="number" min="1" />
           </div>
           <div class="form-item">
-            <input id="swap-players" ref="swapPlayers" type="checkbox" />
-            <label for="swap-players">{{ t.swapTurnWhenGameRepetition }}</label>
+            <ToggleButton
+              :label="t.swapTurnWhenGameRepetition"
+              :value="swapPlayers"
+              @change="
+                (value) => {
+                  swapPlayers = value;
+                }
+              "
+            />
           </div>
           <div class="form-item">
-            <input id="enable-comment" ref="enableComment" type="checkbox" />
-            <label for="enable-comment">{{ t.outputComments }}</label>
+            <ToggleButton
+              :label="t.outputComments"
+              :value="enableComment"
+              @change="
+                (value) => {
+                  enableComment = value;
+                }
+              "
+            />
           </div>
           <div class="form-item">
-            <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
-            <label for="enable-auto-save">{{
-              t.saveRecordAutomatically
-            }}</label>
+            <ToggleButton
+              :label="t.saveRecordAutomatically"
+              :value="enableAutoSave"
+              @change="
+                (value) => {
+                  enableAutoSave = value;
+                }
+              "
+            />
           </div>
           <div class="form-item">
-            <input id="human-is-front" ref="humanIsFront" type="checkbox" />
-            <label for="human-is-front">{{ t.adjustBoardToHumanPlayer }}</label>
+            <ToggleButton
+              :label="t.adjustBoardToHumanPlayer"
+              :value="humanIsFront"
+              @change="
+                (value) => {
+                  humanIsFront = value;
+                }
+              "
+            />
           </div>
         </div>
       </div>
@@ -167,20 +194,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
-import {
-  ref,
-  onMounted,
-  defineComponent,
-  Ref,
-  onUpdated,
-  onBeforeUnmount,
-} from "vue";
+import { ref, onMounted, onUpdated, onBeforeUnmount } from "vue";
 import api, { isNative } from "@/renderer/ipc/api";
 import { useStore } from "@/renderer/store";
-import { CommentBehavior } from "@/common/settings/analysis";
 import {
   defaultGameSetting,
   GameSetting,
@@ -198,188 +217,149 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import ToggleButton from "../primitive/ToggleButton.vue";
 
-export default defineComponent({
-  name: "GameDialog",
-  components: {
-    Icon,
-    PlayerSelector,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const hours: Ref = ref(null);
-    const minutes: Ref = ref(null);
-    const byoyomi: Ref = ref(null);
-    const increment: Ref = ref(null);
-    const startPosition: Ref = ref(null);
-    const enableEngineTimeout: Ref = ref(null);
-    const maxMoves: Ref = ref(null);
-    const humanIsFront: Ref = ref(null);
-    const repeat: Ref = ref(null);
-    const swapPlayers: Ref = ref(null);
-    const enableComment: Ref = ref(null);
-    const enableAutoSave: Ref = ref(null);
-    const gameSetting = ref(defaultGameSetting());
-    const engineSettings = ref(new USIEngineSettings());
-    const blackPlayerURI = ref("");
-    const whitePlayerURI = ref("");
+const store = useStore();
+const dialog = ref();
+const hours = ref();
+const minutes = ref();
+const byoyomi = ref();
+const increment = ref();
+const startPosition = ref();
+const enableEngineTimeout = ref(false);
+const maxMoves = ref();
+const repeat = ref();
+const swapPlayers = ref(false);
+const enableComment = ref(false);
+const enableAutoSave = ref(false);
+const humanIsFront = ref(false);
+const gameSetting = ref(defaultGameSetting());
+const engineSettings = ref(new USIEngineSettings());
+const blackPlayerURI = ref("");
+const whitePlayerURI = ref("");
 
-    let defaultValueLoaded = false;
-    let defaultValueApplied = false;
-    store.retainBussyState();
+let defaultValueLoaded = false;
+let defaultValueApplied = false;
+store.retainBussyState();
 
-    onMounted(async () => {
-      try {
-        gameSetting.value = await api.loadGameSetting();
-        engineSettings.value = await api.loadUSIEngineSetting();
-        blackPlayerURI.value = gameSetting.value.black.uri;
-        whitePlayerURI.value = gameSetting.value.white.uri;
-        showModalDialog(dialog.value);
-        installHotKeyForDialog(dialog.value);
-        defaultValueLoaded = true;
-      } catch (e) {
-        store.pushError(e);
-        store.destroyModalDialog();
-      } finally {
-        store.releaseBussyState();
-      }
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    onUpdated(() => {
-      if (!defaultValueLoaded || defaultValueApplied) {
-        return;
-      }
-      hours.value.value = Math.floor(
-        gameSetting.value.timeLimit.timeSeconds / 3600
-      );
-      minutes.value.value =
-        Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
-      byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
-      increment.value.value = gameSetting.value.timeLimit.increment;
-      startPosition.value.value =
-        gameSetting.value.startPosition !== undefined
-          ? gameSetting.value.startPosition
-          : "current";
-      enableEngineTimeout.value.checked = gameSetting.value.enableEngineTimeout;
-      maxMoves.value.value = gameSetting.value.maxMoves;
-      humanIsFront.value.checked = gameSetting.value.humanIsFront;
-      repeat.value.value = gameSetting.value.repeat;
-      swapPlayers.value.checked = gameSetting.value.swapPlayers;
-      enableComment.value.checked = gameSetting.value.enableComment;
-      enableAutoSave.value.checked = gameSetting.value.enableAutoSave;
-      defaultValueApplied = true;
-    });
-
-    const buildPlayerSetting = (playerURI: string): PlayerSetting => {
-      if (
-        uri.isUSIEngine(playerURI) &&
-        engineSettings.value.hasEngine(playerURI)
-      ) {
-        const engine = engineSettings.value.getEngine(
-          playerURI
-        ) as USIEngineSetting;
-        return {
-          name: engine.name,
-          uri: playerURI,
-          usi: engine,
-        };
-      }
-      return {
-        name: "人",
-        uri: uri.ES_HUMAN,
-      };
-    };
-
-    const onStart = () => {
-      const gameSetting: GameSetting = {
-        black: buildPlayerSetting(blackPlayerURI.value),
-        white: buildPlayerSetting(whitePlayerURI.value),
-        timeLimit: {
-          timeSeconds:
-            (readInputAsNumber(hours.value) * 60 +
-              readInputAsNumber(minutes.value)) *
-            60,
-          byoyomi: readInputAsNumber(byoyomi.value),
-          increment: readInputAsNumber(increment.value),
-        },
-        startPosition:
-          startPosition.value.value !== "current"
-            ? startPosition.value.value
-            : undefined,
-        enableEngineTimeout: enableEngineTimeout.value.checked,
-        maxMoves: readInputAsNumber(maxMoves.value),
-        humanIsFront: humanIsFront.value.checked,
-        repeat: readInputAsNumber(repeat.value),
-        swapPlayers: swapPlayers.value.checked,
-        enableComment: enableComment.value.checked,
-        enableAutoSave: enableAutoSave.value.checked,
-      };
-      const error = isNative()
-        ? validateGameSetting(gameSetting)
-        : validateGameSettingForWeb(gameSetting);
-      if (error) {
-        store.pushError(error);
-      } else {
-        store.startGame(gameSetting);
-      }
-    };
-
-    const onCancel = () => {
-      store.closeModalDialog();
-    };
-
-    const onUpdatePlayerSetting = (settings: USIEngineSettings) => {
-      engineSettings.value = settings;
-    };
-
-    const onSelectBlackPlayer = (uri: string) => {
-      blackPlayerURI.value = uri;
-    };
-    const onSelectWhitePlayer = (uri: string) => {
-      whitePlayerURI.value = uri;
-    };
-
-    const onSwapColor = () => {
-      [blackPlayerURI.value, whitePlayerURI.value] = [
-        whitePlayerURI.value,
-        blackPlayerURI.value,
-      ];
-    };
-
-    return {
-      t,
-      CommentBehavior,
-      dialog,
-      hours,
-      minutes,
-      byoyomi,
-      increment,
-      startPosition,
-      enableEngineTimeout,
-      maxMoves,
-      humanIsFront,
-      repeat,
-      swapPlayers,
-      enableComment,
-      enableAutoSave,
-      engineSettings,
-      blackPlayerURI,
-      whitePlayerURI,
-      onStart,
-      onCancel,
-      onUpdatePlayerSetting,
-      onSelectBlackPlayer,
-      onSelectWhitePlayer,
-      onSwapColor,
-      IconType,
-    };
-  },
+onMounted(async () => {
+  try {
+    gameSetting.value = await api.loadGameSetting();
+    engineSettings.value = await api.loadUSIEngineSetting();
+    blackPlayerURI.value = gameSetting.value.black.uri;
+    whitePlayerURI.value = gameSetting.value.white.uri;
+    showModalDialog(dialog.value);
+    installHotKeyForDialog(dialog.value);
+    defaultValueLoaded = true;
+  } catch (e) {
+    store.pushError(e);
+    store.destroyModalDialog();
+  } finally {
+    store.releaseBussyState();
+  }
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+
+onUpdated(() => {
+  if (!defaultValueLoaded || defaultValueApplied) {
+    return;
+  }
+  hours.value.value = Math.floor(
+    gameSetting.value.timeLimit.timeSeconds / 3600
+  );
+  minutes.value.value =
+    Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
+  byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
+  increment.value.value = gameSetting.value.timeLimit.increment;
+  startPosition.value.value =
+    gameSetting.value.startPosition !== undefined
+      ? gameSetting.value.startPosition
+      : "current";
+  enableEngineTimeout.value = gameSetting.value.enableEngineTimeout;
+  maxMoves.value.value = gameSetting.value.maxMoves;
+  repeat.value.value = gameSetting.value.repeat;
+  swapPlayers.value = gameSetting.value.swapPlayers;
+  enableComment.value = gameSetting.value.enableComment;
+  enableAutoSave.value = gameSetting.value.enableAutoSave;
+  humanIsFront.value = gameSetting.value.humanIsFront;
+  defaultValueApplied = true;
+});
+
+const buildPlayerSetting = (playerURI: string): PlayerSetting => {
+  if (uri.isUSIEngine(playerURI) && engineSettings.value.hasEngine(playerURI)) {
+    const engine = engineSettings.value.getEngine(
+      playerURI
+    ) as USIEngineSetting;
+    return {
+      name: engine.name,
+      uri: playerURI,
+      usi: engine,
+    };
+  }
+  return {
+    name: "人",
+    uri: uri.ES_HUMAN,
+  };
+};
+
+const onStart = () => {
+  const gameSetting: GameSetting = {
+    black: buildPlayerSetting(blackPlayerURI.value),
+    white: buildPlayerSetting(whitePlayerURI.value),
+    timeLimit: {
+      timeSeconds:
+        (readInputAsNumber(hours.value) * 60 +
+          readInputAsNumber(minutes.value)) *
+        60,
+      byoyomi: readInputAsNumber(byoyomi.value),
+      increment: readInputAsNumber(increment.value),
+    },
+    startPosition:
+      startPosition.value.value !== "current"
+        ? startPosition.value.value
+        : undefined,
+    enableEngineTimeout: enableEngineTimeout.value,
+    maxMoves: readInputAsNumber(maxMoves.value),
+    repeat: readInputAsNumber(repeat.value),
+    swapPlayers: swapPlayers.value,
+    enableComment: enableComment.value,
+    enableAutoSave: enableAutoSave.value,
+    humanIsFront: humanIsFront.value,
+  };
+  const error = isNative()
+    ? validateGameSetting(gameSetting)
+    : validateGameSettingForWeb(gameSetting);
+  if (error) {
+    store.pushError(error);
+  } else {
+    store.startGame(gameSetting);
+  }
+};
+
+const onCancel = () => {
+  store.closeModalDialog();
+};
+
+const onUpdatePlayerSetting = (settings: USIEngineSettings) => {
+  engineSettings.value = settings;
+};
+
+const onSelectBlackPlayer = (uri: string) => {
+  blackPlayerURI.value = uri;
+};
+const onSelectWhitePlayer = (uri: string) => {
+  whitePlayerURI.value = uri;
+};
+
+const onSwapColor = () => {
+  [blackPlayerURI.value, whitePlayerURI.value] = [
+    whitePlayerURI.value,
+    blackPlayerURI.value,
+  ];
+};
 </script>
 
 <style scoped>

@@ -22,17 +22,41 @@ body::-webkit-scrollbar {
   flex-direction: column;
 }
 
-.column.reverse {
-  flex-direction: column-reverse;
-}
-
 .row {
   display: flex;
   flex-direction: row;
 }
 
+.column.reverse {
+  flex-direction: column-reverse;
+}
+
 .row.reverse {
   flex-direction: row-reverse;
+}
+
+.column.wrap {
+  flex-wrap: wrap;
+}
+
+.row.wrap {
+  flex-wrap: wrap;
+}
+
+.column > .auto {
+  flex: auto;
+}
+
+.row > .auto {
+  flex: auto;
+}
+
+.column > .grow {
+  flex: 1;
+}
+
+.row > .grow {
+  flex: 1;
 }
 
 .regular-interval {

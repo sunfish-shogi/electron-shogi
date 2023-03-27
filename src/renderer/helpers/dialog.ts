@@ -18,11 +18,3 @@ export function showModalDialog(dialog: Dialog, onCancel?: () => void): void {
   });
   dialog.showModal();
 }
-
-interface FormItem extends HTMLElement {
-  value: string;
-}
-
-export function getFormItemByID(id: string): FormItem | null {
-  return document.getElementById(id) as FormItem | null;
-}

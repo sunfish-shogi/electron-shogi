@@ -1,11 +1,13 @@
 <template>
   <div ref="root" class="full column record-pane">
-    <div class="record">
+    <div class="auto record">
       <RecordView
         :record="store.record"
         :operational="isRecordOperational"
         :show-comment="appSetting.showCommentInRecordView"
         :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
+        :elapsed-time-toggle-label="t.elapsedTime"
+        :comment-toggle-label="t.comments"
         @go-begin="goBegin"
         @go-back="goBack"
         @go-forward="goForward"
@@ -14,34 +16,20 @@
         @select-branch="selectBranch"
         @swap-with-previous-branch="swapWithPreviousBranch"
         @swap-with-next-branch="swapWithNextBranch"
+        @toggle-show-elapsed-time="onToggleElapsedTime"
+        @toggle-show-comment="onToggleComment"
       />
-    </div>
-    <div class="row options">
-      <div class="option">
-        <input
-          id="show-elapsed-time"
-          type="checkbox"
-          :checked="appSetting.showElapsedTimeInRecordView"
-          @change="onToggleElapsedTime"
-        />
-        <label for="show-elapsed-time">{{ t.elapsedTime }}</label>
-      </div>
-      <div class="option">
-        <input
-          id="show-comment"
-          type="checkbox"
-          :checked="appSetting.showCommentInRecordView"
-          @change="onToggleComment"
-        />
-        <label for="show-comment">{{ t.comments }}</label>
-      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+export const minWidth = 200;
+</script>
+
+<script setup lang="ts">
 import { t } from "@/common/i18n";
-import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import RecordView from "@/renderer/view/primitive/RecordView.vue";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
@@ -51,101 +39,70 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 
-export const minWidth = 200;
+const store = useStore();
+const appSetting = useAppSetting();
+const root = ref();
 
-export default defineComponent({
-  name: "RecordPane",
-  components: {
-    RecordView,
-  },
-  setup() {
-    const store = useStore();
-    const appSetting = useAppSetting();
-    const root = ref();
+onMounted(() => {
+  installHotKeyForMainWindow(root.value);
+});
 
-    onMounted(() => {
-      installHotKeyForMainWindow(root.value);
-    });
+onUnmounted(() => {
+  uninstallHotKeyForMainWindow(root.value);
+});
 
-    onUnmounted(() => {
-      uninstallHotKeyForMainWindow(root.value);
-    });
+const goto = (ply: number) => {
+  store.changePly(ply);
+};
 
-    const goto = (ply: number) => {
-      store.changePly(ply);
-    };
+const goBegin = () => {
+  goto(0);
+};
 
-    const goBegin = () => {
-      goto(0);
-    };
+const goBack = () => {
+  goto(store.record.current.number - 1);
+};
 
-    const goBack = () => {
-      goto(store.record.current.number - 1);
-    };
+const goForward = () => {
+  goto(store.record.current.number + 1);
+};
 
-    const goForward = () => {
-      goto(store.record.current.number + 1);
-    };
+const goEnd = () => {
+  goto(Number.MAX_SAFE_INTEGER);
+};
 
-    const goEnd = () => {
-      goto(Number.MAX_SAFE_INTEGER);
-    };
+const selectMove = (ply: number) => {
+  goto(ply);
+};
 
-    const selectMove = (ply: number) => {
-      goto(ply);
-    };
+const selectBranch = (index: number) => {
+  store.changeBranch(index);
+};
 
-    const selectBranch = (index: number) => {
-      store.changeBranch(index);
-    };
+const swapWithPreviousBranch = () => {
+  store.swapWithPreviousBranch();
+};
 
-    const swapWithPreviousBranch = () => {
-      store.swapWithPreviousBranch();
-    };
+const swapWithNextBranch = () => {
+  store.swapWithNextBranch();
+};
 
-    const swapWithNextBranch = () => {
-      store.swapWithNextBranch();
-    };
+const onToggleElapsedTime = (enabled: boolean) => {
+  appSetting.updateAppSetting({
+    showElapsedTimeInRecordView: enabled,
+  });
+};
 
-    const onToggleElapsedTime = (event: Event) => {
-      const checkbox = event.target as HTMLInputElement;
-      appSetting.updateAppSetting({
-        showElapsedTimeInRecordView: checkbox.checked,
-      });
-    };
+const onToggleComment = (enabled: boolean) => {
+  appSetting.updateAppSetting({
+    showCommentInRecordView: enabled,
+  });
+};
 
-    const onToggleComment = (event: Event) => {
-      const checkbox = event.target as HTMLInputElement;
-      appSetting.updateAppSetting({
-        showCommentInRecordView: checkbox.checked,
-      });
-    };
-
-    const isRecordOperational = computed(() => {
-      return (
-        store.appState === AppState.NORMAL ||
-        store.appState === AppState.RESEARCH
-      );
-    });
-
-    return {
-      t,
-      store,
-      appSetting,
-      root,
-      isRecordOperational,
-      goBegin,
-      goBack,
-      goForward,
-      goEnd,
-      selectMove,
-      selectBranch,
-      swapWithPreviousBranch,
-      swapWithNextBranch,
-      onToggleElapsedTime,
-      onToggleComment,
-    };
-  },
+const isRecordOperational = computed(() => {
+  return (
+    store.appState === AppState.NORMAL || store.appState === AppState.RESEARCH
+  );
 });
 </script>
 
@@ -156,22 +113,5 @@ export default defineComponent({
 .record {
   width: 100%;
   min-height: 0;
-  flex: auto;
-}
-.options {
-  width: 100%;
-  margin-top: 2px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-.option {
-  white-space: nowrap;
-  padding: 0 6px 0 6px;
-  margin-right: 4px;
-  background-color: var(--main-bg-color);
-  text-shadow: 1px 1px 2px var(--main-bg-color), 1px 0 2px var(--main-bg-color),
-    1px -1px 2px var(--main-bg-color), 0 1px 2px var(--main-bg-color),
-    0 -1px 2px var(--main-bg-color), -1px 1px 2px var(--main-bg-color),
-    -1px 0 2px var(--main-bg-color), -1px -1px 2px var(--main-bg-color);
 }
 </style>

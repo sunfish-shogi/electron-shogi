@@ -98,7 +98,6 @@ type Texts = {
   language: string;
   theme: string;
   standard: string;
-  standardGreen: string;
   green: string;
   cherryBlossom: string;
   customImage: string;
@@ -195,8 +194,7 @@ type Texts = {
   adjustBoardToHumanPlayer: string;
   adjustBoardAutomatically: string;
   startGame: string;
-  startCriteria: string;
-  endCriteria: string;
+  startEndCriteria: string;
   endCriteria1Move: string;
   outputSettings: string;
   noOutputs: string;
@@ -277,6 +275,7 @@ type Texts = {
   bgContain: string;
   bgTile: string;
   typeCustomTitleHere: string;
+  displayEmptyElements: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
   canOpenLogDirectoryFromMenu: string;
@@ -401,7 +400,7 @@ const ja: Texts = {
   gameProgress: "対局の経過",
   allGamesCompleted: "連続対局終了",
   gameEnded: "対局終了",
-  offlineGame: "オフライン対局",
+  offlineGame: "ローカル対局",
   csaOnlineGame: "通信対局（CSA）",
   csaProtocolOnlineGame: "通信対局（CSAプロトコル）",
   csaProtocolV121: "CSAプロトコル1.2.1 標準",
@@ -443,7 +442,6 @@ const ja: Texts = {
   language: "言語",
   theme: "テーマ",
   standard: "標準",
-  standardGreen: "標準（緑）",
   green: "緑",
   cherryBlossom: "桜",
   customImage: "カスタム画像",
@@ -538,10 +536,9 @@ const ja: Texts = {
   outputComments: "コメントを出力する",
   saveRecordAutomatically: "棋譜を自動で保存する",
   adjustBoardToHumanPlayer: "人を手前に表示する",
-  adjustBoardAutomatically: "盤面の向きを自動で調整する",
+  adjustBoardAutomatically: "盤面の向きを自動調整",
   startGame: "対局開始",
-  startCriteria: "開始条件",
-  endCriteria: "終了条件",
+  startEndCriteria: "開始・終了条件",
   endCriteria1Move: "局面ごとの終了条件",
   outputSettings: "出力設定",
   noOutputs: "出力しない",
@@ -622,6 +619,7 @@ const ja: Texts = {
   bgContain: "拡大して表示",
   bgTile: "タイル状に表示",
   typeCustomTitleHere: "ここに見出しを入力",
+  displayEmptyElements: "未入力の項目を表示",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
   shouldRestartToApplyLogSettings:
@@ -818,7 +816,6 @@ const en: Texts = {
   language: "Languages",
   theme: "Theme",
   standard: "Standard",
-  standardGreen: "Standard (Green)",
   green: "Green",
   cherryBlossom: "Cherry Blossom",
   customImage: "Custom Image",
@@ -915,8 +912,7 @@ const en: Texts = {
   adjustBoardToHumanPlayer: "Adjust Board to Human Player",
   adjustBoardAutomatically: "Adjust Board Automatically",
   startGame: "Start Game",
-  startCriteria: "Start Criteria",
-  endCriteria: "End Criteria",
+  startEndCriteria: "Start/End Criteria",
   endCriteria1Move: "End Criteria for 1 Move",
   outputSettings: "Output Settings",
   noOutputs: "No Outputs",
@@ -997,6 +993,7 @@ const en: Texts = {
   bgContain: "Contain",
   bgTile: "Tile",
   typeCustomTitleHere: "Type custom title here",
+  displayEmptyElements: "Display Empty Elements",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
   shouldRestartToApplyLogSettings:

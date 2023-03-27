@@ -48,7 +48,7 @@
   />
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { filter as filterString } from "@/common/helpers/string";
 import api from "@/renderer/ipc/api";
@@ -58,14 +58,7 @@ import {
   USIEngineSettings,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
-import {
-  ref,
-  onMounted,
-  defineComponent,
-  Ref,
-  onBeforeUnmount,
-  computed,
-} from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import USIEngineOptionDialog from "@/renderer/view/dialog/USIEngineOptionDialog.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import {
@@ -74,135 +67,107 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 
-export default defineComponent({
-  name: "USIEngineManagementDialog",
-  components: {
-    USIEngineOptionDialog,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const optionDialog: Ref<USIEngineSetting | null> = ref(null);
-    const setting = ref(new USIEngineSettings());
-    const filter: Ref = ref(null);
-    const filterWords: Ref<string[]> = ref([]);
+const store = useStore();
+const dialog = ref();
+const optionDialog = ref(null as USIEngineSetting | null);
+const setting = ref(new USIEngineSettings());
+const filter = ref();
+const filterWords = ref([] as string[]);
 
-    store.retainBussyState();
+store.retainBussyState();
 
-    onMounted(async () => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-      try {
-        setting.value = await api.loadUSIEngineSetting();
-      } catch (e) {
-        store.pushError(e);
-        store.destroyModalDialog();
-      } finally {
-        store.releaseBussyState();
-      }
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    const engines = computed(() =>
-      setting.value.engineList.map((engine) => {
-        return {
-          uri: engine.uri,
-          name: engine.name,
-          visible:
-            filterWords.value.length == 0 ||
-            filterString(engine.name, filterWords.value) ||
-            filterString(engine.defaultName, filterWords.value),
-        };
-      })
-    );
-
-    const updateFilter = () => {
-      filterWords.value = String(filter.value.value)
-        .trim()
-        .split(/ +/)
-        .filter((s) => s);
-    };
-
-    const add = async () => {
-      try {
-        store.retainBussyState();
-        const path = await api.showSelectUSIEngineDialog();
-        if (!path) {
-          return;
-        }
-        const appSetting = useAppSetting();
-        const timeoutSeconds = appSetting.engineTimeoutSeconds;
-        setting.value.addEngine(
-          await api.getUSIEngineInfo(path, timeoutSeconds)
-        );
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    const remove = (uri: string) => {
-      setting.value.removeEngine(uri);
-    };
-
-    const openOptions = (uri: string) => {
-      optionDialog.value = setting.value.getEngine(uri) as USIEngineSetting;
-    };
-
-    const duplicate = (uri: string) => {
-      const src = setting.value.getEngine(uri) as USIEngineSetting;
-      const engine = duplicateEngineSetting(src);
-      setting.value.addEngine(engine);
-    };
-
-    const saveAndClose = async () => {
-      try {
-        store.retainBussyState();
-        await api.saveUSIEngineSetting(setting.value as USIEngineSettings);
-        store.destroyModalDialog();
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    const cancel = () => {
-      store.closeModalDialog();
-    };
-
-    const optionOk = (engine: USIEngineSetting) => {
-      setting.value.updateEngine(engine);
-      optionDialog.value = null;
-    };
-
-    const optionCancel = () => {
-      optionDialog.value = null;
-    };
-
-    return {
-      t,
-      optionDialog,
-      dialog,
-      setting,
-      filter,
-      engines,
-      updateFilter,
-      add,
-      remove,
-      openOptions,
-      duplicate,
-      saveAndClose,
-      cancel,
-      optionOk,
-      optionCancel,
-    };
-  },
+onMounted(async () => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
+  try {
+    setting.value = await api.loadUSIEngineSetting();
+  } catch (e) {
+    store.pushError(e);
+    store.destroyModalDialog();
+  } finally {
+    store.releaseBussyState();
+  }
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+
+const engines = computed(() =>
+  setting.value.engineList.map((engine) => {
+    return {
+      uri: engine.uri,
+      name: engine.name,
+      visible:
+        filterWords.value.length == 0 ||
+        filterString(engine.name, filterWords.value) ||
+        filterString(engine.defaultName, filterWords.value),
+    };
+  })
+);
+
+const updateFilter = () => {
+  filterWords.value = String(filter.value.value)
+    .trim()
+    .split(/ +/)
+    .filter((s) => s);
+};
+
+const add = async () => {
+  try {
+    store.retainBussyState();
+    const path = await api.showSelectUSIEngineDialog();
+    if (!path) {
+      return;
+    }
+    const appSetting = useAppSetting();
+    const timeoutSeconds = appSetting.engineTimeoutSeconds;
+    setting.value.addEngine(await api.getUSIEngineInfo(path, timeoutSeconds));
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
+
+const remove = (uri: string) => {
+  setting.value.removeEngine(uri);
+};
+
+const openOptions = (uri: string) => {
+  optionDialog.value = setting.value.getEngine(uri) as USIEngineSetting;
+};
+
+const duplicate = (uri: string) => {
+  const src = setting.value.getEngine(uri) as USIEngineSetting;
+  const engine = duplicateEngineSetting(src);
+  setting.value.addEngine(engine);
+};
+
+const saveAndClose = async () => {
+  try {
+    store.retainBussyState();
+    await api.saveUSIEngineSetting(setting.value as USIEngineSettings);
+    store.destroyModalDialog();
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
+
+const cancel = () => {
+  store.closeModalDialog();
+};
+
+const optionOk = (engine: USIEngineSetting) => {
+  setting.value.updateEngine(engine);
+  optionDialog.value = null;
+};
+
+const optionCancel = () => {
+  optionDialog.value = null;
+};
 </script>
 
 <style scoped>

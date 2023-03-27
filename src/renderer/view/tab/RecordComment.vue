@@ -3,7 +3,7 @@
     <div class="full column">
       <textarea
         ref="textarea"
-        class="text"
+        class="auto text"
         :value="comment"
         :readonly="readonly"
         @input="change"
@@ -29,11 +29,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
-import { computed, defineComponent, onMounted, ref, Ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import PVPreviewDialog from "@/renderer/view/dialog/PVPreviewDialog.vue";
 import { IconType } from "@/renderer/assets/icons";
@@ -44,68 +44,44 @@ type Preview = {
   pv: string[];
 };
 
-export default defineComponent({
-  name: "RecordComment",
-  components: {
-    Icon,
-    PVPreviewDialog,
-  },
-  setup() {
-    const store = useStore();
-    const readonly = computed(
-      () =>
-        store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH
-    );
-    const textarea: Ref = ref(null);
-    const comment = computed(() => store.record.current.comment);
-    const pvs = computed(() => store.inCommentPVs);
-    const preview = ref<Preview | null>(null);
+const store = useStore();
+const readonly = computed(
+  () => store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH
+);
+const textarea = ref();
+const comment = computed(() => store.record.current.comment);
+const pvs = computed(() => store.inCommentPVs);
+const preview = ref<Preview | null>(null);
 
-    const change = (event: Event) => {
-      const comment = (event.target as HTMLTextAreaElement).value;
-      store.updateRecordComment(comment);
-    };
+const change = (event: Event) => {
+  const comment = (event.target as HTMLTextAreaElement).value;
+  store.updateRecordComment(comment);
+};
 
-    const play = (pv: Move[]) => {
-      preview.value = {
-        position: store.record.position.sfen,
-        pv: pv.map((move) => move.usi),
-      };
-    };
+const play = (pv: Move[]) => {
+  preview.value = {
+    position: store.record.position.sfen,
+    pv: pv.map((move) => move.usi),
+  };
+};
 
-    const closePreview = () => {
-      preview.value = null;
-    };
+const closePreview = () => {
+  preview.value = null;
+};
 
-    onMounted(() => {
-      textarea.value.addEventListener("copy", (event: ClipboardEvent) => {
-        event.stopPropagation();
-      });
-      textarea.value.addEventListener("paste", (event: ClipboardEvent) => {
-        event.stopPropagation();
-      });
-    });
-
-    return {
-      t,
-      IconType,
-      comment,
-      pvs,
-      textarea,
-      readonly,
-      preview,
-      change,
-      play,
-      closePreview,
-    };
-  },
+onMounted(() => {
+  textarea.value.addEventListener("copy", (event: ClipboardEvent) => {
+    event.stopPropagation();
+  });
+  textarea.value.addEventListener("paste", (event: ClipboardEvent) => {
+    event.stopPropagation();
+  });
 });
 </script>
 
 <style scoped>
 .text {
   width: 100%;
-  flex-grow: 1;
   resize: none;
   box-sizing: border-box;
 }

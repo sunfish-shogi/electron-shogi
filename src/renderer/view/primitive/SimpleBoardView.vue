@@ -54,9 +54,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { Move, ImmutablePosition, Piece } from "@/common/shogi";
-import { computed, defineComponent, PropType } from "vue";
+import { computed, PropType } from "vue";
 import { RectSize } from "@/common/graphics";
 
 const pieceImageMap = {
@@ -102,242 +102,223 @@ function buildParams(size: number) {
   };
 }
 
-export default defineComponent({
-  name: "SimpleBoardView",
-  props: {
-    maxSize: {
-      type: RectSize,
-      required: true,
-    },
-    position: {
-      type: Object as PropType<ImmutablePosition>,
-      required: true,
-    },
-    header: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    footer: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    lastMove: {
-      type: Object as PropType<Move | null>,
-      required: false,
-      default: null,
-    },
+const props = defineProps({
+  maxSize: {
+    type: RectSize,
+    required: true,
   },
-  emits: ["resize"],
-  setup(props) {
-    const layout = computed(() => {
-      const param = buildParams(
-        Math.min(props.maxSize.width, props.maxSize.height)
-      );
+  position: {
+    type: Object as PropType<ImmutablePosition>,
+    required: true,
+  },
+  header: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  footer: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  lastMove: {
+    type: Object as PropType<Move | null>,
+    required: false,
+    default: null,
+  },
+});
+
+const layout = computed(() => {
+  const param = buildParams(
+    Math.min(props.maxSize.width, props.maxSize.height)
+  );
+  return {
+    frameStyle: {
+      width: `${param.size}px`,
+      height: `${param.size}px`,
+    },
+    headerStyle: {
+      transform: "translate(-50%, 0%)",
+      left: `${param.headerX}px`,
+      top: `${param.headerY}px`,
+      "font-size": `${param.fontSize}px`,
+    },
+    footerStyle: {
+      left: `${param.footerX}px`,
+      top: `${param.footerY}px`,
+      "font-size": `${param.fontSize}px`,
+    },
+    boardStyle: {
+      left: `${param.boardLeft - param.boardBorderSize}px`,
+      top: `${param.boardTop - param.boardBorderSize}px`,
+    },
+    boardImageStyle: {
+      width: `${param.boardSize + param.boardBorderSize * 2}px`,
+      height: `${param.boardSize + param.boardBorderSize * 2}px`,
+    },
+    files: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((file) => {
       return {
-        frameStyle: {
-          width: `${param.size}px`,
-          height: `${param.size}px`,
+        style: {
+          left: `${param.fileLeft + param.pieceSize * (9 - file)}px`,
+          top: `${param.fileTop}px`,
         },
-        headerStyle: {
-          transform: "translate(-50%, 0%)",
-          left: `${param.headerX}px`,
-          top: `${param.headerY}px`,
-          "font-size": `${param.fontSize}px`,
+        image: `./character/arabic_numerals/${file}.png`,
+      };
+    }),
+    fileImageStyle: {
+      width: `${param.labelSize}px`,
+      height: `${param.labelSize}px`,
+    },
+    ranks: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((rank) => {
+      return {
+        style: {
+          left: `${param.rankLeft}px`,
+          top: `${param.rankTop + param.pieceSize * (rank - 1)}px`,
         },
-        footerStyle: {
-          left: `${param.footerX}px`,
-          top: `${param.footerY}px`,
-          "font-size": `${param.fontSize}px`,
+        image: `./character/numerals/${rank}.png`,
+      };
+    }),
+    rankImageStyle: {
+      width: `${param.labelSize}px`,
+      height: `${param.labelSize}px`,
+    },
+    lastMoveStyle: (function () {
+      if (!props.lastMove) {
+        return null;
+      }
+      const square = props.lastMove.to;
+      return {
+        "background-color": "gold",
+        left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
+        top: `${param.boardTop + (param.boardSize * square.y) / 9}px`,
+        width: `${param.pieceSize}px`,
+        height: `${param.pieceSize}px`,
+      };
+    })(),
+    boardPieces: props.position.board.listNonEmptySquares().map((square) => {
+      const piece = props.position.board.at(square) as Piece;
+      return {
+        id: `${square.x},${square.y}`,
+        style: {
+          left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
+          top: `${param.boardTop + (param.boardSize * square.y) / 9}px`,
         },
-        boardStyle: {
-          left: `${param.boardLeft - param.boardBorderSize}px`,
-          top: `${param.boardTop - param.boardBorderSize}px`,
+        imageStyle: {
+          width: `${param.pieceSize}px`,
+          height: `${param.pieceSize}px`,
+          transform: piece.color === "white" ? "rotate(180deg)" : undefined,
         },
-        boardImageStyle: {
-          width: `${param.boardSize + param.boardBorderSize * 2}px`,
-          height: `${param.boardSize + param.boardBorderSize * 2}px`,
-        },
-        files: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((file) => {
-          return {
-            style: {
-              left: `${param.fileLeft + param.pieceSize * (9 - file)}px`,
-              top: `${param.fileTop}px`,
-            },
-            image: `./character/arabic_numerals/${file}.png`,
-          };
-        }),
-        fileImageStyle: {
-          width: `${param.labelSize}px`,
-          height: `${param.labelSize}px`,
-        },
-        ranks: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((rank) => {
-          return {
-            style: {
-              left: `${param.rankLeft}px`,
-              top: `${param.rankTop + param.pieceSize * (rank - 1)}px`,
-            },
-            image: `./character/numerals/${rank}.png`,
-          };
-        }),
-        rankImageStyle: {
-          width: `${param.labelSize}px`,
-          height: `${param.labelSize}px`,
-        },
-        lastMoveStyle: (function () {
-          if (!props.lastMove) {
-            return null;
-          }
-          const square = props.lastMove.to;
-          return {
-            "background-color": "gold",
-            left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
-            top: `${param.boardTop + (param.boardSize * square.y) / 9}px`,
-            width: `${param.pieceSize}px`,
-            height: `${param.pieceSize}px`,
-          };
-        })(),
-        boardPieces: props.position.board
-          .listNonEmptySquares()
-          .map((square) => {
-            const piece = props.position.board.at(square) as Piece;
-            return {
-              id: `${square.x},${square.y}`,
-              style: {
-                left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
-                top: `${param.boardTop + (param.boardSize * square.y) / 9}px`,
-              },
-              imageStyle: {
-                width: `${param.pieceSize}px`,
-                height: `${param.pieceSize}px`,
-                transform:
-                  piece.color === "white" ? "rotate(180deg)" : undefined,
-              },
-              image: pieceImageMap[piece.type],
-            };
-          }),
-        blackHandImageStyle: {
-          width: `${param.handSize}px`,
-          height: "auto",
-        },
-        blackHandSymbol: {
+        image: pieceImageMap[piece.type],
+      };
+    }),
+    blackHandImageStyle: {
+      width: `${param.handSize}px`,
+      height: "auto",
+    },
+    blackHandSymbol: {
+      style: {
+        left: `${param.blackHandLeft}px`,
+        top: `${param.blackHandTop}px`,
+      },
+      image: "./character/turns/black.png",
+    },
+    blackHandPieces: (function () {
+      const list = [];
+      for (const { type, count } of props.position.blackHand.counts) {
+        if (count === 0) {
+          continue;
+        }
+        list.push({
+          id: type,
           style: {
             left: `${param.blackHandLeft}px`,
-            top: `${param.blackHandTop}px`,
+            top: `${param.blackHandTop + param.handSize * (list.length + 1)}px`,
           },
-          image: "./character/turns/black.png",
-        },
-        blackHandPieces: (function () {
-          const list = [];
-          for (const { type, count } of props.position.blackHand.counts) {
-            if (count === 0) {
-              continue;
-            }
-            list.push({
-              id: type,
-              style: {
-                left: `${param.blackHandLeft}px`,
-                top: `${
-                  param.blackHandTop + param.handSize * (list.length + 1)
-                }px`,
-              },
-              image: `./piece/gothic/${type}.png`,
-            });
-            if (count === 1) {
-              continue;
-            }
-            list.push({
-              id: `${type}-number`,
-              style: {
-                left: `${param.blackHandLeft}px`,
-                top: `${
-                  param.blackHandTop + param.handSize * (list.length + 1)
-                }px`,
-              },
-              image: `./character/numerals/${count}.png`,
-            });
-          }
-          if (list.length === 0) {
-            return [
-              {
-                id: "empty",
-                style: {
-                  left: `${param.blackHandLeft}px`,
-                  top: `${param.blackHandTop + param.handSize}px`,
-                },
-                image: "./character/hand/nashi.png",
-              },
-            ];
-          }
-          return list;
-        })(),
-        whiteHandImageStyle: {
-          width: `${param.handSize}px`,
-          height: "auto",
-          transform: "rotate(180deg)",
-        },
-        whiteHandSymbol: {
+          image: `./piece/gothic/${type}.png`,
+        });
+        if (count === 1) {
+          continue;
+        }
+        list.push({
+          id: `${type}-number`,
+          style: {
+            left: `${param.blackHandLeft}px`,
+            top: `${param.blackHandTop + param.handSize * (list.length + 1)}px`,
+          },
+          image: `./character/numerals/${count}.png`,
+        });
+      }
+      if (list.length === 0) {
+        return [
+          {
+            id: "empty",
+            style: {
+              left: `${param.blackHandLeft}px`,
+              top: `${param.blackHandTop + param.handSize}px`,
+            },
+            image: "./character/hand/nashi.png",
+          },
+        ];
+      }
+      return list;
+    })(),
+    whiteHandImageStyle: {
+      width: `${param.handSize}px`,
+      height: "auto",
+      transform: "rotate(180deg)",
+    },
+    whiteHandSymbol: {
+      style: {
+        left: `${param.whiteHandLeft}px`,
+        top: `${param.whiteHandTop}px`,
+        transform: "translate(0%, -100%)",
+      },
+      image: "./character/turns/white.png",
+    },
+    whiteHandPieces: (function () {
+      const list = [];
+      for (const { type, count } of props.position.whiteHand.counts) {
+        if (count === 0) {
+          continue;
+        }
+        list.push({
+          id: type,
           style: {
             left: `${param.whiteHandLeft}px`,
-            top: `${param.whiteHandTop}px`,
+            top: `${param.whiteHandTop - param.handSize * (list.length + 1)}px`,
             transform: "translate(0%, -100%)",
           },
-          image: "./character/turns/white.png",
-        },
-        whiteHandPieces: (function () {
-          const list = [];
-          for (const { type, count } of props.position.whiteHand.counts) {
-            if (count === 0) {
-              continue;
-            }
-            list.push({
-              id: type,
-              style: {
-                left: `${param.whiteHandLeft}px`,
-                top: `${
-                  param.whiteHandTop - param.handSize * (list.length + 1)
-                }px`,
-                transform: "translate(0%, -100%)",
-              },
-              image: `./piece/gothic/${type}.png`,
-            });
-            if (count === 1) {
-              continue;
-            }
-            list.push({
-              id: `${type}-number`,
-              style: {
-                left: `${param.whiteHandLeft}px`,
-                top: `${
-                  param.whiteHandTop - param.handSize * (list.length + 1)
-                }px`,
-                transform: "translate(0%, -100%)",
-              },
-              image: `./character/numerals/${count}.png`,
-            });
-          }
-          if (list.length === 0) {
-            return [
-              {
-                id: "empty",
-                style: {
-                  left: `${param.whiteHandLeft}px`,
-                  top: `${param.whiteHandTop - param.handSize}px`,
-                  transform: "translate(0%, -100%)",
-                },
-                image: "./character/hand/nashi.png",
-              },
-            ];
-          }
-          return list;
-        })(),
-      };
-    });
-    return {
-      layout,
-    };
-  },
+          image: `./piece/gothic/${type}.png`,
+        });
+        if (count === 1) {
+          continue;
+        }
+        list.push({
+          id: `${type}-number`,
+          style: {
+            left: `${param.whiteHandLeft}px`,
+            top: `${param.whiteHandTop - param.handSize * (list.length + 1)}px`,
+            transform: "translate(0%, -100%)",
+          },
+          image: `./character/numerals/${count}.png`,
+        });
+      }
+      if (list.length === 0) {
+        return [
+          {
+            id: "empty",
+            style: {
+              left: `${param.whiteHandLeft}px`,
+              top: `${param.whiteHandTop - param.handSize}px`,
+              transform: "translate(0%, -100%)",
+            },
+            image: "./character/hand/nashi.png",
+          },
+        ];
+      }
+      return list;
+    })(),
+  };
 });
 </script>
 

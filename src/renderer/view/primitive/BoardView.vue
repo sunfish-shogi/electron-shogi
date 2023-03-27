@@ -128,7 +128,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   PieceType,
   Square,
@@ -137,7 +137,7 @@ import {
   Move,
   ImmutablePosition,
 } from "@/common/shogi";
-import { computed, reactive, watch, defineComponent, PropType } from "vue";
+import { computed, reactive, watch, PropType } from "vue";
 import {
   BoardImageType,
   BoardLabelType,
@@ -153,314 +153,292 @@ type State = {
   reservedMove: Move | null;
 };
 
-export default defineComponent({
-  name: "BoardView",
-  props: {
-    pieceImageType: {
-      type: String as PropType<PieceImageType>,
-      required: true,
-    },
-    boardImageType: {
-      type: String as PropType<BoardImageType>,
-      required: true,
-    },
-    customBoardImageUrl: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    pieceStandImageType: {
-      type: String as PropType<PieceStandImageType>,
-      required: true,
-    },
-    customPieceStandImageUrl: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    boardLabelType: {
-      type: String as PropType<BoardLabelType>,
-      required: true,
-    },
-    maxSize: {
-      type: RectSize,
-      required: true,
-    },
-    position: {
-      type: Object as PropType<ImmutablePosition>,
-      required: true,
-    },
-    lastMove: {
-      type: Object as PropType<Move | null>,
-      required: false,
-      default: null,
-    },
-    flip: {
-      type: Boolean,
-      required: false,
-    },
-    allowEdit: {
-      type: Boolean,
-      required: false,
-    },
-    allowMove: {
-      type: Boolean,
-      required: false,
-    },
-    blackPlayerName: {
-      type: String,
-      required: false,
-      default: "先手",
-    },
-    whitePlayerName: {
-      type: String,
-      required: false,
-      default: "後手",
-    },
-    blackPlayerTime: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-    blackPlayerByoyomi: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-    whitePlayerTime: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-    whitePlayerByoyomi: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-    nextMoveLabel: {
-      type: String,
-      required: false,
-      default: "手番",
-    },
+const props = defineProps({
+  pieceImageType: {
+    type: String as PropType<PieceImageType>,
+    required: true,
   },
-  emits: ["resize", "move", "edit"],
-  setup(props, context) {
-    const state = reactive({
-      pointer: null,
-      reservedMove: null,
-    } as State);
-
-    const resetState = () => {
-      state.pointer = null;
-      state.reservedMove = null;
-    };
-
-    watch(
-      [() => props.position, () => props.allowEdit, () => props.allowMove],
-      () => {
-        resetState();
-      }
-    );
-
-    const clickFrame = () => {
-      resetState();
-    };
-
-    const updatePointer = (
-      newPointer: Square | Piece,
-      empty: boolean,
-      color: Color | undefined
-    ) => {
-      const prevPointer = state.pointer;
-      resetState();
-      if (
-        newPointer instanceof Square &&
-        prevPointer instanceof Square &&
-        newPointer.equals(prevPointer)
-      ) {
-        return;
-      }
-      if (
-        newPointer instanceof Piece &&
-        prevPointer instanceof Piece &&
-        newPointer.equals(prevPointer)
-      ) {
-        return;
-      }
-      if (prevPointer) {
-        const editFrom = prevPointer;
-        const editTo =
-          newPointer instanceof Square ? newPointer : newPointer.color;
-        if (
-          props.allowEdit &&
-          props.position.isValidEditing(editFrom, editTo)
-        ) {
-          context.emit("edit", {
-            move: {
-              from: prevPointer,
-              to: editTo,
-            },
-          });
-          return;
-        }
-        if (props.allowMove && newPointer instanceof Square) {
-          const moveFrom =
-            prevPointer instanceof Square ? prevPointer : prevPointer.type;
-          const moveTo = newPointer;
-          const move = props.position.createMove(moveFrom, moveTo);
-          if (!move) {
-            return;
-          }
-          const noProm = props.position.isValidMove(move);
-          const prom = props.position.isValidMove(move.withPromote());
-          if (noProm && prom) {
-            state.reservedMove = move;
-            return;
-          }
-          if (noProm) {
-            context.emit("move", move);
-            return;
-          }
-          if (prom) {
-            context.emit("move", move.withPromote());
-            return;
-          }
-        }
-      }
-      if ((!props.allowMove && !props.allowEdit) || empty) {
-        return;
-      }
-      if (!props.allowEdit && color !== props.position.color) {
-        return;
-      }
-      state.pointer = newPointer;
-    };
-
-    const clickSquare = (event: Event, file: number, rank: number) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const square = new Square(file, rank);
-      const piece = props.position.board.at(square);
-      const empty = !piece;
-      updatePointer(square, empty, piece?.color);
-    };
-
-    const clickHand = (event: Event, color: Color, type: PieceType) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const empty = props.position.hand(color).count(type) === 0;
-      updatePointer(new Piece(color, type), empty, color);
-    };
-
-    const clickSquareR = (event: Event, file: number, rank: number) => {
-      event.stopPropagation();
-      event.preventDefault();
-      resetState();
-      const square = new Square(file, rank);
-      if (props.allowEdit && props.position.board.at(square)) {
-        context.emit("edit", { rotate: square });
-      }
-    };
-
-    const clickPromote = (event: Event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const move = state.reservedMove;
-      resetState();
-      if (move && props.position.isValidMove(move.withPromote())) {
-        context.emit("move", move.withPromote());
-      }
-    };
-
-    const clickNotPromote = (event: Event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const move = state.reservedMove;
-      resetState();
-      if (move && props.position.isValidMove(move)) {
-        context.emit("move", move);
-      }
-    };
-
-    const layoutBuilder = computed(() => {
-      const builder = new LayoutBuilder(
-        props.pieceImageType,
-        props.boardImageType,
-        props.pieceStandImageType,
-        props.boardLabelType,
-        props.customBoardImageUrl,
-        props.customPieceStandImageUrl
-      );
-      builder.preload();
-      return builder;
-    });
-
-    const layout = computed(() => {
-      const layout = layoutBuilder.value.build(
-        props.maxSize,
-        props.position,
-        props.lastMove,
-        state.pointer,
-        state.reservedMove,
-        props.flip
-      );
-      context.emit("resize", layout.frame.size);
-      return layout;
-    });
-
-    const formatTime = (time?: number, byoyomi?: number): string => {
-      if (time) {
-        return secondsToHMMSS(time);
-      } else if (byoyomi !== undefined) {
-        return "" + byoyomi;
-      }
-      return "0:00:00";
-    };
-
-    const timeSeverity = (time?: number, byoyomi?: number) => {
-      if (!time && !byoyomi) {
-        return "normal";
-      }
-      const rem = (time || 0) + (byoyomi || 0);
-      if (rem <= 5) {
-        return "danger";
-      } else if (rem <= 10) {
-        return "warning";
-      }
-      return "normal";
-    };
-
-    const blackPlayerTimeText = computed(() => {
-      return formatTime(props.blackPlayerTime, props.blackPlayerByoyomi);
-    });
-
-    const blackPlayerTimeSeverity = computed(() => {
-      return timeSeverity(props.blackPlayerTime, props.blackPlayerByoyomi);
-    });
-
-    const whitePlayerTimeText = computed(() => {
-      return formatTime(props.whitePlayerTime, props.whitePlayerByoyomi);
-    });
-
-    const whitePlayerTimeSeverity = computed(() => {
-      return timeSeverity(props.whitePlayerTime, props.whitePlayerByoyomi);
-    });
-
-    return {
-      clickFrame,
-      clickSquare,
-      clickHand,
-      clickSquareR,
-      clickPromote,
-      clickNotPromote,
-      layout,
-      blackPlayerTimeText,
-      blackPlayerTimeSeverity,
-      whitePlayerTimeText,
-      whitePlayerTimeSeverity,
-      Color,
-    };
+  boardImageType: {
+    type: String as PropType<BoardImageType>,
+    required: true,
   },
+  customBoardImageUrl: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  pieceStandImageType: {
+    type: String as PropType<PieceStandImageType>,
+    required: true,
+  },
+  customPieceStandImageUrl: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  boardLabelType: {
+    type: String as PropType<BoardLabelType>,
+    required: true,
+  },
+  maxSize: {
+    type: RectSize,
+    required: true,
+  },
+  position: {
+    type: Object as PropType<ImmutablePosition>,
+    required: true,
+  },
+  lastMove: {
+    type: Object as PropType<Move | null>,
+    required: false,
+    default: null,
+  },
+  flip: {
+    type: Boolean,
+    required: false,
+  },
+  allowEdit: {
+    type: Boolean,
+    required: false,
+  },
+  allowMove: {
+    type: Boolean,
+    required: false,
+  },
+  blackPlayerName: {
+    type: String,
+    required: false,
+    default: "先手",
+  },
+  whitePlayerName: {
+    type: String,
+    required: false,
+    default: "後手",
+  },
+  blackPlayerTime: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  blackPlayerByoyomi: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  whitePlayerTime: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  whitePlayerByoyomi: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  nextMoveLabel: {
+    type: String,
+    required: false,
+    default: "手番",
+  },
+});
+
+const emit = defineEmits(["resize", "move", "edit"]);
+
+const state = reactive({
+  pointer: null,
+  reservedMove: null,
+} as State);
+
+const resetState = () => {
+  state.pointer = null;
+  state.reservedMove = null;
+};
+
+watch(
+  [() => props.position, () => props.allowEdit, () => props.allowMove],
+  () => {
+    resetState();
+  }
+);
+
+const clickFrame = () => {
+  resetState();
+};
+
+const updatePointer = (
+  newPointer: Square | Piece,
+  empty: boolean,
+  color: Color | undefined
+) => {
+  const prevPointer = state.pointer;
+  resetState();
+  if (
+    newPointer instanceof Square &&
+    prevPointer instanceof Square &&
+    newPointer.equals(prevPointer)
+  ) {
+    return;
+  }
+  if (
+    newPointer instanceof Piece &&
+    prevPointer instanceof Piece &&
+    newPointer.equals(prevPointer)
+  ) {
+    return;
+  }
+  if (prevPointer) {
+    const editFrom = prevPointer;
+    const editTo = newPointer instanceof Square ? newPointer : newPointer.color;
+    if (props.allowEdit && props.position.isValidEditing(editFrom, editTo)) {
+      emit("edit", {
+        move: {
+          from: prevPointer,
+          to: editTo,
+        },
+      });
+      return;
+    }
+    if (props.allowMove && newPointer instanceof Square) {
+      const moveFrom =
+        prevPointer instanceof Square ? prevPointer : prevPointer.type;
+      const moveTo = newPointer;
+      const move = props.position.createMove(moveFrom, moveTo);
+      if (!move) {
+        return;
+      }
+      const noProm = props.position.isValidMove(move);
+      const prom = props.position.isValidMove(move.withPromote());
+      if (noProm && prom) {
+        state.reservedMove = move;
+        return;
+      }
+      if (noProm) {
+        emit("move", move);
+        return;
+      }
+      if (prom) {
+        emit("move", move.withPromote());
+        return;
+      }
+    }
+  }
+  if ((!props.allowMove && !props.allowEdit) || empty) {
+    return;
+  }
+  if (!props.allowEdit && color !== props.position.color) {
+    return;
+  }
+  state.pointer = newPointer;
+};
+
+const clickSquare = (event: Event, file: number, rank: number) => {
+  event.stopPropagation();
+  event.preventDefault();
+  const square = new Square(file, rank);
+  const piece = props.position.board.at(square);
+  const empty = !piece;
+  updatePointer(square, empty, piece?.color);
+};
+
+const clickHand = (event: Event, color: Color, type: PieceType) => {
+  event.stopPropagation();
+  event.preventDefault();
+  const empty = props.position.hand(color).count(type) === 0;
+  updatePointer(new Piece(color, type), empty, color);
+};
+
+const clickSquareR = (event: Event, file: number, rank: number) => {
+  event.stopPropagation();
+  event.preventDefault();
+  resetState();
+  const square = new Square(file, rank);
+  if (props.allowEdit && props.position.board.at(square)) {
+    emit("edit", { rotate: square });
+  }
+};
+
+const clickPromote = (event: Event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  const move = state.reservedMove;
+  resetState();
+  if (move && props.position.isValidMove(move.withPromote())) {
+    emit("move", move.withPromote());
+  }
+};
+
+const clickNotPromote = (event: Event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  const move = state.reservedMove;
+  resetState();
+  if (move && props.position.isValidMove(move)) {
+    emit("move", move);
+  }
+};
+
+const layoutBuilder = computed(() => {
+  const builder = new LayoutBuilder(
+    props.pieceImageType,
+    props.boardImageType,
+    props.pieceStandImageType,
+    props.boardLabelType,
+    props.customBoardImageUrl,
+    props.customPieceStandImageUrl
+  );
+  builder.preload();
+  return builder;
+});
+
+const layout = computed(() => {
+  const layout = layoutBuilder.value.build(
+    props.maxSize,
+    props.position,
+    props.lastMove,
+    state.pointer,
+    state.reservedMove,
+    props.flip
+  );
+  emit("resize", layout.frame.size);
+  return layout;
+});
+
+const formatTime = (time?: number, byoyomi?: number): string => {
+  if (time) {
+    return secondsToHMMSS(time);
+  } else if (byoyomi !== undefined) {
+    return "" + byoyomi;
+  }
+  return "0:00:00";
+};
+
+const timeSeverity = (time?: number, byoyomi?: number) => {
+  if (!time && !byoyomi) {
+    return "normal";
+  }
+  const rem = (time || 0) + (byoyomi || 0);
+  if (rem <= 5) {
+    return "danger";
+  } else if (rem <= 10) {
+    return "warning";
+  }
+  return "normal";
+};
+
+const blackPlayerTimeText = computed(() => {
+  return formatTime(props.blackPlayerTime, props.blackPlayerByoyomi);
+});
+
+const blackPlayerTimeSeverity = computed(() => {
+  return timeSeverity(props.blackPlayerTime, props.blackPlayerByoyomi);
+});
+
+const whitePlayerTimeText = computed(() => {
+  return formatTime(props.whitePlayerTime, props.whitePlayerByoyomi);
+});
+
+const whitePlayerTimeSeverity = computed(() => {
+  return timeSeverity(props.whitePlayerTime, props.whitePlayerByoyomi);
 });
 </script>
 

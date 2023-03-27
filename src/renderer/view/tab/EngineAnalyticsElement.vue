@@ -83,7 +83,7 @@
             {{ iterate.upperBound ? "--" : "" }}
             {{ iterate.scoreMate ? t.mateShort : "" }}
           </div>
-          <div class="list-column text">
+          <div class="grow list-column text">
             <button
               v-if="iterate.pv && iterate.pv.length !== 0 && iterate.text"
               @click="showPreview(iterate)"
@@ -106,10 +106,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { USIIteration, USIPlayerMonitor } from "@/renderer/store/usi";
-import { computed, defineComponent, ref } from "vue";
+import { computed, ref } from "vue";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import PVPreviewDialog from "@/renderer/view/dialog/PVPreviewDialog.vue";
@@ -123,117 +123,97 @@ type Preview = {
   infos: string[];
 };
 
-export default defineComponent({
-  name: "EngineAnalyticsElement",
-  components: {
-    Icon,
-    PVPreviewDialog,
+const props = defineProps({
+  historyMode: {
+    type: Boolean,
+    required: true,
   },
-  props: {
-    historyMode: {
-      type: Boolean,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    info: {
-      type: USIPlayerMonitor,
-      required: true,
-    },
-    height: {
-      type: Number,
-      required: true,
-    },
+  name: {
+    type: String,
+    required: true,
   },
-  setup: (props) => {
-    const enableHighlight = computed(() => {
-      if (!props.historyMode) {
-        return false;
-      }
-      for (const iterate of props.info.iterates) {
-        if (iterate.multiPV && iterate.multiPV !== 1) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    const preview = ref<Preview | null>(null);
-
-    const evaluationViewFrom = computed(() => {
-      return useAppSetting().evaluationViewFrom;
-    });
-    const getDisplayScore = (
-      score: number,
-      color: Color,
-      evaluationViewFrom: EvaluationViewFrom
-    ) => {
-      return evaluationViewFrom === EvaluationViewFrom.EACH ||
-        color == Color.BLACK
-        ? score
-        : -score;
-    };
-
-    const showPreview = (ite: USIIteration) => {
-      const infos = [];
-      if (ite.depth !== undefined) {
-        infos.push(`深さ=${ite.depth}`);
-      }
-      if (ite.selectiveDepth !== undefined) {
-        infos.push(`選択的深さ=${ite.selectiveDepth}`);
-      }
-      if (ite.score) {
-        infos.push(
-          `評価値=${getDisplayScore(
-            ite.score,
-            ite.color,
-            evaluationViewFrom.value
-          )}`
-        );
-        if (ite.lowerBound) {
-          infos.push("（下界値）");
-        }
-        if (ite.upperBound) {
-          infos.push("（上界値）");
-        }
-      }
-      if (ite.scoreMate) {
-        infos.push(
-          `詰み手数=${getDisplayScore(
-            ite.scoreMate,
-            ite.color,
-            evaluationViewFrom.value
-          )}`
-        );
-      }
-      if (ite.multiPV) {
-        infos.push(`順位=${ite.multiPV}`);
-      }
-      preview.value = {
-        position: ite.position,
-        pv: ite.pv || [],
-        infos: [infos.join(" / ")],
-      };
-    };
-
-    const closePreview = () => {
-      preview.value = null;
-    };
-
-    return {
-      t,
-      IconType,
-      enableHighlight,
-      preview,
-      evaluationViewFrom,
-      getDisplayScore,
-      showPreview,
-      closePreview,
-    };
+  info: {
+    type: USIPlayerMonitor,
+    required: true,
+  },
+  height: {
+    type: Number,
+    required: true,
   },
 });
+
+const enableHighlight = computed(() => {
+  if (!props.historyMode) {
+    return false;
+  }
+  for (const iterate of props.info.iterates) {
+    if (iterate.multiPV && iterate.multiPV !== 1) {
+      return true;
+    }
+  }
+  return false;
+});
+
+const preview = ref<Preview | null>(null);
+
+const evaluationViewFrom = computed(() => {
+  return useAppSetting().evaluationViewFrom;
+});
+const getDisplayScore = (
+  score: number,
+  color: Color,
+  evaluationViewFrom: EvaluationViewFrom
+) => {
+  return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK
+    ? score
+    : -score;
+};
+
+const showPreview = (ite: USIIteration) => {
+  const infos = [];
+  if (ite.depth !== undefined) {
+    infos.push(`深さ=${ite.depth}`);
+  }
+  if (ite.selectiveDepth !== undefined) {
+    infos.push(`選択的深さ=${ite.selectiveDepth}`);
+  }
+  if (ite.score) {
+    infos.push(
+      `評価値=${getDisplayScore(
+        ite.score,
+        ite.color,
+        evaluationViewFrom.value
+      )}`
+    );
+    if (ite.lowerBound) {
+      infos.push("（下界値）");
+    }
+    if (ite.upperBound) {
+      infos.push("（上界値）");
+    }
+  }
+  if (ite.scoreMate) {
+    infos.push(
+      `詰み手数=${getDisplayScore(
+        ite.scoreMate,
+        ite.color,
+        evaluationViewFrom.value
+      )}`
+    );
+  }
+  if (ite.multiPV) {
+    infos.push(`順位=${ite.multiPV}`);
+  }
+  preview.value = {
+    position: ite.position,
+    pv: ite.pv || [],
+    infos: [infos.join(" / ")],
+  };
+};
+
+const closePreview = () => {
+  preview.value = null;
+};
 </script>
 
 <style scoped>
@@ -309,7 +289,6 @@ export default defineComponent({
   text-align: left;
 }
 .list-column.text {
-  flex: 1;
   text-align: left;
   text-overflow: ellipsis;
 }

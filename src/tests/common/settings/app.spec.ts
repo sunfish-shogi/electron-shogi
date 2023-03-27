@@ -63,6 +63,7 @@ describe("settings/csa", () => {
       lastUSIEngineFilePath: "",
       lastImageExportFilePath: "",
       lastOtherFilePath: "",
+      emptyRecordInfoVisibility: true,
     };
     const result = normalizeAppSetting(setting, {
       returnCode: "\r\n",

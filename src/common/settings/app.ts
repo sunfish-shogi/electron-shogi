@@ -135,6 +135,7 @@ export type AppSetting = {
   lastUSIEngineFilePath: string;
   lastImageExportFilePath: string;
   lastOtherFilePath: string;
+  emptyRecordInfoVisibility: boolean;
 };
 
 export type AppSettingUpdate = {
@@ -184,6 +185,7 @@ export type AppSettingUpdate = {
   lastUSIEngineFilePath?: string;
   lastImageExportFilePath?: string;
   lastOtherFilePath?: string;
+  emptyRecordInfoVisibility?: boolean;
 };
 
 export function buildUpdatedAppSetting(
@@ -270,6 +272,7 @@ export function defaultAppSetting(opt?: {
     lastUSIEngineFilePath: "",
     lastImageExportFilePath: "",
     lastOtherFilePath: "",
+    emptyRecordInfoVisibility: true,
   };
 }
 

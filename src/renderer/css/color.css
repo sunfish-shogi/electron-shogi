@@ -43,6 +43,14 @@
   --bussy-dialog-color: white;
   --bussy-dialog-bg-color: dimgray;
   --bussy-dialog-border-color: white;
+  --control-shadow-color: #2c2c2c;
+  --selector-color: black;
+  --selector-bg-color: #e0ebe0;
+  --pushed-selector-color: white;
+  --pushed-selector-bg-color: #4b704b;
+  --toggle-knob-color: white;
+  --toggle-active-color: #5bd75b;
+  --toggle-inactive-color: darkgray;
 }
 
 .cherry-blossom {
@@ -90,6 +98,14 @@
   --bussy-dialog-color: white;
   --bussy-dialog-bg-color: dimgray;
   --bussy-dialog-border-color: white;
+  --control-shadow-color: #2c2c2c;
+  --selector-color: black;
+  --selector-bg-color: #f4dddd;
+  --pushed-selector-color: white;
+  --pushed-selector-bg-color: #d06868;
+  --toggle-knob-color: white;
+  --toggle-active-color: #5bd75b;
+  --toggle-inactive-color: darkgray;
 }
 
 .autumn {
@@ -137,6 +153,14 @@
   --bussy-dialog-color: white;
   --bussy-dialog-bg-color: dimgray;
   --bussy-dialog-border-color: white;
+  --control-shadow-color: #2c2c2c;
+  --selector-color: black;
+  --selector-bg-color: #e9d3af;
+  --pushed-selector-color: white;
+  --pushed-selector-bg-color: #566132;
+  --toggle-knob-color: white;
+  --toggle-active-color: #e1e469;
+  --toggle-inactive-color: darkgray;
 }
 
 .snow {
@@ -184,6 +208,14 @@
   --bussy-dialog-color: white;
   --bussy-dialog-bg-color: dimgray;
   --bussy-dialog-border-color: white;
+  --control-shadow-color: #2c2c2c;
+  --selector-color: black;
+  --selector-bg-color: #c8d4ec;
+  --pushed-selector-color: white;
+  --pushed-selector-bg-color: #6384c9;
+  --toggle-knob-color: white;
+  --toggle-active-color: #4a70c0;
+  --toggle-inactive-color: darkgray;
 }
 
 .dark {
@@ -231,4 +263,12 @@
   --bussy-dialog-color: white;
   --bussy-dialog-bg-color: dimgray;
   --bussy-dialog-border-color: white;
+  --control-shadow-color: black;
+  --selector-color: white;
+  --selector-bg-color: #3c3c3c;
+  --pushed-selector-color: white;
+  --pushed-selector-bg-color: #547272;
+  --toggle-knob-color: #ddd;
+  --toggle-active-color: #259625;
+  --toggle-inactive-color: #5c5c5c;
 }

@@ -6,6 +6,23 @@
         <!-- 表示 -->
         <div class="section">
           <div class="section-title">{{ t.view }}</div>
+          <!-- 言語 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.language }}</div>
+            <HorizontalSelector
+              class="selector"
+              :value="language"
+              :items="[
+                { label: '日本語', value: Language.JA },
+                { label: 'English', value: Language.EN },
+              ]"
+              @change="
+                (value) => {
+                  language = value;
+                }
+              "
+            />
+          </div>
           <div class="form-group warning">
             <div class="note">
               翻訳の改善にご協力ください。 We'd like your help to translate.
@@ -15,157 +32,166 @@
               change the language.
             </div>
           </div>
-          <!-- 言語 -->
-          <div class="form-item">
-            <div class="form-item-label-wide">{{ t.language }}</div>
-            <select ref="language" :value="appSetting.language">
-              <option :value="Language.JA">日本語</option>
-              <option :value="Language.EN">English</option>
-            </select>
-          </div>
           <!-- テーマ -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.theme }}</div>
-            <select ref="thema" :value="appSetting.thema">
-              <option :value="Thema.STANDARD">{{ t.standardGreen }}</option>
-              <option :value="Thema.CHERRY_BLOSSOM">
-                {{ t.cherryBlossom }}
-              </option>
-              <option :value="Thema.AUTUMN">{{ t.autumn }}</option>
-              <option :value="Thema.SNOW">{{ t.snow }}</option>
-              <option :value="Thema.DARK">{{ t.dark }}</option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="thema"
+              :items="[
+                { label: t.green, value: Thema.STANDARD },
+                { label: t.cherryBlossom, value: Thema.CHERRY_BLOSSOM },
+                { label: t.autumn, value: Thema.AUTUMN },
+                { label: t.snow, value: Thema.SNOW },
+                { label: t.dark, value: Thema.DARK },
+              ]"
+              @change="
+                (value) => {
+                  thema = value;
+                }
+              "
+            />
           </div>
           <!-- 背景画像 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.backgroundImage }}</div>
-            <select
-              ref="backgroundImageType"
-              :value="appSetting.backgroundImageType"
-              @change="onChangeBackgroundImageType"
-            >
-              <option :value="BackgroundImageType.NONE">{{ t.none }}</option>
-              <option :value="BackgroundImageType.COVER">
-                {{ t.bgCover }}
-              </option>
-              <option :value="BackgroundImageType.CONTAIN">
-                {{ t.bgContain }}
-              </option>
-              <option :value="BackgroundImageType.TILE">{{ t.bgTile }}</option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="backgroundImageType"
+              :items="[
+                { label: t.none, value: BackgroundImageType.NONE },
+                { label: t.bgCover, value: BackgroundImageType.COVER },
+                { label: t.bgContain, value: BackgroundImageType.CONTAIN },
+                { label: t.bgTile, value: BackgroundImageType.TILE },
+              ]"
+              @change="
+                (value) => {
+                  backgroundImageType = value;
+                }
+              "
+            />
           </div>
           <div
             ref="backgroundImageSelector"
             class="form-item"
             :class="{
-              hidden:
-                appSetting.backgroundImageType === BackgroundImageType.NONE,
+              hidden: backgroundImageType === BackgroundImageType.NONE,
             }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
               :default-url="appSetting.backgroundImageFileURL"
-              @select="selectBackgroundImageFile"
+              @select="(url) => (backgroundImageFileURL = url)"
             />
           </div>
           <!-- 駒画像 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.piece }}</div>
-            <select ref="pieceImage" :value="appSetting.pieceImage">
-              <option :value="PieceImageType.HITOMOJI">
-                {{ t.singleKanjiPiece }}
-              </option>
-              <option :value="PieceImageType.HITOMOJI_GOTHIC">
-                {{ t.singleKanjiGothicPiece }}
-              </option>
-              <option :value="PieceImageType.HITOMOJI_DARK">
-                {{ t.singleKanjiDarkPiece }}
-              </option>
-              <option :value="PieceImageType.HITOMOJI_GOTHIC_DARK">
-                {{ t.singleKanjiGothicDarkPiece }}
-              </option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="pieceImage"
+              :items="[
+                { label: t.singleKanjiPiece, value: PieceImageType.HITOMOJI },
+                {
+                  label: t.singleKanjiGothicPiece,
+                  value: PieceImageType.HITOMOJI_GOTHIC,
+                },
+                {
+                  label: t.singleKanjiDarkPiece,
+                  value: PieceImageType.HITOMOJI_DARK,
+                },
+                {
+                  label: t.singleKanjiGothicDarkPiece,
+                  value: PieceImageType.HITOMOJI_GOTHIC_DARK,
+                },
+              ]"
+              @change="
+                (value) => {
+                  pieceImage = value;
+                }
+              "
+            />
           </div>
           <!-- 盤画像 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.board }}</div>
-            <select
-              ref="boardImage"
-              :value="appSetting.boardImage"
-              @change="onChangeBoardImage"
-            >
-              <option :value="BoardImageType.LIGHT">
-                {{ t.lightWoodyTexture }}
-              </option>
-              <option :value="BoardImageType.WARM">
-                {{ t.warmWoodTexture }}
-              </option>
-              <option :value="BoardImageType.RESIN">{{ t.regin }}</option>
-              <option :value="BoardImageType.RESIN2">{{ t.regin }}2</option>
-              <option :value="BoardImageType.RESIN3">{{ t.regin }}3</option>
-              <option :value="BoardImageType.DARK">{{ t.dark }}</option>
-              <option :value="BoardImageType.GREEN">{{ t.green }}</option>
-              <option :value="BoardImageType.CHERRY_BLOSSOM">
-                {{ t.cherryBlossom }}
-              </option>
-              <option :value="BoardImageType.CUSTOM_IMAGE">
-                {{ t.customImage }}
-              </option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="boardImage"
+              :items="[
+                { label: t.lightWoodyTexture, value: BoardImageType.LIGHT },
+                { label: t.warmWoodTexture, value: BoardImageType.WARM },
+                { label: t.regin, value: BoardImageType.RESIN },
+                { label: t.regin + '2', value: BoardImageType.RESIN2 },
+                { label: t.regin + '3', value: BoardImageType.RESIN3 },
+                { label: t.dark, value: BoardImageType.DARK },
+                { label: t.green, value: BoardImageType.GREEN },
+                {
+                  label: t.cherryBlossom,
+                  value: BoardImageType.CHERRY_BLOSSOM,
+                },
+                { label: t.customImage, value: BoardImageType.CUSTOM_IMAGE },
+              ]"
+              @change="
+                (value) => {
+                  boardImage = value;
+                }
+              "
+            />
           </div>
           <div
             ref="boardImageSelector"
             class="form-item"
             :class="{
-              hidden: appSetting.boardImage !== BoardImageType.CUSTOM_IMAGE,
+              hidden: boardImage !== BoardImageType.CUSTOM_IMAGE,
             }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
               :default-url="appSetting.boardImageFileURL"
-              @select="selectBoardImageFile"
+              @select="(url) => (boardImageFileURL = url)"
             />
           </div>
           <!-- 駒台画像 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.pieceStand }}</div>
-            <select
-              ref="pieceStandImage"
-              :value="appSetting.pieceStandImage"
-              @change="onChangePieceStandImage"
-            >
-              <option :value="PieceStandImageType.STANDARD">
-                {{ t.standard }}
-              </option>
-              <option :value="PieceStandImageType.DARK">
-                {{ t.dark }}
-              </option>
-              <option :value="PieceStandImageType.GREEN">
-                {{ t.green }}
-              </option>
-              <option :value="PieceStandImageType.CHERRY_BLOSSOM">
-                {{ t.cherryBlossom }}
-              </option>
-              <option :value="PieceStandImageType.CUSTOM_IMAGE">
-                {{ t.customImage }}
-              </option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="pieceStandImage"
+              :items="[
+                { label: t.standard, value: PieceStandImageType.STANDARD },
+                { label: t.dark, value: PieceStandImageType.DARK },
+                { label: t.green, value: PieceStandImageType.GREEN },
+                {
+                  label: t.cherryBlossom,
+                  value: PieceStandImageType.CHERRY_BLOSSOM,
+                },
+                {
+                  label: t.customImage,
+                  value: PieceStandImageType.CUSTOM_IMAGE,
+                },
+              ]"
+              @change="
+                (value) => {
+                  pieceStandImage = value;
+                }
+              "
+            />
           </div>
           <div
             ref="pieceStandImageSelector"
             class="form-item"
             :class="{
-              hidden:
-                appSetting.pieceStandImage !== PieceStandImageType.CUSTOM_IMAGE,
+              hidden: pieceStandImage !== PieceStandImageType.CUSTOM_IMAGE,
             }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
               :default-url="appSetting.pieceStandImageFileURL"
-              @select="selectPieceStandImageFile"
+              @select="(url) => (pieceStandImageFileURL = url)"
             />
           </div>
           <!-- 段・筋の表示 -->
@@ -173,48 +199,47 @@
             <div class="form-item-label-wide">
               {{ t.displayFileAndRank }}
             </div>
-            <input
-              ref="displayBoardLabels"
-              class="toggle"
-              :checked="appSetting.boardLabelType != BoardLabelType.NONE"
-              type="checkbox"
+            <ToggleButton
+              :value="displayBoardLabels"
+              @change="(checked) => (displayBoardLabels = checked)"
             />
           </div>
           <!-- 左コントロールの表示 -->
-          <div :class="{ hidden: !isNative }" class="form-item">
+          <div :class="{ hidden: !isNative() }" class="form-item">
             <div class="form-item-label-wide">
               {{ t.displayLeftControls }}
             </div>
-            <input
-              ref="displayLeftSideControls"
-              class="toggle"
-              :checked="
-                appSetting.leftSideControlType != LeftSideControlType.NONE
-              "
-              type="checkbox"
+            <ToggleButton
+              :value="displayLeftSideControls"
+              @change="(checked) => (displayLeftSideControls = checked)"
             />
           </div>
           <!-- 右コントロールの表示 -->
-          <div :class="{ hidden: !isNative }" class="form-item">
+          <div :class="{ hidden: !isNative() }" class="form-item">
             <div class="form-item-label-wide">
               {{ t.displayRightControls }}
             </div>
-            <input
-              ref="displayRightSideControls"
-              class="toggle"
-              :checked="
-                appSetting.rightSideControlType != RightSideControlType.NONE
-              "
-              type="checkbox"
+            <ToggleButton
+              :value="displayRightSideControls"
+              @change="(checked) => (displayRightSideControls = checked)"
             />
           </div>
           <!-- タブビューの形式 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.tabViewStyle }}</div>
-            <select ref="tabPaneType" :value="appSetting.tabPaneType">
-              <option :value="TabPaneType.SINGLE">{{ t.oneColumn }}</option>
-              <option :value="TabPaneType.DOUBLE">{{ t.twoColumns }}</option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="tabPaneType"
+              :items="[
+                { label: t.oneColumn, value: TabPaneType.SINGLE },
+                { label: t.twoColumns, value: TabPaneType.DOUBLE },
+              ]"
+              @change="
+                (value) => {
+                  tabPaneType = value;
+                }
+              "
+            />
           </div>
         </div>
         <hr />
@@ -311,11 +336,9 @@
             <div class="form-item-label-wide">
               {{ t.translateOptionName }}
             </div>
-            <input
-              ref="translateEngineOptionName"
-              class="toggle"
-              :checked="appSetting.translateEngineOptionName"
-              type="checkbox"
+            <ToggleButton
+              :value="translateEngineOptionName"
+              @change="(checked) => (translateEngineOptionName = checked)"
             />
             <div class="form-item-unit">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
@@ -431,58 +454,61 @@
         <div class="section">
           <div class="section-title">{{ t.forDevelopers }}</div>
           <div class="form-group warning">
-            <div v-if="!isNative" class="note">
+            <div v-if="!isNative()" class="note">
               {{ t.inBrowserLogsOutputToConsoleAndIgnoreThisSetting }}
             </div>
-            <div v-if="isNative" class="note">
+            <div v-if="isNative()" class="note">
               {{ t.shouldRestartToApplyLogSettings }}
             </div>
-            <div v-if="isNative" class="note">
+            <div v-if="isNative()" class="note">
               {{ t.canOpenLogDirectoryFromMenu }}
             </div>
-            <div v-if="isNative" class="note">
+            <div v-if="isNative()" class="note">
               {{ t.hasNoOldLogCleanUpFeature }}
             </div>
           </div>
           <!-- アプリログを出力 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.enableAppLog }}</div>
-            <input
-              ref="enableAppLog"
-              class="toggle"
-              :checked="appSetting.enableAppLog"
-              type="checkbox"
+            <ToggleButton
+              :value="enableAppLog"
+              @change="(checked) => (enableAppLog = checked)"
             />
           </div>
           <!-- USI通信ログを出力 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.enableUSILog }}</div>
-            <input
-              ref="enableUSILog"
-              class="toggle"
-              :checked="appSetting.enableUSILog"
-              type="checkbox"
+            <ToggleButton
+              :value="enableUSILog"
+              @change="(checked) => (enableUSILog = checked)"
             />
           </div>
           <!-- CSA通信ログを出力 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.enableCSALog }}</div>
-            <input
-              ref="enableCSALog"
-              class="toggle"
-              :checked="appSetting.enableCSALog"
-              type="checkbox"
+            <ToggleButton
+              :value="enableCSALog"
+              @change="(checked) => (enableCSALog = checked)"
             />
           </div>
           <!-- ログレベル -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.logLevel }}</div>
-            <select ref="logLevel" :value="appSetting.logLevel">
-              <option :value="LogLevel.DEBUG">DEBUG</option>
-              <option :value="LogLevel.INFO">INFO</option>
-              <option :value="LogLevel.WARN">WARN</option>
-              <option :value="LogLevel.ERROR">ERROR</option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="logLevel"
+              :items="[
+                { label: 'DEBUG', value: LogLevel.DEBUG },
+                { label: 'INFO', value: LogLevel.INFO },
+                { label: 'WARN', value: LogLevel.WARN },
+                { label: 'ERROR', value: LogLevel.ERROR },
+              ]"
+              @change="
+                (value) => {
+                  logLevel = value;
+                }
+              "
+            />
           </div>
         </div>
       </div>
@@ -498,7 +524,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t, Language } from "@/common/i18n";
 import {
   PieceImageType,
@@ -514,8 +540,9 @@ import {
   BackgroundImageType,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
+import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useStore } from "@/renderer/store";
-import { ref, defineComponent, onMounted, Ref, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api, { isNative } from "@/renderer/ipc/api";
@@ -525,6 +552,7 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
+import HorizontalSelector from "../primitive/HorizontalSelector.vue";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -538,241 +566,140 @@ const nameToReturnCode: { [name: string]: string } = {
   cr: "\r",
 };
 
-export default defineComponent({
-  name: "AppSettingDialog",
-  components: {
-    ImageSelector,
-  },
-  setup() {
-    const store = useStore();
-    const appSetting = useAppSetting();
-    const dialog: Ref = ref(null);
-    const language: Ref = ref(null);
-    const thema: Ref = ref(null);
-    const backgroundImageType: Ref = ref(null);
-    const backgroundImageSelector: Ref = ref(null);
-    const pieceImage: Ref = ref(null);
-    const boardImage: Ref = ref(null);
-    const boardImageSelector: Ref = ref(null);
-    const pieceStandImage: Ref = ref(null);
-    const pieceStandImageSelector: Ref = ref(null);
-    const displayBoardLabels: Ref = ref(null);
-    const displayLeftSideControls: Ref = ref(null);
-    const displayRightSideControls: Ref = ref(null);
-    const tabPaneType: Ref = ref(null);
-    const pieceVolume: Ref = ref(null);
-    const clockVolume: Ref = ref(null);
-    const clockPitch: Ref = ref(null);
-    const clockSoundTarget: Ref = ref(null);
-    const returnCode: Ref = ref(null);
-    const autoSaveDirectory: Ref = ref(null);
-    const translateEngineOptionName: Ref = ref(null);
-    const engineTimeoutSeconds: Ref = ref(null);
-    const evaluationViewFrom: Ref = ref(null);
-    const coefficientInSigmoid: Ref = ref(null);
-    const badMoveLevelThreshold1: Ref = ref(null);
-    const badMoveLevelThreshold2: Ref = ref(null);
-    const badMoveLevelThreshold3: Ref = ref(null);
-    const badMoveLevelThreshold4: Ref = ref(null);
-    const enableAppLog: Ref = ref(null);
-    const enableUSILog: Ref = ref(null);
-    const enableCSALog: Ref = ref(null);
-    const logLevel: Ref = ref(null);
-    let backgroundImageFileURL = appSetting.backgroundImageFileURL;
-    let boardImageFileURL = appSetting.boardImageFileURL;
-    let pieceStandImageFileURL = appSetting.pieceStandImageFileURL;
+const store = useStore();
+const appSetting = useAppSetting();
+const dialog = ref();
+const language = ref(appSetting.language);
+const thema = ref(appSetting.thema);
+const backgroundImageType = ref(appSetting.backgroundImageType);
+const backgroundImageSelector = ref();
+const pieceImage = ref(appSetting.pieceImage);
+const boardImage = ref(appSetting.boardImage);
+const boardImageSelector = ref();
+const pieceStandImage = ref(appSetting.pieceStandImage);
+const pieceStandImageSelector = ref();
+const displayBoardLabels = ref(
+  appSetting.boardLabelType != BoardLabelType.NONE
+);
+const displayLeftSideControls = ref(
+  appSetting.leftSideControlType != LeftSideControlType.NONE
+);
+const displayRightSideControls = ref(
+  appSetting.rightSideControlType != RightSideControlType.NONE
+);
+const tabPaneType = ref(appSetting.tabPaneType);
+const pieceVolume = ref();
+const clockVolume = ref();
+const clockPitch = ref();
+const clockSoundTarget = ref();
+const returnCode = ref();
+const autoSaveDirectory = ref();
+const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
+const engineTimeoutSeconds = ref();
+const evaluationViewFrom = ref();
+const coefficientInSigmoid = ref();
+const badMoveLevelThreshold1 = ref();
+const badMoveLevelThreshold2 = ref();
+const badMoveLevelThreshold3 = ref();
+const badMoveLevelThreshold4 = ref();
+const enableAppLog = ref(appSetting.enableAppLog);
+const enableUSILog = ref(appSetting.enableUSILog);
+const enableCSALog = ref(appSetting.enableCSALog);
+const logLevel = ref(appSetting.logLevel);
+const backgroundImageFileURL = ref(appSetting.backgroundImageFileURL);
+const boardImageFileURL = ref(appSetting.boardImageFileURL);
+const pieceStandImageFileURL = ref(appSetting.pieceStandImageFileURL);
 
-    onMounted(() => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    const saveAndClose = async () => {
-      const update: AppSettingUpdate = {
-        language: language.value.value,
-        thema: thema.value.value,
-        backgroundImageType: backgroundImageType.value.value,
-        pieceImage: pieceImage.value.value,
-        boardImage: boardImage.value.value,
-        pieceStandImage: pieceStandImage.value.value,
-        boardLabelType: displayBoardLabels.value.checked
-          ? BoardLabelType.STANDARD
-          : BoardLabelType.NONE,
-        leftSideControlType: displayLeftSideControls.value.checked
-          ? LeftSideControlType.STANDARD
-          : LeftSideControlType.NONE,
-        rightSideControlType: displayRightSideControls.value.checked
-          ? RightSideControlType.STANDARD
-          : RightSideControlType.NONE,
-        tabPaneType: tabPaneType.value.value,
-        pieceVolume: readInputAsNumber(pieceVolume.value),
-        clockVolume: readInputAsNumber(clockVolume.value),
-        clockPitch: readInputAsNumber(clockPitch.value),
-        clockSoundTarget: clockSoundTarget.value.value,
-        returnCode: nameToReturnCode[returnCode.value.value],
-        autoSaveDirectory: autoSaveDirectory.value.value,
-        translateEngineOptionName: translateEngineOptionName.value.checked,
-        engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
-        evaluationViewFrom: evaluationViewFrom.value.value,
-        coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
-        badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
-        badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
-        badMoveLevelThreshold3: readInputAsNumber(badMoveLevelThreshold3.value),
-        badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
-        enableAppLog: enableAppLog.value.checked,
-        enableUSILog: enableUSILog.value.checked,
-        enableCSALog: enableCSALog.value.checked,
-        logLevel: logLevel.value.value,
-      };
-      if (update.backgroundImageType !== BackgroundImageType.NONE) {
-        update.backgroundImageFileURL = backgroundImageFileURL;
-      }
-      if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
-        update.boardImageFileURL = boardImageFileURL;
-      }
-      if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
-        update.pieceStandImageFileURL = pieceStandImageFileURL;
-      }
-      store.retainBussyState();
-      try {
-        await useAppSetting().updateAppSetting(update);
-        store.closeAppSettingDialog();
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    const onChangeBackgroundImageType = () => {
-      const formItem = backgroundImageSelector.value as HTMLElement;
-      if (backgroundImageType.value.value !== BackgroundImageType.NONE) {
-        formItem.classList.remove("hidden");
-      } else {
-        formItem.classList.add("hidden");
-      }
-    };
-
-    const selectBackgroundImageFile = (url: string) => {
-      backgroundImageFileURL = url;
-    };
-
-    const onChangeBoardImage = () => {
-      const formItem = boardImageSelector.value as HTMLElement;
-      if (boardImage.value.value === BoardImageType.CUSTOM_IMAGE) {
-        formItem.classList.remove("hidden");
-      } else {
-        formItem.classList.add("hidden");
-      }
-    };
-
-    const selectBoardImageFile = (url: string) => {
-      boardImageFileURL = url;
-    };
-
-    const onChangePieceStandImage = () => {
-      const formItem = pieceStandImageSelector.value as HTMLElement;
-      if (pieceStandImage.value.value === PieceStandImageType.CUSTOM_IMAGE) {
-        formItem.classList.remove("hidden");
-      } else {
-        formItem.classList.add("hidden");
-      }
-    };
-
-    const selectPieceStandImageFile = (url: string) => {
-      pieceStandImageFileURL = url;
-    };
-
-    const selectAutoSaveDirectory = async () => {
-      store.retainBussyState();
-      try {
-        const path = await api.showSelectDirectoryDialog(
-          autoSaveDirectory.value.value
-        );
-        if (path) {
-          autoSaveDirectory.value.value = path;
-        }
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    const cancel = () => {
-      store.closeAppSettingDialog();
-    };
-
-    return {
-      t,
-      Language,
-      Thema,
-      BackgroundImageType,
-      PieceImageType,
-      BoardImageType,
-      PieceStandImageType,
-      BoardLabelType,
-      LeftSideControlType,
-      RightSideControlType,
-      TabPaneType,
-      EvaluationViewFrom,
-      LogLevel,
-      dialog,
-      language,
-      thema,
-      backgroundImageType,
-      backgroundImageSelector,
-      pieceImage,
-      boardImage,
-      boardImageSelector,
-      pieceStandImage,
-      pieceStandImageSelector,
-      displayBoardLabels,
-      displayLeftSideControls,
-      displayRightSideControls,
-      tabPaneType,
-      pieceVolume,
-      clockVolume,
-      clockPitch,
-      clockSoundTarget,
-      returnCode,
-      autoSaveDirectory,
-      translateEngineOptionName,
-      engineTimeoutSeconds,
-      evaluationViewFrom,
-      coefficientInSigmoid,
-      badMoveLevelThreshold1,
-      badMoveLevelThreshold2,
-      badMoveLevelThreshold3,
-      badMoveLevelThreshold4,
-      enableAppLog,
-      enableUSILog,
-      enableCSALog,
-      logLevel,
-      appSetting,
-      returnCodeToName,
-      isNative: isNative(),
-      onChangeBackgroundImageType,
-      selectBackgroundImageFile,
-      onChangeBoardImage,
-      selectBoardImageFile,
-      onChangePieceStandImage,
-      selectPieceStandImageFile,
-      selectAutoSaveDirectory,
-      saveAndClose,
-      cancel,
-    };
-  },
+onMounted(() => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+
+const saveAndClose = async () => {
+  const update: AppSettingUpdate = {
+    language: language.value,
+    thema: thema.value,
+    backgroundImageType: backgroundImageType.value,
+    pieceImage: pieceImage.value,
+    boardImage: boardImage.value,
+    pieceStandImage: pieceStandImage.value,
+    boardLabelType: displayBoardLabels.value
+      ? BoardLabelType.STANDARD
+      : BoardLabelType.NONE,
+    leftSideControlType: displayLeftSideControls.value
+      ? LeftSideControlType.STANDARD
+      : LeftSideControlType.NONE,
+    rightSideControlType: displayRightSideControls.value
+      ? RightSideControlType.STANDARD
+      : RightSideControlType.NONE,
+    tabPaneType: tabPaneType.value,
+    pieceVolume: readInputAsNumber(pieceVolume.value),
+    clockVolume: readInputAsNumber(clockVolume.value),
+    clockPitch: readInputAsNumber(clockPitch.value),
+    clockSoundTarget: clockSoundTarget.value.value,
+    returnCode: nameToReturnCode[returnCode.value.value],
+    autoSaveDirectory: autoSaveDirectory.value.value,
+    translateEngineOptionName: translateEngineOptionName.value,
+    engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
+    evaluationViewFrom: evaluationViewFrom.value.value,
+    coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
+    badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
+    badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
+    badMoveLevelThreshold3: readInputAsNumber(badMoveLevelThreshold3.value),
+    badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
+    enableAppLog: enableAppLog.value,
+    enableUSILog: enableUSILog.value,
+    enableCSALog: enableCSALog.value,
+    logLevel: logLevel.value,
+  };
+  if (update.backgroundImageType !== BackgroundImageType.NONE) {
+    update.backgroundImageFileURL = backgroundImageFileURL.value;
+  }
+  if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
+    update.boardImageFileURL = boardImageFileURL.value;
+  }
+  if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
+    update.pieceStandImageFileURL = pieceStandImageFileURL.value;
+  }
+  store.retainBussyState();
+  try {
+    await useAppSetting().updateAppSetting(update);
+    store.closeAppSettingDialog();
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
+
+const selectAutoSaveDirectory = async () => {
+  store.retainBussyState();
+  try {
+    const path = await api.showSelectDirectoryDialog(
+      autoSaveDirectory.value.value
+    );
+    if (path) {
+      autoSaveDirectory.value.value = path;
+    }
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
+
+const cancel = () => {
+  store.closeAppSettingDialog();
+};
 </script>
 
 <style scoped>
 .settings {
-  width: 540px;
+  width: 590px;
   height: 540px;
 }
 .section {
@@ -792,5 +719,8 @@ input.file-path {
 .image-selector {
   display: inline-block;
   width: 200px;
+}
+.selector {
+  max-width: 400px;
 }
 </style>

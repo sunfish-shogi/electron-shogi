@@ -38,11 +38,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { useStore } from "@/renderer/store";
-import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import {
@@ -50,37 +50,21 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 
-export default defineComponent({
-  name: "InfoMessage",
-  components: {
-    Icon,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
+const store = useStore();
+const dialog = ref();
 
-    onMounted(() => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    const onClose = () => {
-      store.dequeueMessage();
-    };
-
-    return {
-      t,
-      dialog,
-      store,
-      onClose,
-      IconType,
-    };
-  },
+onMounted(() => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+
+const onClose = () => {
+  store.dequeueMessage();
+};
 </script>
 
 <style scoped>

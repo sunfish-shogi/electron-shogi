@@ -7,47 +7,38 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
 import api from "@/renderer/ipc/api";
 
-export default defineComponent({
-  name: "ImageSelector",
-  props: {
-    defaultUrl: {
-      type: String,
-      default: "",
-    },
-  },
-  emits: ["select"],
-  setup(props, { emit }) {
-    const store = useStore();
-    const url = ref(props.defaultUrl);
-
-    const select = async () => {
-      store.retainBussyState();
-      try {
-        const newURL = await api.showSelectImageDialog(url.value);
-        if (newURL) {
-          url.value = newURL;
-          emit("select", newURL);
-        }
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    return {
-      t,
-      url,
-      select,
-    };
+const props = defineProps({
+  defaultUrl: {
+    type: String,
+    default: "",
   },
 });
+
+const emit = defineEmits(["select"]);
+
+const store = useStore();
+const url = ref(props.defaultUrl);
+
+const select = async () => {
+  store.retainBussyState();
+  try {
+    const newURL = await api.showSelectImageDialog(url.value);
+    if (newURL) {
+      url.value = newURL;
+      emit("select", newURL);
+    }
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
 </script>
 
 <style scoped>

@@ -68,16 +68,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  Ref,
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  reactive,
-  ref,
-} from "vue";
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { t } from "@/common/i18n";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import SimpleBoardView from "@/renderer/view/primitive/SimpleBoardView.vue";
@@ -89,165 +81,123 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { Rect, RectSize } from "@/common/graphics";
-import {
-  Color,
-  Move,
-  RecordMetadataKey,
-  getMoveDisplayText,
-} from "@/common/shogi";
+import { Color, Move, getMoveDisplayText } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
 import { Lazy } from "@/renderer/helpers/lazy";
 import { PositionImageStyle } from "@/common/settings/app";
+import {
+  getBlackPlayerName,
+  getWhitePlayerName,
+} from "@/common/helpers/metadata";
 
 const lazyUpdateDelay = 100;
 const marginHor = 80;
 const marginVer = 150;
 const aspectRatio = 16 / 9;
 
-export default defineComponent({
-  name: "ExportBoardImageDialog",
-  components: {
-    BoardView,
-    SimpleBoardView,
-    Icon,
-  },
-  setup() {
-    const store = useStore();
-    const appSetting = useAppSetting();
-    const blackPlayerName = store.record.metadata.getStandardMetadata(
-      RecordMetadataKey.BLACK_NAME
-    );
-    const whitePlayerName = store.record.metadata.getStandardMetadata(
-      RecordMetadataKey.WHITE_NAME
-    );
-    const blackPlayerShortName = store.record.metadata.getStandardMetadata(
-      RecordMetadataKey.BLACK_SHORT_NAME
-    );
-    const whitePlayerShortName = store.record.metadata.getStandardMetadata(
-      RecordMetadataKey.WHITE_SHORT_NAME
-    );
-    const record = store.record;
-    const lastMove =
-      record.current.move instanceof Move ? record.current.move : null;
-    const dialog: Ref = ref(null);
-    const board: Ref = ref(null);
-    const imageSize: Ref = ref(null);
-    const headerText: Ref = ref(null);
-    const windowSize = reactive(
-      new RectSize(window.innerWidth, window.innerHeight)
-    );
-    const zoom = ref(window.devicePixelRatio);
-    const defaultHeader = lastMove
-      ? `${record.current.number}手目 ${getMoveDisplayText(
-          record.position,
-          lastMove
-        )}まで`
-      : record.current.nextColor === Color.BLACK
-      ? "先手番"
-      : "後手番";
+const store = useStore();
+const appSetting = useAppSetting();
+const blackPlayerName = computed(() =>
+  getBlackPlayerName(store.record.metadata)
+);
+const whitePlayerName = computed(() =>
+  getWhitePlayerName(store.record.metadata)
+);
+const record = store.record;
+const lastMove =
+  record.current.move instanceof Move ? record.current.move : null;
+const dialog = ref();
+const board = ref();
+const imageSize = ref();
+const headerText = ref();
+const windowSize = reactive(
+  new RectSize(window.innerWidth, window.innerHeight)
+);
+const zoom = ref(window.devicePixelRatio);
+const defaultHeader = lastMove
+  ? `${record.current.number}手目 ${getMoveDisplayText(
+      record.position,
+      lastMove
+    )}まで`
+  : record.current.nextColor === Color.BLACK
+  ? "先手番"
+  : "後手番";
 
-    const windowLazyUpdate = new Lazy();
-    const updateSize = () => {
-      windowLazyUpdate.after(() => {
-        windowSize.width = window.innerWidth;
-        windowSize.height = window.innerHeight;
-      }, lazyUpdateDelay);
-      zoom.value = window.devicePixelRatio;
-    };
+const windowLazyUpdate = new Lazy();
+const updateSize = () => {
+  windowLazyUpdate.after(() => {
+    windowSize.width = window.innerWidth;
+    windowSize.height = window.innerHeight;
+  }, lazyUpdateDelay);
+  zoom.value = window.devicePixelRatio;
+};
 
-    onMounted(() => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-      window.addEventListener("resize", updateSize);
-      imageSize.value.value = appSetting.positionImageSize;
-      headerText.value.value = appSetting.positionImageHeader;
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-      window.removeEventListener("resize", updateSize);
-    });
-
-    const maxSize = computed(() => {
-      const height = appSetting.positionImageSize / zoom.value;
-      const width = height * aspectRatio;
-      return new RectSize(
-        Math.min(width, windowSize.width - marginHor),
-        Math.min(height, windowSize.height - marginVer)
-      );
-    });
-
-    const changeSize = (e: Event) => {
-      const elem = e.target as HTMLInputElement;
-      appSetting.updateAppSetting({
-        positionImageSize: parseInt(elem.value) || 400,
-      });
-    };
-
-    const changeHeaderText = (e: Event) => {
-      const elem = e.target as HTMLInputElement;
-      appSetting.updateAppSetting({
-        positionImageHeader: elem.value,
-      });
-    };
-
-    const changeType = (e: Event) => {
-      const elem = e.target as HTMLSelectElement;
-      appSetting.updateAppSetting({
-        positionImageStyle: elem.value as PositionImageStyle,
-      });
-    };
-
-    const getRect = () => {
-      const elem = board.value as HTMLElement;
-      const domRect = elem.getBoundingClientRect();
-      return new Rect(domRect.x, domRect.y, domRect.width, domRect.height);
-    };
-
-    const saveAsPNG = () => {
-      api.exportCaptureAsPNG(getRect()).catch((e) => {
-        store.pushError(e);
-      });
-    };
-
-    const saveAsJPEG = () => {
-      api.exportCaptureAsJPEG(getRect()).catch((e) => {
-        store.pushError(e);
-      });
-    };
-
-    const close = () => {
-      store.closeModalDialog();
-    };
-
-    return {
-      PositionImageStyle,
-      t,
-      IconType,
-      dialog,
-      board,
-      imageSize,
-      headerText,
-      appSetting,
-      lastMove,
-      defaultHeader,
-      maxSize,
-      blackPlayerName,
-      whitePlayerName,
-      blackPlayerShortName,
-      whitePlayerShortName,
-      record,
-      changeSize,
-      changeHeaderText,
-      changeType,
-      saveAsPNG,
-      saveAsJPEG,
-      close,
-    };
-  },
+onMounted(() => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
+  window.addEventListener("resize", updateSize);
+  imageSize.value.value = appSetting.positionImageSize;
+  headerText.value.value = appSetting.positionImageHeader;
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+  window.removeEventListener("resize", updateSize);
+});
+
+const maxSize = computed(() => {
+  const height = appSetting.positionImageSize / zoom.value;
+  const width = height * aspectRatio;
+  return new RectSize(
+    Math.min(width, windowSize.width - marginHor),
+    Math.min(height, windowSize.height - marginVer)
+  );
+});
+
+const changeSize = (e: Event) => {
+  const elem = e.target as HTMLInputElement;
+  appSetting.updateAppSetting({
+    positionImageSize: parseInt(elem.value) || 400,
+  });
+};
+
+const changeHeaderText = (e: Event) => {
+  const elem = e.target as HTMLInputElement;
+  appSetting.updateAppSetting({
+    positionImageHeader: elem.value,
+  });
+};
+
+const changeType = (e: Event) => {
+  const elem = e.target as HTMLSelectElement;
+  appSetting.updateAppSetting({
+    positionImageStyle: elem.value as PositionImageStyle,
+  });
+};
+
+const getRect = () => {
+  const elem = board.value as HTMLElement;
+  const domRect = elem.getBoundingClientRect();
+  return new Rect(domRect.x, domRect.y, domRect.width, domRect.height);
+};
+
+const saveAsPNG = () => {
+  api.exportCaptureAsPNG(getRect()).catch((e) => {
+    store.pushError(e);
+  });
+};
+
+const saveAsJPEG = () => {
+  api.exportCaptureAsJPEG(getRect()).catch((e) => {
+    store.pushError(e);
+  });
+};
+
+const close = () => {
+  store.closeModalDialog();
+};
 </script>
 
 <style scoped>

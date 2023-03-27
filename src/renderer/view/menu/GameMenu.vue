@@ -23,45 +23,30 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { defineComponent, onMounted, ref, Ref } from "vue";
+import { onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 
-export default defineComponent({
-  name: "GameMenu",
-  components: {
-    Icon,
-  },
-  emits: ["close"],
-  setup(_, context) {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const onClose = () => {
-      context.emit("close");
-    };
-    onMounted(() => {
-      showModalDialog(dialog.value, onClose);
-    });
-    const onLocalGame = () => {
-      store.showGameDialog();
-      context.emit("close");
-    };
-    const onCSAGame = () => {
-      store.showCSAGameDialog();
-      context.emit("close");
-    };
-    return {
-      t,
-      dialog,
-      IconType,
-      onClose,
-      onLocalGame,
-      onCSAGame,
-    };
-  },
+const emit = defineEmits(["close"]);
+
+const store = useStore();
+const dialog = ref();
+const onClose = () => {
+  emit("close");
+};
+onMounted(() => {
+  showModalDialog(dialog.value, onClose);
 });
+const onLocalGame = () => {
+  store.showGameDialog();
+  emit("close");
+};
+const onCSAGame = () => {
+  store.showCSAGameDialog();
+  emit("close");
+};
 </script>

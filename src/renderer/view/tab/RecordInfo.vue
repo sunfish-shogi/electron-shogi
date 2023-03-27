@@ -1,88 +1,103 @@
 <template>
   <div>
-    <div
-      ref="root"
-      class="full column root"
-      :style="{ height: `${size.height}px` }"
-    >
-      <div class="row element">
-        <div class="key">{{ t.file }}</div>
-        <div class="value">
-          {{ store.recordFilePath || t.newRecordWithBrackets }}
+    <div class="full column root">
+      <div
+        ref="root"
+        class="full column main"
+        :style="{ height: `${size.height - 25}px` }"
+      >
+        <div class="row element">
+          <div class="key">{{ t.file }}</div>
+          <div class="value">
+            {{ store.recordFilePath || t.newRecordWithBrackets }}
+          </div>
+        </div>
+        <div
+          v-for="element in list"
+          :key="element.key"
+          class="row element"
+          :class="{
+            hidden: !appSetting.emptyRecordInfoVisibility && !element.value,
+          }"
+        >
+          <div class="key">{{ element.displayName }}</div>
+          <input
+            class="value"
+            :value="element.value"
+            @input="change($event, element.key)"
+          />
         </div>
       </div>
-      <div v-for="element in list" :key="element.key" class="row element">
-        <div class="key">{{ element.displayName }}</div>
-        <input
-          class="value"
-          :value="element.value"
-          @input="change($event, element.key)"
+      <div class="options">
+        <ToggleButton
+          :value="appSetting.emptyRecordInfoVisibility"
+          :label="t.displayEmptyElements"
+          @change="changeEmptyInfoVisibility"
         />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { getRecordMetadataName, t } from "@/common/i18n";
 import { RecordMetadataKey } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
-import { computed, defineComponent, onMounted, Ref, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { RectSize } from "@/common/graphics.js";
+import ToggleButton from "../primitive/ToggleButton.vue";
+import { useAppSetting } from "@/renderer/store/setting";
 
-export default defineComponent({
-  name: "RecordComment",
-  props: {
-    size: {
-      type: RectSize,
-      required: true,
-    },
-  },
-  setup() {
-    const root: Ref = ref(null);
-    const store = useStore();
-    const list = computed(() => {
-      return Object.values(RecordMetadataKey).map((key) => {
-        const metadata = store.record.metadata;
-        return {
-          key: key,
-          displayName: getRecordMetadataName(key),
-          value: metadata.getStandardMetadata(key) || "",
-        };
-      });
-    });
-
-    onMounted(() => {
-      root.value.addEventListener("copy", (event: ClipboardEvent) => {
-        event.stopPropagation();
-      });
-      root.value.addEventListener("paste", (event: ClipboardEvent) => {
-        event.stopPropagation();
-      });
-    });
-
-    const change = (event: Event, key: RecordMetadataKey) => {
-      const input = event.target as HTMLInputElement;
-      store.updateStandardRecordMetadata({
-        key,
-        value: input.value,
-      });
-    };
-
-    return {
-      t,
-      root,
-      store,
-      list,
-      change,
-    };
+defineProps({
+  size: {
+    type: RectSize,
+    required: true,
   },
 });
+
+const root = ref();
+const store = useStore();
+const appSetting = useAppSetting();
+const list = computed(() => {
+  return Object.values(RecordMetadataKey).map((key) => {
+    const metadata = store.record.metadata;
+    return {
+      key: key,
+      displayName: getRecordMetadataName(key),
+      value: metadata.getStandardMetadata(key) || "",
+    };
+  });
+});
+
+onMounted(() => {
+  root.value.addEventListener("copy", (event: ClipboardEvent) => {
+    event.stopPropagation();
+  });
+  root.value.addEventListener("paste", (event: ClipboardEvent) => {
+    event.stopPropagation();
+  });
+});
+
+const change = (event: Event, key: RecordMetadataKey) => {
+  const input = event.target as HTMLInputElement;
+  store.updateStandardRecordMetadata({
+    key,
+    value: input.value,
+  });
+};
+
+const changeEmptyInfoVisibility = (visible: boolean) => {
+  appSetting.updateAppSetting({
+    emptyRecordInfoVisibility: visible,
+  });
+};
 </script>
 
 <style scoped>
 .root {
   background-color: var(--text-bg-color);
+}
+.main {
   overflow: auto;
 }
 .element {
@@ -92,10 +107,19 @@ export default defineComponent({
 .key {
   width: 150px;
 }
-div.value {
+.value {
+  white-space: pre-wrap;
+  word-break: break-all;
   width: calc(100% - 150px);
 }
 input.value {
   width: min(500px, calc(100% - 200px));
+}
+.options {
+  padding: 2px 5px 2px 5px;
+  height: 24px;
+  text-align: left;
+  color: var(--main-color);
+  background-color: var(--main-bg-color);
 }
 </style>

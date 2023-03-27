@@ -14,7 +14,6 @@ dialog::backdrop {
 }
 
 dialog button {
-  font-size: 0.8em;
   margin: 0px 5px 0px 5px;
   padding: 5px 15px 5px 15px;
 }
@@ -43,27 +42,24 @@ dialog .form-group {
   border: 1px dashed var(--dialog-border-color);
   border-radius: 10px 10px 10px 10px;
   padding: 10px;
+  margin: 10px 0px 10px 0px;
 }
 
-dialog .form-group + * {
-  margin-top: 10px;
+dialog .row > .form-group {
+  margin-top: 0px;
 }
 
 dialog .row > .form-group + * {
-  margin-top: 0px;
   margin-left: 10px;
 }
 
 dialog .form-item {
   text-align: left;
-}
-
-dialog .form-item:nth-child(n+2) {
-  margin-top: 5px;
+  margin: 10px 0px 10px 0px;
 }
 
 dialog .form-item > * {
-  vertical-align: middle;
+  vertical-align: top;
 }
 
 dialog .form-item.center {
@@ -75,12 +71,9 @@ dialog .form-item.center > *:nth-child(n+2) {
   margin-left: 5px;
 }
 
-dialog .form-item label {
-  font-size: 0.8em;
-}
-
 dialog .form-item-label {
   display: inline-block;
+  font-size: 0.95em;
   text-align: left;
   margin-right: 5px;
   width: 90px;
@@ -88,6 +81,7 @@ dialog .form-item-label {
 
 dialog .form-item-label-wide {
   display: inline-block;
+  font-size: 0.95em;
   text-align: left;
   margin-right: 5px;
   width: 160px;
@@ -197,6 +191,6 @@ dialog.menu .icon {
 
 dialog.menu .label {
   display: block;
-  font-size: 14px;
-  margin-top: 0.5em;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }

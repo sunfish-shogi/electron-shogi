@@ -17,8 +17,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, onMounted } from "vue";
+<script setup lang="ts">
+import { computed, onMounted } from "vue";
 import StandardLayout from "@/renderer/view/main/StandardLayout.vue";
 import GameDialog from "@/renderer/view/dialog/GameDialog.vue";
 import CSAGameDialog from "@/renderer/view/dialog/CSAGameDialog.vue";
@@ -39,102 +39,74 @@ import { CSAGameState } from "@/renderer/store/csa";
 import { useAppSetting } from "./store/setting";
 import { BackgroundImageType } from "@/common/settings/app";
 
-export default defineComponent({
-  name: "App",
-  components: {
-    StandardLayout,
-    GameDialog,
-    CSAGameDialog,
-    ResearchDialog,
-    USIEngineManagementDialog,
-    ExportPositionImageDialog,
-    AppSettingDialog,
-    PasteDialog,
-    BussyMessage,
-    ConfirmDialog,
-    InfoMessage,
-    ErrorMessage,
-    AnalysisDialog,
-    CSAGameReadyDialog,
-  },
-  setup() {
-    const appSetting = useAppSetting();
-    const store = useStore();
+const appSetting = useAppSetting();
+const store = useStore();
 
-    const dialogVisibilities = computed(() => {
-      return {
-        game: store.appState === AppState.GAME_DIALOG,
-        csaGame: store.appState === AppState.CSA_GAME_DIALOG,
-        research: store.appState === AppState.RESEARCH_DIALOG,
-        analysis: store.appState === AppState.ANALYSIS_DIALOG,
-        usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
-        exportPositionImage:
-          store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG,
-        appSetting: store.isAppSettingDialogVisible,
-        paste: store.appState === AppState.PASTE_DIALOG,
-        bussy: store.isBussy,
-        confirm: store.confirmation !== undefined,
-        csaGameReady:
-          store.csaGameState === CSAGameState.WAITING_LOGIN ||
-          store.csaGameState === CSAGameState.READY ||
-          store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL,
-      };
-    });
+const dialogVisibilities = computed(() => {
+  return {
+    game: store.appState === AppState.GAME_DIALOG,
+    csaGame: store.appState === AppState.CSA_GAME_DIALOG,
+    research: store.appState === AppState.RESEARCH_DIALOG,
+    analysis: store.appState === AppState.ANALYSIS_DIALOG,
+    usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
+    exportPositionImage:
+      store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG,
+    appSetting: store.isAppSettingDialogVisible,
+    paste: store.appState === AppState.PASTE_DIALOG,
+    bussy: store.isBussy,
+    confirm: store.confirmation !== undefined,
+    csaGameReady:
+      store.csaGameState === CSAGameState.WAITING_LOGIN ||
+      store.csaGameState === CSAGameState.READY ||
+      store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL,
+  };
+});
 
-    onMounted(() => {
-      const body = document.getElementsByTagName("body")[0];
-      body.addEventListener("copy", (event) => {
-        store.copyRecordKIF();
-        event.preventDefault();
-      });
-      body.addEventListener("paste", (event) => {
-        store.showPasteDialog();
-        event.preventDefault();
-      });
-      body.addEventListener("dragover", (event: DragEvent) => {
-        event.preventDefault();
-      });
-      body.addEventListener("drop", (event: DragEvent) => {
-        if (event.dataTransfer && event.dataTransfer.files[0]) {
-          const path = event.dataTransfer.files[0].path;
-          store.openRecord(path);
-        }
-        event.preventDefault();
-      });
-    });
+onMounted(() => {
+  const body = document.getElementsByTagName("body")[0];
+  body.addEventListener("copy", (event) => {
+    store.copyRecordKIF();
+    event.preventDefault();
+  });
+  body.addEventListener("paste", (event) => {
+    store.showPasteDialog();
+    event.preventDefault();
+  });
+  body.addEventListener("dragover", (event: DragEvent) => {
+    event.preventDefault();
+  });
+  body.addEventListener("drop", (event: DragEvent) => {
+    if (event.dataTransfer && event.dataTransfer.files[0]) {
+      const path = event.dataTransfer.files[0].path;
+      store.openRecord(path);
+    }
+    event.preventDefault();
+  });
+});
 
-    const style = computed(() => {
-      if (
-        appSetting.backgroundImageType == BackgroundImageType.NONE ||
-        !appSetting.backgroundImageFileURL
-      ) {
-        return {};
-      }
-      let size = "";
-      switch (appSetting.backgroundImageType) {
-        case BackgroundImageType.COVER:
-          size = "cover";
-          break;
-        case BackgroundImageType.CONTAIN:
-          size = "contain";
-          break;
-        case BackgroundImageType.TILE:
-          size = "auto";
-          break;
-      }
-      return {
-        "background-image": `url("${appSetting.backgroundImageFileURL}")`,
-        "background-size": size,
-      };
-    });
-
-    return {
-      style,
-      appSetting,
-      store,
-      dialogVisibilities,
-    };
-  },
+const style = computed(() => {
+  if (
+    appSetting.backgroundImageType == BackgroundImageType.NONE ||
+    !appSetting.backgroundImageFileURL
+  ) {
+    return {};
+  }
+  let size = "";
+  switch (appSetting.backgroundImageType) {
+    case BackgroundImageType.COVER:
+      size = "cover";
+      break;
+    case BackgroundImageType.CONTAIN:
+      size = "contain";
+      break;
+    case BackgroundImageType.TILE:
+      size = "auto";
+      break;
+  }
+  return {
+    "background-image": `url("${appSetting.backgroundImageFileURL}")`,
+    "background-size": size,
+  };
 });
 </script>
 

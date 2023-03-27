@@ -5,10 +5,10 @@
         <div class="form-group">
           <div class="message">{{ t.importingFollowingRecordOrPosition }}</div>
           <div class="message">{{ t.supportsKIFCSAUSI }}</div>
-          <div v-if="!isNative" class="message">
+          <div v-if="!isNative()" class="message">
             {{ t.plesePasteRecordIntoTextArea }}
           </div>
-          <div v-if="!isNative" class="message">
+          <div v-if="!isNative()" class="message">
             {{ t.desktopVersionPastesAutomatically }}
           </div>
           <textarea ref="textarea" />
@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { isNative } from "@/renderer/ipc/api";
@@ -35,56 +35,42 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import { useStore } from "@/renderer/store";
-import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
-export default defineComponent({
-  name: "PasteDialog",
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const textarea: Ref = ref(null);
+const store = useStore();
+const dialog = ref();
+const textarea = ref();
 
-    store.retainBussyState();
-    onMounted(async () => {
-      try {
-        showModalDialog(dialog.value);
-        installHotKeyForDialog(dialog.value);
-        if (isNative()) {
-          textarea.value.value = await navigator.clipboard.readText();
-        }
-      } finally {
-        store.releaseBussyState();
-      }
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    const onOk = () => {
-      const data = textarea.value.value;
-      if (!data) {
-        store.pushError(new Error(t.emptyRecordInput));
-        return;
-      }
-      store.closeModalDialog();
-      store.pasteRecord(data);
-    };
-
-    const onCancel = () => {
-      store.closeModalDialog();
-    };
-
-    return {
-      t,
-      dialog,
-      textarea,
-      onOk,
-      onCancel,
-      isNative: isNative(),
-    };
-  },
+store.retainBussyState();
+onMounted(async () => {
+  try {
+    showModalDialog(dialog.value);
+    installHotKeyForDialog(dialog.value);
+    if (isNative()) {
+      textarea.value.value = await navigator.clipboard.readText();
+    }
+  } finally {
+    store.releaseBussyState();
+  }
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+
+const onOk = () => {
+  const data = textarea.value.value;
+  if (!data) {
+    store.pushError(new Error(t.emptyRecordInput));
+    return;
+  }
+  store.closeModalDialog();
+  store.pasteRecord(data);
+};
+
+const onCancel = () => {
+  store.closeModalDialog();
+};
 </script>
 
 <style scoped>

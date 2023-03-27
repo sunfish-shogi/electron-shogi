@@ -138,30 +138,6 @@ export default defineComponent({
 });
 </script>
 
-<style>
-@import "./css/font.css";
-@import "./css/color.css";
-@import "./css/basic.css";
-@import "./css/control.css";
-@import "./css/dialog.css";
-
-body {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 17px;
-  margin: 0;
-}
-body::-webkit-scrollbar {
-  display: none;
-}
-#app {
-  text-align: center;
-  height: 100vh;
-  width: 100vw;
-}
-</style>
-
 <style scoped>
 .root {
   color: var(--main-color);

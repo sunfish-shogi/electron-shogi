@@ -48,7 +48,7 @@
         <div
           v-for="branch in branches"
           :key="branch.index"
-          class="move-element"
+          class="row move-element"
           :class="{ selected: branch.selected }"
           :value="branch.index"
           @click="changeBranch(branch.index)"

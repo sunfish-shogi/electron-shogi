@@ -39,7 +39,7 @@ import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
 import { getPortableExeDir, isTest } from "./environment";
 
 const userDir = !isTest() ? app.getPath("userData") : "";
-const rootDir = !isTest() ? getPortableExeDir() || app.getPath("userData") : "";
+const rootDir = getPortableExeDir() || userDir;
 const docDir = !isTest()
   ? path.join(app.getPath("documents"), "ElectronShogi")
   : "";

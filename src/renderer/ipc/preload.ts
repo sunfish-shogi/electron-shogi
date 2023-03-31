@@ -47,6 +47,12 @@ const api: Bridge = {
       defaultPath
     );
   },
+  async showSelectImageDialog(defaultURL?: string): Promise<string> {
+    return await ipcRenderer.invoke(
+      Background.SHOW_SELECT_IMAGE_DIALOG,
+      defaultURL
+    );
+  },
   async exportCaptureAsPNG(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);
   },

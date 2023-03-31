@@ -2,6 +2,7 @@ import {
   BoardImageType,
   BoardLabelType,
   PieceImageType,
+  PieceStandImageType,
 } from "@/common/settings/app";
 import {
   handPieceTypes,
@@ -302,27 +303,29 @@ const pieceImageMap: { [key: string]: PieceImages } = {
   },
 };
 
-const boardGridMap = {
-  [BoardImageType.LIGHT]: "./board/grid.svg",
-  [BoardImageType.WARM]: "./board/grid.svg",
-  [BoardImageType.RESIN]: "./board/grid.svg",
-  [BoardImageType.RESIN2]: "./board/grid.svg",
-  [BoardImageType.RESIN3]: "./board/grid.svg",
-  [BoardImageType.DARK]: "./board/grid_white.svg",
-  [BoardImageType.GREEN]: "./board/grid.svg",
-  [BoardImageType.CHERRY_BLOSSOM]: "./board/grid.svg",
-};
+function getBoardGridURL(type: BoardImageType): string {
+  switch (type) {
+    default:
+      return "./board/grid.svg";
+    case BoardImageType.DARK:
+      return "./board/grid_white.svg";
+  }
+}
 
-const boardTextureMap = {
-  [BoardImageType.LIGHT]: "./board/wood_light.png",
-  [BoardImageType.WARM]: "./board/wood_warm.png",
-  [BoardImageType.RESIN]: null,
-  [BoardImageType.RESIN2]: null,
-  [BoardImageType.RESIN3]: null,
-  [BoardImageType.DARK]: null,
-  [BoardImageType.GREEN]: null,
-  [BoardImageType.CHERRY_BLOSSOM]: null,
-};
+function getBoardTextureURL(
+  type: BoardImageType,
+  customURL?: string
+): string | null {
+  switch (type) {
+    case BoardImageType.LIGHT:
+      return "./board/wood_light.png";
+    case BoardImageType.WARM:
+      return "./board/wood_warm.png";
+    case BoardImageType.CUSTOM_IMAGE:
+      return customURL || null;
+  }
+  return null;
+}
 
 const boardBackgroundColorMap = {
   [BoardImageType.LIGHT]: "rgba(0, 0, 0, 0)",
@@ -333,17 +336,26 @@ const boardBackgroundColorMap = {
   [BoardImageType.DARK]: "#333333",
   [BoardImageType.GREEN]: "#598459",
   [BoardImageType.CHERRY_BLOSSOM]: "#ecb6b6",
+  [BoardImageType.CUSTOM_IMAGE]: "rgba(0, 0, 0, 0)",
 };
 
-const handColorMap = {
-  [BoardImageType.LIGHT]: "#8b4513",
-  [BoardImageType.WARM]: "#8b4513",
-  [BoardImageType.RESIN]: "#8b4513",
-  [BoardImageType.RESIN2]: "#8b4513",
-  [BoardImageType.RESIN3]: "#8b4513",
-  [BoardImageType.DARK]: "#333333",
-  [BoardImageType.GREEN]: "#527a52",
-  [BoardImageType.CHERRY_BLOSSOM]: "#e8a9a9",
+function getPieceStandTextureURL(
+  type: PieceStandImageType,
+  customURL?: string
+): string | null {
+  switch (type) {
+    case PieceStandImageType.CUSTOM_IMAGE:
+      return customURL || null;
+  }
+  return null;
+}
+
+const pieceStandBackgroundColorMap = {
+  [PieceStandImageType.STANDARD]: "#8b4513",
+  [PieceStandImageType.DARK]: "#333333",
+  [PieceStandImageType.GREEN]: "#527a52",
+  [PieceStandImageType.CHERRY_BLOSSOM]: "#e8a9a9",
+  [PieceStandImageType.CUSTOM_IMAGE]: "rgba(0, 0, 0, 0)",
 };
 
 const handLaytoutRule = {
@@ -428,6 +440,7 @@ type HandPointerLayout = {
 };
 
 type HandLayout = {
+  textureImagePath: string | null;
   style: { [key: string]: string };
   pieces: HandPieceLayout[];
   pointers: HandPointerLayout[];
@@ -493,22 +506,36 @@ export default class LayoutBuilder {
   private pieceImages: PieceImages;
   private boardGridImage: string;
   private boardTextureImage: string | null;
+  private pieceStandImage: string | null;
 
   constructor(
     pieceImageType: PieceImageType,
     private boardImageType: BoardImageType,
-    private boardLabelType: BoardLabelType
+    private pieceStandImageType: PieceStandImageType,
+    private boardLabelType: BoardLabelType,
+    customBoardImageURL?: string,
+    customPieceStandImageURL?: string
   ) {
     this.pieceImages =
       pieceImageMap[pieceImageType] || pieceImageMap[PieceImageType.HITOMOJI];
-    this.boardGridImage = boardGridMap[boardImageType];
-    this.boardTextureImage = boardTextureMap[boardImageType];
+    this.boardGridImage = getBoardGridURL(boardImageType);
+    this.boardTextureImage = getBoardTextureURL(
+      boardImageType,
+      customBoardImageURL
+    );
+    this.pieceStandImage = getPieceStandTextureURL(
+      pieceStandImageType,
+      customPieceStandImageURL
+    );
   }
 
   preload(): void {
     preloadImage(this.boardGridImage);
     if (this.boardTextureImage) {
       preloadImage(this.boardTextureImage);
+    }
+    if (this.pieceStandImage) {
+      preloadImage(this.pieceStandImage);
     }
     Object.values(this.pieceImages.black).forEach(preloadImage);
     Object.values(this.pieceImages.white).forEach(preloadImage);
@@ -607,9 +634,9 @@ export default class LayoutBuilder {
             ratio;
         const y =
           boardLayout.y -
-          fontSize * 0.5 +
+          fontSize * 0.6 +
           (flip ? layoutTemplate.board.height : 0) * ratio +
-          layoutTemplate.board.topSquarePadding * 0.5 * ratio * (flip ? -1 : 1);
+          layoutTemplate.board.topSquarePadding * 0.7 * ratio * (flip ? -1 : 1);
         layouts.push({
           id: "file" + file,
           character: String(file),
@@ -724,7 +751,7 @@ export default class LayoutBuilder {
 
     const buildHandLayout = (color: Color, hand: ImmutableHand): HandLayout => {
       const displayColor = flip ? reverseColor(color) : color;
-      const bgColor = handColorMap[this.boardImageType];
+      const bgColor = pieceStandBackgroundColorMap[this.pieceStandImageType];
       const standX = layoutTemplate.hand[displayColor].x * ratio;
       const standY = layoutTemplate.hand[displayColor].y * ratio;
       const standWidth = layoutTemplate.hand.width * ratio;
@@ -794,6 +821,7 @@ export default class LayoutBuilder {
         });
       });
       return {
+        textureImagePath: this.pieceStandImage,
         style: standStyle,
         pieces,
         pointers,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="root">
+    <div class="full column">
       <EngineAnalyticsElement
         v-for="monitor in store.usiMonitors"
         :key="monitor.sessionID"
@@ -47,12 +47,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.root {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>

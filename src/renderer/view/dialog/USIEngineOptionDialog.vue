@@ -1,8 +1,8 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">{{ t.engineSettings }}</div>
-      <div class="dialog-form-area">
+      <div class="title">{{ t.engineSettings }}</div>
+      <div class="form-group">
         <div class="option-filter">
           <input
             ref="filter"
@@ -11,29 +11,29 @@
             @input="updateFilter"
           />
         </div>
-        <div class="option-list">
+        <div class="column option-list">
           <!-- 名前 -->
-          <div class="option">
+          <div class="row option">
             <div class="option-name">{{ t.engineName }}</div>
             <div class="option-unchangeable">{{ engine.defaultName }}</div>
           </div>
           <!-- 作者 -->
-          <div class="option" :class="{ hidden: filterWords.length }">
+          <div class="row option" :class="{ hidden: filterWords.length }">
             <div class="option-name">{{ t.author }}</div>
             <div class="option-unchangeable">{{ engine.author }}</div>
           </div>
           <!-- 場所 -->
-          <div class="option" :class="{ hidden: filterWords.length }">
+          <div class="row option" :class="{ hidden: filterWords.length }">
             <div class="option-name">{{ t.enginePath }}</div>
             <div class="option-unchangeable">
               <div>{{ engine.path }}</div>
-              <button class="dialog-thin-button" @click="openEngineDir">
+              <button class="thin" @click="openEngineDir">
                 {{ t.openDirectory }}
               </button>
             </div>
           </div>
           <!-- 表示名 -->
-          <div class="option" :class="{ hidden: filterWords.length }">
+          <div class="row option" :class="{ hidden: filterWords.length }">
             <div class="option-name">{{ t.displayName }}</div>
             <input
               ref="engineNameInput"
@@ -46,7 +46,7 @@
           <div
             v-for="option in options"
             :key="option.name"
-            class="option"
+            class="row option"
             :class="{ hidden: !option.visible }"
           >
             <div class="option-name">
@@ -81,7 +81,7 @@
             />
             <button
               v-if="option.type === 'filename'"
-              class="dialog-thin-button"
+              class="thin"
               @click="selectFile(inputElementID(option))"
             >
               {{ t.select }}
@@ -107,7 +107,7 @@
             </select>
             <button
               v-if="option.type === 'button'"
-              class="dialog-thin-button"
+              class="thin"
               @click="sendOption(option.name)"
             >
               {{ t.invoke }}
@@ -115,19 +115,14 @@
           </div>
         </div>
       </div>
-      <button class="dialog-wide-button" @click="reset()">
+      <button class="wide" @click="reset()">
         {{ t.resetToEngineDefaultValues }}
       </button>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="ok()"
-        >
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="ok()">
           {{ okButtonText }}
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="cancel()">
+        <button data-hotkey="Escape" @click="cancel()">
           {{ t.cancel }}
         </button>
       </div>
@@ -358,18 +353,11 @@ export default defineComponent({
   width: 640px;
   height: calc(100vh - 220px);
   overflow: auto;
-  display: flex;
-  flex-direction: column;
 }
 .option {
   margin: 5px 5px 0px 5px;
   padding: 5px;
-  display: flex;
-  flex-direction: row;
   border-bottom: 1px solid var(--text-separator-color);
-}
-.option.hidden {
-  display: none;
 }
 .option-filter {
   margin: 0px 5px 5px 5px;

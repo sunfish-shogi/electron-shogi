@@ -5,21 +5,24 @@
         class="board"
         :piece-image-type="appSetting.pieceImage"
         :board-image-type="appSetting.boardImage"
+        :piece-stand-image-type="appSetting.pieceStandImage"
         :board-label-type="appSetting.boardLabelType"
+        :custom-board-image-url="appSetting.boardImageFileURL"
+        :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
         :max-size="maxSize"
         :position="record.position"
         :last-move="lastMove"
         :flip="flip"
       >
         <template #right-control>
-          <div class="control top">
-            <div class="control-row">
+          <div class="full column">
+            <div class="row control-row">
               <button
                 class="control-item"
                 data-hotkey="Control+t"
                 @click="doFlip"
               >
-                <ButtonIcon class="icon" :icon="Icon.FLIP" />
+                <Icon :icon="IconType.FLIP" />
               </button>
               <button
                 class="control-item"
@@ -27,39 +30,39 @@
                 data-hotkey="Escape"
                 @click="close"
               >
-                <ButtonIcon class="icon" :icon="Icon.CLOSE" />
+                <Icon :icon="IconType.CLOSE" />
               </button>
             </div>
-            <div class="control-row">
+            <div class="row control-row">
               <button
                 class="control-item"
                 data-hotkey="ArrowLeft"
                 @click="goBegin"
               >
-                <ButtonIcon class="icon" :icon="Icon.FIRST" />
+                <Icon :icon="IconType.FIRST" />
               </button>
               <button
                 class="control-item"
                 data-hotkey="ArrowRight"
                 @click="goEnd"
               >
-                <ButtonIcon class="icon" :icon="Icon.LAST" />
+                <Icon :icon="IconType.LAST" />
               </button>
             </div>
-            <div class="control-row">
+            <div class="row control-row">
               <button
                 class="control-item"
                 data-hotkey="ArrowUp"
                 @click="goBack"
               >
-                <ButtonIcon class="icon" :icon="Icon.BACK" />
+                <Icon :icon="IconType.BACK" />
               </button>
               <button
                 class="control-item"
                 data-hotkey="ArrowDown"
                 @click="goForward"
               >
-                <ButtonIcon class="icon" :icon="Icon.NEXT" />
+                <Icon :icon="IconType.NEXT" />
               </button>
             </div>
           </div>
@@ -94,11 +97,11 @@ import {
   onBeforeUnmount,
 } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import { RectSize } from "@/common/graphics.js";
 import { computed } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { Icon } from "@/renderer/assets/icons";
+import { IconType } from "@/renderer/assets/icons";
 import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
@@ -107,7 +110,7 @@ import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "PVPreviewDialog",
-  components: { BoardView, ButtonIcon },
+  components: { BoardView, Icon },
   props: {
     position: {
       type: String,
@@ -221,7 +224,7 @@ export default defineComponent({
       goBack,
       goForward,
       doFlip,
-      Icon,
+      IconType,
     };
   },
 });
@@ -232,36 +235,27 @@ export default defineComponent({
   margin-left: auto;
   margin-right: auto;
 }
-.control {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
 .control-row {
   width: 100%;
   height: 25%;
   margin: 0px;
-  display: flex;
-  flex-direction: row;
 }
-.control .control-item {
+.control-item {
   width: 50%;
   height: 100%;
   margin: 0px;
   font-size: 100%;
   padding: 0 5% 0 5%;
 }
-.control.top .control-row:not(:last-child) {
+.control-row:not(:last-child) {
   margin-bottom: 2%;
 }
-.control.top .control-item:not(:last-child) {
+.control-item:not(:last-child) {
   margin-right: 2%;
 }
-.control .control-item .icon {
+.control-item .icon {
   height: 80%;
   width: auto;
-  vertical-align: top;
 }
 .informations {
   height: 120px;
@@ -269,6 +263,7 @@ export default defineComponent({
   overflow-y: scroll;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 5px;
   color: var(--text-color);
   background-color: var(--text-bg-color);
 }

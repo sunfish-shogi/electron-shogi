@@ -1,4 +1,4 @@
-import { Language } from "@/common/i18n";
+import { Language, t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
 
 export enum Thema {
@@ -7,6 +7,13 @@ export enum Thema {
   AUTUMN = "autumn",
   SNOW = "snow",
   DARK = "dark",
+}
+
+export enum BackgroundImageType {
+  NONE = "none",
+  COVER = "cover",
+  CONTAIN = "contain",
+  TILE = "tile",
 }
 
 export enum PieceImageType {
@@ -25,9 +32,28 @@ export enum BoardImageType {
   DARK = "dark",
   GREEN = "green",
   CHERRY_BLOSSOM = "cherry-blossom",
+  CUSTOM_IMAGE = "custom-image",
+}
+
+export enum PieceStandImageType {
+  STANDARD = "standard",
+  DARK = "dark",
+  GREEN = "green",
+  CHERRY_BLOSSOM = "cherry-blossom",
+  CUSTOM_IMAGE = "custom-image",
 }
 
 export enum BoardLabelType {
+  NONE = "none",
+  STANDARD = "standard",
+}
+
+export enum LeftSideControlType {
+  NONE = "none",
+  STANDARD = "standard",
+}
+
+export enum RightSideControlType {
   NONE = "none",
   STANDARD = "standard",
 }
@@ -65,9 +91,16 @@ export enum PositionImageStyle {
 export type AppSetting = {
   language: Language;
   thema: Thema;
+  backgroundImageType: BackgroundImageType;
+  backgroundImageFileURL?: string;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
+  boardImageFileURL?: string;
+  pieceStandImage: PieceStandImageType;
+  pieceStandImageFileURL?: string;
   boardLabelType: BoardLabelType;
+  leftSideControlType: LeftSideControlType;
+  rightSideControlType: RightSideControlType;
   pieceVolume: number;
   clockVolume: number;
   clockPitch: number;
@@ -98,14 +131,25 @@ export type AppSetting = {
   positionImageStyle: PositionImageStyle;
   positionImageSize: number;
   positionImageHeader: string;
+  lastRecordFilePath: string;
+  lastUSIEngineFilePath: string;
+  lastImageExportFilePath: string;
+  lastOtherFilePath: string;
 };
 
 export type AppSettingUpdate = {
   language?: Language;
   thema?: Thema;
+  backgroundImageType?: BackgroundImageType;
+  backgroundImageFileURL?: string;
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
+  boardImageFileURL?: string;
+  pieceStandImage?: PieceStandImageType;
+  pieceStandImageFileURL?: string;
   boardLabelType?: BoardLabelType;
+  leftSideControlType?: LeftSideControlType;
+  rightSideControlType?: RightSideControlType;
   pieceVolume?: number;
   clockVolume?: number;
   clockPitch?: number;
@@ -136,6 +180,10 @@ export type AppSettingUpdate = {
   positionImageStyle?: PositionImageStyle;
   positionImageSize?: number;
   positionImageHeader?: string;
+  lastRecordFilePath?: string;
+  lastUSIEngineFilePath?: string;
+  lastImageExportFilePath?: string;
+  lastOtherFilePath?: string;
 };
 
 export function buildUpdatedAppSetting(
@@ -181,9 +229,13 @@ export function defaultAppSetting(opt?: {
   return {
     language: Language.JA,
     thema: Thema.STANDARD,
+    backgroundImageType: BackgroundImageType.NONE,
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.RESIN2,
+    pieceStandImage: PieceStandImageType.STANDARD,
     boardLabelType: BoardLabelType.STANDARD,
+    leftSideControlType: LeftSideControlType.STANDARD,
+    rightSideControlType: RightSideControlType.STANDARD,
     pieceVolume: 30,
     clockVolume: 30,
     clockPitch: 500,
@@ -214,6 +266,10 @@ export function defaultAppSetting(opt?: {
     positionImageStyle: PositionImageStyle.BOOK,
     positionImageSize: 500,
     positionImageHeader: "",
+    lastRecordFilePath: "",
+    lastUSIEngineFilePath: "",
+    lastImageExportFilePath: "",
+    lastOtherFilePath: "",
   };
 }
 
@@ -228,6 +284,29 @@ export function normalizeAppSetting(
     ...defaultAppSetting(opt),
     ...setting,
   };
+  if (
+    result.autoSaveDirectory.endsWith("\\") ||
+    result.autoSaveDirectory.endsWith("/")
+  ) {
+    result.autoSaveDirectory = result.autoSaveDirectory.slice(0, -1);
+  }
+  // 旧バージョンでは盤画像に合わせて自動で駒台の色が選ばれていた。
+  if (!setting.pieceStandImage) {
+    switch (setting.boardImage) {
+      default:
+        result.pieceStandImage = PieceStandImageType.STANDARD;
+        break;
+      case BoardImageType.DARK:
+        result.pieceStandImage = PieceStandImageType.DARK;
+        break;
+      case BoardImageType.GREEN:
+        result.pieceStandImage = PieceStandImageType.GREEN;
+        break;
+      case BoardImageType.CHERRY_BLOSSOM:
+        result.pieceStandImage = PieceStandImageType.CHERRY_BLOSSOM;
+        break;
+    }
+  }
   // 旧バージョンではタブの最小化を Tab.INDISIBLE で表していたが廃止した。
   if (result.tab === Tab.INVISIBLE) {
     result.tab = Tab.RECORD_INFO;
@@ -236,27 +315,38 @@ export function normalizeAppSetting(
 }
 
 export function validateAppSetting(setting: AppSetting): Error | undefined {
+  if (
+    setting.backgroundImageType !== BackgroundImageType.NONE &&
+    !setting.backgroundImageFileURL
+  ) {
+    return new Error(t.backgroundImageFileNotSelected);
+  }
+  if (
+    setting.boardImage === BoardImageType.CUSTOM_IMAGE &&
+    !setting.boardImageFileURL
+  ) {
+    return new Error(t.boardImageFileNotSelected);
+  }
+  if (
+    setting.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE &&
+    !setting.pieceStandImageFileURL
+  ) {
+    return new Error(t.pieceStandImageFileNotSelected);
+  }
   if (setting.pieceVolume < 0 || setting.pieceVolume > 100) {
-    return new Error("駒音の大きさには0%～100%の値を指定してください。");
+    return new Error(t.pieceVolumeMustBe0To100Percent);
   }
   if (setting.clockVolume < 0 || setting.clockVolume > 100) {
-    return new Error("時計音の大きさには0%～100%の値を指定してください。");
+    return new Error(t.clockVolumeMustBe0To100Percent);
   }
   if (setting.clockPitch < 220 || setting.clockPitch > 880) {
-    return new Error("時計音の高さには220Hz～880Hzの値を指定してください。");
+    return new Error(t.clockPitchMustBe220To880Hz);
   }
-  if (setting.engineTimeoutSeconds < 1) {
-    return new Error(
-      "エンジンのタイムアウト時間は 1 秒以上の値を指定してください。"
-    );
-  }
-  if (setting.engineTimeoutSeconds > 300) {
-    return new Error(
-      "エンジンのタイムアウト時間は 300 秒以下の値を指定してください。"
-    );
+  if (setting.engineTimeoutSeconds < 1 || setting.engineTimeoutSeconds > 300) {
+    return new Error(t.engineTimeoutMustBe1To300Seconds);
   }
   if (setting.coefficientInSigmoid <= 0) {
-    return new Error("勝率換算係数には0より大きい値を指定してください。");
+    return new Error(t.coefficientInSigmoidMustBeGreaterThan0);
   }
   if (
     setting.badMoveLevelThreshold1 < 1 ||

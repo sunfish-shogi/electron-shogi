@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="root">
-      <div class="headers">
+    <div class="full column root">
+      <div class="row headers">
         <div class="header">
           <span class="label">{{ t.name }}: </span>
           <span class="value">{{ name }}</span>
@@ -31,7 +31,7 @@
           </span>
         </div>
       </div>
-      <div class="list-header">
+      <div class="row list-header">
         <div class="list-column time">{{ t.elapsed }}</div>
         <div class="list-column multipv-index">{{ t.rank }}</div>
         <div class="list-column depth">{{ t.depth }}</div>
@@ -44,7 +44,7 @@
             ? info.iterates
             : info.latestIteration"
           :key="index"
-          class="list-item"
+          class="row list-item"
           :class="{ highlight: enableHighlight && iterate.multiPV === 1 }"
         >
           <div class="list-column time">
@@ -88,7 +88,7 @@
               v-if="iterate.pv && iterate.pv.length !== 0 && iterate.text"
               @click="showPreview(iterate)"
             >
-              <ButtonIcon class="icon" :icon="Icon.PLAY" />
+              <Icon :icon="IconType.PLAY" />
               <span>{{ t.displayPVShort }}</span>
             </button>
             {{ iterate.text }}
@@ -110,8 +110,8 @@
 import { t } from "@/common/i18n";
 import { USIIteration, USIPlayerMonitor } from "@/renderer/store/usi";
 import { computed, defineComponent, ref } from "vue";
-import { Icon } from "@/renderer/assets/icons";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import { IconType } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import PVPreviewDialog from "@/renderer/view/dialog/PVPreviewDialog.vue";
 import { EvaluationViewFrom } from "@/common/settings/app";
 import { Color } from "@/common/shogi";
@@ -126,7 +126,7 @@ type Preview = {
 export default defineComponent({
   name: "EngineAnalyticsElement",
   components: {
-    ButtonIcon,
+    Icon,
     PVPreviewDialog,
   },
   props: {
@@ -224,7 +224,7 @@ export default defineComponent({
 
     return {
       t,
-      Icon,
+      IconType,
       enableHighlight,
       preview,
       evaluationViewFrom,
@@ -238,19 +238,13 @@ export default defineComponent({
 
 <style scoped>
 .root {
-  width: 100%;
-  height: 100%;
   padding-bottom: 2px;
-  display: flex;
-  flex-direction: column;
   background-color: var(--active-tab-bg-color);
 }
 .headers {
   width: 100%;
   height: 18px;
   text-align: left;
-  display: flex;
-  flex-direction: row;
 }
 .header {
   margin: 0px 4px 0px 0px;
@@ -270,8 +264,6 @@ export default defineComponent({
   width: 100%;
   font-size: 12px;
   background-color: var(--text-bg-color);
-  display: flex;
-  flex-direction: row;
 }
 .list {
   width: 100%;
@@ -281,8 +273,6 @@ export default defineComponent({
 .list-item {
   height: 24px;
   font-size: 12px;
-  display: flex;
-  flex-direction: row;
 }
 .list-item.highlight {
   background: var(--text-bg-color-warning);
@@ -331,7 +321,6 @@ export default defineComponent({
 }
 .list-column .icon {
   height: 18px;
-  vertical-align: top;
 }
 .list-column button span {
   line-height: 19px;

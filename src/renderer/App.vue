@@ -1,6 +1,6 @@
 <template>
-  <div class="root" :class="appSetting.thema">
-    <StandardLayout class="main" />
+  <div class="root full" :class="appSetting.thema" :style="style">
+    <StandardLayout class="full" />
     <GameDialog v-if="dialogVisibilities.game" />
     <CSAGameDialog v-if="dialogVisibilities.csaGame" />
     <ResearchDialog v-if="dialogVisibilities.research" />
@@ -37,6 +37,7 @@ import AnalysisDialog from "@/renderer/view/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";
 import { useAppSetting } from "./store/setting";
+import { BackgroundImageType } from "@/common/settings/app";
 
 export default defineComponent({
   name: "App",
@@ -102,7 +103,33 @@ export default defineComponent({
       });
     });
 
+    const style = computed(() => {
+      if (
+        appSetting.backgroundImageType == BackgroundImageType.NONE ||
+        !appSetting.backgroundImageFileURL
+      ) {
+        return {};
+      }
+      let size = "";
+      switch (appSetting.backgroundImageType) {
+        case BackgroundImageType.COVER:
+          size = "cover";
+          break;
+        case BackgroundImageType.CONTAIN:
+          size = "contain";
+          break;
+        case BackgroundImageType.TILE:
+          size = "auto";
+          break;
+      }
+      return {
+        "background-image": `url("${appSetting.backgroundImageFileURL}")`,
+        "background-size": size,
+      };
+    });
+
     return {
+      style,
       appSetting,
       store,
       dialogVisibilities,
@@ -111,38 +138,9 @@ export default defineComponent({
 });
 </script>
 
-<style>
-@import "./css/font.css";
-@import "./css/color.css";
-@import "./css/control.css";
-@import "./css/dialog.css";
-
-body {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 17px;
-  margin: 0;
-}
-body::-webkit-scrollbar {
-  display: none;
-}
-#app {
-  text-align: center;
-  height: 100vh;
-  width: 100vw;
-}
-</style>
-
 <style scoped>
 .root {
   color: var(--main-color);
   background-color: var(--main-bg-color);
-  height: 100%;
-  width: 100%;
-}
-.main {
-  height: 100%;
-  width: 100%;
 }
 </style>

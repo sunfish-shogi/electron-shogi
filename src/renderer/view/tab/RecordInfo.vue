@@ -1,13 +1,17 @@
 <template>
   <div>
-    <div ref="root" class="root" :style="{ height: `${size.height}px` }">
-      <div class="element">
+    <div
+      ref="root"
+      class="full column root"
+      :style="{ height: `${size.height}px` }"
+    >
+      <div class="row element">
         <div class="key">{{ t.file }}</div>
         <div class="value">
           {{ store.recordFilePath || t.newRecordWithBrackets }}
         </div>
       </div>
-      <div v-for="element in list" :key="element.key" class="element">
+      <div v-for="element in list" :key="element.key" class="row element">
         <div class="key">{{ element.displayName }}</div>
         <input
           class="value"
@@ -78,18 +82,12 @@ export default defineComponent({
 
 <style scoped>
 .root {
-  width: 100%;
-  height: 100%;
   background-color: var(--text-bg-color);
   overflow: auto;
-  display: flex;
-  flex-direction: column;
 }
 .element {
   margin: 3px;
   text-align: left;
-  display: flex;
-  flex-direction: row;
 }
 .key {
   width: 150px;

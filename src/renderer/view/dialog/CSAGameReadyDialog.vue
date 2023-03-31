@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog" class="bussy">
       <div class="message-box">
-        <ButtonIcon class="icon" :icon="Icon.BUSSY" />
+        <Icon :icon="IconType.BUSSY" />
         <div class="message">
           <span v-if="store.csaGameState === CSAGameState.READY">
             対局の開始を待っています。
@@ -20,7 +20,7 @@
           store.csaGameState === CSAGameState.READY ||
           store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL
         "
-        class="dialog-main-buttons"
+        class="main-buttons"
       >
         <button autofocus data-hotkey="Escape" @click="onLogout()">
           対局をキャンセル
@@ -40,8 +40,8 @@ import {
   Ref,
   watch,
 } from "vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import {
   installHotKeyForDialog,
@@ -52,7 +52,7 @@ import { CSAGameState, loginRetryIntervalSeconds } from "@/renderer/store/csa";
 export default defineComponent({
   name: "CSAGameReadyDialog",
   components: {
-    ButtonIcon,
+    Icon,
   },
   setup() {
     const store = useStore();
@@ -89,7 +89,7 @@ export default defineComponent({
 
     return {
       dialog,
-      Icon,
+      IconType,
       store,
       CSAGameState,
       remainingSeconds,

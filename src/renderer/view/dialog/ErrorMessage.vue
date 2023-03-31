@@ -2,8 +2,8 @@
   <div>
     <dialog ref="dialog" class="error">
       <div class="message-box">
-        <ButtonIcon class="icon" :icon="Icon.ERROR" />
-        <div class="items">
+        <Icon :icon="IconType.ERROR" />
+        <div class="column">
           <div class="notice">
             {{ t.errorsOccurred(store.errors.length) }}
           </div>
@@ -16,7 +16,7 @@
           </div>
         </div>
       </div>
-      <div class="dialog-main-buttons">
+      <div class="main-buttons">
         <button autofocus data-hotkey="Escape" @click="onClose()">
           {{ t.close }}
         </button>
@@ -30,8 +30,8 @@ import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
 import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
-import { Icon } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
@@ -40,7 +40,7 @@ import {
 export default defineComponent({
   name: "ErrorMessage",
   components: {
-    ButtonIcon,
+    Icon,
   },
   setup() {
     const store = useStore();
@@ -64,17 +64,13 @@ export default defineComponent({
       dialog,
       store,
       onClose,
-      Icon,
+      IconType,
     };
   },
 });
 </script>
 
 <style scoped>
-.items {
-  display: flex;
-  flex-direction: column;
-}
 .item {
   margin: 10px 0px 10px 0px;
 }

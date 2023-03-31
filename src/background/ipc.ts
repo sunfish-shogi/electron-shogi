@@ -1,7 +1,15 @@
-import { BrowserWindow, dialog, ipcMain, shell, WebContents } from "electron";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  shell,
+  WebContents,
+} from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import path from "path";
 import fs from "fs";
+import url from "url";
 import {
   loadAnalysisSetting,
   loadAppSetting,
@@ -58,6 +66,7 @@ import { t } from "@/common/i18n";
 import { Rect } from "@/common/graphics";
 import { exportCaptureJPEG, exportCapturePNG } from "./image";
 import { getRelativePath, resolvePath } from "./path";
+import { fileURLToPath } from "./helpers/url";
 
 const isWindows = process.platform === "win32";
 
@@ -125,13 +134,22 @@ ipcMain.handle(
     if (!win) {
       throw new Error("Failed to open dialog by unexpected error.");
     }
+    const appSetting = loadAppSetting();
     getAppLogger().debug(`show open-record dialog`);
     const results = dialog.showOpenDialogSync(win, {
+      defaultPath: appSetting.lastRecordFilePath,
       properties: ["openFile"],
       filters: [{ name: t.recordFile, extensions: ["kif", "kifu", "csa"] }],
     });
     getAppLogger().debug(`open-record dialog result: ${results}`);
-    return results && results.length === 1 ? results[0] : "";
+    if (!results || results.length !== 1) {
+      return "";
+    }
+    saveAppSetting({
+      ...appSetting,
+      lastRecordFilePath: results[0],
+    });
+    return results[0];
   }
 );
 
@@ -155,9 +173,13 @@ ipcMain.handle(
     if (!win) {
       throw new Error("failed to open dialog by unexpected error.");
     }
+    const appSetting = loadAppSetting();
     getAppLogger().debug("show save-record dialog");
     const result = dialog.showSaveDialogSync(win, {
-      defaultPath: defaultPath,
+      defaultPath: path.resolve(
+        path.dirname(appSetting.lastRecordFilePath),
+        defaultPath
+      ),
       properties: ["createDirectory", "showOverwriteConfirmation"],
       filters: [
         { name: "KIF (Shift-JIS)", extensions: ["kif"] },
@@ -166,7 +188,14 @@ ipcMain.handle(
       ],
     });
     getAppLogger().debug(`save-record dialog result: ${result}`);
-    return result ? result : "";
+    if (!result) {
+      return "";
+    }
+    saveAppSetting({
+      ...appSetting,
+      lastRecordFilePath: result,
+    });
+    return result;
   }
 );
 
@@ -192,12 +221,21 @@ ipcMain.handle(
     if (!win) {
       throw new Error("failed to open dialog by unexpected error.");
     }
+    const appSetting = loadAppSetting();
     getAppLogger().debug("show select-file dialog");
     const results = dialog.showOpenDialogSync(win, {
+      defaultPath: appSetting.lastOtherFilePath,
       properties: ["openFile"],
     });
     getAppLogger().debug(`select-file dialog result: ${results}`);
-    return results && results.length === 1 ? results[0] : "";
+    if (!results || results.length !== 1) {
+      return "";
+    }
+    saveAppSetting({
+      ...appSetting,
+      lastOtherFilePath: results[0],
+    });
+    return results[0];
   }
 );
 
@@ -211,11 +249,33 @@ ipcMain.handle(
     }
     getAppLogger().debug("show select-directory dialog");
     const results = dialog.showOpenDialogSync(win, {
+      defaultPath,
       properties: ["createDirectory", "openDirectory"],
-      defaultPath: defaultPath,
     });
     getAppLogger().debug(`select-directory dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
+  }
+);
+
+ipcMain.handle(
+  Background.SHOW_SELECT_IMAGE_DIALOG,
+  async (event, defaultURL?: string): Promise<string> => {
+    validateIPCSender(event.senderFrame);
+    const win = BrowserWindow.getFocusedWindow();
+    if (!win) {
+      throw new Error("failed to open dialog by unexpected error.");
+    }
+    getAppLogger().debug("show select-image dialog");
+    const results = dialog.showOpenDialogSync(win, {
+      defaultPath:
+        defaultURL && fileURLToPath(defaultURL, app.getPath("pictures")),
+      properties: ["openFile"],
+      filters: [{ name: t.imageFile, extensions: ["png", "jpg", "jpeg"] }],
+    });
+    getAppLogger().debug(`select-image dialog result: ${results}`);
+    return results && results.length === 1
+      ? url.pathToFileURL(results[0]).toString()
+      : "";
   }
 );
 
@@ -325,14 +385,24 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
   if (!win) {
     throw new Error("failed to open dialog by unexpected error.");
   }
+  const appSetting = loadAppSetting();
   getAppLogger().debug("show select-USI-engine dialog");
   const results = dialog.showOpenDialogSync(win, {
+    defaultPath: appSetting.lastUSIEngineFilePath,
     properties: ["openFile", "noResolveAliases"],
     filters: isWindows
       ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }]
       : undefined,
   });
-  return results && results.length === 1 ? getRelativePath(results[0]) : "";
+  if (!results || results.length !== 1) {
+    return "";
+  }
+  const enginePath = getRelativePath(results[0]);
+  saveAppSetting({
+    ...appSetting,
+    lastUSIEngineFilePath: enginePath,
+  });
+  return enginePath;
 });
 
 ipcMain.handle(

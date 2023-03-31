@@ -97,22 +97,28 @@ type Texts = {
   appSettings: string;
   language: string;
   theme: string;
+  standard: string;
   standardGreen: string;
   green: string;
   cherryBlossom: string;
+  customImage: string;
   autumn: string;
   snow: string;
   dark: string;
-  pieceImages: string;
+  piece: string;
   singleKanjiPiece: string;
   singleKanjiGothicPiece: string;
   singleKanjiDarkPiece: string;
   singleKanjiGothicDarkPiece: string;
-  boardImage: string;
+  backgroundImage: string;
+  board: string;
+  pieceStand: string;
   lightWoodyTexture: string;
   warmWoodTexture: string;
   regin: string;
   displayFileAndRank: string;
+  displayLeftControls: string;
+  displayRightControls: string;
   tabViewStyle: string;
   oneColumn: string;
   twoColumns: string;
@@ -129,6 +135,7 @@ type Texts = {
   select: string;
   usiProtocol: string;
   translateOptionName: string;
+  functionalOnJapaneseOnly: string;
   maxStartupTime: string;
   forDevelopers: string;
   enableAppLog: string;
@@ -140,6 +147,7 @@ type Texts = {
   file: string;
   recordFile: string;
   executableFile: string;
+  imageFile: string;
   remove: string;
   deleteMove: string;
   recordProperties: string;
@@ -264,8 +272,10 @@ type Texts = {
   filterByEngineName: string;
   bookStyle: string;
   gameStyle: string;
-  size: string;
-  title: string;
+  none: string;
+  bgCover: string;
+  bgContain: string;
+  bgTile: string;
   typeCustomTitleHere: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
@@ -315,6 +325,14 @@ type Texts = {
   invalidBoard: string;
   invalidHandPiece: string;
   invalidUSI: string;
+  backgroundImageFileNotSelected: string;
+  boardImageFileNotSelected: string;
+  pieceStandImageFileNotSelected: string;
+  pieceVolumeMustBe0To100Percent: string;
+  clockVolumeMustBe0To100Percent: string;
+  clockPitchMustBe220To880Hz: string;
+  engineTimeoutMustBe1To300Seconds: string;
+  coefficientInSigmoidMustBeGreaterThan0: string;
   errorsOccurred: (n: number) => string;
   between: (a: unknown, b: unknown) => string;
   addNthEngine: (n: number) => string;
@@ -424,22 +442,28 @@ const ja: Texts = {
   appSettings: "アプリ設定",
   language: "言語",
   theme: "テーマ",
+  standard: "標準",
   standardGreen: "標準（緑）",
   green: "緑",
   cherryBlossom: "桜",
+  customImage: "カスタム画像",
   autumn: "紅葉",
   snow: "雪",
   dark: "ダーク",
-  pieceImages: "駒画像",
+  piece: "駒",
   singleKanjiPiece: "一文字駒",
   singleKanjiGothicPiece: "一文字駒（ゴシック体）",
   singleKanjiDarkPiece: "一文字駒（ダーク）",
   singleKanjiGothicDarkPiece: "一文字駒（ゴシック体・ダーク）",
-  boardImage: "盤画像",
+  backgroundImage: "背景画像",
+  board: "盤",
+  pieceStand: "駒台",
   lightWoodyTexture: "木目（明るい）",
   warmWoodTexture: "木目（暖かい）",
   regin: "レジン",
   displayFileAndRank: "段・筋を表示",
+  displayLeftControls: "左側操作ボタンを表示",
+  displayRightControls: "右側操作ボタンを表示",
   tabViewStyle: "タブビューの形式",
   oneColumn: "1列",
   twoColumns: "2列",
@@ -456,6 +480,7 @@ const ja: Texts = {
   select: "選択",
   usiProtocol: "USIプロトコル",
   translateOptionName: "オプション名を翻訳",
+  functionalOnJapaneseOnly: "日本語選択時のみ有効",
   maxStartupTime: "最大起動待ち時間",
   forDevelopers: "開発者向け",
   enableAppLog: "アプリログを出力",
@@ -467,6 +492,7 @@ const ja: Texts = {
   file: "ファイル",
   recordFile: "棋譜ファイル",
   executableFile: "実行可能ファイル",
+  imageFile: "画像ファイル",
   remove: "削除",
   deleteMove: "指し手削除",
   recordProperties: "棋譜情報",
@@ -591,8 +617,10 @@ const ja: Texts = {
   filterByEngineName: "エンジン名で検索",
   bookStyle: "書籍風",
   gameStyle: "対局画面風",
-  size: "サイズ",
-  title: "見出し",
+  none: "なし",
+  bgCover: "1枚で表示",
+  bgContain: "拡大して表示",
+  bgTile: "タイル状に表示",
   typeCustomTitleHere: "ここに見出しを入力",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
@@ -658,6 +686,19 @@ const ja: Texts = {
   invalidBoard: "不正な盤面",
   invalidHandPiece: "不正な持ち駒",
   invalidUSI: "不正なUSI",
+  backgroundImageFileNotSelected: "背景画像のファイルが選択されていません。",
+  boardImageFileNotSelected: "盤面画像のファイルが選択されていません。",
+  pieceStandImageFileNotSelected: "駒台画像のファイルが選択されていません。",
+  pieceVolumeMustBe0To100Percent:
+    "駒音の大きさには0%～100%の値を指定してください。",
+  clockVolumeMustBe0To100Percent:
+    "時計音の大きさには0%～100%の値を指定してください。",
+  clockPitchMustBe220To880Hz:
+    "時計音の高さには220Hz～880Hzの値を指定してください。",
+  engineTimeoutMustBe1To300Seconds:
+    "エンジンのタイムアウト時間には1秒～300秒の値を指定してください。",
+  coefficientInSigmoidMustBeGreaterThan0:
+    "勝率換算係数には0より大きい値を指定してください。",
   errorsOccurred: (n) => `${n} 種類のエラーが発生しました。`,
   between: (a, b) => `${a} から ${b} まで`,
   addNthEngine: (n) => `${n} 個目のエンジンを追加`,
@@ -776,22 +817,28 @@ const en: Texts = {
   appSettings: "Preferences",
   language: "Languages",
   theme: "Theme",
-  standardGreen: "Green (Standard)",
+  standard: "Standard",
+  standardGreen: "Standard (Green)",
   green: "Green",
   cherryBlossom: "Cherry Blossom",
+  customImage: "Custom Image",
   autumn: "Autumn",
   snow: "Snow",
   dark: "Dark",
-  pieceImages: "Piece Images",
+  piece: "Piece",
   singleKanjiPiece: "Single Kanji",
   singleKanjiGothicPiece: "Single Kanji (Gothic)",
   singleKanjiDarkPiece: "Single Kanji (Dark)",
   singleKanjiGothicDarkPiece: "Single Kanji (Gothic, Dark)",
-  boardImage: "Board Image",
+  backgroundImage: "Background Image",
+  board: "Board Image",
+  pieceStand: "Piece Stand",
   lightWoodyTexture: "Woody Texture (Light)",
   warmWoodTexture: "Woody Texture (Warm)",
   regin: "Regin",
   displayFileAndRank: "Display File & Rank",
+  displayLeftControls: "Display Left Controls",
+  displayRightControls: "Display Right Controls",
   tabViewStyle: "Tab View Style",
   oneColumn: "1 Column",
   twoColumns: "2 Columns",
@@ -808,6 +855,7 @@ const en: Texts = {
   select: "Select",
   usiProtocol: "USI Protocol",
   translateOptionName: "Translate Option Name",
+  functionalOnJapaneseOnly: "Functional on Japanese Only",
   maxStartupTime: "Max Startup Time",
   forDevelopers: "For Developers",
   enableAppLog: "Enable App Log",
@@ -819,6 +867,7 @@ const en: Texts = {
   file: "File",
   recordFile: "Record File",
   executableFile: "Executable",
+  imageFile: "Image",
   remove: "Remove",
   deleteMove: "Delete Move",
   recordProperties: "Record Properties",
@@ -943,8 +992,10 @@ const en: Texts = {
   filterByEngineName: "Filter by Engine Name",
   bookStyle: "Book Style",
   gameStyle: "Game Style",
-  size: "Size",
-  title: "Title",
+  none: "None",
+  bgCover: "Cover",
+  bgContain: "Contain",
+  bgTile: "Tile",
   typeCustomTitleHere: "Type custom title here",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
@@ -1012,6 +1063,15 @@ const en: Texts = {
   invalidBoard: "Invalid board",
   invalidHandPiece: "Invalid hand piece",
   invalidUSI: "Invalid USI",
+  backgroundImageFileNotSelected: "Background image file is not selected.",
+  boardImageFileNotSelected: "Board image file is not selected.",
+  pieceStandImageFileNotSelected: "Piece stand image file is not selected.",
+  pieceVolumeMustBe0To100Percent: "Piece volume must be 0% to 100%.",
+  clockVolumeMustBe0To100Percent: "Clock volume must be 0% to 100%.",
+  clockPitchMustBe220To880Hz: "Clock pitch must be 220Hz to 880Hz.",
+  engineTimeoutMustBe1To300Seconds: "Engine timeout must be 1 to 300 seconds.",
+  coefficientInSigmoidMustBeGreaterThan0:
+    "Coefficient in sigmoid must be greater than 0.",
   errorsOccurred: (n) =>
     n >= 2 ? `${n} errors have occurred.` : `${n} error has occurred.`,
   between: (a, b) => `between ${a} and ${b}`,

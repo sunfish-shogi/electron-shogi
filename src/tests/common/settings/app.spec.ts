@@ -10,6 +10,10 @@ import {
   TabPaneType,
   EvaluationViewFrom,
   PositionImageStyle,
+  PieceStandImageType,
+  BackgroundImageType,
+  LeftSideControlType,
+  RightSideControlType,
 } from "@/common/settings/app";
 import { Language } from "@/common/i18n";
 
@@ -18,9 +22,13 @@ describe("settings/csa", () => {
     const setting = {
       language: Language.JA,
       thema: Thema.DARK,
+      backgroundImageType: BackgroundImageType.NONE,
       pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       boardImage: BoardImageType.WARM,
+      pieceStandImage: PieceStandImageType.GREEN,
       boardLabelType: BoardLabelType.NONE,
+      leftSideControlType: LeftSideControlType.STANDARD,
+      rightSideControlType: RightSideControlType.STANDARD,
       pieceVolume: 10,
       clockVolume: 20,
       clockPitch: 300,
@@ -51,6 +59,10 @@ describe("settings/csa", () => {
       positionImageStyle: PositionImageStyle.GAME,
       positionImageSize: 500,
       positionImageHeader: "header",
+      lastRecordFilePath: "",
+      lastUSIEngineFilePath: "",
+      lastImageExportFilePath: "",
+      lastOtherFilePath: "",
     };
     const result = normalizeAppSetting(setting, {
       returnCode: "\r\n",

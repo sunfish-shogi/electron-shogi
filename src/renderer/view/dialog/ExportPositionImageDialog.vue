@@ -4,22 +4,20 @@
       <div ref="board" class="board" :class="appSetting.positionImageStyle">
         <SimpleBoardView
           v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK"
-          :piece-image-type="appSetting.pieceImage"
-          :board-image-type="appSetting.boardImage"
-          :board-label-type="appSetting.boardLabelType"
           :max-size="maxSize"
           :position="record.position"
           :header="appSetting.positionImageHeader || defaultHeader"
           :footer="record.current.comment"
           :last-move="lastMove"
-          :black-player-name="blackPlayerShortName"
-          :white-player-name="whitePlayerShortName"
         />
         <BoardView
           v-else
           :piece-image-type="appSetting.pieceImage"
           :board-image-type="appSetting.boardImage"
+          :piece-stand-image-type="appSetting.pieceStandImage"
           :board-label-type="appSetting.boardLabelType"
+          :custom-board-image-url="appSetting.boardImageFileURL"
+          :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
           :max-size="maxSize"
           :position="record.position"
           :last-move="lastMove"
@@ -28,63 +26,41 @@
           :white-player-name="whitePlayerName"
         />
       </div>
-      <div class="control-items">
-        <div>
-          <span class="dialog-form-item-label">{{ t.size }}</span>
-          <input
-            ref="imageSize"
-            class="size"
-            type="number"
-            min="400"
-            max="2000"
-            @input="changeSize"
-          />
-          <span class="dialog-form-item-unit">px</span>
-        </div>
-        <div
-          :class="{
-            hidden: appSetting.positionImageStyle === PositionImageStyle.GAME,
-          }"
-        >
-          <span class="dialog-form-item-label">{{ t.title }}</span>
-          <input
-            ref="headerText"
-            class="header"
-            :placeholder="t.typeCustomTitleHere"
-            @input="changeHeaderText"
-          />
-        </div>
-      </div>
-      <div class="control-items">
+      <div class="form-item center">
         <select :value="appSetting.positionImageStyle" @change="changeType">
           <option :value="PositionImageStyle.BOOK">{{ t.bookStyle }}</option>
           <option :value="PositionImageStyle.GAME">{{ t.gameStyle }}</option>
         </select>
-        <button
-          class="dialog-button"
-          autofocus
-          data-hotkey="Enter"
-          @click="saveAsPNG"
-        >
-          <ButtonIcon class="icon" :icon="Icon.SAVE" />
+        <input
+          ref="imageSize"
+          class="size"
+          type="number"
+          min="400"
+          max="2000"
+          @input="changeSize"
+        />
+        <span class="form-item-unit">px</span>
+        <input
+          ref="headerText"
+          :class="{
+            hidden: appSetting.positionImageStyle === PositionImageStyle.GAME,
+          }"
+          class="header"
+          :placeholder="t.typeCustomTitleHere"
+          @input="changeHeaderText"
+        />
+      </div>
+      <div class="form-item center">
+        <button autofocus data-hotkey="Enter" @click="saveAsPNG">
+          <Icon :icon="IconType.SAVE" />
           <span>PNG</span>
         </button>
-        <button
-          class="dialog-button"
-          autofocus
-          data-hotkey="Enter"
-          @click="saveAsJPEG"
-        >
-          <ButtonIcon class="icon" :icon="Icon.SAVE" />
+        <button autofocus data-hotkey="Enter" @click="saveAsJPEG">
+          <Icon :icon="IconType.SAVE" />
           <span>JPEG</span>
         </button>
-        <button
-          class="dialog-button"
-          autofocus
-          data-hotkey="Escape"
-          @click="close"
-        >
-          <ButtonIcon class="icon" :icon="Icon.CLOSE" />
+        <button autofocus data-hotkey="Escape" @click="close">
+          <Icon :icon="IconType.CLOSE" />
           <span>{{ t.close }}</span>
         </button>
       </div>
@@ -105,7 +81,7 @@ import {
 import { t } from "@/common/i18n";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import SimpleBoardView from "@/renderer/view/primitive/SimpleBoardView.vue";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import {
   installHotKeyForDialog,
@@ -120,7 +96,7 @@ import {
   getMoveDisplayText,
 } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
-import { Icon } from "@/renderer/assets/icons";
+import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
 import { Lazy } from "@/renderer/helpers/lazy";
 import { PositionImageStyle } from "@/common/settings/app";
@@ -135,7 +111,7 @@ export default defineComponent({
   components: {
     BoardView,
     SimpleBoardView,
-    ButtonIcon,
+    Icon,
   },
   setup() {
     const store = useStore();
@@ -249,7 +225,7 @@ export default defineComponent({
     return {
       PositionImageStyle,
       t,
-      Icon,
+      IconType,
       dialog,
       board,
       imageSize,
@@ -284,19 +260,6 @@ export default defineComponent({
 }
 .board.book {
   background-color: white;
-}
-.control-items {
-  display: flex;
-  flex-direction: row;
-  margin-top: 5px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.control-items > * {
-  margin: 0 5px;
-}
-.hidden {
-  display: none;
 }
 input.size {
   width: 50px;

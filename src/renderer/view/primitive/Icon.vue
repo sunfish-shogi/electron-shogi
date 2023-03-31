@@ -3,14 +3,14 @@
 </template>
 
 <script lang="ts">
-import { Icon, iconSourceMap } from "@/renderer/assets/icons";
+import { IconType, iconSourceMap } from "@/renderer/assets/icons";
 import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
-  name: "ButtonIcon",
+  name: "Icon",
   props: {
     icon: {
-      type: String as PropType<Icon>,
+      type: String as PropType<IconType>,
       required: true,
     },
   },

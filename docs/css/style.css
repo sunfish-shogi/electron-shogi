@@ -177,8 +177,10 @@ header .link-buttons {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: -5px;
 }
 
 header .link-buttons > * {
-  margin: 0px 0.5em 0px 0.5em;
+  margin: 5px 0.5em 0px 0.5em;
 }

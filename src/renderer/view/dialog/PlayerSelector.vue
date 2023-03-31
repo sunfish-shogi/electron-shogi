@@ -17,15 +17,15 @@
           {{ engine.name }}
         </option>
       </select>
-      <div v-if="displayPonderState" class="player-info">
+      <div v-if="displayPonderState" class="row player-info">
         <span class="player-info-key">{{ t.ponder }}:</span>
         <span class="player-info-value">{{ ponderState || "---" }}</span>
       </div>
-      <div v-if="displayThreadState" class="player-info">
+      <div v-if="displayThreadState" class="row player-info">
         <span class="player-info-key">{{ t.numberOfThreads }}:</span>
         <span class="player-info-value">{{ threadState || "---" }}</span>
       </div>
-      <div v-if="displayMultiPvState" class="player-info">
+      <div v-if="displayMultiPvState" class="row player-info">
         <span class="player-info-key">{{ t.multiPV }}:</span>
         <span class="player-info-value">{{ multiPVState || "---" }}</span>
       </div>
@@ -34,7 +34,7 @@
         :disabled="!isPlayerSettingEnabled"
         @click="openPlayerSetting"
       >
-        <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
+        <Icon :icon="IconType.SETTINGS" />
         <span>{{ t.settings }}</span>
       </button>
     </div>
@@ -52,9 +52,9 @@
 import { t } from "@/common/i18n";
 import { computed, defineComponent, PropType, Ref, ref } from "vue";
 import * as uri from "@/common/uri.js";
-import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 import USIEngineOptionDialog from "@/renderer/view/dialog/USIEngineOptionDialog.vue";
-import { Icon } from "@/renderer/assets/icons";
+import { IconType } from "@/renderer/assets/icons";
 import {
   getUSIEngineOptionCurrentValue,
   USIEngineSetting,
@@ -71,7 +71,7 @@ import api from "@/renderer/ipc/api";
 export default defineComponent({
   name: "PlayerSelector",
   components: {
-    ButtonIcon,
+    Icon,
     USIEngineOptionDialog,
   },
   props: {
@@ -195,7 +195,7 @@ export default defineComponent({
       openPlayerSetting,
       savePlayerSetting,
       closePlayerSetting,
-      Icon,
+      IconType,
       uri,
     };
   },
@@ -212,8 +212,6 @@ export default defineComponent({
 }
 .player-info {
   line-height: 1.3em;
-  display: flex;
-  flex-direction: row;
   font-size: 0.8em;
 }
 .player-info-key {

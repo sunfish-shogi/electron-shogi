@@ -1,8 +1,8 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">{{ t.engineManagement }}</div>
-      <div class="dialog-form-area">
+      <div class="title">{{ t.engineManagement }}</div>
+      <div class="form-group">
         <div class="engine-filter">
           <input
             ref="filter"
@@ -11,14 +11,14 @@
             @input="updateFilter"
           />
         </div>
-        <div class="engine-list">
+        <div class="column engine-list">
           <div v-if="setting.engineList.length === 0" class="engine">
             {{ t.noEngineRegistered }}
           </div>
           <div
             v-for="engine in engines"
             :key="engine.uri"
-            class="engine"
+            class="row engine"
             :class="{ hidden: !engine.visible }"
             :value="engine.uri"
           >
@@ -29,17 +29,12 @@
           </div>
         </div>
       </div>
-      <button class="dialog-wide-button" @click="add()">{{ t.add }}</button>
-      <div class="dialog-main-buttons">
-        <button
-          data-hotkey="Enter"
-          autofocus
-          class="dialog-button"
-          @click="saveAndClose()"
-        >
+      <button class="wide" @click="add()">{{ t.add }}</button>
+      <div class="main-buttons">
+        <button data-hotkey="Enter" autofocus @click="saveAndClose()">
           {{ t.saveAndClose }}
         </button>
-        <button class="dialog-button" data-hotkey="Escape" @click="cancel()">
+        <button data-hotkey="Escape" @click="cancel()">
           {{ t.cancel }}
         </button>
       </div>
@@ -215,8 +210,6 @@ export default defineComponent({
   width: 720px;
   height: 400px;
   overflow: auto;
-  display: flex;
-  flex-direction: column;
 }
 .engine-filter {
   margin: 0px 5px 5px 5px;
@@ -228,11 +221,6 @@ export default defineComponent({
   margin: 0px 5px 0px 5px;
   padding: 5px;
   border-bottom: 1px solid gray;
-  display: flex;
-  flex-direction: row;
-}
-.engine.hidden {
-  display: none;
 }
 .engine-name {
   text-align: left;

@@ -1,12 +1,16 @@
 import {
   AppSetting,
   AppSettingUpdate,
+  BackgroundImageType,
   BoardImageType,
   BoardLabelType,
   ClockSoundTarget,
   EvaluationViewFrom,
+  LeftSideControlType,
   PieceImageType,
+  PieceStandImageType,
   PositionImageStyle,
+  RightSideControlType,
   Tab,
   TabPaneType,
   Thema,
@@ -33,11 +37,32 @@ class AppSettingStore {
   get pieceImage(): PieceImageType {
     return this.setting.pieceImage;
   }
+  get backgroundImageType(): BackgroundImageType {
+    return this.setting.backgroundImageType;
+  }
+  get backgroundImageFileURL(): string | undefined {
+    return this.setting.backgroundImageFileURL;
+  }
   get boardImage(): BoardImageType {
     return this.setting.boardImage;
   }
+  get boardImageFileURL(): string | undefined {
+    return this.setting.boardImageFileURL;
+  }
+  get pieceStandImage(): PieceStandImageType {
+    return this.setting.pieceStandImage;
+  }
+  get pieceStandImageFileURL(): string | undefined {
+    return this.setting.pieceStandImageFileURL;
+  }
   get boardLabelType(): BoardLabelType {
     return this.setting.boardLabelType;
+  }
+  get leftSideControlType(): LeftSideControlType {
+    return this.setting.leftSideControlType;
+  }
+  get rightSideControlType(): RightSideControlType {
+    return this.setting.rightSideControlType;
   }
   get pieceVolume(): number {
     return this.setting.pieceVolume;
@@ -128,6 +153,18 @@ class AppSettingStore {
   }
   get positionImageHeader(): string {
     return this.setting.positionImageHeader;
+  }
+  get lastRecordFilePath(): string {
+    return this.setting.lastRecordFilePath;
+  }
+  get lastUSIEngineFilePath(): string {
+    return this.setting.lastUSIEngineFilePath;
+  }
+  get lastImageExportFilePath(): string {
+    return this.setting.lastImageExportFilePath;
+  }
+  get lastOtherFilePath(): string {
+    return this.setting.lastOtherFilePath;
   }
 
   async loadAppSetting(): Promise<void> {

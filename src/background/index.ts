@@ -14,7 +14,9 @@ import { quitAll as usiQuitAll } from "@/background/usi";
 import { AppState } from "@/common/control/state";
 import { validateHTTPRequest } from "./security";
 import {
+  getPortableExeDir,
   isDevelopment,
+  isPortable,
   isPreview,
   isProduction,
   isTest,
@@ -23,6 +25,9 @@ import { setLanguage, t } from "@/common/i18n";
 
 getAppLogger().info("start main process");
 getAppLogger().info("process argv: %s", process.argv.join(" "));
+if (isPortable()) {
+  getAppLogger().info("portable mode: %s", getPortableExeDir());
+}
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([

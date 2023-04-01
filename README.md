@@ -93,8 +93,11 @@ npm run serve
 ### Release Build
 
 ```
-# Electron App
+# Electron App (Installer)
 npm run electron:build
+
+# Electron App (Portable)
+npm run electron:portable
 
 # Web App
 npm run build
@@ -103,7 +106,7 @@ npm run build
 ### Unit Tests
 
 ```
-npm run test:unit
+npm run test
 ```
 
 カバレッジレポートを出力する場合は `-- --coverage` を付与すると `coverage` ディレクトリに結果が出力されます。

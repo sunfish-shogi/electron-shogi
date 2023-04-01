@@ -93,8 +93,11 @@ npm run serve
 ### Release Build
 
 ```
-# Electron App
+# Electron App (Installer)
 npm run electron:build
+
+# Electron App (Portable)
+npm run electron:portable
 
 # Web App
 npm run build

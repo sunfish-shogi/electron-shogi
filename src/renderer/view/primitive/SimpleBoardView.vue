@@ -72,8 +72,7 @@ const pieceImageMap = {
   gold: "./piece/gothic/gold.png",
   bishop: "./piece/gothic/bishop.png",
   rook: "./piece/gothic/rook.png",
-  king: "./piece/gothic/king.png",
-  king2: "./piece/gothic/king2.png",
+  king: "./piece/gothic/king2.png",
   promPawn: "./piece/gothic/prom_pawn.png",
   promLance: "./piece/gothic/prom_lance.png",
   promKnight: "./piece/gothic/prom_knight.png",
@@ -92,6 +91,7 @@ function buildParams(size: number) {
     boardLeft: size * 0.15,
     boardTop: size * 0.12,
     boardSize: size * 0.7,
+    boardBorderSize: size * 0.004,
     fileLeft: size * 0.168,
     fileTop: size * 0.078,
     rankLeft: size * 0.85,
@@ -179,12 +179,12 @@ export default defineComponent({
           "font-size": `${param.fontSize}px`,
         },
         boardStyle: {
-          left: `${param.boardLeft}px`,
-          top: `${param.boardTop}px`,
+          left: `${param.boardLeft - param.boardBorderSize}px`,
+          top: `${param.boardTop - param.boardBorderSize}px`,
         },
         boardImageStyle: {
-          width: `${param.boardSize}px`,
-          height: `${param.boardSize}px`,
+          width: `${param.boardSize + param.boardBorderSize * 2}px`,
+          height: `${param.boardSize + param.boardBorderSize * 2}px`,
         },
         files: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((file) => {
           return {

@@ -50,7 +50,7 @@ const config = {
   mac: {
     electronLanguages: ["en", "ja"],
   },
-  publish: process.env.GITHUB_ACTIONS === "true" ? "never" : null,
+  publish: null,
 };
 
 switch (target) {

@@ -1,5 +1,3 @@
-"use strict";
-
 import archiver from "archiver";
 import fs from "fs";
 

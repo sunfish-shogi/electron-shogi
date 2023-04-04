@@ -1,5 +1,3 @@
-"use strict"
-
 import builder from "electron-builder";
 import fs from "fs";
 

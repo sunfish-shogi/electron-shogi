@@ -49,12 +49,14 @@
             class="row option"
             :class="{ hidden: !option.visible }"
           >
+            <!-- オプション名 -->
             <div class="option-name">
               {{ option.displayName || option.name }}
               <span v-if="option.displayName" class="option-name-original">
                 {{ option.name }}
               </span>
             </div>
+            <!-- 数値 (spin) -->
             <input
               v-if="option.type === 'spin'"
               :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
@@ -65,6 +67,7 @@
               step="1"
               :name="option.name"
             />
+            <!-- 文字列 (string) -->
             <input
               v-if="option.type === 'string'"
               :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
@@ -72,6 +75,7 @@
               type="text"
               :name="option.name"
             />
+            <!-- ファイル名 (filename) -->
             <input
               v-if="option.type === 'filename'"
               :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
@@ -86,6 +90,7 @@
             >
               {{ t.select }}
             </button>
+            <!-- ブール値 (check) -->
             <HorizontalSelector
               v-if="option.type === 'check'"
               :ref="
@@ -94,12 +99,20 @@
                 }
               "
               value=""
-              :items="[
-                { value: '', label: t.defaultValue },
-                { value: 'true', label: 'ON' },
-                { value: 'false', label: 'OFF' },
-              ]"
+              :items="
+                option.default
+                  ? [
+                      { value: 'true', label: 'ON' },
+                      { value: 'false', label: 'OFF' },
+                    ]
+                  : [
+                      { value: '', label: t.defaultValue },
+                      { value: 'true', label: 'ON' },
+                      { value: 'false', label: 'OFF' },
+                    ]
+              "
             />
+            <!-- 選択 (combo) -->
             <select
               v-if="option.type === 'combo'"
               :ref="(el) => { inputs[option.name] = el as HTMLSelectElement }"

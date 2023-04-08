@@ -53,6 +53,22 @@ describe("settings/usi", () => {
         vars: [],
       })
     ).toBeUndefined();
+    expect(
+      getUSIEngineOptionCurrentValue({
+        name: "test",
+        type: "string",
+        default: "<empty>",
+        vars: [],
+      })
+    ).toBe("");
+    expect(
+      getUSIEngineOptionCurrentValue({
+        name: "test",
+        type: "filename",
+        default: "<empty>",
+        vars: [],
+      })
+    ).toBe("");
     expect(getUSIEngineOptionCurrentValue(null)).toBeUndefined();
   });
 

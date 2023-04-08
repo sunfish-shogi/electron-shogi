@@ -62,6 +62,7 @@ describe("settings/usi", () => {
       getUSIEngineOptionCurrentValue({
         name: "test",
         type: "string",
+        order: 1,
         default: "<empty>",
         vars: [],
       })
@@ -70,6 +71,7 @@ describe("settings/usi", () => {
       getUSIEngineOptionCurrentValue({
         name: "test",
         type: "filename",
+        order: 1,
         default: "<empty>",
         vars: [],
       })

@@ -13,37 +13,26 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { useStore } from "@/renderer/store";
-import { computed, defineComponent } from "vue";
+import { computed } from "vue";
 import EngineAnalyticsElement from "@/renderer/view/tab/EngineAnalyticsElement.vue";
 import { RectSize } from "@/common/graphics.js";
 
-export default defineComponent({
-  name: "EngineAnalytics",
-  components: {
-    EngineAnalyticsElement,
+const props = defineProps({
+  size: {
+    type: RectSize,
+    required: true,
   },
-  props: {
-    size: {
-      type: RectSize,
-      required: true,
-    },
-    historyMode: {
-      type: Boolean,
-      required: true,
-    },
+  historyMode: {
+    type: Boolean,
+    required: true,
   },
-  setup(props) {
-    const store = useStore();
-    const elementHeight = computed(() => {
-      const rows = store.usiMonitors.length;
-      return rows !== 0 ? props.size.height / rows : 0;
-    });
-    return {
-      store,
-      elementHeight,
-    };
-  },
+});
+
+const store = useStore();
+const elementHeight = computed(() => {
+  const rows = store.usiMonitors.length;
+  return rows !== 0 ? props.size.height / rows : 0;
 });
 </script>

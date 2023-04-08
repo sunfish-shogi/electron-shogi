@@ -17,7 +17,7 @@
           <span>{{ t.hideTabView }}</span>
         </div>
       </div>
-      <div class="tab-contents">
+      <div class="auto tab-contents">
         <RecordInfo
           v-if="activeTab === Tab.RECORD_INFO"
           class="full tab-content"
@@ -57,7 +57,11 @@
 </template>
 
 <script lang="ts">
-import { PropType, computed, defineComponent } from "vue";
+export const headerHeight = 30;
+</script>
+
+<script setup lang="ts">
+import { PropType, computed } from "vue";
 import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import EngineAnalytics from "@/renderer/view/tab/EngineAnalytics.vue";
 import EvaluationChart, {
@@ -70,86 +74,63 @@ import { Tab } from "@/common/settings/app";
 import { IconType } from "@/renderer/assets/icons";
 import { t } from "@/common/i18n";
 
-export const headerHeight = 30;
-
-export default defineComponent({
-  name: "TabPane",
-  components: {
-    RecordComment,
-    EngineAnalytics,
-    EvaluationChart,
-    RecordInfo,
-    Icon,
+const props = defineProps({
+  size: {
+    type: RectSize,
+    required: true,
   },
-  props: {
-    size: {
-      type: RectSize,
-      required: true,
-    },
-    visibleTabs: {
-      type: Array as PropType<Tab[]>,
-      required: true,
-    },
-    activeTab: {
-      type: String as PropType<Tab>,
-      required: true,
-    },
-    displayMinimizeToggle: {
-      type: Boolean,
-      required: false,
-    },
+  visibleTabs: {
+    type: Array as PropType<Tab[]>,
+    required: true,
   },
-  emits: ["onChangeTab", "onMinimize"],
-  setup(props, { emit }) {
-    const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
-    const minimize = () => emit("onMinimize");
-    const contentSize = computed(() =>
-      props.size.reduce(new RectSize(0, headerHeight))
-    );
-
-    const tabs = {
-      [Tab.RECORD_INFO]: {
-        title: t.recordProperties,
-        icon: IconType.DESCRIPTION,
-      },
-      [Tab.COMMENT]: {
-        title: t.comments,
-        icon: IconType.COMMENT,
-      },
-      [Tab.SEARCH]: {
-        title: t.searchLog,
-        icon: IconType.BRAIN,
-      },
-      [Tab.PV]: {
-        title: t.pv,
-        icon: IconType.PV,
-      },
-      [Tab.CHART]: {
-        title: t.evaluation,
-        icon: IconType.CHART,
-      },
-      [Tab.PERCENTAGE_CHART]: {
-        title: t.estimatedWinRate,
-        icon: IconType.PERCENT,
-      },
-      [Tab.INVISIBLE]: {
-        title: t.hideTabView,
-        icon: IconType.ARROW_DROP,
-      },
-    };
-
-    return {
-      t,
-      contentSize,
-      changeSelect,
-      minimize,
-      tabs,
-      Tab,
-      IconType,
-      EvaluationChartType,
-    };
+  activeTab: {
+    type: String as PropType<Tab>,
+    required: true,
+  },
+  displayMinimizeToggle: {
+    type: Boolean,
+    required: false,
   },
 });
+
+const emit = defineEmits(["onChangeTab", "onMinimize"]);
+
+const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
+const minimize = () => emit("onMinimize");
+const contentSize = computed(() =>
+  props.size.reduce(new RectSize(0, headerHeight))
+);
+
+const tabs = {
+  [Tab.RECORD_INFO]: {
+    title: t.recordProperties,
+    icon: IconType.DESCRIPTION,
+  },
+  [Tab.COMMENT]: {
+    title: t.comments,
+    icon: IconType.COMMENT,
+  },
+  [Tab.SEARCH]: {
+    title: t.searchLog,
+    icon: IconType.BRAIN,
+  },
+  [Tab.PV]: {
+    title: t.pv,
+    icon: IconType.PV,
+  },
+  [Tab.CHART]: {
+    title: t.evaluation,
+    icon: IconType.CHART,
+  },
+  [Tab.PERCENTAGE_CHART]: {
+    title: t.estimatedWinRate,
+    icon: IconType.PERCENT,
+  },
+  [Tab.INVISIBLE]: {
+    title: t.hideTabView,
+    icon: IconType.ARROW_DROP,
+  },
+};
 </script>
 
 <style scoped>
@@ -176,9 +157,6 @@ export default defineComponent({
 }
 .tab.end {
   margin-left: auto;
-}
-.tab-contents {
-  flex: 1;
 }
 .tab-contents .tab-content {
   color: var(--text-color);

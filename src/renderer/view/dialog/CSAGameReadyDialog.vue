@@ -30,16 +30,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import {
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  Ref,
-  watch,
-} from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
@@ -49,54 +42,37 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { CSAGameState, loginRetryIntervalSeconds } from "@/renderer/store/csa";
 
-export default defineComponent({
-  name: "CSAGameReadyDialog",
-  components: {
-    Icon,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const remainingSeconds = ref(0);
-    let remainingTimer = 0;
+const store = useStore();
+const dialog = ref();
+const remainingSeconds = ref(0);
+let remainingTimer = 0;
 
-    onMounted(() => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-      window.clearInterval(remainingTimer);
-    });
-
-    watch(
-      () => store.csaGameState,
-      (newState) => {
-        window.clearInterval(remainingTimer);
-        if (newState === CSAGameState.LOGIN_RETRY_INTERVAL) {
-          remainingSeconds.value = loginRetryIntervalSeconds;
-          remainingTimer = window.setInterval(() => {
-            remainingSeconds.value--;
-          }, 1000);
-        }
-      }
-    );
-
-    const onLogout = () => {
-      store.cancelCSAGame();
-    };
-
-    return {
-      dialog,
-      IconType,
-      store,
-      CSAGameState,
-      remainingSeconds,
-      onLogout,
-    };
-  },
+onMounted(() => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+  window.clearInterval(remainingTimer);
+});
+
+watch(
+  () => store.csaGameState,
+  (newState) => {
+    window.clearInterval(remainingTimer);
+    if (newState === CSAGameState.LOGIN_RETRY_INTERVAL) {
+      remainingSeconds.value = loginRetryIntervalSeconds;
+      remainingTimer = window.setInterval(() => {
+        remainingSeconds.value--;
+      }, 1000);
+    }
+  }
+);
+
+const onLogout = () => {
+  store.cancelCSAGame();
+};
 </script>
 
 <style scoped>

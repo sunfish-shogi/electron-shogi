@@ -193,11 +193,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import {
   computed,
-  defineComponent,
   onUpdated,
   onBeforeUpdate,
   ref,
@@ -205,7 +204,7 @@ import {
   onBeforeUnmount,
 } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
-import { Move, PositionChange, RecordMetadataKey } from "@/common/shogi";
+import { Move, PositionChange } from "@/common/shogi";
 import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
 import Icon from "@/renderer/view/primitive/Icon.vue";
@@ -225,251 +224,194 @@ import {
   RightSideControlType,
   LeftSideControlType,
 } from "@/common/settings/app";
+import {
+  getBlackPlayerName,
+  getWhitePlayerName,
+} from "@/common/helpers/metadata";
 
-export default defineComponent({
-  name: "BoardPane",
-  components: {
-    BoardView,
-    Icon,
-    GameMenu,
-    FileMenu,
-    InitialPositionMenu,
+defineProps({
+  maxSize: {
+    type: RectSize,
+    required: true,
   },
-  props: {
-    maxSize: {
-      type: RectSize,
-      required: true,
-    },
-  },
-  emits: ["resize"],
-  setup(_, context) {
-    const store = useStore();
-    const appSetting = useAppSetting();
-    const rightControl = ref();
-    const leftControl = ref();
-    const isGameMenuVisible = ref(false);
-    const isFileMenuVisible = ref(false);
-    const isInitialPositionMenuVisible = ref(false);
+});
 
-    onMounted(() => {
-      installHotKeyForMainWindow(rightControl.value);
-      installHotKeyForMainWindow(leftControl.value);
-    });
+const emit = defineEmits(["resize"]);
 
-    onUpdated(() => {
-      installHotKeyForMainWindow(rightControl.value);
-      installHotKeyForMainWindow(leftControl.value);
-    });
+const store = useStore();
+const appSetting = useAppSetting();
+const rightControl = ref();
+const leftControl = ref();
+const isGameMenuVisible = ref(false);
+const isFileMenuVisible = ref(false);
+const isInitialPositionMenuVisible = ref(false);
 
-    onBeforeUpdate(() => {
-      uninstallHotKeyForMainWindow(rightControl.value);
-      uninstallHotKeyForMainWindow(leftControl.value);
-    });
+onMounted(() => {
+  installHotKeyForMainWindow(rightControl.value);
+  installHotKeyForMainWindow(leftControl.value);
+});
 
-    onBeforeUnmount(() => {
-      uninstallHotKeyForMainWindow(rightControl.value);
-      uninstallHotKeyForMainWindow(leftControl.value);
-    });
+onUpdated(() => {
+  installHotKeyForMainWindow(rightControl.value);
+  installHotKeyForMainWindow(leftControl.value);
+});
 
-    const onResize = (size: RectSize) => {
-      context.emit("resize", size);
-    };
+onBeforeUpdate(() => {
+  uninstallHotKeyForMainWindow(rightControl.value);
+  uninstallHotKeyForMainWindow(leftControl.value);
+});
 
-    const onMove = (move: Move) => {
-      if (
-        store.appState === AppState.GAME ||
-        store.appState === AppState.CSA_GAME
-      ) {
-        humanPlayer.doMove(move);
-      } else {
-        store.doMove(move);
-      }
-    };
+onBeforeUnmount(() => {
+  uninstallHotKeyForMainWindow(rightControl.value);
+  uninstallHotKeyForMainWindow(leftControl.value);
+});
 
-    const onEdit = (change: PositionChange) => {
-      store.editPosition(change);
-    };
+const onResize = (size: RectSize) => {
+  emit("resize", size);
+};
 
-    const onGame = () => {
-      isGameMenuVisible.value = true;
-    };
+const onMove = (move: Move) => {
+  if (
+    store.appState === AppState.GAME ||
+    store.appState === AppState.CSA_GAME
+  ) {
+    humanPlayer.doMove(move);
+  } else {
+    store.doMove(move);
+  }
+};
 
-    const onShowGameResults = () => {
-      store.showGameResults();
-    };
+const onEdit = (change: PositionChange) => {
+  store.editPosition(change);
+};
 
-    const onStop = () => {
-      store.stopGame();
-    };
+const onGame = () => {
+  isGameMenuVisible.value = true;
+};
 
-    const onWin = () => {
-      humanPlayer.win();
-    };
+const onShowGameResults = () => {
+  store.showGameResults();
+};
 
-    const onResign = () => {
-      humanPlayer.resign();
-    };
+const onStop = () => {
+  store.stopGame();
+};
 
-    const onResearch = () => {
-      store.showResearchDialog();
-    };
+const onWin = () => {
+  humanPlayer.win();
+};
 
-    const onEndResearch = () => {
-      store.stopResearch();
-    };
+const onResign = () => {
+  humanPlayer.resign();
+};
 
-    const onAnalysis = () => {
-      store.showAnalysisDialog();
-    };
+const onResearch = () => {
+  store.showResearchDialog();
+};
 
-    const onEndAnalysis = () => {
-      store.stopAnalysis();
-    };
+const onEndResearch = () => {
+  store.stopResearch();
+};
 
-    const onStartEditPosition = () => {
-      store.startPositionEditing();
-    };
+const onAnalysis = () => {
+  store.showAnalysisDialog();
+};
 
-    const onEndEditPosition = () => {
-      store.endPositionEditing();
-    };
+const onEndAnalysis = () => {
+  store.stopAnalysis();
+};
 
-    const onInitPosition = () => {
-      isInitialPositionMenuVisible.value = true;
-    };
+const onStartEditPosition = () => {
+  store.startPositionEditing();
+};
 
-    const onChangeTurn = () => {
-      store.changeTurn();
-    };
+const onEndEditPosition = () => {
+  store.endPositionEditing();
+};
 
-    const onOpenAppSettings = () => {
-      store.showAppSettingDialog();
-    };
+const onInitPosition = () => {
+  isInitialPositionMenuVisible.value = true;
+};
 
-    const onOpenEngineSettings = () => {
-      store.showUsiEngineManagementDialog();
-    };
+const onChangeTurn = () => {
+  store.changeTurn();
+};
 
-    const onFlip = () => {
-      appSetting.flipBoard();
-    };
+const onOpenAppSettings = () => {
+  store.showAppSettingDialog();
+};
 
-    const onFileAction = () => {
-      isFileMenuVisible.value = true;
-    };
+const onOpenEngineSettings = () => {
+  store.showUsiEngineManagementDialog();
+};
 
-    const onRemoveCurrentMove = () => {
-      store.removeCurrentMove();
-    };
+const onFlip = () => {
+  appSetting.flipBoard();
+};
 
-    const lastMove = computed(() => {
-      const move = store.record.current.move;
-      return move instanceof Move ? move : undefined;
-    });
+const onFileAction = () => {
+  isFileMenuVisible.value = true;
+};
 
-    const blackPlayerName = computed(() => {
-      return (
-        store.record.metadata.getStandardMetadata(
-          RecordMetadataKey.BLACK_NAME
-        ) || t.sente
-      );
-    });
+const onRemoveCurrentMove = () => {
+  store.removeCurrentMove();
+};
 
-    const whitePlayerName = computed(() => {
-      return (
-        store.record.metadata.getStandardMetadata(
-          RecordMetadataKey.WHITE_NAME
-        ) || t.gote
-      );
-    });
+const lastMove = computed(() => {
+  const move = store.record.current.move;
+  return move instanceof Move ? move : undefined;
+});
 
-    const clock = computed(() => {
-      if (
-        store.appState === AppState.GAME ||
-        store.csaGameState === CSAGameState.GAME
-      ) {
-        return {
-          black: {
-            time: store.blackTime,
-            byoyomi: store.blackByoyomi,
-          },
-          white: {
-            time: store.whiteTime,
-            byoyomi: store.whiteByoyomi,
-          },
-        };
-      }
-      return undefined;
-    });
+const blackPlayerName = computed(() =>
+  getBlackPlayerName(store.record.metadata)
+);
+const whitePlayerName = computed(() =>
+  getWhitePlayerName(store.record.metadata)
+);
 
-    const controlStates = computed(() => {
-      return {
-        game: store.appState === AppState.NORMAL,
-        showGameResults:
-          store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
-        stop:
-          store.appState === AppState.GAME ||
-          store.appState === AppState.CSA_GAME,
-        win: store.appState === AppState.CSA_GAME && store.isMovableByUser,
-        resign:
-          (store.appState === AppState.GAME ||
-            store.appState === AppState.CSA_GAME) &&
-          store.isMovableByUser,
-        research: store.appState === AppState.NORMAL,
-        endResearch: store.appState === AppState.RESEARCH,
-        analysis: store.appState === AppState.NORMAL,
-        endAnalysis: store.appState === AppState.ANALYSIS,
-        startEditPosition: store.appState === AppState.NORMAL,
-        endEditPosition: store.appState === AppState.POSITION_EDITING,
-        initPosition: store.appState === AppState.POSITION_EDITING,
-        removeCurrentMove:
-          store.appState === AppState.NORMAL ||
-          store.appState === AppState.RESEARCH,
-        engineSettings: store.appState === AppState.NORMAL,
-      };
-    });
-
+const clock = computed(() => {
+  if (
+    store.appState === AppState.GAME ||
+    store.csaGameState === CSAGameState.GAME
+  ) {
     return {
-      t,
-      store,
-      rightControl,
-      leftControl,
-      isGameMenuVisible,
-      isFileMenuVisible,
-      isInitialPositionMenuVisible,
-      appSetting,
-      lastMove,
-      blackPlayerName,
-      whitePlayerName,
-      clock,
-      controlStates,
-      onResize,
-      onMove,
-      onEdit,
-      onGame,
-      onShowGameResults,
-      onStop,
-      onWin,
-      onResign,
-      onResearch,
-      onEndResearch,
-      onAnalysis,
-      onEndAnalysis,
-      onStartEditPosition,
-      onEndEditPosition,
-      onInitPosition,
-      onChangeTurn,
-      onOpenAppSettings,
-      onOpenEngineSettings,
-      onFlip,
-      onFileAction,
-      onRemoveCurrentMove,
-      IconType,
-      AppState,
-      RightSideControlType,
-      LeftSideControlType,
+      black: {
+        time: store.blackTime,
+        byoyomi: store.blackByoyomi,
+      },
+      white: {
+        time: store.whiteTime,
+        byoyomi: store.whiteByoyomi,
+      },
     };
-  },
+  }
+  return undefined;
+});
+
+const controlStates = computed(() => {
+  return {
+    game: store.appState === AppState.NORMAL,
+    showGameResults:
+      store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
+    stop:
+      store.appState === AppState.GAME || store.appState === AppState.CSA_GAME,
+    win: store.appState === AppState.CSA_GAME && store.isMovableByUser,
+    resign:
+      (store.appState === AppState.GAME ||
+        store.appState === AppState.CSA_GAME) &&
+      store.isMovableByUser,
+    research: store.appState === AppState.NORMAL,
+    endResearch: store.appState === AppState.RESEARCH,
+    analysis: store.appState === AppState.NORMAL,
+    endAnalysis: store.appState === AppState.ANALYSIS,
+    startEditPosition: store.appState === AppState.NORMAL,
+    endEditPosition: store.appState === AppState.POSITION_EDITING,
+    initPosition: store.appState === AppState.POSITION_EDITING,
+    removeCurrentMove:
+      store.appState === AppState.NORMAL ||
+      store.appState === AppState.RESEARCH,
+    engineSettings: store.appState === AppState.NORMAL,
+  };
 });
 </script>
 

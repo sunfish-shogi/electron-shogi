@@ -4,6 +4,7 @@ button {
   border-color: var(--control-button-border-color);
   border-style: solid;
   border-width: 0px 1px 1px 0px;
+  font-size: 0.8rem;
 }
 
 button:active {
@@ -27,7 +28,7 @@ button.close:hover:enabled {
 }
 
 button.thin {
-  margin: 0px 5px 0px 5px;
+  margin: 0;
   padding: 2px 25px 2px 25px;
 }
 
@@ -42,18 +43,24 @@ input {
   background-color: var(--text-bg-color);
   border-color: var(--input-border-color);
   border-style: solid;
-  border-width: 1px;
-  font-size: 0.9em;
+  border-width: 0.8px;
+  height: 20px;
+  padding: 1px 2px;
+  font-size: 0.9rem;
 }
 
 select {
   color: var(--text-color);
   background-color: var(--text-bg-color);
-  font-size: 0.9em;
+  border-width: 0.8px;
+  height: 23.6px;
+  padding: 1px 2px;
+  font-size: 0.9rem;
 }
 
 textarea {
   color: var(--text-color);
   background-color: var(--text-bg-color);
-  font-size: 0.9em;
+  border-width: 0.8px;
+  font-size: 0.9rem;
 }

@@ -166,6 +166,9 @@ class AppSettingStore {
   get lastOtherFilePath(): string {
     return this.setting.lastOtherFilePath;
   }
+  get emptyRecordInfoVisibility(): boolean {
+    return this.setting.emptyRecordInfoVisibility;
+  }
 
   async loadAppSetting(): Promise<void> {
     this.setting = await api.loadAppSetting();

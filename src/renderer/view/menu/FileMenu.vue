@@ -57,97 +57,73 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { computed, defineComponent, onMounted, ref, Ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
 
-export default defineComponent({
-  name: "FileMenu",
-  components: {
-    Icon,
-  },
-  emits: ["close"],
-  setup(_, context) {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const onClose = () => {
-      context.emit("close");
-    };
-    onMounted(() => {
-      showModalDialog(dialog.value, onClose);
-    });
-    const onNewFile = () => {
-      store.resetRecord();
-      context.emit("close");
-    };
-    const onOpen = () => {
-      store.openRecord();
-      context.emit("close");
-    };
-    const onSave = () => {
-      store.saveRecord({ overwrite: true });
-      context.emit("close");
-    };
-    const onSaveAs = () => {
-      store.saveRecord();
-      context.emit("close");
-    };
-    const onExportImage = () => {
-      store.showExportBoardImageDialog();
-      context.emit("close");
-    };
-    const onCopyKIF = () => {
-      store.copyRecordKIF();
-      context.emit("close");
-    };
-    const onCopyCSA = () => {
-      store.copyRecordCSA();
-      context.emit("close");
-    };
-    const onCopyUSI = () => {
-      store.copyRecordUSIAll();
-      context.emit("close");
-    };
-    const onCopySFEN = () => {
-      store.copyBoardSFEN();
-      context.emit("close");
-    };
-    const onPaste = () => {
-      store.showPasteDialog();
-      context.emit("close");
-    };
-    const states = computed(() => {
-      return {
-        newFile: store.appState === AppState.NORMAL,
-        open: store.appState === AppState.NORMAL,
-        save: store.appState === AppState.NORMAL,
-        saveAs: store.appState === AppState.NORMAL,
-        exportImage: store.appState === AppState.NORMAL,
-        paste: store.appState === AppState.NORMAL,
-      };
-    });
-    return {
-      t,
-      dialog,
-      IconType,
-      onClose,
-      onNewFile,
-      onOpen,
-      onSave,
-      onSaveAs,
-      onExportImage,
-      onCopyKIF,
-      onCopyCSA,
-      onCopyUSI,
-      onCopySFEN,
-      onPaste,
-      states,
-    };
-  },
+const emit = defineEmits(["close"]);
+
+const store = useStore();
+const dialog = ref();
+const onClose = () => {
+  emit("close");
+};
+onMounted(() => {
+  showModalDialog(dialog.value, onClose);
+});
+const onNewFile = () => {
+  store.resetRecord();
+  emit("close");
+};
+const onOpen = () => {
+  store.openRecord();
+  emit("close");
+};
+const onSave = () => {
+  store.saveRecord({ overwrite: true });
+  emit("close");
+};
+const onSaveAs = () => {
+  store.saveRecord();
+  emit("close");
+};
+const onExportImage = () => {
+  store.showExportBoardImageDialog();
+  emit("close");
+};
+const onCopyKIF = () => {
+  store.copyRecordKIF();
+  emit("close");
+};
+const onCopyCSA = () => {
+  store.copyRecordCSA();
+  emit("close");
+};
+const onCopyUSI = () => {
+  store.copyRecordUSIAll();
+  emit("close");
+};
+const onCopySFEN = () => {
+  store.copyBoardSFEN();
+  emit("close");
+};
+const onPaste = () => {
+  store.showPasteDialog();
+  emit("close");
+};
+const states = computed(() => {
+  return {
+    newFile: store.appState === AppState.NORMAL,
+    open: store.appState === AppState.NORMAL,
+    save: store.appState === AppState.NORMAL,
+    saveAs: store.appState === AppState.NORMAL,
+    exportImage: store.appState === AppState.NORMAL,
+    paste: store.appState === AppState.NORMAL,
+  };
 });
 </script>

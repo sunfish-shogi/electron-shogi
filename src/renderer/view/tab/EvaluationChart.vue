@@ -7,19 +7,17 @@
 </template>
 
 <script lang="ts">
+export enum EvaluationChartType {
+  RAW = "raw",
+  WIN_RATE = "winRate",
+}
+</script>
+
+<script setup lang="ts">
 import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  PropType,
-  ref,
-  Ref,
-  watch,
-} from "vue";
+import { computed, onMounted, onUnmounted, PropType, ref, watch } from "vue";
 import {
   ActiveElement,
   Chart,
@@ -162,212 +160,194 @@ function getColorPalette(thema: Thema): ColorPalette {
   }
 }
 
-export enum EvaluationChartType {
-  RAW = "raw",
-  WIN_RATE = "winRate",
+const props = defineProps({
+  size: {
+    type: RectSize,
+    required: true,
+  },
+  type: {
+    type: String as PropType<EvaluationChartType>,
+    required: true,
+  },
+});
+
+const canvas = ref();
+const store = useStore();
+let chart: Chart;
+let maxScore = MAX_SCORE;
+let minScore = MIN_SCORE;
+if (props.type === EvaluationChartType.WIN_RATE) {
+  maxScore = 100;
+  minScore = 0;
 }
 
-export default defineComponent({
-  name: "EvaluationChart",
-  props: {
-    size: {
-      type: RectSize,
-      required: true,
-    },
-    type: {
-      type: String as PropType<EvaluationChartType>,
-      required: true,
-    },
-  },
-  setup(props) {
-    const canvas: Ref = ref(null);
-    const store = useStore();
-    let chart: Chart;
-    let maxScore = MAX_SCORE;
-    let minScore = MIN_SCORE;
-    if (props.type === EvaluationChartType.WIN_RATE) {
-      maxScore = 100;
-      minScore = 0;
+const buildDataset = (
+  borderColor: ChartColor,
+  series: Series,
+  record: ImmutableRecord,
+  appSetting: AppSetting
+) => {
+  const dataPoints: { x: number; y: number }[] = [];
+  const nodes = record.moves;
+  for (const node of nodes) {
+    const searchInfo = getSearchInfo(node, series);
+    if (!searchInfo) {
+      continue;
     }
-
-    const buildDataset = (
-      borderColor: ChartColor,
-      series: Series,
-      record: ImmutableRecord,
-      appSetting: AppSetting
-    ) => {
-      const dataPoints: { x: number; y: number }[] = [];
-      const nodes = record.moves;
-      for (const node of nodes) {
-        const searchInfo = getSearchInfo(node, series);
-        if (!searchInfo) {
-          continue;
-        }
-        const score = getScore(
-          searchInfo,
-          props.type,
-          appSetting.coefficientInSigmoid
-        );
-        if (score !== undefined) {
-          dataPoints.push({
-            x: node.number,
-            y: score,
-          });
-        }
-      }
-      const lastNode = nodes[nodes.length - 1];
-      if (
-        (series === Series.BLACK_PLAYER &&
-          lastNode.nextColor === Color.BLACK) ||
-        (series === Series.WHITE_PLAYER && lastNode.nextColor === Color.WHITE)
-      ) {
-        const data = lastNode.customData as RecordCustomData;
-        if (data && data.opponentSearchInfo) {
-          const score = getScore(
-            data.opponentSearchInfo,
-            props.type,
-            appSetting.coefficientInSigmoid
-          );
-          if (score !== undefined) {
-            dataPoints.push({
-              x: lastNode.number + 1,
-              y: score,
-            });
-          }
-        }
-      }
-      return {
-        label: getSeriesName(series),
-        borderColor,
-        data: dataPoints,
-        showLine: true,
-      };
-    };
-
-    const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
-      return {
-        label: t.currentPosition,
-        borderColor: palette.head,
-        data: [
-          { x: record.current.number, y: maxScore },
-          { x: record.current.number, y: minScore },
-        ],
-        showLine: true,
-        pointBorderWidth: 0,
-        pointRadius: 0,
-      };
-    };
-
-    const buildDatasets = (
-      record: ImmutableRecord,
-      appSetting: AppSetting,
-      palette: ColorPalette
-    ) => {
-      const series = [
-        { borderColor: palette.blackPlayer, type: Series.BLACK_PLAYER },
-        { borderColor: palette.whitePlayer, type: Series.WHITE_PLAYER },
-        { borderColor: palette.researcher, type: Series.RESEARCHER },
-        { borderColor: palette.researcher2, type: Series.RESEARCHER_2 },
-        { borderColor: palette.researcher3, type: Series.RESEARCHER_3 },
-        { borderColor: palette.researcher4, type: Series.RESEARCHER_4 },
-      ];
-      const datasets: ChartDataset[] = [verticalLine(record, palette)];
-      for (const s of series) {
-        const dataset = buildDataset(s.borderColor, s.type, record, appSetting);
-        if (dataset.data.length > 0) {
-          datasets.push(dataset);
-        }
-      }
-      return datasets;
-    };
-
-    const buildScalesOption = (
-      record: ImmutableRecord,
-      palette: ColorPalette
-    ) => {
-      return {
-        x: {
-          min: 0,
-          max: record.length + 10,
-          ticks: { color: palette.ticks },
-          grid: { color: palette.grid },
-        },
-        y: {
-          min: minScore,
-          max: maxScore,
-          ticks: { color: palette.ticks },
-          grid: { color: palette.grid },
-        },
-      };
-    };
-
-    const updateChart = (record: ImmutableRecord, appSetting: AppSetting) => {
-      const palette = getColorPalette(appSetting.thema);
-      chart.data.datasets = buildDatasets(record, appSetting, palette);
-      chart.options.color = palette.main;
-      chart.options.scales = buildScalesOption(record, palette);
-      chart.update();
-    };
-
-    const onClick = (event: ChartEvent, _: ActiveElement[], chart: Chart) => {
-      if (event.x === null) {
-        return;
-      }
-      const width = chart.scales.x.max - chart.scales.x.min;
-      const displayWidth = chart.scales.x.right - chart.scales.x.left;
-      const x =
-        ((event.x - chart.scales.x.left) / displayWidth) * width +
-        chart.scales.x.min;
-      const ply = Math.round(x);
-      store.changePly(ply);
-    };
-
-    onMounted(() => {
-      const appSetting = useAppSetting();
-      const element = canvas.value as HTMLCanvasElement;
-      const context = element.getContext("2d") as CanvasRenderingContext2D;
-      chart = new Chart(context, {
-        type: "scatter",
-        data: {
-          datasets: [],
-        },
-        options: {
-          animation: {
-            duration: 0,
-          },
-          responsive: true,
-          maintainAspectRatio: false,
-          events: ["click"],
-          onClick,
-        },
+    const score = getScore(
+      searchInfo,
+      props.type,
+      appSetting.coefficientInSigmoid
+    );
+    if (score !== undefined) {
+      dataPoints.push({
+        x: node.number,
+        y: score,
       });
-      chart.draw();
-      updateChart(store.record, appSetting);
-
-      watch(
-        () => [store.record, appSetting],
-        ([record, appSetting]) =>
-          updateChart(record as ImmutableRecord, appSetting as AppSetting),
-        { deep: true }
+    }
+  }
+  const lastNode = nodes[nodes.length - 1];
+  if (
+    (series === Series.BLACK_PLAYER && lastNode.nextColor === Color.BLACK) ||
+    (series === Series.WHITE_PLAYER && lastNode.nextColor === Color.WHITE)
+  ) {
+    const data = lastNode.customData as RecordCustomData;
+    if (data && data.opponentSearchInfo) {
+      const score = getScore(
+        data.opponentSearchInfo,
+        props.type,
+        appSetting.coefficientInSigmoid
       );
-    });
+      if (score !== undefined) {
+        dataPoints.push({
+          x: lastNode.number + 1,
+          y: score,
+        });
+      }
+    }
+  }
+  return {
+    label: getSeriesName(series),
+    borderColor,
+    data: dataPoints,
+    showLine: true,
+  };
+};
 
-    onUnmounted(() => {
-      chart.destroy();
-    });
+const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
+  return {
+    label: t.currentPosition,
+    borderColor: palette.head,
+    data: [
+      { x: record.current.number, y: maxScore },
+      { x: record.current.number, y: minScore },
+    ],
+    showLine: true,
+    pointBorderWidth: 0,
+    pointRadius: 0,
+  };
+};
 
-    const style = computed(() => {
-      return {
-        height: `${props.size.height}px`,
-        width: `${props.size.width}px`,
-      };
-    });
+const buildDatasets = (
+  record: ImmutableRecord,
+  appSetting: AppSetting,
+  palette: ColorPalette
+) => {
+  const series = [
+    { borderColor: palette.blackPlayer, type: Series.BLACK_PLAYER },
+    { borderColor: palette.whitePlayer, type: Series.WHITE_PLAYER },
+    { borderColor: palette.researcher, type: Series.RESEARCHER },
+    { borderColor: palette.researcher2, type: Series.RESEARCHER_2 },
+    { borderColor: palette.researcher3, type: Series.RESEARCHER_3 },
+    { borderColor: palette.researcher4, type: Series.RESEARCHER_4 },
+  ];
+  const datasets: ChartDataset[] = [verticalLine(record, palette)];
+  for (const s of series) {
+    const dataset = buildDataset(s.borderColor, s.type, record, appSetting);
+    if (dataset.data.length > 0) {
+      datasets.push(dataset);
+    }
+  }
+  return datasets;
+};
 
-    return {
-      canvas,
-      style,
-    };
-  },
+const buildScalesOption = (record: ImmutableRecord, palette: ColorPalette) => {
+  return {
+    x: {
+      min: 0,
+      max: record.length + 10,
+      ticks: { color: palette.ticks },
+      grid: { color: palette.grid },
+    },
+    y: {
+      min: minScore,
+      max: maxScore,
+      ticks: { color: palette.ticks },
+      grid: { color: palette.grid },
+    },
+  };
+};
+
+const updateChart = (record: ImmutableRecord, appSetting: AppSetting) => {
+  const palette = getColorPalette(appSetting.thema);
+  chart.data.datasets = buildDatasets(record, appSetting, palette);
+  chart.options.color = palette.main;
+  chart.options.scales = buildScalesOption(record, palette);
+  chart.update();
+};
+
+const onClick = (event: ChartEvent, _: ActiveElement[], chart: Chart) => {
+  if (event.x === null) {
+    return;
+  }
+  const width = chart.scales.x.max - chart.scales.x.min;
+  const displayWidth = chart.scales.x.right - chart.scales.x.left;
+  const x =
+    ((event.x - chart.scales.x.left) / displayWidth) * width +
+    chart.scales.x.min;
+  const ply = Math.round(x);
+  store.changePly(ply);
+};
+
+onMounted(() => {
+  const appSetting = useAppSetting();
+  const element = canvas.value as HTMLCanvasElement;
+  const context = element.getContext("2d") as CanvasRenderingContext2D;
+  chart = new Chart(context, {
+    type: "scatter",
+    data: {
+      datasets: [],
+    },
+    options: {
+      animation: {
+        duration: 0,
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      events: ["click"],
+      onClick,
+    },
+  });
+  chart.draw();
+  updateChart(store.record, appSetting);
+
+  watch(
+    () => [store.record, appSetting],
+    ([record, appSetting]) =>
+      updateChart(record as ImmutableRecord, appSetting as AppSetting),
+    { deep: true }
+  );
+});
+
+onUnmounted(() => {
+  chart.destroy();
+});
+
+const style = computed(() => {
+  return {
+    height: `${props.size.height}px`,
+    width: `${props.size.width}px`,
+  };
 });
 </script>
 

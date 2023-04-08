@@ -25,10 +25,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
-import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
@@ -36,38 +36,21 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+const store = useStore();
+const dialog = ref();
 
-export default defineComponent({
-  name: "ErrorMessage",
-  components: {
-    Icon,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-
-    onMounted(() => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    const onClose = () => {
-      store.clearErrors();
-    };
-
-    return {
-      t,
-      dialog,
-      store,
-      onClose,
-      IconType,
-    };
-  },
+onMounted(() => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+
+const onClose = () => {
+  store.clearErrors();
+};
 </script>
 
 <style scoped>

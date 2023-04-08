@@ -14,14 +14,16 @@
         />
       </div>
       <div class="form-group">
-        <div>{{ t.startCriteria }}</div>
+        <div>{{ t.startEndCriteria }}</div>
         <div class="form-item">
-          <input
-            ref="enableStartNumber"
-            class="toggle"
-            type="checkbox"
-            :checked="defaultValues.enableStartNumber"
-            @change="updateToggle"
+          <ToggleButton
+            :value="enableStartNumber"
+            @change="
+              (value) => {
+                startNumber.disabled = !value;
+                enableStartNumber = value;
+              }
+            "
           />
           <div class="form-item-unit">{{ t.fromPrefix }}</div>
           <input
@@ -30,21 +32,19 @@
             type="number"
             min="1"
             step="1"
-            :disabled="!defaultValues.enableStartNumber"
-            :value="defaultValues.startNumber"
+            :disabled="!enableStartNumber"
           />
           <div class="form-item-unit">{{ t.plySuffix }}{{ t.fromSuffix }}</div>
         </div>
-      </div>
-      <div class="form-group">
-        <div>{{ t.endCriteria }}</div>
         <div class="form-item">
-          <input
-            ref="enableEndNumber"
-            class="toggle"
-            type="checkbox"
-            :checked="defaultValues.enableEndNumber"
-            @change="updateToggle"
+          <ToggleButton
+            :value="enableEndNumber"
+            @change="
+              (value) => {
+                endNumber.disabled = !value;
+                enableEndNumber = value;
+              }
+            "
           />
           <div class="form-item-unit">{{ t.toPrefix }}</div>
           <input
@@ -53,8 +53,7 @@
             type="number"
             min="1"
             step="1"
-            :disabled="!defaultValues.enableEndNumber"
-            :value="defaultValues.endNumber"
+            :disabled="!enableEndNumber"
           />
           <div class="form-item-unit">{{ t.plySuffix }}{{ t.toSuffix }}</div>
         </div>
@@ -69,7 +68,6 @@
             type="number"
             min="0"
             step="1"
-            :value="defaultValues.maxSecondsPerMove"
           />
           <div class="form-item-unit">
             {{ t.secondsSuffix }}{{ t.toSuffix }}
@@ -80,22 +78,21 @@
         <div>{{ t.outputSettings }}</div>
         <div class="form-item">
           <div class="form-item-label-wide">{{ t.moveComments }}</div>
-          <select
-            ref="commentBehavior"
-            size="1"
-            :value="defaultValues.commentBehavior"
-          >
-            <option :value="CommentBehavior.NONE">{{ t.noOutputs }}</option>
-            <option :value="CommentBehavior.INSERT">
-              {{ t.insertCommentToTop }}
-            </option>
-            <option :value="CommentBehavior.APPEND">
-              {{ t.appendCommentToBottom }}
-            </option>
-            <option :value="CommentBehavior.OVERWRITE">
-              {{ t.overwrite }}
-            </option>
-          </select>
+          <HorizontalSelector
+            class="selector"
+            :items="[
+              { value: CommentBehavior.NONE, label: t.noOutputs },
+              { value: CommentBehavior.INSERT, label: t.insertCommentToTop },
+              { value: CommentBehavior.APPEND, label: t.appendCommentToBottom },
+              { value: CommentBehavior.OVERWRITE, label: t.overwrite },
+            ]"
+            :value="commentBehavior"
+            @change="
+              (value) => {
+                commentBehavior = value;
+              }
+            "
+          />
         </div>
       </div>
       <div class="main-buttons">
@@ -108,147 +105,97 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
-import {
-  AnalysisSetting,
-  defaultAnalysisSetting,
-} from "@/common/settings/analysis";
+import { AnalysisSetting } from "@/common/settings/analysis";
 import { USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { CommentBehavior } from "@/common/settings/analysis";
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  Ref,
-} from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import ToggleButton from "../primitive/ToggleButton.vue";
+import HorizontalSelector from "../primitive/HorizontalSelector.vue";
 
-export default defineComponent({
-  name: "ResearchDialog",
-  components: {
-    PlayerSelector,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const enableStartNumber: Ref = ref(null);
-    const startNumber: Ref = ref(null);
-    const enableEndNumber: Ref = ref(null);
-    const endNumber: Ref = ref(null);
-    const maxSecondsPerMove: Ref = ref(null);
-    const commentBehavior: Ref = ref(null);
-    const analysisSetting = ref(defaultAnalysisSetting());
-    const engineSettings = ref(new USIEngineSettings());
-    const engineURI = ref("");
+const store = useStore();
+const dialog = ref();
+const enableStartNumber = ref(false);
+const startNumber = ref();
+const enableEndNumber = ref(false);
+const endNumber = ref();
+const maxSecondsPerMove = ref();
+const commentBehavior = ref(CommentBehavior.NONE);
+const engineSettings = ref(new USIEngineSettings());
+const engineURI = ref("");
 
-    store.retainBussyState();
+store.retainBussyState();
 
-    onMounted(async () => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-      try {
-        analysisSetting.value = await api.loadAnalysisSetting();
-        engineSettings.value = await api.loadUSIEngineSetting();
-        engineURI.value = analysisSetting.value.usi?.uri || "";
-      } catch (e) {
-        store.pushError(e);
-        store.destroyModalDialog();
-      } finally {
-        store.releaseBussyState();
-      }
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    const updateToggle = () => {
-      startNumber.value.disabled = !enableStartNumber.value.checked;
-      endNumber.value.disabled = !enableEndNumber.value.checked;
-    };
-
-    const onStart = () => {
-      if (
-        !engineURI.value ||
-        !engineSettings.value.hasEngine(engineURI.value)
-      ) {
-        store.pushError("エンジンを選択してください。");
-        return;
-      }
-      const engine = engineSettings.value.getEngine(engineURI.value);
-      const analysisSetting: AnalysisSetting = {
-        usi: engine,
-        startCriteria: {
-          enableNumber: enableStartNumber.value.checked,
-          number: readInputAsNumber(startNumber.value),
-        },
-        endCriteria: {
-          enableNumber: enableEndNumber.value.checked,
-          number: readInputAsNumber(endNumber.value),
-        },
-        perMoveCriteria: {
-          maxSeconds: readInputAsNumber(maxSecondsPerMove.value),
-        },
-        commentBehavior: commentBehavior.value.value,
-      };
-      store.startAnalysis(analysisSetting);
-    };
-
-    const onCancel = () => {
-      store.closeModalDialog();
-    };
-
-    const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
-      engineSettings.value = settings;
-    };
-
-    const onSelectPlayer = (uri: string) => {
-      engineURI.value = uri;
-    };
-
-    const defaultValues = computed(() => {
-      return {
-        enableStartNumber: analysisSetting.value.startCriteria.enableNumber,
-        startNumber: analysisSetting.value.startCriteria.number,
-        enableEndNumber: analysisSetting.value.endCriteria.enableNumber,
-        endNumber: analysisSetting.value.endCriteria.number,
-        maxSecondsPerMove: analysisSetting.value.perMoveCriteria.maxSeconds,
-        commentBehavior: analysisSetting.value.commentBehavior,
-      };
-    });
-
-    return {
-      t,
-      CommentBehavior,
-      dialog,
-      engineSettings,
-      engineURI,
-      enableStartNumber,
-      startNumber,
-      enableEndNumber,
-      endNumber,
-      maxSecondsPerMove,
-      commentBehavior,
-      defaultValues,
-      updateToggle,
-      onStart,
-      onCancel,
-      onUpdatePlayerSetting,
-      onSelectPlayer,
-    };
-  },
+onMounted(async () => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
+  try {
+    const analysisSetting = await api.loadAnalysisSetting();
+    engineSettings.value = await api.loadUSIEngineSetting();
+    engineURI.value = analysisSetting.usi?.uri || "";
+    enableStartNumber.value = analysisSetting.startCriteria.enableNumber;
+    startNumber.value.value = analysisSetting.startCriteria.number;
+    enableEndNumber.value = analysisSetting.endCriteria.enableNumber;
+    endNumber.value.value = analysisSetting.endCriteria.number;
+    maxSecondsPerMove.value.value = analysisSetting.perMoveCriteria.maxSeconds;
+    commentBehavior.value = analysisSetting.commentBehavior;
+  } catch (e) {
+    store.pushError(e);
+    store.destroyModalDialog();
+  } finally {
+    store.releaseBussyState();
+  }
 });
+
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+
+const onStart = () => {
+  if (!engineURI.value || !engineSettings.value.hasEngine(engineURI.value)) {
+    store.pushError("エンジンを選択してください。");
+    return;
+  }
+  const engine = engineSettings.value.getEngine(engineURI.value);
+  const analysisSetting: AnalysisSetting = {
+    usi: engine,
+    startCriteria: {
+      enableNumber: enableStartNumber.value,
+      number: readInputAsNumber(startNumber.value),
+    },
+    endCriteria: {
+      enableNumber: enableEndNumber.value,
+      number: readInputAsNumber(endNumber.value),
+    },
+    perMoveCriteria: {
+      maxSeconds: readInputAsNumber(maxSecondsPerMove.value),
+    },
+    commentBehavior: commentBehavior.value,
+  };
+  store.startAnalysis(analysisSetting);
+};
+
+const onCancel = () => {
+  store.closeModalDialog();
+};
+
+const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
+  engineSettings.value = settings;
+};
+
+const onSelectPlayer = (uri: string) => {
+  engineURI.value = uri;
+};
 </script>
 
 <style scoped>
@@ -262,5 +209,8 @@ input.toggle {
 }
 input.small {
   width: 50px;
+}
+.selector {
+  max-width: 210px;
 }
 </style>

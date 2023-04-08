@@ -63,96 +63,71 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { defineComponent, onMounted, ref, Ref } from "vue";
+import { onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { InitialPositionType } from "@/common/shogi";
 
-export default defineComponent({
-  name: "InitialPositionMenu",
-  components: {
-    Icon,
-  },
-  emits: ["close"],
-  setup(_, context) {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const onClose = () => {
-      context.emit("close");
-    };
-    onMounted(() => {
-      showModalDialog(dialog.value, onClose);
-    });
-    const onStandard = () => {
-      store.initializePosition(InitialPositionType.STANDARD);
-      context.emit("close");
-    };
-    const onHandicapLance = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_LANCE);
-      context.emit("close");
-    };
-    const onHandicapRightLance = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_RIGHT_LANCE);
-      context.emit("close");
-    };
-    const onHandicapBishop = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_BISHOP);
-      context.emit("close");
-    };
-    const onHandicapRook = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_ROOK);
-      context.emit("close");
-    };
-    const onHandicapRookLance = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_ROOK_LANCE);
-      context.emit("close");
-    };
-    const onHandicap2Pieces = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_2PIECES);
-      context.emit("close");
-    };
-    const onHandicap4Pieces = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_4PIECES);
-      context.emit("close");
-    };
-    const onHandicap6Pieces = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_6PIECES);
-      context.emit("close");
-    };
-    const onHandicap8Pieces = () => {
-      store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
-      context.emit("close");
-    };
-    const onTsumeShogi = () => {
-      store.initializePosition(InitialPositionType.TSUME_SHOGI);
-      context.emit("close");
-    };
-    const onTsumeShogi2Kings = () => {
-      store.initializePosition(InitialPositionType.TSUME_SHOGI_2KINGS);
-      context.emit("close");
-    };
-    return {
-      t,
-      dialog,
-      IconType,
-      onClose,
-      onStandard,
-      onHandicapLance,
-      onHandicapRightLance,
-      onHandicapBishop,
-      onHandicapRook,
-      onHandicapRookLance,
-      onHandicap2Pieces,
-      onHandicap4Pieces,
-      onHandicap6Pieces,
-      onHandicap8Pieces,
-      onTsumeShogi,
-      onTsumeShogi2Kings,
-    };
-  },
+const emit = defineEmits(["close"]);
+
+const store = useStore();
+const dialog = ref();
+const onClose = () => {
+  emit("close");
+};
+onMounted(() => {
+  showModalDialog(dialog.value, onClose);
 });
+const onStandard = () => {
+  store.initializePosition(InitialPositionType.STANDARD);
+  emit("close");
+};
+const onHandicapLance = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_LANCE);
+  emit("close");
+};
+const onHandicapRightLance = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_RIGHT_LANCE);
+  emit("close");
+};
+const onHandicapBishop = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_BISHOP);
+  emit("close");
+};
+const onHandicapRook = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_ROOK);
+  emit("close");
+};
+const onHandicapRookLance = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_ROOK_LANCE);
+  emit("close");
+};
+const onHandicap2Pieces = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_2PIECES);
+  emit("close");
+};
+const onHandicap4Pieces = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_4PIECES);
+  emit("close");
+};
+const onHandicap6Pieces = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_6PIECES);
+  emit("close");
+};
+const onHandicap8Pieces = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
+  emit("close");
+};
+const onTsumeShogi = () => {
+  store.initializePosition(InitialPositionType.TSUME_SHOGI);
+  emit("close");
+};
+const onTsumeShogi2Kings = () => {
+  store.initializePosition(InitialPositionType.TSUME_SHOGI_2KINGS);
+  emit("close");
+};
 </script>

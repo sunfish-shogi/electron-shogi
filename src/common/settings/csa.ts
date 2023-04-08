@@ -113,7 +113,7 @@ export function buildCSAGameSettingByHistory(
   };
 }
 
-export const maxServerHistoryLenght = 10;
+export const maxServerHistoryLength = 10;
 
 export function appendCSAGameSettingHistory(
   history: CSAGameSettingHistory,
@@ -130,7 +130,7 @@ export function appendCSAGameSettingHistory(
     ) {
       newServerHistory.push(server);
     }
-    if (newServerHistory.length === maxServerHistoryLenght) {
+    if (newServerHistory.length === maxServerHistoryLength) {
       break;
     }
   }

@@ -109,12 +109,12 @@
             <input ref="password" class="long-text" type="password" />
           </div>
           <div class="form-item">
-            <input
-              id="show-password"
-              type="checkbox"
+            <div class="form-item-label-wide"></div>
+            <ToggleButton
+              :label="t.showPassword"
+              :value="false"
               @change="onTogglePasswordVisibility"
             />
-            <label for="show-password">{{ t.showPassword }}</label>
           </div>
           <div class="form-group warning">
             <div v-if="isEncryptionAvailable" class="note">
@@ -129,15 +129,15 @@
             </div>
           </div>
           <div class="form-item">
-            <input
-              id="save-history"
-              ref="saveHistory"
-              type="checkbox"
-              checked
+            <div class="form-item-label-wide">{{ t.saveHistory }}</div>
+            <ToggleButton
+              :value="saveHistory"
+              @change="
+                (value) => {
+                  saveHistory = value;
+                }
+              "
             />
-            <label for="save-history">
-              {{ t.saveHistory }} ({{ t.keepLatest(maxServerHistoryLenght) }})
-            </label>
           </div>
         </div>
         <div class="form-group">
@@ -148,22 +148,52 @@
             <input ref="repeat" class="number" type="number" min="1" />
           </div>
           <div class="form-item">
-            <input id="auto-relogin" ref="autoRelogin" type="checkbox" />
-            <label for="auto-relogin">{{ t.autoRelogin }}</label>
+            <div class="form-item-label-wide">{{ t.autoRelogin }}</div>
+            <ToggleButton
+              :value="autoRelogin"
+              @change="
+                (value) => {
+                  autoRelogin = value;
+                }
+              "
+            />
           </div>
           <div class="form-item">
-            <input id="enable-comment" ref="enableComment" type="checkbox" />
-            <label for="enable-comment">{{ t.outputComments }}</label>
+            <div class="form-item-label-wide">{{ t.outputComments }}</div>
+            <ToggleButton
+              :value="enableComment"
+              @change="
+                (value) => {
+                  enableComment = value;
+                }
+              "
+            />
           </div>
           <div class="form-item">
-            <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
-            <label for="enable-auto-save">{{
-              t.saveRecordAutomatically
-            }}</label>
+            <div class="form-item-label-wide">
+              {{ t.saveRecordAutomatically }}
+            </div>
+            <ToggleButton
+              :value="enableAutoSave"
+              @change="
+                (value) => {
+                  enableAutoSave = value;
+                }
+              "
+            />
           </div>
           <div class="form-item">
-            <input id="auto-flip" ref="autoFlip" type="checkbox" />
-            <label for="auto-flip">{{ t.adjustBoardAutomatically }}</label>
+            <div class="form-item-label-wide">
+              {{ t.adjustBoardAutomatically }}
+            </div>
+            <ToggleButton
+              :value="autoFlip"
+              @change="
+                (value) => {
+                  autoFlip = value;
+                }
+              "
+            />
           </div>
         </div>
       </div>
@@ -179,23 +209,14 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
-import {
-  ref,
-  onMounted,
-  defineComponent,
-  Ref,
-  computed,
-  onUpdated,
-  onBeforeUnmount,
-} from "vue";
+import { ref, onMounted, computed, onUpdated, onBeforeUnmount } from "vue";
 import api from "@/renderer/ipc/api";
 import { useStore } from "@/renderer/store";
 import {
   CSAProtocolVersion,
-  maxServerHistoryLenght,
   CSAGameSetting,
   validateCSAGameSetting,
   buildCSAGameSettingByHistory,
@@ -203,7 +224,6 @@ import {
 } from "@/common/settings/csa";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
-import { IconType } from "@/renderer/assets/icons";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
@@ -212,196 +232,153 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
+import ToggleButton from "../primitive/ToggleButton.vue";
 
-export default defineComponent({
-  name: "CSAGameDialog",
-  components: {
-    PlayerSelector,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
-    const protocolVersion: Ref = ref(null);
-    const selectedProtocolVersion = ref(CSAProtocolVersion.V121);
-    const host: Ref = ref(null);
-    const port: Ref = ref(null);
-    const id: Ref = ref(null);
-    const password: Ref = ref(null);
-    const saveHistory: Ref = ref(null);
-    const enableComment: Ref = ref(null);
-    const enableAutoSave: Ref = ref(null);
-    const repeat: Ref = ref(null);
-    const autoRelogin: Ref = ref(null);
-    const autoFlip: Ref = ref(null);
-    const isEncryptionAvailable: Ref = ref(false);
-    const history = ref(defaultCSAGameSettingHistory());
-    const engineSettings = ref(new USIEngineSettings());
-    const playerURI = ref("");
+const store = useStore();
+const dialog = ref();
+const protocolVersion = ref();
+const selectedProtocolVersion = ref(CSAProtocolVersion.V121);
+const host = ref();
+const port = ref();
+const id = ref();
+const password = ref();
+const saveHistory = ref(true);
+const repeat = ref();
+const autoRelogin = ref(false);
+const enableComment = ref(false);
+const enableAutoSave = ref(false);
+const autoFlip = ref(false);
+const isEncryptionAvailable = ref(false);
+const history = ref(defaultCSAGameSettingHistory());
+const engineSettings = ref(new USIEngineSettings());
+const playerURI = ref("");
 
-    let defaultValueLoaded = false;
-    let defaultValueApplied = false;
-    store.retainBussyState();
+let defaultValueLoaded = false;
+let defaultValueApplied = false;
+store.retainBussyState();
 
-    onMounted(async () => {
-      try {
-        isEncryptionAvailable.value = await api.isEncryptionAvailable();
-        history.value = await api.loadCSAGameSettingHistory();
-        engineSettings.value = await api.loadUSIEngineSetting();
-        showModalDialog(dialog.value);
-        installHotKeyForDialog(dialog.value);
-        defaultValueLoaded = true;
-      } catch (e) {
-        store.pushError(e);
-        store.destroyModalDialog();
-      } finally {
-        store.releaseBussyState();
-      }
-    });
+onMounted(async () => {
+  try {
+    isEncryptionAvailable.value = await api.isEncryptionAvailable();
+    history.value = await api.loadCSAGameSettingHistory();
+    engineSettings.value = await api.loadUSIEngineSetting();
+    showModalDialog(dialog.value);
+    installHotKeyForDialog(dialog.value);
+    defaultValueLoaded = true;
+  } catch (e) {
+    store.pushError(e);
+    store.destroyModalDialog();
+  } finally {
+    store.releaseBussyState();
+  }
+});
 
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
 
-    onUpdated(() => {
-      if (!defaultValueLoaded || defaultValueApplied) {
-        return;
-      }
-      const defaultSetting = buildCSAGameSettingByHistory(history.value, 0);
-      protocolVersion.value.value = selectedProtocolVersion.value =
-        defaultSetting.server.protocolVersion;
-      host.value.value = defaultSetting.server.host;
-      port.value.value = defaultSetting.server.port;
-      id.value.value = defaultSetting.server.id;
-      password.value.value = defaultSetting.server.password;
-      enableComment.value.checked = defaultSetting.enableComment;
-      enableAutoSave.value.checked = defaultSetting.enableAutoSave;
-      repeat.value.value = defaultSetting.repeat;
-      autoRelogin.value.checked = defaultSetting.autoRelogin;
-      autoFlip.value.checked = defaultSetting.autoFlip;
-      playerURI.value = defaultSetting.player.uri;
-      defaultValueApplied = true;
-    });
+onUpdated(() => {
+  if (!defaultValueLoaded || defaultValueApplied) {
+    return;
+  }
+  const defaultSetting = buildCSAGameSettingByHistory(history.value, 0);
+  protocolVersion.value.value = selectedProtocolVersion.value =
+    defaultSetting.server.protocolVersion;
+  host.value.value = defaultSetting.server.host;
+  port.value.value = defaultSetting.server.port;
+  id.value.value = defaultSetting.server.id;
+  password.value.value = defaultSetting.server.password;
+  repeat.value.value = defaultSetting.repeat;
+  autoRelogin.value = defaultSetting.autoRelogin;
+  enableComment.value = defaultSetting.enableComment;
+  enableAutoSave.value = defaultSetting.enableAutoSave;
+  autoFlip.value = defaultSetting.autoFlip;
+  playerURI.value = defaultSetting.player.uri;
+  defaultValueApplied = true;
+});
 
-    const buildPlayerSetting = (playerURI: string): PlayerSetting => {
-      if (
-        uri.isUSIEngine(playerURI) &&
-        engineSettings.value.hasEngine(playerURI)
-      ) {
-        const engine = engineSettings.value.getEngine(
-          playerURI
-        ) as USIEngineSetting;
-        return {
-          name: engine.name,
-          uri: playerURI,
-          usi: engine,
-        };
-      }
-      return {
-        name: "人",
-        uri: uri.ES_HUMAN,
-      };
-    };
-
-    const onStart = () => {
-      const csaGameSetting: CSAGameSetting = {
-        player: buildPlayerSetting(playerURI.value),
-        server: {
-          protocolVersion: protocolVersion.value.value,
-          host: String(host.value.value || "").trim(),
-          port: Number(port.value.value),
-          id: String(id.value.value || ""),
-          password: String(password.value.value || ""),
-        },
-        enableComment: enableComment.value.checked,
-        enableAutoSave: enableAutoSave.value.checked,
-        repeat: readInputAsNumber(repeat.value),
-        autoRelogin: autoRelogin.value.checked,
-        autoFlip: autoFlip.value.checked,
-      };
-      const error = validateCSAGameSetting(csaGameSetting);
-      if (error) {
-        store.pushError(error);
-      } else {
-        store.loginCSAGame(csaGameSetting, {
-          saveHistory: saveHistory.value.checked,
-        });
-      }
-    };
-
-    const onCancel = () => {
-      store.closeModalDialog();
-    };
-
-    const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
-      engineSettings.value = settings;
-    };
-
-    const onSelectPlayer = (uri: string) => {
-      playerURI.value = uri;
-    };
-
-    const onTogglePasswordVisibility = (event: Event) => {
-      const checkbox = event.target as HTMLInputElement;
-      password.value.type = checkbox.checked ? "text" : "password";
-    };
-
-    const onChangeHistory = (event: Event) => {
-      const select = event.target as HTMLSelectElement;
-      const server = history.value.serverHistory[Number(select.value)];
-      if (server) {
-        protocolVersion.value.value = server.protocolVersion;
-        host.value.value = server.host;
-        port.value.value = server.port;
-        id.value.value = server.id;
-        password.value.value = server.password;
-      }
-    };
-
-    const onChangeProtocolVersion = () => {
-      selectedProtocolVersion.value = protocolVersion.value.value;
-    };
-
-    const logEnabled = computed(() => {
-      const appSetting = useAppSetting();
-      return (
-        appSetting.enableCSALog &&
-        appSetting.enableAppLog &&
-        appSetting.enableUSILog
-      );
-    });
-
+const buildPlayerSetting = (playerURI: string): PlayerSetting => {
+  if (uri.isUSIEngine(playerURI) && engineSettings.value.hasEngine(playerURI)) {
+    const engine = engineSettings.value.getEngine(
+      playerURI
+    ) as USIEngineSetting;
     return {
-      t,
-      CSAProtocolVersion,
-      maxServerHistoryLenght,
-      dialog,
-      protocolVersion,
-      host,
-      port,
-      id,
-      password,
-      saveHistory,
-      enableComment,
-      enableAutoSave,
-      repeat,
-      autoRelogin,
-      autoFlip,
-      engineSettings,
-      playerURI,
-      history,
-      selectedProtocolVersion,
-      onChangeProtocolVersion,
-      logEnabled,
-      isEncryptionAvailable,
-      onStart,
-      onCancel,
-      onUpdatePlayerSetting,
-      onSelectPlayer,
-      onTogglePasswordVisibility,
-      onChangeHistory,
-      IconType,
+      name: engine.name,
+      uri: playerURI,
+      usi: engine,
     };
-  },
+  }
+  return {
+    name: "人",
+    uri: uri.ES_HUMAN,
+  };
+};
+
+const onStart = () => {
+  const csaGameSetting: CSAGameSetting = {
+    player: buildPlayerSetting(playerURI.value),
+    server: {
+      protocolVersion: protocolVersion.value.value,
+      host: String(host.value.value || "").trim(),
+      port: Number(port.value.value),
+      id: String(id.value.value || ""),
+      password: String(password.value.value || ""),
+    },
+    repeat: readInputAsNumber(repeat.value),
+    autoRelogin: autoRelogin.value,
+    enableComment: enableComment.value,
+    enableAutoSave: enableAutoSave.value,
+    autoFlip: autoFlip.value,
+  };
+  const error = validateCSAGameSetting(csaGameSetting);
+  if (error) {
+    store.pushError(error);
+  } else {
+    store.loginCSAGame(csaGameSetting, {
+      saveHistory: saveHistory.value,
+    });
+  }
+};
+
+const onCancel = () => {
+  store.closeModalDialog();
+};
+
+const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
+  engineSettings.value = settings;
+};
+
+const onSelectPlayer = (uri: string) => {
+  playerURI.value = uri;
+};
+
+const onTogglePasswordVisibility = (value: boolean) => {
+  password.value.type = value ? "text" : "password";
+};
+
+const onChangeHistory = (event: Event) => {
+  const select = event.target as HTMLSelectElement;
+  const server = history.value.serverHistory[Number(select.value)];
+  if (server) {
+    protocolVersion.value.value = server.protocolVersion;
+    host.value.value = server.host;
+    port.value.value = server.port;
+    id.value.value = server.id;
+    password.value.value = server.password;
+  }
+};
+
+const onChangeProtocolVersion = () => {
+  selectedProtocolVersion.value = protocolVersion.value.value;
+};
+
+const logEnabled = computed(() => {
+  const appSetting = useAppSetting();
+  return (
+    appSetting.enableCSALog &&
+    appSetting.enableAppLog &&
+    appSetting.enableUSILog
+  );
 });
 </script>
 
@@ -413,6 +390,6 @@ input.number {
   width: 100px;
 }
 .long-text {
-  flex-grow: 1;
+  width: 250px;
 }
 </style>

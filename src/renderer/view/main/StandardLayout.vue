@@ -9,13 +9,13 @@
     >
       <Pane :size="topPaneHeightPercentage">
         <div class="full column">
-          <div class="row top-pane-main">
+          <div class="row">
             <BoardPane
               :style="boardPaneStyle"
               :max-size="boardPaneMaxSize"
               @resize="onBoardPaneResize"
             />
-            <RecordPane class="top-right-pane" :style="recordPaneStyle" />
+            <RecordPane :style="recordPaneStyle" />
           </div>
           <button
             v-if="!isBottomPaneVisible"
@@ -30,7 +30,7 @@
       <Pane :size="bottomPaneHeightPercentage">
         <TabPane
           v-if="appSetting.tabPaneType === TabPaneType.SINGLE"
-          class="tab-pane"
+          class="full"
           :size="tabPaneSize"
           :visible-tabs="[
             Tab.RECORD_INFO,
@@ -55,7 +55,7 @@
         >
           <Pane :size="bottomLeftPaneWidthPercentage">
             <TabPane
-              class="tab-pane"
+              class="full"
               :size="tabPaneSize"
               :visible-tabs="[Tab.RECORD_INFO, Tab.SEARCH, Tab.PV]"
               :active-tab="appSetting.tab"
@@ -64,7 +64,7 @@
           </Pane>
           <Pane>
             <TabPane
-              class="tab-pane"
+              class="full"
               :size="tabPaneSize2"
               :visible-tabs="[Tab.COMMENT, Tab.CHART, Tab.PERCENTAGE_CHART]"
               :active-tab="appSetting.tab2"
@@ -79,16 +79,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
-import {
-  reactive,
-  onMounted,
-  onUnmounted,
-  defineComponent,
-  computed,
-  ref,
-} from "vue";
+import { reactive, onMounted, onUnmounted, computed, ref } from "vue";
 import BoardPane from "./BoardPane.vue";
 import RecordPane, { minWidth as minRecordWidth } from "./RecordPane.vue";
 import TabPane, { headerHeight as tabHeaderHeight } from "./TabPane.vue";
@@ -108,194 +101,155 @@ const splitterWidth = 8;
 const margin = 10;
 const lazyUpdateDelay = 100;
 
-export default defineComponent({
-  name: "StandardLayout",
-  components: {
-    BoardPane,
-    RecordPane,
-    TabPane,
-    Splitpanes,
-    Pane,
-    Icon,
-  },
-  setup() {
-    const appSetting = useAppSetting();
-    const windowSize = reactive(
-      new RectSize(window.innerWidth, window.innerHeight)
+const appSetting = useAppSetting();
+const windowSize = reactive(
+  new RectSize(window.innerWidth, window.innerHeight)
+);
+const topPaneHeightPercentage = ref(appSetting.topPaneHeightPercentage);
+const bottomLeftPaneWidthPercentage = ref(
+  appSetting.bottomLeftPaneWidthPercentage
+);
+const boardPaneSize = reactive(new RectSize(0, 0));
+
+const windowLazyUpdate = new Lazy();
+const updateSize = () => {
+  windowLazyUpdate.after(() => {
+    windowSize.width = window.innerWidth;
+    windowSize.height = window.innerHeight;
+  }, lazyUpdateDelay);
+};
+
+onMounted(() => {
+  window.addEventListener("resize", updateSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateSize);
+});
+
+const onBoardPaneResize = (size: RectSize) => {
+  boardPaneSize.width = size.width;
+  boardPaneSize.height = size.height;
+};
+
+const updateAppSetting = (update: AppSettingUpdate) => {
+  appSetting.updateAppSetting(update).catch((e) => {
+    api.log(
+      LogLevel.WARN,
+      "StandardLayout: failed to update app setting: " + toString(e)
     );
-    const topPaneHeightPercentage = ref(appSetting.topPaneHeightPercentage);
-    const bottomLeftPaneWidthPercentage = ref(
-      appSetting.bottomLeftPaneWidthPercentage
-    );
-    const boardPaneSize = reactive(new RectSize(0, 0));
+  });
+};
 
-    const windowLazyUpdate = new Lazy();
-    const updateSize = () => {
-      windowLazyUpdate.after(() => {
-        windowSize.width = window.innerWidth;
-        windowSize.height = window.innerHeight;
-      }, lazyUpdateDelay);
-    };
+const onChangeTab = (tab: Tab) => {
+  updateAppSetting({ tab });
+};
+const onChangeTab2 = (tab2: Tab) => {
+  updateAppSetting({ tab2 });
+};
 
-    onMounted(() => {
-      window.addEventListener("resize", updateSize);
-    });
+const onMinimizeTab = () => {
+  topPaneHeightPercentage.value = 100;
+  updateAppSetting({ topPaneHeightPercentage: 100 });
+};
 
-    onUnmounted(() => {
-      window.removeEventListener("resize", updateSize);
-    });
+const onUnhideTabView = () => {
+  const newValue = Math.min(
+    appSetting.topPanePreviousHeightPercentage,
+    ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) /
+      windowSize.height) *
+      100
+  );
+  topPaneHeightPercentage.value = newValue;
+  updateAppSetting({ topPaneHeightPercentage: newValue });
+};
 
-    const onBoardPaneResize = (size: RectSize) => {
-      boardPaneSize.width = size.width;
-      boardPaneSize.height = size.height;
-    };
+const mainLazyUpdate = new Lazy();
+const onResizeMain = (panes: { size: number }[]) => {
+  const newValue = panes[0].size;
+  mainLazyUpdate.after(() => {
+    topPaneHeightPercentage.value = newValue;
+  }, lazyUpdateDelay);
+};
+const onResizedMain = (panes: { size: number }[]) => {
+  mainLazyUpdate.clear();
+  const newValue = panes[0].size;
+  topPaneHeightPercentage.value = newValue;
+  updateAppSetting({ topPaneHeightPercentage: newValue });
+};
 
-    const updateAppSetting = (update: AppSettingUpdate) => {
-      appSetting.updateAppSetting(update).catch((e) => {
-        api.log(
-          LogLevel.WARN,
-          "StandardLayout: failed to update app setting: " + toString(e)
-        );
-      });
-    };
+const bottomLazyUpdate = new Lazy();
+const onResizeBottom = (panes: { size: number }[]) => {
+  const newValue = panes[0].size;
+  bottomLazyUpdate.after(() => {
+    bottomLeftPaneWidthPercentage.value = newValue;
+  }, lazyUpdateDelay);
+};
+const onResizedBottom = (panes: { size: number }[]) => {
+  bottomLazyUpdate.clear();
+  const newValue = panes[0].size;
+  bottomLeftPaneWidthPercentage.value = newValue;
+  updateAppSetting({ bottomLeftPaneWidthPercentage: newValue });
+};
 
-    const onChangeTab = (tab: Tab) => {
-      updateAppSetting({ tab });
-    };
-    const onChangeTab2 = (tab2: Tab) => {
-      updateAppSetting({ tab2 });
-    };
+const isBottomPaneVisible = computed(() => {
+  return (
+    (windowSize.height * bottomPaneHeightPercentage.value) / 100 >=
+    tabHeaderHeight
+  );
+});
 
-    const onMinimizeTab = () => {
-      topPaneHeightPercentage.value = 100;
-      updateAppSetting({ topPaneHeightPercentage: 100 });
-    };
+const boardPaneMaxSize = computed(() => {
+  return new RectSize(
+    Math.max(windowSize.width - minRecordWidth - margin * 2, 0),
+    Math.max(
+      (windowSize.height - splitterWidth) *
+        (topPaneHeightPercentage.value / 100) -
+        margin * 2 -
+        (isBottomPaneVisible.value ? 0 : tabHeaderHeight),
+      0
+    )
+  );
+});
 
-    const onUnhideTabView = () => {
-      const newValue = Math.min(
-        appSetting.topPanePreviousHeightPercentage,
-        ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) /
-          windowSize.height) *
-          100
-      );
-      topPaneHeightPercentage.value = newValue;
-      updateAppSetting({ topPaneHeightPercentage: newValue });
-    };
+const boardPaneStyle = computed(() => {
+  return {
+    margin: `${margin}px`,
+  };
+});
 
-    const mainLazyUpdate = new Lazy();
-    const onResizeMain = (panes: { size: number }[]) => {
-      const newValue = panes[0].size;
-      mainLazyUpdate.after(() => {
-        topPaneHeightPercentage.value = newValue;
-      }, lazyUpdateDelay);
-    };
-    const onResizedMain = (panes: { size: number }[]) => {
-      mainLazyUpdate.clear();
-      const newValue = panes[0].size;
-      topPaneHeightPercentage.value = newValue;
-      updateAppSetting({ topPaneHeightPercentage: newValue });
-    };
+const recordPaneStyle = computed(() => {
+  const width = windowSize.width - boardPaneSize.width - margin * 3;
+  const height = boardPaneSize.height;
+  return {
+    margin: `${margin}px ${margin}px ${margin}px 0`,
+    width: `${width}px`,
+    height: `${height}px`,
+  };
+});
 
-    const bottomLazyUpdate = new Lazy();
-    const onResizeBottom = (panes: { size: number }[]) => {
-      const newValue = panes[0].size;
-      bottomLazyUpdate.after(() => {
-        bottomLeftPaneWidthPercentage.value = newValue;
-      }, lazyUpdateDelay);
-    };
-    const onResizedBottom = (panes: { size: number }[]) => {
-      bottomLazyUpdate.clear();
-      const newValue = panes[0].size;
-      bottomLeftPaneWidthPercentage.value = newValue;
-      updateAppSetting({ bottomLeftPaneWidthPercentage: newValue });
-    };
+const bottomPaneHeightPercentage = computed(() => {
+  return 100 - topPaneHeightPercentage.value;
+});
 
-    const isBottomPaneVisible = computed(() => {
-      return (
-        (windowSize.height * bottomPaneHeightPercentage.value) / 100 >=
-        tabHeaderHeight
-      );
-    });
+const tabPaneSize = computed(() => {
+  return new RectSize(
+    appSetting.tabPaneType === TabPaneType.SINGLE
+      ? windowSize.width
+      : (windowSize.width - splitterWidth) *
+        (bottomLeftPaneWidthPercentage.value / 100),
+    (windowSize.height - splitterWidth) *
+      (bottomPaneHeightPercentage.value / 100)
+  );
+});
 
-    const boardPaneMaxSize = computed(() => {
-      return new RectSize(
-        Math.max(windowSize.width - minRecordWidth - margin * 2, 0),
-        Math.max(
-          (windowSize.height - splitterWidth) *
-            (topPaneHeightPercentage.value / 100) -
-            margin * 2 -
-            (isBottomPaneVisible.value ? 0 : tabHeaderHeight),
-          0
-        )
-      );
-    });
-
-    const boardPaneStyle = computed(() => {
-      return {
-        margin: `${margin}px`,
-      };
-    });
-
-    const recordPaneStyle = computed(() => {
-      const width = windowSize.width - boardPaneSize.width - margin * 3;
-      const height = boardPaneSize.height;
-      return {
-        margin: `${margin}px ${margin}px ${margin}px 0`,
-        width: `${width}px`,
-        height: `${height}px`,
-      };
-    });
-
-    const bottomPaneHeightPercentage = computed(() => {
-      return 100 - topPaneHeightPercentage.value;
-    });
-
-    const tabPaneSize = computed(() => {
-      return new RectSize(
-        appSetting.tabPaneType === TabPaneType.SINGLE
-          ? windowSize.width
-          : (windowSize.width - splitterWidth) *
-            (bottomLeftPaneWidthPercentage.value / 100),
-        (windowSize.height - splitterWidth) *
-          (bottomPaneHeightPercentage.value / 100)
-      );
-    });
-
-    const tabPaneSize2 = computed(() => {
-      return new RectSize(
-        (windowSize.width - splitterWidth) *
-          (1.0 - bottomLeftPaneWidthPercentage.value / 100),
-        (windowSize.height - splitterWidth) *
-          (bottomPaneHeightPercentage.value / 100)
-      );
-    });
-
-    return {
-      t,
-      topPaneHeightPercentage,
-      bottomPaneHeightPercentage,
-      bottomLeftPaneWidthPercentage,
-      isBottomPaneVisible,
-      boardPaneMaxSize,
-      boardPaneStyle,
-      recordPaneStyle,
-      tabPaneSize,
-      tabPaneSize2,
-      appSetting,
-      onBoardPaneResize,
-      onChangeTab,
-      onChangeTab2,
-      onMinimizeTab,
-      onUnhideTabView,
-      onResizeMain,
-      onResizedMain,
-      onResizeBottom,
-      onResizedBottom,
-      TabPaneType,
-      Tab,
-      IconType,
-    };
-  },
+const tabPaneSize2 = computed(() => {
+  return new RectSize(
+    (windowSize.width - splitterWidth) *
+      (1.0 - bottomLeftPaneWidthPercentage.value / 100),
+    (windowSize.height - splitterWidth) *
+      (bottomPaneHeightPercentage.value / 100)
+  );
 });
 </script>
 
@@ -320,13 +274,6 @@ export default defineComponent({
 </style>
 
 <style scoped>
-.top-pane-main {
-  width: 100%;
-  flex-grow: 1;
-}
-.top-right-pane {
-  flex: 1;
-}
 .unhide-tabview-button {
   width: 100%;
   height: 30px;
@@ -334,8 +281,5 @@ export default defineComponent({
   text-align: center;
   line-height: 180%;
   padding: 0 5% 0 5%;
-}
-.tab-pane {
-  height: 100%;
 }
 </style>

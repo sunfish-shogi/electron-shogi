@@ -15,10 +15,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
@@ -27,41 +27,24 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 
-export default defineComponent({
-  name: "InfoMessage",
-  components: {
-    Icon,
-  },
-  setup() {
-    const store = useStore();
-    const dialog: Ref = ref(null);
+const store = useStore();
+const dialog = ref();
 
-    const onOk = () => {
-      store.confirmationOk();
-    };
+const onOk = () => {
+  store.confirmationOk();
+};
 
-    const onClose = () => {
-      store.confirmationCancel();
-    };
+const onClose = () => {
+  store.confirmationCancel();
+};
 
-    onMounted(() => {
-      showModalDialog(dialog.value, onClose);
-      installHotKeyForDialog(dialog.value);
-    });
+onMounted(() => {
+  showModalDialog(dialog.value, onClose);
+  installHotKeyForDialog(dialog.value);
+});
 
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    return {
-      t,
-      dialog,
-      store,
-      onOk,
-      onClose,
-      IconType,
-    };
-  },
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
 });
 </script>
 

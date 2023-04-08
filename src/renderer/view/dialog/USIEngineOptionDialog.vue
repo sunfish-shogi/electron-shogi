@@ -57,7 +57,7 @@
             </div>
             <input
               v-if="option.type === 'spin'"
-              :id="inputElementID(option)"
+              :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
               class="option-value-number"
               type="number"
               :min="option.min"
@@ -67,14 +67,14 @@
             />
             <input
               v-if="option.type === 'string'"
-              :id="inputElementID(option)"
+              :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
               class="option-value-text"
               type="text"
               :name="option.name"
             />
             <input
               v-if="option.type === 'filename'"
-              :id="inputElementID(option)"
+              :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
               class="option-value-filename"
               type="text"
               :name="option.name"
@@ -82,22 +82,27 @@
             <button
               v-if="option.type === 'filename'"
               class="thin"
-              @click="selectFile(inputElementID(option))"
+              @click="selectFile(option.name)"
             >
               {{ t.select }}
             </button>
-            <select
+            <HorizontalSelector
               v-if="option.type === 'check'"
-              :id="inputElementID(option)"
-              class="option-value-check"
-            >
-              <option value="">{{ t.defaultValue }}</option>
-              <option value="true">ON</option>
-              <option value="false">OFF</option>
-            </select>
+              :ref="
+                (el) => {
+                  selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
+                }
+              "
+              value=""
+              :items="[
+                { value: '', label: t.defaultValue },
+                { value: 'true', label: 'ON' },
+                { value: 'false', label: 'OFF' },
+              ]"
+            />
             <select
               v-if="option.type === 'combo'"
-              :id="inputElementID(option)"
+              :ref="(el) => { inputs[option.name] = el as HTMLSelectElement }"
               class="option-value-combo"
             >
               <option value="">{{ t.defaultValue }}</option>
@@ -130,10 +135,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { t, usiOptionNameMap } from "@/common/i18n";
 import { filter as filterString } from "@/common/helpers/string";
-import { getFormItemByID, showModalDialog } from "@/renderer/helpers/dialog.js";
+import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
 import {
@@ -150,202 +155,177 @@ import {
 import { useStore } from "@/renderer/store";
 import {
   computed,
-  defineComponent,
   onBeforeUnmount,
   onMounted,
   onUpdated,
   PropType,
   ref,
-  Ref,
 } from "vue";
 import { useAppSetting } from "@/renderer/store/setting";
+import HorizontalSelector from "../primitive/HorizontalSelector.vue";
 
 type Option = USIEngineOption & {
   displayName?: string;
   visible: boolean;
 };
 
-function inputElementID(option: USIEngineOption) {
-  return `USI_ENGINE_OPTION_DIALOG_OPTION_${option.name}`;
-}
-
-export default defineComponent({
-  name: "USIEngineOptionDialog",
-  props: {
-    latestEngineSetting: {
-      type: Object as PropType<USIEngineSetting>,
-      required: true,
-    },
-    okButtonText: {
-      type: String,
-      required: false,
-      default: "OK",
-    },
+const props = defineProps({
+  latestEngineSetting: {
+    type: Object as PropType<USIEngineSetting>,
+    required: true,
   },
-  emits: ["ok", "cancel"],
-  setup(props, context) {
-    const store = useStore();
-    const appSetting = useAppSetting();
-    const dialog: Ref = ref(null);
-    const engineNameInput: Ref = ref(null);
-    const filter: Ref = ref(null);
-    const filterWords: Ref<string[]> = ref([]);
-    const engine = ref(emptyUSIEngineSetting());
-
-    let defaultValueLoaded = false;
-    let defaultValueApplied = false;
-    store.retainBussyState();
-
-    onMounted(async () => {
-      showModalDialog(dialog.value);
-      installHotKeyForDialog(dialog.value);
-      try {
-        const timeoutSeconds = appSetting.engineTimeoutSeconds;
-        engine.value = await api.getUSIEngineInfo(
-          props.latestEngineSetting.path,
-          timeoutSeconds
-        );
-        mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
-        engineNameInput.value.value = engine.value.name;
-        defaultValueLoaded = true;
-      } catch (e) {
-        store.pushError(e);
-        context.emit("cancel");
-      } finally {
-        store.releaseBussyState();
-      }
-    });
-
-    const options = computed(() =>
-      Object.values(engine.value.options)
-        .sort((a, b): number => (a.order < b.order ? -1 : 1))
-        .map((option) => {
-          const enableFilter = filterWords.value.length > 0;
-          const ret: Option = {
-            ...option,
-            value: getUSIEngineOptionCurrentValue(option),
-            visible: !enableFilter,
-          };
-          if (appSetting.translateEngineOptionName) {
-            ret.displayName = usiOptionNameMap[option.name];
-          }
-          if (enableFilter) {
-            ret.visible =
-              (ret.displayName &&
-                filterString(ret.displayName, filterWords.value)) ||
-              filterString(ret.name, filterWords.value);
-          }
-          return ret;
-        })
-    );
-
-    onUpdated(() => {
-      if (!defaultValueLoaded || defaultValueApplied) {
-        return;
-      }
-      for (const option of options.value) {
-        const elem = getFormItemByID(inputElementID(option));
-        if (elem && option.value !== undefined) {
-          elem.value = option.value + "";
-        }
-      }
-      defaultValueApplied = true;
-    });
-
-    onBeforeUnmount(() => {
-      uninstallHotKeyForDialog(dialog.value);
-    });
-
-    const updateFilter = () => {
-      filterWords.value = String(filter.value.value)
-        .trim()
-        .split(/ +/)
-        .filter((s) => s);
-    };
-
-    const openEngineDir = () => {
-      api.openExplorer(engine.value.path);
-    };
-
-    const selectFile = async (id: string) => {
-      store.retainBussyState();
-      try {
-        const path = await api.showSelectFileDialog();
-        const elem = getFormItemByID(id);
-        if (path && elem) {
-          elem.value = path;
-        }
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    const sendOption = async (name: string) => {
-      store.retainBussyState();
-      try {
-        const timeoutSeconds = appSetting.engineTimeoutSeconds;
-        await api.sendUSISetOption(engine.value.path, name, timeoutSeconds);
-      } catch (e) {
-        store.pushError(e);
-      } finally {
-        store.releaseBussyState();
-      }
-    };
-
-    const reset = () => {
-      engineNameInput.value.value = engine.value.defaultName;
-      for (const option of options.value) {
-        const elem = getFormItemByID(inputElementID(option));
-        if (elem) {
-          if (engine.value.options[option.name].default !== undefined) {
-            elem.value = engine.value.options[option.name].default + "";
-          } else {
-            elem.value = "";
-          }
-        }
-      }
-    };
-
-    const ok = () => {
-      engine.value.name = engineNameInput.value.value;
-      for (const option of options.value) {
-        const elem = getFormItemByID(inputElementID(option));
-        if (elem) {
-          engine.value.options[option.name].value = !elem.value
-            ? undefined
-            : option.type === "spin"
-            ? readInputAsNumber(elem as HTMLInputElement)
-            : elem.value;
-        }
-      }
-      context.emit("ok", engine.value);
-    };
-
-    const cancel = () => {
-      context.emit("cancel");
-    };
-
-    return {
-      t,
-      engine,
-      dialog,
-      engineNameInput,
-      filter,
-      filterWords,
-      options,
-      inputElementID,
-      updateFilter,
-      openEngineDir,
-      selectFile,
-      sendOption,
-      reset,
-      ok,
-      cancel,
-    };
+  okButtonText: {
+    type: String,
+    required: false,
+    default: "OK",
   },
 });
+const emit = defineEmits(["ok", "cancel"]);
+
+const store = useStore();
+const appSetting = useAppSetting();
+const dialog = ref();
+const engineNameInput = ref();
+const filter = ref();
+const filterWords = ref([] as string[]);
+const inputs = ref(
+  {} as { [key: string]: HTMLInputElement | HTMLSelectElement }
+);
+const selectors = ref(
+  {} as { [key: string]: InstanceType<typeof HorizontalSelector> }
+);
+const engine = ref(emptyUSIEngineSetting());
+let defaultValueLoaded = false;
+let defaultValueApplied = false;
+store.retainBussyState();
+onMounted(async () => {
+  showModalDialog(dialog.value);
+  installHotKeyForDialog(dialog.value);
+  try {
+    const timeoutSeconds = appSetting.engineTimeoutSeconds;
+    engine.value = await api.getUSIEngineInfo(
+      props.latestEngineSetting.path,
+      timeoutSeconds
+    );
+    mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
+    engineNameInput.value.value = engine.value.name;
+    defaultValueLoaded = true;
+  } catch (e) {
+    store.pushError(e);
+    emit("cancel");
+  } finally {
+    store.releaseBussyState();
+  }
+});
+const options = computed(() =>
+  Object.values(engine.value.options)
+    .sort((a, b): number => (a.order < b.order ? -1 : 1))
+    .map((option) => {
+      const enableFilter = filterWords.value.length > 0;
+      const ret: Option = {
+        ...option,
+        value: getUSIEngineOptionCurrentValue(option),
+        visible: !enableFilter,
+      };
+      if (appSetting.translateEngineOptionName) {
+        ret.displayName = usiOptionNameMap[option.name];
+      }
+      if (enableFilter) {
+        ret.visible =
+          (ret.displayName &&
+            filterString(ret.displayName, filterWords.value)) ||
+          filterString(ret.name, filterWords.value);
+      }
+      return ret;
+    })
+);
+onUpdated(() => {
+  if (!defaultValueLoaded || defaultValueApplied) {
+    return;
+  }
+  for (const option of options.value) {
+    if (option.value === undefined) {
+      continue;
+    }
+    if (option.type === "check") {
+      selectors.value[option.name].setValue((option.value as string) || "");
+    } else if (inputs.value[option.name]) {
+      inputs.value[option.name].value = option.value + "";
+    }
+  }
+  defaultValueApplied = true;
+});
+onBeforeUnmount(() => {
+  uninstallHotKeyForDialog(dialog.value);
+});
+const updateFilter = () => {
+  filterWords.value = String(filter.value.value)
+    .trim()
+    .split(/ +/)
+    .filter((s) => s);
+};
+const openEngineDir = () => {
+  api.openExplorer(engine.value.path);
+};
+const selectFile = async (name: string) => {
+  store.retainBussyState();
+  try {
+    const path = await api.showSelectFileDialog();
+    const elem = inputs.value[name];
+    if (path && elem) {
+      elem.value = path;
+    }
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
+const sendOption = async (name: string) => {
+  store.retainBussyState();
+  try {
+    const timeoutSeconds = appSetting.engineTimeoutSeconds;
+    await api.sendUSISetOption(engine.value.path, name, timeoutSeconds);
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
+const reset = () => {
+  engineNameInput.value.value = engine.value.defaultName;
+  for (const option of options.value) {
+    const value =
+      engine.value.options[option.name].default !== undefined
+        ? engine.value.options[option.name].default + ""
+        : "";
+    if (option.type === "check") {
+      selectors.value[option.name].setValue(value);
+    } else if (inputs.value[option.name]) {
+      inputs.value[option.name].value = value;
+    }
+  }
+};
+const ok = () => {
+  engine.value.name = engineNameInput.value.value;
+  for (const option of options.value) {
+    if (option.type === "check") {
+      engine.value.options[option.name].value =
+        selectors.value[option.name].getValue() || undefined;
+    } else if (inputs.value[option.name]) {
+      const elem = inputs.value[option.name];
+      engine.value.options[option.name].value = !elem.value
+        ? undefined
+        : option.type === "spin"
+        ? readInputAsNumber(elem as HTMLInputElement)
+        : elem.value;
+    }
+  }
+  emit("ok", engine.value);
+};
+const cancel = () => {
+  emit("cancel");
+};
 </script>
 
 <style scoped>
@@ -376,12 +356,13 @@ export default defineComponent({
   width: 100%;
 }
 .option-unchangeable {
-  width: 340px;
+  width: 365px;
   text-align: left;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 .option-value-text {
   width: 340px;
-  height: 1.167em;
   text-align: left;
 }
 .option-value-filename {
@@ -390,15 +371,12 @@ export default defineComponent({
 }
 .option-value-number {
   width: 100px;
-  height: 1.167em;
   text-align: right;
 }
 .option-value-combo {
-  height: 1.667em;
   text-align: left;
 }
 .option-value-check {
-  height: 1.667em;
   text-align: left;
 }
 </style>

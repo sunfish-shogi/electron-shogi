@@ -181,7 +181,7 @@ const specialMoveToDisplayStringMap = {
   foulLose: "反則負け",
   enteringOfKing: "入玉",
   winByDefault: "不戦勝",
-  lossByDefault: "不戦敗",
+  loseByDefault: "不戦敗",
 };
 
 export function getSpecialMoveDisplayString(move: SpecialMove): string {
@@ -312,4 +312,120 @@ export function getMoveDisplayText(
     ret += "打";
   }
   return ret;
+}
+
+export function getPVText(position: ImmutablePosition, pv: Move[]): string {
+  let ret = "";
+  let prev: Move | undefined;
+  const p = position.clone();
+  for (const move of pv) {
+    ret += `${getMoveDisplayText(p, move, {
+      prev,
+      compatible: true,
+    })}`;
+    p.doMove(move, { ignoreValidation: true });
+    prev = move;
+  }
+  return ret;
+}
+
+const moveRegExp =
+  /^[▲△☗☖]?([１２３４５６７８９][一二三四五六七八九]|同)(王|玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)(左|直|右|)(引|寄|上|)(成|不成|打|)(\([1-9][1-9]\)|)/;
+
+export function parsePVText(position: ImmutablePosition, text: string): Move[] {
+  const clean = text.replaceAll(/[\s\u3000]/g, "");
+
+  // 1手ずつ分割する。
+  const sections = [];
+  let lastIndex = 0;
+  for (let i = 1; i <= clean.length; i++) {
+    const char = clean[i];
+    if (!char || char === "▲" || char === "△" || char === "☗" || char === "☖") {
+      sections.push(clean.substring(lastIndex, i));
+      lastIndex = i;
+    }
+  }
+
+  // 指し手を読み込む。
+  const p = position.clone();
+  const pv: Move[] = [];
+  for (const section of sections) {
+    const result = moveRegExp.exec(section);
+    if (!result) {
+      break;
+    }
+    const toStr = result[1];
+    const pieceType = stringToPieceType(result[2]);
+    const horStr = result[3];
+    const verStr = result[4];
+    const promOrDropStr = result[5];
+    const fromStr = result[6]; // 古い表記の場合のみ
+
+    let to: Square;
+    if (toStr.startsWith("同")) {
+      to = pv[pv.length - 1].to;
+    } else {
+      const file = multiByteCharToNumber(toStr[0]);
+      const rank = kanjiToNumber(toStr[1]);
+      to = new Square(file, rank);
+    }
+    let from: Square | PieceType;
+    if (promOrDropStr === "打") {
+      from = pieceType;
+    } else if (fromStr) {
+      const file = charToNumber(fromStr[1]);
+      const rank = charToNumber(fromStr[2]);
+      from = new Square(file, rank);
+    } else {
+      const squares = p
+        .listAttackersByPiece(to, new Piece(p.color, pieceType))
+        .filter((square) => {
+          let dir = square.directionTo(to);
+          dir = p.color === Color.BLACK ? dir : reverseDirection(dir);
+          const vDir = directionToVDirection(dir);
+          const hDir = directionToHDirection(dir);
+          if (verStr.indexOf("引") >= 0 && vDir !== VDirection.DOWN) {
+            return false;
+          }
+          if (verStr.indexOf("寄") >= 0 && vDir !== VDirection.NONE) {
+            return false;
+          }
+          if (verStr.indexOf("上") >= 0 && vDir !== VDirection.UP) {
+            return false;
+          }
+          if (horStr.indexOf("左") >= 0 && hDir !== HDirection.RIGHT) {
+            return false;
+          }
+          if (horStr.indexOf("直") >= 0 && hDir !== HDirection.NONE) {
+            return false;
+          }
+          if (horStr.indexOf("右") >= 0 && hDir !== HDirection.LEFT) {
+            return false;
+          }
+          return true;
+        });
+      if (squares.length === 1) {
+        from = squares[0];
+      } else if (
+        squares.length === 0 &&
+        p.hand(p.color).count(pieceType) !== 0
+      ) {
+        from = pieceType;
+      } else {
+        break;
+      }
+    }
+    let move = p.createMove(from, to);
+    if (!move) {
+      break;
+    }
+    if (promOrDropStr === "成") {
+      move = move.withPromote();
+    }
+    if (!p.doMove(move, { ignoreValidation: true })) {
+      break;
+    }
+    pv.push(move);
+  }
+  return pv;
 }

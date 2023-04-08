@@ -3,8 +3,8 @@ exports.default = function(context) {
   if (context.electronPlatformName === 'darwin') {
     return;
   }
-  var fs = require('fs');
-  var localeDir = context.appOutDir+'/locales/';
+  let fs = require('fs');
+  let localeDir = context.appOutDir+'/locales/';
   for (const file of fs.readdirSync(localeDir)) {
     switch (file) {
       case "en-US.pak":

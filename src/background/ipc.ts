@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, ipcMain, WebContents } from "electron";
+import { BrowserWindow, dialog, ipcMain, shell, WebContents } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import path from "path";
 import fs from "fs";
@@ -17,7 +17,7 @@ import {
   saveUSIEngineSetting,
 } from "@/background/settings";
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
-import { setupMenu, updateMenuState } from "@/background/menu";
+import { setupMenu, updateAppState } from "@/background/menu";
 import { MenuEvent } from "@/common/control/menu";
 import { USIInfoCommand } from "@/common/usi";
 import { AppState } from "@/common/control/state";
@@ -54,10 +54,13 @@ import {
 import { CSAServerSetting } from "@/common/settings/csa";
 import { isEncryptionAvailable } from "./encrypt";
 import { validateIPCSender } from "./security";
+import { t } from "@/common/i18n";
+import { Rect } from "@/common/graphics";
+import { exportCaptureJPEG, exportCapturePNG } from "./image";
 
 const isWindows = process.platform === "win32";
 
-let mainWindow: BrowserWindow;
+let mainWindow: BrowserWindow; // TODO: refactoring
 let appState = AppState.NORMAL;
 
 export function setup(win: BrowserWindow): void {
@@ -77,17 +80,34 @@ ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, (event) => {
   validateIPCSender(event.senderFrame);
   const path = process.argv[process.argv.length - 1];
   if (isValidRecordFilePath(path)) {
+    getAppLogger().debug(`record path from proc arg: ${path}`);
     return path;
   }
 });
 
 ipcMain.on(
-  Background.UPDATE_MENU_STATE,
+  Background.UPDATE_APP_STATE,
   (_, state: AppState, bussy: boolean) => {
+    getAppLogger().debug(
+      `change app state: AppState=${state} BussyState=${bussy}`
+    );
     appState = state;
-    updateMenuState(state, bussy);
+    updateAppState(state, bussy);
   }
 );
+
+ipcMain.on(Background.OPEN_EXPLORER, (_, target: string) => {
+  const stats = fs.statSync(target, { throwIfNoEntry: false });
+  if (!stats) {
+    sendError(new Error(t.failedToOpenDirectory(target)));
+    return;
+  }
+  if (stats.isDirectory()) {
+    shell.openPath(target);
+  } else {
+    shell.openPath(path.dirname(target));
+  }
+});
 
 function isValidRecordFilePath(path: string) {
   return (
@@ -101,12 +121,14 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("Failed to open dialog by unexpected error.");
     }
+    getAppLogger().debug(`show open-record dialog`);
     const results = dialog.showOpenDialogSync(win, {
       properties: ["openFile"],
-      filters: [{ name: "棋譜ファイル", extensions: ["kif", "kifu", "csa"] }],
+      filters: [{ name: t.recordFile, extensions: ["kif", "kifu", "csa"] }],
     });
+    getAppLogger().debug(`open-record dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
   }
 );
@@ -116,8 +138,9 @@ ipcMain.handle(
   async (event, path: string): Promise<Uint8Array> => {
     validateIPCSender(event.senderFrame);
     if (!isValidRecordFilePath(path)) {
-      throw new Error(`取り扱いできないファイル拡張子です`);
+      throw new Error(t.fileExtensionNotSupported);
     }
+    getAppLogger().debug(`open record: ${path}`);
     return fs.promises.readFile(path);
   }
 );
@@ -128,17 +151,19 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("failed to open dialog by unexpected error.");
     }
+    getAppLogger().debug("show save-record dialog");
     const result = dialog.showSaveDialogSync(win, {
       defaultPath: defaultPath,
       properties: ["createDirectory", "showOverwriteConfirmation"],
       filters: [
-        { name: "KIF形式 (Shift-JIS)", extensions: ["kif"] },
-        { name: "KIF形式 (UTF-8)", extensions: ["kifu"] },
-        { name: "CSA形式", extensions: ["csa"] },
+        { name: "KIF (Shift-JIS)", extensions: ["kif"] },
+        { name: "KIF (UTF-8)", extensions: ["kifu"] },
+        { name: "CSA", extensions: ["csa"] },
       ],
     });
+    getAppLogger().debug(`save-record dialog result: ${result}`);
     return result ? result : "";
   }
 );
@@ -148,8 +173,9 @@ ipcMain.handle(
   async (event, filePath: string, data: Uint8Array): Promise<void> => {
     validateIPCSender(event.senderFrame);
     if (!isValidRecordFilePath(filePath)) {
-      throw new Error(`取り扱いできないファイル拡張子です`);
+      throw new Error(t.fileExtensionNotSupported);
     }
+    getAppLogger().debug(`save record: ${filePath} (${data.length} bytes)`);
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.promises.writeFile(filePath, data);
@@ -162,11 +188,13 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("failed to open dialog by unexpected error.");
     }
+    getAppLogger().debug("show select-file dialog");
     const results = dialog.showOpenDialogSync(win, {
       properties: ["openFile"],
     });
+    getAppLogger().debug(`select-file dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
   }
 );
@@ -177,28 +205,49 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      throw new Error("予期せぬエラーでダイアログを表示せきません。");
+      throw new Error("failed to open dialog by unexpected error.");
     }
+    getAppLogger().debug("show select-directory dialog");
     const results = dialog.showOpenDialogSync(win, {
       properties: ["createDirectory", "openDirectory"],
       defaultPath: defaultPath,
     });
+    getAppLogger().debug(`select-directory dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
+  }
+);
+
+ipcMain.handle(
+  Background.EXPORT_CAPTURE_AS_PNG,
+  async (event, json: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    await exportCapturePNG(new Rect(json));
+  }
+);
+
+ipcMain.handle(
+  Background.EXPORT_CAPTURE_AS_JPEG,
+  async (event, json: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    await exportCaptureJPEG(new Rect(json));
   }
 );
 
 ipcMain.handle(Background.LOAD_APP_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load app setting");
   return JSON.stringify(loadAppSetting());
 });
 
 ipcMain.handle(Background.SAVE_APP_SETTING, (event, json: string): void => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("save app setting");
   saveAppSetting(JSON.parse(json));
 });
 
 ipcMain.handle(Background.LOAD_RESEARCH_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load research setting");
   return JSON.stringify(loadResearchSetting());
 });
 
@@ -206,12 +255,14 @@ ipcMain.handle(
   Background.SAVE_RESEARCH_SETTING,
   (event, json: string): void => {
     validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save research setting");
     saveResearchSetting(JSON.parse(json));
   }
 );
 
 ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load analysis setting");
   return JSON.stringify(loadAnalysisSetting());
 });
 
@@ -219,22 +270,26 @@ ipcMain.handle(
   Background.SAVE_ANALYSIS_SETTING,
   (event, json: string): void => {
     validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save analysis setting");
     saveAnalysisSetting(JSON.parse(json));
   }
 );
 
 ipcMain.handle(Background.LOAD_GAME_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load game setting");
   return JSON.stringify(loadGameSetting());
 });
 
 ipcMain.handle(Background.SAVE_GAME_SETTING, (event, json: string): void => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("save game setting");
   saveGameSetting(JSON.parse(json));
 });
 
 ipcMain.handle(Background.LOAD_CSA_GAME_SETTING_HISTORY, (event): string => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load CSA game setting history");
   return JSON.stringify(loadCSAGameSettingHistory());
 });
 
@@ -242,12 +297,14 @@ ipcMain.handle(
   Background.SAVE_CSA_GAME_SETTING_HISTORY,
   (event, json: string): void => {
     validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save CSA game setting history");
     saveCSAGameSettingHistory(JSON.parse(json));
   }
 );
 
 ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load USI engine setting");
   return loadUSIEngineSetting().json;
 });
 
@@ -255,6 +312,7 @@ ipcMain.handle(
   Background.SAVE_USI_ENGINE_SETTING,
   (event, json: string): void => {
     validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save USI engine setting");
     saveUSIEngineSetting(new USIEngineSettings(json));
   }
 );
@@ -263,12 +321,13 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
   validateIPCSender(event.senderFrame);
   const win = BrowserWindow.getFocusedWindow();
   if (!win) {
-    throw new Error("予期せぬエラーでダイアログを表示せきません。");
+    throw new Error("failed to open dialog by unexpected error.");
   }
+  getAppLogger().debug("show select-USI-engine dialog");
   const results = dialog.showOpenDialogSync(win, {
     properties: ["openFile", "noResolveAliases"],
     filters: isWindows
-      ? [{ name: "実行可能ファイル", extensions: ["exe", "cmd", "bat"] }]
+      ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }]
       : undefined,
   });
   return results && results.length === 1 ? results[0] : "";
@@ -418,6 +477,9 @@ ipcMain.handle(Background.IS_ENCRYPTION_AVAILABLE, (event): boolean => {
 ipcMain.handle(Background.LOG, (event, level: LogLevel, message: string) => {
   validateIPCSender(event.senderFrame);
   switch (level) {
+    case LogLevel.DEBUG:
+      getAppLogger().debug("%s", message);
+      break;
     case LogLevel.INFO:
       getAppLogger().info("%s", message);
       break;

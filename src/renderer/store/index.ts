@@ -1,4 +1,4 @@
-import api, { appInfo } from "@/renderer/ipc/api";
+import api from "@/renderer/ipc/api";
 import {
   Color,
   exportCSA,
@@ -14,28 +14,21 @@ import {
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
+import { ClockSoundTarget, Tab } from "@/common/settings/app";
 import {
-  AppSetting,
-  AppSettingUpdate,
-  ClockSoundTarget,
-  Tab,
-  defaultAppSetting,
-  buildUpdatedAppSetting,
-} from "@/common/settings/app";
-import {
-  AudioEventHandler,
   beepShort,
   beepUnlimited,
   playPieceBeat,
+  stopBeep,
 } from "@/renderer/audio";
-import { RecordManager } from "./record";
+import { RecordManager, SearchInfoSenderType } from "./record";
 import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
-import { AppState } from "../../common/control/state";
-import { Message, MessageStore } from "./message";
+import { AppState } from "@/common/control/state";
+import { Message, MessageStore, Attachment } from "./message";
 import { ErrorEntry, ErrorStore } from "./error";
 import * as uri from "@/common/uri";
 import { Confirmation } from "./confirm";
@@ -52,13 +45,48 @@ import {
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
+import { SearchInfo } from "@/renderer/players/player";
+import { useAppSetting } from "./setting";
+import { t } from "@/common/i18n";
 
-export class Store {
+function getMessageAttachmentsByGameResults(
+  results: GameResults
+): Attachment[] {
+  const validTotal = results.total - results.invalid;
+  return [
+    {
+      type: "list",
+      items: [
+        {
+          text: results.player1.name,
+          children: [
+            `勝ち数: ${results.player1.win}`,
+            `勝率: ${formatPercentage(results.player1.win, validTotal, 1)}`,
+          ],
+        },
+        {
+          text: results.player2.name,
+          children: [
+            `勝ち数: ${results.player2.win}`,
+            `勝率: ${formatPercentage(results.player2.win, validTotal, 1)}`,
+          ],
+        },
+        { text: `引き分け: ${results.draw}` },
+        { text: `有効対局数: ${validTotal}` },
+        { text: `無効対局数: ${results.invalid}` },
+      ],
+    },
+  ];
+}
+
+type OnChangeFilePath = (path?: string) => void;
+
+class Store {
+  private onChangeFilePath: OnChangeFilePath[] = [];
   private _bussy = new BussyStore();
   private _message = new MessageStore();
   private _error = new ErrorStore();
   private recordManager = new RecordManager();
-  private _appSetting = defaultAppSetting();
   private _appState = AppState.NORMAL;
   private _isAppSettingDialogVisible = false;
   private _confirmation?: Confirmation & { appState: AppState };
@@ -68,40 +96,69 @@ export class Store {
   private gameManager = new GameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock,
-    this
+    this.whiteClock
   );
   private csaGameManager = new CSAGameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock,
-    this
+    this.whiteClock
   );
-  private researchManager?: ResearchManager;
-  private analysisManager?: AnalysisManager;
-  private unlimitedBeepHandler?: AudioEventHandler;
+  private researchManager = new ResearchManager();
+  private analysisManager = new AnalysisManager(this.recordManager);
+  private _reactive: UnwrapNestedRefs<Store>;
 
   constructor() {
-    this.updateAppTitle();
     this.recordManager.on("changeFilePath", (path?: string) => {
-      this.updateAppTitle(path);
+      for (const listener of this.onChangeFilePath) {
+        listener(path);
+      }
     });
     this.recordManager.on("changePosition", () => {
       this.onUpdatePosition();
     });
+    const refs = reactive(this);
+    const appSetting = useAppSetting();
+    this.gameManager
+      .on("saveRecord", refs.onSaveRecord.bind(refs))
+      .on("gameNext", refs.onGameNext.bind(refs))
+      .on("gameEnd", refs.onGameEnd.bind(refs))
+      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
+      .on("beepShort", this.onBeepShort.bind(this))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("stopBeep", stopBeep)
+      .on("error", refs.pushError.bind(refs));
+    this.csaGameManager
+      .on("saveRecord", refs.onSaveRecord.bind(refs))
+      .on("gameNext", refs.onGameNext.bind(refs))
+      .on("gameEnd", refs.onCSAGameEnd.bind(refs))
+      .on("flipBoard", refs.onFlipBoard.bind(refs))
+      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
+      .on("beepShort", this.onBeepShort.bind(this))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("stopBeep", stopBeep)
+      .on("error", refs.pushError.bind(refs));
+    this.researchManager.on(
+      "updateSearchInfo",
+      this.onUpdateSearchInfo.bind(refs)
+    );
+    this.analysisManager
+      .on("finish", this.onFinish.bind(refs))
+      .on("error", this.pushError.bind(refs));
+    this._reactive = refs;
   }
 
-  private updateAppTitle(path?: string): void {
-    if (!document) {
-      return;
+  addListener(event: "changeFilePath", listener: OnChangeFilePath): this;
+  addListener(event: string, listener: unknown): this {
+    switch (event) {
+      case "changeFilePath":
+        this.onChangeFilePath.push(listener as OnChangeFilePath);
+        break;
     }
-    const appName = "Electron将棋";
-    const appVersion = appInfo.appVersion;
-    if (path) {
-      document.title = `${appName} Version ${appVersion} - ${path}`;
-    } else {
-      document.title = `${appName} Version ${appVersion}`;
-    }
+    return this;
+  }
+
+  get reactive(): UnwrapNestedRefs<Store> {
+    return this._reactive;
   }
 
   get isBussy(): boolean {
@@ -157,33 +214,15 @@ export class Store {
     return this.recordManager.recordFilePath;
   }
 
+  get inCommentPVs(): Move[][] {
+    return this.recordManager.inCommentPVs;
+  }
+
   updateStandardRecordMetadata(update: {
     key: RecordMetadataKey;
     value: string;
   }): void {
     this.recordManager.updateStandardMetadata(update);
-  }
-
-  get appSetting(): AppSetting {
-    return this._appSetting;
-  }
-
-  async reloadAppSetting(): Promise<void> {
-    this._appSetting = await api.loadAppSetting();
-  }
-
-  async updateAppSetting(update: AppSettingUpdate): Promise<void> {
-    const updated = buildUpdatedAppSetting(this.appSetting, update);
-    if (updated instanceof Error) {
-      throw updated;
-    }
-    await api.saveAppSetting(updated);
-    this._appSetting = updated;
-  }
-
-  flipBoard(): void {
-    this._appSetting.boardFlipping = !this.appSetting.boardFlipping;
-    api.saveAppSetting(this.appSetting);
   }
 
   get appState(): AppState {
@@ -271,6 +310,12 @@ export class Store {
     }
   }
 
+  showExportBoardImageDialog() {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.EXPORT_POSITION_IMAGE_DIALOG;
+    }
+  }
+
   destroyModalDialog(): void {
     if (
       this.appState === AppState.PASTE_DIALOG ||
@@ -278,7 +323,8 @@ export class Store {
       this.appState === AppState.CSA_GAME_DIALOG ||
       this.appState === AppState.RESEARCH_DIALOG ||
       this.appState === AppState.ANALYSIS_DIALOG ||
-      this.appState === AppState.USI_ENGINE_SETTING_DIALOG
+      this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
+      this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG
     ) {
       this._appState = AppState.NORMAL;
     }
@@ -366,9 +412,8 @@ export class Store {
       .saveGameSetting(setting)
       .then(() => {
         this.initializeDisplaySettingForGame(setting);
-        const builder = defaultPlayerBuilder(
-          this.appSetting.engineTimeoutSeconds
-        );
+        const appSetting = useAppSetting();
+        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
         return this.gameManager.startGame(setting, builder);
       })
       .then(() => (this._appState = AppState.GAME))
@@ -378,6 +423,14 @@ export class Store {
       .finally(() => {
         this.releaseBussyState();
       });
+  }
+
+  get gameSetting(): GameSetting {
+    return this.gameManager.setting;
+  }
+
+  get gameResults(): GameResults {
+    return this.gameManager.results;
   }
 
   get csaGameState(): CSAGameState {
@@ -398,9 +451,8 @@ export class Store {
         }
       })
       .then(() => {
-        const builder = defaultPlayerBuilder(
-          this.appSetting.engineTimeoutSeconds
-        );
+        const appSetting = useAppSetting();
+        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
         return this.csaGameManager.login(setting, builder);
       })
       .then(() => (this._appState = AppState.CSA_GAME))
@@ -412,12 +464,14 @@ export class Store {
       });
   }
 
-  logoutCSAGame(): void {
+  cancelCSAGame(): void {
     if (this.appState !== AppState.CSA_GAME) {
       return;
     }
     if (this.csaGameManager.state === CSAGameState.GAME) {
-      this.pushError("ログアウトするには対局を終了してください。");
+      this.pushError(
+        "対局が始まっているため通信対局をキャンセルできませんでした。"
+      );
       return;
     }
     this.csaGameManager.logout();
@@ -426,7 +480,8 @@ export class Store {
 
   private initializeDisplaySettingForGame(setting: GameSetting): void {
     if (setting.humanIsFront) {
-      let flip = this.appSetting.boardFlipping;
+      const appSetting = useAppSetting();
+      let flip = appSetting.boardFlipping;
       if (
         setting.black.uri === uri.ES_HUMAN &&
         setting.white.uri !== uri.ES_HUMAN
@@ -438,8 +493,8 @@ export class Store {
       ) {
         flip = true;
       }
-      if (flip !== this.appSetting.boardFlipping) {
-        this.flipBoard();
+      if (flip !== appSetting.boardFlipping) {
+        appSetting.flipBoard();
       }
     }
   }
@@ -447,131 +502,107 @@ export class Store {
   stopGame(): void {
     switch (this.appState) {
       case AppState.GAME:
-        this.gameManager.endGame(SpecialMove.INTERRUPT);
+        // 連続対局の場合は確認ダイアログを表示する。
+        if (this.gameManager.setting.repeat >= 2) {
+          this.showConfirmation({
+            message: t.areYouSureWantToQuitGames,
+            onOk: () => this.gameManager.endGame(SpecialMove.INTERRUPT),
+          });
+        } else {
+          this.gameManager.endGame(SpecialMove.INTERRUPT);
+        }
         break;
       case AppState.CSA_GAME:
+        // 確認ダイアログを表示する。
         this.showConfirmation({
-          message:
-            "中断を要求すると負けになる可能性があります。よろしいですか？",
-          onOk: () => {
-            this.csaGameManager.stop();
-          },
+          message: t.areYouSureWantToRequestQuit,
+          onOk: () => this.csaGameManager.stop(),
         });
         break;
     }
+  }
+
+  showGameResults(): void {
+    if (this.appState !== AppState.GAME) {
+      return;
+    }
+    const results = this.gameManager.results;
+    this.enqueueMessage({
+      text: t.gameProgress,
+      attachments: getMessageAttachmentsByGameResults(results),
+    });
   }
 
   onGameNext(): void {
     this.usiMonitor.clear();
   }
 
-  onGameEnd(gameResults?: GameResults, specialMove?: SpecialMove): void {
-    if (
-      this.appState !== AppState.GAME &&
-      this.appState !== AppState.CSA_GAME
-    ) {
+  onGameEnd(results: GameResults, specialMove: SpecialMove): void {
+    if (this.appState !== AppState.GAME) {
       return;
     }
-    if (gameResults && gameResults.total >= 2) {
-      const validTotal = gameResults.total - gameResults.invalid;
+    if (results && results.total >= 2) {
       this.enqueueMessage({
-        text: "連続対局終了",
-        attachments: [
-          {
-            type: "list",
-            items: [
-              {
-                text: gameResults.player1.name,
-                children: [
-                  `勝ち数: ${gameResults.player1.win}`,
-                  `勝率: ${formatPercentage(
-                    gameResults.player1.win,
-                    validTotal,
-                    1
-                  )}`,
-                ],
-              },
-              {
-                text: gameResults.player2.name,
-                children: [
-                  `勝ち数: ${gameResults.player2.win}`,
-                  `勝率: ${formatPercentage(
-                    gameResults.player2.win,
-                    validTotal,
-                    1
-                  )}`,
-                ],
-              },
-              { text: `引き分け: ${gameResults.draw}` },
-              { text: `有効対局数: ${validTotal}` },
-              { text: `無効対局数: ${gameResults.invalid}` },
-            ],
-          },
-        ],
+        text: t.allGamesCompleted,
+        attachments: getMessageAttachmentsByGameResults(results),
       });
     } else if (specialMove) {
       this.enqueueMessage({
-        text: `対局終了（${getSpecialMoveDisplayString(specialMove)})`,
+        text: `${t.gameEnded}（${getSpecialMoveDisplayString(specialMove)})`,
       });
     }
     this._appState = AppState.NORMAL;
   }
 
+  onCSAGameEnd(): void {
+    if (this.appState !== AppState.CSA_GAME) {
+      return;
+    }
+    this._appState = AppState.NORMAL;
+  }
+
   onFlipBoard(flip: boolean): void {
-    if (this._appSetting.boardFlipping !== flip) {
-      this.flipBoard();
+    const appSetting = useAppSetting();
+    if (appSetting.boardFlipping !== flip) {
+      useAppSetting().flipBoard();
     }
   }
 
   onSaveRecord(): void {
     const fname = defaultRecordFileName(this.recordManager.record.metadata);
-    const path = `${this.appSetting.autoSaveDirectory}/${fname}`;
+    const appSetting = useAppSetting();
+    const path = `${appSetting.autoSaveDirectory}/${fname}`;
     this.saveRecordByPath(path).catch((e) => {
       this.pushError(`棋譜の保存に失敗しました: ${e}`);
     });
   }
 
-  onPieceBeat(): void {
-    playPieceBeat(this.appSetting.pieceVolume);
-  }
-
-  onBeepShort(): void {
+  private onBeepShort(): void {
+    const appSetting = useAppSetting();
     if (
-      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
-      return;
-    }
-    if (this.unlimitedBeepHandler) {
       return;
     }
     beepShort({
-      frequency: this.appSetting.clockPitch,
-      volume: this.appSetting.clockVolume,
+      frequency: appSetting.clockPitch,
+      volume: appSetting.clockVolume,
     });
   }
 
-  onBeepUnlimited(): void {
+  private onBeepUnlimited(): void {
+    const appSetting = useAppSetting();
     if (
-      this.appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
+      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
       !this.isMovableByUser
     ) {
       return;
     }
-    if (this.unlimitedBeepHandler) {
-      return;
-    }
-    this.unlimitedBeepHandler = beepUnlimited({
-      frequency: this.appSetting.clockPitch,
-      volume: this.appSetting.clockVolume,
+    beepUnlimited({
+      frequency: appSetting.clockPitch,
+      volume: appSetting.clockVolume,
     });
-  }
-
-  onStopBeep(): void {
-    if (this.unlimitedBeepHandler) {
-      this.unlimitedBeepHandler.stop();
-      this.unlimitedBeepHandler = undefined;
-    }
   }
 
   doMove(move: Move): void {
@@ -584,7 +615,8 @@ export class Store {
     if (!this.recordManager.appendMove({ move })) {
       return;
     }
-    playPieceBeat(this.appSetting.pieceVolume);
+    const appSetting = useAppSetting();
+    playPieceBeat(appSetting.pieceVolume);
   }
 
   onFinish(): void {
@@ -592,10 +624,6 @@ export class Store {
       this._message.enqueue({ text: "棋譜解析が終了しました。" });
       this._appState = AppState.NORMAL;
     }
-  }
-
-  onError(e: unknown): void {
-    this.pushError(e);
   }
 
   startResearch(researchSetting: ResearchSetting): void {
@@ -609,31 +637,22 @@ export class Store {
     }
     api
       .saveResearchSetting(researchSetting)
-      .then(() => {
-        this.researchManager = new ResearchManager(
-          researchSetting,
-          this.appSetting
-        );
-        this.researchManager.on("updateSearchInfo", (type, info) =>
-          this.recordManager.updateSearchInfo(type, info)
-        );
-        return this.researchManager.launch();
-      })
+      .then(() => this.researchManager.launch(researchSetting))
       .then(() => {
         this._appState = AppState.RESEARCH;
         this.usiMonitor.clear();
         this.onUpdatePosition();
+        const appSetting = useAppSetting();
         if (
-          this.appSetting.tab !== Tab.SEARCH &&
-          this.appSetting.tab !== Tab.PV &&
-          this.appSetting.tab !== Tab.CHART &&
-          this.appSetting.tab !== Tab.PERCENTAGE_CHART
+          appSetting.tab !== Tab.SEARCH &&
+          appSetting.tab !== Tab.PV &&
+          appSetting.tab !== Tab.CHART &&
+          appSetting.tab !== Tab.PERCENTAGE_CHART
         ) {
-          this.updateAppSetting({ tab: Tab.PV });
+          useAppSetting().updateAppSetting({ tab: Tab.PV });
         }
       })
       .catch((e) => {
-        this.researchManager = undefined;
         this.pushError("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
@@ -645,11 +664,12 @@ export class Store {
     if (this.appState !== AppState.RESEARCH) {
       return;
     }
-    if (this.researchManager) {
-      this.researchManager.close();
-      this.researchManager = undefined;
-    }
+    this.researchManager.close();
     this._appState = AppState.NORMAL;
+  }
+
+  onUpdateSearchInfo(type: SearchInfoSenderType, info: SearchInfo): void {
+    this.recordManager.updateSearchInfo(type, info);
   }
 
   startAnalysis(analysisSetting: AnalysisSetting): void {
@@ -659,21 +679,12 @@ export class Store {
     this.retainBussyState();
     api
       .saveAnalysisSetting(analysisSetting)
-      .then(() => {
-        this.analysisManager = new AnalysisManager(
-          this.recordManager,
-          analysisSetting,
-          this.appSetting,
-          this
-        );
-        return this.analysisManager.start();
-      })
+      .then(() => this.analysisManager.start(analysisSetting))
       .then(() => {
         this._appState = AppState.ANALYSIS;
         this.usiMonitor.clear();
       })
       .catch((e) => {
-        this.analysisManager = undefined;
         this.pushError("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
@@ -685,10 +696,7 @@ export class Store {
     if (this.appState !== AppState.ANALYSIS) {
       return;
     }
-    if (this.analysisManager) {
-      this.analysisManager.close();
-      this.analysisManager = undefined;
-    }
+    this.analysisManager.close();
     this._appState = AppState.NORMAL;
   }
 
@@ -703,7 +711,7 @@ export class Store {
       return;
     }
     this.showConfirmation({
-      message: "現在の棋譜は削除されます。よろしいですか？",
+      message: t.areYouSureWantToClearRecord,
       onOk: () => {
         this.recordManager.reset();
       },
@@ -729,7 +737,7 @@ export class Store {
       return;
     }
     this.showConfirmation({
-      message: "現在の棋譜は削除されます。よろしいですか？",
+      message: t.areYouSureWantToClearRecord,
       onOk: () => {
         this._appState = AppState.POSITION_EDITING;
         this.recordManager.resetByCurrentPosition();
@@ -748,7 +756,7 @@ export class Store {
       return;
     }
     this.showConfirmation({
-      message: "現在の局面は破棄されます。よろしいですか？",
+      message: t.areYouSureWantToDiscardPosition,
       onOk: () => {
         this.recordManager.reset(initialPositionType);
       },
@@ -805,7 +813,9 @@ export class Store {
       return;
     }
     this.showConfirmation({
-      message: `${this.recordManager.record.current.number}手目以降を削除します。よろしいですか？`,
+      message: t.areYouSureWantToDeleteFollowingMove(
+        this.recordManager.record.current.number
+      ),
       onOk: () => {
         this.recordManager.removeCurrentMove();
       },
@@ -813,15 +823,17 @@ export class Store {
   }
 
   copyRecordKIF(): void {
+    const appSetting = useAppSetting();
     const str = exportKakinoki(this.recordManager.record, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordCSA(): void {
+    const appSetting = useAppSetting();
     const str = exportCSA(this.recordManager.record, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
@@ -912,8 +924,9 @@ export class Store {
   }
 
   private async saveRecordByPath(path: string): Promise<void> {
+    const appSetting = useAppSetting();
     const dataOrError = this.recordManager.exportRecordAsBuffer(path, {
-      returnCode: this.appSetting.returnCode,
+      returnCode: appSetting.returnCode,
     });
     if (dataOrError instanceof Error) {
       throw dataOrError;
@@ -922,7 +935,7 @@ export class Store {
     try {
       await api.saveRecord(path, dataOrError);
     } catch (e) {
-      throw new Error(`棋譜の保存に失敗しました: ${e}`);
+      throw new Error(`${t.failedToSaveRecord}: ${e}`);
     } finally {
       this.releaseBussyState();
     }
@@ -949,8 +962,15 @@ export class Store {
   }
 }
 
-const store = reactive<Store>(new Store());
+export function createStore(): UnwrapNestedRefs<Store> {
+  return new Store().reactive;
+}
+
+let store: UnwrapNestedRefs<Store>;
 
 export function useStore(): UnwrapNestedRefs<Store> {
+  if (!store) {
+    store = createStore();
+  }
   return store;
 }

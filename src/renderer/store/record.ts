@@ -6,13 +6,14 @@ import {
   DoMoveOption,
   exportCSA,
   exportKakinoki,
-  getMoveDisplayText,
+  getPVText,
   ImmutablePosition,
   ImmutableRecord,
   importCSA,
   importKakinoki,
   InitialPositionType,
   Move,
+  parsePVText,
   Position,
   PositionChange,
   Record,
@@ -25,10 +26,12 @@ import iconv from "iconv-lite";
 import { getSituationText } from "./score";
 import { SearchInfo } from "@/renderer/players/player";
 import { CommentBehavior } from "@/common/settings/analysis";
+import { t } from "@/common/i18n";
+import { localizeError } from "@/common/i18n";
 
 export enum SearchInfoSenderType {
   PLAYER,
-  ENEMY,
+  OPPONENT,
   RESEARCHER,
   RESEARCHER_2,
   RESEARCHER_3,
@@ -37,7 +40,7 @@ export enum SearchInfoSenderType {
 
 export type RecordCustomData = {
   playerSearchInfo?: SearchInfo;
-  enemySearchInfo?: SearchInfo;
+  opponentSearchInfo?: SearchInfo;
   researchInfo?: SearchInfo;
   researchInfo2?: SearchInfo;
   researchInfo3?: SearchInfo;
@@ -108,20 +111,21 @@ function buildSearchComment(
     comment += `${prefix}評価値=${searchInfo.score}\n`;
   }
   if (searchInfo.pv && searchInfo.pv.length !== 0) {
-    comment += `${prefix}読み筋=`;
-    let prev: Move | undefined;
-    const p = position.clone();
-    for (const move of searchInfo.pv) {
-      comment += `${getMoveDisplayText(p, move, {
-        prev,
-        compatible: true,
-      })}`;
-      p.doMove(move, { ignoreValidation: true });
-      prev = move;
-    }
-    comment += "\n";
+    comment += `${prefix}読み筋=${getPVText(position, searchInfo.pv)}\n`;
   }
   return comment;
+}
+
+function getPVsFromSearchComment(
+  position: ImmutablePosition,
+  comment: string
+): Move[][] {
+  return comment
+    .split("\n")
+    .filter((line) => line.match(/^[#*]読み筋=/))
+    .map((line) => {
+      return parsePVText(position, line.split("=", 2)[1]);
+    });
 }
 
 function formatTimeLimitCSA(setting: TimeLimitSetting): string {
@@ -210,7 +214,7 @@ export class RecordManager {
         const position = Position.newBySFEN(data);
         recordOrError = position
           ? new Record(position)
-          : new Error("局面を読み込めませんでした。");
+          : new Error(t.failedToParseSFEN);
         break;
       }
       case RecordFormatType.USI:
@@ -223,11 +227,11 @@ export class RecordManager {
         recordOrError = importCSA(data);
         break;
       default:
-        recordOrError = new Error("棋譜フォーマットの検出ができませんでした。");
+        recordOrError = new Error(t.failedToDetectRecordFormat);
         break;
     }
     if (recordOrError instanceof Error) {
-      return recordOrError;
+      return localizeError(recordOrError);
     }
     this._record = recordOrError;
     this.setupRecordHandler();
@@ -246,10 +250,10 @@ export class RecordManager {
     } else if (path.match(/\.csa$/)) {
       recordOrError = importCSA(new TextDecoder().decode(data));
     } else {
-      recordOrError = new Error("不明なファイル形式: " + path);
+      recordOrError = new Error(`${t.unknownFileExtension}: ${path}`);
     }
     if (recordOrError instanceof Error) {
-      return recordOrError;
+      return localizeError(recordOrError);
     }
     this._record = recordOrError;
     this.setupRecordHandler();
@@ -268,7 +272,7 @@ export class RecordManager {
     } else if (path.match(/\.csa$/)) {
       data = new TextEncoder().encode(exportCSA(this.record, opt));
     } else {
-      return new Error("不明なファイル形式: " + path);
+      return new Error(`${t.unknownFileExtension}: ${path}`);
     }
     this.updateRecordFilePath(path);
     return data as Buffer;
@@ -347,6 +351,13 @@ export class RecordManager {
     this.appendComment((head ? head + "\n" : "") + comment, behavior);
   }
 
+  get inCommentPVs(): Move[][] {
+    return getPVsFromSearchComment(
+      this.record.position,
+      this.record.current.comment
+    );
+  }
+
   setGameStartMetadata(metadata: GameStartMetadata): void {
     if (metadata.gameTitle) {
       this._record.metadata.setStandardMetadata(
@@ -395,8 +406,8 @@ export class RecordManager {
       case SearchInfoSenderType.PLAYER:
         data.playerSearchInfo = searchInfo;
         break;
-      case SearchInfoSenderType.ENEMY:
-        data.enemySearchInfo = searchInfo;
+      case SearchInfoSenderType.OPPONENT:
+        data.opponentSearchInfo = searchInfo;
         break;
       case SearchInfoSenderType.RESEARCHER:
         if ((searchInfo.depth || 0) >= (data.researchInfo?.depth || 0)) {

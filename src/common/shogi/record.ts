@@ -6,6 +6,8 @@ import {
   Color,
   reverseColor,
   parseUSIMove,
+  InvalidUSIError,
+  InvalidMoveError,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
 import { getMoveDisplayText, getSpecialMoveDisplayString } from "./text";
@@ -32,68 +34,13 @@ export enum RecordMetadataKey {
   OPUS_NO = "opusNo", // 作品番号
   OPUS_NAME = "opusName", // 作品名
   AUTHOR = "author", // 作者
-  PUBLISHED_ON = "publishedOn", // 発表誌
+  PUBLISHED_BY = "publishedBy", // 発表誌
   PUBLISHED_AT = "publishedAt", // 発表年月
   SOURCE = "source", // 出典
   LENGTH = "length", // 手数
   INTEGRITY = "integrity", // 完全性
   CATEGORY = "category", // 分類
   AWARD = "award", // 受賞
-}
-
-export function getStandardMetadataDisplayName(key: RecordMetadataKey): string {
-  switch (key) {
-    case RecordMetadataKey.BLACK_NAME:
-      return "先手";
-    case RecordMetadataKey.WHITE_NAME:
-      return "後手";
-    case RecordMetadataKey.START_DATETIME:
-      return "開始日時";
-    case RecordMetadataKey.END_DATETIME:
-      return "終了日時";
-    case RecordMetadataKey.DATE:
-      return "対局日";
-    case RecordMetadataKey.TOURNAMENT:
-      return "棋戦";
-    case RecordMetadataKey.STRATEGY:
-      return "戦型";
-    case RecordMetadataKey.TITLE:
-      return "表題";
-    case RecordMetadataKey.TIME_LIMIT:
-      return "持ち時間";
-    case RecordMetadataKey.TIME_SPENT:
-      return "消費時間";
-    case RecordMetadataKey.PLACE:
-      return "場所";
-    case RecordMetadataKey.POSTED_ON:
-      return "掲載";
-    case RecordMetadataKey.NOTE:
-      return "備考";
-    case RecordMetadataKey.BLACK_SHORT_NAME:
-      return "先手省略名";
-    case RecordMetadataKey.WHITE_SHORT_NAME:
-      return "後手省略名";
-    case RecordMetadataKey.OPUS_NO:
-      return "作品番号";
-    case RecordMetadataKey.OPUS_NAME:
-      return "作品名";
-    case RecordMetadataKey.AUTHOR:
-      return "作者";
-    case RecordMetadataKey.PUBLISHED_ON:
-      return "発表誌";
-    case RecordMetadataKey.PUBLISHED_AT:
-      return "発表年月";
-    case RecordMetadataKey.SOURCE:
-      return "出典";
-    case RecordMetadataKey.LENGTH:
-      return "手数";
-    case RecordMetadataKey.INTEGRITY:
-      return "完全性";
-    case RecordMetadataKey.CATEGORY:
-      return "分類";
-    case RecordMetadataKey.AWARD:
-      return "受賞";
-  }
 }
 
 export interface ImmutableRecordMetadata {
@@ -153,7 +100,7 @@ export enum SpecialMove {
   FOUL_LOSE = "foulLose", // 手番側の負け
   ENTERING_OF_KING = "enteringOfKing",
   WIN_BY_DEFAULT = "winByDefault",
-  LOSS_BY_DEFAULT = "lossByDefault",
+  LOSE_BY_DEFAULT = "loseByDefault",
 }
 
 export interface ImmutableNode {
@@ -762,18 +709,18 @@ export class Record {
     } else if (data.startsWith(prefixMoves)) {
       return Record.newByUSIFromMoves(new Position(), data);
     } else {
-      return new Error("不正なUSI(1): " + data);
+      return new InvalidUSIError(data);
     }
   }
 
   private static newByUSIFromSFEN(data: string): Record | Error {
     const sections = data.split(" ");
     if (sections.length < 4) {
-      return new Error("不正なUSI(2): " + data);
+      return new InvalidUSIError(data);
     }
     const position = Position.newBySFEN(sections.slice(0, 4).join(" "));
     if (!position) {
-      return new Error("不正なUSI(3): " + data);
+      return new InvalidUSIError(data);
     }
     return Record.newByUSIFromMoves(position, sections.slice(4).join(" "));
   }
@@ -788,7 +735,7 @@ export class Record {
     }
     const sections = data.split(" ");
     if (sections[0] !== "moves") {
-      return new Error("不正なUSI(4): " + data);
+      return new InvalidUSIError(data);
     }
     for (let i = 1; i < sections.length; i++) {
       const parsed = parseUSIMove(sections[i]);
@@ -797,7 +744,7 @@ export class Record {
       }
       let move = record.position.createMove(parsed.from, parsed.to);
       if (!move) {
-        return new Error("不正な指し手: " + sections[i]);
+        return new InvalidMoveError(sections[i]);
       }
       if (parsed.promote) {
         move = move.withPromote();

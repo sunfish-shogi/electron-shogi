@@ -3,7 +3,7 @@ import { Socket } from "@/background/csa/socket";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { Color } from "@/common/shogi";
 import * as log4js from "log4js";
-import { csaServerSetting } from "../../mock/csa";
+import { csaServerSetting } from "@/tests/mock/csa";
 
 jest.mock("@/background/csa/socket");
 
@@ -423,7 +423,7 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onClose(true);
     expect(clientHandlers.mockOnError).toBeCalledTimes(1);
     expect(clientHandlers.mockOnError.mock.calls[0][0].toString()).toBe(
-      "Error: CSAサーバーへ接続できませんでした。"
+      "Error: CSAサーバーに接続できませんでした。"
     );
     expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
   });

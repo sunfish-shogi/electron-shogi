@@ -1,8 +1,9 @@
 # Electron 将棋
 
-
 [![Test](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/sunfish-shogi/electron-shogi/branch/main/graph/badge.svg?token=TLSQXAIJFY)](https://codecov.io/gh/sunfish-shogi/electron-shogi)
+
+[English](./README.en.md)
 
 将棋の GUI アプリです。
 コンピューターとの対局や棋譜の編集・検討ができます。
@@ -16,20 +17,19 @@
 コンピューター将棋界の権威ある開発者も[オープンソースのGUIの必要性に言及](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/)しています。
 Electron 将棋はオープンソースであり、そして低い制限のもとで自由に利用・改変が可能です。
 
-Electron 将棋はその名前の通り [Electron](https://www.electronjs.org/) を使っています。
+Electron 将棋は Web ベースの GUI フレームワークである [Electron](https://www.electronjs.org/) を使っています。
 Web の技術を使うことで将来の幅広い活用を目指しており、機能は限られますが通常のブラウザでも動作します。
 Electron は Chromium をバンドルするため、どの OS でも同じ操作性と品質が担保しやすいのも特徴です。
-将来は [Tauri](https://github.com/tauri-apps/tauri) 版の制作やスマホ対応を行うことも視野に入れています。
 
-昨今では 2in1 PC やコンパーチブル型 PC の普及により、PC 向けの OS でもタッチパネルを使って将棋の対局ができるようになりました。
+昨今では 2in1 タブレットやコンバーチブル型 PC の普及により、PC 向けの OS でもタッチパネルを使って将棋の対局ができるようになりました。
 しかし、 PC 向けの伝統的なアプリケーションは UI コンポーネントが細かく、タッチ操作との相性がよくありません。
 Electron 将棋ではタッチ操作のしやすさも重視して UI を設計しています。
 
-## Web サイト
+## Website
 
 https://sunfish-shogi.github.io/electron-shogi/
 
-ブラウザ版アプリを試すことができます。
+ウェブサイトではブラウザ版アプリを試すことができます。
 
 ## Wiki
 
@@ -47,8 +47,7 @@ https://github.com/sunfish-shogi/electron-shogi/wiki
 
 ## ダウンロード
 
-[Releases](https://github.com/sunfish-shogi/electron-shogi/releases) から Windows 版、Mac 版をダウンロードできます。
-Linux 版のバイナリはありませんので、後述のコマンドでビルドしてください。
+[Releases](https://github.com/sunfish-shogi/electron-shogi/releases) からダウンロードできます。
 
 ## エンジン開発者の方へ
 
@@ -73,7 +72,7 @@ GitHub アカウントをお持ちでない場合は [送信フォーム](https:
 
 - Node.js
 
-### セットアップ
+### Setup
 
 ```
 git clone https://github.com/sunfish-shogi/electron-shogi.git
@@ -81,27 +80,27 @@ cd electron-shogi
 npm install
 ```
 
-### 起動
+### Launch
 
 ```
-# Electron アプリ
+# Electron App
 npm run electron:serve
 
-# ブラウザアプリ
+# Web App
 npm run serve
 ```
 
-### リリース
+### Release Build
 
 ```
-# Electron アプリ
+# Electron App
 npm run electron:build
 
-# ブラウザアプリ
+# Web App
 npm run build
 ```
 
-### ユニットテスト
+### Unit Tests
 
 ```
 npm run test:unit
@@ -115,19 +114,19 @@ npm run test:unit
 npm run lint
 ```
 
-## ライセンス
+## Licences
 
-### Electron 将棋のライセンス
+### Electron Shogi
 
 [MIT License](LICENSE)
 
-### アイコン画像のライセンス
+### Icon Images
 
 [/public/icon](https://github.com/sunfish-shogi/electron-shogi/tree/main/public/icon) 配下のアイコン画像は [Material Icons](https://google.github.io/material-design-icons/) を使用しています。
 これには [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt) が適用されます。
 
-### 依存モジュールのライセンス
+### Dependencies
 
 レンダラープロセスで使用しているライブラリは [THIRD PARTY LICENSES](https://sunfish-shogi.github.io/electron-shogi/third-party-licenses.html) を参照してください。
 
-Electron と Chromium については Electron Builder によって成果物にバンドルされます。
+Electron と Chromium については electron-builder によって成果物にバンドルされます。

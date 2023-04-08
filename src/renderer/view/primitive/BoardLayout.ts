@@ -15,7 +15,7 @@ import {
   Square,
 } from "@/common/shogi";
 import preloadImage from "@/renderer/assets/preload";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics";
 
 type PieceImages = {
   black: {

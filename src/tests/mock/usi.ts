@@ -19,6 +19,7 @@ export const usiEngineSettingWithPonder: USIEngineSetting = {
     USI_Ponder: {
       name: "USI_Ponder",
       type: "check",
+      order: 2,
       vars: [],
       value: "true",
     },

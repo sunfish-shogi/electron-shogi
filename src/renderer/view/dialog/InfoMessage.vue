@@ -3,10 +3,10 @@
     <dialog ref="dialog" class="info">
       <div class="message-box">
         <ButtonIcon class="icon" :icon="Icon.INFO" />
-        <div class="message">{{ message.text }}</div>
+        <div class="message">{{ store.message.text }}</div>
       </div>
       <div
-        v-for="(attachment, aidx) in message.attachments"
+        v-for="(attachment, aidx) in store.message.attachments"
         :key="aidx"
         class="attachment"
       >
@@ -31,7 +31,7 @@
       </div>
       <div class="dialog-main-buttons">
         <button autofocus data-hotkey="Escape" @click="onClose()">
-          閉じる
+          {{ t.close }}
         </button>
       </div>
     </dialog>
@@ -39,16 +39,10 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { useStore } from "@/renderer/store";
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  Ref,
-} from "vue";
+import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { Icon } from "@/renderer/assets/icons";
 import {
@@ -74,15 +68,14 @@ export default defineComponent({
       uninstallHotKeyForDialog(dialog.value);
     });
 
-    const message = computed(() => store.message);
-
     const onClose = () => {
       store.dequeueMessage();
     };
 
     return {
+      t,
       dialog,
-      message,
+      store,
       onClose,
       Icon,
     };

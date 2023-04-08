@@ -7,9 +7,10 @@ import { ResearchSetting } from "@/common/settings/research";
 import { AppState } from "@/common/control/state";
 import { GameResult } from "@/common/player";
 import { AnalysisSetting } from "@/common/settings/analysis";
-import { LogLevel } from "../../common/log";
-import { CSAGameResult, CSASpecialMove } from "../../common/csa";
+import { LogLevel } from "@/common/log";
+import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAGameSettingHistory, CSAServerSetting } from "@/common/settings/csa";
+import { Rect } from "@/common/graphics";
 
 type AppInfo = {
   appVersion?: string;
@@ -17,13 +18,16 @@ type AppInfo = {
 
 export interface Bridge {
   getRecordPathFromProcArg(): Promise<string>;
-  updateMenuState(appState: AppState, bussy: boolean): void;
+  updateAppState(appState: AppState, bussy: boolean): void;
+  openExplorer(path: string): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
+  exportCaptureAsPNG(json: string): Promise<void>;
+  exportCaptureAsJPEG(json: string): Promise<void>;
   loadAppSetting(): Promise<string>;
   saveAppSetting(setting: string): Promise<void>;
   loadResearchSetting(): Promise<string>;
@@ -123,13 +127,16 @@ export interface Bridge {
 
 export interface API {
   getRecordPathFromProcArg(): Promise<string>;
-  updateMenuState(appState: AppState, bussy: boolean): void;
+  updateAppState(appState: AppState, bussy: boolean): void;
+  openExplorer(path: string): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
+  exportCaptureAsPNG(rect: Rect): Promise<void>;
+  exportCaptureAsJPEG(rect: Rect): Promise<void>;
   loadAppSetting(): Promise<AppSetting>;
   saveAppSetting(setting: AppSetting): Promise<void>;
   loadResearchSetting(): Promise<ResearchSetting>;
@@ -203,6 +210,12 @@ export const bridge: Bridge = getWindowObject().electronShogiAPI || webAPI;
 
 const api: API = {
   ...bridge,
+  exportCaptureAsPNG(rect: Rect): Promise<void> {
+    return bridge.exportCaptureAsPNG(rect.json);
+  },
+  exportCaptureAsJPEG(rect: Rect): Promise<void> {
+    return bridge.exportCaptureAsJPEG(rect.json);
+  },
   async loadAppSetting(): Promise<AppSetting> {
     return JSON.parse(await bridge.loadAppSetting());
   },

@@ -1,11 +1,11 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">対局</div>
+      <div class="dialog-title">{{ t.game }}</div>
       <div class="dialog-form-area">
         <div class="players">
           <div class="player">
-            <div class="top-label">先手（下手）</div>
+            <div class="top-label">{{ t.senteOrShitate }}</div>
             <PlayerSelector
               :player-uri="blackPlayerURI"
               :contains-human="true"
@@ -18,7 +18,7 @@
             />
           </div>
           <div class="player">
-            <div class="top-label">後手（上手）</div>
+            <div class="top-label">{{ t.goteOrUwate }}</div>
             <PlayerSelector
               v-if="whitePlayerURI"
               :player-uri="whitePlayerURI"
@@ -35,14 +35,15 @@
         <div class="players-control">
           <button @click="onSwapColor">
             <ButtonIcon class="icon" :icon="Icon.SWAP_H" />
-            先後入れ替え
+            <span>{{ t.swapSenteGote }}</span>
           </button>
         </div>
       </div>
       <div class="dialog-form-areas-h">
         <div class="dialog-form-area time-limit">
-          <div class="top-label">時間</div>
+          <div class="top-label">{{ t.time }}</div>
           <div class="dialog-form-item">
+            <!-- TODO: Translate -->
             <div class="dialog-form-item-label">持ち時間</div>
             <input
               ref="hours"
@@ -52,7 +53,7 @@
               max="99"
               step="1"
             />
-            <div class="dialog-form-item-unit">時間</div>
+            <div class="dialog-form-item-unit">{{ t.hoursSuffix }}</div>
             <input
               ref="minutes"
               class="time"
@@ -61,9 +62,10 @@
               max="59"
               step="1"
             />
-            <div class="dialog-form-item-unit">分</div>
+            <div class="dialog-form-item-unit">{{ t.minutesSuffix }}</div>
           </div>
           <div class="dialog-form-item">
+            <!-- TODO: Translate -->
             <div class="dialog-form-item-label">秒読み</div>
             <input
               ref="byoyomi"
@@ -73,9 +75,10 @@
               max="60"
               step="1"
             />
-            <div class="dialog-form-item-unit">秒</div>
+            <div class="dialog-form-item-unit">{{ t.secondsSuffix }}</div>
           </div>
           <div class="dialog-form-item">
+            <!-- TODO: Translate -->
             <div class="dialog-form-item-label">増加</div>
             <input
               ref="increment"
@@ -85,7 +88,7 @@
               max="99"
               step="1"
             />
-            <div class="dialog-form-item-unit">秒</div>
+            <div class="dialog-form-item-unit">{{ t.secondsSuffix }}</div>
           </div>
           <div class="dialog-form-item">
             <input
@@ -93,50 +96,62 @@
               ref="enableEngineTimeout"
               type="checkbox"
             />
-            <label for="enable-engine-timeout">エンジンの時間切れあり</label>
+            <label for="enable-engine-timeout">{{
+              t.enableEngineTimeout
+            }}</label>
           </div>
         </div>
         <div class="dialog-form-area flags">
-          <div class="top-label">その他</div>
+          <div class="top-label">{{ t.others }}</div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label">開始局面</div>
+            <div class="dialog-form-item-label">{{ t.startPosition }}</div>
             <select ref="startPosition">
-              <option value="current">現在の局面</option>
-              <option value="standard">平手</option>
-              <option value="handicapLance">香落ち</option>
-              <option value="handicapRightLance">右香落ち</option>
-              <option value="handicapBishop">角落ち</option>
-              <option value="handicapRook">飛車落ち</option>
-              <option value="handicapRookLance">飛車香落ち</option>
-              <option value="handicap2Pieces">2枚落ち</option>
-              <option value="handicap4Pieces">4枚落ち</option>
-              <option value="handicap6Pieces">6枚落ち</option>
-              <option value="handicap8Pieces">8枚落ち</option>
+              <option value="current">{{ t.currentPosition }}</option>
+              <option value="standard">{{ t.nonHandicap }}</option>
+              <option value="handicapLance">{{ t.lanceHandicap }}</option>
+              <option value="handicapRightLance">
+                {{ t.rightLanceHandicap }}
+              </option>
+              <option value="handicapBishop">{{ t.bishopHandicap }}</option>
+              <option value="handicapRook">{{ t.rookHandicap }}</option>
+              <option value="handicapRookLance">
+                {{ t.rookLanceHandicap }}
+              </option>
+              <option value="handicap2Pieces">{{ t.twoPiecesHandicap }}</option>
+              <option value="handicap4Pieces">
+                {{ t.fourPiecesHandicap }}
+              </option>
+              <option value="handicap6Pieces">{{ t.sixPiecesHandicap }}</option>
+              <option value="handicap8Pieces">
+                {{ t.eightPiecesHandicap }}
+              </option>
             </select>
           </div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label">最大手数</div>
+            <div class="dialog-form-item-label">{{ t.maxMoves }}</div>
             <input ref="maxMoves" class="number" type="number" min="1" />
           </div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label">連続対局</div>
+            <div class="dialog-form-item-label">{{ t.gameRepetition }}</div>
             <input ref="repeat" class="number" type="number" min="1" />
           </div>
           <div class="dialog-form-item">
             <input id="swap-players" ref="swapPlayers" type="checkbox" />
-            <label for="swap-players">1局ごとに手番を入れ替える</label>
+            <label for="swap-players">{{ t.swapTurnWhenGameRepetition }}</label>
           </div>
           <div class="dialog-form-item">
             <input id="enable-comment" ref="enableComment" type="checkbox" />
-            <label for="enable-comment">コメントを出力する</label>
+            <label for="enable-comment">{{ t.outputComments }}</label>
           </div>
           <div class="dialog-form-item">
             <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
-            <label for="enable-auto-save">棋譜を自動で保存する</label>
+            <label for="enable-auto-save">{{
+              t.saveRecordAutomatically
+            }}</label>
           </div>
           <div class="dialog-form-item">
             <input id="human-is-front" ref="humanIsFront" type="checkbox" />
-            <label for="human-is-front">人を手前に表示する</label>
+            <label for="human-is-front">{{ t.adjustBoardToHumanPlayer }}</label>
           </div>
         </div>
       </div>
@@ -147,10 +162,10 @@
           class="dialog-button"
           @click="onStart()"
         >
-          対局開始
+          {{ t.startGame }}
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -158,6 +173,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import {
   ref,
@@ -214,6 +230,8 @@ export default defineComponent({
     const blackPlayerURI = ref("");
     const whitePlayerURI = ref("");
 
+    let defaultValueLoaded = false;
+    let defaultValueApplied = false;
     store.retainBussyState();
 
     onMounted(async () => {
@@ -224,6 +242,7 @@ export default defineComponent({
         whitePlayerURI.value = gameSetting.value.white.uri;
         showModalDialog(dialog.value);
         installHotKeyForDialog(dialog.value);
+        defaultValueLoaded = true;
       } catch (e) {
         store.pushError(e);
         store.destroyModalDialog();
@@ -236,30 +255,29 @@ export default defineComponent({
       uninstallHotKeyForDialog(dialog.value);
     });
 
-    let defaultValueApplied = false;
     onUpdated(() => {
-      if (!defaultValueApplied) {
-        hours.value.value = Math.floor(
-          gameSetting.value.timeLimit.timeSeconds / 3600
-        );
-        minutes.value.value =
-          Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
-        byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
-        increment.value.value = gameSetting.value.timeLimit.increment;
-        startPosition.value.value =
-          gameSetting.value.startPosition !== undefined
-            ? gameSetting.value.startPosition
-            : "current";
-        enableEngineTimeout.value.checked =
-          gameSetting.value.enableEngineTimeout;
-        maxMoves.value.value = gameSetting.value.maxMoves;
-        humanIsFront.value.checked = gameSetting.value.humanIsFront;
-        repeat.value.value = gameSetting.value.repeat;
-        swapPlayers.value.checked = gameSetting.value.swapPlayers;
-        enableComment.value.checked = gameSetting.value.enableComment;
-        enableAutoSave.value.checked = gameSetting.value.enableAutoSave;
-        defaultValueApplied = true;
+      if (!defaultValueLoaded || defaultValueApplied) {
+        return;
       }
+      hours.value.value = Math.floor(
+        gameSetting.value.timeLimit.timeSeconds / 3600
+      );
+      minutes.value.value =
+        Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
+      byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
+      increment.value.value = gameSetting.value.timeLimit.increment;
+      startPosition.value.value =
+        gameSetting.value.startPosition !== undefined
+          ? gameSetting.value.startPosition
+          : "current";
+      enableEngineTimeout.value.checked = gameSetting.value.enableEngineTimeout;
+      maxMoves.value.value = gameSetting.value.maxMoves;
+      humanIsFront.value.checked = gameSetting.value.humanIsFront;
+      repeat.value.value = gameSetting.value.repeat;
+      swapPlayers.value.checked = gameSetting.value.swapPlayers;
+      enableComment.value.checked = gameSetting.value.enableComment;
+      enableAutoSave.value.checked = gameSetting.value.enableAutoSave;
+      defaultValueApplied = true;
     });
 
     const buildPlayerSetting = (playerURI: string): PlayerSetting => {
@@ -339,6 +357,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       CommentBehavior,
       dialog,
       hours,

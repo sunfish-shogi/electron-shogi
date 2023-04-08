@@ -1,8 +1,8 @@
 import api, { API } from "@/renderer/ipc/api";
 import { onUSIBestMove, onUSIInfo, USIPlayer } from "@/renderer/players/usi";
 import { Record } from "@/common/shogi";
-import { timeLimitSetting } from "../../mock/game";
-import { usiEngineSettingWithPonder } from "../../mock/usi";
+import { timeLimitSetting } from "@/tests/mock/game";
+import { usiEngineSettingWithPonder } from "@/tests/mock/usi";
 
 jest.mock("@/renderer/ipc/api");
 

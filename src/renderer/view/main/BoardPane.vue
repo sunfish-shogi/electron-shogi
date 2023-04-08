@@ -5,17 +5,18 @@
       :board-image-type="appSetting.boardImage"
       :board-label-type="appSetting.boardLabelType"
       :max-size="maxSize"
-      :position="position"
+      :position="store.record.position"
       :last-move="lastMove"
       :flip="appSetting.boardFlipping"
-      :allow-move="allowMove"
-      :allow-edit="allowEdit"
+      :allow-move="store.isMovableByUser"
+      :allow-edit="store.appState === AppState.POSITION_EDITING"
       :black-player-name="blackPlayerName"
       :white-player-name="whitePlayerName"
       :black-player-time="clock?.black.time"
       :black-player-byoyomi="clock?.black.byoyomi"
       :white-player-time="clock?.white.time"
       :white-player-byoyomi="clock?.white.byoyomi"
+      :next-move-label="t.nextTurn"
       @resize="onResize"
       @move="onMove"
       @edit="onEdit"
@@ -28,19 +29,28 @@
             @click="onGame"
           >
             <ButtonIcon class="icon" :icon="Icon.GAME" />
-            対局
+            <span>{{ t.game }}</span>
+          </button>
+          <button
+            v-if="controlStates.showGameResults"
+            class="control-item"
+            @click="onShowGameResults"
+          >
+            <ButtonIcon class="icon" :icon="Icon.SCORE" />
+            <span>{{ t.displayGameResults }}</span>
           </button>
           <button
             v-if="controlStates.stop"
             class="control-item"
+            data-hotkey="Escape"
             @click="onStop"
           >
-            <ButtonIcon class="icon" :icon="Icon.STOP" data-hotkey="Escape" />
-            対局中断
+            <ButtonIcon class="icon" :icon="Icon.STOP" />
+            <span>{{ t.stopGame }}</span>
           </button>
           <button v-if="controlStates.win" class="control-item" @click="onWin">
             <ButtonIcon class="icon" :icon="Icon.CALL" />
-            勝ち宣言
+            <span>{{ t.declareWinning }}</span>
           </button>
           <button
             v-if="controlStates.resign"
@@ -48,19 +58,16 @@
             @click="onResign"
           >
             <ButtonIcon class="icon" :icon="Icon.RESIGN" />
-            投了
+            <span>{{ t.resign }}</span>
           </button>
           <button
             v-if="controlStates.research"
             class="control-item"
+            data-hotkey="Control+r"
             @click="onResearch"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.RESEARCH"
-              data-hotkey="Control+r"
-            />
-            検討
+            <ButtonIcon class="icon" :icon="Icon.RESEARCH" />
+            <span>{{ t.research }}</span>
           </button>
           <button
             v-if="controlStates.endResearch"
@@ -69,19 +76,16 @@
             @click="onEndResearch"
           >
             <ButtonIcon class="icon" :icon="Icon.END" />
-            検討終了
+            <span>{{ t.endResearch }}</span>
           </button>
           <button
             v-if="controlStates.analysis"
             class="control-item"
+            data-hotkey="Control+a"
             @click="onAnalysis"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.ANALYSIS"
-              data-hotkey="Control+a"
-            />
-            解析
+            <ButtonIcon class="icon" :icon="Icon.ANALYSIS" />
+            <span>{{ t.analysis }}</span>
           </button>
           <button
             v-if="controlStates.endAnalysis"
@@ -90,7 +94,7 @@
             @click="onEndAnalysis"
           >
             <ButtonIcon class="icon" :icon="Icon.STOP" />
-            解析中断
+            <span>{{ t.stopAnalysis }}</span>
           </button>
           <button
             v-if="controlStates.startEditPosition"
@@ -98,7 +102,7 @@
             @click="onStartEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.EDIT" />
-            局面編集
+            <span>{{ t.setupPosition }}</span>
           </button>
           <button
             v-if="controlStates.endEditPosition"
@@ -106,7 +110,7 @@
             @click="onEndEditPosition"
           >
             <ButtonIcon class="icon" :icon="Icon.CHECK" />
-            局面編集終了
+            <span>{{ t.completePositionSetup }}</span>
           </button>
           <button
             v-if="controlStates.initPosition"
@@ -114,62 +118,52 @@
             @click="onChangeTurn"
           >
             <ButtonIcon class="icon" :icon="Icon.SWAP" />
-            手番変更
+            <span>{{ t.changeTurn }}</span>
           </button>
           <button
             v-if="controlStates.initPosition"
             class="control-item"
             @click="onInitPosition"
           >
-            局面の初期化
+            <span>{{ t.initializePosition }}</span>
           </button>
         </div>
       </template>
       <template #left-control>
         <div ref="leftControl" class="control bottom">
-          <button class="control-item" @click="onOpenAppSettings">
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.SETTINGS"
-              data-hotkey="Control+,"
-            />
-            アプリ設定
+          <button
+            class="control-item"
+            data-hotkey="Control+,"
+            @click="onOpenAppSettings"
+          >
+            <ButtonIcon class="icon" :icon="Icon.SETTINGS" />
+            <span>{{ t.appSettings }}</span>
           </button>
           <button
             class="control-item"
+            data-hotkey="Control+."
             :disabled="!controlStates.engineSettings"
             @click="onOpenEngineSettings"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.ENGINE_SETTINGS"
-              data-hotkey="Control+."
-            />
-            エンジン設定
+            <ButtonIcon class="icon" :icon="Icon.ENGINE_SETTINGS" />
+            <span>{{ t.engineSettings }}</span>
           </button>
-          <button class="control-item" @click="onFlip">
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.FLIP"
-              data-hotkey="Control+t"
-            />
-            盤面反転
+          <button class="control-item" data-hotkey="Control+t" @click="onFlip">
+            <ButtonIcon class="icon" :icon="Icon.FLIP" />
+            <span>{{ t.flipBoard }}</span>
           </button>
           <button class="control-item" @click="onFileAction">
             <ButtonIcon class="icon" :icon="Icon.FILE" />
-            ファイル
+            <span>{{ t.file }}</span>
           </button>
           <button
             class="control-item"
+            data-hotkey="Control+d"
             :disabled="!controlStates.removeCurrentMove"
             @click="onRemoveCurrentMove"
           >
-            <ButtonIcon
-              class="icon"
-              :icon="Icon.DELETE"
-              data-hotkey="Control+d"
-            />
-            指し手削除
+            <ButtonIcon class="icon" :icon="Icon.DELETE" />
+            <span>{{ t.deleteMove }}</span>
           </button>
         </div>
       </template>
@@ -184,6 +178,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import {
   computed,
   defineComponent,
@@ -195,7 +190,7 @@ import {
 } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import { Move, PositionChange, RecordMetadataKey } from "@/common/shogi";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { AppState } from "@/common/control/state.js";
@@ -209,6 +204,7 @@ import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "BoardPane",
@@ -228,6 +224,7 @@ export default defineComponent({
   emits: ["resize"],
   setup(_, context) {
     const store = useStore();
+    const appSetting = useAppSetting();
     const rightControl = ref();
     const leftControl = ref();
     const isGameMenuVisible = ref(false);
@@ -275,6 +272,10 @@ export default defineComponent({
 
     const onGame = () => {
       isGameMenuVisible.value = true;
+    };
+
+    const onShowGameResults = () => {
+      store.showGameResults();
     };
 
     const onStop = () => {
@@ -330,7 +331,7 @@ export default defineComponent({
     };
 
     const onFlip = () => {
-      useStore().flipBoard();
+      appSetting.flipBoard();
     };
 
     const onFileAction = () => {
@@ -341,30 +342,24 @@ export default defineComponent({
       store.removeCurrentMove();
     };
 
-    const allowEdit = computed(
-      () => store.appState === AppState.POSITION_EDITING
-    );
-
-    const allowMove = computed(() => store.isMovableByUser);
-
-    const appSetting = computed(() => store.appSetting);
-
-    const position = computed(() => store.record.position);
-
     const lastMove = computed(() => {
       const move = store.record.current.move;
       return move instanceof Move ? move : undefined;
     });
 
     const blackPlayerName = computed(() => {
-      return store.record.metadata.getStandardMetadata(
-        RecordMetadataKey.BLACK_NAME
+      return (
+        store.record.metadata.getStandardMetadata(
+          RecordMetadataKey.BLACK_NAME
+        ) || t.sente
       );
     });
 
     const whitePlayerName = computed(() => {
-      return store.record.metadata.getStandardMetadata(
-        RecordMetadataKey.WHITE_NAME
+      return (
+        store.record.metadata.getStandardMetadata(
+          RecordMetadataKey.WHITE_NAME
+        ) || t.gote
       );
     });
 
@@ -390,6 +385,8 @@ export default defineComponent({
     const controlStates = computed(() => {
       return {
         game: store.appState === AppState.NORMAL,
+        showGameResults:
+          store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
         stop:
           store.appState === AppState.GAME ||
           store.appState === AppState.CSA_GAME,
@@ -413,13 +410,14 @@ export default defineComponent({
     });
 
     return {
+      t,
+      store,
       rightControl,
       leftControl,
       isGameMenuVisible,
       isFileMenuVisible,
       isInitialPositionMenuVisible,
       appSetting,
-      position,
       lastMove,
       blackPlayerName,
       whitePlayerName,
@@ -429,6 +427,7 @@ export default defineComponent({
       onMove,
       onEdit,
       onGame,
+      onShowGameResults,
       onStop,
       onWin,
       onResign,
@@ -445,9 +444,8 @@ export default defineComponent({
       onFlip,
       onFileAction,
       onRemoveCurrentMove,
-      allowEdit,
-      allowMove,
       Icon,
+      AppState,
     };
   },
 });
@@ -471,6 +469,9 @@ export default defineComponent({
   height: 19%;
   font-size: 100%;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
   line-height: 200%;
   padding: 0 5% 0 5%;
 }

@@ -2,10 +2,10 @@ import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
 import { GameResult } from "@/common/player";
 import { contextBridge, ipcRenderer } from "electron";
-import { Background, Renderer } from "../../common/ipc/channel";
+import { Background, Renderer } from "@/common/ipc/channel";
 import { Bridge } from "./api";
-import { LogLevel } from "../../common/log";
-import { CSAGameResult, CSASpecialMove } from "../../common/csa";
+import { LogLevel } from "@/common/log";
+import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 
 const api: Bridge = {
   // NOTICE:
@@ -17,8 +17,11 @@ const api: Bridge = {
   async getRecordPathFromProcArg(): Promise<string> {
     return await ipcRenderer.invoke(Background.GET_RECORD_PATH_FROM_PROC_ARG);
   },
-  updateMenuState(appState: AppState, bussy: boolean): void {
-    ipcRenderer.send(Background.UPDATE_MENU_STATE, appState, bussy);
+  updateAppState(appState: AppState, bussy: boolean): void {
+    ipcRenderer.send(Background.UPDATE_APP_STATE, appState, bussy);
+  },
+  openExplorer(path: string) {
+    ipcRenderer.send(Background.OPEN_EXPLORER, path);
   },
   async showOpenRecordDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);
@@ -43,6 +46,12 @@ const api: Bridge = {
       Background.SHOW_SELECT_DIRECTORY_DIALOG,
       defaultPath
     );
+  },
+  async exportCaptureAsPNG(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);
+  },
+  async exportCaptureAsJPEG(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_JPEG, json);
   },
   async loadAppSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_APP_SETTING);

@@ -1,5 +1,6 @@
 import { issueEngineURI } from "@/common/uri";
 import * as uri from "@/common/uri";
+import { t } from "@/common/i18n";
 
 // reserved option names
 export const USIPonder = "USI_Ponder";
@@ -22,6 +23,7 @@ export type USIEngineOptionType =
 export type USIEngineOption = {
   name: string;
   type: USIEngineOptionType;
+  order: number;
   default?: string | number;
   min?: number;
   max?: number;
@@ -77,7 +79,7 @@ export function duplicateEngineSetting(
 ): USIEngineSetting {
   const engine: USIEngineSetting = JSON.parse(JSON.stringify(src));
   engine.uri = issueEngineURI();
-  engine.name += " のコピー";
+  engine.name = t.copyOf(engine.name);
   return engine;
 }
 

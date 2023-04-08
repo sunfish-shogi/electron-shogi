@@ -130,7 +130,7 @@
           />
         </div>
       </div>
-      <div class="turn" :style="layout.turn.style">手番</div>
+      <div class="turn" :style="layout.turn.style">{{ nextMoveLabel }}</div>
       <div :style="layout.control.left.style">
         <slot name="left-control"></slot>
       </div>
@@ -156,7 +156,7 @@ import {
   BoardLabelType,
   PieceImageType,
 } from "@/common/settings/app";
-import { RectSize } from "./Types";
+import { RectSize } from "@/common/graphics";
 import { secondsToHMMSS } from "@/common/helpers/time";
 import LayoutBuilder from "./BoardLayout";
 
@@ -234,6 +234,11 @@ export default defineComponent({
       type: Number,
       required: false,
       default: undefined,
+    },
+    nextMoveLabel: {
+      type: String,
+      required: false,
+      default: "手番",
     },
   },
   emits: ["resize", "move", "edit"],

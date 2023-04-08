@@ -1,4 +1,3 @@
-import { TimeoutChain } from "@/common/helpers/testing";
 import api, { API } from "@/renderer/ipc/api";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAProtocolVersion } from "@/common/settings/csa";
@@ -12,15 +11,15 @@ import {
   onCSAStart,
 } from "@/renderer/store/csa";
 import { RecordManager } from "@/renderer/store/record";
-import { csaGameSetting, csaGameSummary, playerURI } from "../../mock/csa";
-import { createMockPlayer, createMockPlayerBuilder } from "../../mock/player";
+import { csaGameSetting, csaGameSummary, playerURI } from "@/tests/mock/csa";
+import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
 
 jest.mock("@/renderer/ipc/api");
 
 const mockAPI = api as jest.Mocked<API>;
 
-function createMockHandlers() {
-  return {
+function applyMockHandlers(manager: CSAGameManager) {
+  const handlers = {
     onSaveRecord: jest.fn().mockReturnValue(Promise.resolve()),
     onGameNext: jest.fn(),
     onGameEnd: jest.fn(),
@@ -31,10 +30,26 @@ function createMockHandlers() {
     onStopBeep: jest.fn(),
     onError: jest.fn(),
   };
+  manager
+    .on("saveRecord", handlers.onSaveRecord)
+    .on("gameNext", handlers.onGameNext)
+    .on("gameEnd", handlers.onGameEnd)
+    .on("flipBoard", handlers.onFlipBoard)
+    .on("pieceBeat", handlers.onPieceBeat)
+    .on("beepShort", handlers.onBeepShort)
+    .on("beepUnlimited", handlers.onBeepUnlimited)
+    .on("stopBeep", handlers.onStopBeep)
+    .on("error", handlers.onError);
+  return handlers;
 }
 
 describe("store/csa", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
   afterEach(() => {
+    jest.useRealTimers();
     jest.clearAllMocks();
   });
 
@@ -60,85 +75,76 @@ describe("store/csa", () => {
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
     });
-    const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
-    const manager = new CSAGameManager(
-      recordManager,
-      new Clock(),
-      new Clock(),
-      mockHandlers
-    );
-    return new TimeoutChain()
-      .next(() => manager.login(csaGameSetting, mockPlayerBuilder))
-      .next(() => {
-        expect(mockAPI.csaLogin).toBeCalledTimes(1);
-        expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
-        expect(mockAPI.csaAgree).toBeCalledTimes(0);
-        onCSAGameSummary(123, csaGameSummary);
-        expect(mockAPI.csaAgree).toBeCalledTimes(1);
-        expect(mockAPI.csaMove).toBeCalledTimes(0);
-        expect(mockPlayer.startSearch).toBeCalledTimes(0);
-        onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
-        expect(mockAPI.csaMove).toBeCalledTimes(1);
-        expect(mockAPI.csaMove.mock.calls[0][0]).toBe(123);
-        expect(mockAPI.csaMove.mock.calls[0][1]).toBe("+7776FU");
-        expect(mockPlayer.startSearch).toBeCalledTimes(1);
-        expect(mockPlayer.startPonder).toBeCalledTimes(0);
-        onCSAMove(123, "+7776FU", {
-          black: { time: 590 },
-          white: { time: 600 },
-        });
-        expect(mockAPI.csaMove).toBeCalledTimes(1);
-        expect(mockPlayer.startSearch).toBeCalledTimes(1);
-        expect(mockPlayer.startPonder).toBeCalledTimes(1);
-        onCSAMove(123, "-3334FU", {
-          black: { time: 590 },
-          white: { time: 580 },
-        });
-        expect(mockAPI.csaMove).toBeCalledTimes(2);
-        expect(mockAPI.csaMove.mock.calls[1][0]).toBe(123);
-        expect(mockAPI.csaMove.mock.calls[1][1]).toBe("+2726FU");
-        expect(mockPlayer.startSearch).toBeCalledTimes(2);
-        expect(mockPlayer.startPonder).toBeCalledTimes(1);
-        onCSAMove(123, "+2726FU", {
-          black: { time: 570 },
-          white: { time: 580 },
-        });
-        expect(mockAPI.csaMove).toBeCalledTimes(2);
-        expect(mockAPI.csaResign).toBeCalledTimes(0);
-        expect(mockPlayer.startSearch).toBeCalledTimes(2);
-        expect(mockPlayer.startPonder).toBeCalledTimes(2);
-        onCSAMove(123, "-8384FU", {
-          black: { time: 570 },
-          white: { time: 560 },
-        });
-        expect(mockAPI.csaLogout).toBeCalledTimes(0);
-        expect(mockAPI.csaMove).toBeCalledTimes(2);
-        expect(mockAPI.csaResign).toBeCalledTimes(1);
-        expect(mockPlayer.startSearch).toBeCalledTimes(3);
-        expect(mockPlayer.startPonder).toBeCalledTimes(2);
-        expect(mockPlayer.close).toBeCalledTimes(0);
-        expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
-        onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
-      })
-      .next(() => {
-        expect(mockAPI.csaLogout).toBeCalledTimes(1);
-        expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(123);
-        expect(mockPlayer.close).toBeCalledTimes(1);
-        expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
-        expect(mockHandlers.onError).toBeCalledTimes(0);
-        expect(recordManager.record.moves).toHaveLength(6);
-        expect(recordManager.record.moves[1].comment).toBe(
-          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n"
-        );
-        expect(recordManager.record.moves[2].comment).toBe("");
-        expect(recordManager.record.moves[3].comment).toBe(
-          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n"
-        );
-        expect(recordManager.record.moves[4].comment).toBe("");
-        expect(recordManager.record.moves[5].move).toBe(SpecialMove.RESIGN);
-      })
-      .invoke();
+    const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+    const mockHandlers = applyMockHandlers(manager);
+    return manager.login(csaGameSetting, mockPlayerBuilder).then(() => {
+      expect(mockAPI.csaLogin).toBeCalledTimes(1);
+      expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+      expect(mockAPI.csaAgree).toBeCalledTimes(0);
+      onCSAGameSummary(123, csaGameSummary);
+      expect(mockAPI.csaAgree).toBeCalledTimes(1);
+      expect(mockAPI.csaMove).toBeCalledTimes(0);
+      expect(mockPlayer.startSearch).toBeCalledTimes(0);
+      onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
+      expect(mockAPI.csaMove).toBeCalledTimes(1);
+      expect(mockAPI.csaMove.mock.calls[0][0]).toBe(123);
+      expect(mockAPI.csaMove.mock.calls[0][1]).toBe("+7776FU");
+      expect(mockPlayer.startSearch).toBeCalledTimes(1);
+      expect(mockPlayer.startPonder).toBeCalledTimes(0);
+      onCSAMove(123, "+7776FU", {
+        black: { time: 590 },
+        white: { time: 600 },
+      });
+      expect(mockAPI.csaMove).toBeCalledTimes(1);
+      expect(mockPlayer.startSearch).toBeCalledTimes(1);
+      expect(mockPlayer.startPonder).toBeCalledTimes(1);
+      onCSAMove(123, "-3334FU", {
+        black: { time: 590 },
+        white: { time: 580 },
+      });
+      expect(mockAPI.csaMove).toBeCalledTimes(2);
+      expect(mockAPI.csaMove.mock.calls[1][0]).toBe(123);
+      expect(mockAPI.csaMove.mock.calls[1][1]).toBe("+2726FU");
+      expect(mockPlayer.startSearch).toBeCalledTimes(2);
+      expect(mockPlayer.startPonder).toBeCalledTimes(1);
+      onCSAMove(123, "+2726FU", {
+        black: { time: 570 },
+        white: { time: 580 },
+      });
+      expect(mockAPI.csaMove).toBeCalledTimes(2);
+      expect(mockAPI.csaResign).toBeCalledTimes(0);
+      expect(mockPlayer.startSearch).toBeCalledTimes(2);
+      expect(mockPlayer.startPonder).toBeCalledTimes(2);
+      onCSAMove(123, "-8384FU", {
+        black: { time: 570 },
+        white: { time: 560 },
+      });
+      expect(mockAPI.csaLogout).toBeCalledTimes(0);
+      expect(mockAPI.csaMove).toBeCalledTimes(2);
+      expect(mockAPI.csaResign).toBeCalledTimes(1);
+      expect(mockPlayer.startSearch).toBeCalledTimes(3);
+      expect(mockPlayer.startPonder).toBeCalledTimes(2);
+      expect(mockPlayer.close).toBeCalledTimes(0);
+      expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
+      onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
+      jest.runOnlyPendingTimers();
+      expect(mockAPI.csaLogout).toBeCalledTimes(1);
+      expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(123);
+      expect(mockPlayer.close).toBeCalledTimes(1);
+      expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
+      expect(mockHandlers.onError).toBeCalledTimes(0);
+      expect(recordManager.record.moves).toHaveLength(6);
+      expect(recordManager.record.moves[1].comment).toBe(
+        "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n"
+      );
+      expect(recordManager.record.moves[2].comment).toBe("");
+      expect(recordManager.record.moves[3].comment).toBe(
+        "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n"
+      );
+      expect(recordManager.record.moves[4].comment).toBe("");
+      expect(recordManager.record.moves[5].move).toBe(SpecialMove.RESIGN);
+    });
   });
 
   it("CSAManager/resign/twice", () => {
@@ -163,25 +169,18 @@ describe("store/csa", () => {
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
     });
-    const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
-    const manager = new CSAGameManager(
-      recordManager,
-      new Clock(),
-      new Clock(),
-      mockHandlers
-    );
-    return new TimeoutChain()
-      .next(() =>
-        manager.login(
-          {
-            ...csaGameSetting,
-            repeat: 2,
-          },
-          mockPlayerBuilder
-        )
+    const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+    const mockHandlers = applyMockHandlers(manager);
+    return manager
+      .login(
+        {
+          ...csaGameSetting,
+          repeat: 2,
+        },
+        mockPlayerBuilder
       )
-      .next(() => {
+      .then(() => {
         expect(mockHandlers.onGameNext).toBeCalledTimes(1);
         onCSAGameSummary(123, csaGameSummary);
         onCSAStart(123, { black: { time: 600 }, white: { time: 600 } });
@@ -204,8 +203,12 @@ describe("store/csa", () => {
         expect(mockAPI.csaLogin).toBeCalledTimes(1);
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
         expect(mockAPI.csaLogin).toBeCalledTimes(1);
+        jest.runOnlyPendingTimers();
       })
-      .next(() => {
+      .then(() => {
+        // waiting login
+      })
+      .then(() => {
         expect(mockHandlers.onGameNext).toBeCalledTimes(2);
         expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
@@ -232,21 +235,18 @@ describe("store/csa", () => {
           white: { time: 560 },
         });
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
-      })
-      .next(() => {
+        jest.runOnlyPendingTimers();
         expect(mockAPI.csaLogout).toBeCalledTimes(2);
         expect(mockPlayer.close).toBeCalledTimes(2);
         expect(mockHandlers.onGameNext).toBeCalledTimes(2);
         expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
-      })
-      .invoke();
+      });
   });
 
   describe("CSAManager/onPlayerMove", () => {
     mockAPI.csaMove.mockResolvedValue();
-    const mockHandlers = createMockHandlers();
     const recordManager = new RecordManager();
     const move = new Move(
       new Square(7, 7),
@@ -291,8 +291,7 @@ describe("store/csa", () => {
       const manager = new CSAGameManager(
         recordManager,
         new Clock(),
-        new Clock(),
-        mockHandlers
+        new Clock()
       );
       manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121;
       manager["onPlayerMove"](move, info);
@@ -309,8 +308,7 @@ describe("store/csa", () => {
       const manager = new CSAGameManager(
         recordManager,
         new Clock(),
-        new Clock(),
-        mockHandlers
+        new Clock()
       );
       manager["_setting"].server.protocolVersion =
         CSAProtocolVersion.V121_FLOODGATE;

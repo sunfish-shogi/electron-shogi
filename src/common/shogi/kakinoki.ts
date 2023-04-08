@@ -12,6 +12,13 @@ import {
   RecordMetadata,
   RecordMetadataKey,
   Square,
+  InvalidHandicapError,
+  InvalidBoardError,
+  InvalidHandPieceError,
+  InvalidMoveError,
+  InvalidMoveNumberError,
+  InvalidDestinationError,
+  InvalidLineError,
 } from ".";
 import { Board, InitialPositionType } from "./board";
 import { Hand, ImmutableHand } from "./hand";
@@ -52,7 +59,7 @@ const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
   作品番号: RecordMetadataKey.OPUS_NO,
   作品名: RecordMetadataKey.OPUS_NAME,
   作者: RecordMetadataKey.AUTHOR,
-  発表誌: RecordMetadataKey.PUBLISHED_ON,
+  発表誌: RecordMetadataKey.PUBLISHED_BY,
   発表年月: RecordMetadataKey.PUBLISHED_AT,
   出典: RecordMetadataKey.SOURCE,
   手数: RecordMetadataKey.LENGTH,
@@ -80,7 +87,7 @@ const metadataNameMap = {
   opusNo: "作品番号",
   opusName: "作品名",
   author: "作者",
-  publishedOn: "発表誌",
+  publishedBy: "発表誌",
   publishedAt: "発表年月",
   source: "出典",
   length: "手数",
@@ -236,7 +243,7 @@ function readHandicap(position: Position, data: string): Error | undefined {
       position.reset(InitialPositionType.EMPTY);
       return;
   }
-  return new Error("不正なデータ:" + data);
+  return new InvalidHandicapError(data);
 }
 
 const stringToSpecialMove: { [move: string]: SpecialMove } = {
@@ -250,7 +257,7 @@ const stringToSpecialMove: { [move: string]: SpecialMove } = {
   反則負け: SpecialMove.FOUL_LOSE,
   入玉勝ち: SpecialMove.ENTERING_OF_KING,
   不戦勝: SpecialMove.WIN_BY_DEFAULT,
-  不戦敗: SpecialMove.LOSS_BY_DEFAULT,
+  不戦敗: SpecialMove.LOSE_BY_DEFAULT,
 };
 
 const moveRegExp =
@@ -263,12 +270,12 @@ const specialMoveRegExp =
 
 function readBoard(board: Board, data: string): Error | undefined {
   if (data.length < 21) {
-    return new Error("不正な盤面:" + data);
+    return new InvalidBoardError(data);
   }
   const rankStr = data[20];
   const rank = kanjiToNumber(rankStr);
   if (!rank) {
-    return new Error("不正な盤面:" + data);
+    return new InvalidBoardError(data);
   }
   for (let x = 0; x < 9; x += 1) {
     const file = 9 - x;
@@ -296,7 +303,7 @@ function readHand(hand: Hand, data: string): Error | undefined {
     const pieceType = stringToPieceType(pieceStr);
     const n = kanjiToNumber(numberStr) || 1;
     if (!pieceType) {
-      return new Error("不正な持ち駒: " + section);
+      return new InvalidHandPieceError(section);
     }
     hand.add(pieceType, n);
   }
@@ -329,7 +336,7 @@ function readMove(record: Record, data: string): Error | undefined {
 
   result = moveRegExp.exec(data);
   if (!result) {
-    return new Error("不正な指し手形式:" + data);
+    return new InvalidMoveError(data);
   }
   const num = Number(result[1]);
   const toStr = result[2];
@@ -339,14 +346,14 @@ function readMove(record: Record, data: string): Error | undefined {
   const time = result[6];
 
   if (num === 0) {
-    return new Error("不正な手数:" + data);
+    return new InvalidMoveNumberError(data);
   }
   record.goto(num - 1);
   let to: Square;
   let from: Square | PieceType;
   if (toStr.startsWith("同")) {
     if (!(record.current.move instanceof Move)) {
-      return new Error("不明な移動先: " + data);
+      return new InvalidDestinationError(data);
     }
     to = record.current.move.to;
   } else {
@@ -363,7 +370,7 @@ function readMove(record: Record, data: string): Error | undefined {
   }
   let move = record.position.createMove(from, to);
   if (!move) {
-    return new Error("不正な指し手: " + data);
+    return new InvalidMoveError(data);
   }
   if (promStr === "成") {
     move = move.withPromote();
@@ -388,7 +395,7 @@ export function importKakinoki(data: string): Record | Error {
     }
     const parsed = parseLine(line);
     if (inMoveSection && parsed.isPosition) {
-      return new Error("不正なデータ: " + line);
+      return new InvalidLineError(line);
     }
     let e: Error | undefined;
     switch (parsed.type) {
@@ -469,7 +476,7 @@ const specialMoveToString = {
   foulLose: "反則負け",
   enteringOfKing: "入玉勝ち",
   winByDefault: "不戦勝",
-  lossByDefault: "不戦敗",
+  loseByDefault: "不戦敗",
 };
 
 type KakinokiExportOptions = {

@@ -5,47 +5,51 @@
         <div class="group">
           <button class="close" @click="onClose">
             <ButtonIcon class="icon" :icon="Icon.CLOSE" />
-            <div class="label">戻る</div>
+            <div class="label">{{ t.back }}</div>
           </button>
         </div>
         <div class="group">
           <button :disabled="!states.newFile" @click="onNewFile">
             <ButtonIcon class="icon" :icon="Icon.FILE" />
-            <div class="label">初期化</div>
+            <div class="label">{{ t.clear }}</div>
           </button>
           <button :disabled="!states.open" @click="onOpen">
             <ButtonIcon class="icon" :icon="Icon.OPEN" />
-            <div class="label">開く</div>
+            <div class="label">{{ t.open }}</div>
           </button>
-          <button :disabled="!states.saveAs" @click="onSave">
+          <button :disabled="!states.save" @click="onSave">
             <ButtonIcon class="icon" :icon="Icon.SAVE" />
-            <div class="label">上書き保存</div>
+            <div class="label">{{ t.saveOverwrite }}</div>
           </button>
-          <button :disabled="!states.save" @click="onSaveAs">
+          <button :disabled="!states.saveAs" @click="onSaveAs">
             <ButtonIcon class="icon" :icon="Icon.SAVE_AS" />
-            <div class="label">保存</div>
+            <div class="label">{{ t.saveAs }}</div>
+          </button>
+          <button :disabled="!states.exportImage" @click="onExportImage">
+            <ButtonIcon class="icon" :icon="Icon.GRID" />
+            <div class="label">{{ t.positionImage }}</div>
           </button>
         </div>
         <div class="group">
           <button @click="onCopyKIF">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
-            <div class="label">コピー・KIF</div>
+            <div class="label">{{ t.copyAsKIF }}</div>
           </button>
           <button @click="onCopyCSA">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
-            <div class="label">コピー・CSA</div>
+            <div class="label">{{ t.copyAsCSA }}</div>
           </button>
           <button @click="onCopyUSI">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
-            <div class="label">コピー・USI</div>
+            <div class="label">{{ t.copyAsUSI }}</div>
           </button>
           <button @click="onCopySFEN">
             <ButtonIcon class="icon" :icon="Icon.COPY" />
-            <div class="label">コピー・SFEN</div>
+            <div class="label">{{ t.copyAsSFEN }}</div>
           </button>
           <button :disabled="!states.paste" @click="onPaste">
             <ButtonIcon class="icon" :icon="Icon.PASTE" />
-            <div class="label">貼り付け</div>
+            <div class="label">{{ t.paste }}</div>
           </button>
         </div>
       </div>
@@ -54,6 +58,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { computed, defineComponent, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
@@ -92,6 +97,10 @@ export default defineComponent({
       store.saveRecord();
       context.emit("close");
     };
+    const onExportImage = () => {
+      store.showExportBoardImageDialog();
+      context.emit("close");
+    };
     const onCopyKIF = () => {
       store.copyRecordKIF();
       context.emit("close");
@@ -118,10 +127,12 @@ export default defineComponent({
         open: store.appState === AppState.NORMAL,
         save: store.appState === AppState.NORMAL,
         saveAs: store.appState === AppState.NORMAL,
+        exportImage: store.appState === AppState.NORMAL,
         paste: store.appState === AppState.NORMAL,
       };
     });
     return {
+      t,
       dialog,
       Icon,
       onClose,
@@ -129,6 +140,7 @@ export default defineComponent({
       onOpen,
       onSave,
       onSaveAs,
+      onExportImage,
       onCopyKIF,
       onCopyCSA,
       onCopyUSI,

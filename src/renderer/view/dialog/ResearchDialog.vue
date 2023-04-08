@@ -1,7 +1,7 @@
 <template>
   <div>
     <dialog ref="dialog" class="root">
-      <div class="dialog-title">検討</div>
+      <div class="dialog-title">{{ t.research }}</div>
       <div class="dialog-form-area">
         <div class="dialog-form-area">
           <PlayerSelector
@@ -38,11 +38,11 @@
             class="remove-button"
             @click="secondaryEngineURIs.splice(index, 1)"
           >
-            削除
+            {{ t.remove }}
           </button>
         </div>
         <button @click="secondaryEngineURIs.push('')">
-          {{ secondaryEngineURIs.length + 2 }} 個目のエンジンを追加
+          {{ t.addNthEngine(secondaryEngineURIs.length + 2) }}
         </button>
       </div>
       <div class="dialog-main-buttons">
@@ -52,10 +52,10 @@
           class="dialog-button"
           @click="onStart()"
         >
-          検討開始
+          {{ t.startResearch }}
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -63,6 +63,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api from "@/renderer/ipc/api";
 import {
@@ -147,6 +148,7 @@ export default defineComponent({
     };
 
     return {
+      t,
       dialog,
       engineSettings,
       engineURI,

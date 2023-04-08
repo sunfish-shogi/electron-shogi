@@ -60,7 +60,7 @@ dialog::backdrop {
 .dialog-form-item-label {
   text-align: left;
   margin-right: 5px;
-  width: 70px;
+  width: 90px;
 }
 
 .dialog-form-item-label-wide {
@@ -100,6 +100,11 @@ dialog::backdrop {
   padding: 5px 25px 5px 25px;
 }
 
+.dialog-thin-button {
+  margin: 0px 5px 0px 5px;
+  padding: 2px 25px 2px 25px;
+}
+
 .dialog-wide-button {
   width: 100%;
   margin: 5px 0px 5px 0px;
@@ -114,6 +119,9 @@ dialog .message-box {
 
 dialog .icon {
   width: 36px;
+}
+
+dialog .message-box .icon {
   margin-right: 15px;
 }
 
@@ -125,8 +133,12 @@ dialog button {
 
 dialog button .icon {
   width: 1.4em;
-  margin-right: 5px;
   vertical-align: top;
+}
+
+dialog button .icon + span {
+  margin-left: 5px;
+  line-height: 1.4em;
 }
 
 dialog.menu {

@@ -81,6 +81,13 @@ img.shadow {
   box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.5);;
 }
 
+img.large-icon {
+  width: auto;
+  height: 1.4em;
+  vertical-align: -0.3em;
+  margin: 0px;
+}
+
 img.icon {
   width: auto;
   height: 1.2em;
@@ -166,7 +173,7 @@ h4 {
 }
 
 header .link-buttons {
-  font-size: 1.4em;
+  font-size: 1.2em;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;

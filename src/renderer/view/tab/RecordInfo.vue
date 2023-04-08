@@ -2,8 +2,10 @@
   <div>
     <div ref="root" class="root" :style="{ height: `${size.height}px` }">
       <div class="element">
-        <div class="key">ファイル</div>
-        <div class="value">{{ filePath || "（新規棋譜）" }}</div>
+        <div class="key">{{ t.file }}</div>
+        <div class="value">
+          {{ store.recordFilePath || t.newRecordWithBrackets }}
+        </div>
       </div>
       <div v-for="element in list" :key="element.key" class="element">
         <div class="key">{{ element.displayName }}</div>
@@ -18,13 +20,11 @@
 </template>
 
 <script lang="ts">
-import {
-  getStandardMetadataDisplayName,
-  RecordMetadataKey,
-} from "@/common/shogi";
+import { getRecordMetadataName, t } from "@/common/i18n";
+import { RecordMetadataKey } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { computed, defineComponent, onMounted, Ref, ref } from "vue";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 
 export default defineComponent({
   name: "RecordComment",
@@ -37,13 +37,12 @@ export default defineComponent({
   setup() {
     const root: Ref = ref(null);
     const store = useStore();
-    const filePath = computed(() => store.recordFilePath);
     const list = computed(() => {
       return Object.values(RecordMetadataKey).map((key) => {
         const metadata = store.record.metadata;
         return {
           key: key,
-          displayName: getStandardMetadataDisplayName(key),
+          displayName: getRecordMetadataName(key),
           value: metadata.getStandardMetadata(key) || "",
         };
       });
@@ -67,8 +66,9 @@ export default defineComponent({
     };
 
     return {
+      t,
       root,
-      filePath,
+      store,
       list,
       change,
     };
@@ -92,12 +92,12 @@ export default defineComponent({
   flex-direction: row;
 }
 .key {
-  width: 100px;
+  width: 150px;
 }
 div.value {
-  width: calc(100% - 100px);
+  width: calc(100% - 150px);
 }
 input.value {
-  width: min(500px, calc(100% - 150px));
+  width: min(500px, calc(100% - 200px));
 }
 </style>

@@ -5,9 +5,9 @@
         <ButtonIcon class="icon" :icon="Icon.ERROR" />
         <div class="items">
           <div class="notice">
-            {{ errors.length }} 種類のエラーが発生しました。
+            {{ t.errorsOccurred(store.errors.length) }}
           </div>
-          <div v-for="(error, index) in errors" :key="index" class="item">
+          <div v-for="(error, index) in store.errors" :key="index" class="item">
             <p class="index">
               {{ index + 1 }}
               <span v-if="error.count >= 2">({{ error.count }} 回)</span>
@@ -18,7 +18,7 @@
       </div>
       <div class="dialog-main-buttons">
         <button autofocus data-hotkey="Escape" @click="onClose()">
-          閉じる
+          {{ t.close }}
         </button>
       </div>
     </dialog>
@@ -26,15 +26,9 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  Ref,
-} from "vue";
+import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { Icon } from "@/renderer/assets/icons";
@@ -61,15 +55,14 @@ export default defineComponent({
       uninstallHotKeyForDialog(dialog.value);
     });
 
-    const errors = computed(() => store.errors);
-
     const onClose = () => {
       store.clearErrors();
     };
 
     return {
+      t,
       dialog,
-      errors,
+      store,
       onClose,
       Icon,
     };

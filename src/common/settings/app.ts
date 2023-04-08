@@ -1,3 +1,6 @@
+import { Language } from "@/common/i18n";
+import { LogLevel } from "@/common/log";
+
 export enum Thema {
   STANDARD = "standard",
   CHERRY_BLOSSOM = "cherry-blossom",
@@ -54,7 +57,13 @@ export enum ClockSoundTarget {
   ONLY_USER = "onlyUser",
 }
 
+export enum PositionImageStyle {
+  BOOK = "book",
+  GAME = "game",
+}
+
 export type AppSetting = {
+  language: Language;
   thema: Thema;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
@@ -72,6 +81,7 @@ export type AppSetting = {
   bottomLeftPaneWidthPercentage: number;
   returnCode: string;
   autoSaveDirectory: string;
+  translateEngineOptionName: boolean;
   engineTimeoutSeconds: number;
   evaluationViewFrom: EvaluationViewFrom;
   coefficientInSigmoid: number;
@@ -84,9 +94,14 @@ export type AppSetting = {
   enableAppLog: boolean;
   enableUSILog: boolean;
   enableCSALog: boolean;
+  logLevel: LogLevel;
+  positionImageStyle: PositionImageStyle;
+  positionImageSize: number;
+  positionImageHeader: string;
 };
 
 export type AppSettingUpdate = {
+  language?: Language;
   thema?: Thema;
   pieceImage?: PieceImageType;
   boardImage?: BoardImageType;
@@ -104,6 +119,7 @@ export type AppSettingUpdate = {
   bottomLeftPaneWidthPercentage?: number;
   returnCode?: string;
   autoSaveDirectory?: string;
+  translateEngineOptionName?: boolean;
   engineTimeoutSeconds?: number;
   evaluationViewFrom?: EvaluationViewFrom;
   coefficientInSigmoid?: number;
@@ -116,6 +132,10 @@ export type AppSettingUpdate = {
   enableAppLog?: boolean;
   enableUSILog?: boolean;
   enableCSALog?: boolean;
+  logLevel?: LogLevel;
+  positionImageStyle?: PositionImageStyle;
+  positionImageSize?: number;
+  positionImageHeader?: string;
 };
 
 export function buildUpdatedAppSetting(
@@ -159,6 +179,7 @@ export function defaultAppSetting(opt?: {
   autoSaveDirectory?: string;
 }): AppSetting {
   return {
+    language: Language.JA,
     thema: Thema.STANDARD,
     pieceImage: PieceImageType.HITOMOJI,
     boardImage: BoardImageType.RESIN2,
@@ -176,6 +197,7 @@ export function defaultAppSetting(opt?: {
     bottomLeftPaneWidthPercentage: 60,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
+    translateEngineOptionName: true,
     engineTimeoutSeconds: 10,
     evaluationViewFrom: EvaluationViewFrom.EACH,
     coefficientInSigmoid: 600,
@@ -188,6 +210,10 @@ export function defaultAppSetting(opt?: {
     enableAppLog: false,
     enableUSILog: false,
     enableCSALog: false,
+    logLevel: LogLevel.INFO,
+    positionImageStyle: PositionImageStyle.BOOK,
+    positionImageSize: 500,
+    positionImageHeader: "",
   };
 }
 

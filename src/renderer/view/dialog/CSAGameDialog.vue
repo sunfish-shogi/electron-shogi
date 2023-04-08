@@ -1,17 +1,17 @@
 <template>
   <div>
     <dialog ref="dialog" class="root">
-      <div class="dialog-title">通信対局（CSA プロトコル）</div>
+      <div class="dialog-title">{{ t.csaProtocolOnlineGame }}</div>
       <div class="dialog-scroll-area">
         <div v-if="!logEnabled" class="dialog-form-area dialog-form-warning">
           <div class="dialog-form-note">
-            一部のログが無効になっています。
-            CSAプロトコルを使用した対局では各種ログの出力を推奨します。
-            アプリ設定からログを有効にしてアプリを再起動してください。
+            {{ t.someLogsDisabled }}
+            {{ t.logsRecommendedForCSAProtocol }}
+            {{ t.pleaseEnableLogsAndRestart }}
           </div>
         </div>
         <div class="dialog-form-area">
-          <div>プレイヤー</div>
+          <div>{{ t.player }}</div>
           <PlayerSelector
             :player-uri="playerURI"
             :contains-human="true"
@@ -25,10 +25,12 @@
         </div>
         <div class="dialog-form-area">
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">履歴から選ぶ</div>
+            <div class="dialog-form-item-label-wide">
+              {{ t.selectFromHistory }}
+            </div>
             <select class="long-text" value="0" @change="onChangeHistory">
               <option v-if="history.serverHistory.length === 0" value="0">
-                履歴がありません
+                {{ t.noHistory }}
               </option>
               <option
                 v-for="(server, index) in history.serverHistory"
@@ -41,7 +43,7 @@
           </div>
           <hr />
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">バージョン</div>
+            <div class="dialog-form-item-label-wide">{{ t.version }}</div>
             <select
               ref="protocolVersion"
               class="long-text"
@@ -49,10 +51,10 @@
               @change="onChangeProtocolVersion"
             >
               <option :value="CSAProtocolVersion.V121">
-                CSAプロトコル1.2.1 標準
+                {{ t.csaProtocolV121 }}
               </option>
               <option :value="CSAProtocolVersion.V121_FLOODGATE">
-                CSAプロトコル1.2.1 読み筋コメント付き
+                {{ t.csaProtocolV121WithPVComment }}
               </option>
             </select>
           </div>
@@ -61,7 +63,7 @@
             class="dialog-form-area dialog-form-item dialog-form-warning"
           >
             <div class="dialog-form-note">
-              標準のCSAプロトコルでは評価値や読み筋が送信されません。
+              {{ t.notSendPVOnStandardCSAProtocol }}
             </div>
           </div>
           <div
@@ -69,11 +71,11 @@
             class="dialog-form-area dialog-form-item dialog-form-warning"
           >
             <div class="dialog-form-note">
-              Floodgate仕様で評価値と読み筋を送信します。WCSCで使用しないでください。
+              {{ t.sendPVDoNotUseOnWCSC }}
             </div>
           </div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">接続先ホスト</div>
+            <div class="dialog-form-item-label-wide">{{ t.hostToConnect }}</div>
             <input
               ref="host"
               class="long-text"
@@ -87,7 +89,7 @@
             </datalist>
           </div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">ポート番号</div>
+            <div class="dialog-form-item-label-wide">{{ t.portNumber }}</div>
             <input
               ref="port"
               class="number"
@@ -103,7 +105,7 @@
             <input ref="id" class="long-text" type="text" />
           </div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">パスワード</div>
+            <div class="dialog-form-item-label-wide">{{ t.password }}</div>
             <input ref="password" class="long-text" type="password" />
           </div>
           <div class="dialog-form-item">
@@ -112,16 +114,18 @@
               type="checkbox"
               @change="onTogglePasswordVisibility"
             />
-            <label for="show-password">パスワードを表示する</label>
+            <label for="show-password">{{ t.showPassword }}</label>
           </div>
           <div class="dialog-form-area dialog-form-item dialog-form-warning">
             <div v-if="isEncryptionAvailable" class="dialog-form-note">
-              CSAプロトコルの規格上パスワードは平文で送信されます。
+              {{ t.csaProtocolSendPlaintextPassword }}
             </div>
             <div v-else class="dialog-form-note">
-              OSの暗号化機能が利用できないため、入力したパスワードは平文で保存されます。
-              保存したくない場合は「履歴に保存する」のチェックを外してください。
-              なお、履歴の保存に関係なくCSAプロトコルの規格上パスワードは平文で送信されます。
+              {{
+                t.passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable
+              }}
+              {{ t.pleaseUncheckSaveHistoryIfNotWantSave }}
+              {{ t.csaProtocolSendPlaintextPasswordRegardlessOfHistory }}
             </div>
           </div>
           <div class="dialog-form-item">
@@ -132,30 +136,34 @@
               checked
             />
             <label for="save-history">
-              履歴に保存する（最新{{ maxServerHistoryLenght }}件まで）
+              {{ t.saveHistory }} ({{ t.keepLatest(maxServerHistoryLenght) }})
             </label>
           </div>
         </div>
         <div class="dialog-form-area">
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide number">連続対局</div>
+            <div class="dialog-form-item-label-wide number">
+              {{ t.gameRepetition }}
+            </div>
             <input ref="repeat" class="number" type="number" min="1" />
           </div>
           <div class="dialog-form-item">
             <input id="auto-relogin" ref="autoRelogin" type="checkbox" />
-            <label for="auto-relogin">自動で再ログインする</label>
+            <label for="auto-relogin">{{ t.autoRelogin }}</label>
           </div>
           <div class="dialog-form-item">
             <input id="enable-comment" ref="enableComment" type="checkbox" />
-            <label for="enable-comment">コメントを出力する</label>
+            <label for="enable-comment">{{ t.outputComments }}</label>
           </div>
           <div class="dialog-form-item">
             <input id="enable-auto-save" ref="enableAutoSave" type="checkbox" />
-            <label for="enable-auto-save">棋譜を自動で保存する</label>
+            <label for="enable-auto-save">{{
+              t.saveRecordAutomatically
+            }}</label>
           </div>
           <div class="dialog-form-item">
             <input id="auto-flip" ref="autoFlip" type="checkbox" />
-            <label for="auto-flip">盤面の向きを自動で調整する</label>
+            <label for="auto-flip">{{ t.adjustBoardAutomatically }}</label>
           </div>
         </div>
       </div>
@@ -166,10 +174,10 @@
           class="dialog-button"
           @click="onStart()"
         >
-          対局開始
+          {{ t.startGame }}
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="onCancel()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -177,6 +185,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import {
   ref,
@@ -207,6 +216,7 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export default defineComponent({
   name: "CSAGameDialog",
@@ -357,14 +367,16 @@ export default defineComponent({
     };
 
     const logEnabled = computed(() => {
+      const appSetting = useAppSetting();
       return (
-        store.appSetting.enableCSALog &&
-        store.appSetting.enableAppLog &&
-        store.appSetting.enableUSILog
+        appSetting.enableCSALog &&
+        appSetting.enableAppLog &&
+        appSetting.enableUSILog
       );
     });
 
     return {
+      t,
       CSAProtocolVersion,
       maxServerHistoryLenght,
       dialog,

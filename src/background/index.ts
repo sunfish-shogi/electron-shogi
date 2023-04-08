@@ -3,7 +3,11 @@
 import path from "path";
 import { app, protocol, BrowserWindow, session } from "electron";
 import { getAppState, sendError, setup } from "@/background/ipc";
-import { loadWindowSetting, saveWindowSetting } from "@/background/settings";
+import {
+  loadAppSetting,
+  loadWindowSetting,
+  saveWindowSetting,
+} from "@/background/settings";
 import { buildWindowSetting } from "@/common/settings/window";
 import { getAppLogger, shutdownLoggers } from "@/background/log";
 import { quitAll as usiQuitAll } from "@/background/usi";
@@ -15,6 +19,7 @@ import {
   isProduction,
   isTest,
 } from "@/background/environment";
+import { setLanguage, t } from "@/common/i18n";
 
 getAppLogger().info("start main process");
 getAppLogger().info("process argv: %s", process.argv.join(" "));
@@ -23,6 +28,8 @@ getAppLogger().info("process argv: %s", process.argv.join(" "));
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
+
+setLanguage(loadAppSetting().language);
 
 function createWindow() {
   let setting = loadWindowSetting();
@@ -51,7 +58,7 @@ function createWindow() {
   win.on("close", (event) => {
     if (getAppState() === AppState.CSA_GAME) {
       event.preventDefault();
-      sendError(new Error("CSAプロトコル使用中はアプリを終了できません。"));
+      sendError(new Error(t.youCanNotCloseAppWhileCSAOnlineGame));
       return;
     }
     setting = buildWindowSetting(setting, win);

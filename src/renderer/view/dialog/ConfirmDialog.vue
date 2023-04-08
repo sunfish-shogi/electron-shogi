@@ -3,7 +3,7 @@
     <dialog ref="dialog" class="confirm">
       <div class="message-box">
         <ButtonIcon class="icon" :icon="Icon.QUESTION" />
-        <div class="message">{{ message }}</div>
+        <div class="message">{{ store.confirmation }}</div>
       </div>
       <div class="dialog-main-buttons">
         <button
@@ -15,7 +15,7 @@
           OK
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="onClose()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -23,15 +23,9 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  Ref,
-} from "vue";
+import { defineComponent, onBeforeUnmount, onMounted, ref, Ref } from "vue";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
 import { useStore } from "@/renderer/store";
 import { Icon } from "@/renderer/assets/icons";
@@ -48,7 +42,6 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const dialog: Ref = ref(null);
-    const message = computed(() => store.confirmation);
 
     const onOk = () => {
       store.confirmationOk();
@@ -68,8 +61,9 @@ export default defineComponent({
     });
 
     return {
+      t,
       dialog,
-      message,
+      store,
       onOk,
       onClose,
       Icon,

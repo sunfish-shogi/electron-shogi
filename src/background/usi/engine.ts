@@ -151,11 +151,15 @@ enum State {
 
 const DefaultTimeout = 10 * 1e3;
 
+const USIHashOptionOrder = 1;
+const USIPonderOptionOrder = 2;
+const UserDefinedOptionOrderStart = 100;
+
 export class EngineProcess {
   private handle: ChildProcessWithoutNullStreams | null = null;
   private _name = "NO NAME";
   private _author = "";
-  private _options = {} as USIEngineOptions;
+  private _engineOptions = {} as USIEngineOptions;
   private state = State.WaitingForReadyOK;
   private currentPosition = "";
   private reservedGoCommand?: ReservedGoCommand;
@@ -188,16 +192,16 @@ export class EngineProcess {
   }
 
   get engineOptions(): USIEngineOptions {
-    return this._options;
+    return this._engineOptions;
   }
 
-  on(event: "timeout", callback: TimeoutCallback): void;
-  on(event: "error", callback: ErrorCallback): void;
-  on(event: "usiok", callback: USIOKCallback): void;
-  on(event: "ready", callback: ReadyCallback): void;
-  on(event: "bestmove", callback: BestmoveCallback): void;
-  on(event: "info", callback: InfoCallback): void;
-  on(event: "ponderInfo", callback: InfoCallback): void;
+  on(event: "timeout", callback: TimeoutCallback): this;
+  on(event: "error", callback: ErrorCallback): this;
+  on(event: "usiok", callback: USIOKCallback): this;
+  on(event: "ready", callback: ReadyCallback): this;
+  on(event: "bestmove", callback: BestmoveCallback): this;
+  on(event: "info", callback: InfoCallback): this;
+  on(event: "ponderInfo", callback: InfoCallback): this;
   on(
     event: string,
     callback:
@@ -207,7 +211,7 @@ export class EngineProcess {
       | ReadyCallback
       | BestmoveCallback
       | InfoCallback
-  ): void {
+  ): this {
     switch (event) {
       case "timeout":
         this.timeoutCallback = callback as TimeoutCallback;
@@ -231,14 +235,11 @@ export class EngineProcess {
         this.ponderInfoCallback = callback as InfoCallback;
         break;
     }
+    return this;
   }
 
   launch(): void {
-    getUSILogger().info(
-      "sid=%d: launch: %s",
-      this.sessionID,
-      path.dirname(this.path)
-    );
+    getUSILogger().info("sid=%d: launch: %s", this.sessionID, this.path);
     this.timeout = setTimeout(() => {
       if (this.timeoutCallback) {
         this.timeoutCallback();
@@ -421,6 +422,8 @@ export class EngineProcess {
     const option: USIEngineOption = {
       name: args[1],
       type: args[3] as USIEngineOptionType,
+      order:
+        UserDefinedOptionOrderStart + Object.keys(this._engineOptions).length,
       vars: [],
     };
     for (let i = 4; i + 1 < args.length; i = i + 1) {
@@ -440,22 +443,24 @@ export class EngineProcess {
           break;
       }
     }
-    this._options[option.name] = option;
+    this._engineOptions[option.name] = option;
   }
 
   private onUSIOk(): void {
     if (!this.engineOptions[USIHash]) {
-      this.engineOptions[USIHash] = {
+      this._engineOptions[USIHash] = {
         name: USIHash,
         type: "spin",
+        order: USIHashOptionOrder,
         default: 32,
         vars: [],
       };
     }
     if (!this.engineOptions[USIPonder]) {
-      this.engineOptions[USIPonder] = {
+      this._engineOptions[USIPonder] = {
         name: USIPonder,
         type: "check",
+        order: USIPonderOptionOrder,
         default: "true",
         vars: [],
       };

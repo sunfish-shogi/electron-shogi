@@ -2,10 +2,10 @@
   <div ref="root" class="record-pane">
     <div class="record">
       <RecordView
-        :record="record"
+        :record="store.record"
         :operational="isRecordOperational"
-        :show-comment="showComment"
-        :show-elapsed-time="showElapsedTime"
+        :show-comment="appSetting.showCommentInRecordView"
+        :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
         @go-begin="goBegin"
         @go-back="goBack"
         @go-forward="goForward"
@@ -21,25 +21,26 @@
         <input
           id="show-elapsed-time"
           type="checkbox"
-          :checked="showElapsedTime"
+          :checked="appSetting.showElapsedTimeInRecordView"
           @change="onToggleElapsedTime"
         />
-        <label for="show-elapsed-time">消費時間</label>
+        <label for="show-elapsed-time">{{ t.elapsedTime }}</label>
       </div>
       <div class="option">
         <input
           id="show-comment"
           type="checkbox"
-          :checked="showComment"
+          :checked="appSetting.showCommentInRecordView"
           @change="onToggleComment"
         />
-        <label for="show-comment">コメント</label>
+        <label for="show-comment">{{ t.comments }}</label>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import RecordView from "@/renderer/view/primitive/RecordView.vue";
 import { useStore } from "@/renderer/store";
@@ -48,6 +49,7 @@ import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export const minWidth = 200;
 
@@ -58,6 +60,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const appSetting = useAppSetting();
     const root = ref();
 
     onMounted(() => {
@@ -106,14 +109,14 @@ export default defineComponent({
 
     const onToggleElapsedTime = (event: Event) => {
       const checkbox = event.target as HTMLInputElement;
-      store.updateAppSetting({
+      appSetting.updateAppSetting({
         showElapsedTimeInRecordView: checkbox.checked,
       });
     };
 
     const onToggleComment = (event: Event) => {
       const checkbox = event.target as HTMLInputElement;
-      store.updateAppSetting({
+      appSetting.updateAppSetting({
         showCommentInRecordView: checkbox.checked,
       });
     };
@@ -124,21 +127,13 @@ export default defineComponent({
         store.appState === AppState.RESEARCH
       );
     });
-    const showComment = computed(
-      () => store.appSetting.showCommentInRecordView
-    );
-    const showElapsedTime = computed(
-      () => store.appSetting.showElapsedTimeInRecordView
-    );
-
-    const record = computed(() => store.record);
 
     return {
+      t,
+      store,
+      appSetting,
       root,
       isRecordOperational,
-      showElapsedTime,
-      showComment,
-      record: record,
       goBegin,
       goBack,
       goForward,

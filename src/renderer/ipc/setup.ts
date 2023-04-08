@@ -4,7 +4,7 @@ import { useStore } from "@/renderer/store";
 import { onUSIBestMove, onUSIInfo } from "@/renderer/players/usi";
 import { humanPlayer } from "@/renderer/players/human";
 import { bridge } from "./api";
-import { MenuEvent } from "../../common/control/menu";
+import { MenuEvent } from "@/common/control/menu";
 import { USIInfoCommand } from "@/common/usi";
 import { AppState } from "@/common/control/state";
 import {
@@ -15,7 +15,8 @@ import {
   onCSAReject,
   onCSAStart,
 } from "@/renderer/store/csa";
-import { CSAGameResult, CSASpecialMove } from "../../common/csa";
+import { CSAGameResult, CSASpecialMove } from "@/common/csa";
+import { useAppSetting } from "@/renderer/store/setting";
 
 export function setup(): void {
   const store = useStore();
@@ -38,6 +39,9 @@ export function setup(): void {
         break;
       case MenuEvent.SAVE_RECORD_AS:
         store.saveRecord();
+        break;
+      case MenuEvent.EXPORT_POSITION_IMAGE:
+        store.showExportBoardImageDialog();
         break;
       case MenuEvent.COPY_RECORD:
         store.copyRecordKIF();
@@ -90,8 +94,8 @@ export function setup(): void {
       case MenuEvent.INSERT_WIN_BY_DEFAULT:
         store.insertSpecialMove(SpecialMove.WIN_BY_DEFAULT);
         break;
-      case MenuEvent.INSERT_LOSS_BY_DEFAULT:
-        store.insertSpecialMove(SpecialMove.LOSS_BY_DEFAULT);
+      case MenuEvent.INSERT_LOSE_BY_DEFAULT:
+        store.insertSpecialMove(SpecialMove.LOSE_BY_DEFAULT);
         break;
       case MenuEvent.REMOVE_CURRENT_MOVE:
         store.removeCurrentMove();
@@ -157,7 +161,7 @@ export function setup(): void {
         humanPlayer.win();
         break;
       case MenuEvent.LOGOUT:
-        store.logoutCSAGame();
+        store.cancelCSAGame();
         break;
       case MenuEvent.START_RESEARCH:
         store.showResearchDialog();
@@ -172,7 +176,7 @@ export function setup(): void {
         store.stopAnalysis();
         break;
       case MenuEvent.FLIP_BOARD:
-        store.flipBoard();
+        useAppSetting().flipBoard();
         break;
       case MenuEvent.APP_SETTING_DIALOG:
         store.showAppSettingDialog();
@@ -230,8 +234,8 @@ export function setup(): void {
   watch(
     () => [store.appState, store.isBussy],
     ([appState, bussy]) => {
-      bridge.updateMenuState(appState as AppState, bussy as boolean);
+      bridge.updateAppState(appState as AppState, bussy as boolean);
     }
   );
-  bridge.updateMenuState(store.appState, store.isBussy);
+  bridge.updateAppState(store.appState, store.isBussy);
 }

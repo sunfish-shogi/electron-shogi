@@ -1,50 +1,83 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="dialog-title">アプリ設定</div>
+      <div class="dialog-title">{{ t.appSettings }}</div>
       <div class="dialog-scroll-area settings">
+        <!-- 表示 -->
         <div class="section">
-          <div class="section-title">外観</div>
+          <div class="section-title">{{ t.view }}</div>
+          <div class="dialog-form-area dialog-form-warning">
+            <div class="dialog-form-note">
+              翻訳の改善にご協力ください。 We'd like your help to translate.
+            </div>
+            <div class="dialog-form-note">
+              言語の変更には再起動が必要です。 You should restart this app to
+              change the language.
+            </div>
+          </div>
+          <!-- 言語 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">テーマ</div>
-            <select ref="thema" :value="appSetting.thema">
-              <option :value="Thema.STANDARD">標準（緑）</option>
-              <option :value="Thema.CHERRY_BLOSSOM">桜</option>
-              <option :value="Thema.AUTUMN">紅葉</option>
-              <option :value="Thema.SNOW">雪</option>
-              <option :value="Thema.DARK">ダーク</option>
+            <div class="dialog-form-item-label-wide">{{ t.language }}</div>
+            <select ref="language" :value="appSetting.language">
+              <option :value="Language.JA">日本語</option>
+              <option :value="Language.EN">English</option>
             </select>
           </div>
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">駒画像</div>
+            <div class="dialog-form-item-label-wide">{{ t.theme }}</div>
+            <select ref="thema" :value="appSetting.thema">
+              <option :value="Thema.STANDARD">{{ t.standardGreen }}</option>
+              <option :value="Thema.CHERRY_BLOSSOM">
+                {{ t.cherryBlossom }}
+              </option>
+              <option :value="Thema.AUTUMN">{{ t.autumn }}</option>
+              <option :value="Thema.SNOW">{{ t.snow }}</option>
+              <option :value="Thema.DARK">{{ t.dark }}</option>
+            </select>
+          </div>
+          <!-- 駒画像 -->
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">{{ t.pieceImages }}</div>
             <select ref="pieceImage" :value="appSetting.pieceImage">
-              <option :value="PieceImageType.HITOMOJI">一文字駒</option>
+              <option :value="PieceImageType.HITOMOJI">
+                {{ t.singleKanjiPiece }}
+              </option>
               <option :value="PieceImageType.HITOMOJI_GOTHIC">
-                一文字駒（ゴシック体）
+                {{ t.singleKanjiGothicPiece }}
               </option>
               <option :value="PieceImageType.HITOMOJI_DARK">
-                一文字駒（ダーク）
+                {{ t.singleKanjiDarkPiece }}
               </option>
               <option :value="PieceImageType.HITOMOJI_GOTHIC_DARK">
-                一文字駒（ゴシック体・ダーク）
+                {{ t.singleKanjiGothicDarkPiece }}
               </option>
             </select>
           </div>
+          <!-- 盤画像 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">盤画像</div>
+            <div class="dialog-form-item-label-wide">{{ t.boardImage }}</div>
             <select ref="boardImage" :value="appSetting.boardImage">
-              <option :value="BoardImageType.LIGHT">木目（明るい）</option>
-              <option :value="BoardImageType.WARM">木目（暖かい）</option>
-              <option :value="BoardImageType.RESIN">レジン</option>
-              <option :value="BoardImageType.RESIN2">レジン2</option>
-              <option :value="BoardImageType.RESIN3">レジン3</option>
-              <option :value="BoardImageType.DARK">ダーク</option>
-              <option :value="BoardImageType.GREEN">緑</option>
-              <option :value="BoardImageType.CHERRY_BLOSSOM">桜</option>
+              <option :value="BoardImageType.LIGHT">
+                {{ t.lightWoodyTexture }}
+              </option>
+              <option :value="BoardImageType.WARM">
+                {{ t.warmWoodTexture }}
+              </option>
+              <option :value="BoardImageType.RESIN">{{ t.regin }}</option>
+              <option :value="BoardImageType.RESIN2">{{ t.regin }}2</option>
+              <option :value="BoardImageType.RESIN3">{{ t.regin }}3</option>
+              <option :value="BoardImageType.DARK">{{ t.dark }}</option>
+              <option :value="BoardImageType.GREEN">{{ t.green }}</option>
+              <option :value="BoardImageType.CHERRY_BLOSSOM">
+                {{ t.cherryBlossom }}
+              </option>
             </select>
           </div>
+          <!-- 段・筋の表示 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">段・筋を表示</div>
+            <div class="dialog-form-item-label-wide">
+              {{ t.displayFileAndRank }}
+            </div>
             <input
               ref="displayBoardLabels"
               class="toggle"
@@ -52,19 +85,22 @@
               type="checkbox"
             />
           </div>
+          <!-- タブビューの形式 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">タブビューの形式</div>
+            <div class="dialog-form-item-label-wide">{{ t.tabViewStyle }}</div>
             <select ref="tabPaneType" :value="appSetting.tabPaneType">
-              <option :value="TabPaneType.SINGLE">1列</option>
-              <option :value="TabPaneType.DOUBLE">2列</option>
+              <option :value="TabPaneType.SINGLE">{{ t.oneColumn }}</option>
+              <option :value="TabPaneType.DOUBLE">{{ t.twoColumns }}</option>
             </select>
           </div>
         </div>
         <hr />
+        <!-- 音 -->
         <div class="section">
-          <div class="section-title">音</div>
+          <div class="section-title">{{ t.sounds }}</div>
+          <!-- 駒音の大きさ -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">駒音の大きさ</div>
+            <div class="dialog-form-item-label-wide">{{ t.pieceLoudness }}</div>
             <input
               ref="pieceVolume"
               :value="appSetting.pieceVolume"
@@ -74,8 +110,9 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 時計音の大きさ -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">時計音の大きさ</div>
+            <div class="dialog-form-item-label-wide">{{ t.clockLoudness }}</div>
             <input
               ref="clockVolume"
               :value="appSetting.clockVolume"
@@ -85,8 +122,9 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 時計音の高さ -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">時計音の高さ</div>
+            <div class="dialog-form-item-label-wide">{{ t.clockPitch }}</div>
             <input
               ref="clockPitch"
               :value="appSetting.clockPitch"
@@ -94,29 +132,44 @@
               max="880"
               min="220"
             />
-            <div class="dialog-form-item-unit">Hz (220 から 880 まで)</div>
+            <div class="dialog-form-item-unit">
+              Hz ({{ t.between(220, 880) }})
+            </div>
           </div>
+          <!-- 時計音の対象 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">時計音の対象</div>
+            <div class="dialog-form-item-label-wide">
+              {{ t.clockSoundTarget }}
+            </div>
             <select ref="clockSoundTarget" :value="appSetting.clockSoundTarget">
-              <option value="all">全ての手番</option>
-              <option value="onlyUser">人の手番のみ</option>
+              <option value="all">{{ t.anyTurn }}</option>
+              <option value="onlyUser">{{ t.onlyHumanTurn }}</option>
             </select>
           </div>
         </div>
         <hr />
+        <!-- ファイル -->
         <div class="section">
-          <div class="section-title">ファイル</div>
+          <div class="section-title">{{ t.file }}</div>
+          <!-- 改行文字 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">改行文字</div>
-            <select ref="returnCode" :value="appSetting.returnCode">
+            <div class="dialog-form-item-label-wide">
+              {{ t.newlineCharacter }}
+            </div>
+            <select
+              ref="returnCode"
+              :value="returnCodeToName[appSetting.returnCode]"
+            >
               <option value="crlf">CR + LF (Windows)</option>
               <option value="lf">LF (UNIX/Mac)</option>
-              <option value="cr">CR (90年代Mac)</option>
+              <option value="cr">CR ({{ t.old90sMac }})</option>
             </select>
           </div>
+          <!-- 自動保存先 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">棋譜の自動保存先</div>
+            <div class="dialog-form-item-label-wide">
+              {{ t.autoSavingDirectory }}
+            </div>
             <input
               ref="autoSaveDirectory"
               class="directory"
@@ -124,15 +177,31 @@
               type="text"
             />
             <button class="dialog-button" @click="selectAutoSaveDirectory">
-              選択
+              {{ t.select }}
             </button>
           </div>
         </div>
         <hr />
+        <!-- USI プロトコル -->
         <div class="section">
-          <div class="section-title">USIプロトコル</div>
+          <div class="section-title">{{ t.usiProtocol }}</div>
+          <!-- オプション名を翻訳 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">最大起動待ち時間</div>
+            <div class="dialog-form-item-label-wide">
+              {{ t.translateOptionName }}
+            </div>
+            <input
+              ref="translateEngineOptionName"
+              class="toggle"
+              :checked="appSetting.translateEngineOptionName"
+              type="checkbox"
+            />
+          </div>
+          <!-- 最大起動待ち時間 -->
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">
+              {{ t.maxStartupTime }}
+            </div>
             <input
               ref="engineTimeoutSeconds"
               :value="appSetting.engineTimeoutSeconds"
@@ -140,28 +209,37 @@
               max="300"
               min="1"
             />
-            <div class="dialog-form-item-unit">秒 (1 から 300 まで)</div>
+            <div class="dialog-form-item-unit">
+              {{ t.secondsSuffix }} ({{ t.between(1, 300) }})
+            </div>
           </div>
         </div>
         <hr />
+        <!-- 評価値と推定勝率 -->
         <div class="section">
-          <div class="section-title">評価値・期待勝率</div>
+          <div class="section-title">{{ t.evaluationAndEstimatedWinRate }}</div>
+          <!-- 評価値の符号 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">評価値の符号</div>
+            <div class="dialog-form-item-label-wide">
+              {{ t.signOfEvaluation }}
+            </div>
             <select
               ref="evaluationViewFrom"
               :value="appSetting.evaluationViewFrom"
             >
               <option :value="EvaluationViewFrom.EACH">
-                手番側有利がプラスの値
+                {{ t.swapEachTurnChange }}
               </option>
               <option :value="EvaluationViewFrom.BLACK">
-                先手有利がプラスの値
+                {{ t.alwaysSenteIsPositive }}
               </option>
             </select>
           </div>
+          <!-- 勝率換算係数 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">勝率換算係数</div>
+            <div class="dialog-form-item-label-wide">
+              {{ t.winRateCoefficient }}
+            </div>
             <input
               ref="coefficientInSigmoid"
               :value="appSetting.coefficientInSigmoid"
@@ -169,9 +247,13 @@
               max="10000"
               min="1"
             />
-            <div class="dialog-form-item-unit">(推奨: 600 から 1500 まで)</div>
+            <div class="dialog-form-item-unit">
+              ({{ t.recommended }}: {{ t.between(600, 1500) }})
+            </div>
           </div>
+          <!-- 緩手の閾値 -->
           <div class="dialog-form-item">
+            <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">緩手の閾値</div>
             <input
               ref="badMoveLevelThreshold1"
@@ -182,7 +264,9 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 疑問手の閾値 -->
           <div class="dialog-form-item">
+            <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">疑問手の閾値</div>
             <input
               ref="badMoveLevelThreshold2"
@@ -193,7 +277,9 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 悪手の閾値 -->
           <div class="dialog-form-item">
+            <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">悪手の閾値</div>
             <input
               ref="badMoveLevelThreshold3"
@@ -204,7 +290,9 @@
             />
             <div class="dialog-form-item-unit">%</div>
           </div>
+          <!-- 大悪手の閾値 -->
           <div class="dialog-form-item">
+            <!-- TODO: Translate -->
             <div class="dialog-form-item-label-wide">大悪手の閾値</div>
             <input
               ref="badMoveLevelThreshold4"
@@ -217,24 +305,26 @@
           </div>
         </div>
         <hr />
+        <!-- 開発者向け -->
         <div class="section">
-          <div class="section-title">開発者向け</div>
+          <div class="section-title">{{ t.forDevelopers }}</div>
           <div class="dialog-form-area dialog-form-warning">
             <div v-if="!isNative" class="dialog-form-note">
-              ※ブラウザ版でログは出力されません。
+              {{ t.inBrowserLogsOutputToConsoleAndIgnoreThisSetting }}
             </div>
-            <div class="dialog-form-note">
-              ※ログの有効化にはアプリの再起動が必要です。
+            <div v-if="isNative" class="dialog-form-note">
+              {{ t.shouldRestartToApplyLogSettings }}
             </div>
-            <div class="dialog-form-note">
-              ※ログの出力先は「デバッグ」-「ログファイルの場所を開く」で開きます。
+            <div v-if="isNative" class="dialog-form-note">
+              {{ t.canOpenLogDirectoryFromMenu }}
             </div>
-            <div class="dialog-form-note">
-              ※現在、古いログファイルの自動削除機能はありません。
+            <div v-if="isNative" class="dialog-form-note">
+              {{ t.hasNoOldLogCleanUpFeature }}
             </div>
           </div>
+          <!-- アプリログを出力 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">アプリログを出力</div>
+            <div class="dialog-form-item-label-wide">{{ t.enableAppLog }}</div>
             <input
               ref="enableAppLog"
               class="toggle"
@@ -242,8 +332,9 @@
               type="checkbox"
             />
           </div>
+          <!-- USI通信ログを出力 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">USI通信ログを出力</div>
+            <div class="dialog-form-item-label-wide">{{ t.enableUSILog }}</div>
             <input
               ref="enableUSILog"
               class="toggle"
@@ -251,14 +342,25 @@
               type="checkbox"
             />
           </div>
+          <!-- CSA通信ログを出力 -->
           <div class="dialog-form-item">
-            <div class="dialog-form-item-label-wide">CSA通信ログを出力</div>
+            <div class="dialog-form-item-label-wide">{{ t.enableCSALog }}</div>
             <input
               ref="enableCSALog"
               class="toggle"
               :checked="appSetting.enableCSALog"
               type="checkbox"
             />
+          </div>
+          <!-- ログレベル -->
+          <div class="dialog-form-item">
+            <div class="dialog-form-item-label-wide">{{ t.logLevel }}</div>
+            <select ref="logLevel" :value="appSetting.logLevel">
+              <option :value="LogLevel.DEBUG">DEBUG</option>
+              <option :value="LogLevel.INFO">INFO</option>
+              <option :value="LogLevel.WARN">WARN</option>
+              <option :value="LogLevel.ERROR">ERROR</option>
+            </select>
           </div>
         </div>
       </div>
@@ -269,10 +371,10 @@
           autofocus
           @click="saveAndClose()"
         >
-          保存して閉じる
+          {{ t.saveAndClose }}
         </button>
         <button class="dialog-button" data-hotkey="Escape" @click="cancel()">
-          キャンセル
+          {{ t.cancel }}
         </button>
       </div>
     </dialog>
@@ -280,6 +382,7 @@
 </template>
 
 <script lang="ts">
+import { t, Language } from "@/common/i18n";
 import {
   PieceImageType,
   BoardImageType,
@@ -290,14 +393,7 @@ import {
   Thema,
 } from "@/common/settings/app";
 import { useStore } from "@/renderer/store";
-import {
-  ref,
-  defineComponent,
-  onMounted,
-  Ref,
-  computed,
-  onBeforeUnmount,
-} from "vue";
+import { ref, defineComponent, onMounted, Ref, onBeforeUnmount } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api, { isNative } from "@/renderer/ipc/api";
@@ -305,6 +401,8 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { useAppSetting } from "@/renderer/store/setting";
+import { LogLevel } from "@/common/log";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -322,7 +420,9 @@ export default defineComponent({
   name: "AppSettingDialog",
   setup() {
     const store = useStore();
+    const appSetting = useAppSetting();
     const dialog: Ref = ref(null);
+    const language: Ref = ref(null);
     const thema: Ref = ref(null);
     const pieceImage: Ref = ref(null);
     const boardImage: Ref = ref(null);
@@ -334,6 +434,7 @@ export default defineComponent({
     const clockSoundTarget: Ref = ref(null);
     const returnCode: Ref = ref(null);
     const autoSaveDirectory: Ref = ref(null);
+    const translateEngineOptionName: Ref = ref(null);
     const engineTimeoutSeconds: Ref = ref(null);
     const evaluationViewFrom: Ref = ref(null);
     const coefficientInSigmoid: Ref = ref(null);
@@ -344,6 +445,7 @@ export default defineComponent({
     const enableAppLog: Ref = ref(null);
     const enableUSILog: Ref = ref(null);
     const enableCSALog: Ref = ref(null);
+    const logLevel: Ref = ref(null);
 
     onMounted(() => {
       showModalDialog(dialog.value);
@@ -356,6 +458,7 @@ export default defineComponent({
 
     const saveAndClose = async () => {
       const update: AppSettingUpdate = {
+        language: language.value.value,
         thema: thema.value.value,
         pieceImage: pieceImage.value.value,
         boardImage: boardImage.value.value,
@@ -369,6 +472,7 @@ export default defineComponent({
         clockSoundTarget: clockSoundTarget.value.value,
         returnCode: nameToReturnCode[returnCode.value.value],
         autoSaveDirectory: autoSaveDirectory.value.value,
+        translateEngineOptionName: translateEngineOptionName.value.checked,
         engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
         evaluationViewFrom: evaluationViewFrom.value.value,
         coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
@@ -379,10 +483,11 @@ export default defineComponent({
         enableAppLog: enableAppLog.value.checked,
         enableUSILog: enableUSILog.value.checked,
         enableCSALog: enableCSALog.value.checked,
+        logLevel: logLevel.value.value,
       };
       store.retainBussyState();
       try {
-        await store.updateAppSetting(update);
+        await useAppSetting().updateAppSetting(update);
         store.closeAppSettingDialog();
       } catch (e) {
         store.pushError(e);
@@ -411,21 +516,18 @@ export default defineComponent({
       store.closeAppSettingDialog();
     };
 
-    const appSetting = computed(() => {
-      return {
-        ...store.appSetting,
-        returnCode: returnCodeToName[store.appSetting.returnCode],
-      };
-    });
-
     return {
+      t,
+      Language,
       Thema,
       PieceImageType,
       BoardImageType,
       BoardLabelType,
       TabPaneType,
       EvaluationViewFrom,
+      LogLevel,
       dialog,
+      language,
       thema,
       pieceImage,
       boardImage,
@@ -437,6 +539,7 @@ export default defineComponent({
       clockSoundTarget,
       returnCode,
       autoSaveDirectory,
+      translateEngineOptionName,
       engineTimeoutSeconds,
       evaluationViewFrom,
       coefficientInSigmoid,
@@ -447,7 +550,9 @@ export default defineComponent({
       enableAppLog,
       enableUSILog,
       enableCSALog,
+      logLevel,
       appSetting,
+      returnCodeToName,
       isNative: isNative(),
       selectAutoSaveDirectory,
       saveAndClose,

@@ -23,7 +23,7 @@
             @click="onUnhideTabView"
           >
             <ButtonIcon class="icon" :icon="Icon.ARROW_UP" />
-            タブビューを再表示
+            <span>{{ t.expandTabView }}</span>
           </button>
         </div>
       </Pane>
@@ -80,6 +80,7 @@
 </template>
 
 <script lang="ts">
+import { t } from "@/common/i18n";
 import {
   reactive,
   onMounted,
@@ -91,8 +92,7 @@ import {
 import BoardPane from "./BoardPane.vue";
 import RecordPane, { minWidth as minRecordWidth } from "./RecordPane.vue";
 import TabPane, { headerHeight as tabHeaderHeight } from "./TabPane.vue";
-import { RectSize } from "@/renderer/view/primitive/Types";
-import { useStore } from "@/renderer/store";
+import { RectSize } from "@/common/graphics";
 import { AppSettingUpdate, Tab, TabPaneType } from "@/common/settings/app";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
@@ -102,6 +102,7 @@ import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { Icon } from "@/renderer/assets/icons";
 import ButtonIcon from "@/renderer/view/primitive/ButtonIcon.vue";
+import { useAppSetting } from "@/renderer/store/setting";
 
 const splitterWidth = 8;
 const margin = 10;
@@ -118,15 +119,13 @@ export default defineComponent({
     ButtonIcon,
   },
   setup() {
-    const store = useStore();
+    const appSetting = useAppSetting();
     const windowSize = reactive(
       new RectSize(window.innerWidth, window.innerHeight)
     );
-    const topPaneHeightPercentage = ref(
-      store.appSetting.topPaneHeightPercentage
-    );
+    const topPaneHeightPercentage = ref(appSetting.topPaneHeightPercentage);
     const bottomLeftPaneWidthPercentage = ref(
-      store.appSetting.bottomLeftPaneWidthPercentage
+      appSetting.bottomLeftPaneWidthPercentage
     );
     const boardPaneSize = reactive(new RectSize(0, 0));
 
@@ -152,7 +151,7 @@ export default defineComponent({
     };
 
     const updateAppSetting = (update: AppSettingUpdate) => {
-      store.updateAppSetting(update).catch((e) => {
+      appSetting.updateAppSetting(update).catch((e) => {
         api.log(
           LogLevel.WARN,
           "StandardLayout: failed to update app setting: " + toString(e)
@@ -174,7 +173,7 @@ export default defineComponent({
 
     const onUnhideTabView = () => {
       const newValue = Math.min(
-        store.appSetting.topPanePreviousHeightPercentage,
+        appSetting.topPanePreviousHeightPercentage,
         ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) /
           windowSize.height) *
           100
@@ -253,24 +252,26 @@ export default defineComponent({
 
     const tabPaneSize = computed(() => {
       return new RectSize(
-        store.appSetting.tabPaneType === TabPaneType.SINGLE
+        appSetting.tabPaneType === TabPaneType.SINGLE
           ? windowSize.width
           : (windowSize.width - splitterWidth) *
             (bottomLeftPaneWidthPercentage.value / 100),
-        (windowSize.height * bottomPaneHeightPercentage.value) / 100
+        (windowSize.height - splitterWidth) *
+          (bottomPaneHeightPercentage.value / 100)
       );
     });
 
     const tabPaneSize2 = computed(() => {
       return new RectSize(
-        windowSize.width * (1.0 - bottomLeftPaneWidthPercentage.value / 100),
-        (windowSize.height * bottomPaneHeightPercentage.value) / 100
+        (windowSize.width - splitterWidth) *
+          (1.0 - bottomLeftPaneWidthPercentage.value / 100),
+        (windowSize.height - splitterWidth) *
+          (bottomPaneHeightPercentage.value / 100)
       );
     });
 
-    const appSetting = computed(() => store.appSetting);
-
     return {
+      t,
       topPaneHeightPercentage,
       bottomPaneHeightPercentage,
       bottomLeftPaneWidthPercentage,

@@ -1,18 +1,19 @@
 <template>
-  <div class="root" :class="thema">
+  <div class="root" :class="appSetting.thema">
     <StandardLayout class="main" />
     <GameDialog v-if="dialogVisibilities.game" />
     <CSAGameDialog v-if="dialogVisibilities.csaGame" />
     <ResearchDialog v-if="dialogVisibilities.research" />
     <AnalysisDialog v-if="dialogVisibilities.analysis" />
     <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
+    <ExportPositionImageDialog v-if="dialogVisibilities.exportPositionImage" />
     <AppSettingDialog v-if="dialogVisibilities.appSetting" />
     <PasteDialog v-if="dialogVisibilities.paste" />
     <BussyMessage v-if="dialogVisibilities.bussy" />
     <ConfirmDialog v-if="dialogVisibilities.confirm" />
     <CSAGameReadyDialog v-if="dialogVisibilities.csaGameReady" />
-    <InfoMessage v-if="hasMessage" />
-    <ErrorMessage v-if="hasErrors" />
+    <InfoMessage v-if="store.hasMessage" />
+    <ErrorMessage v-if="store.hasError" />
   </div>
 </template>
 
@@ -23,6 +24,7 @@ import GameDialog from "@/renderer/view/dialog/GameDialog.vue";
 import CSAGameDialog from "@/renderer/view/dialog/CSAGameDialog.vue";
 import ResearchDialog from "@/renderer/view/dialog/ResearchDialog.vue";
 import USIEngineManagementDialog from "@/renderer/view/dialog/USIEngineManagementDialog.vue";
+import ExportPositionImageDialog from "@/renderer/view/dialog/ExportPositionImageDialog.vue";
 import AppSettingDialog from "@/renderer/view/dialog/AppSettingDialog.vue";
 import PasteDialog from "@/renderer/view/dialog/PasteDialog.vue";
 import BussyMessage from "@/renderer/view/dialog/BussyMessage.vue";
@@ -34,6 +36,7 @@ import { AppState } from "@/common/control/state.js";
 import AnalysisDialog from "@/renderer/view/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";
+import { useAppSetting } from "./store/setting";
 
 export default defineComponent({
   name: "App",
@@ -43,6 +46,7 @@ export default defineComponent({
     CSAGameDialog,
     ResearchDialog,
     USIEngineManagementDialog,
+    ExportPositionImageDialog,
     AppSettingDialog,
     PasteDialog,
     BussyMessage,
@@ -53,9 +57,8 @@ export default defineComponent({
     CSAGameReadyDialog,
   },
   setup() {
+    const appSetting = useAppSetting();
     const store = useStore();
-
-    const thema = computed(() => store.appSetting.thema);
 
     const dialogVisibilities = computed(() => {
       return {
@@ -64,17 +67,18 @@ export default defineComponent({
         research: store.appState === AppState.RESEARCH_DIALOG,
         analysis: store.appState === AppState.ANALYSIS_DIALOG,
         usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
+        exportPositionImage:
+          store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG,
         appSetting: store.isAppSettingDialogVisible,
         paste: store.appState === AppState.PASTE_DIALOG,
         bussy: store.isBussy,
         confirm: store.confirmation !== undefined,
-        csaGameReady: store.csaGameState === CSAGameState.READY,
+        csaGameReady:
+          store.csaGameState === CSAGameState.WAITING_LOGIN ||
+          store.csaGameState === CSAGameState.READY ||
+          store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL,
       };
     });
-
-    const hasMessage = computed(() => store.hasMessage);
-
-    const hasErrors = computed(() => store.hasError);
 
     onMounted(() => {
       const body = document.getElementsByTagName("body")[0];
@@ -99,10 +103,9 @@ export default defineComponent({
     });
 
     return {
-      thema,
+      appSetting,
+      store,
       dialogVisibilities,
-      hasMessage,
-      hasErrors,
     };
   },
 });

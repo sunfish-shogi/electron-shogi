@@ -12,6 +12,7 @@ describe("settings/usi", () => {
       getUSIEngineOptionCurrentValue({
         name: "test",
         type: "spin",
+        order: 1,
         default: 5,
         min: 0,
         max: 10,
@@ -23,6 +24,7 @@ describe("settings/usi", () => {
       getUSIEngineOptionCurrentValue({
         name: "test",
         type: "spin",
+        order: 1,
         default: 5,
         min: 0,
         max: 10,
@@ -33,6 +35,7 @@ describe("settings/usi", () => {
       getUSIEngineOptionCurrentValue({
         name: "test",
         type: "string",
+        order: 1,
         default: "foo",
         vars: [],
         value: "bar",
@@ -42,6 +45,7 @@ describe("settings/usi", () => {
       getUSIEngineOptionCurrentValue({
         name: "test",
         type: "string",
+        order: 1,
         default: "foo",
         vars: [],
       })
@@ -50,6 +54,7 @@ describe("settings/usi", () => {
       getUSIEngineOptionCurrentValue({
         name: "test",
         type: "string",
+        order: 1,
         vars: [],
       })
     ).toBeUndefined();
@@ -83,6 +88,7 @@ describe("settings/usi", () => {
         foo: {
           name: "foo",
           type: "spin",
+          order: 1,
           default: 5,
           min: 0,
           max: 10,
@@ -101,6 +107,7 @@ describe("settings/usi", () => {
       foo: {
         name: "foo",
         type: "spin",
+        order: 1,
         default: 5,
         min: 0,
         max: 10,
@@ -122,6 +129,7 @@ describe("settings/usi", () => {
         foo: {
           name: "name-foo-a",
           type: "spin",
+          order: 1,
           default: 5,
           min: 0,
           max: 20,
@@ -140,6 +148,7 @@ describe("settings/usi", () => {
         foo: {
           name: "name-foo-b",
           type: "spin",
+          order: 1,
           default: 10,
           min: 0,
           max: 25,
@@ -159,6 +168,7 @@ describe("settings/usi", () => {
         foo: {
           name: "name-foo-a",
           type: "spin",
+          order: 1,
           default: 5,
           min: 0,
           max: 20,

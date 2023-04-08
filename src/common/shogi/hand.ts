@@ -11,6 +11,7 @@ function buildSFEN(n: number, piece: Piece): string {
 export interface ImmutableHand {
   count(pieceType: PieceType): number;
   forEach(handler: (pieceType: PieceType, n: number) => void): void;
+  readonly counts: { type: PieceType; count: number }[];
   readonly sfenBlack: string;
   readonly sfenWhite: string;
   formatSFEN(color: Color): string;
@@ -28,6 +29,18 @@ export class Hand {
     this.pieces.set(PieceType.GOLD, 0);
     this.pieces.set(PieceType.BISHOP, 0);
     this.pieces.set(PieceType.ROOK, 0);
+  }
+
+  get counts(): { type: PieceType; count: number }[] {
+    return [
+      { type: PieceType.ROOK, count: this.count(PieceType.ROOK) },
+      { type: PieceType.BISHOP, count: this.count(PieceType.BISHOP) },
+      { type: PieceType.GOLD, count: this.count(PieceType.GOLD) },
+      { type: PieceType.SILVER, count: this.count(PieceType.SILVER) },
+      { type: PieceType.KNIGHT, count: this.count(PieceType.KNIGHT) },
+      { type: PieceType.LANCE, count: this.count(PieceType.LANCE) },
+      { type: PieceType.PAWN, count: this.count(PieceType.PAWN) },
+    ];
   }
 
   count(pieceType: PieceType): number {

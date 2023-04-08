@@ -2,7 +2,7 @@
   <div>
     <div class="root">
       <EngineAnalyticsElement
-        v-for="monitor in monitors"
+        v-for="monitor in store.usiMonitors"
         :key="monitor.sessionID"
         :history-mode="historyMode"
         :name="monitor.name"
@@ -17,7 +17,7 @@
 import { useStore } from "@/renderer/store";
 import { computed, defineComponent } from "vue";
 import EngineAnalyticsElement from "@/renderer/view/tab/EngineAnalyticsElement.vue";
-import { RectSize } from "@/renderer/view/primitive/Types";
+import { RectSize } from "@/common/graphics.js";
 
 export default defineComponent({
   name: "EngineAnalytics",
@@ -36,13 +36,12 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const monitors = computed(() => store.usiMonitors);
     const elementHeight = computed(() => {
       const rows = store.usiMonitors.length;
       return rows !== 0 ? props.size.height / rows : 0;
     });
     return {
-      monitors,
+      store,
       elementHeight,
     };
   },

@@ -1,25 +1,24 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { TimeoutChain } from "@/common/helpers/testing";
 import api, { API } from "@/renderer/ipc/api";
-import { Tab, TabPaneType, Thema } from "@/common/settings/app";
 import { Move } from "@/common/shogi";
-import { Store } from "@/renderer/store";
+import { createStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
 import iconv from "iconv-lite";
 import * as audio from "@/renderer/audio";
-import { gameSetting10m30s } from "../../mock/game";
+import { gameSetting10m30s } from "@/tests/mock/game";
 import { GameManager } from "@/renderer/store/game";
 import { AppState } from "@/common/control/state";
 import { AnalysisManager } from "@/renderer/store/analysis";
-import { analysisSetting } from "../../mock/analysis";
+import { analysisSetting } from "@/tests/mock/analysis";
 import { USIPlayer } from "@/renderer/players/usi";
-import { researchSetting } from "../../mock/research";
+import { researchSetting } from "@/tests/mock/research";
 import {
   csaGameSetting,
   emptyCSAGameSettingHistory,
   singleCSAGameSettingHistory,
-} from "../../mock/csa";
+} from "@/tests/mock/csa";
 import { CSAGameManager } from "@/renderer/store/csa";
+import { promisedTimeout } from "@/tests/helpers/timeout";
 
 jest.mock("@/renderer/audio");
 jest.mock("@/renderer/ipc/api");
@@ -114,13 +113,19 @@ const sampleBranchKIF = `
 `;
 
 describe("store/index", () => {
+  beforeEach(() => {
+    mockGameManager.prototype.on.mockReturnThis();
+    mockCSAGameManager.prototype.on.mockReturnThis();
+    mockAnalysisManager.prototype.on.mockReturnThis();
+  });
+
   afterEach(() => {
     jest.useRealTimers();
     jest.clearAllMocks();
   });
 
   it("message", () => {
-    const store = new Store();
+    const store = createStore();
     expect(store.hasMessage).toBeFalsy();
     store.enqueueMessage({ text: "first message" });
     expect(store.hasMessage).toBeTruthy();
@@ -151,7 +156,7 @@ describe("store/index", () => {
   });
 
   it("errors", () => {
-    const store = new Store();
+    const store = createStore();
     expect(store.hasError).toBeFalsy();
     expect(store.errors).toHaveLength(0);
     store.pushError("first error");
@@ -168,54 +173,8 @@ describe("store/index", () => {
     expect(store.errors).toHaveLength(0);
   });
 
-  it("updateAppSetting/success", async () => {
-    mockAPI.saveAppSetting.mockResolvedValue();
-    const store = new Store();
-    expect(store.appSetting.thema).toBe(Thema.STANDARD);
-    expect(store.appSetting.pieceVolume).toBe(30);
-    expect(store.appSetting.clockVolume).toBe(30);
-    expect(store.appSetting.tab).toBe(Tab.RECORD_INFO);
-    await store.updateAppSetting({
-      thema: Thema.DARK,
-      pieceVolume: 0,
-      tabPaneType: TabPaneType.SINGLE,
-      tab: Tab.COMMENT,
-    });
-    expect(store.appSetting.thema).toBe(Thema.DARK);
-    expect(store.appSetting.pieceVolume).toBe(0);
-    expect(store.appSetting.clockVolume).toBe(30);
-    expect(store.appSetting.tab).toBe(Tab.COMMENT);
-    expect(store.appSetting.tabPaneType).toBe(TabPaneType.SINGLE);
-    await store.updateAppSetting({
-      tabPaneType: TabPaneType.DOUBLE,
-    });
-    expect(store.appSetting.tab).toBe(Tab.RECORD_INFO); // コメントタブの選択が自動で解除される。
-    expect(store.appSetting.tabPaneType).toBe(TabPaneType.DOUBLE);
-  });
-
-  it("updateAppSetting/error", async () => {
-    const store = new Store();
-    try {
-      await store.updateAppSetting({
-        pieceVolume: -1,
-      });
-      throw new Error("updateAppSetting must be rejected");
-    } catch {
-      expect(store.appSetting.pieceVolume).toBe(30);
-    }
-  });
-
-  it("flipBoard", () => {
-    const store = new Store();
-    expect(store.appSetting.boardFlipping).toBeFalsy();
-    store.flipBoard();
-    expect(store.appSetting.boardFlipping).toBeTruthy();
-    store.flipBoard();
-    expect(store.appSetting.boardFlipping).toBeFalsy();
-  });
-
   it("showConfirmation", () => {
-    const store = new Store();
+    const store = createStore();
     const confirmation1 = {
       message: "Are you ready?",
       onOk: jest.fn(),
@@ -240,7 +199,7 @@ describe("store/index", () => {
     jest.useFakeTimers();
     const usi =
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f";
-    const store = new Store();
+    const store = createStore();
     store.pasteRecord(usi);
     store.updateUSIInfo(101, usi, "Engine A", {
       depth: 8,
@@ -278,7 +237,7 @@ describe("store/index", () => {
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f";
     const usi2 =
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d";
-    const store = new Store();
+    const store = createStore();
     store.pasteRecord(usi);
     store.updateUSIPonderInfo(101, usi2, "Engine A", {
       depth: 8,
@@ -297,34 +256,27 @@ describe("store/index", () => {
   it("startGame/success", () => {
     mockAPI.saveGameSetting.mockResolvedValue();
     mockGameManager.prototype.startGame.mockResolvedValue();
-    const store = new Store();
+    const store = createStore();
     store.showGameDialog();
     store.startGame(gameSetting10m30s);
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.GAME);
-        expect(mockAPI.saveGameSetting).toBeCalledTimes(1);
-        expect(mockAPI.saveGameSetting.mock.calls[0][0]).toBe(
-          gameSetting10m30s
-        );
-        expect(mockGameManager.prototype.startGame).toBeCalledTimes(1);
-        expect(mockGameManager.prototype.startGame.mock.calls[0][0]).toBe(
-          gameSetting10m30s
-        );
-      })
-      .invoke();
+    expect(store.isBussy).toBeTruthy();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.appState).toBe(AppState.GAME);
+      expect(mockAPI.saveGameSetting).toBeCalledTimes(1);
+      expect(mockAPI.saveGameSetting.mock.calls[0][0]).toBe(gameSetting10m30s);
+      expect(mockGameManager.prototype.startGame).toBeCalledTimes(1);
+      expect(mockGameManager.prototype.startGame.mock.calls[0][0]).toBe(
+        gameSetting10m30s
+      );
+    });
   });
 
   it("startGame/invalidState", () => {
-    const store = new Store();
+    const store = createStore();
     store.startGame(gameSetting10m30s);
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.NORMAL);
-      })
-      .invoke();
+    expect(store.isBussy).toBeFalsy();
+    expect(store.appState).toBe(AppState.NORMAL);
   });
 
   it("loginCSAGame/success", () => {
@@ -333,24 +285,23 @@ describe("store/index", () => {
     );
     mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
-    const store = new Store();
+    const store = createStore();
     store.showCSAGameDialog();
     store.loginCSAGame(csaGameSetting, { saveHistory: true });
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.CSA_GAME);
-        expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(1);
-        expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(1);
-        expect(
-          mockAPI.saveCSAGameSettingHistory.mock.calls[0][0]
-        ).toStrictEqual(singleCSAGameSettingHistory);
-        expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
-        expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
-          csaGameSetting
-        );
-      })
-      .invoke();
+    expect(store.isBussy).toBeTruthy();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.appState).toBe(AppState.CSA_GAME);
+      expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(1);
+      expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(1);
+      expect(mockAPI.saveCSAGameSettingHistory.mock.calls[0][0]).toStrictEqual(
+        singleCSAGameSettingHistory
+      );
+      expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
+      expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
+        csaGameSetting
+      );
+    });
   });
 
   it("loginCSAGame/doNotSaveHistory", () => {
@@ -359,109 +310,90 @@ describe("store/index", () => {
     );
     mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
-    const store = new Store();
+    const store = createStore();
     store.showCSAGameDialog();
     store.loginCSAGame(csaGameSetting, { saveHistory: false });
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.CSA_GAME);
-        expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(0);
-        expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(0);
-        expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
-        expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
-          csaGameSetting
-        );
-      })
-      .invoke();
+    expect(store.isBussy).toBeTruthy();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.appState).toBe(AppState.CSA_GAME);
+      expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(0);
+      expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(0);
+      expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
+      expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
+        csaGameSetting
+      );
+    });
   });
 
   it("loginCSAGame/invalidState", () => {
-    const store = new Store();
+    const store = createStore();
     store.loginCSAGame(csaGameSetting, { saveHistory: true });
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.NORMAL);
-      })
-      .invoke();
+    expect(store.isBussy).toBeFalsy();
+    expect(store.appState).toBe(AppState.NORMAL);
   });
 
   it("startResearch/success", () => {
     mockAPI.saveResearchSetting.mockResolvedValue();
     mockUSIPlayer.prototype.launch.mockResolvedValue();
     mockUSIPlayer.prototype.startResearch.mockResolvedValue();
-    const store = new Store();
+    const store = createStore();
     store.showResearchDialog();
     store.startResearch(researchSetting);
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.RESEARCH);
-        expect(mockAPI.saveResearchSetting).toBeCalledTimes(1);
-        expect(mockUSIPlayer).toBeCalledTimes(1);
-        expect(mockUSIPlayer.mock.calls[0][0]).toBe(researchSetting.usi);
-        expect(mockUSIPlayer.prototype.launch).toBeCalledTimes(1);
-        expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
-      })
-      .next(() => {
-        mockUSIPlayer.prototype.close.mockResolvedValue();
-        store.stopResearch();
-      })
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.NORMAL);
-        expect(mockUSIPlayer.prototype.close).toBeCalledTimes(1);
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.appState).toBe(AppState.RESEARCH);
+      expect(mockAPI.saveResearchSetting).toBeCalledTimes(1);
+      expect(mockUSIPlayer).toBeCalledTimes(1);
+      expect(mockUSIPlayer.mock.calls[0][0]).toBe(researchSetting.usi);
+      expect(mockUSIPlayer.prototype.launch).toBeCalledTimes(1);
+      expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
+      mockUSIPlayer.prototype.close.mockResolvedValue();
+      store.stopResearch();
+      expect(store.isBussy).toBeFalsy();
+      expect(store.appState).toBe(AppState.NORMAL);
+      expect(mockUSIPlayer.prototype.close).toBeCalledTimes(1);
+    });
   });
 
   it("startResearch/invalidState", () => {
-    const store = new Store();
+    const store = createStore();
     store.startResearch(researchSetting);
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.NORMAL);
-      })
-      .invoke();
+    expect(store.isBussy).toBeFalsy();
+    expect(store.appState).toBe(AppState.NORMAL);
   });
 
   it("startAnalysis/success", () => {
     mockAPI.saveAnalysisSetting.mockResolvedValue();
     mockAnalysisManager.prototype.start.mockResolvedValue();
-    const store = new Store();
+    const store = createStore();
     store.showAnalysisDialog();
     store.startAnalysis(analysisSetting);
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.ANALYSIS);
-        expect(mockAPI.saveAnalysisSetting).toBeCalledTimes(1);
-        expect(mockAPI.saveAnalysisSetting.mock.calls[0][0]).toBe(
-          analysisSetting
-        );
-        expect(mockAnalysisManager).toBeCalledTimes(1);
-        expect(mockAnalysisManager.mock.calls[0][1]).toBe(analysisSetting);
-        expect(mockAnalysisManager.prototype.start).toBeCalledTimes(1);
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.appState).toBe(AppState.ANALYSIS);
+      expect(mockAPI.saveAnalysisSetting).toBeCalledTimes(1);
+      expect(mockAPI.saveAnalysisSetting.mock.calls[0][0]).toBe(
+        analysisSetting
+      );
+      expect(mockAnalysisManager).toBeCalledTimes(1);
+      expect(mockAnalysisManager.prototype.start).toBeCalledTimes(1);
+      expect(mockAnalysisManager.prototype.start.mock.calls[0][0]).toBe(
+        analysisSetting
+      );
+    });
   });
 
   it("startAnalysis/invalidState", () => {
-    const store = new Store();
+    const store = createStore();
     store.startAnalysis(analysisSetting);
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.appState).toBe(AppState.NORMAL);
-      })
-      .invoke();
+    expect(store.isBussy).toBeFalsy();
+    expect(store.appState).toBe(AppState.NORMAL);
   });
 
   it("doMove", () => {
     mockAudio.playPieceBeat.mockReturnValue();
-    const store = new Store();
+    const store = createStore();
     store.doMove(store.record.position.createMoveByUSI("7g7f") as Move);
     store.doMove(store.record.position.createMoveByUSI("3c3d") as Move);
     store.doMove(store.record.position.createMoveByUSI("2g2f") as Move);
@@ -476,25 +408,23 @@ describe("store/index", () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       iconv.encode(sampleKIF, "Shift_JIS")
     );
-    const store = new Store();
+    const store = createStore();
     store.openRecord();
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.record.moves.length).not.toBe(1);
-        expect(store.recordFilePath).not.toBeUndefined();
-        store.resetRecord();
-        expect(store.confirmation).toBe(
-          "現在の棋譜は削除されます。よろしいですか？"
-        );
-        store.confirmationOk();
-        expect(store.record.moves.length).toBe(1);
-        expect(store.recordFilePath).toBeUndefined();
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.record.moves.length).not.toBe(1);
+      expect(store.recordFilePath).not.toBeUndefined();
+      store.resetRecord();
+      expect(store.confirmation).toBe(
+        "現在の棋譜は削除されます。よろしいですか？"
+      );
+      store.confirmationOk();
+      expect(store.record.moves.length).toBe(1);
+      expect(store.recordFilePath).toBeUndefined();
+    });
   });
 
   it("removeCurrentMove", () => {
-    const store = new Store();
+    const store = createStore();
     store.pasteRecord(sampleBranchKIF);
     store.changePly(8);
     store.removeCurrentMove();
@@ -526,12 +456,12 @@ describe("store/index", () => {
         },
       })
     );
-    const store = new Store();
+    const store = createStore();
     store.copyRecordKIF();
   });
 
   it("pasteRecord/kif/success", () => {
-    const store = new Store();
+    const store = createStore();
     store.pasteRecord(sampleKIF);
     const moves = store.record.moves;
     expect(moves.length).toBe(11);
@@ -544,7 +474,7 @@ describe("store/index", () => {
   });
 
   it("pasteRecord/csa/success", () => {
-    const store = new Store();
+    const store = createStore();
     store.pasteRecord(sampleCSA);
     const moves = store.record.moves;
     expect(moves.length).toBe(13);
@@ -562,7 +492,7 @@ describe("store/index", () => {
   });
 
   it("pasteRecord/invalidState", () => {
-    const store = new Store();
+    const store = createStore();
     store.showGameDialog();
     store.pasteRecord(sampleKIF);
     const moves = store.record.moves;
@@ -575,23 +505,21 @@ describe("store/index", () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       iconv.encode(sampleKIF, "Shift_JIS")
     );
-    const store = new Store();
+    const store = createStore();
     store.openRecord();
     expect(store.isBussy).toBeTruthy();
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBe("/test/sample.kif");
-        const moves = store.record.moves;
-        expect(moves.length).toBe(11);
-        expect(moves[1].comment).toBe("通常コメント\n");
-        expect(moves[1].customData).toStrictEqual({});
-        expect(moves[2].comment).toBe("#評価値=108\n");
-        const customData = moves[2].customData as RecordCustomData;
-        expect(customData.researchInfo?.score).toBe(108);
-        expect(store.hasError).toBeFalsy();
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBe("/test/sample.kif");
+      const moves = store.record.moves;
+      expect(moves.length).toBe(11);
+      expect(moves[1].comment).toBe("通常コメント\n");
+      expect(moves[1].customData).toStrictEqual({});
+      expect(moves[2].comment).toBe("#評価値=108\n");
+      const customData = moves[2].customData as RecordCustomData;
+      expect(customData.researchInfo?.score).toBe(108);
+      expect(store.hasError).toBeFalsy();
+    });
   });
 
   it("openRecord/csa/success", () => {
@@ -599,49 +527,41 @@ describe("store/index", () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       new TextEncoder().encode(sampleCSA)
     );
-    const store = new Store();
+    const store = createStore();
     store.openRecord();
     expect(store.isBussy).toBeTruthy();
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBe("/test/sample.csa");
-        const moves = store.record.moves;
-        expect(moves.length).toBe(13);
-        expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showOpenRecordDialog).toBeCalledTimes(1);
-        expect(mockAPI.openRecord).toBeCalledTimes(1);
-        expect(mockAPI.openRecord.mock.calls[0][0]).toBe("/test/sample.csa");
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBe("/test/sample.csa");
+      const moves = store.record.moves;
+      expect(moves.length).toBe(13);
+      expect(store.hasError).toBeFalsy();
+      expect(mockAPI.showOpenRecordDialog).toBeCalledTimes(1);
+      expect(mockAPI.openRecord).toBeCalledTimes(1);
+      expect(mockAPI.openRecord.mock.calls[0][0]).toBe("/test/sample.csa");
+    });
   });
 
   it("openRecord/invalidState", () => {
-    const store = new Store();
+    const store = createStore();
     store.showGameDialog();
     store.openRecord();
-    return new TimeoutChain()
-      .next(() => {
-        const moves = store.record.moves;
-        expect(moves.length).toBe(1);
-        expect(store.hasError).toBeFalsy();
-        expect(store.recordFilePath).toBeUndefined();
-      })
-      .invoke();
+    const moves = store.record.moves;
+    expect(moves.length).toBe(1);
+    expect(store.hasError).toBeFalsy();
+    expect(store.recordFilePath).toBeUndefined();
   });
 
   it("openRecord/cancel", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("");
-    const store = new Store();
+    const store = createStore();
     store.openRecord();
     expect(store.isBussy).toBeTruthy();
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBeUndefined();
-        expect(store.hasError).toBeFalsy();
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBeUndefined();
+      expect(store.hasError).toBeFalsy();
+    });
   });
 
   it("saveRecord/success", () => {
@@ -649,56 +569,48 @@ describe("store/index", () => {
       new Promise((resolve) => resolve("/test/sample.csa"))
     );
     mockAPI.saveRecord.mockResolvedValueOnce();
-    const store = new Store();
+    const store = createStore();
     store.saveRecord();
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBe("/test/sample.csa");
-        expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
-        expect(mockAPI.saveRecord).toBeCalledTimes(1);
-        expect(mockAPI.saveRecord.mock.calls[0][0]).toBe("/test/sample.csa");
-        const data = new TextDecoder().decode(
-          mockAPI.saveRecord.mock.calls[0][1]
-        );
-        expect(data).toMatch(
-          /^' CSA形式棋譜ファイル Generated by Electron Shogi\r\n/
-        );
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBe("/test/sample.csa");
+      expect(store.hasError).toBeFalsy();
+      expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+      expect(mockAPI.saveRecord).toBeCalledTimes(1);
+      expect(mockAPI.saveRecord.mock.calls[0][0]).toBe("/test/sample.csa");
+      const data = new TextDecoder().decode(
+        mockAPI.saveRecord.mock.calls[0][1]
+      );
+      expect(data).toMatch(
+        /^' CSA形式棋譜ファイル Generated by Electron Shogi\r\n/
+      );
+    });
   });
 
   it("saveRecord/invalidState", () => {
-    const store = new Store();
+    const store = createStore();
     store.showGameDialog();
     store.saveRecord();
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.hasError).toBeFalsy();
-        expect(store.recordFilePath).toBeUndefined();
-      })
-      .invoke();
+    expect(store.hasError).toBeFalsy();
+    expect(store.recordFilePath).toBeUndefined();
   });
 
   it("saveRecord/cancel", () => {
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
       new Promise((resolve) => resolve(""))
     );
-    const store = new Store();
+    const store = createStore();
     store.saveRecord();
-    return new TimeoutChain()
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBeUndefined();
-        expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
-        expect(mockAPI.saveRecord).toBeCalledTimes(0);
-      })
-      .invoke();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBeUndefined();
+      expect(store.hasError).toBeFalsy();
+      expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+      expect(mockAPI.saveRecord).toBeCalledTimes(0);
+    });
   });
 
-  it("saveRecord/noOverwrite", () => {
+  it("saveRecord/noOverwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       iconv.encode(sampleKIF, "Shift_JIS")
     );
@@ -706,23 +618,19 @@ describe("store/index", () => {
       new Promise((resolve) => resolve("/test/sample2.csa"))
     );
     mockAPI.saveRecord.mockResolvedValueOnce();
-    const store = new Store();
+    const store = createStore();
     store.openRecord("/test/sample1.csa");
-    return new TimeoutChain()
-      .next(() => {
-        store.saveRecord();
-      })
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBe("/test/sample2.csa");
-        expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
-        expect(mockAPI.saveRecord).toBeCalledTimes(1);
-      })
-      .invoke();
+    await promisedTimeout(() => store.saveRecord());
+    return await promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBe("/test/sample2.csa");
+      expect(store.hasError).toBeFalsy();
+      expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+      expect(mockAPI.saveRecord).toBeCalledTimes(1);
+    });
   });
 
-  it("saveRecord/overwrite", () => {
+  it("saveRecord/overwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       iconv.encode(sampleKIF, "Shift_JIS")
     );
@@ -730,21 +638,15 @@ describe("store/index", () => {
       new Promise((resolve) => resolve("/test/sample2.csa"))
     );
     mockAPI.saveRecord.mockResolvedValueOnce();
-    const store = new Store();
+    const store = createStore();
     store.openRecord("/test/sample1.csa");
-    return new TimeoutChain()
-      .next(() => {
-        store.saveRecord({
-          overwrite: true,
-        });
-      })
-      .next(() => {
-        expect(store.isBussy).toBeFalsy();
-        expect(store.recordFilePath).toBe("/test/sample1.csa");
-        expect(store.hasError).toBeFalsy();
-        expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(0);
-        expect(mockAPI.saveRecord).toBeCalledTimes(1);
-      })
-      .invoke();
+    await promisedTimeout(() => store.saveRecord({ overwrite: true }));
+    return await promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.recordFilePath).toBe("/test/sample1.csa");
+      expect(store.hasError).toBeFalsy();
+      expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(0);
+      expect(mockAPI.saveRecord).toBeCalledTimes(1);
+    });
   });
 });

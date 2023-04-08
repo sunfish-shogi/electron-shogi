@@ -178,8 +178,6 @@ export default defineComponent({
       }
     };
 
-    const beginPosSelected = computed(() => props.record.current.number === 0);
-
     const moves = computed(() => {
       const ret: {
         number: number;
@@ -246,7 +244,6 @@ export default defineComponent({
     });
 
     return {
-      beginPosSelected,
       moves,
       branches,
       moveList,

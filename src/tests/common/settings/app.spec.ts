@@ -1,3 +1,4 @@
+import { LogLevel } from "@/common/log";
 import {
   Thema,
   PieceImageType,
@@ -8,11 +9,14 @@ import {
   Tab,
   TabPaneType,
   EvaluationViewFrom,
+  PositionImageStyle,
 } from "@/common/settings/app";
+import { Language } from "@/common/i18n";
 
 describe("settings/csa", () => {
   it("normalize", () => {
     const setting = {
+      language: Language.JA,
       thema: Thema.DARK,
       pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       boardImage: BoardImageType.WARM,
@@ -30,6 +34,7 @@ describe("settings/csa", () => {
       bottomLeftPaneWidthPercentage: 80,
       returnCode: "\r",
       autoSaveDirectory: "/tmp/electron-shogi",
+      translateEngineOptionName: true,
       engineTimeoutSeconds: 60,
       evaluationViewFrom: EvaluationViewFrom.EACH,
       coefficientInSigmoid: 1000,
@@ -42,6 +47,10 @@ describe("settings/csa", () => {
       enableAppLog: true,
       enableUSILog: true,
       enableCSALog: true,
+      logLevel: LogLevel.INFO,
+      positionImageStyle: PositionImageStyle.GAME,
+      positionImageSize: 500,
+      positionImageHeader: "header",
     };
     const result = normalizeAppSetting(setting, {
       returnCode: "\r\n",

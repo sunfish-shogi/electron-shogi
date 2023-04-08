@@ -39,7 +39,10 @@ export function getUSIEngineOptionCurrentValue(
     return option.value;
   }
   if (option.default !== undefined) {
-    if (option.type === "string" && option.default === "<empty>") {
+    if (
+      (option.type === "string" || option.type === "filename") &&
+      option.default === "<empty>"
+    ) {
       return "";
     }
     return option.default;

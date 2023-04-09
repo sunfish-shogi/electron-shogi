@@ -10,6 +10,7 @@ import { Color, Move, reverseColor } from "@/common/shogi";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { scoreToPercentage } from "./score";
 import { useAppSetting } from "./setting";
+import { t } from "@/common/i18n";
 
 type FinishCallback = () => void;
 type ErrorCallback = (e: unknown) => void;
@@ -222,13 +223,13 @@ function getMoveAccuracyText(
     scoreToPercentage(before, appSetting.coefficientInSigmoid) -
     scoreToPercentage(after, appSetting.coefficientInSigmoid);
   if (loss >= appSetting.badMoveLevelThreshold4) {
-    return "大悪手";
+    return t.blunder;
   } else if (loss >= appSetting.badMoveLevelThreshold3) {
-    return "悪手";
+    return t.mistake;
   } else if (loss >= appSetting.badMoveLevelThreshold2) {
-    return "疑問手";
+    return t.dubious;
   } else if (loss >= appSetting.badMoveLevelThreshold1) {
-    return "緩手";
+    return t.inaccuracy;
   }
   return null;
 }

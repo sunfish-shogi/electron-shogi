@@ -355,33 +355,33 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
     setting.badMoveLevelThreshold1 < 1 ||
     setting.badMoveLevelThreshold1 > 100
   ) {
-    return new Error("緩手には1%～100%の値を指定してください。");
+    return new Error(t.inaccuracyThresholdMustBe1To100Percent);
   }
   if (
     setting.badMoveLevelThreshold2 < 1 ||
     setting.badMoveLevelThreshold2 > 100
   ) {
-    return new Error("疑問手には1%～100%の値を指定してください。");
+    return new Error(t.dubiousThresholdMustBe1To100Percent);
   }
   if (
     setting.badMoveLevelThreshold3 < 1 ||
     setting.badMoveLevelThreshold3 > 100
   ) {
-    return new Error("悪手には1%～100%の閾値を指定してください。");
+    return new Error(t.mistakeThresholdMustBe1To100Percent);
   }
   if (
     setting.badMoveLevelThreshold4 < 1 ||
     setting.badMoveLevelThreshold4 > 100
   ) {
-    return new Error("大悪手には1%～100%の値を指定してください。");
+    return new Error(t.blunderThresholdMustBe1To100Percent);
   }
   if (setting.badMoveLevelThreshold1 >= setting.badMoveLevelThreshold2) {
-    return new Error("緩手には疑問手より小さい値を指定してください。");
+    return new Error(t.inaccuracyThresholdMustBeLessThanDubiousThreshold);
   }
   if (setting.badMoveLevelThreshold2 >= setting.badMoveLevelThreshold3) {
-    return new Error("疑問手には悪手より小さい値を指定してください。");
+    return new Error(t.dubiousThresholdMustBeLessThanMistakeThreshold);
   }
   if (setting.badMoveLevelThreshold3 >= setting.badMoveLevelThreshold4) {
-    return new Error("悪手には大悪手より小さい値を指定してください。");
+    return new Error(t.mistakeThresholdMustBeLessThanBlunderThreshold);
   }
 }

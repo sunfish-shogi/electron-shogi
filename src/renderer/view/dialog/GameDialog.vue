@@ -43,8 +43,7 @@
         <div class="form-group time-limit">
           <div class="top-label">{{ t.time }}</div>
           <div class="form-item">
-            <!-- TODO: Translate -->
-            <div class="form-item-label">持ち時間</div>
+            <div class="form-item-label">{{ t.allottedTime }}</div>
             <input
               ref="hours"
               class="time"
@@ -65,8 +64,7 @@
             <div class="form-item-unit">{{ t.minutesSuffix }}</div>
           </div>
           <div class="form-item">
-            <!-- TODO: Translate -->
-            <div class="form-item-label">秒読み</div>
+            <div class="form-item-label">{{ t.byoyomi }}</div>
             <input
               ref="byoyomi"
               class="time"
@@ -78,8 +76,7 @@
             <div class="form-item-unit">{{ t.secondsSuffix }}</div>
           </div>
           <div class="form-item">
-            <!-- TODO: Translate -->
-            <div class="form-item-label">増加</div>
+            <div class="form-item-label">{{ t.increments }}</div>
             <input
               ref="increment"
               class="time"

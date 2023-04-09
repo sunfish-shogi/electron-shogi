@@ -398,8 +398,7 @@
           </div>
           <!-- 緩手の閾値 -->
           <div class="form-item">
-            <!-- TODO: Translate -->
-            <div class="form-item-label-wide">緩手の閾値</div>
+            <div class="form-item-label-wide">{{ t.inaccuracyThreshold }}</div>
             <input
               ref="badMoveLevelThreshold1"
               :value="appSetting.badMoveLevelThreshold1"
@@ -411,8 +410,7 @@
           </div>
           <!-- 疑問手の閾値 -->
           <div class="form-item">
-            <!-- TODO: Translate -->
-            <div class="form-item-label-wide">疑問手の閾値</div>
+            <div class="form-item-label-wide">{{ t.dubiousThreshold }}</div>
             <input
               ref="badMoveLevelThreshold2"
               :value="appSetting.badMoveLevelThreshold2"
@@ -424,8 +422,7 @@
           </div>
           <!-- 悪手の閾値 -->
           <div class="form-item">
-            <!-- TODO: Translate -->
-            <div class="form-item-label-wide">悪手の閾値</div>
+            <div class="form-item-label-wide">{{ t.mistakeThreshold }}</div>
             <input
               ref="badMoveLevelThreshold3"
               :value="appSetting.badMoveLevelThreshold3"
@@ -437,8 +434,7 @@
           </div>
           <!-- 大悪手の閾値 -->
           <div class="form-item">
-            <!-- TODO: Translate -->
-            <div class="form-item-label-wide">大悪手の閾値</div>
+            <div class="form-item-label-wide">{{ t.blunderThreshold }}</div>
             <input
               ref="badMoveLevelThreshold4"
               :value="appSetting.badMoveLevelThreshold4"

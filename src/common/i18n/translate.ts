@@ -194,6 +194,9 @@ type Texts = {
   adjustBoardToHumanPlayer: string;
   adjustBoardAutomatically: string;
   startGame: string;
+  allottedTime: string;
+  byoyomi: string;
+  increments: string;
   startEndCriteria: string;
   endCriteria1Move: string;
   outputSettings: string;
@@ -274,6 +277,14 @@ type Texts = {
   bgCover: string;
   bgContain: string;
   bgTile: string;
+  inaccuracy: string;
+  dubious: string;
+  mistake: string;
+  blunder: string;
+  inaccuracyThreshold: string;
+  dubiousThreshold: string;
+  mistakeThreshold: string;
+  blunderThreshold: string;
   typeCustomTitleHere: string;
   displayEmptyElements: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
@@ -332,6 +343,13 @@ type Texts = {
   clockPitchMustBe220To880Hz: string;
   engineTimeoutMustBe1To300Seconds: string;
   coefficientInSigmoidMustBeGreaterThan0: string;
+  inaccuracyThresholdMustBe1To100Percent: string;
+  dubiousThresholdMustBe1To100Percent: string;
+  mistakeThresholdMustBe1To100Percent: string;
+  blunderThresholdMustBe1To100Percent: string;
+  inaccuracyThresholdMustBeLessThanDubiousThreshold: string;
+  dubiousThresholdMustBeLessThanMistakeThreshold: string;
+  mistakeThresholdMustBeLessThanBlunderThreshold: string;
   errorsOccurred: (n: number) => string;
   between: (a: unknown, b: unknown) => string;
   addNthEngine: (n: number) => string;
@@ -538,6 +556,9 @@ const ja: Texts = {
   adjustBoardToHumanPlayer: "人を手前に表示する",
   adjustBoardAutomatically: "盤面の向きを自動調整",
   startGame: "対局開始",
+  allottedTime: "持ち時間",
+  byoyomi: "秒読み",
+  increments: "増加",
   startEndCriteria: "開始・終了条件",
   endCriteria1Move: "局面ごとの終了条件",
   outputSettings: "出力設定",
@@ -618,6 +639,14 @@ const ja: Texts = {
   bgCover: "1枚で表示",
   bgContain: "拡大して表示",
   bgTile: "タイル状に表示",
+  inaccuracy: "緩手",
+  dubious: "疑問手",
+  mistake: "悪手",
+  blunder: "大悪手",
+  inaccuracyThreshold: "緩手の閾値",
+  dubiousThreshold: "疑問手の閾値",
+  mistakeThreshold: "悪手の閾値",
+  blunderThreshold: "大悪手の閾値",
   typeCustomTitleHere: "ここに見出しを入力",
   displayEmptyElements: "未入力の項目を表示",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
@@ -697,6 +726,20 @@ const ja: Texts = {
     "エンジンのタイムアウト時間には1秒～300秒の値を指定してください。",
   coefficientInSigmoidMustBeGreaterThan0:
     "勝率換算係数には0より大きい値を指定してください。",
+  inaccuracyThresholdMustBe1To100Percent:
+    "緩手には1%～100%の値を指定してください。",
+  dubiousThresholdMustBe1To100Percent:
+    "疑問手には1%～100%の値を指定してください。",
+  mistakeThresholdMustBe1To100Percent:
+    "悪手には1%～100%の閾値を指定してください。",
+  blunderThresholdMustBe1To100Percent:
+    "大悪手には1%～100%の値を指定してください。",
+  inaccuracyThresholdMustBeLessThanDubiousThreshold:
+    "緩手には疑問手より小さい値を指定してください。",
+  dubiousThresholdMustBeLessThanMistakeThreshold:
+    "疑問手には悪手より小さい値を指定してください。",
+  mistakeThresholdMustBeLessThanBlunderThreshold:
+    "悪手には大悪手より小さい値を指定してください。",
   errorsOccurred: (n) => `${n} 種類のエラーが発生しました。`,
   between: (a, b) => `${a} から ${b} まで`,
   addNthEngine: (n) => `${n} 個目のエンジンを追加`,
@@ -912,6 +955,9 @@ const en: Texts = {
   adjustBoardToHumanPlayer: "Adjust Board to Human Player",
   adjustBoardAutomatically: "Adjust Board Automatically",
   startGame: "Start Game",
+  allottedTime: "Allotted Time",
+  byoyomi: "Byoyomi",
+  increments: "Increments",
   startEndCriteria: "Start/End Criteria",
   endCriteria1Move: "End Criteria for 1 Move",
   outputSettings: "Output Settings",
@@ -992,6 +1038,14 @@ const en: Texts = {
   bgCover: "Cover",
   bgContain: "Contain",
   bgTile: "Tile",
+  inaccuracy: "Inaccuracy",
+  dubious: "Dubious",
+  mistake: "Mistake",
+  blunder: "Blunder",
+  inaccuracyThreshold: "Inaccuracy Threshold",
+  dubiousThreshold: "Dubious Threshold",
+  mistakeThreshold: "Mistake Threshold",
+  blunderThreshold: "Blunder Threshold",
   typeCustomTitleHere: "Type custom title here",
   displayEmptyElements: "Display Empty Elements",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
@@ -1069,6 +1123,16 @@ const en: Texts = {
   engineTimeoutMustBe1To300Seconds: "Engine timeout must be 1 to 300 seconds.",
   coefficientInSigmoidMustBeGreaterThan0:
     "Coefficient in sigmoid must be greater than 0.",
+  inaccuracyThresholdMustBe1To100Percent: "Inaccuracy must be 1% to 100%.",
+  dubiousThresholdMustBe1To100Percent: "Dubious threshold must be 1% to 100%.",
+  mistakeThresholdMustBe1To100Percent: "Mistake threshold must be 1% to 100%.",
+  blunderThresholdMustBe1To100Percent: "Blunder threshold must be 1% to 100%.",
+  inaccuracyThresholdMustBeLessThanDubiousThreshold:
+    "Inaccuracy threshold must be less than dubious threshold.",
+  dubiousThresholdMustBeLessThanMistakeThreshold:
+    "Dubious threshold must be less than mistake threshold.",
+  mistakeThresholdMustBeLessThanBlunderThreshold:
+    "Mistake threshold must be less than blunder threshold.",
   errorsOccurred: (n) =>
     n >= 2 ? `${n} errors have occurred.` : `${n} error has occurred.`,
   between: (a, b) => `between ${a} and ${b}`,

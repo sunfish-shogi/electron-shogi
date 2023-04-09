@@ -56,6 +56,7 @@ function createWindow() {
       webSecurity: !isDevelopment(),
     },
   });
+  win.setBackgroundColor("#888");
   if (setting.maximized) {
     win.maximize();
   }
@@ -103,6 +104,20 @@ function createWindow() {
       throw e;
     });
   }
+
+  win.once("ready-to-show", () => {
+    // レンダラー側の準備ができたら uncaughtException は常にレンダラーへ送る。
+    process.on("uncaughtException", (e, origin) => {
+      try {
+        sendError(new Error(`${origin}: ${e}`));
+      } catch (ipcError) {
+        getAppLogger().error(
+          `failed to send error to renderer: ${ipcError}: ${e}`
+        );
+      }
+    });
+    win.show();
+  });
 }
 
 app.enableSandbox();

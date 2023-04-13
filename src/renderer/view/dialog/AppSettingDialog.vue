@@ -297,6 +297,18 @@
         <!-- ファイル -->
         <div class="section">
           <div class="section-title">{{ t.file }}</div>
+          <!-- 文字コード -->
+          <div class="form-item">
+            <div class="form-item-label-wide">
+              {{ t.textEncoding }}
+            </div>
+            <select ref="textDecodingRule" :value="appSetting.textDecodingRule">
+              <option :value="TextDecodingRule.STRICT">{{ t.strict }}</option>
+              <option :value="TextDecodingRule.AUTO_DETECT">
+                {{ t.autoDetect }}
+              </option>
+            </select>
+          </div>
           <!-- 改行文字 -->
           <div class="form-item">
             <div class="form-item-label-wide">
@@ -534,6 +546,7 @@ import {
   AppSettingUpdate,
   Thema,
   BackgroundImageType,
+  TextDecodingRule,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
@@ -588,6 +601,7 @@ const pieceVolume = ref();
 const clockVolume = ref();
 const clockPitch = ref();
 const clockSoundTarget = ref();
+const textDecodingRule = ref();
 const returnCode = ref();
 const autoSaveDirectory = ref();
 const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
@@ -637,6 +651,7 @@ const saveAndClose = async () => {
     clockVolume: readInputAsNumber(clockVolume.value),
     clockPitch: readInputAsNumber(clockPitch.value),
     clockSoundTarget: clockSoundTarget.value.value,
+    textDecodingRule: textDecodingRule.value.value,
     returnCode: nameToReturnCode[returnCode.value.value],
     autoSaveDirectory: autoSaveDirectory.value.value,
     translateEngineOptionName: translateEngineOptionName.value,

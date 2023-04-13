@@ -13,6 +13,7 @@ import {
   RightSideControlType,
   Tab,
   TabPaneType,
+  TextDecodingRule,
   Thema,
   buildUpdatedAppSetting,
   defaultAppSetting,
@@ -96,6 +97,9 @@ class AppSettingStore {
   }
   get bottomLeftPaneWidthPercentage(): number {
     return this.setting.bottomLeftPaneWidthPercentage;
+  }
+  get textDecodingRule(): TextDecodingRule {
+    return this.setting.textDecodingRule;
   }
   get returnCode(): string {
     return this.setting.returnCode;

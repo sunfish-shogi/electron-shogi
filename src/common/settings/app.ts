@@ -73,6 +73,11 @@ export enum Tab {
   INVISIBLE = "invisible", // Deprecated
 }
 
+export enum TextDecodingRule {
+  STRICT = "strict",
+  AUTO_DETECT = "autoDetect",
+}
+
 export enum EvaluationViewFrom {
   BLACK = "black",
   EACH = "each",
@@ -112,6 +117,7 @@ export type AppSetting = {
   topPaneHeightPercentage: number;
   topPanePreviousHeightPercentage: number;
   bottomLeftPaneWidthPercentage: number;
+  textDecodingRule: TextDecodingRule;
   returnCode: string;
   autoSaveDirectory: string;
   translateEngineOptionName: boolean;
@@ -162,6 +168,7 @@ export type AppSettingUpdate = {
   topPaneHeightPercentage?: number;
   topPanePreviousHeightPercentage?: number;
   bottomLeftPaneWidthPercentage?: number;
+  textDecodingRule?: TextDecodingRule;
   returnCode?: string;
   autoSaveDirectory?: string;
   translateEngineOptionName?: boolean;
@@ -249,6 +256,7 @@ export function defaultAppSetting(opt?: {
     topPaneHeightPercentage: 60,
     topPanePreviousHeightPercentage: 60,
     bottomLeftPaneWidthPercentage: 60,
+    textDecodingRule: TextDecodingRule.AUTO_DETECT,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
     translateEngineOptionName: true,

@@ -14,7 +14,7 @@ import {
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
-import { ClockSoundTarget, Tab } from "@/common/settings/app";
+import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";
 import {
   beepShort,
   beepUnlimited,
@@ -877,11 +877,13 @@ class Store {
         if (!path) {
           return;
         }
-        return api.openRecord(path as string).then((data) => {
-          const e = this.recordManager.importRecordFromBuffer(
-            data as Buffer,
-            path as string
-          );
+        const appSetting = useAppSetting();
+        const autoDetect =
+          appSetting.textDecodingRule == TextDecodingRule.AUTO_DETECT;
+        return api.openRecord(path).then((data) => {
+          const e = this.recordManager.importRecordFromBuffer(data, path, {
+            autoDetect,
+          });
           return e && Promise.reject(e);
         });
       })

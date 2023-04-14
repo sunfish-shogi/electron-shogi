@@ -14,6 +14,7 @@ import {
   BackgroundImageType,
   LeftSideControlType,
   RightSideControlType,
+  TextDecodingRule,
 } from "@/common/settings/app";
 import { Language } from "@/common/i18n";
 
@@ -40,6 +41,7 @@ describe("settings/csa", () => {
       topPaneHeightPercentage: 50,
       topPanePreviousHeightPercentage: 50,
       bottomLeftPaneWidthPercentage: 80,
+      textDecodingRule: TextDecodingRule.STRICT,
       returnCode: "\r",
       autoSaveDirectory: "/tmp/electron-shogi",
       translateEngineOptionName: true,

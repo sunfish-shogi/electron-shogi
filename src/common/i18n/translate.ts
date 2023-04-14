@@ -128,6 +128,9 @@ type Texts = {
   clockSoundTarget: string;
   anyTurn: string;
   onlyHumanTurn: string;
+  textEncoding: string;
+  strict: string;
+  autoDetect: string;
   newlineCharacter: string;
   old90sMac: string;
   autoSavingDirectory: string;
@@ -490,6 +493,9 @@ const ja: Texts = {
   clockSoundTarget: "時計音の対象",
   anyTurn: "全ての手番",
   onlyHumanTurn: "人間の手番のみ",
+  textEncoding: "文字コード",
+  strict: "厳格",
+  autoDetect: "自動判定",
   newlineCharacter: "改行文字",
   old90sMac: "90年代Mac",
   autoSavingDirectory: "棋譜の自動保存先",
@@ -889,6 +895,9 @@ const en: Texts = {
   clockSoundTarget: "Clock Sound Target",
   anyTurn: "Any",
   onlyHumanTurn: "Human",
+  textEncoding: "Text Encoding",
+  strict: "Strict",
+  autoDetect: "Auto Detect",
   newlineCharacter: "Newline Character",
   old90sMac: "90's Mac",
   autoSavingDirectory: "Auto-Saving Directory",

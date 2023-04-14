@@ -3,7 +3,6 @@ import api, { API } from "@/renderer/ipc/api";
 import { Move } from "@/common/shogi";
 import { createStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
-import iconv from "iconv-lite";
 import * as audio from "@/renderer/audio";
 import { gameSetting10m30s } from "@/tests/mock/game";
 import { GameManager } from "@/renderer/store/game";
@@ -19,6 +18,7 @@ import {
 } from "@/tests/mock/csa";
 import { CSAGameManager } from "@/renderer/store/csa";
 import { promisedTimeout } from "@/tests/helpers/timeout";
+import { convert } from "encoding-japanese";
 
 jest.mock("@/renderer/audio");
 jest.mock("@/renderer/ipc/api");
@@ -406,7 +406,7 @@ describe("store/index", () => {
   it("resetRecord", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
-      iconv.encode(sampleKIF, "Shift_JIS")
+      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array
     );
     const store = createStore();
     store.openRecord();
@@ -503,14 +503,61 @@ describe("store/index", () => {
   it("openRecord/kif/success", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
-      iconv.encode(sampleKIF, "Shift_JIS")
+      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array
     );
     const store = createStore();
     store.openRecord();
     expect(store.isBussy).toBeTruthy();
     return promisedTimeout(() => {
       expect(store.isBussy).toBeFalsy();
+      expect(store.errors).toStrictEqual([]);
       expect(store.recordFilePath).toBe("/test/sample.kif");
+      const moves = store.record.moves;
+      expect(moves.length).toBe(11);
+      expect(moves[1].comment).toBe("通常コメント\n");
+      expect(moves[1].customData).toStrictEqual({});
+      expect(moves[2].comment).toBe("#評価値=108\n");
+      const customData = moves[2].customData as RecordCustomData;
+      expect(customData.researchInfo?.score).toBe(108);
+      expect(store.hasError).toBeFalsy();
+    });
+  });
+
+  it("openRecord/kif-utf8/success", () => {
+    mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
+    mockAPI.openRecord.mockResolvedValueOnce(
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" }))
+    );
+    const store = createStore();
+    store.openRecord();
+    expect(store.isBussy).toBeTruthy();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.errors).toStrictEqual([]);
+      expect(store.recordFilePath).toBe("/test/sample.kif");
+      const moves = store.record.moves;
+      expect(moves.length).toBe(11);
+      expect(moves[1].comment).toBe("通常コメント\n");
+      expect(moves[1].customData).toStrictEqual({});
+      expect(moves[2].comment).toBe("#評価値=108\n");
+      const customData = moves[2].customData as RecordCustomData;
+      expect(customData.researchInfo?.score).toBe(108);
+      expect(store.hasError).toBeFalsy();
+    });
+  });
+
+  it("openRecord/kifu/success", () => {
+    mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kifu");
+    mockAPI.openRecord.mockResolvedValueOnce(
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" }))
+    );
+    const store = createStore();
+    store.openRecord();
+    expect(store.isBussy).toBeTruthy();
+    return promisedTimeout(() => {
+      expect(store.isBussy).toBeFalsy();
+      expect(store.errors).toStrictEqual([]);
+      expect(store.recordFilePath).toBe("/test/sample.kifu");
       const moves = store.record.moves;
       expect(moves.length).toBe(11);
       expect(moves[1].comment).toBe("通常コメント\n");
@@ -532,6 +579,7 @@ describe("store/index", () => {
     expect(store.isBussy).toBeTruthy();
     return promisedTimeout(() => {
       expect(store.isBussy).toBeFalsy();
+      expect(store.errors).toStrictEqual([]);
       expect(store.recordFilePath).toBe("/test/sample.csa");
       const moves = store.record.moves;
       expect(moves.length).toBe(13);
@@ -612,7 +660,7 @@ describe("store/index", () => {
 
   it("saveRecord/noOverwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
-      iconv.encode(sampleKIF, "Shift_JIS")
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }))
     );
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
       new Promise((resolve) => resolve("/test/sample2.csa"))
@@ -632,7 +680,7 @@ describe("store/index", () => {
 
   it("saveRecord/overwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
-      iconv.encode(sampleKIF, "Shift_JIS")
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }))
     );
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
       new Promise((resolve) => resolve("/test/sample2.csa"))

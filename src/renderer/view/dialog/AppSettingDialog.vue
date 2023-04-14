@@ -287,10 +287,19 @@
             <div class="form-item-label-wide">
               {{ t.clockSoundTarget }}
             </div>
-            <select ref="clockSoundTarget" :value="appSetting.clockSoundTarget">
-              <option value="all">{{ t.anyTurn }}</option>
-              <option value="onlyUser">{{ t.onlyHumanTurn }}</option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="clockSoundTarget"
+              :items="[
+                { label: t.anyTurn, value: ClockSoundTarget.ALL },
+                { label: t.onlyHumanTurn, value: ClockSoundTarget.ONLY_USER },
+              ]"
+              @change="
+                (value) => {
+                  clockSoundTarget = value;
+                }
+              "
+            />
           </div>
         </div>
         <hr />
@@ -302,26 +311,39 @@
             <div class="form-item-label-wide">
               {{ t.textEncoding }}
             </div>
-            <select ref="textDecodingRule" :value="appSetting.textDecodingRule">
-              <option :value="TextDecodingRule.STRICT">{{ t.strict }}</option>
-              <option :value="TextDecodingRule.AUTO_DETECT">
-                {{ t.autoDetect }}
-              </option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="textDecodingRule"
+              :items="[
+                { label: t.strict, value: TextDecodingRule.STRICT },
+                { label: t.autoDetect, value: TextDecodingRule.AUTO_DETECT },
+              ]"
+              @change="
+                (value) => {
+                  textDecodingRule = value;
+                }
+              "
+            />
           </div>
           <!-- 改行文字 -->
           <div class="form-item">
             <div class="form-item-label-wide">
               {{ t.newlineCharacter }}
             </div>
-            <select
-              ref="returnCode"
-              :value="returnCodeToName[appSetting.returnCode]"
-            >
-              <option value="crlf">CR + LF (Windows)</option>
-              <option value="lf">LF (UNIX/Mac)</option>
-              <option value="cr">CR ({{ t.old90sMac }})</option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="returnCode"
+              :items="[
+                { label: 'CRLF (Windows)', value: 'crlf' },
+                { label: 'LF (UNIX/Mac)', value: 'lf' },
+                { label: `CR (${t.old90sMac})`, value: 'cr' },
+              ]"
+              @change="
+                (value) => {
+                  returnCode = value;
+                }
+              "
+            />
           </div>
           <!-- 自動保存先 -->
           <div class="form-item">
@@ -380,17 +402,22 @@
             <div class="form-item-label-wide">
               {{ t.signOfEvaluation }}
             </div>
-            <select
-              ref="evaluationViewFrom"
-              :value="appSetting.evaluationViewFrom"
-            >
-              <option :value="EvaluationViewFrom.EACH">
-                {{ t.swapEachTurnChange }}
-              </option>
-              <option :value="EvaluationViewFrom.BLACK">
-                {{ t.alwaysSenteIsPositive }}
-              </option>
-            </select>
+            <HorizontalSelector
+              class="selector"
+              :value="evaluationViewFrom"
+              :items="[
+                { label: t.swapEachTurnChange, value: EvaluationViewFrom.EACH },
+                {
+                  label: t.alwaysSenteIsPositive,
+                  value: EvaluationViewFrom.BLACK,
+                },
+              ]"
+              @change="
+                (value) => {
+                  evaluationViewFrom = value;
+                }
+              "
+            />
           </div>
           <!-- 勝率換算係数 -->
           <div class="form-item">
@@ -547,6 +574,7 @@ import {
   Thema,
   BackgroundImageType,
   TextDecodingRule,
+  ClockSoundTarget,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
@@ -600,13 +628,13 @@ const tabPaneType = ref(appSetting.tabPaneType);
 const pieceVolume = ref();
 const clockVolume = ref();
 const clockPitch = ref();
-const clockSoundTarget = ref();
-const textDecodingRule = ref();
-const returnCode = ref();
+const clockSoundTarget = ref(appSetting.clockSoundTarget);
+const textDecodingRule = ref(appSetting.textDecodingRule);
+const returnCode = ref(returnCodeToName[appSetting.returnCode]);
 const autoSaveDirectory = ref();
 const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
 const engineTimeoutSeconds = ref();
-const evaluationViewFrom = ref();
+const evaluationViewFrom = ref(appSetting.evaluationViewFrom);
 const coefficientInSigmoid = ref();
 const badMoveLevelThreshold1 = ref();
 const badMoveLevelThreshold2 = ref();
@@ -650,13 +678,13 @@ const saveAndClose = async () => {
     pieceVolume: readInputAsNumber(pieceVolume.value),
     clockVolume: readInputAsNumber(clockVolume.value),
     clockPitch: readInputAsNumber(clockPitch.value),
-    clockSoundTarget: clockSoundTarget.value.value,
-    textDecodingRule: textDecodingRule.value.value,
-    returnCode: nameToReturnCode[returnCode.value.value],
+    clockSoundTarget: clockSoundTarget.value,
+    textDecodingRule: textDecodingRule.value,
+    returnCode: nameToReturnCode[returnCode.value],
     autoSaveDirectory: autoSaveDirectory.value.value,
     translateEngineOptionName: translateEngineOptionName.value,
     engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
-    evaluationViewFrom: evaluationViewFrom.value.value,
+    evaluationViewFrom: evaluationViewFrom.value,
     coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
     badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
     badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),

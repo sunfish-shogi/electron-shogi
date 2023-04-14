@@ -906,9 +906,8 @@ class Store {
         if (options?.overwrite && path) {
           return path;
         }
-        const defaultPath = defaultRecordFileName(
-          this.recordManager.record.metadata
-        );
+        const defaultPath =
+          path || defaultRecordFileName(this.recordManager.record.metadata);
         return api.showSaveRecordDialog(defaultPath);
       })
       .then((path) => {

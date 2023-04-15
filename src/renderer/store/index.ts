@@ -137,10 +137,9 @@ class Store {
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
       .on("error", refs.pushError.bind(refs));
-    this.researchManager.on(
-      "updateSearchInfo",
-      this.onUpdateSearchInfo.bind(refs)
-    );
+    this.researchManager
+      .on("updateSearchInfo", this.onUpdateSearchInfo.bind(refs))
+      .on("error", this.pushError.bind(refs));
     this.analysisManager
       .on("finish", this.onFinish.bind(refs))
       .on("error", this.pushError.bind(refs));

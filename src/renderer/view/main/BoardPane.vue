@@ -107,6 +107,24 @@
             <span>{{ t.stopAnalysis }}</span>
           </button>
           <button
+            v-if="controlStates.mateSearch"
+            class="control-item"
+            data-hotkey="Control+m"
+            @click="onMateSearch"
+          >
+            <Icon :icon="IconType.MATE_SEARCH" />
+            <span>{{ t.mateSearch }}</span>
+          </button>
+          <button
+            v-if="controlStates.stopMateSearch"
+            class="control-item"
+            data-hotkey="Escape"
+            @click="onStopMateSearch"
+          >
+            <Icon :icon="IconType.END" />
+            <span>{{ t.stopMateSearch }}</span>
+          </button>
+          <button
             v-if="controlStates.startEditPosition"
             class="control-item"
             @click="onStartEditPosition"
@@ -321,6 +339,14 @@ const onEndAnalysis = () => {
   store.stopAnalysis();
 };
 
+const onMateSearch = () => {
+  store.showMateSearchDialog();
+};
+
+const onStopMateSearch = () => {
+  store.stopMateSearch();
+};
+
 const onStartEditPosition = () => {
   store.startPositionEditing();
 };
@@ -404,12 +430,15 @@ const controlStates = computed(() => {
     endResearch: store.appState === AppState.RESEARCH,
     analysis: store.appState === AppState.NORMAL,
     endAnalysis: store.appState === AppState.ANALYSIS,
+    mateSearch: store.appState === AppState.NORMAL,
+    stopMateSearch: store.appState === AppState.MATE_SEARCH,
     startEditPosition: store.appState === AppState.NORMAL,
     endEditPosition: store.appState === AppState.POSITION_EDITING,
     initPosition: store.appState === AppState.POSITION_EDITING,
     removeCurrentMove:
       store.appState === AppState.NORMAL ||
-      store.appState === AppState.RESEARCH,
+      store.appState === AppState.RESEARCH ||
+      store.appState === AppState.MATE_SEARCH,
     engineSettings: store.appState === AppState.NORMAL,
   };
 });

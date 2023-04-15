@@ -51,6 +51,7 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
       }
     ),
     startPonder: jest.fn(() => Promise.resolve()),
+    startMateSearch: jest.fn(() => Promise.resolve()),
     stop: jest.fn(() => Promise.resolve()),
     gameover: jest.fn(() => Promise.resolve()),
     close: jest.fn(() => Promise.resolve()),

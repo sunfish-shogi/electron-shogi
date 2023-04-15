@@ -23,6 +23,10 @@ export class HumanPlayer implements Player {
     // do nothing
   }
 
+  async startMateSearch(): Promise<void> {
+    // do nothing
+  }
+
   async stop(): Promise<void> {
     // do nothing
   }

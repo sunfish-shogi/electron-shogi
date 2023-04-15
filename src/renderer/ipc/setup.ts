@@ -1,7 +1,14 @@
 import { watch } from "vue";
 import { SpecialMove, InitialPositionType } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
-import { onUSIBestMove, onUSIInfo } from "@/renderer/players/usi";
+import {
+  onUSIBestMove,
+  onUSICheckmate,
+  onUSICheckmateNotImplemented,
+  onUSICheckmateTimeout,
+  onUSIInfo,
+  onUSINoMate,
+} from "@/renderer/players/usi";
 import { humanPlayer } from "@/renderer/players/human";
 import { bridge } from "./api";
 import { MenuEvent } from "@/common/control/menu";
@@ -144,6 +151,12 @@ export function setup(): void {
       case MenuEvent.INIT_POSITION_TSUME_SHOGI_2KINGS:
         store.initializePosition(InitialPositionType.TSUME_SHOGI_2KINGS);
         break;
+      case MenuEvent.START_MATE_SEARCH:
+        store.showMateSearchDialog();
+        break;
+      case MenuEvent.STOP_MATE_SEARCH:
+        store.stopMateSearch();
+        break;
       case MenuEvent.START_GAME:
         store.showGameDialog();
         break;
@@ -186,20 +199,18 @@ export function setup(): void {
     }
   });
   bridge.onUSIBestMove(onUSIBestMove);
-  bridge.onUSIInfo(
-    (sessionID: number, usi: string, name: string, json: string) => {
-      const info = JSON.parse(json) as USIInfoCommand;
-      store.updateUSIInfo(sessionID, usi, name, info);
-      onUSIInfo(sessionID, usi, info);
-    }
-  );
-  bridge.onUSIPonderInfo(
-    (sessionID: number, usi: string, name: string, json: string) => {
-      const info = JSON.parse(json) as USIInfoCommand;
-      store.updateUSIPonderInfo(sessionID, usi, name, info);
-      onUSIInfo(sessionID, usi, info);
-    }
-  );
+  bridge.onUSICheckmate(onUSICheckmate);
+  bridge.onUSICheckmateNotImplemented(onUSICheckmateNotImplemented);
+  bridge.onUSICheckmateTimeout(onUSICheckmateTimeout);
+  bridge.onUSINoMate(onUSINoMate);
+  bridge.onUSIInfo((sessionID: number, usi: string, json: string) => {
+    const info = JSON.parse(json) as USIInfoCommand;
+    onUSIInfo(sessionID, usi, info);
+  });
+  bridge.onUSIPonderInfo((sessionID: number, usi: string, json: string) => {
+    const info = JSON.parse(json) as USIInfoCommand;
+    onUSIInfo(sessionID, usi, info);
+  });
   bridge.onCSAGameSummary((sessionID: number, gameSummary: string): void => {
     onCSAGameSummary(sessionID, JSON.parse(gameSummary));
   });

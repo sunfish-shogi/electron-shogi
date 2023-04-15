@@ -6,12 +6,15 @@ import { USIEngineSettings } from "@/common/settings/usi";
 import { LogLevel } from "@/common/log";
 import { Bridge } from "./api";
 import { t } from "@/common/i18n";
+import { defaultCSAGameSettingHistory } from "@/common/settings/csa";
+import { defaultMateSearchSetting } from "@/common/settings/mate";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
   RESEARCH_SETTING = "researchSetting",
   ANALYSIS_SETTING = "analysisSetting",
   GAME_SETTING = "gameSetting",
+  MATE_SEARCH_SETTING = "mateSearchSetting",
   CSA_GAME_SETTING_HISTORY = "csaGameSettingHistory",
 }
 
@@ -106,10 +109,30 @@ export const webAPI: Bridge = {
     localStorage.setItem(STORAGE_KEY.GAME_SETTING, json);
   },
   async loadCSAGameSettingHistory(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+    const json = localStorage.getItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY);
+    if (!json) {
+      return JSON.stringify(defaultCSAGameSettingHistory());
+    }
+    return JSON.stringify({
+      ...defaultCSAGameSettingHistory(),
+      ...JSON.parse(json),
+    });
   },
   async saveCSAGameSettingHistory(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY, json);
+  },
+  async loadMateSearchSetting(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.MATE_SEARCH_SETTING);
+    if (!json) {
+      return JSON.stringify(defaultMateSearchSetting());
+    }
+    return JSON.stringify({
+      ...defaultMateSearchSetting(),
+      ...JSON.parse(json),
+    });
+  },
+  async saveMateSearchSetting(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.MATE_SEARCH_SETTING, json);
   },
   async loadUSIEngineSetting(): Promise<string> {
     return new USIEngineSettings().json;
@@ -139,6 +162,9 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   async usiGoInfinite(): Promise<void> {
+    // Do Nothing
+  },
+  async usiGoMate(): Promise<void> {
     // Do Nothing
   },
   async usiStop(): Promise<void> {
@@ -197,6 +223,18 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   onUSIBestMove(): void {
+    // Do Nothing
+  },
+  onUSICheckmate(): void {
+    // Do Nothing
+  },
+  onUSICheckmateNotImplemented(): void {
+    // Do Nothing
+  },
+  onUSICheckmateTimeout(): void {
+    // Do Nothing
+  },
+  onUSINoMate(): void {
     // Do Nothing
   },
   onUSIInfo(): void {

@@ -29,6 +29,8 @@ function onReadLine(line) {
     console.log("usiok");
   } else if (line === "isready") {
     console.log("readyok");
+  } else if (line.startsWith("go mate ")) {
+    console.log("checkmate notimplemented");
   } else if (line.startsWith("go ")) {
     console.log("bestmove resign");
   } else if (line === "quit") {

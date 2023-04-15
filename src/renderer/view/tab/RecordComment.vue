@@ -20,12 +20,6 @@
         </button>
       </div>
     </div>
-    <PVPreviewDialog
-      v-if="preview"
-      :position="preview.position"
-      :pv="preview.pv"
-      @close="closePreview"
-    />
   </div>
 </template>
 
@@ -35,14 +29,8 @@ import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
 import { computed, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
-import PVPreviewDialog from "@/renderer/view/dialog/PVPreviewDialog.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { Move } from "@/common/shogi";
-
-type Preview = {
-  position: string;
-  pv: string[];
-};
 
 const store = useStore();
 const readonly = computed(
@@ -51,7 +39,6 @@ const readonly = computed(
 const textarea = ref();
 const comment = computed(() => store.record.current.comment);
 const pvs = computed(() => store.inCommentPVs);
-const preview = ref<Preview | null>(null);
 
 const change = (event: Event) => {
   const comment = (event.target as HTMLTextAreaElement).value;
@@ -59,14 +46,10 @@ const change = (event: Event) => {
 };
 
 const play = (pv: Move[]) => {
-  preview.value = {
-    position: store.record.position.sfen,
-    pv: pv.map((move) => move.usi),
-  };
-};
-
-const closePreview = () => {
-  preview.value = null;
+  store.showPVPreviewDialog({
+    position: store.record.position,
+    pv: pv,
+  });
 };
 
 onMounted(() => {

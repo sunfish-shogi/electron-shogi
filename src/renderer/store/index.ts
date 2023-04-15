@@ -11,6 +11,7 @@ import {
   getSpecialMoveDisplayString,
   exportKakinoki,
   RecordMetadataKey,
+  ImmutablePosition,
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
@@ -34,6 +35,7 @@ import * as uri from "@/common/uri";
 import { Confirmation } from "./confirm";
 import { AnalysisManager } from "./analysis";
 import { AnalysisSetting } from "@/common/settings/analysis";
+import { MateSearchSetting } from "@/common/settings/mate";
 import { LogLevel } from "@/common/log";
 import { formatPercentage, toString } from "@/common/helpers/string";
 import { CSAGameManager, CSAGameState } from "./csa";
@@ -48,6 +50,13 @@ import { ResearchManager } from "./research";
 import { SearchInfo } from "@/renderer/players/player";
 import { useAppSetting } from "./setting";
 import { t } from "@/common/i18n";
+import { MateSearchManager } from "./mate";
+
+type PVPreview = {
+  position: ImmutablePosition;
+  pv: Move[];
+  infos?: string[];
+};
 
 function getMessageAttachmentsByGameResults(
   results: GameResults
@@ -90,6 +99,7 @@ class Store {
   private _appState = AppState.NORMAL;
   private _isAppSettingDialogVisible = false;
   private _confirmation?: Confirmation & { appState: AppState };
+  private _pvPreview?: PVPreview;
   private usiMonitor = new USIMonitor();
   private blackClock = new Clock();
   private whiteClock = new Clock();
@@ -105,6 +115,7 @@ class Store {
   );
   private researchManager = new ResearchManager();
   private analysisManager = new AnalysisManager(this.recordManager);
+  private mateSearchManager = new MateSearchManager();
   private _reactive: UnwrapNestedRefs<Store>;
 
   constructor() {
@@ -143,6 +154,11 @@ class Store {
     this.analysisManager
       .on("finish", this.onFinish.bind(refs))
       .on("error", this.pushError.bind(refs));
+    this.mateSearchManager
+      .on("checkmate", this.onCheckmate.bind(refs))
+      .on("notImplemented", this.onNotImplemented.bind(refs))
+      .on("noMate", this.onNoMate.bind(refs))
+      .on("error", this.onCheckmateError.bind(refs));
     this._reactive = refs;
   }
 
@@ -273,6 +289,18 @@ class Store {
     this._confirmation = undefined;
   }
 
+  get pvPreview(): PVPreview | undefined {
+    return this._pvPreview;
+  }
+
+  showPVPreviewDialog(pvPreview: PVPreview): void {
+    this._pvPreview = pvPreview;
+  }
+
+  closePVPreviewDialog(): void {
+    this._pvPreview = undefined;
+  }
+
   showPasteDialog(): void {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.PASTE_DIALOG;
@@ -303,6 +331,12 @@ class Store {
     }
   }
 
+  showMateSearchDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.MATE_SEARCH_DIALOG;
+    }
+  }
+
   showUsiEngineManagementDialog(): void {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.USI_ENGINE_SETTING_DIALOG;
@@ -322,6 +356,7 @@ class Store {
       this.appState === AppState.CSA_GAME_DIALOG ||
       this.appState === AppState.RESEARCH_DIALOG ||
       this.appState === AppState.ANALYSIS_DIALOG ||
+      this.appState === AppState.MATE_SEARCH_DIALOG ||
       this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
       this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG
     ) {
@@ -696,6 +731,88 @@ class Store {
       return;
     }
     this.analysisManager.close();
+    this._appState = AppState.NORMAL;
+  }
+
+  startMateSearch(mateSearchSetting: MateSearchSetting): void {
+    if (this.appState !== AppState.MATE_SEARCH_DIALOG || this.isBussy) {
+      return;
+    }
+    this.retainBussyState();
+    if (!mateSearchSetting.usi) {
+      this.pushError(new Error("エンジンが設定されていません。"));
+      return;
+    }
+    api
+      .saveMateSearchSetting(mateSearchSetting)
+      .then(() =>
+        this.mateSearchManager.start(
+          mateSearchSetting,
+          this.recordManager.record
+        )
+      )
+      .then(() => {
+        this._appState = AppState.MATE_SEARCH;
+        this.usiMonitor.clear();
+        const appSetting = useAppSetting();
+        if (appSetting.tab !== Tab.SEARCH && appSetting.tab !== Tab.PV) {
+          useAppSetting().updateAppSetting({ tab: Tab.SEARCH });
+        }
+      })
+      .catch((e) => {
+        this.pushError("詰将棋探索の初期化中にエラーが出ました: " + e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
+  }
+
+  stopMateSearch(): void {
+    if (this.appState !== AppState.MATE_SEARCH) {
+      return;
+    }
+    this.mateSearchManager.close();
+    this._appState = AppState.NORMAL;
+  }
+
+  onCheckmate(moves: Move[]): void {
+    if (this.appState !== AppState.MATE_SEARCH) {
+      return;
+    }
+    this._appState = AppState.NORMAL;
+    const position = this.recordManager.record.position;
+    this.showConfirmation({
+      message: t.mateInNPlyDoYouWantToDisplay(moves.length),
+      onOk: () => {
+        this.showPVPreviewDialog({
+          position,
+          pv: moves,
+        });
+      },
+    });
+  }
+
+  onNotImplemented(): void {
+    if (this.appState !== AppState.MATE_SEARCH) {
+      return;
+    }
+    this.pushError(new Error(t.thisEngineNotSupportsMateSearch));
+    this._appState = AppState.NORMAL;
+  }
+
+  onNoMate(): void {
+    if (this.appState !== AppState.MATE_SEARCH) {
+      return;
+    }
+    this.enqueueMessage({ text: t.noMateFound });
+    this._appState = AppState.NORMAL;
+  }
+
+  onCheckmateError(e: unknown): void {
+    if (this.appState !== AppState.MATE_SEARCH) {
+      return;
+    }
+    this.pushError(e);
     this._appState = AppState.NORMAL;
   }
 

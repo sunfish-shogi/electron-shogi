@@ -6,15 +6,17 @@ import {
   USIEngineSetting,
   USIPonder,
 } from "@/common/settings/usi";
-import { Color, ImmutableRecord, Position } from "@/common/shogi";
-import { Player, SearchInfo, SearchHandler } from "./player";
+import { Color, ImmutableRecord, Move, Position } from "@/common/shogi";
+import { Player, SearchInfo, SearchHandler, MateHandler } from "./player";
 import { GameResult } from "@/common/player";
+import { useStore } from "../store";
 
 export class USIPlayer implements Player {
   private sessionID = 0;
   private usi?: string;
   private position?: Position;
   private searchHandler?: SearchHandler;
+  private mateHandler?: MateHandler;
   private ponder?: string;
   private inPonder = false;
   private info?: SearchInfo;
@@ -25,6 +27,10 @@ export class USIPlayer implements Player {
     private timeoutSeconds: number,
     private onSearchInfo?: (info: SearchInfo) => void
   ) {}
+
+  get name(): string {
+    return this.setting.name;
+  }
 
   async launch(): Promise<void> {
     this.sessionID = await api.usiLaunch(this.setting, this.timeoutSeconds);
@@ -42,6 +48,7 @@ export class USIPlayer implements Player {
     whiteTimeMs: number,
     handler: SearchHandler
   ): Promise<void> {
+    this.clearHandlers();
     this.searchHandler = handler;
     this.usi = record.usi;
     this.position = record.position.clone();
@@ -77,7 +84,7 @@ export class USIPlayer implements Player {
     if (ponderSetting !== "true") {
       return;
     }
-    this.searchHandler = undefined;
+    this.clearHandlers();
     this.usi = this.ponder;
     this.position = record.position.clone();
     const ponderMove = this.position.createMoveByUSI(
@@ -98,8 +105,20 @@ export class USIPlayer implements Player {
     );
   }
 
+  async startMateSearch(
+    record: ImmutableRecord,
+    handler: MateHandler
+  ): Promise<void> {
+    this.clearHandlers();
+    this.usi = record.usi;
+    this.info = undefined;
+    this.position = record.position.clone();
+    this.mateHandler = handler;
+    await api.usiGoMate(this.sessionID, this.usi);
+  }
+
   async startResearch(record: ImmutableRecord): Promise<void> {
-    this.searchHandler = undefined;
+    this.clearHandlers();
     this.usi = record.usi;
     this.info = undefined;
     this.position = record.position.clone();
@@ -115,35 +134,42 @@ export class USIPlayer implements Player {
   }
 
   async close(): Promise<void> {
-    this.searchHandler = undefined;
+    this.clearHandlers();
     await api.usiQuit(this.sessionID);
     delete usiPlayers[this.sessionID];
   }
 
-  onBestMove(usi: string, sfen: string, ponder?: string): void {
-    const searchHandler = this.searchHandler;
+  private clearHandlers(): void {
     this.searchHandler = undefined;
+    this.mateHandler = undefined;
+  }
+
+  onBestMove(usi: string, usiMove: string, ponder?: string): void {
+    const searchHandler = this.searchHandler;
+    this.clearHandlers();
     if (!searchHandler || !this.position) {
       return;
     }
     if (usi !== this.usi) {
       return;
     }
-    if (sfen === "resign") {
+    if (usiMove === "resign") {
       searchHandler.onResign();
       return;
     }
-    if (sfen === "win") {
+    if (usiMove === "win") {
       searchHandler.onWin();
       return;
     }
-    const move = this.position.createMoveByUSI(sfen);
+    const move = this.position.createMoveByUSI(usiMove);
     if (!move) {
-      searchHandler.onError("エンジンから不明な指し手を受信しました:" + sfen);
+      searchHandler.onError(
+        "エンジンから不明な指し手を受信しました:" + usiMove
+      );
       searchHandler.onResign();
       return;
     }
-    this.ponder = ponder && `${usi} ${sfen} ${ponder}`;
+    this.ponder = ponder && `${usi} ${usiMove} ${ponder}`;
     this.flushUSIInfo();
     if (
       this.info &&
@@ -158,6 +184,66 @@ export class USIPlayer implements Player {
       searchHandler.onMove(move, info);
     } else {
       searchHandler.onMove(move);
+    }
+  }
+
+  onCheckmate(usi: string, usiMoves: string[]): void {
+    if (usi !== this.usi || !this.position) {
+      return;
+    }
+    const mateHandler = this.mateHandler;
+    this.clearHandlers();
+    if (!mateHandler) {
+      return;
+    }
+    const position = this.position;
+    const moves: Move[] = [];
+    for (const usiMove of usiMoves) {
+      const move = position.createMoveByUSI(usiMove);
+      if (!move) {
+        mateHandler.onError(
+          "エンジンから不明な指し手を受信しました:" + usiMove
+        );
+        return;
+      }
+      moves.push(move);
+      if (!position.doMove(move)) {
+        mateHandler.onError(
+          "エンジンから無効な指し手を受信しました:" + usiMove
+        );
+        return;
+      }
+    }
+    mateHandler.onCheckmate(moves);
+  }
+
+  onCheckmateNotImplemented(): void {
+    const mateHandler = this.mateHandler;
+    this.clearHandlers();
+    if (mateHandler) {
+      mateHandler.onNotImplemented();
+    }
+  }
+
+  onCheckmateTimeout(usi: string): void {
+    if (usi !== this.usi || !this.position) {
+      return;
+    }
+    const mateHandler = this.mateHandler;
+    this.clearHandlers();
+    if (mateHandler) {
+      mateHandler.onTimeout();
+    }
+  }
+
+  onNoMate(usi: string): void {
+    if (usi !== this.usi || !this.position) {
+      return;
+    }
+    const mateHandler = this.mateHandler;
+    this.clearHandlers();
+    if (mateHandler) {
+      mateHandler.onNoMate();
     }
   }
 
@@ -212,14 +298,53 @@ const usiPlayers: { [sessionID: number]: USIPlayer } = {};
 export function onUSIBestMove(
   sessionID: number,
   usi: string,
-  sfen: string,
+  usiMove: string,
   ponder?: string
 ) {
   const player = usiPlayers[sessionID];
   if (!player) {
     return;
   }
-  player.onBestMove(usi, sfen, ponder);
+  player.onBestMove(usi, usiMove, ponder);
+}
+
+export function onUSICheckmate(
+  sessionID: number,
+  usi: string,
+  usiMoves: string[]
+) {
+  const player = usiPlayers[sessionID];
+  if (!player) {
+    return;
+  }
+  useStore().updateUSIInfo(sessionID, usi, player.name, {
+    pv: usiMoves,
+  });
+  player.onCheckmate(usi, usiMoves);
+}
+
+export function onUSICheckmateNotImplemented(sessionID: number) {
+  const player = usiPlayers[sessionID];
+  if (!player) {
+    return;
+  }
+  player.onCheckmateNotImplemented();
+}
+
+export function onUSICheckmateTimeout(sessionID: number, usi: string) {
+  const player = usiPlayers[sessionID];
+  if (!player) {
+    return;
+  }
+  player.onCheckmateTimeout(usi);
+}
+
+export function onUSINoMate(sessionID: number, usi: string) {
+  const player = usiPlayers[sessionID];
+  if (!player) {
+    return;
+  }
+  player.onNoMate(usi);
 }
 
 export function onUSIInfo(
@@ -231,5 +356,19 @@ export function onUSIInfo(
   if (!player) {
     return;
   }
+  useStore().updateUSIInfo(sessionID, usi, player.name, info);
+  player.onUSIInfo(usi, info);
+}
+
+export function onUSIPonderInfo(
+  sessionID: number,
+  usi: string,
+  info: USIInfoCommand
+) {
+  const player = usiPlayers[sessionID];
+  if (!player) {
+    return;
+  }
+  useStore().updateUSIPonderInfo(sessionID, usi, player.name, info);
   player.onUSIInfo(usi, info);
 }

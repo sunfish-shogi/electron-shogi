@@ -5,13 +5,13 @@
         <Icon :icon="IconType.BUSSY" />
         <div class="message">
           <span v-if="store.csaGameState === CSAGameState.READY">
-            対局の開始を待っています。
+            {{ t.waitingForNewGame }}
           </span>
           <span v-if="store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL">
-            CSAサーバーへのログインを{{ remainingSeconds }}秒後に再試行します。
+            {{ t.tryToReloginToCSAServerNSecondsLater(remainingSeconds) }}
           </span>
           <span v-if="store.csaGameState === CSAGameState.WAITING_LOGIN">
-            CSAサーバーへの接続とログインを試みています。メッセージボックスが表示されている場合は閉じてください。
+            {{ t.tryingToConnectAndLoginToCSAServer }}
           </span>
         </div>
       </div>
@@ -23,7 +23,7 @@
         class="main-buttons"
       >
         <button autofocus data-hotkey="Escape" @click="onLogout()">
-          対局をキャンセル
+          {{ t.cancelGame }}
         </button>
       </div>
     </dialog>
@@ -41,6 +41,7 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import { CSAGameState, loginRetryIntervalSeconds } from "@/renderer/store/csa";
+import { t } from "@/common/i18n";
 
 const store = useStore();
 const dialog = ref();

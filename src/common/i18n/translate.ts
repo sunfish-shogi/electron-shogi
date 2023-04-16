@@ -200,6 +200,7 @@ type Texts = {
   adjustBoardToHumanPlayer: string;
   adjustBoardAutomatically: string;
   startGame: string;
+  cancelGame: string;
   allottedTime: string;
   byoyomi: string;
   increments: string;
@@ -293,6 +294,8 @@ type Texts = {
   blunderThreshold: string;
   typeCustomTitleHere: string;
   displayEmptyElements: string;
+  waitingForNewGame: string;
+  tryingToConnectAndLoginToCSAServer: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
   canOpenLogDirectoryFromMenu: string;
@@ -357,6 +360,7 @@ type Texts = {
   dubiousThresholdMustBeLessThanMistakeThreshold: string;
   mistakeThresholdMustBeLessThanBlunderThreshold: string;
   thisEngineNotSupportsMateSearch: string;
+  tryToReloginToCSAServerNSecondsLater: (n: number) => string;
   mateInNPlyDoYouWantToDisplay: (n: number) => string;
   errorsOccurred: (n: number) => string;
   between: (a: unknown, b: unknown) => string;
@@ -570,6 +574,7 @@ const ja: Texts = {
   adjustBoardToHumanPlayer: "人を手前に表示する",
   adjustBoardAutomatically: "盤面の向きを自動調整",
   startGame: "対局開始",
+  cancelGame: "対局をキャンセル",
   allottedTime: "持ち時間",
   byoyomi: "秒読み",
   increments: "増加",
@@ -663,6 +668,9 @@ const ja: Texts = {
   blunderThreshold: "大悪手の閾値",
   typeCustomTitleHere: "ここに見出しを入力",
   displayEmptyElements: "未入力の項目を表示",
+  waitingForNewGame: "対局開始を待っています。",
+  tryingToConnectAndLoginToCSAServer:
+    "CSAサーバーへの接続とログインを試みています。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
   shouldRestartToApplyLogSettings:
@@ -756,6 +764,8 @@ const ja: Texts = {
     "悪手には大悪手より小さい値を指定してください。",
   thisEngineNotSupportsMateSearch:
     "このエンジンは詰将棋探索をサポートしていません。",
+  tryToReloginToCSAServerNSecondsLater: (n) =>
+    `CSAサーバーへのログインを${n}秒後に再試行します。`,
   mateInNPlyDoYouWantToDisplay: (n) =>
     `${n}手で詰みました。再生画面を表示しますか？`,
   errorsOccurred: (n) => `${n} 種類のエラーが発生しました。`,
@@ -979,6 +989,7 @@ const en: Texts = {
   adjustBoardToHumanPlayer: "Adjust Board to Human Player",
   adjustBoardAutomatically: "Adjust Board Automatically",
   startGame: "Start Game",
+  cancelGame: "Cancel Game",
   allottedTime: "Allotted Time",
   byoyomi: "Byoyomi",
   increments: "Increments",
@@ -1072,6 +1083,9 @@ const en: Texts = {
   blunderThreshold: "Blunder Threshold",
   typeCustomTitleHere: "Type custom title here",
   displayEmptyElements: "Display Empty Elements",
+  waitingForNewGame: "Waiting for new game.",
+  tryingToConnectAndLoginToCSAServer:
+    "Trying to connect and login to CSA server.",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
   shouldRestartToApplyLogSettings:
@@ -1158,6 +1172,8 @@ const en: Texts = {
   mistakeThresholdMustBeLessThanBlunderThreshold:
     "Mistake threshold must be less than blunder threshold.",
   thisEngineNotSupportsMateSearch: "This engine does not support mate search.",
+  tryToReloginToCSAServerNSecondsLater: (n) =>
+    `Try to relogin to CSA server ${n} seconds later.`,
   mateInNPlyDoYouWantToDisplay: (n) =>
     `Mate in ${n} ply. Do you want to display?`,
   errorsOccurred: (n) =>

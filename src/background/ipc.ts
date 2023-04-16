@@ -15,12 +15,14 @@ import {
   loadAppSetting,
   loadCSAGameSettingHistory,
   loadGameSetting,
+  loadMateSearchSetting,
   loadResearchSetting,
   loadUSIEngineSetting,
   saveAnalysisSetting,
   saveAppSetting,
   saveCSAGameSettingHistory,
   saveGameSetting,
+  saveMateSearchSetting,
   saveResearchSetting,
   saveUSIEngineSetting,
 } from "@/background/settings";
@@ -35,6 +37,7 @@ import {
   go as usiGo,
   goPonder as usiGoPonder,
   goInfinite as usiGoInfinite,
+  goMate as usiGoMate,
   ponderHit as usiPonderHit,
   quit as usiQuit,
   sendSetOptionCommand as usiSendSetOptionCommand,
@@ -364,6 +367,21 @@ ipcMain.handle(
   }
 );
 
+ipcMain.handle(Background.LOAD_MATE_SEARCH_SETTING, (event): string => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load mate search setting");
+  return JSON.stringify(loadMateSearchSetting());
+});
+
+ipcMain.handle(
+  Background.SAVE_MATE_SEARCH_SETTING,
+  (event, json: string): void => {
+    validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save mate search setting");
+    saveMateSearchSetting(JSON.parse(json));
+  }
+);
+
 ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load USI engine setting");
@@ -475,6 +493,14 @@ ipcMain.handle(
   }
 );
 
+ipcMain.handle(
+  Background.USI_GO_MATE,
+  (event, sessionID: number, usi: string) => {
+    validateIPCSender(event.senderFrame);
+    usiGoMate(sessionID, usi);
+  }
+);
+
 ipcMain.handle(Background.USI_STOP, (event, sessionID: number) => {
   validateIPCSender(event.senderFrame);
   usiStop(sessionID);
@@ -575,29 +601,50 @@ export function onMenuEvent(event: MenuEvent): void {
 export function onUSIBestMove(
   sessionID: number,
   usi: string,
-  sfen: string,
+  usiMove: string,
   ponder?: string
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_BEST_MOVE,
     sessionID,
     usi,
-    sfen,
+    usiMove,
     ponder
   );
+}
+
+export function onUSICheckmate(
+  sessionID: number,
+  usi: string,
+  usiMoves: string[]
+): void {
+  mainWindow.webContents.send(Renderer.USI_CHECKMATE, sessionID, usi, usiMoves);
+}
+
+export function onUSICheckmateNotImplemented(sessionID: number): void {
+  mainWindow.webContents.send(
+    Renderer.USI_CHECKMATE_NOT_IMPLEMENTED,
+    sessionID
+  );
+}
+
+export function onUSICheckmateTimeout(sessionID: number, usi: string): void {
+  mainWindow.webContents.send(Renderer.USI_CHECKMATE_TIMEOUT, sessionID, usi);
+}
+
+export function onUSINoMate(sessionID: number, usi: string): void {
+  mainWindow.webContents.send(Renderer.USI_NO_MATE, sessionID, usi);
 }
 
 export function onUSIInfo(
   sessionID: number,
   usi: string,
-  name: string,
   info: USIInfoCommand
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_INFO,
     sessionID,
     usi,
-    name,
     JSON.stringify(info)
   );
 }
@@ -605,14 +652,12 @@ export function onUSIInfo(
 export function onUSIPonderInfo(
   sessionID: number,
   usi: string,
-  name: string,
   info: USIInfoCommand
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_PONDER_INFO,
     sessionID,
     usi,
-    name,
     JSON.stringify(info)
   );
 }

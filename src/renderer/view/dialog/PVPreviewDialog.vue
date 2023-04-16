@@ -85,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { Move, Position, Record } from "@/common/shogi";
+import { ImmutablePosition, Move, Record } from "@/common/shogi";
 import {
   onMounted,
   PropType,
@@ -108,11 +108,11 @@ import { useAppSetting } from "@/renderer/store/setting";
 
 const props = defineProps({
   position: {
-    type: String,
+    type: Object as PropType<ImmutablePosition>,
     required: true,
   },
   pv: {
-    type: Array as PropType<string[]>,
+    type: Array as PropType<Move[]>,
     required: true,
   },
   infos: {
@@ -136,16 +136,8 @@ const updateSize = () => {
 };
 
 const updateRecord = () => {
-  const position = Position.newBySFEN(props.position);
-  if (!position) {
-    return;
-  }
-  record.clear(position);
-  for (const usiMove of props.pv) {
-    const move = record.position.createMoveByUSI(usiMove);
-    if (!move) {
-      break;
-    }
+  record.clear(props.position);
+  for (const move of props.pv) {
     record.append(move, { ignoreValidation: true });
   }
   record.goto(1);

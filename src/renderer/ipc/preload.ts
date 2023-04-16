@@ -89,6 +89,12 @@ const api: Bridge = {
   async saveCSAGameSettingHistory(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_CSA_GAME_SETTING_HISTORY, json);
   },
+  async loadMateSearchSetting(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_MATE_SEARCH_SETTING);
+  },
+  async saveMateSearchSetting(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_MATE_SEARCH_SETTING, json);
+  },
   async loadUSIEngineSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_USI_ENGINE_SETTING);
   },
@@ -165,6 +171,9 @@ const api: Bridge = {
   async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
     await ipcRenderer.invoke(Background.USI_GO_INFINITE, sessionID, usi);
   },
+  async usiGoMate(sessionID: number, usi: string): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_GO_MATE, sessionID, usi);
+  },
   async usiStop(sessionID: number): Promise<void> {
     await ipcRenderer.invoke(Background.USI_STOP, sessionID);
   },
@@ -224,43 +233,54 @@ const api: Bridge = {
     callback: (
       sessionID: number,
       usi: string,
-      sfen: string,
+      usiMove: string,
       ponder?: string
     ) => void
   ): void {
     ipcRenderer.on(
       Renderer.USI_BEST_MOVE,
-      (_, sessionID, usi, sfen, ponder) => {
-        callback(sessionID, usi, sfen, ponder);
+      (_, sessionID, usi, usiMove, ponder) => {
+        callback(sessionID, usi, usiMove, ponder);
       }
     );
   },
-  onUSIInfo(
-    callback: (
-      sessionID: number,
-      usi: string,
-      name: string,
-      json: string
-    ) => void
+  onUSICheckmate(
+    callback: (sessionID: number, usi: string, moves: string[]) => void
   ): void {
-    ipcRenderer.on(Renderer.USI_INFO, (_, sessionID, usi, name, json) => {
-      callback(sessionID, usi, name, json);
+    ipcRenderer.on(Renderer.USI_CHECKMATE, (_, sessionID, usi, moves) => {
+      callback(sessionID, usi, moves);
+    });
+  },
+  onUSICheckmateNotImplemented(callback: (sessionID: number) => void): void {
+    ipcRenderer.on(Renderer.USI_CHECKMATE_NOT_IMPLEMENTED, (_, sessionID) => {
+      callback(sessionID);
+    });
+  },
+  onUSICheckmateTimeout(
+    callback: (sessionID: number, usi: string) => void
+  ): void {
+    ipcRenderer.on(Renderer.USI_CHECKMATE_TIMEOUT, (_, sessionID, usi) => {
+      callback(sessionID, usi);
+    });
+  },
+  onUSINoMate(callback: (sessionID: number, usi: string) => void): void {
+    ipcRenderer.on(Renderer.USI_NO_MATE, (_, sessionID, usi) => {
+      callback(sessionID, usi);
+    });
+  },
+  onUSIInfo(
+    callback: (sessionID: number, usi: string, json: string) => void
+  ): void {
+    ipcRenderer.on(Renderer.USI_INFO, (_, sessionID, usi, json) => {
+      callback(sessionID, usi, json);
     });
   },
   onUSIPonderInfo(
-    callback: (
-      sessionID: number,
-      usi: string,
-      name: string,
-      json: string
-    ) => void
+    callback: (sessionID: number, usi: string, json: string) => void
   ): void {
-    ipcRenderer.on(
-      Renderer.USI_PONDER_INFO,
-      (_, sessionID, usi, name, json) => {
-        callback(sessionID, usi, name, json);
-      }
-    );
+    ipcRenderer.on(Renderer.USI_PONDER_INFO, (_, sessionID, usi, json) => {
+      callback(sessionID, usi, json);
+    });
   },
   onCSAGameSummary(
     callback: (sessionID: number, gameSummary: string) => void

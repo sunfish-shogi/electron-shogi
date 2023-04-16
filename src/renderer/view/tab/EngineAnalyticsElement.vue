@@ -95,13 +95,6 @@
           </div>
         </div>
       </div>
-      <PVPreviewDialog
-        v-if="preview"
-        :position="preview.position"
-        :pv="preview.pv"
-        :infos="preview.infos"
-        @close="closePreview"
-      />
     </div>
   </div>
 </template>
@@ -109,19 +102,13 @@
 <script setup lang="ts">
 import { t } from "@/common/i18n";
 import { USIIteration, USIPlayerMonitor } from "@/renderer/store/usi";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
-import PVPreviewDialog from "@/renderer/view/dialog/PVPreviewDialog.vue";
 import { EvaluationViewFrom } from "@/common/settings/app";
-import { Color } from "@/common/shogi";
+import { Color, Move, Position } from "@/common/shogi";
 import { useAppSetting } from "@/renderer/store/setting";
-
-type Preview = {
-  position: string;
-  pv: string[];
-  infos: string[];
-};
+import { useStore } from "@/renderer/store";
 
 const props = defineProps({
   historyMode: {
@@ -154,8 +141,6 @@ const enableHighlight = computed(() => {
   return false;
 });
 
-const preview = ref<Preview | null>(null);
-
 const evaluationViewFrom = computed(() => {
   return useAppSetting().evaluationViewFrom;
 });
@@ -170,6 +155,19 @@ const getDisplayScore = (
 };
 
 const showPreview = (ite: USIIteration) => {
+  const position = Position.newBySFEN(ite.position);
+  if (!position) {
+    return;
+  }
+  const pos = position.clone();
+  const pv: Move[] = [];
+  for (const usiMove of ite.pv || []) {
+    const move = pos.createMoveByUSI(usiMove);
+    if (!move || !pos.doMove(move)) {
+      break;
+    }
+    pv.push(move);
+  }
   const infos = [];
   if (ite.depth !== undefined) {
     infos.push(`深さ=${ite.depth}`);
@@ -204,15 +202,11 @@ const showPreview = (ite: USIIteration) => {
   if (ite.multiPV) {
     infos.push(`順位=${ite.multiPV}`);
   }
-  preview.value = {
-    position: ite.position,
-    pv: ite.pv || [],
+  useStore().showPVPreviewDialog({
+    position,
+    pv,
     infos: [infos.join(" / ")],
-  };
-};
-
-const closePreview = () => {
-  preview.value = null;
+  });
 };
 </script>
 

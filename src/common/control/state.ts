@@ -11,5 +11,7 @@ export enum AppState {
   RESEARCH_DIALOG = "researchDialog",
   ANALYSIS = "analysis",
   ANALYSIS_DIALOG = "analysisDialog",
+  MATE_SEARCH = "mateSearch",
+  MATE_SEARCH_DIALOG = "mateSearchDialog",
   USI_ENGINE_SETTING_DIALOG = "usiEngineSettingDialog",
 }

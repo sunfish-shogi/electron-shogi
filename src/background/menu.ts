@@ -125,57 +125,69 @@ function createMenuTemplate() {
             menuItem(t.interrupt, MenuEvent.INSERT_INTERRUPT, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.resign, MenuEvent.INSERT_RESIGN, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.draw, MenuEvent.INSERT_DRAW, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.impass, MenuEvent.INSERT_IMPASS, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.repetitionDraw, MenuEvent.INSERT_REPETITION_DRAW, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.mate, MenuEvent.INSERT_MATE, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.timeout, MenuEvent.INSERT_TIMEOUT, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.foulWin, MenuEvent.INSERT_FOUL_WIN, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.foulLose, MenuEvent.INSERT_FOUL_LOSE, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.enteringOfKing, MenuEvent.INSERT_ENTERING_OF_KING, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.winByDefault, MenuEvent.INSERT_WIN_BY_DEFAULT, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
             menuItem(t.loseByDefault, MenuEvent.INSERT_LOSE_BY_DEFAULT, [
               AppState.NORMAL,
               AppState.RESEARCH,
+              AppState.MATE_SEARCH,
             ]),
           ],
         },
         menuItem(
           t.deleteMoves,
           MenuEvent.REMOVE_CURRENT_MOVE,
-          [AppState.NORMAL, AppState.RESEARCH],
+          [AppState.NORMAL, AppState.RESEARCH, AppState.MATE_SEARCH],
           "CmdOrCtrl+D"
         ),
         { type: "separator" },
@@ -265,6 +277,15 @@ function createMenuTemplate() {
         menuItem(t.winByDeclaration, MenuEvent.WIN, [AppState.CSA_GAME]),
         { type: "separator" },
         menuItem(t.logout, MenuEvent.LOGOUT, [AppState.CSA_GAME]),
+      ],
+    },
+    {
+      label: t.mateSearch,
+      submenu: [
+        menuItem(t.mateSearch, MenuEvent.START_MATE_SEARCH, [AppState.NORMAL]),
+        menuItem(t.stopMateSearch, MenuEvent.STOP_MATE_SEARCH, [
+          AppState.MATE_SEARCH,
+        ]),
       ],
     },
     {

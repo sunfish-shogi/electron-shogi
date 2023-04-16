@@ -37,6 +37,11 @@ import {
 } from "@/common/settings/csa";
 import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
 import { getPortableExeDir, isTest } from "./environment";
+import {
+  MateSearchSetting,
+  defaultMateSearchSetting,
+  normalizeMateSearchSetting,
+} from "@/common/settings/mate";
 
 const userDir = !isTest() ? app.getPath("userData") : "";
 const rootDir = getPortableExeDir() || userDir;
@@ -204,5 +209,24 @@ export function loadAnalysisSetting(): AnalysisSetting {
   }
   return normalizeAnalysisSetting(
     JSON.parse(fs.readFileSync(analysisSettingPath, "utf8"))
+  );
+}
+
+const mateSearchSettingPath = path.join(rootDir, "mate_search_setting.json");
+
+export function saveMateSearchSetting(setting: MateSearchSetting): void {
+  fs.writeFileSync(
+    mateSearchSettingPath,
+    JSON.stringify(setting, undefined, 2),
+    "utf8"
+  );
+}
+
+export function loadMateSearchSetting(): MateSearchSetting {
+  if (!fs.existsSync(mateSearchSettingPath)) {
+    return defaultMateSearchSetting();
+  }
+  return normalizeMateSearchSetting(
+    JSON.parse(fs.readFileSync(mateSearchSettingPath, "utf8"))
   );
 }

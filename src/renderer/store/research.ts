@@ -28,17 +28,25 @@ type UpdateSearchInfoCallback = (
 
 export class ResearchManager {
   private engines: USIPlayer[] = [];
-  private onUpdateSearchInfo?: (
-    type: SearchInfoSenderType,
-    info: SearchInfo
-  ) => void;
+  private onUpdateSearchInfo: UpdateSearchInfoCallback = () => {
+    /* noop */
+  };
+  private onError: ErrorCallback = () => {
+    /* noop */
+  };
 
-  on(event: "updateSearchInfo", callback: UpdateSearchInfoCallback): void;
-  on(event: string, callback: unknown): void {
+  on(event: "updateSearchInfo", handler: UpdateSearchInfoCallback): this;
+  on(event: "error", handler: ErrorCallback): this;
+  on(event: string, handler: unknown): this {
     switch (event) {
       case "updateSearchInfo":
-        this.onUpdateSearchInfo = callback as UpdateSearchInfoCallback;
+        this.onUpdateSearchInfo = handler as UpdateSearchInfoCallback;
+        break;
+      case "error":
+        this.onError = handler as ErrorCallback;
+        break;
     }
+    return this;
   }
 
   async launch(setting: ResearchSetting) {
@@ -70,7 +78,7 @@ export class ResearchManager {
         usi as USIEngineSetting,
         appSetting.engineTimeoutSeconds,
         (info) => {
-          if (this.onUpdateSearchInfo && type !== undefined) {
+          if (type !== undefined) {
             this.onUpdateSearchInfo(type, info);
           }
         }
@@ -89,8 +97,13 @@ export class ResearchManager {
     this.engines.forEach((engine) => engine.startResearch(record));
   }
 
-  async close() {
-    await Promise.allSettled(this.engines.map((engine) => engine.close()));
-    this.engines = [];
+  close() {
+    Promise.allSettled(this.engines.map((engine) => engine.close()))
+      .then(() => {
+        this.engines = [];
+      })
+      .catch((e) => {
+        this.onError(e);
+      });
   }
 }

@@ -282,7 +282,12 @@ function createMenuTemplate() {
     {
       label: t.mateSearch,
       submenu: [
-        menuItem(t.mateSearch, MenuEvent.START_MATE_SEARCH, [AppState.NORMAL]),
+        menuItem(
+          t.mateSearch,
+          MenuEvent.START_MATE_SEARCH,
+          [AppState.NORMAL],
+          "CmdOrCtrl+M"
+        ),
         menuItem(t.stopMateSearch, MenuEvent.STOP_MATE_SEARCH, [
           AppState.MATE_SEARCH,
         ]),

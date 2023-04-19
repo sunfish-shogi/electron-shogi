@@ -45,7 +45,7 @@ import { RecordMetadataKey } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { computed, onMounted, ref } from "vue";
 import { RectSize } from "@/common/graphics.js";
-import ToggleButton from "../primitive/ToggleButton.vue";
+import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useAppSetting } from "@/renderer/store/setting";
 
 defineProps({

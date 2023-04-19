@@ -1,5 +1,5 @@
-import { t } from "../i18n";
-import { ImmutableRecordMetadata, RecordMetadataKey } from "../shogi";
+import { t } from "@/common/i18n";
+import { ImmutableRecordMetadata, RecordMetadataKey } from "@/common/shogi";
 
 export function getBlackPlayerName(metadata: ImmutableRecordMetadata): string {
   return (

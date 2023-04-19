@@ -589,7 +589,7 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
-import HorizontalSelector from "../primitive/HorizontalSelector.vue";
+import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",

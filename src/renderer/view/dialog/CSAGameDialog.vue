@@ -232,7 +232,7 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
-import ToggleButton from "../primitive/ToggleButton.vue";
+import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 
 const store = useStore();
 const dialog = ref();

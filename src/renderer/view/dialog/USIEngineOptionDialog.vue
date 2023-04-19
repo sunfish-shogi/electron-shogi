@@ -35,12 +35,14 @@
           <!-- 表示名 -->
           <div class="row option" :class="{ hidden: filterWords.length }">
             <div class="option-name">{{ t.displayName }}</div>
-            <input
-              ref="engineNameInput"
-              class="option-value-text"
-              type="text"
-              name="ElectronShogiEngineName"
-            />
+            <div class="option-unchangeable">
+              <input
+                ref="engineNameInput"
+                class="option-value-text"
+                type="text"
+                name="ElectronShogiEngineName"
+              />
+            </div>
           </div>
           <!-- オプション -->
           <div
@@ -49,87 +51,105 @@
             class="row option"
             :class="{ hidden: !option.visible }"
           >
-            <!-- オプション名 -->
             <div class="option-name">
+              <!-- オプション名 -->
               {{ option.displayName || option.name }}
               <span v-if="option.displayName" class="option-name-original">
                 {{ option.name }}
               </span>
             </div>
-            <!-- 数値 (spin) -->
-            <input
-              v-if="option.type === 'spin'"
-              :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
-              class="option-value-number"
-              type="number"
-              :min="option.min"
-              :max="option.max"
-              step="1"
-              :name="option.name"
-            />
-            <!-- 文字列 (string) -->
-            <input
-              v-if="option.type === 'string'"
-              :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
-              class="option-value-text"
-              type="text"
-              :name="option.name"
-            />
-            <!-- ファイル名 (filename) -->
-            <input
-              v-if="option.type === 'filename'"
-              :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
-              class="option-value-filename"
-              type="text"
-              :name="option.name"
-            />
-            <button
-              v-if="option.type === 'filename'"
-              class="thin"
-              @click="selectFile(option.name)"
-            >
-              {{ t.select }}
-            </button>
-            <!-- ブール値 (check) -->
-            <HorizontalSelector
-              v-if="option.type === 'check'"
-              :ref="
+            <div class="option-value">
+              <span class="option-value-control">
+                <!-- 数値 (spin) -->
+                <input
+                  v-if="option.type === 'spin'"
+                  :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
+                  class="option-value-number"
+                  type="number"
+                  :min="option.min"
+                  :max="option.max"
+                  step="1"
+                  :name="option.name"
+                />
+                <!-- 文字列 (string) -->
+                <input
+                  v-if="option.type === 'string'"
+                  :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
+                  class="option-value-text"
+                  type="text"
+                  :name="option.name"
+                />
+                <!-- ファイル名 (filename) -->
+                <input
+                  v-if="option.type === 'filename'"
+                  :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
+                  class="option-value-filename"
+                  type="text"
+                  :name="option.name"
+                />
+                <button
+                  v-if="option.type === 'filename'"
+                  class="thin"
+                  @click="selectFile(option.name)"
+                >
+                  {{ t.select }}
+                </button>
+                <!-- ブール値 (check) -->
+                <HorizontalSelector
+                  v-if="option.type === 'check'"
+                  :ref="
                 (el) => {
                   selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
                 }
               "
-              value=""
-              :items="
-                option.default
-                  ? [
-                      { value: 'true', label: 'ON' },
-                      { value: 'false', label: 'OFF' },
-                    ]
-                  : [
-                      { value: '', label: t.defaultValue },
-                      { value: 'true', label: 'ON' },
-                      { value: 'false', label: 'OFF' },
-                    ]
-              "
-            />
-            <!-- 選択 (combo) -->
-            <select
-              v-if="option.type === 'combo'"
-              :ref="(el) => { inputs[option.name] = el as HTMLSelectElement }"
-              class="option-value-combo"
-            >
-              <option value="">{{ t.defaultValue }}</option>
-              <option v-for="v in option.vars" :key="v" :value="v">
-                {{ v }}
-              </option>
-            </select>
-            <button
-              v-if="option.type === 'button'"
-              class="thin"
-              @click="sendOption(option.name)"
-            >
-              {{ t.invoke }}
-            </button>
+                  value=""
+                  :items="
+                    option.default
+                      ? [
+                          { value: 'true', label: 'ON' },
+                          { value: 'false', label: 'OFF' },
+                        ]
+                      : [
+                          { value: '', label: t.defaultValue },
+                          { value: 'true', label: 'ON' },
+                          { value: 'false', label: 'OFF' },
+                        ]
+                  "
+                />
+                <!-- 選択 (combo) -->
+                <select
+                  v-if="option.type === 'combo'"
+                  :ref="(el) => { inputs[option.name] = el as HTMLSelectElement }"
+                  class="option-value-combo"
+                >
+                  <option value="">{{ t.defaultValue }}</option>
+                  <option v-for="v in option.vars" :key="v" :value="v">
+                    {{ v }}
+                  </option>
+                </select>
+                <button
+                  v-if="option.type === 'button'"
+                  class="thin"
+                  @click="sendOption(option.name)"
+                >
+                  {{ t.invoke }}
+                </button>
+              </span>
+              <!-- デフォルト値 -->
+              <span
+                v-if="option.default !== undefined && option.default !== ''"
+                class="option-default-value"
+              >
+                {{ t.defaultValue }}:
+                {{
+                  option.type === "check"
+                    ? option.default === "true"
+                      ? "ON"
+                      : "OFF"
+                    : option.default
+                }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -175,7 +195,7 @@ import {
   ref,
 } from "vue";
 import { useAppSetting } from "@/renderer/store/setting";
-import HorizontalSelector from "../primitive/HorizontalSelector.vue";
+import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 
 type Option = USIEngineOption & {
   displayName?: string;
@@ -343,7 +363,7 @@ const cancel = () => {
 
 <style scoped>
 .option-list {
-  width: 640px;
+  width: 740px;
   height: calc(100vh - 220px);
   overflow: auto;
 }
@@ -359,23 +379,29 @@ const cancel = () => {
   width: 100%;
 }
 .option-name {
-  width: 240px;
+  width: 290px;
   text-align: left;
   border-right: 1px solid var(--text-separator-color);
   margin-right: 10px;
 }
 .option-name .option-name-original {
   font-size: 0.7em;
-  width: 100%;
 }
 .option-unchangeable {
-  width: 365px;
+  width: 415px;
   text-align: left;
   white-space: pre-wrap;
   word-break: break-all;
 }
+.option-value {
+  width: 415px;
+  text-align: left;
+}
+.option-value-control {
+  margin-right: 10px;
+}
 .option-value-text {
-  width: 340px;
+  width: 380px;
   text-align: left;
 }
 .option-value-filename {
@@ -389,7 +415,13 @@ const cancel = () => {
 .option-value-combo {
   text-align: left;
 }
-.option-value-check {
-  text-align: left;
+.option button {
+  vertical-align: top;
+}
+.option-default-value {
+  font-size: 0.7em;
+  white-space: nowrap;
+  font-weight: 600;
+  opacity: 0.7;
 }
 </style>

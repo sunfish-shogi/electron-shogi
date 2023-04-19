@@ -35,7 +35,7 @@
           <!-- 表示名 -->
           <div class="row option" :class="{ hidden: filterWords.length }">
             <div class="option-name">{{ t.displayName }}</div>
-            <div class="option-unchangeable">
+            <div class="option-value">
               <input
                 ref="engineNameInput"
                 class="option-value-text"

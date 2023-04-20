@@ -17,7 +17,7 @@
                 { label: 'English', value: Language.EN },
               ]"
               @change="
-                (value) => {
+                (value: Language) => {
                   language = value;
                 }
               "
@@ -46,7 +46,7 @@
                 { label: t.dark, value: Thema.DARK },
               ]"
               @change="
-                (value) => {
+                (value: Thema) => {
                   thema = value;
                 }
               "
@@ -65,7 +65,7 @@
                 { label: t.bgTile, value: BackgroundImageType.TILE },
               ]"
               @change="
-                (value) => {
+                (value: BackgroundImageType) => {
                   backgroundImageType = value;
                 }
               "
@@ -82,7 +82,7 @@
             <ImageSelector
               class="image-selector"
               :default-url="appSetting.backgroundImageFileURL"
-              @select="(url) => (backgroundImageFileURL = url)"
+              @select="(url: string) => (backgroundImageFileURL = url)"
             />
           </div>
           <!-- 駒画像 -->
@@ -107,7 +107,7 @@
                 },
               ]"
               @change="
-                (value) => {
+                (value: PieceImageType) => {
                   pieceImage = value;
                 }
               "
@@ -134,7 +134,7 @@
                 { label: t.customImage, value: BoardImageType.CUSTOM_IMAGE },
               ]"
               @change="
-                (value) => {
+                (value: BoardImageType) => {
                   boardImage = value;
                 }
               "
@@ -151,7 +151,7 @@
             <ImageSelector
               class="image-selector"
               :default-url="appSetting.boardImageFileURL"
-              @select="(url) => (boardImageFileURL = url)"
+              @select="(url: string) => (boardImageFileURL = url)"
             />
           </div>
           <!-- 駒台画像 -->
@@ -174,7 +174,7 @@
                 },
               ]"
               @change="
-                (value) => {
+                (value: PieceStandImageType) => {
                   pieceStandImage = value;
                 }
               "
@@ -191,7 +191,7 @@
             <ImageSelector
               class="image-selector"
               :default-url="appSetting.pieceStandImageFileURL"
-              @select="(url) => (pieceStandImageFileURL = url)"
+              @select="(url: string) => (pieceStandImageFileURL = url)"
             />
           </div>
           <!-- 段・筋の表示 -->
@@ -201,7 +201,7 @@
             </div>
             <ToggleButton
               :value="displayBoardLabels"
-              @change="(checked) => (displayBoardLabels = checked)"
+              @change="(checked: boolean) => (displayBoardLabels = checked)"
             />
           </div>
           <!-- 左コントロールの表示 -->
@@ -211,7 +211,7 @@
             </div>
             <ToggleButton
               :value="displayLeftSideControls"
-              @change="(checked) => (displayLeftSideControls = checked)"
+              @change="(checked: boolean) => (displayLeftSideControls = checked)"
             />
           </div>
           <!-- 右コントロールの表示 -->
@@ -221,7 +221,7 @@
             </div>
             <ToggleButton
               :value="displayRightSideControls"
-              @change="(checked) => (displayRightSideControls = checked)"
+              @change="(checked: boolean) => (displayRightSideControls = checked)"
             />
           </div>
           <!-- タブビューの形式 -->
@@ -235,7 +235,7 @@
                 { label: t.twoColumns, value: TabPaneType.DOUBLE },
               ]"
               @change="
-                (value) => {
+                (value: TabPaneType) => {
                   tabPaneType = value;
                 }
               "
@@ -295,7 +295,7 @@
                 { label: t.onlyHumanTurn, value: ClockSoundTarget.ONLY_USER },
               ]"
               @change="
-                (value) => {
+                (value: ClockSoundTarget) => {
                   clockSoundTarget = value;
                 }
               "
@@ -319,7 +319,7 @@
                 { label: t.autoDetect, value: TextDecodingRule.AUTO_DETECT },
               ]"
               @change="
-                (value) => {
+                (value: TextDecodingRule) => {
                   textDecodingRule = value;
                 }
               "
@@ -339,7 +339,7 @@
                 { label: `CR (${t.old90sMac})`, value: 'cr' },
               ]"
               @change="
-                (value) => {
+                (value: string) => {
                   returnCode = value;
                 }
               "
@@ -372,7 +372,7 @@
             </div>
             <ToggleButton
               :value="translateEngineOptionName"
-              @change="(checked) => (translateEngineOptionName = checked)"
+              @change="(checked: boolean) => (translateEngineOptionName = checked)"
             />
             <div class="form-item-unit">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
@@ -413,7 +413,7 @@
                 },
               ]"
               @change="
-                (value) => {
+                (value: EvaluationViewFrom) => {
                   evaluationViewFrom = value;
                 }
               "
@@ -507,7 +507,7 @@
             <div class="form-item-label-wide">{{ t.enableAppLog }}</div>
             <ToggleButton
               :value="enableAppLog"
-              @change="(checked) => (enableAppLog = checked)"
+              @change="(checked: boolean) => (enableAppLog = checked)"
             />
           </div>
           <!-- USI通信ログを出力 -->
@@ -515,7 +515,7 @@
             <div class="form-item-label-wide">{{ t.enableUSILog }}</div>
             <ToggleButton
               :value="enableUSILog"
-              @change="(checked) => (enableUSILog = checked)"
+              @change="(checked: boolean) => (enableUSILog = checked)"
             />
           </div>
           <!-- CSA通信ログを出力 -->
@@ -523,7 +523,7 @@
             <div class="form-item-label-wide">{{ t.enableCSALog }}</div>
             <ToggleButton
               :value="enableCSALog"
-              @change="(checked) => (enableCSALog = checked)"
+              @change="(checked: boolean) => (enableCSALog = checked)"
             />
           </div>
           <!-- ログレベル -->
@@ -539,7 +539,7 @@
                 { label: 'ERROR', value: LogLevel.ERROR },
               ]"
               @change="
-                (value) => {
+                (value: LogLevel) => {
                   logLevel = value;
                 }
               "

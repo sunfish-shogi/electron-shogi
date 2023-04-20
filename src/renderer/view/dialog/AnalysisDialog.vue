@@ -19,7 +19,7 @@
           <ToggleButton
             :value="enableStartNumber"
             @change="
-              (value) => {
+              (value: boolean) => {
                 startNumber.disabled = !value;
                 enableStartNumber = value;
               }
@@ -40,7 +40,7 @@
           <ToggleButton
             :value="enableEndNumber"
             @change="
-              (value) => {
+              (value: boolean) => {
                 endNumber.disabled = !value;
                 enableEndNumber = value;
               }
@@ -88,7 +88,7 @@
             ]"
             :value="commentBehavior"
             @change="
-              (value) => {
+              (value: CommentBehavior) => {
                 commentBehavior = value;
               }
             "

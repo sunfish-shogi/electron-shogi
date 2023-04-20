@@ -9,12 +9,12 @@
           :display-thread-state="true"
           :display-multi-pv-state="false"
           @update-engine-setting="
-            (settings) => {
+            (settings: USIEngineSettings) => {
               engineSettings = settings;
             }
           "
           @select-player="
-            (uri) => {
+            (uri: string) => {
               engineURI = uri;
             }
           "

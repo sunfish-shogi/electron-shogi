@@ -98,10 +98,10 @@
                 <HorizontalSelector
                   v-if="option.type === 'check'"
                   :ref="
-                (el) => {
-                  selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
-                }
-              "
+                    (el: unknown) => {
+                      selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
+                    }
+                  "
                   value=""
                   :items="
                     option.default

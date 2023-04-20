@@ -133,7 +133,7 @@
             <ToggleButton
               :value="saveHistory"
               @change="
-                (value) => {
+                (value: boolean) => {
                   saveHistory = value;
                 }
               "
@@ -152,7 +152,7 @@
             <ToggleButton
               :value="autoRelogin"
               @change="
-                (value) => {
+                (value: boolean) => {
                   autoRelogin = value;
                 }
               "
@@ -163,7 +163,7 @@
             <ToggleButton
               :value="enableComment"
               @change="
-                (value) => {
+                (value: boolean) => {
                   enableComment = value;
                 }
               "
@@ -176,7 +176,7 @@
             <ToggleButton
               :value="enableAutoSave"
               @change="
-                (value) => {
+                (value: boolean) => {
                   enableAutoSave = value;
                 }
               "
@@ -189,7 +189,7 @@
             <ToggleButton
               :value="autoFlip"
               @change="
-                (value) => {
+                (value: boolean) => {
                   autoFlip = value;
                 }
               "

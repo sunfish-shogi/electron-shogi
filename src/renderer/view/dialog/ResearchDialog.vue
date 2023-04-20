@@ -11,7 +11,7 @@
             :display-multi-pv-state="true"
             @update-engine-setting="onUpdatePlayerSetting"
             @select-player="
-              (uri) => {
+              (uri: string) => {
                 engineURI = uri;
               }
             "
@@ -29,7 +29,7 @@
             :display-multi-pv-state="true"
             @update-engine-setting="onUpdatePlayerSetting"
             @select-player="
-              (uri) => {
+              (uri: string) => {
                 secondaryEngineURIs[index] = uri;
               }
             "

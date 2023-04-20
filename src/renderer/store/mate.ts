@@ -1,5 +1,5 @@
 import { MateSearchSetting } from "@/common/settings/mate";
-import { USIPlayer } from "../players/usi";
+import { USIPlayer } from "@/renderer/players/usi";
 import { useAppSetting } from "./setting";
 import { ImmutableRecord, Move } from "@/common/shogi";
 

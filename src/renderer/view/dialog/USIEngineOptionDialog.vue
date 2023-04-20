@@ -35,7 +35,7 @@
           <!-- 表示名 -->
           <div class="row option" :class="{ hidden: filterWords.length }">
             <div class="option-name">{{ t.displayName }}</div>
-            <div class="option-unchangeable">
+            <div class="option-value">
               <input
                 ref="engineNameInput"
                 class="option-value-text"
@@ -98,10 +98,10 @@
                 <HorizontalSelector
                   v-if="option.type === 'check'"
                   :ref="
-                (el) => {
-                  selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
-                }
-              "
+                    (el: unknown) => {
+                      selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
+                    }
+                  "
                   value=""
                   :items="
                     option.default

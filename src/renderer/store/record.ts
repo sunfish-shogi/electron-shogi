@@ -27,7 +27,7 @@ import { SearchInfo } from "@/renderer/players/player";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { t } from "@/common/i18n";
 import { localizeError } from "@/common/i18n";
-import { decodeText, encodeText } from "../helpers/encode";
+import { decodeText, encodeText } from "@/renderer/helpers/encode";
 
 export enum SearchInfoSenderType {
   PLAYER,

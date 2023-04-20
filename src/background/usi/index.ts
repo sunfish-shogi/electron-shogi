@@ -17,7 +17,7 @@ import {
 import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/player";
 import { t } from "@/common/i18n";
-import { resolvePath } from "../path";
+import { resolvePath } from "@/background/path";
 
 function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));

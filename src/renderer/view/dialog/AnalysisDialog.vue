@@ -19,7 +19,7 @@
           <ToggleButton
             :value="enableStartNumber"
             @change="
-              (value) => {
+              (value: boolean) => {
                 startNumber.disabled = !value;
                 enableStartNumber = value;
               }
@@ -40,7 +40,7 @@
           <ToggleButton
             :value="enableEndNumber"
             @change="
-              (value) => {
+              (value: boolean) => {
                 endNumber.disabled = !value;
                 enableEndNumber = value;
               }
@@ -88,7 +88,7 @@
             ]"
             :value="commentBehavior"
             @change="
-              (value) => {
+              (value: CommentBehavior) => {
                 commentBehavior = value;
               }
             "
@@ -120,8 +120,8 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
-import ToggleButton from "../primitive/ToggleButton.vue";
-import HorizontalSelector from "../primitive/HorizontalSelector.vue";
+import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
+import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 
 const store = useStore();
 const dialog = ref();

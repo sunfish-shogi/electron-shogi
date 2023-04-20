@@ -65,14 +65,14 @@
         <ToggleButton
           :label="elapsedTimeToggleLabel"
           :value="showElapsedTime"
-          @change="(enabled) => emit('toggleShowElapsedTime', enabled)"
+          @change="(enabled: boolean) => emit('toggleShowElapsedTime', enabled)"
         />
       </div>
       <div class="option">
         <ToggleButton
           :label="commentToggleLabel"
           :value="showComment"
-          @change="(enabled) => emit('toggleShowComment', enabled)"
+          @change="(enabled: boolean) => emit('toggleShowComment', enabled)"
         />
       </div>
     </div>

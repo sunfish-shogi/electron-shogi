@@ -9,7 +9,7 @@ import {
 import { Color, ImmutableRecord, Move, Position } from "@/common/shogi";
 import { Player, SearchInfo, SearchHandler, MateHandler } from "./player";
 import { GameResult } from "@/common/player";
-import { useStore } from "../store";
+import { useStore } from "@/renderer/store";
 
 export class USIPlayer implements Player {
   private sessionID = 0;

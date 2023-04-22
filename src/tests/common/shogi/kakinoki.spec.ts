@@ -861,5 +861,5 @@ describe("shogi/kakinoki", () => {
     expect(record).toBeInstanceOf(Record);
     record.goto(3);
     expect(record.current.move).toBe(SpecialMove.SEALED_MOVE);
-  })
+  });
 });

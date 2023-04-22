@@ -258,7 +258,7 @@ const stringToSpecialMove: { [move: string]: SpecialMove } = {
   入玉勝ち: SpecialMove.ENTERING_OF_KING,
   不戦勝: SpecialMove.WIN_BY_DEFAULT,
   不戦敗: SpecialMove.LOSE_BY_DEFAULT,
-  封じ手: SpecialMove.SEAL_NEXT_MOVE,
+  封じ手: SpecialMove.SEALED_MOVE,
 };
 
 const moveRegExp =
@@ -478,7 +478,7 @@ const specialMoveToString = {
   enteringOfKing: "入玉勝ち",
   winByDefault: "不戦勝",
   loseByDefault: "不戦敗",
-  sealNextMove: "封じ手",
+  sealedMove: "封じ手",
 };
 
 type KakinokiExportOptions = {

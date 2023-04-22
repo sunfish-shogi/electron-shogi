@@ -101,7 +101,7 @@ export enum SpecialMove {
   ENTERING_OF_KING = "enteringOfKing",
   WIN_BY_DEFAULT = "winByDefault",
   LOSE_BY_DEFAULT = "loseByDefault",
-  SEAL_NEXT_MOVE = "sealNextMove",
+  SEALED_MOVE = "sealedMove",
 }
 
 export interface ImmutableNode {

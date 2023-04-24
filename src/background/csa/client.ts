@@ -1,4 +1,4 @@
-import { Color } from "@/common/shogi";
+import { Color, SpecialMove, importCSA, reverseColor } from "@/common/shogi";
 import {
   emptyCSAGameSummary,
   CSAGameSummary,
@@ -316,12 +316,38 @@ export class Client {
     this.gameSummary = emptyCSAGameSummary();
   }
 
+  private onEndGameSummary(): void {
+    // 初回分の Increment を与える。
+    this.playerStates.black.time += this.gameSummary.increment;
+    this.playerStates.white.time += this.gameSummary.increment;
+
+    // 途中から再開する場合に、前回消費した時間を計算する。
+    const record = importCSA(this.gameSummary.position);
+    if (record instanceof Error) {
+      this.onError(new Error("invalid game position received from CSA server"));
+      return;
+    }
+    for (const entry of record.moves) {
+      if (entry.move === SpecialMove.START) {
+        continue;
+      }
+      const color = reverseColor(entry.nextColor);
+      const time =
+        this.playerStates[color].time -
+        entry.elapsedMs / this.gameSummary.timeUnitMs +
+        this.gameSummary.increment;
+      this.playerStates[color].time = Math.max(time, 0);
+    }
+
+    this.state = State.READY;
+    if (this.gameSummaryCallback) {
+      this.gameSummaryCallback(this.gameSummary);
+    }
+  }
+
   private onGameSummary(command: string): void {
     if (command === "END Game_Summary") {
-      this.state = State.READY;
-      if (this.gameSummaryCallback) {
-        this.gameSummaryCallback(this.gameSummary);
-      }
+      this.onEndGameSummary();
       return;
     }
     if (command === "BEGIN Time") {
@@ -454,7 +480,9 @@ export class Client {
     if (parsed) {
       const elapsed = Number(parsed[1]);
       const time =
-        this.playerStates[color].time - elapsed + this.gameSummary.increment;
+        this.playerStates[color].time -
+        (elapsed * 1e3) / this.gameSummary.timeUnitMs +
+        this.gameSummary.increment;
       this.playerStates[color].time = Math.max(time, 0);
     } else {
       this.logger.info("sid=%d: invalid move format", this.sessionID);

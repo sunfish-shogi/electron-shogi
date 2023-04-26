@@ -61,5 +61,10 @@
     "vue-tsc": "^1.0.9",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.0"
+  },
+  "overrides": {
+    "dir-compare": {
+      "minimatch": ">=3.0.5"
+    }
   }
 }

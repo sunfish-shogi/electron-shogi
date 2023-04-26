@@ -32,6 +32,7 @@ const mockGameSummary = [
   "局面1行目",
   "局面2行目",
   "END Position",
+  "END Game_Summary",
 ];
 
 const mockGameSummaryWithIncrement = [
@@ -57,6 +58,7 @@ const mockGameSummaryWithIncrement = [
   "局面1行目",
   "局面2行目",
   "END Position",
+  "END Game_Summary",
 ];
 
 const mockGameSummaryWithMoves = [
@@ -96,6 +98,73 @@ const mockGameSummaryWithMoves = [
   "+7776FU,T5",
   "-8384FU,T7",
   "END Position",
+  "END Game_Summary",
+];
+
+const mockGameSummary1msec = [
+  "BEGIN Game_Summary",
+  "Protocol_Version:1.2",
+  "Protocol_Mode:Server",
+  "Format:Shogi 1.0",
+  "Declaration:Jishogi 1.1",
+  "Game_ID:20150505-CSA25-3-5-7",
+  "Name+:TANUKI",
+  "Name-:KITSUNE",
+  "Your_Turn:+",
+  "Rematch_On_Draw:NO",
+  "To_Move:+",
+  "Max_Moves:256",
+  "BEGIN Time",
+  "Time_Unit:1msec",
+  "Total_Time:900000",
+  "Increment:5000",
+  "Least_Time_Per_Move:0",
+  "END Time",
+  "BEGIN Position",
+  "P1-KY-KE-GI-KI-OU-KI-GI-KE-KY",
+  "P2 * -HI *  *  *  *  * -KA * ",
+  "P3-FU-FU-FU-FU-FU-FU-FU-FU-FU",
+  "P4 *  *  *  *  *  *  *  *  * ",
+  "P5 *  *  *  *  *  *  *  *  * ",
+  "P6 *  *  *  *  *  *  *  *  * ",
+  "P7+FU+FU+FU+FU+FU+FU+FU+FU+FU",
+  "P8 * +KA *  *  *  *  * +HI * ",
+  "P9+KY+KE+GI+KI+OU+KI+GI+KE+KY",
+  "P+",
+  "P-",
+  "+",
+  "+2726FU,T12",
+  "-3334FU,T6",
+  "+7776FU,T5",
+  "-8384FU,T7",
+  "END Position",
+  "END Game_Summary",
+];
+
+const mockGameSummary1min = [
+  "BEGIN Game_Summary",
+  "Protocol_Version:1.2",
+  "Protocol_Mode:Server",
+  "Format:Shogi 1.0",
+  "Declaration:Jishogi 1.1",
+  "Game_ID:20150505-CSA25-3-5-7",
+  "Name+:TANUKI",
+  "Name-:KITSUNE",
+  "Your_Turn:+",
+  "Rematch_On_Draw:NO",
+  "To_Move:+",
+  "Max_Moves:256",
+  "BEGIN Time",
+  "Time_Unit:1min",
+  "Total_Time:15",
+  "Byoyomi:1",
+  "Least_Time_Per_Move:0",
+  "END Time",
+  "BEGIN Position",
+  "局面1行目",
+  "局面2行目",
+  "END Position",
+  "END Game_Summary",
 ];
 
 function bindHandlers(client: Client) {
@@ -143,8 +212,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummary) {
       socketHandlers.onRead(line);
     }
-    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(0);
-    socketHandlers.onRead("END Game_Summary");
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
@@ -223,7 +290,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummary) {
       socketHandlers.onRead(line);
     }
-    socketHandlers.onRead("END Game_Summary");
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
     socketHandlers.onRead("+7776FU,T11");
@@ -273,8 +339,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummary) {
       socketHandlers.onRead(line);
     }
-    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(0);
-    socketHandlers.onRead("END Game_Summary");
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
@@ -374,7 +438,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummary) {
       socketHandlers.onRead(line);
     }
-    socketHandlers.onRead("END Game_Summary");
     client.reject("20150505-CSA25-3-5-7");
     expect(mockSocket.prototype.write).toBeCalledTimes(2);
     expect(mockSocket.prototype.write.mock.calls[1][0]).toBe(
@@ -403,7 +466,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummary) {
       socketHandlers.onRead(line);
     }
-    socketHandlers.onRead("END Game_Summary");
     client.agree("20150505-CSA25-3-5-7");
     expect(clientHandlers.mockOnReject).toBeCalledTimes(0);
     socketHandlers.onRead("REJECT:20150505-CSA25-3-5-7 by Player2");
@@ -428,7 +490,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummary) {
       socketHandlers.onRead(line);
     }
-    socketHandlers.onRead("END Game_Summary");
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
     socketHandlers.onRead("+7776FU,T11");
@@ -502,7 +563,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummaryWithIncrement) {
       socketHandlers.onRead(line);
     }
-    socketHandlers.onRead("END Game_Summary");
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
@@ -553,7 +613,6 @@ describe("ipc/background/csa/client", () => {
     for (const line of mockGameSummaryWithMoves) {
       socketHandlers.onRead(line);
     }
-    socketHandlers.onRead("END Game_Summary");
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
@@ -607,6 +666,122 @@ describe("ipc/background/csa/client", () => {
     expect(clientHandlers.mockOnMove.mock.calls[1][1]).toStrictEqual({
       black: { time: 892 },
       white: { time: 899 }, // 902 - 8 + 5
+    });
+  });
+
+  it("timeUnit1msec", async () => {
+    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const clientHandlers = bindHandlers(client);
+    client.login();
+    const socketHandlers = mockSocket.mock.calls[0][2];
+    socketHandlers.onConnect();
+    socketHandlers.onRead("LOGIN:TestPlayer OK");
+    for (const line of mockGameSummary1msec) {
+      socketHandlers.onRead(line);
+    }
+    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
+      id: "20150505-CSA25-3-5-7",
+      blackPlayerName: "TANUKI",
+      whitePlayerName: "KITSUNE",
+      myColor: Color.BLACK,
+      toMove: Color.BLACK,
+      position:
+        "P1-KY-KE-GI-KI-OU-KI-GI-KE-KY\n" +
+        "P2 * -HI *  *  *  *  * -KA * \n" +
+        "P3-FU-FU-FU-FU-FU-FU-FU-FU-FU\n" +
+        "P4 *  *  *  *  *  *  *  *  * \n" +
+        "P5 *  *  *  *  *  *  *  *  * \n" +
+        "P6 *  *  *  *  *  *  *  *  * \n" +
+        "P7+FU+FU+FU+FU+FU+FU+FU+FU+FU\n" +
+        "P8 * +KA *  *  *  *  * +HI * \n" +
+        "P9+KY+KE+GI+KI+OU+KI+GI+KE+KY\n" +
+        "P+\n" +
+        "P-\n" +
+        "+\n" +
+        "+2726FU,T12\n" +
+        "-3334FU,T6\n" +
+        "+7776FU,T5\n" +
+        "-8384FU,T7\n",
+      timeUnitMs: 1,
+      totalTime: 900 * 1e3,
+      byoyomi: 0,
+      delay: 0,
+      increment: 5 * 1e3,
+    });
+    client.agree("20150505-CSA25-3-5-7");
+    socketHandlers.onRead("START:20150505-CSA25-3-5-7");
+    expect(clientHandlers.mockOnStart).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnStart.mock.calls[0][0]).toStrictEqual({
+      black: { time: 898 * 1e3 }, // 900 + (5 - 12) + (5 - 5) + 5
+      white: { time: 902 * 1e3 }, // 900 + (5 - 6) + (5 - 7) + 5
+    });
+    client.doMove("+7776FU");
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(0);
+    socketHandlers.onRead("+7776FU,T11");
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnMove.mock.calls[0][0]).toBe("+7776FU,T11");
+    expect(clientHandlers.mockOnMove.mock.calls[0][1]).toStrictEqual({
+      black: { time: 892 * 1e3 }, // 898 - 11 + 5
+      white: { time: 902 * 1e3 },
+    });
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(1);
+    socketHandlers.onRead("-3334FU,T8");
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(2);
+    expect(clientHandlers.mockOnMove.mock.calls[1][0]).toBe("-3334FU,T8");
+    expect(clientHandlers.mockOnMove.mock.calls[1][1]).toStrictEqual({
+      black: { time: 892 * 1e3 },
+      white: { time: 899 * 1e3 }, // 902 - 8 + 5
+    });
+  });
+
+  it("timeUnit1min", async () => {
+    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const clientHandlers = bindHandlers(client);
+    client.login();
+    const socketHandlers = mockSocket.mock.calls[0][2];
+    socketHandlers.onConnect();
+    socketHandlers.onRead("LOGIN:TestPlayer OK");
+    for (const line of mockGameSummary1min) {
+      socketHandlers.onRead(line);
+    }
+    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
+      id: "20150505-CSA25-3-5-7",
+      blackPlayerName: "TANUKI",
+      whitePlayerName: "KITSUNE",
+      myColor: Color.BLACK,
+      toMove: Color.BLACK,
+      position: "局面1行目\n局面2行目\n",
+      timeUnitMs: 60 * 1e3,
+      totalTime: 15,
+      byoyomi: 1,
+      delay: 0,
+      increment: 0,
+    });
+    client.agree("20150505-CSA25-3-5-7");
+    socketHandlers.onRead("START:20150505-CSA25-3-5-7");
+    expect(clientHandlers.mockOnStart).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnStart.mock.calls[0][0]).toStrictEqual({
+      black: { time: 15 },
+      white: { time: 15 },
+    });
+    client.doMove("+7776FU");
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(0);
+    socketHandlers.onRead("+7776FU,T60");
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnMove.mock.calls[0][0]).toBe("+7776FU,T60");
+    expect(clientHandlers.mockOnMove.mock.calls[0][1]).toStrictEqual({
+      black: { time: 14 },
+      white: { time: 15 },
+    });
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(1);
+    socketHandlers.onRead("-3334FU,T120");
+    expect(clientHandlers.mockOnMove).toBeCalledTimes(2);
+    expect(clientHandlers.mockOnMove.mock.calls[1][0]).toBe("-3334FU,T120");
+    expect(clientHandlers.mockOnMove.mock.calls[1][1]).toStrictEqual({
+      black: { time: 14 },
+      white: { time: 13 },
     });
   });
 });

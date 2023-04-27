@@ -25,7 +25,7 @@
               }
             "
           />
-          <div class="form-item-unit">{{ t.fromPrefix }}</div>
+          <div class="form-item-unit">{{ t.fromPrefix }}{{ t.plyPrefix}}</div>
           <input
             ref="startNumber"
             class="small"
@@ -46,7 +46,7 @@
               }
             "
           />
-          <div class="form-item-unit">{{ t.toPrefix }}</div>
+          <div class="form-item-unit">{{ t.toPrefix }}{{ t.plyPrefix }}</div>
           <input
             ref="endNumber"
             class="small"

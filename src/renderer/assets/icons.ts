@@ -44,6 +44,7 @@ export enum IconType {
   CALL = "call",
   SCORE = "score",
   GRID = "grid",
+  MATE_SEARCH = "mateSearch",
 }
 
 export const iconSourceMap = {
@@ -90,6 +91,7 @@ export const iconSourceMap = {
   [IconType.CALL]: "icon/record_voice_over_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.SCORE]: "icon/scoreboard_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.GRID]: "icon/grid_on_FILL0_wght400_GRAD0_opsz48.svg",
+  [IconType.MATE_SEARCH]: "icon/psychology_alt_FILL0_wght400_GRAD0_opsz48.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

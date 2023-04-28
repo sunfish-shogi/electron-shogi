@@ -11,6 +11,7 @@ import { LogLevel } from "@/common/log";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAGameSettingHistory, CSAServerSetting } from "@/common/settings/csa";
 import { Rect } from "@/common/graphics";
+import { MateSearchSetting } from "@/common/settings/mate";
 
 type AppInfo = {
   appVersion?: string;
@@ -39,6 +40,8 @@ export interface Bridge {
   saveGameSetting(setting: string): Promise<void>;
   loadCSAGameSettingHistory(): Promise<string>;
   saveCSAGameSettingHistory(setting: string): Promise<void>;
+  loadMateSearchSetting(): Promise<string>;
+  saveMateSearchSetting(setting: string): Promise<void>;
   loadUSIEngineSetting(): Promise<string>;
   saveUSIEngineSetting(setting: string): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
@@ -65,6 +68,7 @@ export interface Bridge {
   ): Promise<void>;
   usiPonderHit(sessionID: number): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
+  usiGoMate(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;
@@ -88,25 +92,23 @@ export interface Bridge {
     callback: (
       sessionID: number,
       usi: string,
-      sfen: string,
+      usiMove: string,
       ponder?: string
     ) => void
   ): void;
+  onUSICheckmate(
+    callback: (sessionID: number, usi: string, usiMoves: string[]) => void
+  ): void;
+  onUSICheckmateNotImplemented(callback: (sessionID: number) => void): void;
+  onUSICheckmateTimeout(
+    callback: (sessionID: number, usi: string) => void
+  ): void;
+  onUSINoMate(callback: (sessionID: number, usi: string) => void): void;
   onUSIInfo(
-    callback: (
-      sessionID: number,
-      usi: string,
-      name: string,
-      json: string
-    ) => void
+    callback: (sessionID: number, usi: string, json: string) => void
   ): void;
   onUSIPonderInfo(
-    callback: (
-      sessionID: number,
-      usi: string,
-      name: string,
-      json: string
-    ) => void
+    callback: (sessionID: number, usi: string, json: string) => void
   ): void;
   onCSAGameSummary(
     callback: (sessionID: number, gameSummary: string) => void
@@ -149,6 +151,8 @@ export interface API {
   saveGameSetting(setting: GameSetting): Promise<void>;
   loadCSAGameSettingHistory(): Promise<CSAGameSettingHistory>;
   saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void>;
+  loadMateSearchSetting(): Promise<MateSearchSetting>;
+  saveMateSearchSetting(setting: MateSearchSetting): Promise<void>;
   loadUSIEngineSetting(): Promise<USIEngineSettings>;
   saveUSIEngineSetting(setting: USIEngineSettings): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
@@ -178,6 +182,7 @@ export interface API {
   ): Promise<void>;
   usiPonderHit(sessionID: number): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
+  usiGoMate(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;
@@ -247,6 +252,12 @@ const api: API = {
   },
   saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void> {
     return bridge.saveCSAGameSettingHistory(JSON.stringify(setting));
+  },
+  async loadMateSearchSetting(): Promise<MateSearchSetting> {
+    return JSON.parse(await bridge.loadMateSearchSetting());
+  },
+  saveMateSearchSetting(setting: MateSearchSetting): Promise<void> {
+    return bridge.saveMateSearchSetting(JSON.stringify(setting));
   },
   async loadUSIEngineSetting(): Promise<USIEngineSettings> {
     return new USIEngineSettings(await bridge.loadUSIEngineSetting());

@@ -1,17 +1,35 @@
 <template>
   <div class="root full" :class="appSetting.thema" :style="style">
     <StandardLayout class="full" />
-    <GameDialog v-if="dialogVisibilities.game" />
-    <CSAGameDialog v-if="dialogVisibilities.csaGame" />
-    <ResearchDialog v-if="dialogVisibilities.research" />
-    <AnalysisDialog v-if="dialogVisibilities.analysis" />
-    <USIEngineManagementDialog v-if="dialogVisibilities.usiEngineSetting" />
-    <ExportPositionImageDialog v-if="dialogVisibilities.exportPositionImage" />
-    <AppSettingDialog v-if="dialogVisibilities.appSetting" />
-    <PasteDialog v-if="dialogVisibilities.paste" />
-    <BussyMessage v-if="dialogVisibilities.bussy" />
-    <ConfirmDialog v-if="dialogVisibilities.confirm" />
-    <CSAGameReadyDialog v-if="dialogVisibilities.csaGameReady" />
+    <GameDialog v-if="store.appState === AppState.GAME_DIALOG" />
+    <CSAGameDialog v-if="store.appState === AppState.CSA_GAME_DIALOG" />
+    <ResearchDialog v-if="store.appState === AppState.RESEARCH_DIALOG" />
+    <AnalysisDialog v-if="store.appState === AppState.ANALYSIS_DIALOG" />
+    <MateSearchDialog v-if="store.appState === AppState.MATE_SEARCH_DIALOG" />
+    <USIEngineManagementDialog
+      v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG"
+    />
+    <ExportPositionImageDialog
+      v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG"
+    />
+    <AppSettingDialog v-if="store.isAppSettingDialogVisible" />
+    <PasteDialog v-if="store.appState === AppState.PASTE_DIALOG" />
+    <BussyMessage v-if="store.isBussy" />
+    <ConfirmDialog v-if="store.confirmation" />
+    <CSAGameReadyDialog
+      v-if="
+        store.csaGameState === CSAGameState.WAITING_LOGIN ||
+        store.csaGameState === CSAGameState.READY ||
+        store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL
+      "
+    />
+    <PVPreviewDialog
+      v-if="store.pvPreview"
+      :position="store.pvPreview.position"
+      :pv="store.pvPreview.pv"
+      :infos="store.pvPreview.infos"
+      @close="store.closePVPreviewDialog()"
+    />
     <InfoMessage v-if="store.hasMessage" />
     <ErrorMessage v-if="store.hasError" />
   </div>
@@ -38,29 +56,11 @@ import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";
 import { useAppSetting } from "./store/setting";
 import { BackgroundImageType } from "@/common/settings/app";
+import MateSearchDialog from "./view/dialog/MateSearchDialog.vue";
+import PVPreviewDialog from "./view/dialog/PVPreviewDialog.vue";
 
 const appSetting = useAppSetting();
 const store = useStore();
-
-const dialogVisibilities = computed(() => {
-  return {
-    game: store.appState === AppState.GAME_DIALOG,
-    csaGame: store.appState === AppState.CSA_GAME_DIALOG,
-    research: store.appState === AppState.RESEARCH_DIALOG,
-    analysis: store.appState === AppState.ANALYSIS_DIALOG,
-    usiEngineSetting: store.appState === AppState.USI_ENGINE_SETTING_DIALOG,
-    exportPositionImage:
-      store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG,
-    appSetting: store.isAppSettingDialogVisible,
-    paste: store.appState === AppState.PASTE_DIALOG,
-    bussy: store.isBussy,
-    confirm: store.confirmation !== undefined,
-    csaGameReady:
-      store.csaGameState === CSAGameState.WAITING_LOGIN ||
-      store.csaGameState === CSAGameState.READY ||
-      store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL,
-  };
-});
 
 onMounted(() => {
   const body = document.getElementsByTagName("body")[0];

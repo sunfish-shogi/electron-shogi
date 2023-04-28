@@ -42,6 +42,8 @@ export enum MenuEvent {
   STOP_RESEARCH = "stopResearch",
   START_ANALYSIS = "startAnalysis",
   STOP_ANALYSIS = "stopAnalysis",
+  START_MATE_SEARCH = "startMateSearch",
+  STOP_MATE_SEARCH = "stopMateSearch",
   START_GAME = "startGame",
   START_CSA_GAME = "startCSAGame",
   STOP_GAME = "stopGame",

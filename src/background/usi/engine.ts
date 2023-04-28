@@ -117,15 +117,20 @@ type USIOKCallback = () => void;
 type ReadyCallback = () => void;
 type BestmoveCallback = (
   position: string,
-  sfen: string,
+  move: string,
   ponder?: string
 ) => void;
+type CheckmateCallback = (position: string, moves: string[]) => void;
+type CheckmateNotImplementedCallback = () => void;
+type CheckmateTimeoutCallback = (position: string) => void;
+type NoMateCallback = (position: string) => void;
 type InfoCallback = (position: string, info: USIInfoCommand) => void;
 
 type ReservedGoCommand = {
   position: string;
   timeState?: TimeState;
-  ponder: boolean;
+  ponder?: boolean;
+  mate?: boolean;
 };
 
 function buildTimeOptions(timeState?: TimeState): string {
@@ -170,6 +175,10 @@ export class EngineProcess {
   usiOkCallback?: USIOKCallback;
   readyCallback?: ReadyCallback;
   bestMoveCallback?: BestmoveCallback;
+  checkmateCallback?: CheckmateCallback;
+  checkmateNotImplementedCallback?: CheckmateNotImplementedCallback;
+  checkmateTimeoutCallback?: CheckmateTimeoutCallback;
+  noMateCallback?: NoMateCallback;
   infoCallback?: InfoCallback;
   ponderInfoCallback?: InfoCallback;
 
@@ -200,6 +209,13 @@ export class EngineProcess {
   on(event: "usiok", callback: USIOKCallback): this;
   on(event: "ready", callback: ReadyCallback): this;
   on(event: "bestmove", callback: BestmoveCallback): this;
+  on(event: "checkmate", callback: CheckmateCallback): this;
+  on(
+    event: "checkmateNotImplemented",
+    callback: CheckmateNotImplementedCallback
+  ): this;
+  on(event: "checkmateTimeout", callback: CheckmateTimeoutCallback): this;
+  on(event: "noMate", callback: NoMateCallback): this;
   on(event: "info", callback: InfoCallback): this;
   on(event: "ponderInfo", callback: InfoCallback): this;
   on(
@@ -210,6 +226,10 @@ export class EngineProcess {
       | USIOKCallback
       | ReadyCallback
       | BestmoveCallback
+      | CheckmateCallback
+      | CheckmateNotImplementedCallback
+      | CheckmateTimeoutCallback
+      | NoMateCallback
       | InfoCallback
   ): this {
     switch (event) {
@@ -227,6 +247,19 @@ export class EngineProcess {
         break;
       case "bestmove":
         this.bestMoveCallback = callback as BestmoveCallback;
+        break;
+      case "checkmate":
+        this.checkmateCallback = callback as CheckmateCallback;
+        break;
+      case "checkmateNotImplemented":
+        this.checkmateNotImplementedCallback =
+          callback as CheckmateNotImplementedCallback;
+        break;
+      case "checkmateTimeout":
+        this.checkmateTimeoutCallback = callback as CheckmateTimeoutCallback;
+        break;
+      case "noMate":
+        this.noMateCallback = callback as NoMateCallback;
         break;
       case "info":
         this.infoCallback = callback as InfoCallback;
@@ -308,7 +341,6 @@ export class EngineProcess {
     this.reservedGoCommand = {
       position,
       timeState,
-      ponder: false,
     };
     switch (this.state) {
       case State.Ready:
@@ -329,6 +361,28 @@ export class EngineProcess {
       position,
       timeState,
       ponder: true,
+    };
+    switch (this.state) {
+      case State.Ready:
+        this.sendReservedGoCommands();
+        break;
+      case State.WaitingForBestMove:
+      case State.Ponder:
+        this.stop();
+        break;
+    }
+  }
+
+  goMate(position: string): void {
+    if (
+      position === this.currentPosition &&
+      this.state === State.WaitingForBestMove
+    ) {
+      return;
+    }
+    this.reservedGoCommand = {
+      position,
+      mate: true,
     };
     switch (this.state) {
       case State.Ready:
@@ -366,6 +420,7 @@ export class EngineProcess {
     this.send(
       "go " +
         (this.reservedGoCommand.ponder ? "ponder " : "") +
+        (this.reservedGoCommand.mate ? "mate " : "") +
         buildTimeOptions(this.reservedGoCommand.timeState)
     );
     this.currentPosition = this.reservedGoCommand.position;
@@ -400,6 +455,8 @@ export class EngineProcess {
       this.onReadyOk();
     } else if (command.startsWith("bestmove ")) {
       this.onBestMove(command.substring(9));
+    } else if (command.startsWith("checkmate ")) {
+      this.onCheckmate(command.substring(10));
     } else if (command.startsWith("info ")) {
       this.onInfo(command.substring(5));
     }
@@ -507,6 +564,28 @@ export class EngineProcess {
     this.state = State.Ready;
     this.currentPosition = "";
     this.sendReservedGoCommands();
+  }
+
+  private onCheckmate(args: string): void {
+    if (args.trim() === "notimplemented") {
+      if (this.checkmateNotImplementedCallback) {
+        this.checkmateNotImplementedCallback();
+      }
+      return;
+    } else if (args.trim() === "timeout") {
+      if (this.checkmateTimeoutCallback) {
+        this.checkmateTimeoutCallback(this.currentPosition);
+      }
+      return;
+    } else if (args.trim() === "nomate") {
+      if (this.noMateCallback) {
+        this.noMateCallback(this.currentPosition);
+      }
+      return;
+    }
+    if (this.checkmateCallback) {
+      this.checkmateCallback(this.currentPosition, args.trim().split(" "));
+    }
   }
 
   private onInfo(args: string): void {

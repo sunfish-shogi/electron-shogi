@@ -22,12 +22,12 @@ import {
   reverseColor,
   SpecialMove,
 } from "@/common/shogi";
-import iconv from "iconv-lite";
 import { getSituationText } from "./score";
 import { SearchInfo } from "@/renderer/players/player";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { t } from "@/common/i18n";
 import { localizeError } from "@/common/i18n";
+import { decodeText, encodeText } from "@/renderer/helpers/encode";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -240,15 +240,21 @@ export class RecordManager {
     return;
   }
 
-  importRecordFromBuffer(data: Buffer, path: string): Error | undefined {
+  importRecordFromBuffer(
+    data: Uint8Array,
+    path: string,
+    option?: { autoDetect?: boolean }
+  ): Error | undefined {
     let recordOrError: Record | Error;
     if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-      const str = path.match(/\.kif$/)
-        ? iconv.decode(data as Buffer, "Shift_JIS")
-        : new TextDecoder().decode(data);
-      recordOrError = importKakinoki(str);
+      const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
+      recordOrError = importKakinoki(
+        decodeText(data, { encoding, autoDetect: option?.autoDetect })
+      );
     } else if (path.match(/\.csa$/)) {
-      recordOrError = importCSA(new TextDecoder().decode(data));
+      recordOrError = importCSA(
+        decodeText(data, { encoding: "UTF8", autoDetect: option?.autoDetect })
+      );
     } else {
       recordOrError = new Error(`${t.unknownFileExtension}: ${path}`);
     }
@@ -262,20 +268,19 @@ export class RecordManager {
     return;
   }
 
-  exportRecordAsBuffer(path: string, opt: ExportOptions): Buffer | Error {
+  exportRecordAsBuffer(path: string, opt: ExportOptions): Uint8Array | Error {
     let data: Uint8Array;
     if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
       const str = exportKakinoki(this.record, opt);
-      data = path.match(/\.kif$/)
-        ? iconv.encode(str, "Shift_JIS")
-        : new TextEncoder().encode(str);
+      const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
+      data = encodeText(str, encoding);
     } else if (path.match(/\.csa$/)) {
-      data = new TextEncoder().encode(exportCSA(this.record, opt));
+      data = encodeText(exportCSA(this.record, opt), "UTF8");
     } else {
       return new Error(`${t.unknownFileExtension}: ${path}`);
     }
     this.updateRecordFilePath(path);
-    return data as Buffer;
+    return data;
   }
 
   swapNextTurn(): void {

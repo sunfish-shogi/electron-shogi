@@ -258,6 +258,7 @@ const stringToSpecialMove: { [move: string]: SpecialMove } = {
   入玉勝ち: SpecialMove.ENTERING_OF_KING,
   不戦勝: SpecialMove.WIN_BY_DEFAULT,
   不戦敗: SpecialMove.LOSE_BY_DEFAULT,
+  封じ手: SpecialMove.SEALED_MOVE,
 };
 
 const moveRegExp =
@@ -266,7 +267,7 @@ const moveRegExp =
 const timeRegExp = /\( *([0-9]+):([0-9]+)\/[0-9: ]*\)/;
 
 const specialMoveRegExp =
-  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗) *(.*)$/;
+  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗|封じ手) *(.*)$/;
 
 function readBoard(board: Board, data: string): Error | undefined {
   if (data.length < 21) {
@@ -477,6 +478,7 @@ const specialMoveToString = {
   enteringOfKing: "入玉勝ち",
   winByDefault: "不戦勝",
   loseByDefault: "不戦敗",
+  sealedMove: "封じ手",
 };
 
 type KakinokiExportOptions = {

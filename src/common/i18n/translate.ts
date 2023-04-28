@@ -74,6 +74,9 @@ type Texts = {
   impass: string;
   repetitionDraw: string;
   mate: string;
+  mateSearch: string;
+  stopMateSearch: string;
+  noMateFound: string;
   timeout: string;
   foulWin: string;
   foulLose: string;
@@ -128,6 +131,9 @@ type Texts = {
   clockSoundTarget: string;
   anyTurn: string;
   onlyHumanTurn: string;
+  textEncoding: string;
+  strict: string;
+  autoDetect: string;
   newlineCharacter: string;
   old90sMac: string;
   autoSavingDirectory: string;
@@ -194,6 +200,7 @@ type Texts = {
   adjustBoardToHumanPlayer: string;
   adjustBoardAutomatically: string;
   startGame: string;
+  cancelGame: string;
   allottedTime: string;
   byoyomi: string;
   increments: string;
@@ -288,6 +295,8 @@ type Texts = {
   blunderThreshold: string;
   typeCustomTitleHere: string;
   displayEmptyElements: string;
+  waitingForNewGame: string;
+  tryingToConnectAndLoginToCSAServer: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
   canOpenLogDirectoryFromMenu: string;
@@ -351,6 +360,9 @@ type Texts = {
   inaccuracyThresholdMustBeLessThanDubiousThreshold: string;
   dubiousThresholdMustBeLessThanMistakeThreshold: string;
   mistakeThresholdMustBeLessThanBlunderThreshold: string;
+  thisEngineNotSupportsMateSearch: string;
+  tryToReloginToCSAServerNSecondsLater: (n: number) => string;
+  mateInNPlyDoYouWantToDisplay: (n: number) => string;
   errorsOccurred: (n: number) => string;
   between: (a: unknown, b: unknown) => string;
   addNthEngine: (n: number) => string;
@@ -437,6 +449,9 @@ const ja: Texts = {
   impass: "持将棋",
   repetitionDraw: "千日手",
   mate: "詰み",
+  mateSearch: "詰み探索",
+  stopMateSearch: "詰み探索終了",
+  noMateFound: "詰みが見つかりませんでした。",
   timeout: "時間切れ",
   foulWin: "反則勝ち",
   foulLose: "反則負け",
@@ -491,6 +506,9 @@ const ja: Texts = {
   clockSoundTarget: "時計音の対象",
   anyTurn: "全ての手番",
   onlyHumanTurn: "人間の手番のみ",
+  textEncoding: "文字コード",
+  strict: "厳格",
+  autoDetect: "自動判定",
   newlineCharacter: "改行文字",
   old90sMac: "90年代Mac",
   autoSavingDirectory: "棋譜の自動保存先",
@@ -557,6 +575,7 @@ const ja: Texts = {
   adjustBoardToHumanPlayer: "人を手前に表示する",
   adjustBoardAutomatically: "盤面の向きを自動調整",
   startGame: "対局開始",
+  cancelGame: "対局をキャンセル",
   allottedTime: "持ち時間",
   byoyomi: "秒読み",
   increments: "増加",
@@ -651,6 +670,9 @@ const ja: Texts = {
   blunderThreshold: "大悪手の閾値",
   typeCustomTitleHere: "ここに見出しを入力",
   displayEmptyElements: "未入力の項目を表示",
+  waitingForNewGame: "対局開始を待っています。",
+  tryingToConnectAndLoginToCSAServer:
+    "CSAサーバーへの接続とログインを試みています。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
   shouldRestartToApplyLogSettings:
@@ -742,6 +764,12 @@ const ja: Texts = {
     "疑問手には悪手より小さい値を指定してください。",
   mistakeThresholdMustBeLessThanBlunderThreshold:
     "悪手には大悪手より小さい値を指定してください。",
+  thisEngineNotSupportsMateSearch:
+    "このエンジンは詰将棋探索をサポートしていません。",
+  tryToReloginToCSAServerNSecondsLater: (n) =>
+    `CSAサーバーへのログインを${n}秒後に再試行します。`,
+  mateInNPlyDoYouWantToDisplay: (n) =>
+    `${n}手で詰みました。再生画面を表示しますか？`,
   errorsOccurred: (n) => `${n} 種類のエラーが発生しました。`,
   between: (a, b) => `${a} から ${b} まで`,
   addNthEngine: (n) => `${n} 個目のエンジンを追加`,
@@ -837,6 +865,9 @@ const en: Texts = {
   impass: "Impass",
   repetitionDraw: "Repetition Draw",
   mate: "Mate",
+  mateSearch: "Mate Search",
+  stopMateSearch: "Stop Mate Search",
+  noMateFound: "No mate.",
   timeout: "Timeout",
   foulWin: "Foul Win",
   foulLose: "Foul Lose",
@@ -891,6 +922,9 @@ const en: Texts = {
   clockSoundTarget: "Clock Sound Target",
   anyTurn: "Any",
   onlyHumanTurn: "Human",
+  textEncoding: "Text Encoding",
+  strict: "Strict",
+  autoDetect: "Auto Detect",
   newlineCharacter: "Newline Character",
   old90sMac: "90's Mac",
   autoSavingDirectory: "Auto-Saving Directory",
@@ -957,6 +991,7 @@ const en: Texts = {
   adjustBoardToHumanPlayer: "Adjust Board to Human Player",
   adjustBoardAutomatically: "Adjust Board Automatically",
   startGame: "Start Game",
+  cancelGame: "Cancel Game",
   allottedTime: "Allotted Time",
   byoyomi: "Byoyomi",
   increments: "Increments",
@@ -1051,6 +1086,9 @@ const en: Texts = {
   blunderThreshold: "Blunder Threshold",
   typeCustomTitleHere: "Type custom title here",
   displayEmptyElements: "Display Empty Elements",
+  waitingForNewGame: "Waiting for new game.",
+  tryingToConnectAndLoginToCSAServer:
+    "Trying to connect and login to CSA server.",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
   shouldRestartToApplyLogSettings:
@@ -1136,6 +1174,11 @@ const en: Texts = {
     "Dubious threshold must be less than mistake threshold.",
   mistakeThresholdMustBeLessThanBlunderThreshold:
     "Mistake threshold must be less than blunder threshold.",
+  thisEngineNotSupportsMateSearch: "This engine does not support mate search.",
+  tryToReloginToCSAServerNSecondsLater: (n) =>
+    `Try to relogin to CSA server ${n} seconds later.`,
+  mateInNPlyDoYouWantToDisplay: (n) =>
+    `Mate in ${n} ply. Do you want to display?`,
   errorsOccurred: (n) =>
     n >= 2 ? `${n} errors have occurred.` : `${n} error has occurred.`,
   between: (a, b) => `between ${a} and ${b}`,

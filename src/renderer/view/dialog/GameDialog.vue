@@ -92,7 +92,7 @@
               :label="t.enableEngineTimeout"
               :value="enableEngineTimeout"
               @change="
-                (value) => {
+                (value: boolean) => {
                   enableEngineTimeout = value;
                 }
               "
@@ -138,7 +138,7 @@
               :label="t.swapTurnWhenGameRepetition"
               :value="swapPlayers"
               @change="
-                (value) => {
+                (value: boolean) => {
                   swapPlayers = value;
                 }
               "
@@ -149,7 +149,7 @@
               :label="t.outputComments"
               :value="enableComment"
               @change="
-                (value) => {
+                (value: boolean) => {
                   enableComment = value;
                 }
               "
@@ -160,7 +160,7 @@
               :label="t.saveRecordAutomatically"
               :value="enableAutoSave"
               @change="
-                (value) => {
+                (value: boolean) => {
                   enableAutoSave = value;
                 }
               "
@@ -171,7 +171,7 @@
               :label="t.adjustBoardToHumanPlayer"
               :value="humanIsFront"
               @change="
-                (value) => {
+                (value: boolean) => {
                   humanIsFront = value;
                 }
               "

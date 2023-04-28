@@ -17,8 +17,12 @@ export interface SearchHandler {
   onError: (e: unknown) => void;
 }
 
-export interface PonderHandler {
-  onSearchInfo: (info: SearchInfo) => void;
+export interface MateHandler {
+  onCheckmate: (moves: Move[]) => void;
+  onNotImplemented: () => void;
+  onTimeout: () => void;
+  onNoMate: () => void;
+  onError: (e: unknown) => void;
 }
 
 export interface Player {
@@ -36,6 +40,7 @@ export interface Player {
     blackTimeMs: number,
     whiteTimeMs: number
   ): Promise<void>;
+  startMateSearch(record: ImmutableRecord, handler: MateHandler): Promise<void>;
   stop(): Promise<void>;
   gameover(result: GameResult): Promise<void>;
   close(): Promise<void>;

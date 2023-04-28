@@ -4,10 +4,9 @@
 
 # チェックリスト / Checklist
 
-<!--
-プログラムの変更が無い場合、以下のチェック項目は必須ではありません。
-Following checks are not mandatory when you don't change program.
--->
-
-- [ ] `npm test` passed
-- [ ] `npm run lint` was applied without warnings
+- MUST
+  - [ ] `npm test` passed
+  - [ ] `npm run lint` was applied without warnings
+  - [ ] no changes of `/docs/webapp` (except release branch)
+- RECOMMENDED (it depends on what you change)
+  - [ ] unit test added/updated

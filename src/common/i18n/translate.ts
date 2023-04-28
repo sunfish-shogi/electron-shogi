@@ -1495,25 +1495,20 @@ const zh_tw: Texts = {
     "※您需要重新啟動本程式以使用變更後的 log 設定。",
   canOpenLogDirectoryFromMenu:
     "※log 的輸出檔案可以在「偵錯」-「開啟紀錄檔案資料夾」開啟。",
-  hasNoOldLogCleanUpFeature:
-    "※現在並沒有舊 log 的自動刪除機制。",
+  hasNoOldLogCleanUpFeature: "※現在並沒有舊 log 的自動刪除機制。",
   processingPleaseWait: "現在處理中。請稍待一會。",
   importingFollowingRecordOrPosition: "將匯入以下棋譜（局面）。",
   supportsKIFCSAUSI: "※支援KIF/CSA/SFEN形式。",
   plesePasteRecordIntoTextArea: "※請在文字輸入區域貼上您的棋譜。",
-  desktopVersionPastesAutomatically:
-    "※安裝程式版將會自動貼上棋譜。",
+  desktopVersionPastesAutomatically: "※安裝程式版將會自動貼上棋譜。",
   someLogsDisabled: "部份 log 已被無效化。",
-  logsRecommendedForCSAProtocol:
-    "若使用CSA協定對局，建議輸出各項 log 。",
-  pleaseEnableLogsAndRestart:
-    "請在程式設定中開啟 log 並重新啟動本程式。",
+  logsRecommendedForCSAProtocol: "若使用CSA協定對局，建議輸出各項 log 。",
+  pleaseEnableLogsAndRestart: "請在程式設定中開啟 log 並重新啟動本程式。",
   notSendPVOnStandardCSAProtocol:
     "在標準的CSA協定中不會送出評價值以及思考棋步。",
   sendPVDoNotUseOnWCSC:
     "使用Floodgate形式傳送評價值與思考棋步。請不要在WCSC中使用。",
-  csaProtocolSendPlaintextPassword:
-    "在CSA協定中，密碼為明文傳輸。",
+  csaProtocolSendPlaintextPassword: "在CSA協定中，密碼為明文傳輸。",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:
     "由於無法使用系統的加密機能，輸入的密碼將會以明文保存。",
   pleaseUncheckSaveHistoryIfNotWantSave:
@@ -1521,8 +1516,7 @@ const zh_tw: Texts = {
   csaProtocolSendPlaintextPasswordRegardlessOfHistory:
     "不過，CSA協定仍會以明文傳輸您的密碼。",
   areYouSureWantToQuitGames: "要中斷連續對局嗎？",
-  areYouSureWantToRequestQuit:
-    "若提出中斷要求，可能會被判負。請問您要繼續嗎？",
+  areYouSureWantToRequestQuit: "若提出中斷要求，可能會被判負。請問您要繼續嗎？",
   areYouSureWantToClearRecord: "將會刪除現在的棋譜。請問您要繼續嗎？",
   areYouSureWantToDiscardPosition: "將不會保存現在的局面。請問您要繼續嗎？",
   youCanNotCloseAppWhileCSAOnlineGame:
@@ -1556,30 +1550,19 @@ const zh_tw: Texts = {
   backgroundImageFileNotSelected: "尚未選取背景圖片。",
   boardImageFileNotSelected: "尚未選取盤面圖片。",
   pieceStandImageFileNotSelected: "尚未選取駒台圖片。",
-  pieceVolumeMustBe0To100Percent:
-    "請在0%～100%之間指定棋駒音效大小。",
-  clockVolumeMustBe0To100Percent:
-    "請在0%～100%之間指定棋鐘音效大小。",
-  clockPitchMustBe220To880Hz:
-    "請在220Hz～880Hz之間指定棋鐘音效頻率。",
-  engineTimeoutMustBe1To300Seconds:
-    "請在1秒～300秒之間指定引擎執行最長時間。",
-  coefficientInSigmoidMustBeGreaterThan0:
-    "請將勝率換算係數填為大於0之值。",
-  inaccuracyThresholdMustBe1To100Percent:
-    "請在0%～100%之間指定緩手門檻。",
-  dubiousThresholdMustBe1To100Percent:
-    "請在0%～100%之間指定疑問手門檻。",
-  mistakeThresholdMustBe1To100Percent:
-    "請在0%～100%之間指定惡手門檻。",
-  blunderThresholdMustBe1To100Percent:
-    "請在0%～100%之間指定大惡手門檻。",
+  pieceVolumeMustBe0To100Percent: "請在0%～100%之間指定棋駒音效大小。",
+  clockVolumeMustBe0To100Percent: "請在0%～100%之間指定棋鐘音效大小。",
+  clockPitchMustBe220To880Hz: "請在220Hz～880Hz之間指定棋鐘音效頻率。",
+  engineTimeoutMustBe1To300Seconds: "請在1秒～300秒之間指定引擎執行最長時間。",
+  coefficientInSigmoidMustBeGreaterThan0: "請將勝率換算係數填為大於0之值。",
+  inaccuracyThresholdMustBe1To100Percent: "請在0%～100%之間指定緩手門檻。",
+  dubiousThresholdMustBe1To100Percent: "請在0%～100%之間指定疑問手門檻。",
+  mistakeThresholdMustBe1To100Percent: "請在0%～100%之間指定惡手門檻。",
+  blunderThresholdMustBe1To100Percent: "請在0%～100%之間指定大惡手門檻。",
   inaccuracyThresholdMustBeLessThanDubiousThreshold:
     "緩手門檻應小於疑問手門檻。",
-  dubiousThresholdMustBeLessThanMistakeThreshold:
-    "疑問手門檻應小於惡手門檻。",
-  mistakeThresholdMustBeLessThanBlunderThreshold:
-    "惡手門檻應小於大惡手門檻。",
+  dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手門檻應小於惡手門檻。",
+  mistakeThresholdMustBeLessThanBlunderThreshold: "惡手門檻應小於大惡手門檻。",
   errorsOccurred: (n) => `發生 ${n} 種類的錯誤。`,
   between: (a, b) => `自 ${a} 到 ${b} `,
   addNthEngine: (n) => `追加第 ${n} 個引擎`,

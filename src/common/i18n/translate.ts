@@ -1275,10 +1275,10 @@ const zh_tw: Texts = {
   draw: "平手",
   impass: "持将棋",
   repetitionDraw: "千日手",
-  mate: "詰死",
-  mateSearch: "詰み探索", // TODO: translate
-  stopMateSearch: "詰み探索終了", // TODO: translate
-  noMateFound: "詰みが見つかりませんでした。", // TODO: translate
+  mate: "詰",
+  mateSearch: "詰搜尋",
+  stopMateSearch: "結束詰搜尋",
+  noMateFound: "在目前的盤面中找不到詰。",
   timeout: "時間耗盡",
   foulWin: "反則勝利",
   foulLose: "反則敗北",
@@ -1315,9 +1315,9 @@ const zh_tw: Texts = {
   singleKanjiDarkPiece: "一文字駒（深色）",
   singleKanjiGothicDarkPiece: "一文字駒（黑體・深色）",
   backgroundImage: "背景圖片",
-  board: "盤",
+  board: "棋盤",
   pieceStand: "駒台",
-  lightWoodyTexture: "木目（明亮）",
+  lightWoodyTexture: "木目（亮色）",
   warmWoodTexture: "木目（暖色）",
   regin: "樹脂",
   displayFileAndRank: "顯示段・筋",
@@ -1333,9 +1333,9 @@ const zh_tw: Texts = {
   clockSoundTarget: "棋鐘音效對象",
   anyTurn: "所有手番",
   onlyHumanTurn: "只有玩家手番",
-  textEncoding: "文字コード", // TODO: translate
-  strict: "厳格", // TODO: translate
-  autoDetect: "自動判定", // TODO: translate
+  textEncoding: "文字編碼",
+  strict: "檔案原始編碼",
+  autoDetect: "自動判定",
   newlineCharacter: "換行符號",
   old90sMac: "90年代Mac",
   autoSavingDirectory: "棋譜自動保存地點",
@@ -1383,7 +1383,7 @@ const zh_tw: Texts = {
   time: "時間",
   enableEngineTimeout: "開啟引擎時間限制",
   others: "其他",
-  nextTurn: "下一手手番",
+  nextTurn: "手番",
   elapsedTime: "消費時間",
   elapsed: "經過時間",
   rank: "順位",
@@ -1394,7 +1394,7 @@ const zh_tw: Texts = {
   multiPV: "多重PV",
   startPosition: "開始局面",
   maxMoves: "最大手數",
-  gameRepetition: "連續対局",
+  gameRepetition: "連續對局",
   autoRelogin: "自動重新登入",
   swapTurnWhenGameRepetition: "每局交換手番",
   outputComments: "輸出備註",
@@ -1402,7 +1402,7 @@ const zh_tw: Texts = {
   adjustBoardToHumanPlayer: "調整到玩家所在方向",
   adjustBoardAutomatically: "自動調整盤面方向",
   startGame: "對局開始",
-  cancelGame: "対局をキャンセル", // TODO: translate
+  cancelGame: "取消對局",
   allottedTime: "持時間",
   byoyomi: "讀秒",
   increments: "增秒",
@@ -1484,7 +1484,7 @@ const zh_tw: Texts = {
   bookStyle: "書籍風",
   gameStyle: "對局畫面風",
   none: "無",
-  bgCover: "僅顯示原圖片",
+  bgCover: "圖片置中",
   bgContain: "擴大表示",
   bgTile: "磁磚狀表示",
   inaccuracy: "緩手",
@@ -1497,9 +1497,8 @@ const zh_tw: Texts = {
   blunderThreshold: "大惡手閾値",
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
-  waitingForNewGame: "対局開始を待っています。", // TODO: translate
-  tryingToConnectAndLoginToCSAServer:
-    "CSAサーバーへの接続とログインを試みています。", // TODO: translate
+  waitingForNewGame: "正在等待下一場對局開始。",
+  tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中 log 會於 console 中顯示，並無視此處的設定。",
   shouldRestartToApplyLogSettings:
@@ -1574,12 +1573,10 @@ const zh_tw: Texts = {
     "緩手門檻應小於疑問手門檻。",
   dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手門檻應小於惡手門檻。",
   mistakeThresholdMustBeLessThanBlunderThreshold: "惡手門檻應小於大惡手門檻。",
-  thisEngineNotSupportsMateSearch:
-    "このエンジンは詰将棋探索をサポートしていません。", // TODO: translate
+  thisEngineNotSupportsMateSearch: "這個引擎不支援詰將棋搜索。",
   tryToReloginToCSAServerNSecondsLater: (n) =>
-    `CSAサーバーへのログインを${n}秒後に再試行します。`, // TODO: translate
-  mateInNPlyDoYouWantToDisplay: (n) =>
-    `${n}手で詰みました。再生画面を表示しますか？`, // TODO: translate
+    `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
+  mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,
   errorsOccurred: (n) => `發生 ${n} 種類的錯誤。`,
   between: (a, b) => `自 ${a} 到 ${b} `,
   addNthEngine: (n) => `追加第 ${n} 個引擎`,

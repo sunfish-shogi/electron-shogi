@@ -1,4 +1,4 @@
-import { Language } from "./language";
+import { Language } from "./languages";
 
 type USIOptionNameMap = { [key: string]: string };
 

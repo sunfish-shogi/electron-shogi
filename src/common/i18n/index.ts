@@ -1,9 +1,9 @@
-import { Language } from "./language";
-import * as translate from "./translate";
+import { Language } from "./languages";
+import * as translate from "./translation_table";
 import * as usi from "./usi";
 
-export * from "./language";
-export * from "./translate";
+export * from "./languages";
+export * from "./translation_table";
 export * from "./errors";
 export * from "./record";
 export * from "./usi";

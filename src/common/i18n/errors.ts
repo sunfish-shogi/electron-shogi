@@ -11,7 +11,7 @@ import {
   InvalidUSIError,
   PieceNotExistsError,
 } from "@/common/shogi";
-import { t } from "./translate";
+import { t } from "./translation_table";
 
 export function localizeError(err: Error): Error {
   if (err instanceof InvalidPieceNameError) {

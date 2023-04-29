@@ -106,7 +106,7 @@
                   label: t.singleKanjiGothicDarkPiece,
                   value: PieceImageType.HITOMOJI_GOTHIC_DARK,
                 },
-                { label: t.customImage, value: PieceImageType.CUSTOM_IMAGE },
+                { label: t.customDir, value: PieceImageType.CUSTOM_IMAGE },
               ]"
               @change="
                 (value: PieceImageType) => {

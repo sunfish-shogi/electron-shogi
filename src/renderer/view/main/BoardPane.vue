@@ -5,6 +5,7 @@
       :board-image-type="appSetting.boardImage"
       :piece-stand-image-type="appSetting.pieceStandImage"
       :board-label-type="appSetting.boardLabelType"
+      :custom-piece-image-dir="appSetting.pieceImageDirURL"
       :custom-board-image-url="appSetting.boardImageFileURL"
       :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
       :max-size="maxSize"

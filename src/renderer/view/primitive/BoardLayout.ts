@@ -19,7 +19,6 @@ import preloadImage from "@/renderer/assets/preload";
 import { RectSize } from "@/common/graphics";
 
 type PieceImages = {
-  // directory: string;
   black: {
     pawn: string;
     lance: string;
@@ -55,11 +54,6 @@ type PieceImages = {
     dragon: string;
   };
 };
-
-// type PiecePath = {
-//   directory: string;
-//   pieceImages: PieceImages;
-// };
 
 const layoutTemplate = {
   frame: {
@@ -162,159 +156,50 @@ const layoutTemplate = {
   },
 };
 
-// deprecated
-// const pieceImageMap: { [key: string]: PieceImages } = {
-//   [PieceImageType.HITOMOJI]: {
-//     black: {
-//       pawn: "./piece/hitomoji/black_pawn.png",
-//       lance: "./piece/hitomoji/black_lance.png",
-//       knight: "./piece/hitomoji/black_knight.png",
-//       silver: "./piece/hitomoji/black_silver.png",
-//       gold: "./piece/hitomoji/black_gold.png",
-//       bishop: "./piece/hitomoji/black_bishop.png",
-//       rook: "./piece/hitomoji/black_rook.png",
-//       king: "./piece/hitomoji/black_king.png",
-//       king2: "./piece/hitomoji/black_king2.png",
-//       promPawn: "./piece/hitomoji/black_prom_pawn.png",
-//       promLance: "./piece/hitomoji/black_prom_lance.png",
-//       promKnight: "./piece/hitomoji/black_prom_knight.png",
-//       promSilver: "./piece/hitomoji/black_prom_silver.png",
-//       horse: "./piece/hitomoji/black_horse.png",
-//       dragon: "./piece/hitomoji/black_dragon.png",
-//     },
-//     white: {
-//       pawn: "./piece/hitomoji/white_pawn.png",
-//       lance: "./piece/hitomoji/white_lance.png",
-//       knight: "./piece/hitomoji/white_knight.png",
-//       silver: "./piece/hitomoji/white_silver.png",
-//       gold: "./piece/hitomoji/white_gold.png",
-//       bishop: "./piece/hitomoji/white_bishop.png",
-//       rook: "./piece/hitomoji/white_rook.png",
-//       king: "./piece/hitomoji/white_king.png",
-//       king2: "./piece/hitomoji/white_king2.png",
-//       promPawn: "./piece/hitomoji/white_prom_pawn.png",
-//       promLance: "./piece/hitomoji/white_prom_lance.png",
-//       promKnight: "./piece/hitomoji/white_prom_knight.png",
-//       promSilver: "./piece/hitomoji/white_prom_silver.png",
-//       horse: "./piece/hitomoji/white_horse.png",
-//       dragon: "./piece/hitomoji/white_dragon.png",
-//     },
+// deprecated, but may be of use when detecting valid piece directory.
+// const piece_template = {
+//   black: {
+//     pawn: "black_pawn.png",
+//     lance: "black_lance.png",
+//     knight: "black_knight.png",
+//     silver: "black_silver.png",
+//     gold: "black_gold.png",
+//     bishop: "black_bishop.png",
+//     rook: "black_rook.png",
+//     king: "black_king.png",
+//     king2: "black_king2.png",
+//     promPawn: "black_prom_pawn.png",
+//     promLance: "black_prom_lance.png",
+//     promKnight: "black_prom_knight.png",
+//     promSilver: "black_prom_silver.png",
+//     horse: "black_horse.png",
+//     dragon: "black_dragon.png",
 //   },
-//   [PieceImageType.HITOMOJI_DARK]: {
-//     black: {
-//       pawn: "./piece/hitomoji_dark/black_pawn.png",
-//       lance: "./piece/hitomoji_dark/black_lance.png",
-//       knight: "./piece/hitomoji_dark/black_knight.png",
-//       silver: "./piece/hitomoji_dark/black_silver.png",
-//       gold: "./piece/hitomoji_dark/black_gold.png",
-//       bishop: "./piece/hitomoji_dark/black_bishop.png",
-//       rook: "./piece/hitomoji_dark/black_rook.png",
-//       king: "./piece/hitomoji_dark/black_king.png",
-//       king2: "./piece/hitomoji_dark/black_king2.png",
-//       promPawn: "./piece/hitomoji_dark/black_prom_pawn.png",
-//       promLance: "./piece/hitomoji_dark/black_prom_lance.png",
-//       promKnight: "./piece/hitomoji_dark/black_prom_knight.png",
-//       promSilver: "./piece/hitomoji_dark/black_prom_silver.png",
-//       horse: "./piece/hitomoji_dark/black_horse.png",
-//       dragon: "./piece/hitomoji_dark/black_dragon.png",
-//     },
-//     white: {
-//       pawn: "./piece/hitomoji_dark/white_pawn.png",
-//       lance: "./piece/hitomoji_dark/white_lance.png",
-//       knight: "./piece/hitomoji_dark/white_knight.png",
-//       silver: "./piece/hitomoji_dark/white_silver.png",
-//       gold: "./piece/hitomoji_dark/white_gold.png",
-//       bishop: "./piece/hitomoji_dark/white_bishop.png",
-//       rook: "./piece/hitomoji_dark/white_rook.png",
-//       king: "./piece/hitomoji_dark/white_king.png",
-//       king2: "./piece/hitomoji_dark/white_king2.png",
-//       promPawn: "./piece/hitomoji_dark/white_prom_pawn.png",
-//       promLance: "./piece/hitomoji_dark/white_prom_lance.png",
-//       promKnight: "./piece/hitomoji_dark/white_prom_knight.png",
-//       promSilver: "./piece/hitomoji_dark/white_prom_silver.png",
-//       horse: "./piece/hitomoji_dark/white_horse.png",
-//       dragon: "./piece/hitomoji_dark/white_dragon.png",
-//     },
-//   },
-//   [PieceImageType.HITOMOJI_GOTHIC]: {
-//     black: {
-//       pawn: "./piece/hitomoji_gothic/black_pawn.png",
-//       lance: "./piece/hitomoji_gothic/black_lance.png",
-//       knight: "./piece/hitomoji_gothic/black_knight.png",
-//       silver: "./piece/hitomoji_gothic/black_silver.png",
-//       gold: "./piece/hitomoji_gothic/black_gold.png",
-//       bishop: "./piece/hitomoji_gothic/black_bishop.png",
-//       rook: "./piece/hitomoji_gothic/black_rook.png",
-//       king: "./piece/hitomoji_gothic/black_king.png",
-//       king2: "./piece/hitomoji_gothic/black_king2.png",
-//       promPawn: "./piece/hitomoji_gothic/black_prom_pawn.png",
-//       promLance: "./piece/hitomoji_gothic/black_prom_lance.png",
-//       promKnight: "./piece/hitomoji_gothic/black_prom_knight.png",
-//       promSilver: "./piece/hitomoji_gothic/black_prom_silver.png",
-//       horse: "./piece/hitomoji_gothic/black_horse.png",
-//       dragon: "./piece/hitomoji_gothic/black_dragon.png",
-//     },
-//     white: {
-//       pawn: "./piece/hitomoji_gothic/white_pawn.png",
-//       lance: "./piece/hitomoji_gothic/white_lance.png",
-//       knight: "./piece/hitomoji_gothic/white_knight.png",
-//       silver: "./piece/hitomoji_gothic/white_silver.png",
-//       gold: "./piece/hitomoji_gothic/white_gold.png",
-//       bishop: "./piece/hitomoji_gothic/white_bishop.png",
-//       rook: "./piece/hitomoji_gothic/white_rook.png",
-//       king: "./piece/hitomoji_gothic/white_king.png",
-//       king2: "./piece/hitomoji_gothic/white_king2.png",
-//       promPawn: "./piece/hitomoji_gothic/white_prom_pawn.png",
-//       promLance: "./piece/hitomoji_gothic/white_prom_lance.png",
-//       promKnight: "./piece/hitomoji_gothic/white_prom_knight.png",
-//       promSilver: "./piece/hitomoji_gothic/white_prom_silver.png",
-//       horse: "./piece/hitomoji_gothic/white_horse.png",
-//       dragon: "./piece/hitomoji_gothic/white_dragon.png",
-//     },
-//   },
-//   [PieceImageType.HITOMOJI_GOTHIC_DARK]: {
-//     black: {
-//       pawn: "./piece/hitomoji_gothic_dark/black_pawn.png",
-//       lance: "./piece/hitomoji_gothic_dark/black_lance.png",
-//       knight: "./piece/hitomoji_gothic_dark/black_knight.png",
-//       silver: "./piece/hitomoji_gothic_dark/black_silver.png",
-//       gold: "./piece/hitomoji_gothic_dark/black_gold.png",
-//       bishop: "./piece/hitomoji_gothic_dark/black_bishop.png",
-//       rook: "./piece/hitomoji_gothic_dark/black_rook.png",
-//       king: "./piece/hitomoji_gothic_dark/black_king.png",
-//       king2: "./piece/hitomoji_gothic_dark/black_king2.png",
-//       promPawn: "./piece/hitomoji_gothic_dark/black_prom_pawn.png",
-//       promLance: "./piece/hitomoji_gothic_dark/black_prom_lance.png",
-//       promKnight: "./piece/hitomoji_gothic_dark/black_prom_knight.png",
-//       promSilver: "./piece/hitomoji_gothic_dark/black_prom_silver.png",
-//       horse: "./piece/hitomoji_gothic_dark/black_horse.png",
-//       dragon: "./piece/hitomoji_gothic_dark/black_dragon.png",
-//     },
-//     white: {
-//       pawn: "./piece/hitomoji_gothic_dark/white_pawn.png",
-//       lance: "./piece/hitomoji_gothic_dark/white_lance.png",
-//       knight: "./piece/hitomoji_gothic_dark/white_knight.png",
-//       silver: "./piece/hitomoji_gothic_dark/white_silver.png",
-//       gold: "./piece/hitomoji_gothic_dark/white_gold.png",
-//       bishop: "./piece/hitomoji_gothic_dark/white_bishop.png",
-//       rook: "./piece/hitomoji_gothic_dark/white_rook.png",
-//       king: "./piece/hitomoji_gothic_dark/white_king.png",
-//       king2: "./piece/hitomoji_gothic_dark/white_king2.png",
-//       promPawn: "./piece/hitomoji_gothic_dark/white_prom_pawn.png",
-//       promLance: "./piece/hitomoji_gothic_dark/white_prom_lance.png",
-//       promKnight: "./piece/hitomoji_gothic_dark/white_prom_knight.png",
-//       promSilver: "./piece/hitomoji_gothic_dark/white_prom_silver.png",
-//       horse: "./piece/hitomoji_gothic_dark/white_horse.png",
-//       dragon: "./piece/hitomoji_gothic_dark/white_dragon.png",
-//     },
+//   white: {
+//     pawn: "white_pawn.png",
+//     lance: "white_lance.png",
+//     knight: "white_knight.png",
+//     silver: "white_silver.png",
+//     gold: "white_gold.png",
+//     bishop: "white_bishop.png",
+//     rook: "white_rook.png",
+//     king: "white_king.png",
+//     king2: "white_king2.png",
+//     promPawn: "white_prom_pawn.png",
+//     promLance: "white_prom_lance.png",
+//     promKnight: "white_prom_knight.png",
+//     promSilver: "white_prom_silver.png",
+//     horse: "white_horse.png",
+//     dragon: "white_dragon.png",
 //   },
 // };
-
 function getPieceTextureMap(
   type: PieceImageType,
   customDir?: string
 ): PieceImages {
-  let dir: string | null = "";
+  let dir = ""; // directory of piece images
+
+  // determine directory
   switch (type) {
     case PieceImageType.HITOMOJI:
       dir = "./piece/hitomoji/";
@@ -329,13 +214,14 @@ function getPieceTextureMap(
       dir = "./piece/hitomoji_gothic_dark/";
       break;
     case PieceImageType.CUSTOM_IMAGE:
-      dir = customDir || null;
+      dir = "file://" + customDir; // should be turn to no "file://" URL?
       break;
     default:
       dir = "./piece/hitomoji/";
       break;
   }
-  const final_piece: PieceImages = {
+  // return piece with custom directory
+  const piece: PieceImages = {
     black: {
       pawn: dir + "black_pawn.png",
       lance: dir + "black_lance.png",
@@ -372,7 +258,7 @@ function getPieceTextureMap(
     },
   };
 
-  return final_piece;
+  return piece;
 }
 function getBoardGridURL(type: BoardImageType): string {
   switch (type) {
@@ -584,13 +470,13 @@ export default class LayoutBuilder {
     private boardImageType: BoardImageType,
     private pieceStandImageType: PieceStandImageType,
     private boardLabelType: BoardLabelType,
-    customPieceImageURL?: string,
+    customPieceImageDir?: string,
     customBoardImageURL?: string,
     customPieceStandImageURL?: string
   ) {
     // this.pieceImages =
     // pieceImageMap[pieceImageType] || pieceImageMap[PieceImageType.HITOMOJI];
-    this.pieceImages = getPieceTextureMap(pieceImageType, customPieceImageURL);
+    this.pieceImages = getPieceTextureMap(pieceImageType, customPieceImageDir);
     this.boardGridImage = getBoardGridURL(boardImageType);
     this.boardTextureImage = getBoardTextureURL(
       boardImageType,

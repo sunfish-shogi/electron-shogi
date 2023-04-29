@@ -3,7 +3,6 @@
     <div class="container">
       <button class="thin select" @click="select">{{ t.select }}</button>
       <span v-if="url" ref="preview">{{ url }}</span>
-      <!-- <img v-if="url" ref="preview" class="preview" :src="url" /> -->
     </div>
   </div>
 </template>
@@ -31,8 +30,8 @@ const select = async () => {
   try {
     const newURL = await api.showSelectDirectoryDialog(url.value);
     if (newURL) {
-      url.value = newURL;
-      emit("select", newURL);
+      url.value = newURL + "/";
+      emit("select", newURL + "/");
     }
   } catch (e) {
     store.pushError(e);

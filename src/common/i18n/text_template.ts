@@ -100,6 +100,7 @@ export type Texts = {
   standard: string;
   green: string;
   cherryBlossom: string;
+  customDir: string;
   customImage: string;
   autumn: string;
   snow: string;
@@ -343,6 +344,7 @@ export type Texts = {
   invalidHandPiece: string;
   invalidUSI: string;
   backgroundImageFileNotSelected: string;
+  pieceImageDirNotSelected: string;
   boardImageFileNotSelected: string;
   pieceStandImageFileNotSelected: string;
   pieceVolumeMustBe0To100Percent: string;

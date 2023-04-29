@@ -339,8 +339,7 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
     setting.pieceImage === PieceImageType.CUSTOM_IMAGE &&
     !setting.pieceImageDirURL
   ) {
-    // return new Error(t.pieceImageDirNotSelected); // todo : add translation lines
-    return new Error("foo"); // todo : add translation lines
+    return new Error(t.pieceImageDirNotSelected);
   }
   if (
     setting.boardImage === BoardImageType.CUSTOM_IMAGE &&

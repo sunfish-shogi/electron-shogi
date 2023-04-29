@@ -106,6 +106,7 @@
                   label: t.singleKanjiGothicDarkPiece,
                   value: PieceImageType.HITOMOJI_GOTHIC_DARK,
                 },
+                { label: t.customImage, value: PieceImageType.CUSTOM_IMAGE },
               ]"
               @change="
                 (value: PieceImageType) => {
@@ -113,6 +114,20 @@
                 }
               "
             />
+            <div
+              ref="pieceImageSelector"
+              class="form-item"
+              :class="{
+                hidden: pieceImage !== PieceImageType.CUSTOM_IMAGE,
+              }"
+            >
+              <div class="form-item-label-wide"></div>
+              <DirectorySelector
+                class="image-selector"
+                :default-url="appSetting.pieceImageDirURL"
+                @select="(url: string) => (pieceImageDirURL = url)"
+              />
+            </div>
           </div>
           <!-- 盤画像 -->
           <div class="form-item">
@@ -578,6 +593,7 @@ import {
   ClockSoundTarget,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
+import DirectorySelector from "@/renderer/view/dialog/DirectorySelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useStore } from "@/renderer/store";
 import { ref, onMounted, onBeforeUnmount } from "vue";
@@ -646,6 +662,7 @@ const enableUSILog = ref(appSetting.enableUSILog);
 const enableCSALog = ref(appSetting.enableCSALog);
 const logLevel = ref(appSetting.logLevel);
 const backgroundImageFileURL = ref(appSetting.backgroundImageFileURL);
+const pieceImageDirURL = ref(appSetting.pieceImageDirURL);
 const boardImageFileURL = ref(appSetting.boardImageFileURL);
 const pieceStandImageFileURL = ref(appSetting.pieceStandImageFileURL);
 
@@ -698,6 +715,9 @@ const saveAndClose = async () => {
   };
   if (update.backgroundImageType !== BackgroundImageType.NONE) {
     update.backgroundImageFileURL = backgroundImageFileURL.value;
+  }
+  if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
+    update.pieceImageDirURL = pieceImageDirURL.value;
   }
   if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
     update.boardImageFileURL = boardImageFileURL.value;

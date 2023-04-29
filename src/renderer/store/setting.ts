@@ -47,6 +47,9 @@ class AppSettingStore {
   get boardImage(): BoardImageType {
     return this.setting.boardImage;
   }
+  get pieceImageDirURL(): string | undefined {
+    return this.setting.pieceImageDirURL;
+  }
   get boardImageFileURL(): string | undefined {
     return this.setting.boardImageFileURL;
   }

@@ -222,6 +222,9 @@ export const webAPI: Bridge = {
   onMenuEvent(): void {
     // Do Nothing
   },
+  onUpdateAppSetting(): void {
+    // Do Nothing
+  },
   onUSIBestMove(): void {
     // Do Nothing
   },

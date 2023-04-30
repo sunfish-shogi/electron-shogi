@@ -1,10 +1,10 @@
 import { BrowserWindow, dialog } from "electron";
-import { getWebContents } from "./ipc";
+import { getWebContents, onUpdateAppSetting } from "./ipc";
 import fs from "fs";
 import path from "path";
 import { Rect } from "@/common/graphics";
 import { getAppLogger } from "./log";
-import { loadAppSetting, saveAppSetting } from "./settings";
+import { loadAppSetting } from "./settings";
 
 const jpegQuality = 85;
 
@@ -38,8 +38,7 @@ async function exportCaptureImage(rect: Rect, ext: string): Promise<void> {
   if (!filePath) {
     return;
   }
-  saveAppSetting({
-    ...appSetting,
+  onUpdateAppSetting({
     lastImageExportFilePath: filePath,
   });
   switch (ext) {

@@ -51,6 +51,7 @@ export enum Background {
 export enum Renderer {
   SEND_ERROR = "sendError",
   MENU_EVENT = "menuEvent",
+  UPDATE_APP_SETTING = "updateAppSetting",
   USI_BEST_MOVE = "usiBestMove",
   USI_CHECKMATE = "usiCheckmate",
   USI_CHECKMATE_NOT_IMPLEMENTED = "usiCheckmateNotImplemented",

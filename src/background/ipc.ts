@@ -70,6 +70,7 @@ import { Rect } from "@/common/graphics";
 import { exportCaptureJPEG, exportCapturePNG } from "./image";
 import { getRelativePath, resolvePath } from "./path";
 import { fileURLToPath } from "./helpers/url";
+import { AppSettingUpdate } from "@/common/settings/app";
 
 const isWindows = process.platform === "win32";
 
@@ -148,8 +149,7 @@ ipcMain.handle(
     if (!results || results.length !== 1) {
       return "";
     }
-    saveAppSetting({
-      ...appSetting,
+    onUpdateAppSetting({
       lastRecordFilePath: results[0],
     });
     return results[0];
@@ -194,8 +194,7 @@ ipcMain.handle(
     if (!result) {
       return "";
     }
-    saveAppSetting({
-      ...appSetting,
+    onUpdateAppSetting({
       lastRecordFilePath: result,
     });
     return result;
@@ -234,8 +233,7 @@ ipcMain.handle(
     if (!results || results.length !== 1) {
       return "";
     }
-    saveAppSetting({
-      ...appSetting,
+    onUpdateAppSetting({
       lastOtherFilePath: results[0],
     });
     return results[0];
@@ -416,8 +414,7 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
     return "";
   }
   const enginePath = getRelativePath(results[0]);
-  saveAppSetting({
-    ...appSetting,
+  onUpdateAppSetting({
     lastUSIEngineFilePath: enginePath,
   });
   return enginePath;
@@ -596,6 +593,13 @@ export function sendError(e: Error): void {
 
 export function onMenuEvent(event: MenuEvent): void {
   mainWindow.webContents.send(Renderer.MENU_EVENT, event);
+}
+
+export function onUpdateAppSetting(setting: AppSettingUpdate): void {
+  mainWindow.webContents.send(
+    Renderer.UPDATE_APP_SETTING,
+    JSON.stringify(setting)
+  );
 }
 
 export function onUSIBestMove(

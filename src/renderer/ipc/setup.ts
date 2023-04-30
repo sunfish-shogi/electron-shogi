@@ -26,6 +26,7 @@ import { useAppSetting } from "@/renderer/store/setting";
 
 export function setup(): void {
   const store = useStore();
+  const appSetting = useAppSetting();
   bridge.onSendError((e: Error) => {
     store.pushError(e);
   });
@@ -197,6 +198,9 @@ export function setup(): void {
         store.showUsiEngineManagementDialog();
         break;
     }
+  });
+  bridge.onUpdateAppSetting((json: string) => {
+    appSetting.updateAppSetting(JSON.parse(json));
   });
   bridge.onUSIBestMove(onUSIBestMove);
   bridge.onUSICheckmate(onUSICheckmate);

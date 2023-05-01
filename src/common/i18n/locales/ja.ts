@@ -74,6 +74,7 @@ export const ja: Texts = {
   repetitionDraw: "千日手",
   mate: "詰み",
   mateSearch: "詰み探索",
+  startMateSearch: "詰み探索開始",
   stopMateSearch: "詰み探索終了",
   noMateFound: "詰みが見つかりませんでした。",
   timeout: "時間切れ",

@@ -74,6 +74,7 @@ export const zh_tw: Texts = {
   repetitionDraw: "千日手",
   mate: "詰死",
   mateSearch: "詰搜尋",
+  startMateSearch: "開始詰搜尋",
   stopMateSearch: "結束詰搜尋",
   noMateFound: "在目前的盤面中找不到詰。",
   timeout: "時間耗盡",

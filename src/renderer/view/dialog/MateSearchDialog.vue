@@ -22,9 +22,9 @@
       </div>
       <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="onStart()">
-          詰み探索開始
+          {{ t.startMateSearch }}
         </button>
-        <button data-hotkey="Escape" @click="onCancel()">キャンセル</button>
+        <button data-hotkey="Escape" @click="onCancel()">{{ t.cancel }}</button>
       </div>
     </dialog>
   </div>

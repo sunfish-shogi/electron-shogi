@@ -72,6 +72,7 @@ export type Texts = {
   repetitionDraw: string;
   mate: string;
   mateSearch: string;
+  startMateSearch: string;
   stopMateSearch: string;
   noMateFound: string;
   timeout: string;

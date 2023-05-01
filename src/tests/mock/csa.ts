@@ -95,3 +95,19 @@ export const csaGameSummary: CSAGameSummary = {
   delay: 0,
   increment: 0,
 };
+
+const invalidPosition = `+2726FU,T12`;
+
+export const csaGameSummaryInvalidPosition: CSAGameSummary = {
+  id: "test-game",
+  blackPlayerName: "me",
+  whitePlayerName: "enemy",
+  myColor: Color.BLACK,
+  toMove: Color.BLACK,
+  position: invalidPosition,
+  timeUnitMs: 1000,
+  totalTime: 600,
+  byoyomi: 30,
+  delay: 0,
+  increment: 0,
+};

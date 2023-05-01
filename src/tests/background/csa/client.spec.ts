@@ -167,6 +167,31 @@ const mockGameSummary1min = [
   "END Game_Summary",
 ];
 
+const mockGameSummaryInvalidPosition = [
+  "BEGIN Game_Summary",
+  "Protocol_Version:1.2",
+  "Protocol_Mode:Server",
+  "Format:Shogi 1.0",
+  "Declaration:Jishogi 1.1",
+  "Game_ID:20150505-CSA25-3-5-7",
+  "Name+:TANUKI",
+  "Name-:KITSUNE",
+  "Your_Turn:-",
+  "Rematch_On_Draw:NO",
+  "To_Move:+",
+  "Max_Moves:256",
+  "BEGIN Time",
+  "Time_Unit:1sec",
+  "Total_Time:600",
+  "Byoyomi:10",
+  "Least_Time_Per_Move:1",
+  "END Time",
+  "BEGIN Position",
+  "+2726FU,T12",
+  "END Position",
+  "END Game_Summary",
+];
+
 function bindHandlers(client: Client) {
   const handlers = {
     mockOnGameSummary: jest.fn(),
@@ -783,5 +808,31 @@ describe("ipc/background/csa/client", () => {
       black: { time: 14 },
       white: { time: 13 },
     });
+  });
+
+  it("errorOfStartPosition", async () => {
+    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const clientHandlers = bindHandlers(client);
+    expect(mockSocket).toBeCalledTimes(0);
+    client.login();
+    expect(mockSocket).toBeCalledTimes(1);
+    expect(mockSocket.mock.calls[0][0]).toBe("test-server");
+    expect(mockSocket.mock.calls[0][1]).toBe(4081);
+    const socketHandlers = mockSocket.mock.calls[0][2];
+    expect(mockSocket.prototype.write).toBeCalledTimes(0);
+    socketHandlers.onConnect();
+    expect(mockSocket.prototype.write).toBeCalledTimes(1);
+    expect(mockSocket.prototype.write.mock.calls[0][0]).toBe(
+      "LOGIN TestPlayer test-password"
+    );
+    expect(mockSocket.prototype.write).toBeCalledTimes(1);
+    socketHandlers.onRead("LOGIN:TestPlayer OK");
+    for (const line of mockGameSummaryInvalidPosition) {
+      socketHandlers.onRead(line);
+    }
+    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(0);
+    expect(clientHandlers.mockOnError).toBeCalledTimes(1);
+    expect(mockSocket.prototype.write).toBeCalledTimes(2);
+    expect(mockSocket.prototype.write.mock.calls[1][0]).toBe("LOGOUT");
   });
 });

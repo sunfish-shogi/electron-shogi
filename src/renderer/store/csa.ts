@@ -285,6 +285,18 @@ export class CSAGameManager {
 
   onGameSummary(gameSummary: CSAGameSummary): void {
     this.gameSummary = gameSummary;
+
+    // 局面を初期化する。
+    const error = this.recordManager.importRecord(
+      this.gameSummary.position,
+      RecordFormatType.CSA
+    );
+    if (error) {
+      this.onError(`CSAGameManager#onGameSummary: ${error}`);
+      this.close(ReloginBehavior.DO_NOT_RELOGIN);
+      return;
+    }
+
     api.csaAgree(this.sessionID, this.gameSummary.id);
   }
 
@@ -295,12 +307,6 @@ export class CSAGameManager {
   onStart(playerStates: CSAPlayerStates): void {
     // 対局数をカウントアップする。
     this.repeat++;
-
-    // 局面を初期化する。
-    this.recordManager.importRecord(
-      this.gameSummary.position,
-      RecordFormatType.CSA
-    );
 
     // 対局情報を初期化する。
     this.recordManager.setGameStartMetadata({

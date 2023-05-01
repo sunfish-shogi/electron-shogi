@@ -327,6 +327,7 @@ export class Client {
     const record = importCSA(this.gameSummary.position);
     if (record instanceof Error) {
       this.onError(new Error("invalid game position received from CSA server"));
+      this.logout();
       return;
     }
     for (const entry of record.moves) {

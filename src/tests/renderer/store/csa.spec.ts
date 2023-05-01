@@ -11,7 +11,12 @@ import {
   onCSAStart,
 } from "@/renderer/store/csa";
 import { RecordManager } from "@/renderer/store/record";
-import { csaGameSetting, csaGameSummary, playerURI } from "@/tests/mock/csa";
+import {
+  csaGameSetting,
+  csaGameSummary,
+  csaGameSummaryInvalidPosition,
+  playerURI,
+} from "@/tests/mock/csa";
 import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
 
 jest.mock("@/renderer/ipc/api");
@@ -243,6 +248,27 @@ describe("store/csa", () => {
         expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
       });
+  });
+
+  it("CSAManager/invalidMove", () => {
+    mockAPI.csaLogin.mockResolvedValueOnce(123);
+    mockAPI.csaLogout.mockResolvedValueOnce();
+    const mockPlayer = createMockPlayer({});
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI]: mockPlayer,
+    });
+    const recordManager = new RecordManager();
+    const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+    const mockHandlers = applyMockHandlers(manager);
+    return manager.login(csaGameSetting, mockPlayerBuilder).then(() => {
+      expect(mockAPI.csaLogin).toBeCalledTimes(1);
+      expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+      expect(mockAPI.csaAgree).toBeCalledTimes(0);
+      onCSAGameSummary(123, csaGameSummaryInvalidPosition);
+      expect(mockAPI.csaAgree).toBeCalledTimes(0);
+      expect(mockAPI.csaLogout).toBeCalledTimes(1);
+      expect(mockHandlers.onError).toBeCalledTimes(1);
+    });
   });
 
   describe("CSAManager/onPlayerMove", () => {

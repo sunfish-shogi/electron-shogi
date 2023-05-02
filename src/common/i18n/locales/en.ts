@@ -75,6 +75,7 @@ export const en: Texts = {
   repetitionDraw: "Repetition Draw",
   mate: "Mate",
   mateSearch: "Mate Search",
+  startMateSearch: "Start Mate Search",
   stopMateSearch: "Stop Mate Search",
   noMateFound: "No mate.",
   timeout: "Timeout",

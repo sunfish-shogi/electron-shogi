@@ -327,6 +327,7 @@ export class Client {
     const record = importCSA(this.gameSummary.position);
     if (record instanceof Error) {
       this.onError(new Error("invalid game position received from CSA server"));
+      this.logout();
       return;
     }
     for (const entry of record.moves) {
@@ -334,11 +335,7 @@ export class Client {
         continue;
       }
       const color = reverseColor(entry.nextColor);
-      const time =
-        this.playerStates[color].time -
-        entry.elapsedMs / this.gameSummary.timeUnitMs +
-        this.gameSummary.increment;
-      this.playerStates[color].time = Math.max(time, 0);
+      this.updateTime(color, entry.elapsedMs);
     }
 
     this.state = State.READY;
@@ -481,17 +478,20 @@ export class Client {
     const parsed = /^.*,T([0-9]+)$/.exec(command);
     if (parsed) {
       const elapsed = Number(parsed[1]);
-      const time =
-        this.playerStates[color].time -
-        (elapsed * 1e3) / this.gameSummary.timeUnitMs +
-        this.gameSummary.increment;
-      this.playerStates[color].time = Math.max(time, 0);
+      this.updateTime(color, elapsed * 1e3);
     } else {
       this.logger.info("sid=%d: invalid move format", this.sessionID);
     }
     if (this.moveCallback) {
       this.moveCallback(command, this.playerStates);
     }
+  }
+
+  private updateTime(color: Color, elapsedMs: number): void {
+    const elapsed = elapsedMs / this.gameSummary.timeUnitMs;
+    const time =
+      this.playerStates[color].time - elapsed + this.gameSummary.increment;
+    this.playerStates[color].time = Math.max(time, 0);
   }
 
   private onEndingCommand(command: string): void {

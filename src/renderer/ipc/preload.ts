@@ -232,6 +232,9 @@ const api: Bridge = {
   onMenuEvent(callback: (event: MenuEvent) => void): void {
     ipcRenderer.on(Renderer.MENU_EVENT, (_, event) => callback(event));
   },
+  onUpdateAppSetting(callback: (json: string) => void): void {
+    ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));
+  },
   onUSIBestMove(
     callback: (
       sessionID: number,

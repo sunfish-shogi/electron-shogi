@@ -89,6 +89,7 @@ export interface Bridge {
   log(level: LogLevel, message: string): void;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
+  onUpdateAppSetting(callback: (json: string) => void): void;
   onUSIBestMove(
     callback: (
       sessionID: number,

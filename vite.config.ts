@@ -1,18 +1,18 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { htmlTemplate } from './plugins/html_template'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import { htmlTemplate } from "./plugins/html_template";
 
 export default defineConfig({
   resolve: {
-    alias: [{ find: '@', replacement: '/src' }]
+    alias: [{ find: "@", replacement: "/src" }],
   },
   plugins: [
     vue(),
     htmlTemplate({
-      "APP_VERSION": `${process.env.npm_package_version}`,
+      APP_VERSION: `${process.env.npm_package_version}`,
     }),
   ],
-  base: './',
+  base: "./",
   build: {
     chunkSizeWarningLimit: 5000000,
   },

@@ -156,43 +156,6 @@ const layoutTemplate = {
   },
 };
 
-// deprecated, but may be of use when detecting valid piece directory.
-// const piece_template = {
-//   black: {
-//     pawn: "black_pawn.png",
-//     lance: "black_lance.png",
-//     knight: "black_knight.png",
-//     silver: "black_silver.png",
-//     gold: "black_gold.png",
-//     bishop: "black_bishop.png",
-//     rook: "black_rook.png",
-//     king: "black_king.png",
-//     king2: "black_king2.png",
-//     promPawn: "black_prom_pawn.png",
-//     promLance: "black_prom_lance.png",
-//     promKnight: "black_prom_knight.png",
-//     promSilver: "black_prom_silver.png",
-//     horse: "black_horse.png",
-//     dragon: "black_dragon.png",
-//   },
-//   white: {
-//     pawn: "white_pawn.png",
-//     lance: "white_lance.png",
-//     knight: "white_knight.png",
-//     silver: "white_silver.png",
-//     gold: "white_gold.png",
-//     bishop: "white_bishop.png",
-//     rook: "white_rook.png",
-//     king: "white_king.png",
-//     king2: "white_king2.png",
-//     promPawn: "white_prom_pawn.png",
-//     promLance: "white_prom_lance.png",
-//     promKnight: "white_prom_knight.png",
-//     promSilver: "white_prom_silver.png",
-//     horse: "white_horse.png",
-//     dragon: "white_dragon.png",
-//   },
-// };
 function getPieceTextureMap(
   type: PieceImageType,
   customDir?: string

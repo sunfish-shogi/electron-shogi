@@ -122,10 +122,10 @@
               }"
             >
               <div class="form-item-label-wide"></div>
-              <DirectorySelector
+              <ImageSelector
                 class="image-selector"
-                :default-url="appSetting.pieceImageDirURL"
-                @select="(url: string) => (pieceImageDirURL = url)"
+                :default-url="appSetting.pieceImageFileURL"
+                @select="(url: string) => (pieceImageFileURL = url)"
               />
             </div>
           </div>
@@ -593,7 +593,6 @@ import {
   ClockSoundTarget,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
-import DirectorySelector from "@/renderer/view/dialog/DirectorySelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useStore } from "@/renderer/store";
 import { ref, onMounted, onBeforeUnmount } from "vue";
@@ -663,6 +662,7 @@ const enableCSALog = ref(appSetting.enableCSALog);
 const logLevel = ref(appSetting.logLevel);
 const backgroundImageFileURL = ref(appSetting.backgroundImageFileURL);
 const pieceImageDirURL = ref(appSetting.pieceImageDirURL);
+const pieceImageFileURL = ref(appSetting.pieceImageFileURL);
 const boardImageFileURL = ref(appSetting.boardImageFileURL);
 const pieceStandImageFileURL = ref(appSetting.pieceStandImageFileURL);
 
@@ -717,7 +717,17 @@ const saveAndClose = async () => {
     update.backgroundImageFileURL = backgroundImageFileURL.value;
   }
   if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
-    update.pieceImageDirURL = pieceImageDirURL.value;
+    console.log(pieceImageFileURL.value!);
+
+    api.shogiGUIStyleCrop(
+      pieceImageFileURL.value!,
+      "" // TODO: pass the image file directory to here
+    );
+    update.pieceImageFileURL = ""; // TODO: pass the image file directory to here
+
+    // get settings storing directory
+
+    update.pieceImageDirURL = pieceImageFileURL.value;
   }
   if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
     update.boardImageFileURL = boardImageFileURL.value;

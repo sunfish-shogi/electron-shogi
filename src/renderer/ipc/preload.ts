@@ -53,6 +53,9 @@ const api: Bridge = {
       defaultURL
     );
   },
+  async shogiGUIStyleCrop(srcURL: string, destPath: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SHOGI_GUI_STYLE_CROP, srcURL, destPath);
+  },
   async exportCaptureAsPNG(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);
   },

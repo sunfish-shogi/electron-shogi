@@ -17,7 +17,7 @@ import {
 } from "@/common/shogi";
 import preloadImage from "@/renderer/assets/preload";
 import { RectSize } from "@/common/graphics";
-
+import { Md5 } from "ts-md5";
 type PieceImages = {
   black: {
     pawn: string;
@@ -199,6 +199,7 @@ function getPieceTextureMap(
 ): PieceImages {
   let dir = ""; // directory of piece images
 
+  // const rootDir = getPortableExeDir() || userDir;
   // determine directory
   switch (type) {
     case PieceImageType.HITOMOJI:
@@ -214,7 +215,9 @@ function getPieceTextureMap(
       dir = "./piece/hitomoji_gothic_dark/";
       break;
     case PieceImageType.CUSTOM_IMAGE:
-      dir = "file://" + customDir; // should be turn to no "file://" URL?
+      dir = "./piece/hitomoji/";
+      // dir = `${customDir}/./pieces/${Md5.hashStr(customDir!)}/`
+      // TODO: check how to pass directory to here
       break;
     default:
       dir = "./piece/hitomoji/";

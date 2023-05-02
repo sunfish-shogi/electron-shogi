@@ -68,6 +68,7 @@ import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
 import { Rect } from "@/common/graphics";
 import { exportCaptureJPEG, exportCapturePNG } from "./image";
+import { shogiGUIStyleCrop } from "./image_cropper";
 import { getRelativePath, resolvePath } from "./path";
 import { fileURLToPath } from "./helpers/url";
 
@@ -279,6 +280,13 @@ ipcMain.handle(
     return results && results.length === 1
       ? url.pathToFileURL(results[0]).toString()
       : "";
+  }
+);
+ipcMain.handle(
+  Background.SHOGI_GUI_STYLE_CROP,
+  async (event, srcURL: string, destPath: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    await shogiGUIStyleCrop(srcURL, destPath);
   }
 );
 

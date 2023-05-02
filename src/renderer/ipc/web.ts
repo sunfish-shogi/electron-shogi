@@ -50,6 +50,9 @@ export const webAPI: Bridge = {
   async showSelectImageDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
+  async shogiGUIStyleCrop(): Promise<void> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   async exportCaptureAsPNG(): Promise<void> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },

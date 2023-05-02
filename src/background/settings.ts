@@ -43,11 +43,14 @@ import {
   normalizeMateSearchSetting,
 } from "@/common/settings/mate";
 
-const userDir = !isTest() ? app.getPath("userData") : "";
-const rootDir = getPortableExeDir() || userDir;
+export const userDir = !isTest() ? app.getPath("userData") : "";
+export const rootDir = getPortableExeDir() || userDir;
 const docDir = !isTest()
   ? path.join(app.getPath("documents"), "ElectronShogi")
   : "";
+export function getRootDir(): string {
+  return rootDir;
+}
 
 export function openSettingsDirectory(): void {
   shell.openPath(rootDir);

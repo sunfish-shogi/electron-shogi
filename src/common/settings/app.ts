@@ -102,6 +102,7 @@ export type AppSetting = {
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
   pieceImageDirURL?: string;
+  pieceImageFileURL?: string;
   boardImageFileURL?: string;
   pieceStandImage: PieceStandImageType;
   pieceStandImageFileURL?: string;
@@ -153,6 +154,7 @@ export type AppSettingUpdate = {
   backgroundImageFileURL?: string;
   pieceImage?: PieceImageType;
   pieceImageDirURL?: string;
+  pieceImageFileURL?: string;
   boardImage?: BoardImageType;
   boardImageFileURL?: string;
   pieceStandImage?: PieceStandImageType;

@@ -42,6 +42,7 @@ import {
   defaultMateSearchSetting,
   normalizeMateSearchSetting,
 } from "@/common/settings/mate";
+import { Md5 } from "ts-md5";
 
 const userDir = !isTest() ? app.getPath("userData") : "";
 const rootDir = getPortableExeDir() || userDir;
@@ -230,3 +231,8 @@ export function loadMateSearchSetting(): MateSearchSetting {
     JSON.parse(fs.readFileSync(mateSearchSettingPath, "utf8"))
   );
 }
+export function getPieceImageDir(): string {
+  const appSetting = loadAppSetting();
+  return path.join(rootDir, "pieces" ,Md5.hashStr(appSetting.pieceImageFileURL!));
+}
+

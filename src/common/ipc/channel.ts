@@ -47,6 +47,7 @@ export enum Background {
   CSA_STOP = "csaStop",
   IS_ENCRYPTION_AVAILABLE = "isEncryptionAvailable",
   LOG = "log",
+  GET_PIECE_IMAGE_DIR = "getPieceImageDir",
 }
 
 export enum Renderer {

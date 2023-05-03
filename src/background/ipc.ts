@@ -72,6 +72,7 @@ import { cropPieceImage } from "./image/cropper";
 import { getRelativePath, resolvePath } from "./path";
 import { fileURLToPath } from "./helpers/url";
 import { AppSettingUpdate } from "@/common/settings/app";
+import { getPieceImageDir } from "@/background/settings";
 
 const isWindows = process.platform === "win32";
 
@@ -281,10 +282,17 @@ ipcMain.handle(
   }
 );
 ipcMain.handle(
-  Background.CROP_PIECE_IMAGE,
-  async (event, srcURL: string, destDir: string): Promise<void> => {
+  Background.GET_PIECE_IMAGE_DIR,
+  async (event): Promise<string> => {
     validateIPCSender(event.senderFrame);
-    await cropPieceImage(srcURL, destDir);
+    return getPieceImageDir();
+  }
+);
+ipcMain.handle(
+  Background.CROP_PIECE_IMAGE,
+  async (event, srcURL: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    await cropPieceImage(srcURL, getPieceImageDir());
   }
 );
 

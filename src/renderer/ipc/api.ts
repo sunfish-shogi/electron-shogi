@@ -23,7 +23,8 @@ export interface Bridge {
   openExplorer(path: string): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
-  cropPieceImage(srcURL: string, destDir: string): Promise<void>;
+  getPieceImageDir(): Promise<string>;
+  cropPieceImage(srcURL: string): Promise<void>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
@@ -136,7 +137,8 @@ export interface API {
   openExplorer(path: string): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
-  cropPieceImage(srcURL: string, destDir: string): Promise<void>;
+  getPieceImageDir(): Promise<string>;
+  cropPieceImage(srcURL: string): Promise<void>;
   showSaveRecordDialog(defaultPath: string): Promise<string>;
   saveRecord(path: string, data: Uint8Array): Promise<void>;
   showSelectFileDialog(): Promise<string>;
@@ -220,8 +222,11 @@ export const bridge: Bridge = getWindowObject().electronShogiAPI || webAPI;
 
 const api: API = {
   ...bridge,
-  cropPieceImage(srcURL: string, destDir: string): Promise<void> {
-    return bridge.cropPieceImage(srcURL, destDir);
+  getPieceImageDir(): Promise<string>{
+    return bridge.getPieceImageDir();
+  },
+  cropPieceImage(srcURL: string): Promise<void> {
+    return bridge.cropPieceImage(srcURL);
   },
   exportCaptureAsPNG(rect: Rect): Promise<void> {
     return bridge.exportCaptureAsPNG(rect.json);

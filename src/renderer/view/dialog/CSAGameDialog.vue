@@ -66,14 +66,6 @@
               {{ t.notSendPVOnStandardCSAProtocol }}
             </div>
           </div>
-          <div
-            v-if="selectedProtocolVersion === CSAProtocolVersion.V121_FLOODGATE"
-            class="form-group warning"
-          >
-            <div class="note">
-              {{ t.sendPVDoNotUseOnWCSC }}
-            </div>
-          </div>
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.hostToConnect }}</div>
             <input
@@ -360,7 +352,8 @@ const onChangeHistory = (event: Event) => {
   const select = event.target as HTMLSelectElement;
   const server = history.value.serverHistory[Number(select.value)];
   if (server) {
-    protocolVersion.value.value = server.protocolVersion;
+    protocolVersion.value.value = selectedProtocolVersion.value =
+      server.protocolVersion;
     host.value.value = server.host;
     port.value.value = server.port;
     id.value.value = server.id;

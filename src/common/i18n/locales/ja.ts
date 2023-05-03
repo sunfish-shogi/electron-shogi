@@ -319,8 +319,6 @@ export const ja: Texts = {
     "アプリ設定からログを有効にしてアプリを再起動してください。",
   notSendPVOnStandardCSAProtocol:
     "標準のCSAプロトコルでは評価値や読み筋が送信されません。",
-  sendPVDoNotUseOnWCSC:
-    "Floodgate仕様で評価値と読み筋を送信します。WCSCで使用しないでください。",
   csaProtocolSendPlaintextPassword:
     "CSAプロトコルの規格上パスワードは平文で送信されます。",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:

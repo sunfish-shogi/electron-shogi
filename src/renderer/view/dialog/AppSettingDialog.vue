@@ -719,11 +719,11 @@ const saveAndClose = async () => {
   if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
     console.log(pieceImageFileURL.value!);
 
-    api.shogiGUIStyleCrop(
+    api.cropPieceImage(
       pieceImageFileURL.value!,
       "" // TODO: pass the image file directory to here
     );
-    update.pieceImageFileURL = ""; // TODO: pass the image file directory to here
+    update.pieceImageFileURL = pieceImageFileURL.value;
 
     // get settings storing directory
 

@@ -101,7 +101,7 @@ export type AppSetting = {
   backgroundImageFileURL?: string;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
-  pieceImageDirURL?: string;
+  // pieceImageDirURL?: string;
   pieceImageFileURL?: string;
   boardImageFileURL?: string;
   pieceStandImage: PieceStandImageType;
@@ -339,9 +339,9 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   }
   if (
     setting.pieceImage === PieceImageType.CUSTOM_IMAGE &&
-    !setting.pieceImageDirURL
+    !setting.pieceImageFileURL
   ) {
-    return new Error(t.pieceImageDirNotSelected);
+    return new Error(t.pieceImageFileNotSelected);
   }
   if (
     setting.boardImage === BoardImageType.CUSTOM_IMAGE &&

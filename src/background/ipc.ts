@@ -68,7 +68,7 @@ import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
 import { Rect } from "@/common/graphics";
 import { exportCaptureJPEG, exportCapturePNG } from "./image";
-import { shogiGUIStyleCrop } from "./image_cropper";
+import { cropPieceImage } from "./image_cropper";
 import { getRelativePath, resolvePath } from "./path";
 import { fileURLToPath } from "./helpers/url";
 import { AppSettingUpdate } from "@/common/settings/app";
@@ -281,10 +281,10 @@ ipcMain.handle(
   }
 );
 ipcMain.handle(
-  Background.SHOGI_GUI_STYLE_CROP,
-  async (event, srcURL: string, destPath: string): Promise<void> => {
+  Background.CROP_PIECE_IMAGE,
+  async (event, srcURL: string, destDir: string): Promise<void> => {
     validateIPCSender(event.senderFrame);
-    await shogiGUIStyleCrop(srcURL, destPath);
+    await cropPieceImage(srcURL, destDir);
   }
 );
 

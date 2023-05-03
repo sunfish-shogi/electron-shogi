@@ -1,8 +1,10 @@
+import path from "path";
 import sharp from "sharp";
-
 import fs from "fs";
 import { Md5 } from "ts-md5";
 import { rootDir } from "./settings";
+import { fileURLToPath } from "node:url";
+import { getAppLogger } from "./log";
 
 async function cropImageFromPath(
   imageurl: string,
@@ -10,7 +12,7 @@ async function cropImageFromPath(
   y: number,
   w: number,
   h: number,
-  destURL: string
+  destDir: string
 ) {
   await sharp(imageurl)
     .extract({
@@ -19,7 +21,7 @@ async function cropImageFromPath(
       width: w,
       height: h,
     })
-    .toFile(destURL);
+    .toFile(destDir);
 }
 
 const pieces = [
@@ -43,28 +45,25 @@ const promPieces = [
   "prom_pawn",
 ];
 
-export async function shogiGUIStyleCrop(
-  srcPath: string,
-  destPath: string
+export async function cropPieceImage(
+  srcURL: string,
+  destDir: string
 ): Promise<void> {
-  srcPath = srcPath.replace("file://", "");
-  destPath = `${rootDir}/pieces/${Md5.hashStr(srcPath)}/`;
-  console.log(destPath);
-
+  srcURL = fileURLToPath(srcURL);
+  destDir = `${rootDir}/pieces/${Md5.hashStr(srcURL)}/`;
+  getAppLogger().info(
+    `generate cropped piece images: src=${srcURL} dst=${destDir}`
+  );
   // create folder if there is no folder
-
-  if (fs.existsSync(destPath)) {
+  if (fs.existsSync(destDir)) {
     return;
   }
-  fs.mkdirSync(destPath, { recursive: true });
+  fs.mkdirSync(destDir, { recursive: true });
 
   // return the image width and height
 
-  const width = (await sharp(srcPath).metadata()).width!;
-  const height = (await sharp(srcPath).metadata()).height!;
-  if (width % 8 != 0 || height % 4 != 0) {
-    throw new Error("Invalid image size");
-  }
+  const width = (await sharp(srcURL).metadata()).width!;
+  const height = (await sharp(srcURL).metadata()).height!;
 
   for (let i = 0; i < 4; i++) {
     let side = "";
@@ -94,14 +93,19 @@ export async function shogiGUIStyleCrop(
           piecesSet = promPieces;
           break;
       }
-      await cropImageFromPath(
-        srcPath,
-        (j * width) / 8,
-        (i * height) / 4,
-        width / 8,
-        height / 4,
-        `${destPath}${side}_${piecesSet[j]}.png`
-      );
+      if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
+        await cropImageFromPath(
+          srcURL,
+          (j * width) / 8,
+          (i * height) / 4,
+          width / 8,
+          height / 4,
+          path.join(destDir, `${side}_${piecesSet[j]}.png`)
+        );
+        getAppLogger().info(`${side}_${piecesSet[j]}.png extracted`);
+      } else {
+        getAppLogger().info(`${side}_${piecesSet[j]}.png exists`);
+      }
     }
   }
 }

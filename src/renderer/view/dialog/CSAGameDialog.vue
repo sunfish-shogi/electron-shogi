@@ -352,7 +352,8 @@ const onChangeHistory = (event: Event) => {
   const select = event.target as HTMLSelectElement;
   const server = history.value.serverHistory[Number(select.value)];
   if (server) {
-    protocolVersion.value.value = server.protocolVersion;
+    protocolVersion.value.value = selectedProtocolVersion.value =
+      server.protocolVersion;
     host.value.value = server.host;
     port.value.value = server.port;
     id.value.value = server.id;

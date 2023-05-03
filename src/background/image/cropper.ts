@@ -2,9 +2,9 @@ import path from "path";
 import sharp from "sharp";
 import fs from "fs";
 import { Md5 } from "ts-md5";
-import { rootDir } from "./settings";
+import { rootDir } from "../settings";
 import { fileURLToPath } from "node:url";
-import { getAppLogger } from "./log";
+import { getAppLogger } from "../log";
 
 async function cropImageFromPath(
   imageurl: string,

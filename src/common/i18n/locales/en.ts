@@ -321,8 +321,6 @@ export const en: Texts = {
     "Please enable log settings and restart this app.",
   notSendPVOnStandardCSAProtocol:
     "Client do not send PV on standard CSA protocol.",
-  sendPVDoNotUseOnWCSC:
-    "Client send PV by floodgate extension. Do not use on WCSC.",
   csaProtocolSendPlaintextPassword:
     "On CSA protocol, client send plaintext password.",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:

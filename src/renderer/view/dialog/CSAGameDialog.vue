@@ -66,14 +66,6 @@
               {{ t.notSendPVOnStandardCSAProtocol }}
             </div>
           </div>
-          <div
-            v-if="selectedProtocolVersion === CSAProtocolVersion.V121_FLOODGATE"
-            class="form-group warning"
-          >
-            <div class="note">
-              {{ t.sendPVDoNotUseOnWCSC }}
-            </div>
-          </div>
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.hostToConnect }}</div>
             <input

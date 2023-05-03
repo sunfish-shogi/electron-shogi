@@ -314,8 +314,6 @@ export const zh_tw: Texts = {
   pleaseEnableLogsAndRestart: "請在程式設定中開啟 log 並重新啟動本程式。",
   notSendPVOnStandardCSAProtocol:
     "在標準的CSA協定中不會送出評價值以及思考棋步。",
-  sendPVDoNotUseOnWCSC:
-    "使用Floodgate形式傳送評價值與思考棋步。請不要在WCSC中使用。",
   csaProtocolSendPlaintextPassword: "在CSA協定中，密碼為明文傳輸。",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:
     "由於無法使用系統的加密機能，輸入的密碼將會以明文保存。",

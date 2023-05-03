@@ -308,7 +308,6 @@ export type Texts = {
   logsRecommendedForCSAProtocol: string;
   pleaseEnableLogsAndRestart: string;
   notSendPVOnStandardCSAProtocol: string;
-  sendPVDoNotUseOnWCSC: string;
   csaProtocolSendPlaintextPassword: string;
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable: string;
   pleaseUncheckSaveHistoryIfNotWantSave: string;

@@ -366,7 +366,7 @@ export const en: Texts = {
   invalidHandPiece: "Invalid hand piece",
   invalidUSI: "Invalid USI",
   backgroundImageFileNotSelected: "Background image file is not selected.",
-  pieceImageDirNotSelected: "Piece image directory is not selected.",
+  pieceImageFileNotSelected: "Piece image File is not selected.",
   boardImageFileNotSelected: "Board image file is not selected.",
   pieceStandImageFileNotSelected: "Piece stand image file is not selected.",
   pieceVolumeMustBe0To100Percent: "Piece volume must be 0% to 100%.",

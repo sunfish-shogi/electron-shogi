@@ -363,7 +363,7 @@ export const ja: Texts = {
   invalidHandPiece: "不正な持ち駒",
   invalidUSI: "不正なUSI",
   backgroundImageFileNotSelected: "背景画像のファイルが選択されていません。",
-  pieceImageDirNotSelected: "駒画像のディレクトリが選択されていません。",
+  pieceImageFileNotSelected: "駒画像のファイルが選択されていません。",
   boardImageFileNotSelected: "盤面画像のファイルが選択されていません。",
   pieceStandImageFileNotSelected: "駒台画像のファイルが選択されていません。",
   pieceVolumeMustBe0To100Percent:

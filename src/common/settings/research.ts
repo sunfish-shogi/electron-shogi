@@ -7,10 +7,15 @@ export type SecondaryResearchSetting = {
 export type ResearchSetting = {
   usi?: USIEngineSetting;
   secondaries?: SecondaryResearchSetting[];
+  enableMaxSeconds: boolean;
+  maxSeconds: number;
 };
 
 export function defaultResearchSetting(): ResearchSetting {
-  return {};
+  return {
+    enableMaxSeconds: false,
+    maxSeconds: 10,
+  };
 }
 
 export function normalizeResearchSetting(

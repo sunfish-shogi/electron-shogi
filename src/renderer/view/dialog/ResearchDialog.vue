@@ -3,48 +3,69 @@
     <dialog ref="dialog" class="root">
       <div class="title">{{ t.research }}</div>
       <div class="form-group">
-        <div class="form-group">
-          <PlayerSelector
-            :player-uri="engineURI"
-            :engine-settings="engineSettings"
-            :display-thread-state="true"
-            :display-multi-pv-state="true"
-            @update-engine-setting="onUpdatePlayerSetting"
-            @select-player="
+        <PlayerSelector
+          :player-uri="engineURI"
+          :engine-settings="engineSettings"
+          :display-thread-state="true"
+          :display-multi-pv-state="true"
+          @update-engine-setting="onUpdatePlayerSetting"
+          @select-player="
               (uri: string) => {
                 engineURI = uri;
               }
             "
-          />
-        </div>
-        <div
-          v-for="(uri, index) in secondaryEngineURIs"
-          :key="index"
-          class="form-group"
-        >
-          <PlayerSelector
-            :player-uri="uri"
-            :engine-settings="engineSettings"
-            :display-thread-state="true"
-            :display-multi-pv-state="true"
-            @update-engine-setting="onUpdatePlayerSetting"
-            @select-player="
+        />
+      </div>
+      <div
+        v-for="(uri, index) in secondaryEngineURIs"
+        :key="index"
+        class="form-group"
+      >
+        <PlayerSelector
+          :player-uri="uri"
+          :engine-settings="engineSettings"
+          :display-thread-state="true"
+          :display-multi-pv-state="true"
+          @update-engine-setting="onUpdatePlayerSetting"
+          @select-player="
               (uri: string) => {
                 secondaryEngineURIs[index] = uri;
               }
             "
+        />
+        <button
+          class="remove-button"
+          @click="secondaryEngineURIs.splice(index, 1)"
+        >
+          {{ t.remove }}
+        </button>
+      </div>
+      <button class="center thin" @click="secondaryEngineURIs.push('')">
+        <Icon :icon="IconType.ADD" />
+        {{ t.addNthEngine(secondaryEngineURIs.length + 2) }}
+      </button>
+      <div class="form-group">
+        <div class="form-item">
+          <ToggleButton
+            :value="enableMaxSeconds"
+            @change="
+              (value: boolean) => {
+                enableMaxSeconds = value;
+              }
+            "
           />
-          <button
-            class="remove-button"
-            @click="secondaryEngineURIs.splice(index, 1)"
-          >
-            {{ t.remove }}
-          </button>
-        </div>
-        <div class="form-item center">
-          <button @click="secondaryEngineURIs.push('')">
-            {{ t.addNthEngine(secondaryEngineURIs.length + 2) }}
-          </button>
+          <div class="form-item-unit">{{ t.toPrefix }}</div>
+          <input
+            ref="maxSeconds"
+            :value="researchSetting.maxSeconds"
+            class="number"
+            type="number"
+            min="1"
+            :disabled="!enableMaxSeconds"
+          />
+          <div class="form-item-unit">
+            {{ t.secondsSuffix }}{{ t.toSuffix }}
+          </div>
         </div>
       </div>
       <div class="main-buttons">
@@ -76,6 +97,10 @@ import {
   installHotKeyForDialog,
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
+import { readInputAsNumber } from "@/renderer/helpers/form";
+import ToggleButton from "../primitive/ToggleButton.vue";
+import Icon from "../primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 
 const store = useStore();
 const dialog = ref();
@@ -83,6 +108,8 @@ const researchSetting = ref(defaultResearchSetting());
 const engineSettings = ref(new USIEngineSettings());
 const engineURI = ref("");
 const secondaryEngineURIs = ref([] as string[]);
+const enableMaxSeconds = ref(false);
+const maxSeconds = ref();
 
 store.retainBussyState();
 
@@ -97,6 +124,7 @@ onMounted(async () => {
       researchSetting.value.secondaries?.map(
         (setting) => setting.usi?.uri || ""
       ) || [];
+    enableMaxSeconds.value = researchSetting.value.enableMaxSeconds;
   } catch (e) {
     store.pushError(e);
     store.destroyModalDialog();
@@ -121,6 +149,8 @@ const onStart = () => {
   const researchSetting: ResearchSetting = {
     usi: engineSetting,
     secondaries: secondaries,
+    enableMaxSeconds: enableMaxSeconds.value,
+    maxSeconds: readInputAsNumber(maxSeconds.value),
   };
   const e = validateResearchSetting(researchSetting);
   if (e) {
@@ -141,9 +171,13 @@ const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
 
 <style scoped>
 .root {
-  width: 380px;
+  width: 450px;
 }
 .remove-button {
   margin-top: 5px;
+}
+input.number {
+  text-align: right;
+  width: 80px;
 }
 </style>

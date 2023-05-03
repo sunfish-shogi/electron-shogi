@@ -20,7 +20,6 @@
             :value="enableStartNumber"
             @change="
               (value: boolean) => {
-                startNumber.disabled = !value;
                 enableStartNumber = value;
               }
             "
@@ -41,7 +40,6 @@
             :value="enableEndNumber"
             @change="
               (value: boolean) => {
-                endNumber.disabled = !value;
                 enableEndNumber = value;
               }
             "

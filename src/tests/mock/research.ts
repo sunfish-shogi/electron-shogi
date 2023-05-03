@@ -3,4 +3,6 @@ import { usiEngineSetting } from "./usi";
 
 export const researchSetting: ResearchSetting = {
   usi: usiEngineSetting,
+  enableMaxSeconds: false,
+  maxSeconds: 10,
 };

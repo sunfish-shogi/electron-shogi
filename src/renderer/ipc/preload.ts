@@ -53,8 +53,11 @@ const api: Bridge = {
       defaultURL
     );
   },
-  async cropPieceImage(srcURL: string, destDir: string): Promise<void> {
-    await ipcRenderer.invoke(Background.CROP_PIECE_IMAGE, srcURL, destDir);
+  async getPieceImageDir() {
+    return await ipcRenderer.invoke(Background.GET_PIECE_IMAGE_DIR);
+  },
+  async cropPieceImage(srcURL: string): Promise<void> {
+    await ipcRenderer.invoke(Background.CROP_PIECE_IMAGE, srcURL);
   },
   async exportCaptureAsPNG(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);

@@ -682,6 +682,8 @@ const saveAndClose = async () => {
     backgroundImageType: backgroundImageType.value,
     pieceImage: pieceImage.value,
     boardImage: boardImage.value,
+    pieceImageFileURL: pieceImageFileURL.value,
+    pieceImageDirURL: pieceImageDirURL.value,
     pieceStandImage: pieceStandImage.value,
     boardLabelType: displayBoardLabels.value
       ? BoardLabelType.STANDARD
@@ -717,17 +719,9 @@ const saveAndClose = async () => {
     update.backgroundImageFileURL = backgroundImageFileURL.value;
   }
   if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
-    console.log(pieceImageFileURL.value!);
-
-    api.cropPieceImage(
-      pieceImageFileURL.value!,
-      "" // TODO: pass the image file directory to here
-    );
+    api.cropPieceImage(pieceImageFileURL.value!);
     update.pieceImageFileURL = pieceImageFileURL.value;
-
-    // get settings storing directory
-
-    update.pieceImageDirURL = pieceImageFileURL.value;
+    update.pieceImageDirURL = `file://${(await api.getPieceImageDir()).valueOf()}/`;
   }
   if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
     update.boardImageFileURL = boardImageFileURL.value;

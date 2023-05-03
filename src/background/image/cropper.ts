@@ -1,8 +1,6 @@
 import path from "path";
 import sharp from "sharp";
 import fs from "fs";
-import { Md5 } from "ts-md5";
-import { rootDir } from "../settings";
 import { fileURLToPath } from "node:url";
 import { getAppLogger } from "../log";
 
@@ -49,8 +47,7 @@ export async function cropPieceImage(
   srcURL: string,
   destDir: string
 ): Promise<void> {
-  srcURL = fileURLToPath(srcURL);
-  destDir = `${rootDir}/pieces/${Md5.hashStr(srcURL)}/`;
+  srcURL = fileURLToPath(`${srcURL}`);
   getAppLogger().info(
     `generate cropped piece images: src=${srcURL} dst=${destDir}`
   );

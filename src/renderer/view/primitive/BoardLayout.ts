@@ -17,7 +17,6 @@ import {
 } from "@/common/shogi";
 import preloadImage from "@/renderer/assets/preload";
 import { RectSize } from "@/common/graphics";
-import { Md5 } from "ts-md5";
 type PieceImages = {
   black: {
     pawn: string;
@@ -178,9 +177,7 @@ function getPieceTextureMap(
       dir = "./piece/hitomoji_gothic_dark/";
       break;
     case PieceImageType.CUSTOM_IMAGE:
-      dir = "./piece/hitomoji/";
-      // dir = `${customDir}/./pieces/${Md5.hashStr(customDir!)}/`
-      // TODO: check how to pass directory to here
+      dir = customDir!;
       break;
     default:
       dir = "./piece/hitomoji/";
@@ -440,8 +437,6 @@ export default class LayoutBuilder {
     customBoardImageURL?: string,
     customPieceStandImageURL?: string
   ) {
-    // this.pieceImages =
-    // pieceImageMap[pieceImageType] || pieceImageMap[PieceImageType.HITOMOJI];
     this.pieceImages = getPieceTextureMap(pieceImageType, customPieceImageDir);
     this.boardGridImage = getBoardGridURL(boardImageType);
     this.boardTextureImage = getBoardTextureURL(

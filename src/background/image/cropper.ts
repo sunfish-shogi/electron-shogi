@@ -30,62 +30,67 @@ export async function cropPieceImage(
   destDir: string
 ): Promise<void> {
   srcURL = fileURLToPath(srcURL);
-  getAppLogger().info(
+  getAppLogger().debug(
     `generate cropped piece images: src=${srcURL} dst=${destDir}`
   );
   // create folder if there is no folder
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
-
   // return the image width and height
-
-  const pic = await sharp(srcURL);
+  const pic = sharp(srcURL);
   const metadata = await pic.metadata();
-  const width = metadata.width;
-  const height = metadata.height;
-  if (width && height) {
-    for (let i = 0; i < 4; i++) {
-      let side = "";
+  let width = metadata.width;
+  let height = metadata.height;
+  if (!width || !height) {
+    throw new Error("cannot get image metadata");
+  } else {
+    width = width / 8;
+    height = height / 4;
+  }
+
+  for (let i = 0; i < 4; i++) {
+    let side = "";
+    switch (i) {
+      case 0:
+      case 1:
+        side = "black";
+        break;
+      case 2:
+      case 3:
+        side = "white";
+        break;
+    }
+    for (let j = 0; j < 8; j++) {
+      if ((i == 1 && j == 3) || (i == 3 && j == 3)) {
+        continue; // "promoted gold" escape
+      }
+
+      let piecesSet: string[] = [];
       switch (i) {
         case 0:
-        case 1:
-          side = "black";
-          break;
         case 2:
+          piecesSet = pieces;
+          break;
+        case 1:
         case 3:
-          side = "white";
+          piecesSet = promPieces;
           break;
       }
-      for (let j = 0; j < 8; j++) {
-        if ((i == 1 && j == 3) || (i == 3 && j == 3)) {
-          continue; // "promoted gold" escape
-        }
-
-        let piecesSet: string[] = [];
-        switch (i) {
-          case 0:
-          case 2:
-            piecesSet = pieces;
-            break;
-          case 1:
-          case 3:
-            piecesSet = promPieces;
-            break;
-        }
-        if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
-          pic
-            .extract({
-              left: (j * width) / 8,
-              top: (i * height) / 4,
-              width: width / 8,
-              height: height / 4,
-            })
-            .toFile(path.join(destDir, `${side}_${piecesSet[j]}.png`));
-          getAppLogger().info(`${side}_${piecesSet[j]}.png extracted`);
-        } else {
-          getAppLogger().info(`${side}_${piecesSet[j]}.png exists`);
-        }
+      if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
+        console.log(`${j * width}, ${i * height}, ${width}, ${height}`);
+        sharp(srcURL)
+          .extract({
+            left: j * width,
+            top: i * height,
+            width: width,
+            height: height,
+          })
+          .resize(width, height)
+          .toFile(path.join(destDir, `${side}_${piecesSet[j]}.png`));
+        getAppLogger().debug(`${side}_${piecesSet[j]}.png extracted`);
+      } else {
+        getAppLogger().debug(`${side}_${piecesSet[j]}.png exists`);
       }
     }
   }

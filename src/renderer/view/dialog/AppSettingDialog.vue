@@ -720,7 +720,7 @@ const saveAndClose = async () => {
   }
   if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
     if (pieceImageFileURL.value) {
-      api.cropPieceImage(pieceImageFileURL.value);
+      await api.cropPieceImage(pieceImageFileURL.value);
       update.pieceImageFileURL = pieceImageFileURL.value;
       update.pieceImageDirURL = `file://${(
         await api.getPieceImageDir(pieceImageFileURL.value)

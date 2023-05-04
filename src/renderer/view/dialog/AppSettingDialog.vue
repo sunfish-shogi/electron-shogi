@@ -719,9 +719,13 @@ const saveAndClose = async () => {
     update.backgroundImageFileURL = backgroundImageFileURL.value;
   }
   if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
-    api.cropPieceImage(pieceImageFileURL.value!);
-    update.pieceImageFileURL = pieceImageFileURL.value;
-    update.pieceImageDirURL = `file://${(await api.getPieceImageDir()).valueOf()}/`;
+    if (pieceImageFileURL.value) {
+      api.cropPieceImage(pieceImageFileURL.value);
+      update.pieceImageFileURL = pieceImageFileURL.value;
+      update.pieceImageDirURL = `file://${(
+        await api.getPieceImageDir(pieceImageFileURL.value)
+      ).valueOf()}/`;
+    }
   }
   if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
     update.boardImageFileURL = boardImageFileURL.value;

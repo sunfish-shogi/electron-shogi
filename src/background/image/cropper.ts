@@ -59,49 +59,50 @@ export async function cropPieceImage(
 
   // return the image width and height
 
-  const width = (await sharp(srcURL).metadata()).width!;
-  const height = (await sharp(srcURL).metadata()).height!;
-
-  for (let i = 0; i < 4; i++) {
-    let side = "";
-    switch (i) {
-      case 0:
-      case 1:
-        side = "black";
-        break;
-      case 2:
-      case 3:
-        side = "white";
-        break;
-    }
-    for (let j = 0; j < 8; j++) {
-      if ((i == 1 && j == 3) || (i == 3 && j == 3)) {
-        continue; // "promoted gold" escape
-      }
-
-      let piecesSet: string[] = [];
+  const width = (await sharp(srcURL).metadata()).width;
+  const height = (await sharp(srcURL).metadata()).height;
+  if (width && height) {
+    for (let i = 0; i < 4; i++) {
+      let side = "";
       switch (i) {
         case 0:
-        case 2:
-          piecesSet = pieces;
-          break;
         case 1:
+          side = "black";
+          break;
+        case 2:
         case 3:
-          piecesSet = promPieces;
+          side = "white";
           break;
       }
-      if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
-        await cropImageFromPath(
-          srcURL,
-          (j * width) / 8,
-          (i * height) / 4,
-          width / 8,
-          height / 4,
-          path.join(destDir, `${side}_${piecesSet[j]}.png`)
-        );
-        getAppLogger().info(`${side}_${piecesSet[j]}.png extracted`);
-      } else {
-        getAppLogger().info(`${side}_${piecesSet[j]}.png exists`);
+      for (let j = 0; j < 8; j++) {
+        if ((i == 1 && j == 3) || (i == 3 && j == 3)) {
+          continue; // "promoted gold" escape
+        }
+
+        let piecesSet: string[] = [];
+        switch (i) {
+          case 0:
+          case 2:
+            piecesSet = pieces;
+            break;
+          case 1:
+          case 3:
+            piecesSet = promPieces;
+            break;
+        }
+        if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
+          await cropImageFromPath(
+            srcURL,
+            (j * width) / 8,
+            (i * height) / 4,
+            width / 8,
+            height / 4,
+            path.join(destDir, `${side}_${piecesSet[j]}.png`)
+          );
+          getAppLogger().info(`${side}_${piecesSet[j]}.png extracted`);
+        } else {
+          getAppLogger().info(`${side}_${piecesSet[j]}.png exists`);
+        }
       }
     }
   }

@@ -160,8 +160,6 @@ function getPieceTextureMap(
   customDir?: string
 ): PieceImages {
   let dir = ""; // directory of piece images
-
-  // const rootDir = getPortableExeDir() || userDir;
   // determine directory
   switch (type) {
     case PieceImageType.HITOMOJI:
@@ -177,7 +175,11 @@ function getPieceTextureMap(
       dir = "./piece/hitomoji_gothic_dark/";
       break;
     case PieceImageType.CUSTOM_IMAGE:
-      dir = customDir!;
+      if (customDir) {
+        dir = customDir;
+      } else {
+        dir = "./piece/hitomoji/";
+      }
       break;
     default:
       dir = "./piece/hitomoji/";

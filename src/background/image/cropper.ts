@@ -47,7 +47,7 @@ export async function cropPieceImage(
   srcURL: string,
   destDir: string
 ): Promise<void> {
-  srcURL = fileURLToPath(`${srcURL}`);
+  srcURL = fileURLToPath(srcURL);
   getAppLogger().info(
     `generate cropped piece images: src=${srcURL} dst=${destDir}`
   );

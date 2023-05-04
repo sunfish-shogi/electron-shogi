@@ -231,8 +231,6 @@ export function loadMateSearchSetting(): MateSearchSetting {
     JSON.parse(fs.readFileSync(mateSearchSettingPath, "utf8"))
   );
 }
-export function getPieceImageDir(): string {
-  const appSetting = loadAppSetting();
-  return path.join(rootDir, "pieces" ,Md5.hashStr(appSetting.pieceImageFileURL!));
+export function getPieceImageDir(fileURL: string): string {
+  return path.join(rootDir, "pieces", Md5.hashStr(fileURL));
 }
-

@@ -283,16 +283,16 @@ ipcMain.handle(
 );
 ipcMain.handle(
   Background.GET_PIECE_IMAGE_DIR,
-  async (event): Promise<string> => {
+  async (event, fileURL: string): Promise<string> => {
     validateIPCSender(event.senderFrame);
-    return getPieceImageDir();
+    return getPieceImageDir(fileURL);
   }
 );
 ipcMain.handle(
   Background.CROP_PIECE_IMAGE,
   async (event, srcURL: string): Promise<void> => {
     validateIPCSender(event.senderFrame);
-    await cropPieceImage(srcURL, getPieceImageDir());
+    await cropPieceImage(srcURL, getPieceImageDir(srcURL));
   }
 );
 

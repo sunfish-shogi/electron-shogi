@@ -4,24 +4,6 @@ import fs from "fs";
 import { fileURLToPath } from "node:url";
 import { getAppLogger } from "../log";
 
-async function cropImageFromPath(
-  imageurl: string,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  destDir: string
-) {
-  await sharp(imageurl)
-    .extract({
-      left: x,
-      top: y,
-      width: w,
-      height: h,
-    })
-    .toFile(destDir);
-}
-
 const pieces = [
   "king2",
   "rook",
@@ -52,15 +34,16 @@ export async function cropPieceImage(
     `generate cropped piece images: src=${srcURL} dst=${destDir}`
   );
   // create folder if there is no folder
-  if (fs.existsSync(destDir)) {
-    return;
+  if (!fs.existsSync(destDir)) {
+    fs.mkdirSync(destDir, { recursive: true });
   }
-  fs.mkdirSync(destDir, { recursive: true });
 
   // return the image width and height
 
-  const width = (await sharp(srcURL).metadata()).width;
-  const height = (await sharp(srcURL).metadata()).height;
+  const pic = await sharp(srcURL);
+  const metadata = await pic.metadata();
+  const width = metadata.width;
+  const height = metadata.height;
   if (width && height) {
     for (let i = 0; i < 4; i++) {
       let side = "";
@@ -91,14 +74,14 @@ export async function cropPieceImage(
             break;
         }
         if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
-          await cropImageFromPath(
-            srcURL,
-            (j * width) / 8,
-            (i * height) / 4,
-            width / 8,
-            height / 4,
-            path.join(destDir, `${side}_${piecesSet[j]}.png`)
-          );
+          pic
+            .extract({
+              left: (j * width) / 8,
+              top: (i * height) / 4,
+              width: width / 8,
+              height: height / 4,
+            })
+            .toFile(path.join(destDir, `${side}_${piecesSet[j]}.png`));
           getAppLogger().info(`${side}_${piecesSet[j]}.png extracted`);
         } else {
           getAppLogger().info(`${side}_${piecesSet[j]}.png exists`);

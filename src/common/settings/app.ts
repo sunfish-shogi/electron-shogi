@@ -339,13 +339,7 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   }
   if (
     setting.pieceImage === PieceImageType.CUSTOM_IMAGE &&
-    !setting.pieceImageDirURL
-  ) {
-    // do nothing
-  }
-  if (
-    setting.pieceImage === PieceImageType.CUSTOM_IMAGE &&
-    !setting.pieceImageFileURL
+    (!setting.pieceImageFileURL || !setting.pieceImageDirURL)
   ) {
     return new Error(t.pieceImageFileNotSelected);
   }

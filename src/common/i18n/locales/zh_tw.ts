@@ -102,7 +102,6 @@ export const zh_tw: Texts = {
   standard: "標準",
   green: "綠色",
   cherryBlossom: "櫻花",
-  customDir: "自定義目錄",
   customImage: "自定義圖片",
   autumn: "紅葉",
   snow: "雪",

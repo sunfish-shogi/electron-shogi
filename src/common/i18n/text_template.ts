@@ -100,7 +100,6 @@ export type Texts = {
   standard: string;
   green: string;
   cherryBlossom: string;
-  customDir: string;
   customImage: string;
   autumn: string;
   snow: string;

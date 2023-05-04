@@ -103,7 +103,6 @@ export const en: Texts = {
   standard: "Standard",
   green: "Green",
   cherryBlossom: "Cherry Blossom",
-  customDir: "Custom Directory",
   customImage: "Custom Image",
   autumn: "Autumn",
   snow: "Snow",

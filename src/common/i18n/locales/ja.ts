@@ -102,7 +102,6 @@ export const ja: Texts = {
   standard: "標準",
   green: "緑",
   cherryBlossom: "桜",
-  customDir: "カスタムディレクトリ",
   customImage: "カスタム画像",
   autumn: "紅葉",
   snow: "雪",

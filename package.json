@@ -25,6 +25,7 @@
     "@github/hotkey": "^2.0.1",
     "chart.js": "^4.0.1",
     "encoding-japanese": "^2.0.0",
+    "jimp": "^0.22.7",
     "log4js": "^6.7.0",
     "sharp": "^0.32.1",
     "splitpanes": "^3.1.5",

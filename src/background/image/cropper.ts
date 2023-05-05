@@ -1,8 +1,8 @@
 import path from "path";
-import sharp from "sharp";
 import fs from "fs";
 import { fileURLToPath } from "node:url";
 import { getAppLogger } from "../log";
+import Jimp from "jimp";
 
 const pieces = [
   "king2",
@@ -37,11 +37,10 @@ export async function cropPieceImage(
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
-  // return the image width and height
-  const pic = sharp(srcURL);
-  const metadata = await pic.metadata();
-  let width = metadata.width;
-  let height = metadata.height;
+  const pic = await Jimp.read(srcURL)
+  let width: number = pic.getWidth()
+  let height: number = pic.getHeight();
+
   if (!width || !height) {
     throw new Error("cannot get image metadata");
   } else {
@@ -78,17 +77,11 @@ export async function cropPieceImage(
           break;
       }
       if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
-        console.log(`${j * width}, ${i * height}, ${width}, ${height}`);
-        const buffer = await sharp(srcURL)
-          .extract({
-            left: j * width,
-            top: i * height,
-            width: width,
-            height: height,
-          })
-          .resize(width, height)
-          .toBuffer();
-        fs.writeFileSync(path.join(destDir, `${side}_${piecesSet[j]}.png`), buffer);
+        await Jimp.read(srcURL).then((image) => {
+          image
+            .crop(j * width, i * height, width, height)
+            .writeAsync(path.join(destDir, `${side}_${piecesSet[j]}.png`));
+        });
 
         getAppLogger().debug(`${side}_${piecesSet[j]}.png extracted`);
       } else {

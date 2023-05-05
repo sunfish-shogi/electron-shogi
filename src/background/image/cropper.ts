@@ -37,8 +37,8 @@ export async function cropPieceImage(
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
-  const pic = await Jimp.read(srcURL)
-  let width: number = pic.getWidth()
+  const pic = await Jimp.read(srcURL);
+  let width: number = pic.getWidth();
   let height: number = pic.getHeight();
 
   if (!width || !height) {

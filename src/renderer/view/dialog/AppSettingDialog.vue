@@ -661,7 +661,7 @@ const enableUSILog = ref(appSetting.enableUSILog);
 const enableCSALog = ref(appSetting.enableCSALog);
 const logLevel = ref(appSetting.logLevel);
 const backgroundImageFileURL = ref(appSetting.backgroundImageFileURL);
-const pieceImageDirURL = ref(appSetting.pieceImageDirURL);
+const croppedPieceImageBaseURL = ref(appSetting.croppedPieceImageBaseURL);
 const pieceImageFileURL = ref(appSetting.pieceImageFileURL);
 const boardImageFileURL = ref(appSetting.boardImageFileURL);
 const pieceStandImageFileURL = ref(appSetting.pieceStandImageFileURL);
@@ -685,7 +685,7 @@ const saveAndClose = async () => {
     pieceImage: pieceImage.value,
     boardImage: boardImage.value,
     pieceImageFileURL: pieceImageFileURL.value,
-    pieceImageDirURL: pieceImageDirURL.value,
+    croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,
     pieceStandImage: pieceStandImage.value,
     boardLabelType: displayBoardLabels.value
       ? BoardLabelType.STANDARD
@@ -724,7 +724,7 @@ const saveAndClose = async () => {
     if (pieceImageFileURL.value) {
       await api.cropPieceImage(pieceImageFileURL.value);
       update.pieceImageFileURL = pieceImageFileURL.value;
-      update.pieceImageDirURL = `file://${(
+      update.croppedPieceImageBaseURL = `file://${(
         await api.getPieceImageDir(pieceImageFileURL.value)
       ).valueOf()}/`;
     }

@@ -101,7 +101,7 @@ export type AppSetting = {
   backgroundImageFileURL?: string;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
-  pieceImageDirURL?: string;
+  croppedPieceImageBaseURL?: string;
   pieceImageFileURL?: string;
   boardImageFileURL?: string;
   pieceStandImage: PieceStandImageType;
@@ -153,7 +153,7 @@ export type AppSettingUpdate = {
   backgroundImageType?: BackgroundImageType;
   backgroundImageFileURL?: string;
   pieceImage?: PieceImageType;
-  pieceImageDirURL?: string;
+  croppedPieceImageBaseURL?: string;
   pieceImageFileURL?: string;
   boardImage?: BoardImageType;
   boardImageFileURL?: string;
@@ -339,7 +339,7 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   }
   if (
     setting.pieceImage === PieceImageType.CUSTOM_IMAGE &&
-    (!setting.pieceImageFileURL || !setting.pieceImageDirURL)
+    (!setting.pieceImageFileURL || !setting.croppedPieceImageBaseURL)
   ) {
     return new Error(t.pieceImageFileNotSelected);
   }

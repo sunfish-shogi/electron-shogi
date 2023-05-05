@@ -6,6 +6,7 @@
         :piece-image-type="appSetting.pieceImage"
         :board-image-type="appSetting.boardImage"
         :piece-stand-image-type="appSetting.pieceStandImage"
+        :custom-piece-image-dir="appSetting.croppedPieceImageBaseURL"
         :board-label-type="appSetting.boardLabelType"
         :custom-board-image-url="appSetting.boardImageFileURL"
         :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"

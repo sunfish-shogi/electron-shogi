@@ -26,6 +26,8 @@ jobs:
           cache: 'npm'
       - run: npm version
       - run: npm ci
+      - run: npm run report:license
+      - run: git diff --exit-code
       - run: npm run electron:build
       - run: node scripts/archive.mjs ${{ matrix.os_short }} ${{ github.ref_name }}
       - uses: actions/upload-artifact@v3

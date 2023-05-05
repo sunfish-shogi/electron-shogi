@@ -18,8 +18,8 @@ jobs:
       - run: npm version
       - run: npm ci
       - run: npm run lint
-      - run: npm run report:license
       - run: git diff --exit-code
+      - run: npm run report:license
       - run: npm test -- --coverage
       - uses: codecov/codecov-action@v3
         with:

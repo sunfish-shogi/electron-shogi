@@ -79,7 +79,7 @@ export async function cropPieceImage(
       }
       if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
         console.log(`${j * width}, ${i * height}, ${width}, ${height}`);
-        sharp(srcURL)
+        await sharp(srcURL)
           .extract({
             left: j * width,
             top: i * height,

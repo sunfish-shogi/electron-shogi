@@ -79,7 +79,7 @@ export async function cropPieceImage(
       }
       if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
         console.log(`${j * width}, ${i * height}, ${width}, ${height}`);
-        sharp(srcURL)
+        const buffer = await sharp(srcURL)
           .extract({
             left: j * width,
             top: i * height,
@@ -87,7 +87,9 @@ export async function cropPieceImage(
             height: height,
           })
           .resize(width, height)
-          .toFile(path.join(destDir, `${side}_${piecesSet[j]}.png`));
+          .toBuffer();
+        fs.writeFileSync(path.join(destDir, `${side}_${piecesSet[j]}.png`), buffer);
+
         getAppLogger().debug(`${side}_${piecesSet[j]}.png extracted`);
       } else {
         getAppLogger().debug(`${side}_${piecesSet[j]}.png exists`);

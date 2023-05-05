@@ -676,6 +676,8 @@ onBeforeUnmount(() => {
 });
 
 const saveAndClose = async () => {
+  store.retainBussyState();
+  try {
   const update: AppSettingUpdate = {
     language: language.value,
     thema: thema.value,
@@ -733,8 +735,7 @@ const saveAndClose = async () => {
   if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
     update.pieceStandImageFileURL = pieceStandImageFileURL.value;
   }
-  store.retainBussyState();
-  try {
+
     await useAppSetting().updateAppSetting(update);
     store.closeAppSettingDialog();
   } catch (e) {

@@ -1,4 +1,7 @@
-import { ResearchSetting } from "@/common/settings/research";
+import {
+  ResearchSetting,
+  defaultResearchSetting,
+} from "@/common/settings/research";
 import { USIPlayer } from "@/renderer/players/usi";
 import { SearchInfo } from "@/renderer/players/player";
 import { ImmutableRecord } from "@/common/shogi";
@@ -27,6 +30,7 @@ type UpdateSearchInfoCallback = (
 ) => void;
 
 export class ResearchManager {
+  private setting = defaultResearchSetting();
   private engines: USIPlayer[] = [];
   private onUpdateSearchInfo: UpdateSearchInfoCallback = () => {
     /* noop */
@@ -50,6 +54,8 @@ export class ResearchManager {
   }
 
   async launch(setting: ResearchSetting) {
+    this.setting = setting;
+
     // Validation
     if (setting.usi === undefined) {
       throw new Error("ResearchManager#launch: USIエンジンの設定は必須です。");
@@ -66,6 +72,7 @@ export class ResearchManager {
         "ResearchManager#launch: 前回のエンジンが終了していません。数秒待ってからもう一度試してください。"
       );
     }
+
     // エンジンを設定する。
     const appSetting = useAppSetting();
     const engineSettings = [
@@ -84,6 +91,7 @@ export class ResearchManager {
         }
       );
     });
+
     // エンジンを起動する。
     try {
       await Promise.all(this.engines.map((engine) => engine.launch()));
@@ -95,6 +103,17 @@ export class ResearchManager {
 
   updatePosition(record: ImmutableRecord) {
     this.engines.forEach((engine) => engine.startResearch(record));
+    if (this.setting.enableMaxSeconds && this.setting.maxSeconds > 0) {
+      setTimeout(() => {
+        this.stopAll();
+      }, this.setting.maxSeconds * 1e3);
+    }
+  }
+
+  private stopAll() {
+    Promise.all(this.engines.map((engine) => engine.stop())).catch((e) => {
+      this.onError(e);
+    });
   }
 
   close() {

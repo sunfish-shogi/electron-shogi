@@ -19,6 +19,8 @@ describe("settings/research", () => {
         },
       },
       secondaries: [],
+      enableMaxSeconds: false,
+      maxSeconds: 10,
     };
     const result = normalizeResearchSetting(setting);
     expect(result).toStrictEqual(setting);
@@ -37,13 +39,17 @@ describe("settings/research", () => {
         },
       },
       secondaries: [],
+      enableMaxSeconds: false,
+      maxSeconds: 10,
     };
     expect(validateResearchSetting(setting)).toBeUndefined();
   });
 
   it("validate/invalidEngine", () => {
-    const setting = {
+    const setting: ResearchSetting = {
       secondaries: [],
+      enableMaxSeconds: false,
+      maxSeconds: 10,
     };
     expect(validateResearchSetting(setting)).toBeInstanceOf(Error);
   });
@@ -61,6 +67,8 @@ describe("settings/research", () => {
         },
       },
       secondaries: [{}],
+      enableMaxSeconds: false,
+      maxSeconds: 10,
     };
     expect(validateResearchSetting(setting)).toBeInstanceOf(Error);
   });

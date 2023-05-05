@@ -23,10 +23,7 @@ module.exports = [{
     path: __dirname + '/dist/packed',
     libraryTarget: 'commonjs2',
   },
-  externals: {
-    'electron': 'electron',
-    'sharp' : 'commonjs sharp',
-  },
+  externals: ['electron'],
   optimization,
 }, {
   mode: 'production',
@@ -36,10 +33,7 @@ module.exports = [{
     path: __dirname + '/dist/packed',
     libraryTarget: 'commonjs',
   },
-  externals: {
-    'electron': 'electron',
-    'sharp' : 'commonjs sharp',
-  },
+  externals: ['electron'],
   optimization,
 },
 ];

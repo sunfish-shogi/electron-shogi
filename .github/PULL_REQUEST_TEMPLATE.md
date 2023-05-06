@@ -11,3 +11,4 @@
   - [ ] `console.log` not included (except script file)
 - RECOMMENDED (it depends on what you change)
   - [ ] unit test added/updated
+  - [ ] i18n

@@ -1,4 +1,4 @@
-import { Record } from "@/common/shogi";
+import { Move, Record } from "@/common/shogi";
 import api, { API } from "@/renderer/ipc/api";
 import { ResearchManager } from "@/renderer/store/research";
 import {
@@ -36,7 +36,7 @@ describe("store/research", () => {
     jest.runOnlyPendingTimers();
     expect(mockAPI.usiStop).toBeCalledTimes(0);
 
-    record.append(record.position.createMoveByUSI("7g7f")!);
+    record.append(record.position.createMoveByUSI("7g7f") as Move);
     manager.updatePosition(record);
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(2);
     expect(mockAPI.usiGoInfinite).toBeCalledWith(
@@ -69,7 +69,7 @@ describe("store/research", () => {
     const record = new Record();
     manager.updatePosition(record);
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(3);
-    record.append(record.position.createMoveByUSI("7g7f")!);
+    record.append(record.position.createMoveByUSI("7g7f") as Move);
     manager.updatePosition(record);
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(6);
   });

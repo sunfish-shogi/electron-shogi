@@ -1,7 +1,6 @@
 import {
   BoardImageType,
   BoardLabelType,
-  PieceImageType,
   PieceStandImageType,
 } from "@/common/settings/app";
 import {
@@ -17,6 +16,8 @@ import {
 } from "@/common/shogi";
 import preloadImage from "@/renderer/assets/preload";
 import { RectSize } from "@/common/graphics";
+import { join } from "@/renderer/helpers/path";
+
 type PieceImages = {
   black: {
     pawn: string;
@@ -155,76 +156,45 @@ const layoutTemplate = {
   },
 };
 
-function getPieceTextureMap(
-  type: PieceImageType,
-  customDir?: string
-): PieceImages {
-  let dir = ""; // directory of piece images
-  // determine directory
-  switch (type) {
-    case PieceImageType.HITOMOJI:
-      dir = "./piece/hitomoji/";
-      break;
-    case PieceImageType.HITOMOJI_DARK:
-      dir = "./piece/hitomoji_dark/";
-      break;
-    case PieceImageType.HITOMOJI_GOTHIC:
-      dir = "./piece/hitomoji_gothic/";
-      break;
-    case PieceImageType.HITOMOJI_GOTHIC_DARK:
-      dir = "./piece/hitomoji_gothic_dark/";
-      break;
-    case PieceImageType.CUSTOM_IMAGE:
-      if (customDir) {
-        dir = customDir;
-      } else {
-        dir = "./piece/hitomoji/";
-      }
-      break;
-    default:
-      dir = "./piece/hitomoji/";
-      break;
-  }
-  // return piece with custom directory
-  const piece: PieceImages = {
+function getPieceTextureMap(baseURL: string): PieceImages {
+  return {
     black: {
-      pawn: dir + "black_pawn.png",
-      lance: dir + "black_lance.png",
-      knight: dir + "black_knight.png",
-      silver: dir + "black_silver.png",
-      gold: dir + "black_gold.png",
-      bishop: dir + "black_bishop.png",
-      rook: dir + "black_rook.png",
-      king: dir + "black_king.png",
-      king2: dir + "black_king2.png",
-      promPawn: dir + "black_prom_pawn.png",
-      promLance: dir + "black_prom_lance.png",
-      promKnight: dir + "black_prom_knight.png",
-      promSilver: dir + "black_prom_silver.png",
-      horse: dir + "black_horse.png",
-      dragon: dir + "black_dragon.png",
+      pawn: join(baseURL, "black_pawn.png"),
+      lance: join(baseURL, "black_lance.png"),
+      knight: join(baseURL, "black_knight.png"),
+      silver: join(baseURL, "black_silver.png"),
+      gold: join(baseURL, "black_gold.png"),
+      bishop: join(baseURL, "black_bishop.png"),
+      rook: join(baseURL, "black_rook.png"),
+      king: join(baseURL, "black_king.png"),
+      king2: join(baseURL, "black_king2.png"),
+      promPawn: join(baseURL, "black_prom_pawn.png"),
+      promLance: join(baseURL, "black_prom_lance.png"),
+      promKnight: join(baseURL, "black_prom_knight.png"),
+      promSilver: join(baseURL, "black_prom_silver.png"),
+      horse: join(baseURL, "black_horse.png"),
+      dragon: join(baseURL, "black_dragon.png"),
     },
     white: {
-      pawn: dir + "white_pawn.png",
-      lance: dir + "white_lance.png",
-      knight: dir + "white_knight.png",
-      silver: dir + "white_silver.png",
-      gold: dir + "white_gold.png",
-      bishop: dir + "white_bishop.png",
-      rook: dir + "white_rook.png",
-      king: dir + "white_king.png",
-      king2: dir + "white_king2.png",
-      promPawn: dir + "white_prom_pawn.png",
-      promLance: dir + "white_prom_lance.png",
-      promKnight: dir + "white_prom_knight.png",
-      promSilver: dir + "white_prom_silver.png",
-      horse: dir + "white_horse.png",
-      dragon: dir + "white_dragon.png",
+      pawn: join(baseURL, "white_pawn.png"),
+      lance: join(baseURL, "white_lance.png"),
+      knight: join(baseURL, "white_knight.png"),
+      silver: join(baseURL, "white_silver.png"),
+      gold: join(baseURL, "white_gold.png"),
+      bishop: join(baseURL, "white_bishop.png"),
+      rook: join(baseURL, "white_rook.png"),
+      king: join(baseURL, "white_king.png"),
+      king2: join(baseURL, "white_king2.png"),
+      promPawn: join(baseURL, "white_prom_pawn.png"),
+      promLance: join(baseURL, "white_prom_lance.png"),
+      promKnight: join(baseURL, "white_prom_knight.png"),
+      promSilver: join(baseURL, "white_prom_silver.png"),
+      horse: join(baseURL, "white_horse.png"),
+      dragon: join(baseURL, "white_dragon.png"),
     },
   };
-
-  return piece;
 }
+
 function getBoardGridURL(type: BoardImageType): string {
   switch (type) {
     default:
@@ -431,15 +401,14 @@ export default class LayoutBuilder {
   private pieceStandImage: string | null;
 
   constructor(
-    pieceImageType: PieceImageType,
     private boardImageType: BoardImageType,
     private pieceStandImageType: PieceStandImageType,
     private boardLabelType: BoardLabelType,
-    customPieceImageDir?: string,
+    pieceImageBaseURL: string,
     customBoardImageURL?: string,
     customPieceStandImageURL?: string
   ) {
-    this.pieceImages = getPieceTextureMap(pieceImageType, customPieceImageDir);
+    this.pieceImages = getPieceTextureMap(pieceImageBaseURL);
     this.boardGridImage = getBoardGridURL(boardImageType);
     this.boardTextureImage = getBoardTextureURL(
       boardImageType,

@@ -12,10 +12,10 @@
         />
         <BoardView
           v-else
-          :piece-image-type="appSetting.pieceImage"
           :board-image-type="appSetting.boardImage"
           :piece-stand-image-type="appSetting.pieceStandImage"
           :board-label-type="appSetting.boardLabelType"
+          :piece-image-base-url="getPieceImageBaseURL(appSetting)"
           :custom-board-image-url="appSetting.boardImageFileURL"
           :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
           :max-size="maxSize"
@@ -86,7 +86,10 @@ import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
 import { Lazy } from "@/renderer/helpers/lazy";
-import { PositionImageStyle } from "@/common/settings/app";
+import {
+  PositionImageStyle,
+  getPieceImageBaseURL,
+} from "@/common/settings/app";
 import {
   getBlackPlayerName,
   getWhitePlayerName,

@@ -9,19 +9,42 @@ export function dirname(path: string): string {
   );
 }
 
-export function trim(path: string): string {
+function trimEnd(path: string): string {
   return path.endsWith("/") || path.endsWith("\\")
     ? path.substring(0, path.length - 1)
     : path;
 }
 
+function detectSeperator(path: string): string {
+  return path.indexOf("/") >= 0 ? "/" : "\\";
+}
+
 export function join(path: string, ...paths: string[]): string {
-  let result = trim(path);
+  const sep = detectSeperator(path);
+  let result = trimEnd(path);
   for (const path of paths) {
-    result += path.startsWith("/") || path.startsWith("\\") ? path : "/" + path;
-    result = trim(result);
+    result += path.startsWith("/") || path.startsWith("\\") ? path : sep + path;
+    result = trimEnd(result);
   }
   return result;
+}
+
+function escapePath(path: string): string {
+  return path.replaceAll(/[<>:"/\\|?*]/g, "_");
+}
+
+function getDateStringByMeta(metadata: ImmutableRecordMetadata): string {
+  const date =
+    metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME) ||
+    metadata.getStandardMetadata(RecordMetadataKey.DATE);
+  if (date) {
+    return date
+      .trim()
+      .replaceAll(" ", "_")
+      .replaceAll("/", "")
+      .replaceAll(":", "");
+  }
+  return getDateString().replaceAll("/", "");
 }
 
 export function defaultRecordFileName(
@@ -51,19 +74,5 @@ export function defaultRecordFileName(
   if (white) {
     ret += "_" + white;
   }
-  return ret.trim().replaceAll("/", "_").replaceAll("\\", "_") + ".kif";
-}
-
-function getDateStringByMeta(metadata: ImmutableRecordMetadata): string {
-  const date =
-    metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.DATE);
-  if (date) {
-    return date
-      .trim()
-      .replaceAll(" ", "_")
-      .replaceAll("/", "")
-      .replaceAll(":", "");
-  }
-  return getDateString().replaceAll("/", "");
+  return escapePath(ret.trim()) + ".kif";
 }

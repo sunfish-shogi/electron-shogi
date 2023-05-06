@@ -84,4 +84,14 @@ describe("helpers/path", () => {
       "20220101_My New Game_先手の人_後手の人.kif"
     );
   });
+
+  it("defaultRecordFileName/escape", async () => {
+    const meta = new RecordMetadata();
+    meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
+    meta.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "Foo:Bar<Baz");
+    meta.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "Qux|Quux>Corge");
+    expect(defaultRecordFileName(meta)).toBe(
+      "20220101_Foo_Bar_Baz_Qux_Quux_Corge.kif"
+    );
+  });
 });

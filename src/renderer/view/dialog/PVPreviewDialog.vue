@@ -3,10 +3,9 @@
     <dialog ref="dialog">
       <BoardView
         class="board"
-        :piece-image-type="appSetting.pieceImage"
         :board-image-type="appSetting.boardImage"
         :piece-stand-image-type="appSetting.pieceStandImage"
-        :custom-piece-image-dir="appSetting.croppedPieceImageBaseURL"
+        :piece-image-base-url="getPieceImageBaseURL(appSetting)"
         :board-label-type="appSetting.boardLabelType"
         :custom-board-image-url="appSetting.boardImageFileURL"
         :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
@@ -106,6 +105,7 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
+import { getPieceImageBaseURL } from "@/common/settings/app";
 
 const props = defineProps({
   position: {

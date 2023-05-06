@@ -1,8 +1,19 @@
 import path from "path";
+import url from "url";
 import fs from "fs";
 import { fileURLToPath } from "node:url";
 import { getAppLogger } from "../log";
 import Jimp from "jimp";
+import { Md5 } from "ts-md5";
+import { imageCacheDir } from "./cache";
+
+function getCroppedPieceImageDir(srcURL: string): string {
+  return path.join(imageCacheDir, "pieces", Md5.hashStr(srcURL));
+}
+
+export function getCroppedPieceImageBaseURL(srcURL: string): string {
+  return url.pathToFileURL(getCroppedPieceImageDir(srcURL)).toString();
+}
 
 const pieces = [
   "king2",
@@ -14,6 +25,7 @@ const pieces = [
   "lance",
   "pawn",
 ];
+
 const promPieces = [
   "king",
   "dragon",
@@ -25,19 +37,18 @@ const promPieces = [
   "prom_pawn",
 ];
 
-export async function cropPieceImage(
-  srcURL: string,
-  destDir: string
-): Promise<void> {
-  srcURL = fileURLToPath(srcURL);
+export async function cropPieceImage(srcURL: string): Promise<void> {
+  const srcPath = fileURLToPath(srcURL);
+  const destDir = getCroppedPieceImageDir(srcURL);
   getAppLogger().debug(
-    `generate cropped piece images: src=${srcURL} dst=${destDir}`
+    `generate cropped piece images: src=${srcPath} dst=${destDir}`
   );
+
   // create folder if there is no folder
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
-  const pic = await Jimp.read(srcURL);
+  const pic = await Jimp.read(srcPath);
   let width: number = pic.getWidth();
   let height: number = pic.getHeight();
 
@@ -76,16 +87,16 @@ export async function cropPieceImage(
           piecesSet = promPieces;
           break;
       }
-      if (!fs.existsSync(path.join(destDir, `${side}_${piecesSet[j]}.png`))) {
-        await Jimp.read(srcURL).then((image) => {
+      const destName = `${side}_${piecesSet[j]}.png`;
+      if (!fs.existsSync(path.join(destDir, destName))) {
+        await Jimp.read(srcPath).then((image) => {
           image
             .crop(j * width, i * height, width, height)
-            .writeAsync(path.join(destDir, `${side}_${piecesSet[j]}.png`));
+            .writeAsync(path.join(destDir, destName));
         });
-
-        getAppLogger().debug(`${side}_${piecesSet[j]}.png extracted`);
+        getAppLogger().debug(`${destName} extracted`);
       } else {
-        getAppLogger().debug(`${side}_${piecesSet[j]}.png exists`);
+        getAppLogger().debug(`${destName} exists`);
       }
     }
   }

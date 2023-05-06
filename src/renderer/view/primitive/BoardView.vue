@@ -141,7 +141,6 @@ import { computed, reactive, watch, PropType } from "vue";
 import {
   BoardImageType,
   BoardLabelType,
-  PieceImageType,
   PieceStandImageType,
 } from "@/common/settings/app";
 import { RectSize } from "@/common/graphics";
@@ -154,18 +153,13 @@ type State = {
 };
 
 const props = defineProps({
-  pieceImageType: {
-    type: String as PropType<PieceImageType>,
-    required: true,
-  },
   boardImageType: {
     type: String as PropType<BoardImageType>,
     required: true,
   },
-  customPieceImageDir: {
+  pieceImageBaseUrl: {
     type: String,
-    required: false,
-    default: undefined,
+    required: true,
   },
   customBoardImageUrl: {
     type: String,
@@ -384,11 +378,10 @@ const clickNotPromote = (event: Event) => {
 
 const layoutBuilder = computed(() => {
   const builder = new LayoutBuilder(
-    props.pieceImageType,
     props.boardImageType,
     props.pieceStandImageType,
     props.boardLabelType,
-    props.customPieceImageDir,
+    props.pieceImageBaseUrl,
     props.customBoardImageUrl,
     props.customPieceStandImageUrl
   );

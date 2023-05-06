@@ -9,6 +9,21 @@ export function dirname(path: string): string {
   );
 }
 
+export function trim(path: string): string {
+  return path.endsWith("/") || path.endsWith("\\")
+    ? path.substring(0, path.length - 1)
+    : path;
+}
+
+export function join(path: string, ...paths: string[]): string {
+  let result = trim(path);
+  for (const path of paths) {
+    result += path.startsWith("/") || path.startsWith("\\") ? path : "/" + path;
+    result = trim(result);
+  }
+  return result;
+}
+
 export function defaultRecordFileName(
   metadata: ImmutableRecordMetadata
 ): string {

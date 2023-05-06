@@ -1,11 +1,10 @@
 <template>
   <div>
     <BoardView
-      :piece-image-type="appSetting.pieceImage"
       :board-image-type="appSetting.boardImage"
       :piece-stand-image-type="appSetting.pieceStandImage"
       :board-label-type="appSetting.boardLabelType"
-      :custom-piece-image-dir="appSetting.croppedPieceImageBaseURL"
+      :piece-image-base-url="getPieceImageBaseURL(appSetting)"
       :custom-board-image-url="appSetting.boardImageFileURL"
       :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
       :max-size="maxSize"
@@ -242,6 +241,7 @@ import { useAppSetting } from "@/renderer/store/setting";
 import {
   RightSideControlType,
   LeftSideControlType,
+  getPieceImageBaseURL,
 } from "@/common/settings/app";
 import {
   getBlackPlayerName,

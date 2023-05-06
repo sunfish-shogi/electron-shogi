@@ -724,9 +724,9 @@ const saveAndClose = async () => {
       if (pieceImageFileURL.value) {
         await api.cropPieceImage(pieceImageFileURL.value);
         update.pieceImageFileURL = pieceImageFileURL.value;
-        update.croppedPieceImageBaseURL = `file://${(
-          await api.getPieceImageDir(pieceImageFileURL.value)
-        ).valueOf()}/`;
+        update.croppedPieceImageBaseURL = await api.getPieceImageBaseURL(
+          pieceImageFileURL.value
+        );
       }
     }
     if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {

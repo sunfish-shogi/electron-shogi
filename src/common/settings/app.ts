@@ -100,9 +100,9 @@ export type AppSetting = {
   backgroundImageType: BackgroundImageType;
   backgroundImageFileURL?: string;
   pieceImage: PieceImageType;
-  boardImage: BoardImageType;
-  croppedPieceImageBaseURL?: string;
   pieceImageFileURL?: string;
+  croppedPieceImageBaseURL?: string;
+  boardImage: BoardImageType;
   boardImageFileURL?: string;
   pieceStandImage: PieceStandImageType;
   pieceStandImageFileURL?: string;
@@ -153,8 +153,8 @@ export type AppSettingUpdate = {
   backgroundImageType?: BackgroundImageType;
   backgroundImageFileURL?: string;
   pieceImage?: PieceImageType;
-  croppedPieceImageBaseURL?: string;
   pieceImageFileURL?: string;
+  croppedPieceImageBaseURL?: string;
   boardImage?: BoardImageType;
   boardImageFileURL?: string;
   pieceStandImage?: PieceStandImageType;
@@ -403,4 +403,20 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   if (setting.badMoveLevelThreshold3 >= setting.badMoveLevelThreshold4) {
     return new Error(t.mistakeThresholdMustBeLessThanBlunderThreshold);
   }
+}
+
+export function getPieceImageBaseURL(setting: AppSetting): string {
+  switch (setting.pieceImage) {
+    case PieceImageType.HITOMOJI_DARK:
+      return "./piece/hitomoji_dark";
+    case PieceImageType.HITOMOJI_GOTHIC:
+      return "./piece/hitomoji_gothic";
+    case PieceImageType.HITOMOJI_GOTHIC_DARK:
+      return "./piece/hitomoji_gothic_dark";
+    case PieceImageType.CUSTOM_IMAGE:
+      if (setting.croppedPieceImageBaseURL) {
+        return setting.croppedPieceImageBaseURL;
+      }
+  }
+  return "./piece/hitomoji";
 }

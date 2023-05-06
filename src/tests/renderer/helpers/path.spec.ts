@@ -1,7 +1,28 @@
-import { defaultRecordFileName } from "@/renderer/helpers/path";
+import { defaultRecordFileName, dirname, join } from "@/renderer/helpers/path";
 import { RecordMetadata, RecordMetadataKey } from "@/common/shogi";
 
 describe("helpers/path", () => {
+  it("dirname", async () => {
+    expect(dirname("/home/user/foo/bar.baz")).toBe("/home/user/foo");
+    expect(dirname("C:\\\\foo\\bar.baz")).toBe("C:\\\\foo");
+    expect(dirname("file:///home/user/foo/bar.baz")).toBe(
+      "file:///home/user/foo"
+    );
+  });
+
+  it("join", async () => {
+    expect(join("/home/user/foo", "bar/baz.qux")).toBe(
+      "/home/user/foo/bar/baz.qux"
+    );
+    expect(join("/home/user/foo/", "/bar/baz.qux")).toBe(
+      "/home/user/foo/bar/baz.qux"
+    );
+    expect(join("./foo/", "/bar/baz.qux")).toBe("./foo/bar/baz.qux");
+    expect(join("C:\\\\Users\\foo\\", "\\bar\\baz.qux")).toBe(
+      "C:\\\\Users\\foo\\bar\\baz.qux"
+    );
+  });
+
   it("defaultRecordFileName/emptyMetadata", async () => {
     const meta = new RecordMetadata();
     expect(defaultRecordFileName(meta)).toMatch(/^[0-9]{8}\.kif$/);

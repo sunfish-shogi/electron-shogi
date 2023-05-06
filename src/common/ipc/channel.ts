@@ -9,6 +9,7 @@ export enum Background {
   SHOW_SELECT_FILE_DIALOG = "showSelectFileDialog",
   SHOW_SELECT_DIRECTORY_DIALOG = "showSelectDirectoryDialog",
   SHOW_SELECT_IMAGE_DIALOG = "showSelectImageDialog",
+  CROP_PIECE_IMAGE = "cropPieceImage",
   EXPORT_CAPTURE_AS_PNG = "exportCaptureAsPNG",
   EXPORT_CAPTURE_AS_JPEG = "exportCaptureAsJPEG",
   LOAD_APP_SETTING = "loadAppSetting",
@@ -46,6 +47,7 @@ export enum Background {
   CSA_STOP = "csaStop",
   IS_ENCRYPTION_AVAILABLE = "isEncryptionAvailable",
   LOG = "log",
+  GET_PIECE_IMAGE_DIR = "getPieceImageDir",
 }
 
 export enum Renderer {

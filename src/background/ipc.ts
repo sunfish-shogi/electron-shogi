@@ -67,10 +67,12 @@ import { isEncryptionAvailable } from "./encrypt";
 import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
 import { Rect } from "@/common/graphics";
-import { exportCaptureJPEG, exportCapturePNG } from "./image";
+import { exportCaptureJPEG, exportCapturePNG } from "./image/capture";
+import { cropPieceImage } from "./image/cropper";
 import { getRelativePath, resolvePath } from "./path";
 import { fileURLToPath } from "./helpers/url";
 import { AppSettingUpdate } from "@/common/settings/app";
+import { getPieceImageDir } from "@/background/settings";
 
 const isWindows = process.platform === "win32";
 
@@ -277,6 +279,20 @@ ipcMain.handle(
     return results && results.length === 1
       ? url.pathToFileURL(results[0]).toString()
       : "";
+  }
+);
+ipcMain.handle(
+  Background.GET_PIECE_IMAGE_DIR,
+  async (event, fileURL: string): Promise<string> => {
+    validateIPCSender(event.senderFrame);
+    return getPieceImageDir(fileURL);
+  }
+);
+ipcMain.handle(
+  Background.CROP_PIECE_IMAGE,
+  async (event, srcURL: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    await cropPieceImage(srcURL, getPieceImageDir(srcURL));
   }
 );
 

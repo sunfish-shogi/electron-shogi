@@ -343,6 +343,7 @@ export type Texts = {
   invalidHandPiece: string;
   invalidUSI: string;
   backgroundImageFileNotSelected: string;
+  pieceImageFileNotSelected: string;
   boardImageFileNotSelected: string;
   pieceStandImageFileNotSelected: string;
   pieceVolumeMustBe0To100Percent: string;

@@ -47,6 +47,12 @@ class AppSettingStore {
   get boardImage(): BoardImageType {
     return this.setting.boardImage;
   }
+  get croppedPieceImageBaseURL(): string | undefined {
+    return this.setting.croppedPieceImageBaseURL;
+  }
+  get pieceImageFileURL(): string | undefined {
+    return this.setting.pieceImageFileURL;
+  }
   get boardImageFileURL(): string | undefined {
     return this.setting.boardImageFileURL;
   }

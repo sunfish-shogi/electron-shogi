@@ -162,6 +162,11 @@ const props = defineProps({
     type: String as PropType<BoardImageType>,
     required: true,
   },
+  customPieceImageDir: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
   customBoardImageUrl: {
     type: String,
     required: false,
@@ -383,6 +388,7 @@ const layoutBuilder = computed(() => {
     props.boardImageType,
     props.pieceStandImageType,
     props.boardLabelType,
+    props.customPieceImageDir,
     props.customBoardImageUrl,
     props.customPieceStandImageUrl
   );

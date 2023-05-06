@@ -21,6 +21,7 @@ export enum PieceImageType {
   HITOMOJI_DARK = "hitomojiDark",
   HITOMOJI_GOTHIC = "hitomojiGothic",
   HITOMOJI_GOTHIC_DARK = "hitomojiGothicDark",
+  CUSTOM_IMAGE = "custom-image",
 }
 
 export enum BoardImageType {
@@ -100,6 +101,8 @@ export type AppSetting = {
   backgroundImageFileURL?: string;
   pieceImage: PieceImageType;
   boardImage: BoardImageType;
+  croppedPieceImageBaseURL?: string;
+  pieceImageFileURL?: string;
   boardImageFileURL?: string;
   pieceStandImage: PieceStandImageType;
   pieceStandImageFileURL?: string;
@@ -150,6 +153,8 @@ export type AppSettingUpdate = {
   backgroundImageType?: BackgroundImageType;
   backgroundImageFileURL?: string;
   pieceImage?: PieceImageType;
+  croppedPieceImageBaseURL?: string;
+  pieceImageFileURL?: string;
   boardImage?: BoardImageType;
   boardImageFileURL?: string;
   pieceStandImage?: PieceStandImageType;
@@ -331,6 +336,12 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
     !setting.backgroundImageFileURL
   ) {
     return new Error(t.backgroundImageFileNotSelected);
+  }
+  if (
+    setting.pieceImage === PieceImageType.CUSTOM_IMAGE &&
+    (!setting.pieceImageFileURL || !setting.croppedPieceImageBaseURL)
+  ) {
+    return new Error(t.pieceImageFileNotSelected);
   }
   if (
     setting.boardImage === BoardImageType.CUSTOM_IMAGE &&

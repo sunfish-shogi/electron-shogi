@@ -354,6 +354,7 @@ export const zh_tw: Texts = {
   invalidHandPiece: "不合法的持駒",
   invalidUSI: "不合法的USI",
   backgroundImageFileNotSelected: "尚未選取背景圖片。",
+  pieceImageFileNotSelected: "尚未選取棋駒圖片。",
   boardImageFileNotSelected: "尚未選取盤面圖片。",
   pieceStandImageFileNotSelected: "尚未選取駒台圖片。",
   pieceVolumeMustBe0To100Percent: "請在0%～100%之間指定棋駒音效大小。",

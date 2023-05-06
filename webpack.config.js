@@ -35,4 +35,5 @@ module.exports = [{
   },
   externals: ['electron'],
   optimization,
-}];
+},
+];

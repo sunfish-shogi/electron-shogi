@@ -106,6 +106,7 @@
                   label: t.singleKanjiGothicDarkPiece,
                   value: PieceImageType.HITOMOJI_GOTHIC_DARK,
                 },
+                { label: t.customImage, value: PieceImageType.CUSTOM_IMAGE },
               ]"
               @change="
                 (value: PieceImageType) => {
@@ -113,6 +114,20 @@
                 }
               "
             />
+            <div
+              ref="pieceImageSelector"
+              class="form-item"
+              :class="{
+                hidden: pieceImage !== PieceImageType.CUSTOM_IMAGE,
+              }"
+            >
+              <div class="form-item-label-wide"></div>
+              <ImageSelector
+                class="image-selector"
+                :default-url="appSetting.pieceImageFileURL"
+                @select="(url: string) => (pieceImageFileURL = url)"
+              />
+            </div>
           </div>
           <!-- 盤画像 -->
           <div class="form-item">
@@ -646,6 +661,8 @@ const enableUSILog = ref(appSetting.enableUSILog);
 const enableCSALog = ref(appSetting.enableCSALog);
 const logLevel = ref(appSetting.logLevel);
 const backgroundImageFileURL = ref(appSetting.backgroundImageFileURL);
+const croppedPieceImageBaseURL = ref(appSetting.croppedPieceImageBaseURL);
+const pieceImageFileURL = ref(appSetting.pieceImageFileURL);
 const boardImageFileURL = ref(appSetting.boardImageFileURL);
 const pieceStandImageFileURL = ref(appSetting.pieceStandImageFileURL);
 
@@ -659,54 +676,66 @@ onBeforeUnmount(() => {
 });
 
 const saveAndClose = async () => {
-  const update: AppSettingUpdate = {
-    language: language.value,
-    thema: thema.value,
-    backgroundImageType: backgroundImageType.value,
-    pieceImage: pieceImage.value,
-    boardImage: boardImage.value,
-    pieceStandImage: pieceStandImage.value,
-    boardLabelType: displayBoardLabels.value
-      ? BoardLabelType.STANDARD
-      : BoardLabelType.NONE,
-    leftSideControlType: displayLeftSideControls.value
-      ? LeftSideControlType.STANDARD
-      : LeftSideControlType.NONE,
-    rightSideControlType: displayRightSideControls.value
-      ? RightSideControlType.STANDARD
-      : RightSideControlType.NONE,
-    tabPaneType: tabPaneType.value,
-    pieceVolume: readInputAsNumber(pieceVolume.value),
-    clockVolume: readInputAsNumber(clockVolume.value),
-    clockPitch: readInputAsNumber(clockPitch.value),
-    clockSoundTarget: clockSoundTarget.value,
-    textDecodingRule: textDecodingRule.value,
-    returnCode: nameToReturnCode[returnCode.value],
-    autoSaveDirectory: autoSaveDirectory.value.value,
-    translateEngineOptionName: translateEngineOptionName.value,
-    engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
-    evaluationViewFrom: evaluationViewFrom.value,
-    coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
-    badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
-    badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
-    badMoveLevelThreshold3: readInputAsNumber(badMoveLevelThreshold3.value),
-    badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
-    enableAppLog: enableAppLog.value,
-    enableUSILog: enableUSILog.value,
-    enableCSALog: enableCSALog.value,
-    logLevel: logLevel.value,
-  };
-  if (update.backgroundImageType !== BackgroundImageType.NONE) {
-    update.backgroundImageFileURL = backgroundImageFileURL.value;
-  }
-  if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
-    update.boardImageFileURL = boardImageFileURL.value;
-  }
-  if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
-    update.pieceStandImageFileURL = pieceStandImageFileURL.value;
-  }
   store.retainBussyState();
   try {
+    const update: AppSettingUpdate = {
+      language: language.value,
+      thema: thema.value,
+      backgroundImageType: backgroundImageType.value,
+      pieceImage: pieceImage.value,
+      boardImage: boardImage.value,
+      pieceImageFileURL: pieceImageFileURL.value,
+      croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,
+      pieceStandImage: pieceStandImage.value,
+      boardLabelType: displayBoardLabels.value
+        ? BoardLabelType.STANDARD
+        : BoardLabelType.NONE,
+      leftSideControlType: displayLeftSideControls.value
+        ? LeftSideControlType.STANDARD
+        : LeftSideControlType.NONE,
+      rightSideControlType: displayRightSideControls.value
+        ? RightSideControlType.STANDARD
+        : RightSideControlType.NONE,
+      tabPaneType: tabPaneType.value,
+      pieceVolume: readInputAsNumber(pieceVolume.value),
+      clockVolume: readInputAsNumber(clockVolume.value),
+      clockPitch: readInputAsNumber(clockPitch.value),
+      clockSoundTarget: clockSoundTarget.value,
+      textDecodingRule: textDecodingRule.value,
+      returnCode: nameToReturnCode[returnCode.value],
+      autoSaveDirectory: autoSaveDirectory.value.value,
+      translateEngineOptionName: translateEngineOptionName.value,
+      engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
+      evaluationViewFrom: evaluationViewFrom.value,
+      coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
+      badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
+      badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
+      badMoveLevelThreshold3: readInputAsNumber(badMoveLevelThreshold3.value),
+      badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
+      enableAppLog: enableAppLog.value,
+      enableUSILog: enableUSILog.value,
+      enableCSALog: enableCSALog.value,
+      logLevel: logLevel.value,
+    };
+    if (update.backgroundImageType !== BackgroundImageType.NONE) {
+      update.backgroundImageFileURL = backgroundImageFileURL.value;
+    }
+    if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
+      if (pieceImageFileURL.value) {
+        await api.cropPieceImage(pieceImageFileURL.value);
+        update.pieceImageFileURL = pieceImageFileURL.value;
+        update.croppedPieceImageBaseURL = `file://${(
+          await api.getPieceImageDir(pieceImageFileURL.value)
+        ).valueOf()}/`;
+      }
+    }
+    if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
+      update.boardImageFileURL = boardImageFileURL.value;
+    }
+    if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
+      update.pieceStandImageFileURL = pieceStandImageFileURL.value;
+    }
+
     await useAppSetting().updateAppSetting(update);
     store.closeAppSettingDialog();
   } catch (e) {

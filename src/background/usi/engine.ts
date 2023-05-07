@@ -35,8 +35,11 @@ export enum GameResult {
 function parseScoreMate(arg: string): number {
   switch (arg) {
     case "+":
+    case "+0":
+    case "0":
       return +1;
     case "-":
+    case "-0":
       return -1;
     default:
       return Number(arg);

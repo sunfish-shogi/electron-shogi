@@ -216,7 +216,7 @@ export const en: Texts = {
   fromSuffix: "",
   toPrefix: "to",
   toSuffix: "",
-  plyPrefix: "string",
+  plyPrefix: "",
   plySuffix: "th move",
   hoursSuffix: "h",
   minutesSuffix: "min",

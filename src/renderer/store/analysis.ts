@@ -188,7 +188,7 @@ export class AnalysisManager {
         : undefined;
     // コメントの先頭に付与するヘッダーを作成する。
     const appSetting = useAppSetting();
-    let head = "";
+    let header = "";
     if (scoreDelta !== undefined && negaScore !== undefined && !isBestMove) {
       const text = getMoveAccuracyText(
         negaScore - scoreDelta,
@@ -196,7 +196,7 @@ export class AnalysisManager {
         appSetting
       );
       if (text) {
-        head = `【${text}】`;
+        header = `【${text}】`;
       }
     }
     // コメントを書き込む。
@@ -204,7 +204,10 @@ export class AnalysisManager {
       SearchInfoSenderType.RESEARCHER,
       this.searchInfo,
       this.setting.commentBehavior,
-      head
+      {
+        header,
+        engineName: this.setting.usi?.name,
+      }
     );
   }
 

@@ -99,7 +99,10 @@ function searchCommentKeyPrefix(type: SearchInfoSenderType): string {
 function buildSearchComment(
   position: ImmutablePosition,
   type: SearchInfoSenderType,
-  searchInfo: SearchInfo
+  searchInfo: SearchInfo,
+  options?: {
+    engineName?: string;
+  }
 ): string {
   const prefix = searchCommentKeyPrefix(type);
   let comment = "";
@@ -112,6 +115,12 @@ function buildSearchComment(
   }
   if (searchInfo.pv && searchInfo.pv.length !== 0) {
     comment += `${prefix}読み筋=${getPVText(position, searchInfo.pv)}\n`;
+  }
+  if (searchInfo.depth) {
+    comment += `${prefix}深さ=${searchInfo.depth}\n`;
+  }
+  if (comment && options?.engineName) {
+    comment += `${prefix}エンジン=${options.engineName}\n`;
   }
   return comment;
 }
@@ -350,10 +359,21 @@ export class RecordManager {
     type: SearchInfoSenderType,
     searchInfo: SearchInfo,
     behavior: CommentBehavior,
-    head?: string
+    options?: {
+      header?: string;
+      engineName?: string;
+    }
   ): void {
-    const comment = buildSearchComment(this.record.position, type, searchInfo);
-    this.appendComment((head ? head + "\n" : "") + comment, behavior);
+    let comment = buildSearchComment(
+      this.record.position,
+      type,
+      searchInfo,
+      options
+    );
+    if (options?.header) {
+      comment = options.header + "\n" + comment;
+    }
+    this.appendComment(comment, behavior);
   }
 
   get inCommentPVs(): Move[][] {

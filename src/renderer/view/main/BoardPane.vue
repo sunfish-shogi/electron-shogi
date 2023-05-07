@@ -389,11 +389,11 @@ const lastMove = computed(() => {
   return move instanceof Move ? move : undefined;
 });
 
-const blackPlayerName = computed(() =>
-  getBlackPlayerName(store.record.metadata)
+const blackPlayerName = computed(
+  () => getBlackPlayerName(store.record.metadata) || t.sente
 );
-const whitePlayerName = computed(() =>
-  getWhitePlayerName(store.record.metadata)
+const whitePlayerName = computed(
+  () => getWhitePlayerName(store.record.metadata) || t.gote
 );
 
 const clock = computed(() => {

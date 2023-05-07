@@ -13,6 +13,8 @@
         :position="record.position"
         :last-move="lastMove"
         :flip="flip"
+        :black-player-name="t.sente"
+        :white-player-name="t.gote"
       >
         <template #right-control>
           <div class="full column">
@@ -106,6 +108,7 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { getPieceImageBaseURL } from "@/common/settings/app";
+import { t } from "@/common/i18n";
 
 const props = defineProps({
   position: {

@@ -1,18 +1,19 @@
-import { t } from "@/common/i18n";
 import { ImmutableRecordMetadata, RecordMetadataKey } from "@/common/shogi";
 
-export function getBlackPlayerName(metadata: ImmutableRecordMetadata): string {
+export function getBlackPlayerName(
+  metadata: ImmutableRecordMetadata
+): string | undefined {
   return (
     metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.BLACK_SHORT_NAME) ||
-    t.sente
+    metadata.getStandardMetadata(RecordMetadataKey.BLACK_SHORT_NAME)
   );
 }
 
-export function getWhitePlayerName(metadata: ImmutableRecordMetadata): string {
+export function getWhitePlayerName(
+  metadata: ImmutableRecordMetadata
+): string | undefined {
   return (
     metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.WHITE_SHORT_NAME) ||
-    t.gote
+    metadata.getStandardMetadata(RecordMetadataKey.WHITE_SHORT_NAME)
   );
 }

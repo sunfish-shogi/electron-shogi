@@ -79,12 +79,20 @@ describe("store/analysis", () => {
     recordManager.changePly(0);
     expect(recordManager.record.current.comment).toBe("");
     recordManager.changePly(1);
-    expect(recordManager.record.current.comment).toBe("互角\n#評価値=20\n");
+    expect(recordManager.record.current.comment).toBe(
+      "互角\n#評価値=20\n#エンジン=my usi engine\n"
+    );
     recordManager.changePly(2);
-    expect(recordManager.record.current.comment).toBe("互角\n#評価値=30\n");
+    expect(recordManager.record.current.comment).toBe(
+      "互角\n#評価値=30\n#エンジン=my usi engine\n"
+    );
     recordManager.changePly(3);
-    expect(recordManager.record.current.comment).toBe("互角\n#評価値=40\n");
+    expect(recordManager.record.current.comment).toBe(
+      "互角\n#評価値=40\n#エンジン=my usi engine\n"
+    );
     recordManager.changePly(4);
-    expect(recordManager.record.current.comment).toBe("互角\n#評価値=50\n");
+    expect(recordManager.record.current.comment).toBe(
+      "互角\n#評価値=50\n#エンジン=my usi engine\n"
+    );
   });
 });

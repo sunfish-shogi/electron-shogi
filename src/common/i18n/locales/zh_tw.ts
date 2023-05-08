@@ -210,6 +210,8 @@ export const zh_tw: Texts = {
   noOutputs: "不輸出",
   insertCommentToTop: "加入到前方",
   appendCommentToBottom: "在後方新增",
+  insertToComment: "コメントに挿入", // TODO: translate
+  insertToRecord: "棋譜に挿入", // TODO: translate
   overwrite: "覆寫原檔案",
   fromPrefix: "從",
   fromSuffix: "",
@@ -296,6 +298,7 @@ export const zh_tw: Texts = {
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",
+  insertedComment: "コメントを挿入しました。", // TODO: translate
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中 log 會於 console 中顯示，並無視此處的設定。",
@@ -374,6 +377,7 @@ export const zh_tw: Texts = {
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
   mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,
+  insertedNMovesToRecord: (n: number) => `${n}手を棋譜に挿入しました。`, // TODO: translate
   errorsOccurred: (n) => `發生 ${n} 種類的錯誤。`,
   between: (a, b) => `自 ${a} 到 ${b} `,
   addNthEngine: (n) => `追加第 ${n} 個引擎`,

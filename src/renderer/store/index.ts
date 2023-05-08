@@ -12,6 +12,7 @@ import {
   exportKakinoki,
   RecordMetadataKey,
   ImmutablePosition,
+  DoMoveOption,
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
@@ -22,7 +23,11 @@ import {
   playPieceBeat,
   stopBeep,
 } from "@/renderer/audio";
-import { RecordManager, SearchInfoSenderType } from "./record";
+import {
+  RecordManager,
+  SearchInfoSenderType,
+  SearchInfo as SearchInfoParam,
+} from "./record";
 import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName, join } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
@@ -34,7 +39,7 @@ import { ErrorEntry, ErrorStore } from "./error";
 import * as uri from "@/common/uri";
 import { Confirmation } from "./confirm";
 import { AnalysisManager } from "./analysis";
-import { AnalysisSetting } from "@/common/settings/analysis";
+import { AnalysisSetting, CommentBehavior } from "@/common/settings/analysis";
 import { MateSearchSetting } from "@/common/settings/mate";
 import { LogLevel } from "@/common/log";
 import { formatPercentage, toString } from "@/common/helpers/string";
@@ -52,10 +57,16 @@ import { useAppSetting } from "./setting";
 import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
 
-type PVPreview = {
+export type PVPreview = {
   position: ImmutablePosition;
+  multiPV?: number;
+  depth?: number;
+  selectiveDepth?: number;
+  score?: number;
+  mate?: number;
+  lowerBound?: boolean;
+  upperBound?: boolean;
   pv: Move[];
-  infos?: string[];
 };
 
 function getMessageAttachmentsByGameResults(
@@ -238,6 +249,22 @@ class Store {
     value: string;
   }): void {
     this.recordManager.updateStandardMetadata(update);
+  }
+
+  appendSearchComment(
+    type: SearchInfoSenderType,
+    searchInfo: SearchInfoParam,
+    behavior: CommentBehavior,
+    options?: {
+      header?: string;
+      engineName?: string;
+    }
+  ): void {
+    this.recordManager.appendSearchComment(type, searchInfo, behavior, options);
+  }
+
+  appendMovesSilently(moves: Move[], opt?: DoMoveOption): number {
+    return this.recordManager.appendMovesSilently(moves, opt);
   }
 
   get appState(): AppState {
@@ -786,6 +813,7 @@ class Store {
       onOk: () => {
         this.showPVPreviewDialog({
           position,
+          mate: moves.length,
           pv: moves,
         });
       },

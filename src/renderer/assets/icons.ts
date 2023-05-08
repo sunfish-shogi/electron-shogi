@@ -46,6 +46,8 @@ export enum IconType {
   GRID = "grid",
   MATE_SEARCH = "mateSearch",
   ADD = "add",
+  TREE = "tree",
+  NOTE = "note",
 }
 
 export const iconSourceMap = {
@@ -94,6 +96,8 @@ export const iconSourceMap = {
   [IconType.GRID]: "icon/grid_on_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.MATE_SEARCH]: "icon/psychology_alt_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.ADD]: "icon/add_circle_FILL0_wght400_GRAD0_opsz48.svg",
+  [IconType.TREE]: "icon/account_tree_FILL0_wght400_GRAD0_opsz48.svg",
+  [IconType.NOTE]: "icon/note_alt_FILL0_wght400_GRAD0_opsz48.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

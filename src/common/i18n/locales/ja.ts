@@ -210,6 +210,8 @@ export const ja: Texts = {
   noOutputs: "出力しない",
   insertCommentToTop: "前方に加筆する",
   appendCommentToBottom: "末尾に加筆する",
+  insertToComment: "コメントに挿入",
+  insertToRecord: "棋譜に挿入",
   overwrite: "上書きする",
   fromPrefix: "",
   fromSuffix: "から",
@@ -296,6 +298,7 @@ export const ja: Texts = {
   typeCustomTitleHere: "ここに見出しを入力",
   displayEmptyElements: "未入力の項目を表示",
   waitingForNewGame: "対局開始を待っています。",
+  insertedComment: "コメントを挿入しました。",
   tryingToConnectAndLoginToCSAServer:
     "CSAサーバーへの接続とログインを試みています。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
@@ -394,6 +397,7 @@ export const ja: Texts = {
     `CSAサーバーへのログインを${n}秒後に再試行します。`,
   mateInNPlyDoYouWantToDisplay: (n) =>
     `${n}手で詰みました。再生画面を表示しますか？`,
+  insertedNMovesToRecord: (n: number) => `${n}手を棋譜に挿入しました。`,
   errorsOccurred: (n) => `${n} 種類のエラーが発生しました。`,
   between: (a, b) => `${a} から ${b} まで`,
   addNthEngine: (n) => `${n} 個目のエンジンを追加`,

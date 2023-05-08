@@ -16,7 +16,7 @@ export enum EvaluationChartType {
 <script setup lang="ts">
 import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
-import { RecordCustomData } from "@/renderer/store/record";
+import { RecordCustomData, SearchInfo } from "@/renderer/store/record";
 import { computed, onMounted, onUnmounted, PropType, ref, watch } from "vue";
 import {
   ActiveElement,
@@ -28,7 +28,6 @@ import {
 import { Color, ImmutableNode, ImmutableRecord } from "@/common/shogi";
 import { scoreToPercentage } from "@/renderer/store/score";
 import { AppSetting, Thema } from "@/common/settings/app";
-import { SearchInfo } from "@/renderer/players/player";
 import { useAppSetting } from "@/renderer/store/setting";
 import { t } from "@/common/i18n";
 

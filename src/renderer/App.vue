@@ -26,8 +26,14 @@
     <PVPreviewDialog
       v-if="store.pvPreview"
       :position="store.pvPreview.position"
+      :multi-pv="store.pvPreview.multiPV"
+      :depth="store.pvPreview.depth"
+      :selective-depth="store.pvPreview.selectiveDepth"
+      :score="store.pvPreview.score"
+      :mate="store.pvPreview.mate"
+      :lower-bound="store.pvPreview.lowerBound"
+      :upper-bound="store.pvPreview.upperBound"
       :pv="store.pvPreview.pv"
-      :infos="store.pvPreview.infos"
       @close="store.closePVPreviewDialog()"
     />
     <InfoMessage v-if="store.hasMessage" />

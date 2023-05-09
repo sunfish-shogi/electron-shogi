@@ -201,7 +201,7 @@ const buildDataset = (
     );
     if (score !== undefined) {
       dataPoints.push({
-        x: node.number,
+        x: node.ply,
         y: score,
       });
     }
@@ -220,7 +220,7 @@ const buildDataset = (
       );
       if (score !== undefined) {
         dataPoints.push({
-          x: lastNode.number + 1,
+          x: lastNode.ply + 1,
           y: score,
         });
       }
@@ -239,8 +239,8 @@ const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
     label: t.currentPosition,
     borderColor: palette.head,
     data: [
-      { x: record.current.number, y: maxScore },
-      { x: record.current.number, y: minScore },
+      { x: record.current.ply, y: maxScore },
+      { x: record.current.ply, y: minScore },
     ],
     showLine: true,
     pointBorderWidth: 0,

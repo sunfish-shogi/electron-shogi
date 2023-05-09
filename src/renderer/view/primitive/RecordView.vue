@@ -188,9 +188,9 @@ const moves = computed(() => {
   }[] = [];
   props.record.moves.forEach((elem) => {
     ret.push({
-      number: elem.number,
+      number: elem.ply,
       text: elem.displayText,
-      time: elem.number != 0 ? elem.timeText : "",
+      time: elem.ply != 0 ? elem.timeText : "",
       hasBranch: elem.hasBranch,
       comment: elem.comment,
       selected: elem === props.record.current,

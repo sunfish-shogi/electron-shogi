@@ -930,7 +930,7 @@ class Store {
     }
     this.showConfirmation({
       message: t.areYouSureWantToDeleteFollowingMove(
-        this.recordManager.record.current.number
+        this.recordManager.record.current.ply
       ),
       onOk: () => {
         this.recordManager.removeCurrentMove();

@@ -120,7 +120,7 @@ const windowSize = reactive(
 );
 const zoom = ref(window.devicePixelRatio);
 const defaultHeader = lastMove
-  ? `${record.current.number}手目 ${getMoveDisplayText(
+  ? `${record.current.ply}手目 ${getMoveDisplayText(
       record.position,
       lastMove
     )}まで`

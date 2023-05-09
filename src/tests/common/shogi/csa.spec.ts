@@ -57,7 +57,7 @@ T40
     expect(record.initialPosition.sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
     );
-    expect(record.current.number).toBe(0);
+    expect(record.current.ply).toBe(0);
     expect(record.current.move).toBe(SpecialMove.START);
     record.goto(1);
     expect(record.current.displayText).toBe("☗７六歩");
@@ -231,7 +231,7 @@ P-00AL
     expect(record.initialPosition.sfen).toBe(
       "7n1/6gk1/6gpN/9/9/6b1P/9/9/9 b 2R2Gb4s2n4l16p 1"
     );
-    expect(record.current.number).toBe(0);
+    expect(record.current.ply).toBe(0);
     expect(record.current.move).toBe(SpecialMove.START);
     record.goto(1);
     expect(record.current.displayText).toBe("☗２一桂成");

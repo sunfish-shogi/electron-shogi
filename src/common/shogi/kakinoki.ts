@@ -579,12 +579,12 @@ export function exportKakinoki(
   ret += formatPosition(record.initialPosition, options);
   ret += "手数----指手---------消費時間--" + returnCode;
   record.forEach((node) => {
-    if (node.number !== 0) {
+    if (node.ply !== 0) {
       if (!node.isFirstBranch) {
         ret += returnCode;
-        ret += "変化：" + node.number + "手" + returnCode;
+        ret += "変化：" + node.ply + "手" + returnCode;
       }
-      ret += node.number + " ";
+      ret += node.ply + " ";
       if (node.move instanceof Move) {
         ret += formatMove(node.move);
       } else {

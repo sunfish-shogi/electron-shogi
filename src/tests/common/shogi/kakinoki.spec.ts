@@ -130,7 +130,7 @@ describe("shogi/kakinoki", () => {
       "l+B5nl/4g1gk1/2b1p2p1/p1p2pp2/3s1P2p/P1P3PP1/1P2PSN1P/2G2GK2/L7L b RSNPrsn2p 65"
     );
     record.goto(999);
-    expect(record.current.number).toBe(94);
+    expect(record.current.ply).toBe(94);
     expect(record.current.comment).toBe("");
   });
 
@@ -340,7 +340,7 @@ describe("shogi/kakinoki", () => {
     expect(record.current.elapsedMs).toBe(21000);
     expect(record.current.totalElapsedMs).toBe(670000);
     record.goto(999);
-    expect(record.current.number).toBe(178);
+    expect(record.current.ply).toBe(178);
     expect(record.current.move).toBe(SpecialMove.RESIGN);
     expect(record.current.elapsedMs).toBe(11000);
     expect(record.current.totalElapsedMs).toBe(1364000);

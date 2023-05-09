@@ -60,11 +60,11 @@ const goBegin = () => {
 };
 
 const goBack = () => {
-  goto(store.record.current.number - 1);
+  goto(store.record.current.ply - 1);
 };
 
 const goForward = () => {
-  goto(store.record.current.number + 1);
+  goto(store.record.current.ply + 1);
 };
 
 const goEnd = () => {

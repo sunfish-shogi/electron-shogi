@@ -197,7 +197,7 @@ const displayPV = computed(() => {
   return record.moves.slice(1).map((move) => {
     return {
       text: move.displayText,
-      selected: move.number === record.current.number,
+      selected: move.ply === record.current.ply,
     };
   });
 });

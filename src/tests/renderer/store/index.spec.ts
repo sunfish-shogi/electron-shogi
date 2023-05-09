@@ -397,7 +397,7 @@ describe("store/index", () => {
     store.doMove(store.record.position.createMoveByUSI("7g7f") as Move);
     store.doMove(store.record.position.createMoveByUSI("3c3d") as Move);
     store.doMove(store.record.position.createMoveByUSI("2g2f") as Move);
-    expect(store.record.current.number).toBe(3);
+    expect(store.record.current.ply).toBe(3);
     expect(store.record.position.sfen).toBe(
       "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P4P1/PP1PPPP1P/1B5R1/LNSGKGSNL w - 1"
     );
@@ -429,21 +429,21 @@ describe("store/index", () => {
     store.changePly(8);
     store.removeCurrentMove();
     expect(store.confirmation).toBeUndefined();
-    expect(store.record.current.number).toBe(7);
+    expect(store.record.current.ply).toBe(7);
     expect(store.record.moves.length).toBe(8);
     store.removeCurrentMove();
     expect(store.confirmation).toBeUndefined();
-    expect(store.record.current.number).toBe(6);
+    expect(store.record.current.ply).toBe(6);
     expect(store.record.moves.length).toBe(8);
     store.removeCurrentMove();
     expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
     store.confirmationCancel();
-    expect(store.record.current.number).toBe(6);
+    expect(store.record.current.ply).toBe(6);
     expect(store.record.moves.length).toBe(8);
     store.removeCurrentMove();
     expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
     store.confirmationOk();
-    expect(store.record.current.number).toBe(5);
+    expect(store.record.current.ply).toBe(5);
     expect(store.record.moves.length).toBe(6);
   });
 

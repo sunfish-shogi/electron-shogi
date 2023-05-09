@@ -18,7 +18,7 @@ type ErrorCallback = (e: unknown) => void;
 export class AnalysisManager {
   private researcher?: USIPlayer;
   private setting = defaultAnalysisSetting();
-  private number?: number;
+  private ply?: number;
   private actualMove?: Move;
   private lastSearchInfo?: SearchInfo;
   private searchInfo?: SearchInfo;
@@ -52,7 +52,7 @@ export class AnalysisManager {
     }
     await this.setupEngine(setting.usi as USIEngineSetting);
     this.setting = setting;
-    this.number = undefined;
+    this.ply = undefined;
     this.actualMove = undefined;
     this.lastSearchInfo = undefined;
     this.searchInfo = undefined;
@@ -102,29 +102,29 @@ export class AnalysisManager {
     this.lastSearchInfo = this.searchInfo;
     this.searchInfo = undefined;
     // 次の手数を決定する。
-    if (this.number !== undefined) {
+    if (this.ply !== undefined) {
       // 2 回目以降は 1 手ずつ進める。
-      this.number = this.number + 1;
+      this.ply = this.ply + 1;
     } else if (this.setting.startCriteria.enableNumber) {
       // 開始手数が指定されている場合はそれに従う。
-      this.number = this.setting.startCriteria.number - 1;
+      this.ply = this.setting.startCriteria.number - 1;
     } else {
       // 開始手数が指定されていない場合は棋譜の先頭から開始する。
-      this.number = 0;
+      this.ply = 0;
     }
     // 終了条件を満たしている場合はここで打ち切る。
     if (
       this.setting.endCriteria.enableNumber &&
-      this.number >= this.setting.endCriteria.number
+      this.ply >= this.setting.endCriteria.number
     ) {
       this.finish();
       return;
     }
     // 対象の局面へ移動する。
-    this.recordManager.changePly(this.number);
+    this.recordManager.changePly(this.ply);
     // 対象の局面が存在しない場合は終了する。
     const record = this.recordManager.record;
-    if (record.current.number !== this.number) {
+    if (record.current.ply !== this.ply) {
       this.finish();
       return;
     }

@@ -163,7 +163,7 @@ export class GameManager {
     this.repeat = 0;
     if (!setting.startPosition) {
       // 連続対局用に何手目から開始するかを記憶する。
-      this.startPly = this.recordManager.record.current.number;
+      this.startPly = this.recordManager.record.current.ply;
     }
     this._results = newGameResults(setting.black.name, setting.white.name);
     await this.nextGame();
@@ -175,7 +175,7 @@ export class GameManager {
     // 初期局面を設定する。
     if (this.setting.startPosition) {
       this.recordManager.reset(this.setting.startPosition);
-    } else if (this.recordManager.record.current.number !== this.startPly) {
+    } else if (this.recordManager.record.current.ply !== this.startPly) {
       this.recordManager.changePly(this.startPly);
       this.recordManager.removeNextMove();
     }
@@ -251,7 +251,7 @@ export class GameManager {
     // 最大手数に到達したら終了する。
     if (
       this._setting.maxMoves &&
-      this.recordManager.record.current.number >= this._setting.maxMoves
+      this.recordManager.record.current.ply >= this._setting.maxMoves
     ) {
       this.endGame(SpecialMove.IMPASS);
       return;

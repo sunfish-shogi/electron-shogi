@@ -569,7 +569,7 @@ export function exportCSA(
   ret += formatMetadata(record.metadata, options);
   ret += formatPosition(record.initialPosition, options);
   record.moves.forEach((node) => {
-    if (node.number === 0) {
+    if (node.ply === 0) {
       return;
     }
     let move: string | undefined;

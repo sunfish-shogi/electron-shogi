@@ -105,7 +105,7 @@ export enum SpecialMove {
 }
 
 export interface ImmutableNode {
-  readonly number: number;
+  readonly ply: number;
   readonly prev: Node | null;
   readonly next: Node | null;
   readonly branch: Node | null;
@@ -140,7 +140,7 @@ class NodeImpl implements Node {
   public totalElapsedMs = 0;
 
   constructor(
-    public number: number,
+    public ply: number,
     public prev: NodeImpl | null,
     public branchIndex: number,
     public activeBranch: boolean,
@@ -297,12 +297,12 @@ export class Record {
   }
 
   get length(): number {
-    let len = this._current.number;
+    let len = this._current.ply;
     for (let p = this._current.next; p; p = p.next) {
       while (!p.activeBranch) {
         p = p.branch as NodeImpl;
       }
-      len = p.number;
+      len = p.ply;
     }
     return len;
   }
@@ -372,13 +372,13 @@ export class Record {
     return false;
   }
 
-  goto(number: number): void {
-    while (number < this._current.number) {
+  goto(ply: number): void {
+    while (ply < this._current.ply) {
       if (!this._goBack()) {
         break;
       }
     }
-    while (number > this._current.number) {
+    while (ply > this._current.ply) {
       if (!this._goForward()) {
         break;
       }
@@ -452,7 +452,7 @@ export class Record {
     // 最終ノードの場合は単に新しいノードを追加する。
     if (!this._current.next) {
       this._current.next = new NodeImpl(
-        this._current.number + 1, // number
+        this._current.ply + 1, // number
         this._current, // prev
         0, // branchIndex
         true, // activeBranch
@@ -492,7 +492,7 @@ export class Record {
 
     // 兄弟ノードを追加する。
     this._current = new NodeImpl(
-      this._current.number + 1, // number
+      this._current.ply + 1, // number
       this._current, // prev
       lastBranch.branchIndex + 1, // branchIndex
       true, // activeBranch
@@ -587,7 +587,7 @@ export class Record {
       this.repetitionCounts[sfen] += 1;
     } else {
       this.repetitionCounts[sfen] = 1;
-      this.repetitionStart[sfen] = this.current.number;
+      this.repetitionStart[sfen] = this.current.ply;
     }
   }
 
@@ -613,7 +613,7 @@ export class Record {
     let black = true;
     let white = true;
     let color = this.position.color;
-    for (let p = this.current; p.number >= since; p = p.prev as Node) {
+    for (let p = this.current; p.ply >= since; p = p.prev as Node) {
       color = reverseColor(color);
       if (p.isCheck) {
         continue;
@@ -654,7 +654,7 @@ export class Record {
   }
 
   get sfen(): string {
-    return this.position.getSFEN(this._current.number + 1);
+    return this.position.getSFEN(this._current.ply + 1);
   }
 
   // 深さ優先で全てのノードを訪問します。

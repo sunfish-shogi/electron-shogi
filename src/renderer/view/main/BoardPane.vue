@@ -438,8 +438,7 @@ const controlStates = computed(() => {
     initPosition: store.appState === AppState.POSITION_EDITING,
     removeCurrentMove:
       store.appState === AppState.NORMAL ||
-      store.appState === AppState.RESEARCH ||
-      store.appState === AppState.MATE_SEARCH,
+      store.appState === AppState.RESEARCH,
     engineSettings: store.appState === AppState.NORMAL,
   };
 });

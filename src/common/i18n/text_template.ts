@@ -208,6 +208,8 @@ export type Texts = {
   noOutputs: string;
   insertCommentToTop: string;
   appendCommentToBottom: string;
+  insertToComment: string;
+  insertToRecord: string;
   overwrite: string;
   fromPrefix: string;
   fromSuffix: string;
@@ -294,6 +296,7 @@ export type Texts = {
   typeCustomTitleHere: string;
   displayEmptyElements: string;
   waitingForNewGame: string;
+  insertedComment: string;
   tryingToConnectAndLoginToCSAServer: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
@@ -361,6 +364,7 @@ export type Texts = {
   thisEngineNotSupportsMateSearch: string;
   tryToReloginToCSAServerNSecondsLater: (n: number) => string;
   mateInNPlyDoYouWantToDisplay: (n: number) => string;
+  insertedNMovesToRecord: (n: number) => string;
   errorsOccurred: (n: number) => string;
   between: (a: unknown, b: unknown) => string;
   addNthEngine: (n: number) => string;

@@ -23,7 +23,6 @@ import {
   SpecialMove,
 } from "@/common/shogi";
 import { getSituationText } from "./score";
-import { SearchInfo } from "@/renderer/players/player";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { t } from "@/common/i18n";
 import { localizeError } from "@/common/i18n";
@@ -37,6 +36,13 @@ export enum SearchInfoSenderType {
   RESEARCHER_3,
   RESEARCHER_4,
 }
+
+export type SearchInfo = {
+  depth?: number; // 探索深さ
+  score?: number; // 先手から見た評価値
+  mate?: number; // 先手勝ちの場合に正の値、後手勝ちの場合に負の値
+  pv?: Move[];
+};
 
 export type RecordCustomData = {
   playerSearchInfo?: SearchInfo;
@@ -70,17 +76,11 @@ function restoreCustomData(record: Record): void {
       const playerScore =
         parsePlayerScoreComment(line) || parseFloodgateScoreComment(line);
       if (playerScore !== undefined) {
-        data.playerSearchInfo = {
-          usi: record.usi,
-          score: playerScore,
-        };
+        data.playerSearchInfo = { score: playerScore };
       }
       const researchScore = parseResearchScoreComment(line);
       if (researchScore !== undefined) {
-        data.researchInfo = {
-          usi: record.usi,
-          score: researchScore,
-        };
+        data.researchInfo = { score: researchScore };
       }
     }
     node.customData = data;
@@ -467,6 +467,19 @@ export class RecordManager {
       this._record.current.setElapsedMs(params.elapsedMs);
     }
     return true;
+  }
+
+  appendMovesSilently(moves: Move[], opt?: DoMoveOption): number {
+    let n = 0;
+    const ply = this._record.current.ply;
+    for (const move of moves) {
+      if (!this._record.append(move, opt)) {
+        break;
+      }
+      n++;
+    }
+    this._record.goto(ply);
+    return n;
   }
 
   updateStandardMetadata(update: {

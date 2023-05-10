@@ -211,6 +211,8 @@ export const en: Texts = {
   noOutputs: "No Outputs",
   insertCommentToTop: "Insert to Top",
   appendCommentToBottom: "Append to Bottom",
+  insertToComment: "Ins. to Comment",
+  insertToRecord: "Ins. to Record",
   overwrite: "Overwrite",
   fromPrefix: "from",
   fromSuffix: "",
@@ -297,6 +299,7 @@ export const en: Texts = {
   typeCustomTitleHere: "Type custom title here",
   displayEmptyElements: "Display Empty Elements",
   waitingForNewGame: "Waiting for new game.",
+  insertedComment: "Inserted comment.",
   tryingToConnectAndLoginToCSAServer:
     "Trying to connect and login to CSA server.",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
@@ -388,6 +391,7 @@ export const en: Texts = {
     `Try to relogin to CSA server ${n} seconds later.`,
   mateInNPlyDoYouWantToDisplay: (n) =>
     `Mate in ${n} ply. Do you want to display?`,
+  insertedNMovesToRecord: (n: number) => `Inserted ${n} moves to the record.`,
   errorsOccurred: (n) =>
     n >= 2 ? `${n} errors have occurred.` : `${n} error has occurred.`,
   between: (a, b) => `between ${a} and ${b}`,

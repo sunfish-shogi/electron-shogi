@@ -168,44 +168,16 @@ const showPreview = (ite: USIIteration) => {
     }
     pv.push(move);
   }
-  const infos = [];
-  if (ite.depth !== undefined) {
-    infos.push(`深さ=${ite.depth}`);
-  }
-  if (ite.selectiveDepth !== undefined) {
-    infos.push(`選択的深さ=${ite.selectiveDepth}`);
-  }
-  if (ite.score) {
-    infos.push(
-      `評価値=${getDisplayScore(
-        ite.score,
-        ite.color,
-        evaluationViewFrom.value
-      )}`
-    );
-    if (ite.lowerBound) {
-      infos.push("（下界値）");
-    }
-    if (ite.upperBound) {
-      infos.push("（上界値）");
-    }
-  }
-  if (ite.scoreMate) {
-    infos.push(
-      `詰み手数=${getDisplayScore(
-        ite.scoreMate,
-        ite.color,
-        evaluationViewFrom.value
-      )}`
-    );
-  }
-  if (ite.multiPV) {
-    infos.push(`順位=${ite.multiPV}`);
-  }
   useStore().showPVPreviewDialog({
     position,
+    multiPV: ite.multiPV,
+    depth: ite.depth,
+    selectiveDepth: ite.selectiveDepth,
+    score: ite.score,
+    mate: ite.scoreMate,
+    lowerBound: ite.lowerBound,
+    upperBound: ite.upperBound,
     pv,
-    infos: [infos.join(" / ")],
   });
 };
 </script>

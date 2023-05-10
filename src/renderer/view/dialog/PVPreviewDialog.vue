@@ -69,9 +69,29 @@
             </div>
           </div>
         </template>
+        <template #left-control>
+          <div class="full column reverse">
+            <button
+              class="control-item-wide"
+              :disabled="!enableInsertion"
+              @click="insertToRecord"
+            >
+              <Icon :icon="IconType.TREE" />
+              <span>{{ t.insertToRecord }}</span>
+            </button>
+            <button
+              class="control-item-wide"
+              :disabled="!enableInsertion"
+              @click="insertToComment"
+            >
+              <Icon :icon="IconType.NOTE" />
+              <span>{{ t.insertToComment }}</span>
+            </button>
+          </div>
+        </template>
       </BoardView>
       <div class="informations">
-        <div v-for="(info, index) in infos" :key="index" class="information">
+        <div class="information">
           {{ info }}
         </div>
         <div class="information">
@@ -87,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { ImmutablePosition, Move, Record } from "@/common/shogi";
+import { Color, ImmutablePosition, Move, Record } from "@/common/shogi";
 import {
   onMounted,
   PropType,
@@ -107,27 +127,65 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
-import { getPieceImageBaseURL } from "@/common/settings/app";
+import {
+  EvaluationViewFrom,
+  getPieceImageBaseURL,
+} from "@/common/settings/app";
 import { t } from "@/common/i18n";
+import { useStore } from "@/renderer/store";
+import { SearchInfoSenderType } from "@/renderer/store/record";
+import { CommentBehavior } from "@/common/settings/analysis";
+import { AppState } from "@/common/control/state";
 
 const props = defineProps({
   position: {
     type: Object as PropType<ImmutablePosition>,
     required: true,
   },
+  multiPv: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  depth: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  selectiveDepth: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  score: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  mate: {
+    type: Number,
+    required: false,
+    default: undefined,
+  },
+  lowerBound: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  upperBound: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   pv: {
     type: Array as PropType<Move[]>,
     required: true,
-  },
-  infos: {
-    type: Array as PropType<string[]>,
-    default: [] as string[],
-    required: false,
   },
 });
 
 const emit = defineEmits(["close"]);
 
+const store = useStore();
 const appSetting = useAppSetting();
 const dialog = ref();
 const maxSize = reactive(new RectSize(0, 0));
@@ -162,7 +220,6 @@ onBeforeUnmount(() => {
 
 watch([() => props.position, () => props.pv], () => {
   updateRecord();
-  showModalDialog(dialog.value);
 });
 
 const close = () => {
@@ -189,6 +246,54 @@ const doFlip = () => {
   flip.value = !flip.value;
 };
 
+const getDisplayScore = (
+  score: number,
+  color: Color,
+  evaluationViewFrom: EvaluationViewFrom
+) => {
+  return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK
+    ? score
+    : -score;
+};
+
+const info = computed(() => {
+  const elements = [];
+  if (props.depth !== undefined) {
+    elements.push(`深さ=${props.depth}`);
+  }
+  if (props.selectiveDepth !== undefined) {
+    elements.push(`選択的深さ=${props.selectiveDepth}`);
+  }
+  if (props.score !== undefined) {
+    elements.push(
+      `評価値=${getDisplayScore(
+        props.score,
+        props.position.color,
+        appSetting.evaluationViewFrom
+      )}`
+    );
+    if (props.lowerBound) {
+      elements.push("（下界値）");
+    }
+    if (props.upperBound) {
+      elements.push("（上界値）");
+    }
+  }
+  if (props.mate !== undefined) {
+    elements.push(
+      `詰み手数=${getDisplayScore(
+        props.mate,
+        props.position.color,
+        appSetting.evaluationViewFrom
+      )}`
+    );
+  }
+  if (props.multiPv) {
+    elements.push(`順位=${props.multiPv}`);
+  }
+  return elements.join(" / ");
+});
+
 const lastMove = computed(() =>
   record.current.move instanceof Move ? record.current.move : null
 );
@@ -201,6 +306,39 @@ const displayPV = computed(() => {
     };
   });
 });
+
+const enableInsertion = computed(() => {
+  return (
+    (store.appState === AppState.NORMAL ||
+      store.appState === AppState.RESEARCH) &&
+    store.record.position.sfen === props.position.sfen
+  );
+});
+
+const insertToRecord = () => {
+  const n = store.appendMovesSilently(props.pv, {
+    ignoreValidation: true,
+  });
+  store.enqueueMessage({
+    text: t.insertedNMovesToRecord(n),
+  });
+};
+
+const insertToComment = () => {
+  store.appendSearchComment(
+    SearchInfoSenderType.RESEARCHER,
+    {
+      depth: props.depth,
+      score: props.score,
+      mate: props.mate,
+      pv: props.pv,
+    },
+    CommentBehavior.APPEND
+  );
+  store.enqueueMessage({
+    text: t.insertedComment,
+  });
+};
 </script>
 
 <style scoped>
@@ -229,6 +367,24 @@ const displayPV = computed(() => {
 .control-item .icon {
   height: 80%;
   width: auto;
+}
+.control-item-wide {
+  width: 100%;
+  height: 19%;
+  margin: 0px;
+  font-size: 100%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  line-height: 200%;
+  padding: 0 5% 0 5%;
+}
+.control-item-wide:not(:last-child) {
+  margin-top: 1%;
+}
+.control-item-wide .icon {
+  height: 68%;
 }
 .informations {
   height: 120px;

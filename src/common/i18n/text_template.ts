@@ -323,12 +323,16 @@ export type Texts = {
   fileExtensionNotSupported: string;
   errorOccuredWhileDisconnectingFromCSAServer: string;
   failedToConnectToCSAServer: string;
+  errorOccuredWhileLogoutFromCSAServer: string;
   disconnectedFromCSAServer: string;
   csaServerLoginDenied: string;
   thisFeatureNotAvailableOnWebApp: string;
+  failedToStartNewGame: string;
+  errorOccuredWhileEndingGame: string;
   failedToSendGoCommand: string;
   failedToSendPonderCommand: string;
   failedToSendStopCommand: string;
+  failedToShutdownEngines: string;
   failedToSaveRecord: string;
   failedToParseSFEN: string;
   failedToDetectRecordFormat: string;

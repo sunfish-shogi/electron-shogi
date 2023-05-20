@@ -142,6 +142,9 @@ const api: Bridge = {
       timeoutSeconds
     );
   },
+  async usiReady(sessionID: number): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_READY, sessionID);
+  },
   async usiGo(
     sessionID: number,
     usi: string,

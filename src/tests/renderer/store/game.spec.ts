@@ -116,10 +116,12 @@ describe("store/game", () => {
           total: 1,
         });
         expect(specialMove).toBe(SpecialMove.RESIGN);
+        expect(mockBlackPlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
         expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
         expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
         expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
         expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
@@ -174,11 +176,13 @@ describe("store/game", () => {
       },
       mockPlayerBuilder,
       () => {
+        expect(mockBlackPlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
         expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
         expect(mockBlackPlayer.stop).toBeCalledTimes(0);
         expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
         expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
         expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
@@ -228,11 +232,13 @@ describe("store/game", () => {
           total: 1,
         });
         expect(specialMove).toBe(SpecialMove.INTERRUPT);
+        expect(mockBlackPlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
         expect(mockBlackPlayer.gameover).toBeCalledTimes(0);
         expect(mockBlackPlayer.stop).toBeCalledTimes(0);
         expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockWhitePlayer.startSearch).toBeCalledTimes(2);
         expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
         expect(mockWhitePlayer.gameover).toBeCalledTimes(0);
@@ -303,16 +309,18 @@ describe("store/game", () => {
             RecordMetadataKey.TITLE
           )
         ).toBe("連続対局 2/2");
+        expect(mockBlackPlayer.readyNewGame).toBeCalledTimes(2);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(3);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(4);
         expect(mockBlackPlayer.gameover).toBeCalledTimes(2);
         expect(mockBlackPlayer.stop).toBeCalledTimes(0);
-        expect(mockBlackPlayer.close).toBeCalledTimes(2);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.readyNewGame).toBeCalledTimes(2);
         expect(mockWhitePlayer.startSearch).toBeCalledTimes(4);
         expect(mockWhitePlayer.startPonder).toBeCalledTimes(3);
         expect(mockWhitePlayer.gameover).toBeCalledTimes(2);
         expect(mockWhitePlayer.stop).toBeCalledTimes(0);
-        expect(mockWhitePlayer.close).toBeCalledTimes(2);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(14);
@@ -372,12 +380,12 @@ describe("store/game", () => {
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(4);
         expect(mockBlackPlayer.gameover).toBeCalledTimes(2);
         expect(mockBlackPlayer.stop).toBeCalledTimes(0);
-        expect(mockBlackPlayer.close).toBeCalledTimes(2);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
         expect(mockWhitePlayer.startSearch).toBeCalledTimes(4);
         expect(mockWhitePlayer.startPonder).toBeCalledTimes(2);
         expect(mockWhitePlayer.gameover).toBeCalledTimes(2);
         expect(mockWhitePlayer.stop).toBeCalledTimes(0);
-        expect(mockWhitePlayer.close).toBeCalledTimes(2);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(12);

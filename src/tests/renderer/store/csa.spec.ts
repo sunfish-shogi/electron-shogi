@@ -84,6 +84,7 @@ describe("store/csa", () => {
     const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
     const mockHandlers = applyMockHandlers(manager);
     return manager.login(csaGameSetting, mockPlayerBuilder).then(() => {
+      expect(mockPlayer.readyNewGame).toBeCalledTimes(1);
       expect(mockAPI.csaLogin).toBeCalledTimes(1);
       expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
       expect(mockAPI.csaAgree).toBeCalledTimes(0);
@@ -136,6 +137,8 @@ describe("store/csa", () => {
       jest.runOnlyPendingTimers();
       expect(mockAPI.csaLogout).toBeCalledTimes(1);
       expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(123);
+      expect(mockPlayer.readyNewGame).toBeCalledTimes(1);
+      expect(mockPlayer.gameover).toBeCalledTimes(1);
       expect(mockPlayer.close).toBeCalledTimes(1);
       expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
       expect(mockHandlers.onError).toBeCalledTimes(0);
@@ -242,7 +245,9 @@ describe("store/csa", () => {
         onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
         jest.runOnlyPendingTimers();
         expect(mockAPI.csaLogout).toBeCalledTimes(2);
-        expect(mockPlayer.close).toBeCalledTimes(2);
+        expect(mockPlayer.readyNewGame).toBeCalledTimes(2);
+        expect(mockPlayer.gameover).toBeCalledTimes(2);
+        expect(mockPlayer.close).toBeCalledTimes(1);
         expect(mockHandlers.onGameNext).toBeCalledTimes(2);
         expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
         expect(mockHandlers.onError).toBeCalledTimes(0);

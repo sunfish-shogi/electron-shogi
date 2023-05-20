@@ -31,6 +31,7 @@ export enum Background {
   GET_USI_ENGINE_INFO = "getUSIEngineInfo",
   SEND_USI_SET_OPTION = "sendUSISetOption",
   LAUNCH_USI = "usiLaunch",
+  USI_READY = "usiReady",
   USI_GO = "usiGo",
   USI_GO_PONDER = "usiGoPonder",
   USI_GO_PONDER_HIT = "usiGoPonderHit",

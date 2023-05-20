@@ -344,12 +344,17 @@ export const en: Texts = {
   errorOccuredWhileDisconnectingFromCSAServer:
     "An error occured while disconnecting from CSA server.",
   failedToConnectToCSAServer: "Failed to connect to CSA server.",
+  errorOccuredWhileLogoutFromCSAServer:
+    "An error occured while logout from CSA server.",
   disconnectedFromCSAServer: "Disconnected from CSA server.",
   csaServerLoginDenied: "CSA server login denied.",
   thisFeatureNotAvailableOnWebApp: "This feature is not available on web app.",
+  failedToStartNewGame: "Failed to start new game.",
+  errorOccuredWhileEndingGame: "An error occured while ending game.",
   failedToSendGoCommand: "Failed to send go-command.",
   failedToSendPonderCommand: "Failed to send ponder-command.",
   failedToSendStopCommand: "Failed to send stop-command.",
+  failedToShutdownEngines: "Failed to shutdown engines.",
   failedToSaveRecord: "Failed to save record.",
   failedToParseSFEN: "Failed to parse SFEN.",
   failedToDetectRecordFormat: "Failed to detect record format.",

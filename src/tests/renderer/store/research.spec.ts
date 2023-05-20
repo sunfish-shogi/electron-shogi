@@ -24,6 +24,7 @@ describe("store/research", () => {
     const manager = new ResearchManager();
     await manager.launch(researchSetting);
     expect(mockAPI.usiLaunch).toBeCalledWith(researchSetting.usi, 10);
+    expect(mockAPI.usiReady).toBeCalledTimes(1);
     const record = new Record();
     manager.updatePosition(record);
     jest.runOnlyPendingTimers(); // 遅延実行
@@ -70,6 +71,7 @@ describe("store/research", () => {
     const manager = new ResearchManager();
     await manager.launch(researchSettingSecondaryEngines);
     expect(mockAPI.usiLaunch).toBeCalledTimes(3);
+    expect(mockAPI.usiReady).toBeCalledTimes(3);
     const record = new Record();
     manager.updatePosition(record);
     jest.runOnlyPendingTimers(); // 遅延実行

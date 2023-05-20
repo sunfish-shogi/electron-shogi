@@ -27,6 +27,7 @@ export interface MateHandler {
 
 export interface Player {
   isEngine(): boolean;
+  readyNewGame(): Promise<void>;
   startSearch(
     record: ImmutableRecord,
     timeLimit: TimeLimitSetting,

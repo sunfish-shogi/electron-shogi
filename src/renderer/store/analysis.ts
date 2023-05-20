@@ -79,6 +79,7 @@ export class AnalysisManager {
       this.updateSearchInfo.bind(this)
     );
     await researcher.launch();
+    await researcher.readyNewGame();
     this.researcher = researcher;
   }
 

@@ -42,6 +42,7 @@ import {
   quit as usiQuit,
   sendSetOptionCommand as usiSendSetOptionCommand,
   setupPlayer as usiSetupPlayer,
+  ready as usiReady,
   stop as usiStop,
 } from "@/background/usi";
 import { GameResult } from "@/common/player";
@@ -462,6 +463,11 @@ ipcMain.handle(
     return await usiSetupPlayer(setting, timeoutSeconds);
   }
 );
+
+ipcMain.handle(Background.USI_READY, async (event, sessionID: number) => {
+  validateIPCSender(event.senderFrame);
+  return await usiReady(sessionID);
+});
 
 ipcMain.handle(
   Background.USI_GO,

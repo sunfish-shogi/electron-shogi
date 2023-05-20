@@ -18,6 +18,7 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
     isEngine(): boolean {
       return false;
     },
+    readyNewGame: jest.fn(() => Promise.resolve()),
     startSearch: jest.fn(
       (
         r: ImmutableRecord,

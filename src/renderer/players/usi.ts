@@ -41,6 +41,10 @@ export class USIPlayer implements Player {
     return true;
   }
 
+  async readyNewGame(): Promise<void> {
+    await api.usiReady(this.sessionID);
+  }
+
   async startSearch(
     record: ImmutableRecord,
     timeLimit: TimeLimitSetting,

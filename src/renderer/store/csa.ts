@@ -29,11 +29,13 @@ import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { t } from "@/common/i18n";
+import { GameResult } from "@/common/player";
 
 export const loginRetryIntervalSeconds = 10;
 
 export enum CSAGameState {
   OFFLINE,
+  PLAYER_SETUP,
   WAITING_LOGIN,
   LOGIN_FAILED,
   LOGIN_RETRY_INTERVAL,
@@ -160,35 +162,35 @@ export class CSAGameManager {
   /**
    * CSA サーバーにログインする。
    */
-  login(setting: CSAGameSetting, playerBuilder: PlayerBuilder): Promise<void> {
+  async login(
+    setting: CSAGameSetting,
+    playerBuilder: PlayerBuilder
+  ): Promise<void> {
     if (this.sessionID) {
-      return Promise.reject(
-        new Error("CSAGameManager#start: session already exists")
-      );
+      throw new Error("CSAGameManager#start: session already exists");
     }
     if (this._state !== CSAGameState.OFFLINE) {
-      return Promise.reject(
-        new Error("CSAGameManager#start: unexpected state")
-      );
+      throw new Error("CSAGameManager#start: unexpected state");
     }
+    this._state = CSAGameState.PLAYER_SETUP;
     this._setting = setting;
     this.playerBuilder = playerBuilder;
     this.repeat = 0;
-    return this.relogin();
+    // プレイヤーを初期化する。
+    this.player = await this.playerBuilder.build(this._setting.player, (info) =>
+      this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info)
+    );
+    await this.relogin();
   }
 
   private async relogin(): Promise<void> {
+    if (!this.player) {
+      throw new Error("CSAGameManager#relogin: player is not initialized");
+    }
     this._state = CSAGameState.WAITING_LOGIN;
     try {
-      // プレイヤーを初期化する。
-      this.player = await this.playerBuilder.build(
-        this._setting.player,
-        (info) =>
-          this.recordManager.updateSearchInfo(
-            SearchInfoSenderType.OPPONENT,
-            info
-          )
-      );
+      // プレイヤーに対局開始を通知する。
+      await this.player.readyNewGame();
       // CSA サーバーにログインする。
       const sessionID = await api.csaLogin(this._setting.server);
       // セッション ID を記憶する。
@@ -200,7 +202,9 @@ export class CSAGameManager {
     } catch (e) {
       this._state = CSAGameState.LOGIN_FAILED;
       this.close(ReloginBehavior.RELOGIN_WITH_INTERVAL);
-      throw e;
+      throw new Error(
+        `CSAGameManager#relogin: ${t.failedToStartNewGame}: ${e}`
+      );
     }
   }
 
@@ -239,14 +243,14 @@ export class CSAGameManager {
     // CSA プロトコルのセッションが存在する場合は切断する。
     if (this.sessionID) {
       releaseSession(this.sessionID);
-      api.csaLogout(this.sessionID).catch(this.onError);
+      api.csaLogout(this.sessionID).catch((e) => {
+        this.onError(
+          new Error(
+            `CSAGameManager#close: ${t.errorOccuredWhileLogoutFromCSAServer}: ${e}`
+          )
+        );
+      });
       this.sessionID = 0;
-    }
-
-    // プレイヤーが起動している場合は終了する。
-    if (this.player) {
-      this.player.close().catch(this.onError);
-      this.player = undefined;
     }
 
     // 時計を停止する。
@@ -262,11 +266,21 @@ export class CSAGameManager {
       this.retryTimer = undefined;
     }
 
-    // 連続対局の条件を満たしていない場合はハンドラーを呼んで終了する。
+    // 連続対局の条件を満たしていない場合はプレイヤーセッションを閉じ、ハンドラーを呼び出して終了する。
     if (
       reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN ||
       this.repeat >= this.setting.repeat
     ) {
+      if (this.player) {
+        this.player.close().catch((e) => {
+          this.onError(
+            new Error(
+              `CSAGameManager#close: ${t.failedToShutdownEngines}: ${e}`
+            )
+          );
+        });
+        this.player = undefined;
+      }
       this.onGameEnd();
       return;
     }
@@ -386,6 +400,24 @@ export class CSAGameManager {
     this.recordManager.appendMove({
       move: this.gameResultToSpecialMove(move, gameResult),
     });
+    // 対局結果をプレイヤーに通知する。
+    if (this.player) {
+      let result: GameResult;
+      switch (gameResult) {
+        case CSAGameResult.WIN:
+          result = GameResult.WIN;
+          break;
+        case CSAGameResult.LOSE:
+          result = GameResult.LOSE;
+          break;
+        case CSAGameResult.DRAW:
+        case CSAGameResult.CENSORED:
+        case CSAGameResult.CHUDAN:
+          result = GameResult.DRAW;
+          break;
+      }
+      this.player.gameover(result);
+    }
     // 自動保存が有効な場合は棋譜を保存する。
     if (this.setting.enableAutoSave) {
       this.onSaveRecord();

@@ -159,7 +159,7 @@ export const zh_tw: Texts = {
   comments: "備註",
   moveComments: "棋步備註",
   searchLog: "思考",
-  pv: "読み筋",
+  pv: "読み筋", // TODO: translate
   mateShort: "詰",
   displayPVShort: "再現",
   evaluation: "評價值",
@@ -334,12 +334,17 @@ export const zh_tw: Texts = {
   errorOccuredWhileDisconnectingFromCSAServer:
     "在與CSA伺服器中斷連線時發生錯誤。",
   failedToConnectToCSAServer: "無法連接CSA伺服器。",
+  errorOccuredWhileLogoutFromCSAServer:
+    "CSAサーバーからのログアウト中にエラーが発生しました。", // TODO: translate
   disconnectedFromCSAServer: "與CSA伺服器的連接結束。",
   csaServerLoginDenied: "您對CSA伺服器的登入被拒絕。",
   thisFeatureNotAvailableOnWebApp: "Web版無法使用本機能",
+  failedToStartNewGame: "対局の開始に失敗しました。", // TODO: translate
+  errorOccuredWhileEndingGame: "対局の終了中にエラーが発生しました。", // TODO: translate
   failedToSendGoCommand: "無法送出go指令。",
   failedToSendPonderCommand: "無法送出ponder指令。",
   failedToSendStopCommand: "無法送出stop指令。",
+  failedToShutdownEngines: "エンジンを正常に終了できませんでした。", // TODO: translate
   failedToSaveRecord: "棋譜保存失敗。",
   failedToParseSFEN: "SFEN讀取失敗。",
   failedToDetectRecordFormat: "無法判別棋譜形式。",

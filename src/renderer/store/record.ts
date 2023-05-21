@@ -176,7 +176,7 @@ export class RecordManager {
   };
 
   constructor() {
-    this.setupRecordHandler();
+    this.bindRecordHandlers();
   }
 
   get record(): ImmutableRecord {
@@ -243,7 +243,7 @@ export class RecordManager {
       return localizeError(recordOrError);
     }
     this._record = recordOrError;
-    this.setupRecordHandler();
+    this.bindRecordHandlers();
     this.clearRecordFilePath();
     restoreCustomData(this._record);
     return;
@@ -271,7 +271,7 @@ export class RecordManager {
       return localizeError(recordOrError);
     }
     this._record = recordOrError;
-    this.setupRecordHandler();
+    this.bindRecordHandlers();
     this.updateRecordFilePath(path);
     restoreCustomData(this._record);
     return;
@@ -470,16 +470,21 @@ export class RecordManager {
   }
 
   appendMovesSilently(moves: Move[], opt?: DoMoveOption): number {
-    let n = 0;
-    const ply = this._record.current.ply;
-    for (const move of moves) {
-      if (!this._record.append(move, opt)) {
-        break;
+    this.unbindRecordHandlers();
+    try {
+      let n = 0;
+      const ply = this._record.current.ply;
+      for (const move of moves) {
+        if (!this._record.append(move, opt)) {
+          break;
+        }
+        n++;
       }
-      n++;
+      this._record.goto(ply);
+      return n;
+    } finally {
+      this.bindRecordHandlers();
     }
-    this._record.goto(ply);
-    return n;
   }
 
   updateStandardMetadata(update: {
@@ -498,12 +503,18 @@ export class RecordManager {
         break;
       case "changePosition":
         this.onChangePosition = handler as () => void;
-        this.setupRecordHandler();
+        this.bindRecordHandlers();
         break;
     }
   }
 
-  private setupRecordHandler(): void {
+  private bindRecordHandlers(): void {
     this._record.on("changePosition", this.onChangePosition);
+  }
+
+  private unbindRecordHandlers(): void {
+    this._record.on("changePosition", () => {
+      /* noop */
+    });
   }
 }

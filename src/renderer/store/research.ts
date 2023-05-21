@@ -8,6 +8,7 @@ import { ImmutableRecord } from "@/common/shogi";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { SearchInfoSenderType } from "./record";
 import { useAppSetting } from "./setting";
+import { Lazy } from "../helpers/lazy";
 
 function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
   switch (index) {
@@ -38,6 +39,8 @@ export class ResearchManager {
   private onError: ErrorCallback = () => {
     /* noop */
   };
+  private lazyPositionUpdate = new Lazy();
+  private maxSecondsTimer?: NodeJS.Timeout;
 
   on(event: "updateSearchInfo", handler: UpdateSearchInfoCallback): this;
   on(event: "error", handler: ErrorCallback): this;
@@ -102,21 +105,28 @@ export class ResearchManager {
   }
 
   updatePosition(record: ImmutableRecord) {
-    this.engines.forEach((engine) => engine.startResearch(record));
-    if (this.setting.enableMaxSeconds && this.setting.maxSeconds > 0) {
-      setTimeout(() => {
-        this.stopAll();
-      }, this.setting.maxSeconds * 1e3);
-    }
+    // 200ms 以内に複数回の更新が行われたら最後だけを採用する。
+    this.lazyPositionUpdate.after(() => {
+      clearTimeout(this.maxSecondsTimer);
+      this.engines.forEach((engine) => engine.startResearch(record));
+      if (this.setting.enableMaxSeconds && this.setting.maxSeconds > 0) {
+        this.maxSecondsTimer = setTimeout(() => {
+          this.stopAll();
+        }, this.setting.maxSeconds * 1e3);
+      }
+    }, 200);
   }
 
   private stopAll() {
+    clearTimeout(this.maxSecondsTimer);
     Promise.all(this.engines.map((engine) => engine.stop())).catch((e) => {
       this.onError(e);
     });
   }
 
   close() {
+    this.lazyPositionUpdate.clear();
+    clearTimeout(this.maxSecondsTimer);
     Promise.allSettled(this.engines.map((engine) => engine.close()))
       .then(() => {
         this.engines = [];

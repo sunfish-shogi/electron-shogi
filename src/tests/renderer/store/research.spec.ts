@@ -26,6 +26,7 @@ describe("store/research", () => {
     expect(mockAPI.usiLaunch).toBeCalledWith(researchSetting.usi, 10);
     const record = new Record();
     manager.updatePosition(record);
+    jest.runOnlyPendingTimers(); // 遅延実行
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(1);
     expect(mockAPI.usiGoInfinite).toBeCalledWith(
       100,
@@ -38,6 +39,7 @@ describe("store/research", () => {
 
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     manager.updatePosition(record);
+    jest.runOnlyPendingTimers(); // 遅延実行
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(2);
     expect(mockAPI.usiGoInfinite).toBeCalledWith(
       100,
@@ -53,6 +55,8 @@ describe("store/research", () => {
     await manager.launch(researchSettingMax5Seconds);
     const record = new Record();
     manager.updatePosition(record);
+    jest.runOnlyPendingTimers(); // 遅延実行
+    expect(mockAPI.usiStop).toBeCalledTimes(0);
 
     // 時間制限があるので stop コマンドが送信される。
     jest.runOnlyPendingTimers();
@@ -68,9 +72,11 @@ describe("store/research", () => {
     expect(mockAPI.usiLaunch).toBeCalledTimes(3);
     const record = new Record();
     manager.updatePosition(record);
+    jest.runOnlyPendingTimers(); // 遅延実行
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(3);
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     manager.updatePosition(record);
+    jest.runOnlyPendingTimers(); // 遅延実行
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(6);
   });
 });

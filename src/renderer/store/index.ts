@@ -144,6 +144,7 @@ class Store {
       .on("saveRecord", refs.onSaveRecord.bind(refs))
       .on("gameNext", refs.onGameNext.bind(refs))
       .on("gameEnd", refs.onGameEnd.bind(refs))
+      .on("flipBoard", refs.onFlipBoard.bind(refs))
       .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
@@ -472,7 +473,6 @@ class Store {
     api
       .saveGameSetting(setting)
       .then(() => {
-        this.initializeDisplaySettingForGame(setting);
         const appSetting = useAppSetting();
         const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
         return this.gameManager.startGame(setting, builder);
@@ -537,27 +537,6 @@ class Store {
     }
     this.csaGameManager.logout();
     this._appState = AppState.NORMAL;
-  }
-
-  private initializeDisplaySettingForGame(setting: GameSetting): void {
-    if (setting.humanIsFront) {
-      const appSetting = useAppSetting();
-      let flip = appSetting.boardFlipping;
-      if (
-        setting.black.uri === uri.ES_HUMAN &&
-        setting.white.uri !== uri.ES_HUMAN
-      ) {
-        flip = false;
-      } else if (
-        setting.black.uri !== uri.ES_HUMAN &&
-        setting.white.uri === uri.ES_HUMAN
-      ) {
-        flip = true;
-      }
-      if (flip !== appSetting.boardFlipping) {
-        appSetting.flipBoard();
-      }
-    }
   }
 
   stopGame(): void {

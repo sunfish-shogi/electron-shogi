@@ -175,10 +175,6 @@ export class RecordManager {
     /* noop */
   };
 
-  constructor() {
-    this.bindRecordHandlers();
-  }
-
   get record(): ImmutableRecord {
     return this._record;
   }

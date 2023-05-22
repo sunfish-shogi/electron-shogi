@@ -42,6 +42,7 @@ export type GameResults = {
 type SaveRecordCallback = () => void;
 type GameNextCallback = () => void;
 type GameEndCallback = (results: GameResults, specialMove: SpecialMove) => void;
+type FlipBoardCallback = (flip: boolean) => void;
 type PieceBeatCallback = () => void;
 type BeepShortCallback = () => void;
 type BeepUnlimitedCallback = () => void;
@@ -77,6 +78,9 @@ export class GameManager {
   private onGameEnd: GameEndCallback = () => {
     /* noop */
   };
+  private onFlipBoard: FlipBoardCallback = () => {
+    /* noop */
+  };
   private onPieceBeat: PieceBeatCallback = () => {
     /* noop */
   };
@@ -106,6 +110,7 @@ export class GameManager {
   on(event: "saveRecord", handler: SaveRecordCallback): this;
   on(event: "gameNext", handler: GameNextCallback): this;
   on(event: "gameEnd", handler: GameEndCallback): this;
+  on(event: "flipBoard", handler: FlipBoardCallback): this;
   on(event: "pieceBeat", handler: PieceBeatCallback): this;
   on(event: "beepShort", handler: BeepShortCallback): this;
   on(event: "beepUnlimited", handler: BeepUnlimitedCallback): this;
@@ -121,6 +126,9 @@ export class GameManager {
         break;
       case "gameEnd":
         this.onGameEnd = handler as GameEndCallback;
+        break;
+      case "flipBoard":
+        this.onFlipBoard = handler as FlipBoardCallback;
         break;
       case "pieceBeat":
         this.onPieceBeat = handler as PieceBeatCallback;
@@ -240,8 +248,23 @@ export class GameManager {
     this.state = GameState.ACTIVE;
     // ハンドラーを呼び出す。
     this.onGameNext();
+    // 盤面の向きを調整する。
+    this.adjustBoardOrientation();
     // 最初の手番へ移る。
     setTimeout(() => this.nextMove());
+  }
+
+  private adjustBoardOrientation(): void {
+    if (this.setting.humanIsFront) {
+      if (!this.blackPlayer?.isEngine() && this.whitePlayer?.isEngine()) {
+        this.onFlipBoard(false);
+      } else if (
+        this.blackPlayer?.isEngine() &&
+        !this.whitePlayer?.isEngine()
+      ) {
+        this.onFlipBoard(true);
+      }
+    }
   }
 
   private nextMove(): void {

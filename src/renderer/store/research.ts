@@ -98,6 +98,7 @@ export class ResearchManager {
     // エンジンを起動する。
     try {
       await Promise.all(this.engines.map((engine) => engine.launch()));
+      await Promise.all(this.engines.map((engine) => engine.readyNewGame()));
     } catch (e) {
       this.close();
       throw e;

@@ -158,6 +158,9 @@ export const webAPI: Bridge = {
   async usiLaunch(): Promise<number> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
+  async usiReady(): Promise<void> {
+    // Do Nothing
+  },
   async usiGo(): Promise<void> {
     // Do Nothing
   },

@@ -21,6 +21,7 @@ import { t } from "@/common/i18n";
 
 enum GameState {
   IDLE = "idle",
+  STARTING = "STARTING",
   ACTIVE = "active",
   PENDING = "pending",
   BUSSY = "bussy",
@@ -166,6 +167,7 @@ export class GameManager {
         "GameManager#startGame: 前回の対局が正常に終了できていません。アプリを再起動してください。"
       );
     }
+    this.state = GameState.STARTING;
     this._setting = setting;
     this.playerBuilder = playerBuilder;
     this.repeat = 0;
@@ -174,10 +176,43 @@ export class GameManager {
       this.startPly = this.recordManager.record.current.ply;
     }
     this._results = newGameResults(setting.black.name, setting.white.name);
-    await this.nextGame();
+    // プレイヤーを初期化する。
+    try {
+      this.blackPlayer = await this.playerBuilder.build(
+        this.setting.black,
+        (info) =>
+          this.recordManager.updateSearchInfo(
+            SearchInfoSenderType.OPPONENT,
+            info
+          )
+      );
+      this.whitePlayer = await this.playerBuilder.build(
+        this.setting.white,
+        (info) =>
+          this.recordManager.updateSearchInfo(
+            SearchInfoSenderType.OPPONENT,
+            info
+          )
+      );
+      await this.nextGame();
+    } catch (e) {
+      try {
+        await this.closePlayers();
+      } catch (errorOnClose) {
+        this.onError(errorOnClose);
+      } finally {
+        this.state = GameState.IDLE;
+      }
+      throw new Error(`GameManager#startGame: ${t.failedToStartNewGame}: ${e}`);
+    }
   }
 
   private async nextGame(): Promise<void> {
+    if (this.blackPlayer === undefined || this.whitePlayer === undefined) {
+      throw new Error(
+        "GameManager#nextGame: プレイヤーが初期化されていません。"
+      );
+    }
     // 連続対局の回数をカウントアップする。
     this.repeat++;
     // 初期局面を設定する。
@@ -218,32 +253,11 @@ export class GameManager {
         this.timeout(Color.WHITE);
       },
     });
-    // プレイヤーを初期化する。
-    try {
-      this.blackPlayer = await this.playerBuilder.build(
-        this.setting.black,
-        (info) =>
-          this.recordManager.updateSearchInfo(
-            SearchInfoSenderType.OPPONENT,
-            info
-          )
-      );
-      this.whitePlayer = await this.playerBuilder.build(
-        this.setting.white,
-        (info) =>
-          this.recordManager.updateSearchInfo(
-            SearchInfoSenderType.OPPONENT,
-            info
-          )
-      );
-    } catch (e) {
-      try {
-        await this.closePlayers();
-      } catch (errorOnClose) {
-        this.onError(errorOnClose);
-      }
-      throw e;
-    }
+    // プレイヤーに対局開始を通知する。
+    await Promise.all([
+      this.blackPlayer.readyNewGame(),
+      this.whitePlayer.readyNewGame(),
+    ]);
     // State を更新する。
     this.state = GameState.ACTIVE;
     // ハンドラーを呼び出す。
@@ -454,10 +468,6 @@ export class GameManager {
         return this.sendGameResults(color, specialMove);
       })
       .then(() => {
-        // プレイヤーを解放する。
-        return this.closePlayers();
-      })
-      .then(() => {
         // インクリメントせずに時計を停止する。
         this.getActiveClock().pause();
         // 終局理由を棋譜に記録する。
@@ -468,8 +478,6 @@ export class GameManager {
         this.recordManager.setGameEndMetadata();
         // 連続対局の記録に追加する。
         this.addGameResults(color, specialMove);
-        // State を更新する。
-        this.state = GameState.IDLE;
         // 自動保存が有効な場合は棋譜を保存する。
         if (this._setting.enableAutoSave) {
           this.onSaveRecord();
@@ -479,7 +487,15 @@ export class GameManager {
           specialMove === SpecialMove.INTERRUPT ||
           this.repeat >= this.setting.repeat;
         if (complete) {
-          this.onGameEnd(this.results, specialMove);
+          // プレイヤーを解放する。
+          this.closePlayers()
+            .catch((e) => {
+              this.onError(e);
+            })
+            .finally(() => {
+              this.state = GameState.IDLE;
+              this.onGameEnd(this.results, specialMove);
+            });
           return;
         }
         // 連続対局時の手番入れ替えが有効ならプレイヤーを入れ替える。
@@ -487,12 +503,19 @@ export class GameManager {
           this.swapPlayers();
         }
         // 次の対局を開始する。
+        this.state = GameState.STARTING;
         this.nextGame().catch((e) => {
-          this.onError(e);
+          this.onError(
+            new Error(`GameManager#endGame: ${t.failedToStartNewGame}: ${e}`)
+          );
         });
       })
       .catch((e) => {
-        this.onError(e);
+        this.onError(
+          new Error(
+            `GameManager#endGame: ${t.errorOccuredWhileEndingGame}: ${e}`
+          )
+        );
         this.state = GameState.PENDING;
       });
   }
@@ -526,6 +549,7 @@ export class GameManager {
       black: this.setting.white,
       white: this.setting.black,
     };
+    [this.blackPlayer, this.whitePlayer] = [this.whitePlayer, this.blackPlayer];
     this._results = {
       ...this.results,
       player1: this.results.player2,
@@ -560,13 +584,21 @@ export class GameManager {
   }
 
   private async closePlayers(): Promise<void> {
+    const tasks: Promise<void>[] = [];
     if (this.blackPlayer) {
-      await this.blackPlayer.close();
+      tasks.push(this.blackPlayer.close());
       this.blackPlayer = undefined;
     }
     if (this.whitePlayer) {
-      await this.whitePlayer.close();
+      tasks.push(this.whitePlayer.close());
       this.whitePlayer = undefined;
+    }
+    try {
+      await Promise.all(tasks);
+    } catch (e) {
+      throw new Error(
+        `GameManager#closePlayers: ${t.failedToShutdownEngines}: ${e}`
+      );
     }
   }
 

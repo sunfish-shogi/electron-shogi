@@ -30,7 +30,6 @@ export async function getUSIEngineInfo(
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
     const process = new EngineProcess(resolvePath(path), sessionID, {
-      setupOnly: true,
       timeout: timeoutSeconds * 1e3,
     })
       .on("error", reject)
@@ -58,7 +57,6 @@ export function sendSetOptionCommand(
   const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
     const process = new EngineProcess(resolvePath(path), sessionID, {
-      setupOnly: true,
       timeout: timeoutSeconds * 1e3,
     })
       .on("error", reject)
@@ -141,8 +139,15 @@ export function setupPlayer(
       .on("noMate", (position) => {
         onUSINoMate(sessionID, position);
       })
-      .on("ready", () => resolve(sessionID));
+      .on("usiok", () => resolve(sessionID));
     process.launch();
+  });
+}
+
+export function ready(sessionID: number): Promise<void> {
+  const session = getSession(sessionID);
+  return new Promise<void>((resolve, reject) => {
+    session.process.on("ready", resolve).on("error", reject).ready();
   });
 }
 

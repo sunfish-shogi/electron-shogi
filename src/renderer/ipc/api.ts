@@ -54,6 +54,7 @@ export interface Bridge {
     timeoutSeconds: number
   ): Promise<void>;
   usiLaunch(json: string, timeoutSeconds: number): Promise<number>;
+  usiReady(sessionID: number): Promise<void>;
   usiGo(
     sessionID: number,
     usi: string,
@@ -171,6 +172,7 @@ export interface API {
     timeoutSeconds: number
   ): Promise<void>;
   usiLaunch(setting: USIEngineSetting, timeoutSeconds: number): Promise<number>;
+  usiReady(sessionID: number): Promise<void>;
   usiGo(
     sessionID: number,
     usi: string,
@@ -287,6 +289,9 @@ const api: API = {
     timeoutSeconds: number
   ): Promise<number> {
     return bridge.usiLaunch(JSON.stringify(setting), timeoutSeconds);
+  },
+  usiReady(sessionID: number): Promise<void> {
+    return bridge.usiReady(sessionID);
   },
   usiGo(
     sessionID: number,

@@ -9,6 +9,10 @@ export class HumanPlayer implements Player {
     return false;
   }
 
+  async readyNewGame(): Promise<void> {
+    // do nothing
+  }
+
   async startSearch(
     record: ImmutableRecord,
     timeLimit: TimeLimitSetting,

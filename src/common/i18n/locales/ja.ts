@@ -341,12 +341,17 @@ export const ja: Texts = {
   errorOccuredWhileDisconnectingFromCSAServer:
     "CSAサーバーからの切断中にエラーが発生しました。",
   failedToConnectToCSAServer: "CSAサーバーに接続できませんでした。",
+  errorOccuredWhileLogoutFromCSAServer:
+    "CSAサーバーからのログアウト中にエラーが発生しました。",
   disconnectedFromCSAServer: "CSAサーバーへの接続が切れました。",
   csaServerLoginDenied: "CSAサーバーへのログインが拒否されました。",
   thisFeatureNotAvailableOnWebApp: "Web版では利用できない機能です。",
+  failedToStartNewGame: "対局の開始に失敗しました。",
+  errorOccuredWhileEndingGame: "対局の終了中にエラーが発生しました。",
   failedToSendGoCommand: "goコマンドを送信できませんでした。",
   failedToSendPonderCommand: "ponderコマンドを送信できませんでした。",
   failedToSendStopCommand: "stopコマンドを送信できませんでした。",
+  failedToShutdownEngines: "エンジンを正常に終了できませんでした。",
   failedToSaveRecord: "棋譜の保存に失敗しました。",
   failedToParseSFEN: "SFENの読み込みに失敗しました。",
   failedToDetectRecordFormat: "棋譜形式を判別できませんでした。",

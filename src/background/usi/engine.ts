@@ -13,7 +13,6 @@ import { USIInfoCommand } from "@/common/usi";
 import { getUSILogger } from "@/background/log";
 
 export type EngineProcessOption = {
-  setupOnly?: boolean;
   timeout?: number;
   engineOptions?: USIEngineOption[];
 };
@@ -149,12 +148,15 @@ function buildTimeOptions(timeState?: TimeState): string {
 }
 
 enum State {
-  WaitingForReadyOK,
-  Ready,
-  WaitingForBestMove,
-  Ponder,
-  WaitingForPonderBestMove,
-  WillQuit,
+  WaitingForUSIOK = "waitingForUSIOK",
+  NotReady = "notReady",
+  WaitingForReadyOK = "waitingForReadyOK",
+  Ready = "ready",
+  WaitingForBestMove = "waitingForBestMove",
+  Ponder = "ponder",
+  WaitingForPonderBestMove = "waitingForPonderBestMove",
+  WaitingForCheckmate = "waitingForCheckmate",
+  WillQuit = "willQuit",
 }
 
 const DefaultTimeout = 10 * 1e3;
@@ -168,7 +170,7 @@ export class EngineProcess {
   private _name = "NO NAME";
   private _author = "";
   private _engineOptions = {} as USIEngineOptions;
-  private state = State.WaitingForReadyOK;
+  private state = State.WaitingForUSIOK;
   private currentPosition = "";
   private reservedGoCommand?: ReservedGoCommand;
   private readline: Readline | null = null;
@@ -334,13 +336,20 @@ export class EngineProcess {
     }
   }
 
-  go(position: string, timeState?: TimeState): void {
-    if (
-      position === this.currentPosition &&
-      this.state === State.WaitingForBestMove
-    ) {
+  ready(): void {
+    if (this.state !== State.NotReady) {
+      getUSILogger().warn(
+        "sid=%d: ready: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
       return;
     }
+    this.send("isready");
+    this.state = State.WaitingForReadyOK;
+  }
+
+  go(position: string, timeState?: TimeState): void {
     this.reservedGoCommand = {
       position,
       timeState,
@@ -351,15 +360,13 @@ export class EngineProcess {
         break;
       case State.WaitingForBestMove:
       case State.Ponder:
+      case State.WaitingForCheckmate:
         this.stop();
         break;
     }
   }
 
   goPonder(position: string, timeState?: TimeState): void {
-    if (position === this.currentPosition && this.state === State.Ponder) {
-      return;
-    }
     this.reservedGoCommand = {
       position,
       timeState,
@@ -371,18 +378,13 @@ export class EngineProcess {
         break;
       case State.WaitingForBestMove:
       case State.Ponder:
+      case State.WaitingForCheckmate:
         this.stop();
         break;
     }
   }
 
   goMate(position: string): void {
-    if (
-      position === this.currentPosition &&
-      this.state === State.WaitingForBestMove
-    ) {
-      return;
-    }
     this.reservedGoCommand = {
       position,
       mate: true,
@@ -393,17 +395,38 @@ export class EngineProcess {
         break;
       case State.WaitingForBestMove:
       case State.Ponder:
+      case State.WaitingForCheckmate:
         this.stop();
         break;
     }
   }
 
   ponderHit(): void {
+    if (this.state !== State.Ponder) {
+      getUSILogger().warn(
+        "sid=%d: ponderHit: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
+      return;
+    }
     this.send("ponderhit");
     this.state = State.WaitingForBestMove;
   }
 
   stop(): void {
+    if (
+      this.state !== State.WaitingForBestMove &&
+      this.state !== State.Ponder &&
+      this.state !== State.WaitingForCheckmate
+    ) {
+      getUSILogger().warn(
+        "sid=%d: stop: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
+      return;
+    }
     this.send("stop");
     if (this.state === State.Ponder) {
       this.state = State.WaitingForPonderBestMove;
@@ -411,8 +434,20 @@ export class EngineProcess {
   }
 
   gameover(gameResult: GameResult): void {
+    if (
+      this.state === State.WaitingForUSIOK ||
+      this.state === State.NotReady ||
+      this.state === State.WaitingForReadyOK
+    ) {
+      getUSILogger().warn(
+        "sid=%d: gameover: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
+      return;
+    }
     this.send("gameover " + gameResult);
-    this.state = State.Ready;
+    this.state = State.NotReady;
   }
 
   private sendReservedGoCommands(): void {
@@ -429,6 +464,8 @@ export class EngineProcess {
     this.currentPosition = this.reservedGoCommand.position;
     this.state = this.reservedGoCommand.ponder
       ? State.Ponder
+      : this.reservedGoCommand.mate
+      ? State.WaitingForCheckmate
       : State.WaitingForBestMove;
     this.reservedGoCommand = undefined;
   }
@@ -507,6 +544,14 @@ export class EngineProcess {
   }
 
   private onUSIOk(): void {
+    if (this.state !== State.WaitingForUSIOK) {
+      getUSILogger().warn(
+        "sid=%d: onUSIOk: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
+      return;
+    }
     if (!this.engineOptions[USIHash]) {
       this._engineOptions[USIHash] = {
         name: USIHash,
@@ -533,23 +578,26 @@ export class EngineProcess {
         }
       });
     }
-    if (!this.option.setupOnly) {
-      this.send("isready");
-    } else if (this.timeout) {
+    if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = undefined;
     }
+    this.state = State.NotReady;
     if (this.usiOkCallback) {
       this.usiOkCallback();
     }
   }
 
   private onReadyOk(): void {
-    this.state = State.Ready;
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      this.timeout = undefined;
+    if (this.state !== State.WaitingForReadyOK) {
+      getUSILogger().warn(
+        "sid=%d: onReadyOk: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
+      return;
     }
+    this.state = State.Ready;
     if (this.readyCallback) {
       this.readyCallback();
     }
@@ -558,6 +606,17 @@ export class EngineProcess {
   }
 
   private onBestMove(args: string): void {
+    if (
+      this.state !== State.WaitingForBestMove &&
+      this.state !== State.WaitingForPonderBestMove
+    ) {
+      getUSILogger().warn(
+        "sid=%d: onBestMove: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
+      return;
+    }
     if (this.bestMoveCallback && this.state === State.WaitingForBestMove) {
       const a = args.split(" ");
       const move = a[0];
@@ -570,6 +629,15 @@ export class EngineProcess {
   }
 
   private onCheckmate(args: string): void {
+    if (this.state !== State.WaitingForCheckmate) {
+      getUSILogger().warn(
+        "sid=%d: onCheckmate: unexpected state: %s",
+        this.sessionID,
+        this.state
+      );
+      return;
+    }
+    this.state = State.Ready;
     if (args.trim() === "notimplemented") {
       if (this.checkmateNotImplementedCallback) {
         this.checkmateNotImplementedCallback();
@@ -594,6 +662,7 @@ export class EngineProcess {
   private onInfo(args: string): void {
     switch (this.state) {
       case State.WaitingForBestMove:
+      case State.WaitingForCheckmate:
         if (this.infoCallback) {
           this.infoCallback(this.currentPosition, parseInfoCommand(args));
         }

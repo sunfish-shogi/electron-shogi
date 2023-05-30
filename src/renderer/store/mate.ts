@@ -63,33 +63,33 @@ export class MateSearchManager {
     this.engine = new USIPlayer(setting.usi, appSetting.engineTimeoutSeconds);
     try {
       await this.engine.launch();
+      await this.engine.readyNewGame();
+      await this.engine.startMateSearch(record, {
+        onCheckmate: (moves) => {
+          this.close();
+          this.onCheckmate(moves);
+        },
+        onNotImplemented: () => {
+          this.close();
+          this.onNotImplemented();
+        },
+        onTimeout: () => {
+          this.close();
+          this.onTimeout();
+        },
+        onNoMate: () => {
+          this.close();
+          this.onNoMate();
+        },
+        onError: (e: unknown) => {
+          this.close();
+          this.onError(e);
+        },
+      });
     } catch (e) {
       this.close();
       throw e;
     }
-    // 探索を開始する。
-    this.engine.startMateSearch(record, {
-      onCheckmate: (moves) => {
-        this.close();
-        this.onCheckmate(moves);
-      },
-      onNotImplemented: () => {
-        this.close();
-        this.onNotImplemented();
-      },
-      onTimeout: () => {
-        this.close();
-        this.onTimeout();
-      },
-      onNoMate: () => {
-        this.close();
-        this.onNoMate();
-      },
-      onError: (e: unknown) => {
-        this.close();
-        this.onError(e);
-      },
-    });
   }
 
   close() {

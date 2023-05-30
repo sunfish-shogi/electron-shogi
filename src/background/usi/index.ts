@@ -18,6 +18,7 @@ import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/player";
 import { t } from "@/common/i18n";
 import { resolvePath } from "@/background/path";
+import { getUSILogger } from "../log";
 
 function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
@@ -29,9 +30,14 @@ export async function getUSIEngineInfo(
 ): Promise<USIEngineSetting> {
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
-    const process = new EngineProcess(resolvePath(path), sessionID, {
-      timeout: timeoutSeconds * 1e3,
-    })
+    const process = new EngineProcess(
+      resolvePath(path),
+      sessionID,
+      getUSILogger(),
+      {
+        timeout: timeoutSeconds * 1e3,
+      }
+    )
       .on("error", reject)
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
       .on("usiok", () => {
@@ -56,9 +62,14 @@ export function sendSetOptionCommand(
 ): Promise<void> {
   const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
-    const process = new EngineProcess(resolvePath(path), sessionID, {
-      timeout: timeoutSeconds * 1e3,
-    })
+    const process = new EngineProcess(
+      resolvePath(path),
+      sessionID,
+      getUSILogger(),
+      {
+        timeout: timeoutSeconds * 1e3,
+      }
+    )
       .on("error", reject)
       .on("timeout", () => {
         reject(newTimeoutError(timeoutSeconds));
@@ -110,10 +121,15 @@ export function setupPlayer(
   timeoutSeconds: number
 ): Promise<number> {
   const sessionID = issueSessionID();
-  const process = new EngineProcess(resolvePath(setting.path), sessionID, {
-    timeout: timeoutSeconds * 1e3,
-    engineOptions: Object.values(setting.options),
-  });
+  const process = new EngineProcess(
+    resolvePath(setting.path),
+    sessionID,
+    getUSILogger(),
+    {
+      timeout: timeoutSeconds * 1e3,
+      engineOptions: Object.values(setting.options),
+    }
+  );
   sessions.set(sessionID, {
     name: setting.name,
     process,

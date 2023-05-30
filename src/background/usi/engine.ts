@@ -6,11 +6,9 @@ import {
   USIHash,
   USIPonder,
 } from "@/common/settings/usi";
-import { spawn, ChildProcessWithoutNullStreams } from "child_process";
-import path from "path";
-import { createInterface as readline, Interface as Readline } from "readline";
+import { Logger } from "log4js";
 import { USIInfoCommand } from "@/common/usi";
-import { getUSILogger } from "@/background/log";
+import { ChildProcess } from "./process";
 
 export type EngineProcessOption = {
   timeout?: number;
@@ -160,21 +158,22 @@ enum State {
 }
 
 const DefaultTimeout = 10 * 1e3;
+const DefaultQuitTimeout = 5 * 1e3;
 
 const USIHashOptionOrder = 1;
 const USIPonderOptionOrder = 2;
 const UserDefinedOptionOrderStart = 100;
 
 export class EngineProcess {
-  private handle: ChildProcessWithoutNullStreams | null = null;
+  private process: ChildProcess | null = null;
   private _name = "NO NAME";
   private _author = "";
   private _engineOptions = {} as USIEngineOptions;
   private state = State.WaitingForUSIOK;
   private currentPosition = "";
   private reservedGoCommand?: ReservedGoCommand;
-  private readline: Readline | null = null;
-  private timeout?: NodeJS.Timeout;
+  private launchTimeout?: NodeJS.Timeout;
+  private quitTimeout?: NodeJS.Timeout;
   timeoutCallback?: TimeoutCallback;
   errorCallback?: ErrorCallback;
   usiOkCallback?: USIOKCallback;
@@ -190,6 +189,7 @@ export class EngineProcess {
   constructor(
     private _path: string,
     private sessionID: number,
+    private logger: Logger,
     private option: EngineProcessOption
   ) {}
 
@@ -223,20 +223,7 @@ export class EngineProcess {
   on(event: "noMate", callback: NoMateCallback): this;
   on(event: "info", callback: InfoCallback): this;
   on(event: "ponderInfo", callback: InfoCallback): this;
-  on(
-    event: string,
-    callback:
-      | TimeoutCallback
-      | ErrorCallback
-      | USIOKCallback
-      | ReadyCallback
-      | BestmoveCallback
-      | CheckmateCallback
-      | CheckmateNotImplementedCallback
-      | CheckmateTimeoutCallback
-      | NoMateCallback
-      | InfoCallback
-  ): this {
+  on(event: string, callback: unknown): this {
     switch (event) {
       case "timeout":
         this.timeoutCallback = callback as TimeoutCallback;
@@ -277,24 +264,12 @@ export class EngineProcess {
   }
 
   launch(): void {
-    getUSILogger().info("sid=%d: launch: %s", this.sessionID, this.path);
-    this.timeout = setTimeout(() => {
-      if (this.timeoutCallback) {
-        this.timeoutCallback();
-      }
-      this.quit();
-    }, this.option.timeout || DefaultTimeout);
-    this.handle = spawn(this.path, {
-      cwd: path.dirname(this.path),
-    });
-    this.handle.on("error", (e) => {
-      if (this.errorCallback) {
-        this.errorCallback(e);
-      }
-      this.quit();
-    });
-    this.readline = readline(this.handle.stdout);
-    this.readline.on("line", this.onReceive.bind(this));
+    this.logger.info("sid=%d: launch: %s", this.sessionID, this.path);
+    this.setLaunchTimeout();
+    this.process = new ChildProcess(this.path);
+    this.process.on("error", this.onError.bind(this));
+    this.process.on("close", this.onClose.bind(this));
+    this.process.on("receive", this.onReceive.bind(this));
     this.send("usi");
   }
 
@@ -303,29 +278,13 @@ export class EngineProcess {
       return;
     }
     this.state = State.WillQuit;
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      this.timeout = undefined;
-    }
-    getUSILogger().info("sid=%d: quit USI engine", this.sessionID);
-    if (!this.handle) {
+    this.clearLaunchTimeout();
+    this.logger.info("sid=%d: quit USI engine", this.sessionID);
+    if (!this.process) {
       return;
     }
-    const t = setTimeout(() => {
-      if (!this.handle) {
-        return;
-      }
-      this.handle.kill();
-      this.handle = null;
-    }, 5 * 1e3);
-    this.handle.on("close", () => {
-      clearTimeout(t);
-      this.handle = null;
-    });
+    this.setQuitTimeout();
     this.send("quit");
-    if (this.readline) {
-      this.readline.close();
-    }
   }
 
   setOption(name: string, value?: string | number): void {
@@ -338,7 +297,7 @@ export class EngineProcess {
 
   ready(): void {
     if (this.state !== State.NotReady) {
-      getUSILogger().warn(
+      this.logger.warn(
         "sid=%d: ready: unexpected state: %s",
         this.sessionID,
         this.state
@@ -403,7 +362,7 @@ export class EngineProcess {
 
   ponderHit(): void {
     if (this.state !== State.Ponder) {
-      getUSILogger().warn(
+      this.logger.warn(
         "sid=%d: ponderHit: unexpected state: %s",
         this.sessionID,
         this.state
@@ -420,7 +379,7 @@ export class EngineProcess {
       this.state !== State.Ponder &&
       this.state !== State.WaitingForCheckmate
     ) {
-      getUSILogger().warn(
+      this.logger.warn(
         "sid=%d: stop: unexpected state: %s",
         this.sessionID,
         this.state
@@ -434,20 +393,85 @@ export class EngineProcess {
   }
 
   gameover(gameResult: GameResult): void {
-    if (
-      this.state === State.WaitingForUSIOK ||
-      this.state === State.NotReady ||
-      this.state === State.WaitingForReadyOK
-    ) {
-      getUSILogger().warn(
-        "sid=%d: gameover: unexpected state: %s",
-        this.sessionID,
-        this.state
-      );
-      return;
+    switch (this.state) {
+      case State.WaitingForUSIOK:
+      case State.NotReady:
+      case State.WaitingForReadyOK:
+      case State.WillQuit:
+        this.logger.warn(
+          "sid=%d: gameover: unexpected state: %s",
+          this.sessionID,
+          this.state
+        );
+        return;
+      case State.WaitingForBestMove:
+      case State.Ponder:
+      case State.WaitingForCheckmate:
+        this.stop();
+        break;
+      case State.Ready:
+      case State.WaitingForPonderBestMove:
+        // do nothing
+        break;
     }
     this.send("gameover " + gameResult);
     this.state = State.NotReady;
+    this.reservedGoCommand = undefined;
+  }
+
+  private setLaunchTimeout(): void {
+    this.launchTimeout = setTimeout(() => {
+      if (this.timeoutCallback) {
+        this.timeoutCallback();
+      }
+      this.quit();
+    }, this.option.timeout || DefaultTimeout);
+  }
+
+  private clearLaunchTimeout(): void {
+    if (this.launchTimeout) {
+      clearTimeout(this.launchTimeout);
+      this.launchTimeout = undefined;
+    }
+  }
+
+  private setQuitTimeout(): void {
+    this.quitTimeout = setTimeout(() => {
+      if (!this.process) {
+        return;
+      }
+      this.process.kill();
+      this.process = null;
+    }, DefaultQuitTimeout);
+  }
+
+  private clearQuitTimeout(): void {
+    if (this.quitTimeout) {
+      clearTimeout(this.quitTimeout);
+      this.quitTimeout = undefined;
+    }
+  }
+
+  private onError(e: Error): void {
+    if (this.errorCallback) {
+      this.errorCallback(e);
+    }
+    this.quit();
+  }
+
+  private onClose(code: number | null, signal: NodeJS.Signals | null): void {
+    this.logger.info(
+      "sid=%d: engine process closed: close=%s signal=%s",
+      this.sessionID,
+      code,
+      signal
+    );
+    if (this.state !== State.WillQuit && this.errorCallback) {
+      this.errorCallback(new Error("closed unexpectedly"));
+    }
+    this.clearLaunchTimeout();
+    this.clearQuitTimeout();
+    this.process = null;
   }
 
   private sendReservedGoCommands(): void {
@@ -471,15 +495,15 @@ export class EngineProcess {
   }
 
   private send(command: string): void {
-    if (!this.handle) {
+    if (!this.process) {
       return;
     }
-    this.handle.stdin.write(`${command}\n`);
-    getUSILogger().info("sid=%d: > %s", this.sessionID, command);
+    this.process.send(command);
+    this.logger.info("sid=%d: > %s", this.sessionID, command);
   }
 
   private onReceive(command: string): void {
-    getUSILogger().info("sid=%d: < %s", this.sessionID, command);
+    this.logger.info("sid=%d: < %s", this.sessionID, command);
     if (this.state === State.WillQuit) {
       return;
     }
@@ -513,7 +537,7 @@ export class EngineProcess {
   private onOption(command: string): void {
     const args = command.split(" ");
     if (args.length < 4 || args[0] !== "name" || args[2] !== "type") {
-      getUSILogger().error("sid=%d: invalid option command", this.sessionID);
+      this.logger.error("sid=%d: invalid option command", this.sessionID);
       return;
     }
     const option: USIEngineOption = {
@@ -545,7 +569,7 @@ export class EngineProcess {
 
   private onUSIOk(): void {
     if (this.state !== State.WaitingForUSIOK) {
-      getUSILogger().warn(
+      this.logger.warn(
         "sid=%d: onUSIOk: unexpected state: %s",
         this.sessionID,
         this.state
@@ -578,10 +602,7 @@ export class EngineProcess {
         }
       });
     }
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      this.timeout = undefined;
-    }
+    this.clearLaunchTimeout();
     this.state = State.NotReady;
     if (this.usiOkCallback) {
       this.usiOkCallback();
@@ -590,7 +611,7 @@ export class EngineProcess {
 
   private onReadyOk(): void {
     if (this.state !== State.WaitingForReadyOK) {
-      getUSILogger().warn(
+      this.logger.warn(
         "sid=%d: onReadyOk: unexpected state: %s",
         this.sessionID,
         this.state
@@ -610,7 +631,7 @@ export class EngineProcess {
       this.state !== State.WaitingForBestMove &&
       this.state !== State.WaitingForPonderBestMove
     ) {
-      getUSILogger().warn(
+      this.logger.warn(
         "sid=%d: onBestMove: unexpected state: %s",
         this.sessionID,
         this.state
@@ -630,7 +651,7 @@ export class EngineProcess {
 
   private onCheckmate(args: string): void {
     if (this.state !== State.WaitingForCheckmate) {
-      getUSILogger().warn(
+      this.logger.warn(
         "sid=%d: onCheckmate: unexpected state: %s",
         this.sessionID,
         this.state

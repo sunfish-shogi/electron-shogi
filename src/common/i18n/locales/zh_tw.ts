@@ -131,6 +131,7 @@ export const zh_tw: Texts = {
   clockSoundTarget: "棋鐘音效對象",
   anyTurn: "所有手番",
   onlyHumanTurn: "只有玩家手番",
+  defaultRecordFileFormat: "デフォルトの保存形式", // TODO: translate
   textEncoding: "文字編碼",
   strict: "檔案原始編碼",
   autoDetect: "自動判定",

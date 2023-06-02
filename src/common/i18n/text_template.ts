@@ -129,6 +129,7 @@ export type Texts = {
   clockSoundTarget: string;
   anyTurn: string;
   onlyHumanTurn: string;
+  defaultRecordFileFormat: string;
   textEncoding: string;
   strict: string;
   autoDetect: string;

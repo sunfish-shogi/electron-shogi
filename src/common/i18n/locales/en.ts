@@ -132,6 +132,7 @@ export const en: Texts = {
   clockSoundTarget: "Clock Sound Target",
   anyTurn: "Any",
   onlyHumanTurn: "Human",
+  defaultRecordFileFormat: "Default Record Format",
   textEncoding: "Text Encoding",
   strict: "Strict",
   autoDetect: "Auto Detect",

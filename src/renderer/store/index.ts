@@ -609,8 +609,11 @@ class Store {
   }
 
   onSaveRecord(): void {
-    const fname = defaultRecordFileName(this.recordManager.record.metadata);
     const appSetting = useAppSetting();
+    const fname = defaultRecordFileName(
+      this.recordManager.record.metadata,
+      appSetting.defaultRecordFileFormat
+    );
     const path = join(appSetting.autoSaveDirectory, fname);
     this.saveRecordByPath(path).catch((e) => {
       this.pushError(`棋譜の保存に失敗しました: ${e}`);
@@ -1029,8 +1032,13 @@ class Store {
         if (options?.overwrite && path) {
           return path;
         }
+        const appSetting = useAppSetting();
         const defaultPath =
-          path || defaultRecordFileName(this.recordManager.record.metadata);
+          path ||
+          defaultRecordFileName(
+            this.recordManager.record.metadata,
+            appSetting.defaultRecordFileFormat
+          );
         return api.showSaveRecordDialog(defaultPath);
       })
       .then((path) => {

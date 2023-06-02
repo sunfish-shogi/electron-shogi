@@ -10,6 +10,7 @@ import {
   PieceImageType,
   PieceStandImageType,
   PositionImageStyle,
+  RecordFileFormat,
   RightSideControlType,
   Tab,
   TabPaneType,
@@ -103,6 +104,9 @@ class AppSettingStore {
   }
   get bottomLeftPaneWidthPercentage(): number {
     return this.setting.bottomLeftPaneWidthPercentage;
+  }
+  get defaultRecordFileFormat(): RecordFileFormat {
+    return this.setting.defaultRecordFileFormat;
   }
   get textDecodingRule(): TextDecodingRule {
     return this.setting.textDecodingRule;

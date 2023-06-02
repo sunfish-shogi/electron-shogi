@@ -131,6 +131,7 @@ export const ja: Texts = {
   clockSoundTarget: "時計音の対象",
   anyTurn: "全ての手番",
   onlyHumanTurn: "人間の手番のみ",
+  defaultRecordFileFormat: "デフォルトの保存形式",
   textEncoding: "文字コード",
   strict: "厳格",
   autoDetect: "自動判定",

@@ -48,7 +48,8 @@ function getDateStringByMeta(metadata: ImmutableRecordMetadata): string {
 }
 
 export function defaultRecordFileName(
-  metadata: ImmutableRecordMetadata
+  metadata: ImmutableRecordMetadata,
+  extension?: string
 ): string {
   let ret = getDateStringByMeta(metadata);
   const title =
@@ -74,5 +75,12 @@ export function defaultRecordFileName(
   if (white) {
     ret += "_" + white;
   }
-  return escapePath(ret.trim()) + ".kif";
+  return (
+    escapePath(ret.trim()) +
+    (extension
+      ? extension.startsWith(".")
+        ? extension
+        : "." + extension
+      : ".kif")
+  );
 }

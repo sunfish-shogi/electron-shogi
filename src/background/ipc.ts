@@ -180,6 +180,18 @@ ipcMain.handle(
       throw new Error("failed to open dialog by unexpected error.");
     }
     const appSetting = loadAppSetting();
+    const filters = [
+      { name: "KIF (Shift_JIS)", extensions: ["kif"] },
+      { name: "KIF (UTF-8)", extensions: ["kifu"] },
+      { name: "CSA", extensions: ["csa"] },
+    ];
+    filters.sort((lhs, rhs) => {
+      return defaultPath.endsWith("." + lhs.extensions[0])
+        ? -1
+        : defaultPath.endsWith("." + rhs.extensions[0])
+        ? 1
+        : 0;
+    });
     getAppLogger().debug("show save-record dialog");
     const result = dialog.showSaveDialogSync(win, {
       defaultPath: path.resolve(
@@ -187,11 +199,7 @@ ipcMain.handle(
         defaultPath
       ),
       properties: ["createDirectory", "showOverwriteConfirmation"],
-      filters: [
-        { name: "KIF (Shift-JIS)", extensions: ["kif"] },
-        { name: "KIF (UTF-8)", extensions: ["kifu"] },
-        { name: "CSA", extensions: ["csa"] },
-      ],
+      filters,
     });
     getAppLogger().debug(`save-record dialog result: ${result}`);
     if (!result) {

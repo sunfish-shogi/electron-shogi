@@ -322,6 +322,26 @@
         <!-- ファイル -->
         <div class="section">
           <div class="section-title">{{ t.file }}</div>
+          <!-- デフォルトの保存形式 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">
+              {{ t.defaultRecordFileFormat }}
+            </div>
+            <HorizontalSelector
+              class="selector"
+              :value="defaultRecordFileFormat"
+              :items="[
+                { label: '.kif (Shift_JIS)', value: RecordFileFormat.KIF },
+                { label: '.kifu (UTF-8)', value: RecordFileFormat.KIFU },
+                { label: '.csa', value: RecordFileFormat.CSA },
+              ]"
+              @change="
+                (value: RecordFileFormat) => {
+                  defaultRecordFileFormat = value;
+                }
+              "
+            />
+          </div>
           <!-- 文字コード -->
           <div class="form-item">
             <div class="form-item-label-wide">
@@ -589,6 +609,7 @@ import {
   AppSettingUpdate,
   Thema,
   BackgroundImageType,
+  RecordFileFormat,
   TextDecodingRule,
   ClockSoundTarget,
 } from "@/common/settings/app";
@@ -645,6 +666,7 @@ const pieceVolume = ref();
 const clockVolume = ref();
 const clockPitch = ref();
 const clockSoundTarget = ref(appSetting.clockSoundTarget);
+const defaultRecordFileFormat = ref(appSetting.defaultRecordFileFormat);
 const textDecodingRule = ref(appSetting.textDecodingRule);
 const returnCode = ref(returnCodeToName[appSetting.returnCode]);
 const autoSaveDirectory = ref();
@@ -701,6 +723,7 @@ const saveAndClose = async () => {
       clockVolume: readInputAsNumber(clockVolume.value),
       clockPitch: readInputAsNumber(clockPitch.value),
       clockSoundTarget: clockSoundTarget.value,
+      defaultRecordFileFormat: defaultRecordFileFormat.value,
       textDecodingRule: textDecodingRule.value,
       returnCode: nameToReturnCode[returnCode.value],
       autoSaveDirectory: autoSaveDirectory.value.value,

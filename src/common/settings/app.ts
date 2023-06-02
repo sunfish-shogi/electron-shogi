@@ -74,6 +74,12 @@ export enum Tab {
   INVISIBLE = "invisible", // Deprecated
 }
 
+export enum RecordFileFormat {
+  KIF = ".kif",
+  KIFU = ".kifu",
+  CSA = ".csa",
+}
+
 export enum TextDecodingRule {
   STRICT = "strict",
   AUTO_DETECT = "autoDetect",
@@ -120,6 +126,7 @@ export type AppSetting = {
   topPaneHeightPercentage: number;
   topPanePreviousHeightPercentage: number;
   bottomLeftPaneWidthPercentage: number;
+  defaultRecordFileFormat: RecordFileFormat;
   textDecodingRule: TextDecodingRule;
   returnCode: string;
   autoSaveDirectory: string;
@@ -173,6 +180,7 @@ export type AppSettingUpdate = {
   topPaneHeightPercentage?: number;
   topPanePreviousHeightPercentage?: number;
   bottomLeftPaneWidthPercentage?: number;
+  defaultRecordFileFormat?: RecordFileFormat;
   textDecodingRule?: TextDecodingRule;
   returnCode?: string;
   autoSaveDirectory?: string;
@@ -261,6 +269,7 @@ export function defaultAppSetting(opt?: {
     topPaneHeightPercentage: 60,
     topPanePreviousHeightPercentage: 60,
     bottomLeftPaneWidthPercentage: 60,
+    defaultRecordFileFormat: RecordFileFormat.KIF,
     textDecodingRule: TextDecodingRule.AUTO_DETECT,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",

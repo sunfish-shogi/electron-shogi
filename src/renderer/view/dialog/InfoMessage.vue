@@ -3,7 +3,14 @@
     <dialog ref="dialog" class="info">
       <div class="message-box">
         <Icon :icon="IconType.INFO" />
-        <div class="message">{{ store.message.text }}</div>
+        <div class="message">
+          <div
+            v-for="(line, index) of store.message.text.split('\n')"
+            :key="index"
+          >
+            {{ line }}
+          </div>
+        </div>
       </div>
       <div
         v-for="(attachment, aidx) in store.message.attachments"

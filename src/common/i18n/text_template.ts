@@ -363,6 +363,9 @@ export type Texts = {
   dubiousThresholdMustBe1To100Percent: string;
   mistakeThresholdMustBe1To100Percent: string;
   blunderThresholdMustBe1To100Percent: string;
+  recordSavedWithGarbledCharacters: string;
+  pleaseConsiderToUseKIFU: string;
+  youCanChangeDefaultRecordFileFormatFromAppSettings: string;
   inaccuracyThresholdMustBeLessThanDubiousThreshold: string;
   dubiousThresholdMustBeLessThanMistakeThreshold: string;
   mistakeThresholdMustBeLessThanBlunderThreshold: string;

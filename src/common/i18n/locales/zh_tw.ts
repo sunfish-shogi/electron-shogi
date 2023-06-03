@@ -375,6 +375,11 @@ export const zh_tw: Texts = {
   dubiousThresholdMustBe1To100Percent: "請在0%～100%之間指定疑問手門檻。",
   mistakeThresholdMustBe1To100Percent: "請在0%～100%之間指定惡手門檻。",
   blunderThresholdMustBe1To100Percent: "請在0%～100%之間指定大惡手門檻。",
+  recordSavedWithGarbledCharacters:
+    "保存した棋譜の一部が文字化けしている可能性があります。",
+  pleaseConsiderToUseKIFU: "KIFU形式(UTF-8)で保存することをお勧めします。",
+  youCanChangeDefaultRecordFileFormatFromAppSettings:
+    "デフォルトの棋譜形式はアプリ設定で変更可能です。",
   inaccuracyThresholdMustBeLessThanDubiousThreshold:
     "緩手門檻應小於疑問手門檻。",
   dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手門檻應小於惡手門檻。",

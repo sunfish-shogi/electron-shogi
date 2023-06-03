@@ -128,6 +128,7 @@ class Store {
   private analysisManager = new AnalysisManager(this.recordManager);
   private mateSearchManager = new MateSearchManager();
   private _reactive: UnwrapNestedRefs<Store>;
+  private garbledNotified = false;
 
   constructor() {
     this.recordManager.on("changeFilePath", (path?: string) => {
@@ -616,7 +617,7 @@ class Store {
     );
     const path = join(appSetting.autoSaveDirectory, fname);
     this.saveRecordByPath(path).catch((e) => {
-      this.pushError(`棋譜の保存に失敗しました: ${e}`);
+      this.pushError(e);
     });
   }
 
@@ -1045,7 +1046,7 @@ class Store {
         if (!path) {
           return;
         }
-        return this.saveRecordByPath(path);
+        return this.saveRecordByPath(path, { detectGarbled: true });
       })
       .catch((e) => {
         this.pushError(e);
@@ -1055,21 +1056,28 @@ class Store {
       });
   }
 
-  private async saveRecordByPath(path: string): Promise<void> {
+  private async saveRecordByPath(
+    path: string,
+    opt?: { detectGarbled: boolean }
+  ): Promise<void> {
     const appSetting = useAppSetting();
-    const dataOrError = this.recordManager.exportRecordAsBuffer(path, {
+    const result = this.recordManager.exportRecordAsBuffer(path, {
       returnCode: appSetting.returnCode,
+      detectGarbled: opt?.detectGarbled,
     });
-    if (dataOrError instanceof Error) {
-      throw dataOrError;
+    if (result instanceof Error) {
+      throw result;
     }
-    this.retainBussyState();
     try {
-      await api.saveRecord(path, dataOrError);
+      await api.saveRecord(path, result.data);
+      if (result.garbled && !this.garbledNotified) {
+        this.enqueueMessage({
+          text: `${t.recordSavedWithGarbledCharacters}\n${t.pleaseConsiderToUseKIFU}\n${t.youCanChangeDefaultRecordFileFormatFromAppSettings}`,
+        });
+        this.garbledNotified = true;
+      }
     } catch (e) {
       throw new Error(`${t.failedToSaveRecord}: ${e}`);
-    } finally {
-      this.releaseBussyState();
     }
   }
 

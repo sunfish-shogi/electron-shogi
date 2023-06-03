@@ -160,6 +160,12 @@ type AppendMoveParams = {
 
 type ExportOptions = {
   returnCode?: string;
+  detectGarbled?: boolean;
+};
+
+type ExportResult = {
+  data: Uint8Array;
+  garbled: boolean;
 };
 
 type ChangeFilePathHandler = (path?: string) => void;
@@ -273,19 +279,29 @@ export class RecordManager {
     return;
   }
 
-  exportRecordAsBuffer(path: string, opt: ExportOptions): Uint8Array | Error {
+  exportRecordAsBuffer(path: string, opt: ExportOptions): ExportResult | Error {
     let data: Uint8Array;
+    let garbled = false;
     if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
       const str = exportKakinoki(this.record, opt);
       const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
       data = encodeText(str, encoding);
+      if (encoding === "SJIS" && opt.detectGarbled) {
+        const restored = decodeText(data, { encoding: "SJIS" });
+        if (restored !== str) {
+          garbled = true;
+        }
+      }
     } else if (path.match(/\.csa$/)) {
       data = encodeText(exportCSA(this.record, opt), "UTF8");
     } else {
       return new Error(`${t.unknownFileExtension}: ${path}`);
     }
     this.updateRecordFilePath(path);
-    return data;
+    return {
+      data,
+      garbled,
+    };
   }
 
   swapNextTurn(): void {

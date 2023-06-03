@@ -391,6 +391,11 @@ export const ja: Texts = {
     "悪手には1%～100%の閾値を指定してください。",
   blunderThresholdMustBe1To100Percent:
     "大悪手には1%～100%の値を指定してください。",
+  recordSavedWithGarbledCharacters:
+    "保存した棋譜の一部が文字化けしている可能性があります。",
+  pleaseConsiderToUseKIFU: "KIFU形式(UTF-8)で保存することをお勧めします。",
+  youCanChangeDefaultRecordFileFormatFromAppSettings:
+    "デフォルトの棋譜形式はアプリ設定で変更可能です。",
   inaccuracyThresholdMustBeLessThanDubiousThreshold:
     "緩手には疑問手より小さい値を指定してください。",
   dubiousThresholdMustBeLessThanMistakeThreshold:

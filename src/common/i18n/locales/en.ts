@@ -386,6 +386,11 @@ export const en: Texts = {
   dubiousThresholdMustBe1To100Percent: "Dubious threshold must be 1% to 100%.",
   mistakeThresholdMustBe1To100Percent: "Mistake threshold must be 1% to 100%.",
   blunderThresholdMustBe1To100Percent: "Blunder threshold must be 1% to 100%.",
+  recordSavedWithGarbledCharacters:
+    "The record has saved with some garbled characters.",
+  pleaseConsiderToUseKIFU: "Please consider to use KIFU(UTF-8).",
+  youCanChangeDefaultRecordFileFormatFromAppSettings:
+    "You can change default record file format from App Settings.",
   inaccuracyThresholdMustBeLessThanDubiousThreshold:
     "Inaccuracy threshold must be less than dubious threshold.",
   dubiousThresholdMustBeLessThanMistakeThreshold:

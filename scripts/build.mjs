@@ -40,13 +40,38 @@ const config = {
       }
     }
   },
-  win: {},
+  win: {
+    fileAssociations: {
+      name: "Kifu",
+      ext: ["kif", "kifu", "csa"],
+    },
+  },
   nsis: {
     allowElevation: false,
     packElevateHelper: false,
   },
   mac: {
     electronLanguages: ["en", "ja"],
+    fileAssociations: {
+      name: "Kifu",
+      ext: ["kif", "kifu", "csa"],
+    },
+    extendInfo: {
+      CFBundleDocumentTypes: [
+        {
+          CFBundleTypeExtensions: ["kif", "kifu", "csa"],
+          CFBundleTypeName: "Kifu",
+          CFBundleTypeRole: "Editor",
+          LSHandlerRank: "Owner",
+        },
+      ],
+    },
+  },
+  linux: {
+    fileAssociations: {
+      name: "Kifu",
+      ext: ["kif", "kifu", "csa"],
+    },
   },
   publish: null,
 };

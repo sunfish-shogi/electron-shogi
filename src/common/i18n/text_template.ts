@@ -158,6 +158,7 @@ export type Texts = {
   comments: string;
   commentsAndBookmarks: string;
   bookmark: string;
+  bookmarkList: string;
   useBookmarkAsHeader: string;
   moveComments: string;
   searchLog: string;

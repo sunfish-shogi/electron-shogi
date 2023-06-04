@@ -953,6 +953,16 @@ class Store {
     });
   }
 
+  jumpToBookmark(bookmark: string): boolean {
+    if (
+      this.appState === AppState.NORMAL ||
+      this.appState === AppState.RESEARCH
+    ) {
+      return this.recordManager.jumpToBookmark(bookmark);
+    }
+    return false;
+  }
+
   copyRecordKIF(): void {
     const appSetting = useAppSetting();
     const str = exportKakinoki(this.recordManager.record, {

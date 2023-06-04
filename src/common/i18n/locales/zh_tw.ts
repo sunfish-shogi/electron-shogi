@@ -160,6 +160,7 @@ export const zh_tw: Texts = {
   comments: "備註",
   commentsAndBookmarks: "備註・しおり", // TODO: translate
   bookmark: "しおり", // TODO: translate
+  bookmarkList: "しおり一覧", // TODO: translate
   useBookmarkAsHeader: "しおりを見出しに使う", // TODO: translate
   moveComments: "棋步備註",
   searchLog: "思考",

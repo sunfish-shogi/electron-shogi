@@ -206,7 +206,7 @@ class NodeImpl implements Node {
 
   static newRootEntry(color: Color): NodeImpl {
     return new NodeImpl(
-      0, // number
+      0, // ply
       null, // prev
       0, // branchIndex
       true, // activeBranch
@@ -233,6 +233,7 @@ export interface ImmutableRecord {
   readonly usi: string;
   readonly usiAll: string;
   readonly sfen: string;
+  readonly bookmarks: string[];
   // 深さ優先で全てのノードを訪問します。
   forEach(handler: (node: ImmutableNode) => void): void;
   on(event: "changePosition", handler: () => void): void;
@@ -584,6 +585,29 @@ export class Record {
     this._current.next = null;
   }
 
+  jumpToBookmark(bookmark: string): boolean {
+    // 一致するブックマークを探す。
+    const node = this.find((node) => node.bookmark === bookmark);
+    if (!node) {
+      return false;
+    }
+    // ブックマークのある局面までの経路を配列に書き出す。
+    const route: Node[] = [];
+    for (let p: Node | null = node; p; p = p.prev) {
+      route[p.ply] = p;
+    }
+    // 合流するところまで局面を戻す。
+    while (this._current !== route[this._current.ply]) {
+      this.goBack();
+    }
+    // ブックマークのある局面まで指し手を進める。
+    while (route.length > this._current.ply + 1) {
+      this.append(route[this._current.ply + 1].move);
+    }
+    this.onChangePosition();
+    return true;
+  }
+
   private incrementRepetition(): void {
     const sfen = this.position.sfen;
     if (this.repetitionCounts[sfen]) {
@@ -660,16 +684,37 @@ export class Record {
     return this.position.getSFEN(this._current.ply + 1);
   }
 
+  get bookmarks(): string[] {
+    const bookmarks: string[] = [];
+    const existed: { [name: string]: boolean } = {};
+    this.forEach((node) => {
+      if (node.bookmark && !existed[node.bookmark]) {
+        bookmarks.push(node.bookmark);
+        existed[node.bookmark] = true;
+      }
+    });
+    return bookmarks;
+  }
+
   // 深さ優先で全てのノードを訪問します。
   forEach(handler: (node: Node) => void): void {
     this._forEach(handler);
   }
 
   private _forEach(handler: (node: NodeImpl) => void): void {
+    this.find((node) => {
+      handler(node);
+      return false;
+    });
+  }
+
+  private find(handler: (node: NodeImpl) => boolean): NodeImpl | null {
     let p: NodeImpl | null = this._first;
     const stack: NodeImpl[] = [];
     while (p) {
-      handler(p);
+      if (handler(p)) {
+        return p;
+      }
       if (p.branch) {
         stack.push(p.branch);
       }
@@ -679,6 +724,7 @@ export class Record {
         p = stack.pop() || null;
       }
     }
+    return null;
   }
 
   on(event: "changePosition", handler: () => void): void;

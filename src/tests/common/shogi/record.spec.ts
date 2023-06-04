@@ -308,6 +308,68 @@ describe("shogi/record", () => {
     );
   });
 
+  it("bookmark", () => {
+    const data = `
+後手の持駒：
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+|v香v桂v銀v金v玉v金v銀v桂v香|一
+| ・v飛 ・ ・ ・ ・ ・v角 ・|二
+|v歩v歩v歩v歩v歩v歩v歩v歩v歩|三
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| 歩 歩 歩 歩 歩 歩 歩 歩 歩|七
+| ・ 角 ・ ・ ・ ・ ・ 飛 ・|八
+| 香 桂 銀 金 玉 金 銀 桂 香|九
++---------------------------+
+先手の持駒：
+先手番
+手数----指手---------消費時間--
+&開始局面
+1 ７六歩(77) ( 0:08/0:00:08)
+2 ３四歩(33) ( 0:12/0:00:12)
+&第1図
+3 ２二角成(88) ( 0:15/0:00:23)
+4 ２二銀(31) ( 0:03/0:00:15)+
+&第2図
+5 ４五角打 ( 0:06/0:00:29)
+&最終図
+
+変化：4手
+4 ２二飛(82) ( 0:05/0:00:17)
+&変化図
+`;
+    const record = importKakinoki(data) as Record;
+    expect(record.bookmarks).toStrictEqual([
+      "開始局面",
+      "第1図",
+      "第2図",
+      "最終図",
+      "変化図",
+    ]);
+    expect(record.jumpToBookmark("第1図")).toBeTruthy();
+    expect(record.current.ply).toBe(2);
+    expect((record.current.move as Move).usi).toBe("3c3d");
+    expect(record.jumpToBookmark("第1図")).toBeTruthy(); // not changed
+    expect(record.current.ply).toBe(2);
+    expect((record.current.move as Move).usi).toBe("3c3d");
+    expect(record.jumpToBookmark("第2図")).toBeTruthy();
+    expect(record.current.ply).toBe(4);
+    expect((record.current.move as Move).usi).toBe("3a2b");
+    expect(record.jumpToBookmark("第3図")).toBeFalsy(); // not found
+    expect(record.current.ply).toBe(4);
+    expect((record.current.move as Move).usi).toBe("3a2b");
+    expect(record.jumpToBookmark("最終図")).toBeTruthy();
+    expect(record.current.ply).toBe(5);
+    expect((record.current.move as Move).usi).toBe("B*4e");
+    expect(record.jumpToBookmark("変化図")).toBeTruthy();
+    expect(record.current.ply).toBe(4);
+    expect((record.current.move as Move).usi).toBe("8b2b");
+    expect(record.jumpToBookmark("開始局面")).toBeTruthy();
+    expect(record.current.ply).toBe(0);
+  });
+
   it("newByUSI/position-startpos", () => {
     // 平手100手
     const data =

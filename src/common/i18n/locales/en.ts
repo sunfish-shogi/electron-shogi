@@ -161,6 +161,7 @@ export const en: Texts = {
   comments: "Comments",
   commentsAndBookmarks: "Comments & Bookmarks",
   bookmark: "Bookmark",
+  bookmarkList: "Bookmarks",
   useBookmarkAsHeader: "Use Bookmark as Header",
   moveComments: "Move Comments",
   searchLog: "Search Log",

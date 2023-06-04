@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="full column">
+    <div class="full column root">
       <textarea
         ref="textarea"
         class="auto text"
@@ -19,17 +19,24 @@
           <span>{{ t.pv }}{{ pvs.length >= 2 ? " " + (index + 1) : "" }}</span>
         </button>
       </div>
-      <div class="row bookmark-area">
-        <div class="bookmark-label">{{ t.bookmark }}</div>
+      <div class="bookmark-area">
         <input
           type="text"
-          class="auto"
+          class="bookmark"
           :value="bookmark"
           :readonly="readonly"
+          :placeholder="t.bookmark"
           @input="changeBookmark"
         />
+        <button class="list" @click="openBookmarkList">
+          <span>{{ t.bookmarkList }}</span>
+        </button>
       </div>
     </div>
+    <BookmarkListDialog
+      v-if="bookmarkListDialogVisible"
+      @close="bookmarkListDialogVisible = false"
+    />
   </div>
 </template>
 
@@ -41,6 +48,7 @@ import { computed, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { Move } from "@/common/shogi";
+import BookmarkListDialog from "../dialog/BookmarkListDialog.vue";
 
 const store = useStore();
 const readonly = computed(
@@ -50,6 +58,7 @@ const textarea = ref();
 const comment = computed(() => store.record.current.comment);
 const pvs = computed(() => store.inCommentPVs);
 const bookmark = computed(() => store.record.current.bookmark);
+const bookmarkListDialogVisible = ref(false);
 
 const change = (event: Event) => {
   const comment = (event.target as HTMLTextAreaElement).value;
@@ -59,6 +68,10 @@ const change = (event: Event) => {
 const changeBookmark = (event: Event) => {
   const bookmark = (event.target as HTMLInputElement).value;
   store.updateRecordBookmark(bookmark);
+};
+
+const openBookmarkList = () => {
+  bookmarkListDialogVisible.value = true;
 };
 
 const play = (pv: Move[]) => {
@@ -79,6 +92,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.root {
+  background-color: var(--main-bg-color);
+}
 .text {
   width: 100%;
   resize: none;
@@ -87,7 +103,7 @@ onMounted(() => {
 .play-buttons {
   height: 28px;
 }
-button.play {
+button {
   height: 27px;
   line-height: 25px;
   font-size: 16px;
@@ -95,12 +111,16 @@ button.play {
   padding-right: 5px;
 }
 .bookmark-area {
-  padding: 2px 5px 2px 5px;
-  height: 24px;
-  color: var(--main-color);
-  background-color: var(--main-bg-color);
+  padding: 1px 0px 1px 0px;
+  height: 28px;
+  text-align: left;
+  white-space: nowrap;
 }
-.bookmark-label {
-  padding-right: 5px;
+.bookmark-area > * {
+  vertical-align: middle;
+}
+.bookmark {
+  max-width: 250px;
+  margin-right: 5px;
 }
 </style>

@@ -160,6 +160,7 @@ export const ja: Texts = {
   comments: "コメント",
   commentsAndBookmarks: "コメント・しおり",
   bookmark: "しおり",
+  bookmarkList: "しおり一覧",
   useBookmarkAsHeader: "しおりを見出しに使う",
   moveComments: "指し手コメント",
   searchLog: "思考",

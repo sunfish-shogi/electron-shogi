@@ -156,6 +156,9 @@ export type Texts = {
   deleteMove: string;
   recordProperties: string;
   comments: string;
+  commentsAndBookmarks: string;
+  bookmark: string;
+  useBookmarkAsHeader: string;
   moveComments: string;
   searchLog: string;
   pv: string;

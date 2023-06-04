@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, computed } from "vue";
+import { computed } from "vue";
 import { issueDOMID } from "@/renderer/helpers/unique";
 
 const props = defineProps({
@@ -29,12 +29,6 @@ const props = defineProps({
   height: {
     type: Number,
     default: 20,
-  },
-  onChange: {
-    type: Function as PropType<(checked: boolean) => void>,
-    default: () => {
-      /* noop */
-    },
   },
 });
 

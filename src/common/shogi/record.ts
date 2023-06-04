@@ -123,12 +123,14 @@ export interface ImmutableNode {
   readonly isLastMove: boolean;
   readonly elapsedMs: number;
   readonly totalElapsedMs: number;
+  readonly bookmark: string;
 }
 
 export interface Node extends ImmutableNode {
   comment: string;
   customData: unknown;
   setElapsedMs(elapsedMs: number): void;
+  bookmark: string;
 }
 
 class NodeImpl implements Node {
@@ -138,6 +140,7 @@ class NodeImpl implements Node {
   public customData: unknown;
   public elapsedMs = 0;
   public totalElapsedMs = 0;
+  public bookmark = "";
 
   constructor(
     public ply: number,

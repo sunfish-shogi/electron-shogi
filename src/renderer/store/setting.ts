@@ -165,6 +165,9 @@ class AppSettingStore {
   get positionImageSize(): number {
     return this.setting.positionImageSize;
   }
+  get useBookmarkAsPositionImageHeader(): boolean {
+    return this.setting.useBookmarkAsPositionImageHeader;
+  }
   get positionImageHeader(): string {
     return this.setting.positionImageHeader;
   }

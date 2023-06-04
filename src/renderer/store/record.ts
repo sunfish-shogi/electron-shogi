@@ -346,6 +346,10 @@ export class RecordManager {
     this._record.current.comment = comment;
   }
 
+  updateBookmark(bookmark: string): void {
+    this._record.current.bookmark = bookmark;
+  }
+
   appendComment(add: string, behavior: CommentBehavior): void {
     if (!add) {
       return;

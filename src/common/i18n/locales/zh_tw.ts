@@ -158,6 +158,9 @@ export const zh_tw: Texts = {
   deleteMove: "刪除該手",
   recordProperties: "棋譜情報",
   comments: "備註",
+  commentsAndBookmarks: "備註・しおり", // TODO: translate
+  bookmark: "しおり", // TODO: translate
+  useBookmarkAsHeader: "しおりを見出しに使う", // TODO: translate
   moveComments: "棋步備註",
   searchLog: "思考",
   pv: "読み筋", // TODO: translate

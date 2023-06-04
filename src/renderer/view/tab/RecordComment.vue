@@ -19,6 +19,16 @@
           <span>{{ t.pv }}{{ pvs.length >= 2 ? " " + (index + 1) : "" }}</span>
         </button>
       </div>
+      <div class="row bookmark-area">
+        <div class="bookmark-label">{{ t.bookmark }}</div>
+        <input
+          type="text"
+          class="auto"
+          :value="bookmark"
+          :readonly="readonly"
+          @input="changeBookmark"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -39,10 +49,16 @@ const readonly = computed(
 const textarea = ref();
 const comment = computed(() => store.record.current.comment);
 const pvs = computed(() => store.inCommentPVs);
+const bookmark = computed(() => store.record.current.bookmark);
 
 const change = (event: Event) => {
   const comment = (event.target as HTMLTextAreaElement).value;
   store.updateRecordComment(comment);
+};
+
+const changeBookmark = (event: Event) => {
+  const bookmark = (event.target as HTMLInputElement).value;
+  store.updateRecordBookmark(bookmark);
 };
 
 const play = (pv: Move[]) => {
@@ -76,6 +92,15 @@ button.play {
   line-height: 25px;
   font-size: 16px;
   padding-left: 5px;
+  padding-right: 5px;
+}
+.bookmark-area {
+  padding: 2px 5px 2px 5px;
+  height: 24px;
+  color: var(--main-color);
+  background-color: var(--main-bg-color);
+}
+.bookmark-label {
   padding-right: 5px;
 }
 </style>

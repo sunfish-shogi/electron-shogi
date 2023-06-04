@@ -849,6 +849,10 @@ class Store {
     this.recordManager.updateComment(comment);
   }
 
+  updateRecordBookmark(bookmark: string): void {
+    this.recordManager.updateBookmark(bookmark);
+  }
+
   insertSpecialMove(specialMove: SpecialMove): void {
     if (
       this.appState !== AppState.NORMAL &&

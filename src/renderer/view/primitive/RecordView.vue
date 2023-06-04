@@ -32,7 +32,10 @@
         </div>
         <div class="move-text">{{ move.text }}</div>
         <div v-if="showElapsedTime" class="move-time">{{ move.time }}</div>
-        <div v-if="showComment" class="move-comment">{{ move.comment }}</div>
+        <div v-if="showComment" class="move-comment">
+          <span v-if="move.bookmark" class="bookmark">{{ move.bookmark }}</span>
+          {{ move.comment }}
+        </div>
       </div>
     </div>
     <div class="auto row branch-list-area">
@@ -47,6 +50,9 @@
         >
           <div class="move-text">{{ branch.text }}</div>
           <div v-if="showComment" class="move-comment">
+            <span v-if="branch.bookmark" class="bookmark">{{
+              branch.bookmark
+            }}</span>
             {{ branch.comment }}
           </div>
         </div>
@@ -183,6 +189,7 @@ const moves = computed(() => {
     text: string;
     time: string;
     hasBranch: boolean;
+    bookmark: string;
     comment: string;
     selected: boolean;
   }[] = [];
@@ -192,6 +199,7 @@ const moves = computed(() => {
       text: elem.displayText,
       time: elem.ply != 0 ? elem.timeText : "",
       hasBranch: elem.hasBranch,
+      bookmark: elem.bookmark,
       comment: elem.comment,
       selected: elem === props.record.current,
     });
@@ -206,6 +214,7 @@ const branches = computed(() => {
   const ret: {
     index: number;
     text: string;
+    bookmark: string;
     comment: string;
     selected: boolean;
   }[] = [];
@@ -214,6 +223,7 @@ const branches = computed(() => {
     ret.push({
       index: ret.length,
       text: p.displayText,
+      bookmark: p.bookmark,
       comment: p.comment,
       selected: p.activeBranch,
     });
@@ -333,6 +343,17 @@ onUpdated(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.bookmark {
+  display: inline-block;
+  height: 100%;
+  color: var(--main-color);
+  background-color: var(--main-bg-color);
+  padding-left: 5px;
+  padding-right: 5px;
+  box-sizing: border-box;
+  border: 1px solid var(--text-separator-color);
+  border-radius: 5px;
 }
 .options {
   width: 100%;

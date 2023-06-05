@@ -202,6 +202,14 @@ export function setup(): void {
   bridge.onUpdateAppSetting((json: string) => {
     appSetting.updateAppSetting(JSON.parse(json));
   });
+  bridge.onOpenRecord((path: string) => {
+    store.showConfirmation({
+      message: "現在の棋譜を閉じて別のファイルを開きます。よろしいですか？", // TODO i18n
+      onOk: () => {
+        store.openRecord(path);
+      },
+    });
+  });
   bridge.onUSIBestMove(onUSIBestMove);
   bridge.onUSICheckmate(onUSICheckmate);
   bridge.onUSICheckmateNotImplemented(onUSICheckmateNotImplemented);

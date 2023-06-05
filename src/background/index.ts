@@ -2,7 +2,13 @@
 
 import path from "path";
 import { app, protocol, BrowserWindow, session } from "electron";
-import { getAppState, sendError, setup } from "@/background/ipc";
+import {
+  getAppState,
+  openRecord,
+  sendError,
+  setInitialFilePath,
+  setup,
+} from "@/background/ipc";
 import {
   loadAppSetting,
   loadWindowSetting,
@@ -117,10 +123,30 @@ function createWindow() {
       }
     });
     win.show();
+
+    // macOS では起動後に Finder からファイルを開こうとすると既に存在するプロセスに対して open-file イベントが発生する。
+    app.on("open-file", (event, path) => {
+      event.preventDefault();
+      if (win.isMinimized()) {
+        win.restore();
+      }
+      win.focus();
+      openRecord(path);
+    });
   });
 }
 
 app.enableSandbox();
+
+app.once("will-finish-launching", () => {
+  getAppLogger().info("on will-finish-launching");
+
+  // macOS の Finder でファイルが開かれた場合には process.argv ではなく open-file イベントからパスを取得する必要がある。
+  app.once("open-file", (event, path) => {
+    event.preventDefault();
+    setInitialFilePath(path);
+  });
+});
 
 app.on("will-quit", () => {
   getAppLogger().info("on will-quit");

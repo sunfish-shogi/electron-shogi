@@ -320,6 +320,7 @@ export type Texts = {
   areYouSureWantToRequestQuit: string;
   areYouSureWantToClearRecord: string;
   areYouSureWantToDiscardPosition: string;
+  areYouSureWantToOpenFileInsteadOfCurrentRecord: string;
   youCanNotCloseAppWhileCSAOnlineGame: string;
   fileExtensionNotSupported: string;
   errorOccuredWhileDisconnectingFromCSAServer: string;

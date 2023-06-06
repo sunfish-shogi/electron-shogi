@@ -92,6 +92,7 @@ export interface Bridge {
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
   onUpdateAppSetting(callback: (json: string) => void): void;
+  onOpenRecord(callback: (path: string) => void): void;
   onUSIBestMove(
     callback: (
       sessionID: number,

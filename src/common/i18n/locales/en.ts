@@ -339,6 +339,8 @@ export const en: Texts = {
   areYouSureWantToClearRecord: "Are you sure you want to clear record?",
   areYouSureWantToDiscardPosition:
     "Are you sure you want to discard the position?",
+  areYouSureWantToOpenFileInsteadOfCurrentRecord:
+    "Are you sure you want to open the file instead of current record?",
   youCanNotCloseAppWhileCSAOnlineGame:
     "You can not close app while CSA online game.",
   fileExtensionNotSupported: "File extension is not supported.",

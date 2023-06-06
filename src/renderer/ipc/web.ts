@@ -234,6 +234,9 @@ export const webAPI: Bridge = {
   onUpdateAppSetting(): void {
     // Do Nothing
   },
+  onOpenRecord(): void {
+    // Do Nothing
+  },
   onUSIBestMove(): void {
     // Do Nothing
   },

@@ -244,6 +244,9 @@ const api: Bridge = {
   onUpdateAppSetting(callback: (json: string) => void): void {
     ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));
   },
+  onOpenRecord(callback: (path: string) => void): void {
+    ipcRenderer.on(Renderer.OPEN_RECORD, (_, path) => callback(path));
+  },
   onUSIBestMove(
     callback: (
       sessionID: number,

@@ -23,6 +23,7 @@ import {
   onCSAStart,
 } from "@/renderer/store/csa";
 import { useAppSetting } from "@/renderer/store/setting";
+import { t } from "@/common/i18n";
 
 export function setup(): void {
   const store = useStore();
@@ -201,6 +202,14 @@ export function setup(): void {
   });
   bridge.onUpdateAppSetting((json: string) => {
     appSetting.updateAppSetting(JSON.parse(json));
+  });
+  bridge.onOpenRecord((path: string) => {
+    store.showConfirmation({
+      message: t.areYouSureWantToOpenFileInsteadOfCurrentRecord,
+      onOk: () => {
+        store.openRecord(path);
+      },
+    });
   });
   bridge.onUSIBestMove(onUSIBestMove);
   bridge.onUSICheckmate(onUSICheckmate);

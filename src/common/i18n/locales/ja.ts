@@ -336,6 +336,8 @@ export const ja: Texts = {
     "中断を要求すると負けになる可能性があります。よろしいですか？",
   areYouSureWantToClearRecord: "現在の棋譜は削除されます。よろしいですか？",
   areYouSureWantToDiscardPosition: "現在の局面は破棄されます。よろしいですか？",
+  areYouSureWantToOpenFileInsteadOfCurrentRecord:
+    "現在の棋譜を閉じて別のファイルを開きます。よろしいですか？",
   youCanNotCloseAppWhileCSAOnlineGame:
     "CSAプロトコル使用中はアプリを終了できません。",
   fileExtensionNotSupported: "取り扱いできないファイル拡張子です。",

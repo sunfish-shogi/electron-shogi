@@ -77,8 +77,13 @@ import { getCroppedPieceImageBaseURL } from "@/background/image/cropper";
 
 const isWindows = process.platform === "win32";
 
+let initialFilePath = "";
 let mainWindow: BrowserWindow; // TODO: refactoring
 let appState = AppState.NORMAL;
+
+export function setInitialFilePath(path: string): void {
+  initialFilePath = path;
+}
 
 export function setup(win: BrowserWindow): void {
   mainWindow = win;
@@ -95,6 +100,12 @@ export function getWebContents(): WebContents {
 
 ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, (event) => {
   validateIPCSender(event.senderFrame);
+  if (isValidRecordFilePath(initialFilePath)) {
+    getAppLogger().debug(
+      `record path from open-file event: ${initialFilePath}`
+    );
+    return initialFilePath;
+  }
   const path = process.argv[process.argv.length - 1];
   if (isValidRecordFilePath(path)) {
     getAppLogger().debug(`record path from proc arg: ${path}`);
@@ -632,6 +643,12 @@ export function onUpdateAppSetting(setting: AppSettingUpdate): void {
     Renderer.UPDATE_APP_SETTING,
     JSON.stringify(setting)
   );
+}
+
+export function openRecord(path: string): void {
+  if (isValidRecordFilePath(path)) {
+    mainWindow.webContents.send(Renderer.OPEN_RECORD, path);
+  }
 }
 
 export function onUSIBestMove(

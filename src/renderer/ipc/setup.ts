@@ -23,6 +23,7 @@ import {
   onCSAStart,
 } from "@/renderer/store/csa";
 import { useAppSetting } from "@/renderer/store/setting";
+import { t } from "@/common/i18n";
 
 export function setup(): void {
   const store = useStore();
@@ -204,7 +205,7 @@ export function setup(): void {
   });
   bridge.onOpenRecord((path: string) => {
     store.showConfirmation({
-      message: "現在の棋譜を閉じて別のファイルを開きます。よろしいですか？", // TODO i18n
+      message: t.areYouSureWantToOpenFileInsteadOfCurrentRecord,
       onOk: () => {
         store.openRecord(path);
       },

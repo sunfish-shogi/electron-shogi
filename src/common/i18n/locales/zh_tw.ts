@@ -329,6 +329,8 @@ export const zh_tw: Texts = {
   areYouSureWantToRequestQuit: "若提出中斷要求，可能會被判負。請問您要繼續嗎？",
   areYouSureWantToClearRecord: "將會刪除現在的棋譜。請問您要繼續嗎？",
   areYouSureWantToDiscardPosition: "將不會保存現在的局面。請問您要繼續嗎？",
+  areYouSureWantToOpenFileInsteadOfCurrentRecord:
+    "現在の棋譜を閉じて別のファイルを開きます。よろしいですか？", // TODO: translate
   youCanNotCloseAppWhileCSAOnlineGame:
     "由於CSA協定正在使用中，本程式無法被關閉。",
   fileExtensionNotSupported: "無法支援的副檔名。",

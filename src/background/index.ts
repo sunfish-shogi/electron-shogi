@@ -126,6 +126,7 @@ function createWindow() {
 
     // macOS では起動後に Finder からファイルを開こうとすると既に存在するプロセスに対して open-file イベントが発生する。
     app.on("open-file", (event, path) => {
+      getAppLogger().info("on open-file: %s", path);
       event.preventDefault();
       if (win.isMinimized()) {
         win.restore();
@@ -143,6 +144,7 @@ app.once("will-finish-launching", () => {
 
   // macOS の Finder でファイルが開かれた場合には process.argv ではなく open-file イベントからパスを取得する必要がある。
   app.once("open-file", (event, path) => {
+    getAppLogger().info("on open-file: %s", path);
     event.preventDefault();
     setInitialFilePath(path);
   });

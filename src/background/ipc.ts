@@ -100,7 +100,13 @@ export function getWebContents(): WebContents {
 
 ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, (event) => {
   validateIPCSender(event.senderFrame);
-  const path = process.argv[process.argv.length - 1] || initialFilePath;
+  if (isValidRecordFilePath(initialFilePath)) {
+    getAppLogger().debug(
+      `record path from open-file event: ${initialFilePath}`
+    );
+    return initialFilePath;
+  }
+  const path = process.argv[process.argv.length - 1];
   if (isValidRecordFilePath(path)) {
     getAppLogger().debug(`record path from proc arg: ${path}`);
     return path;

@@ -5,7 +5,8 @@ export function getBlackPlayerName(
 ): string | undefined {
   return (
     metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.BLACK_SHORT_NAME)
+    metadata.getStandardMetadata(RecordMetadataKey.BLACK_SHORT_NAME) ||
+    metadata.getStandardMetadata(RecordMetadataKey.SHITATE_NAME)
   );
 }
 
@@ -14,6 +15,7 @@ export function getWhitePlayerName(
 ): string | undefined {
   return (
     metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.WHITE_SHORT_NAME)
+    metadata.getStandardMetadata(RecordMetadataKey.WHITE_SHORT_NAME) ||
+    metadata.getStandardMetadata(RecordMetadataKey.UWATE_NAME)
   );
 }

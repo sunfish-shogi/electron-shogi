@@ -28,6 +28,7 @@ import {
   SpecialMove,
 } from "./record";
 import { Square } from "./square";
+import { getBlackPlayerName, getWhitePlayerName } from "../helpers/metadata";
 
 enum LineType {
   VERSION,
@@ -420,15 +421,11 @@ function formatMetadata(
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
-  const blackName =
-    metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.BLACK_SHORT_NAME);
+  const blackName = getBlackPlayerName(metadata);
   if (blackName) {
     ret += "N+" + blackName + returnCode;
   }
-  const whiteName =
-    metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.WHITE_SHORT_NAME);
+  const whiteName = getWhitePlayerName(metadata);
   if (whiteName) {
     ret += "N-" + whiteName + returnCode;
   }

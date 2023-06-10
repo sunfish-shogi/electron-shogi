@@ -141,8 +141,8 @@ describe("shogi/kakinoki", () => {
 場所：81Dojo
 持ち時間：15分+60秒
 手合割：角落ち
-先手：ZhangJingding
-後手：Sota_FUJII
+下手：ZhangJingding
+上手：Sota_FUJII
 手数----指手---------消費時間--
 1   ８四歩(83)   (0:23/0:0:23)
 2   ７六歩(77)   (0:29/0:0:29)
@@ -326,10 +326,10 @@ describe("shogi/kakinoki", () => {
     const record = importKakinoki(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.SHITATE_NAME)
     ).toBe("ZhangJingding");
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.UWATE_NAME)
     ).toBe("Sota_FUJII");
     expect(record.position.board.at(new Square(2, 2))).toBeNull();
     expect(record.position.board.at(new Square(8, 2))).toStrictEqual(

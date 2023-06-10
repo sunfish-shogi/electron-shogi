@@ -17,6 +17,8 @@ export enum RecordMetadataKey {
   TITLE = "title", // 表題
   BLACK_NAME = "blackName", // 先手
   WHITE_NAME = "whiteName", // 後手
+  SHITATE_NAME = "shitateName", // 下手
+  UWATE_NAME = "uwateName", // 上手
   START_DATETIME = "startDatetime", // 開始日時
   END_DATETIME = "endDatetime", // 終了日時
   DATE = "date", // 対局日

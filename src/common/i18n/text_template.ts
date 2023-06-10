@@ -177,8 +177,10 @@ export type Texts = {
   expandTabView: string;
   sente: string;
   senteOrShitate: string;
+  shitate: string;
   gote: string;
   goteOrUwate: string;
+  uwate: string;
   swapSenteGote: string;
   currentPosition: string;
   time: string;

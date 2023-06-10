@@ -107,6 +107,7 @@ enum LineType {
   WHITE_TURN,
   MOVE,
   COMMENT,
+  BOOKMARK,
   UNKNOWN,
 }
 
@@ -163,6 +164,12 @@ const linePatterns = [
   {
     prefix: /^\*/,
     type: LineType.COMMENT,
+    removePrefix: true,
+    isPosition: false,
+  },
+  {
+    prefix: /^&/,
+    type: LineType.BOOKMARK,
     removePrefix: true,
     isPosition: false,
   },
@@ -389,6 +396,7 @@ export function importKakinoki(data: string): Record | Error {
   const lines = data.split(/\r?\n/);
   const position = new Position();
   let preMoveComment = "";
+  let preMoveBookmark = "";
   let inMoveSection = false;
   for (const line of lines) {
     if (line === "") {
@@ -431,6 +439,7 @@ export function importKakinoki(data: string): Record | Error {
         if (!inMoveSection) {
           record.clear(position);
           record.first.comment = preMoveComment;
+          record.first.bookmark = preMoveBookmark;
           inMoveSection = true;
         }
         e = readMove(record, parsed.data);
@@ -445,6 +454,13 @@ export function importKakinoki(data: string): Record | Error {
           preMoveComment = appendLine(preMoveComment, parsed.data);
         }
         break;
+      case LineType.BOOKMARK:
+        if (inMoveSection) {
+          record.current.bookmark = parsed.data;
+        } else {
+          preMoveBookmark = parsed.data;
+        }
+        break;
       case LineType.PROGRAM_COMMENT:
         break;
       case LineType.UNKNOWN:
@@ -457,6 +473,7 @@ export function importKakinoki(data: string): Record | Error {
   if (!inMoveSection) {
     record.clear(position);
     record.first.comment = preMoveComment;
+    record.first.bookmark = preMoveBookmark;
   }
   record.goto(0);
   record.resetAllBranchSelection();
@@ -603,6 +620,9 @@ export function exportKakinoki(
         ? node.comment.slice(0, -1)
         : node.comment;
       ret += "*" + comment.replaceAll("\n", returnCode + "*") + returnCode;
+    }
+    if (node.bookmark.length !== 0) {
+      ret += "&" + node.bookmark + returnCode;
     }
   });
   return ret;

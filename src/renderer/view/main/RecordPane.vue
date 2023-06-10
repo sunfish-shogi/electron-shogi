@@ -7,7 +7,7 @@
         :show-comment="appSetting.showCommentInRecordView"
         :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
         :elapsed-time-toggle-label="t.elapsedTime"
-        :comment-toggle-label="t.comments"
+        :comment-toggle-label="t.commentsAndBookmarks"
         @go-begin="goBegin"
         @go-back="goBack"
         @go-forward="goForward"

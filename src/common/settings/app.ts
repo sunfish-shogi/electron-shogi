@@ -146,6 +146,7 @@ export type AppSetting = {
   logLevel: LogLevel;
   positionImageStyle: PositionImageStyle;
   positionImageSize: number;
+  useBookmarkAsPositionImageHeader: boolean;
   positionImageHeader: string;
   lastRecordFilePath: string;
   lastUSIEngineFilePath: string;
@@ -200,6 +201,7 @@ export type AppSettingUpdate = {
   logLevel?: LogLevel;
   positionImageStyle?: PositionImageStyle;
   positionImageSize?: number;
+  useBookmarkAsPositionImageHeader?: boolean;
   positionImageHeader?: string;
   lastRecordFilePath?: string;
   lastUSIEngineFilePath?: string;
@@ -289,6 +291,7 @@ export function defaultAppSetting(opt?: {
     logLevel: LogLevel.INFO,
     positionImageStyle: PositionImageStyle.BOOK,
     positionImageSize: 500,
+    useBookmarkAsPositionImageHeader: false,
     positionImageHeader: "",
     lastRecordFilePath: "",
     lastUSIEngineFilePath: "",

@@ -342,8 +342,16 @@ export class RecordManager {
     this._record.removeNextMove();
   }
 
+  jumpToBookmark(bookmark: string): boolean {
+    return this._record.jumpToBookmark(bookmark);
+  }
+
   updateComment(comment: string): void {
     this._record.current.comment = comment;
+  }
+
+  updateBookmark(bookmark: string): void {
+    this._record.current.bookmark = bookmark;
   }
 
   appendComment(add: string, behavior: CommentBehavior): void {

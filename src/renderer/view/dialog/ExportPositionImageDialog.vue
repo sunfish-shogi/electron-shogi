@@ -6,7 +6,7 @@
           v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK"
           :max-size="maxSize"
           :position="record.position"
-          :header="appSetting.positionImageHeader || defaultHeader"
+          :header="header"
           :footer="record.current.comment"
           :last-move="lastMove"
         />
@@ -26,31 +26,46 @@
           :white-player-name="whitePlayerName"
         />
       </div>
-      <div class="form-item center">
-        <select :value="appSetting.positionImageStyle" @change="changeType">
-          <option :value="PositionImageStyle.BOOK">{{ t.bookStyle }}</option>
-          <option :value="PositionImageStyle.GAME">{{ t.gameStyle }}</option>
-        </select>
-        <input
-          ref="imageSize"
-          class="size"
-          type="number"
-          min="400"
-          max="2000"
-          @input="changeSize"
-        />
-        <span class="form-item-unit">px</span>
-        <input
-          ref="headerText"
+      <div>
+        <div class="form-item center">
+          <HorizontalSelector
+            :value="appSetting.positionImageStyle"
+            :items="[
+              { value: PositionImageStyle.BOOK, label: t.bookStyle },
+              { value: PositionImageStyle.GAME, label: t.gameStyle },
+            ]"
+            @change="changeType"
+          />
+          <input
+            ref="imageSize"
+            class="size"
+            type="number"
+            min="400"
+            max="2000"
+            @input="changeSize"
+          />
+          <span class="form-item-unit">px</span>
+        </div>
+        <div
+          class="form-item center"
           :class="{
             hidden: appSetting.positionImageStyle === PositionImageStyle.GAME,
           }"
-          class="header"
-          :placeholder="t.typeCustomTitleHere"
-          @input="changeHeaderText"
-        />
+        >
+          <input
+            ref="headerText"
+            class="header"
+            :placeholder="t.typeCustomTitleHere"
+            @input="changeHeaderText"
+          />
+          <ToggleButton
+            :value="appSetting.useBookmarkAsPositionImageHeader"
+            :label="t.useBookmarkAsHeader"
+            @change="changeWhetherToUseBookmark"
+          />
+        </div>
       </div>
-      <div class="form-item center">
+      <div class="main-buttons">
         <button autofocus data-hotkey="Enter" @click="saveAsPNG">
           <Icon :icon="IconType.SAVE" />
           <span>PNG</span>
@@ -94,10 +109,12 @@ import {
   getBlackPlayerName,
   getWhitePlayerName,
 } from "@/common/helpers/metadata";
+import HorizontalSelector from "../primitive/HorizontalSelector.vue";
+import ToggleButton from "../primitive/ToggleButton.vue";
 
 const lazyUpdateDelay = 100;
-const marginHor = 80;
-const marginVer = 150;
+const marginHor = 150;
+const marginVer = 200;
 const aspectRatio = 16 / 9;
 
 const store = useStore();
@@ -119,14 +136,6 @@ const windowSize = reactive(
   new RectSize(window.innerWidth, window.innerHeight)
 );
 const zoom = ref(window.devicePixelRatio);
-const defaultHeader = lastMove
-  ? `${record.current.ply}手目 ${getMoveDisplayText(
-      record.position,
-      lastMove
-    )}まで`
-  : record.current.nextColor === Color.BLACK
-  ? "先手番"
-  : "後手番";
 
 const windowLazyUpdate = new Lazy();
 const updateSize = () => {
@@ -159,6 +168,21 @@ const maxSize = computed(() => {
   );
 });
 
+const header = computed(() => {
+  return (
+    (appSetting.useBookmarkAsPositionImageHeader && record.current.bookmark) ||
+    appSetting.positionImageHeader ||
+    (lastMove
+      ? `${record.current.ply}手目 ${getMoveDisplayText(
+          record.position,
+          lastMove
+        )}まで`
+      : record.current.nextColor === Color.BLACK
+      ? "先手番"
+      : "後手番")
+  );
+});
+
 const changeSize = (e: Event) => {
   const elem = e.target as HTMLInputElement;
   appSetting.updateAppSetting({
@@ -173,11 +197,14 @@ const changeHeaderText = (e: Event) => {
   });
 };
 
-const changeType = (e: Event) => {
-  const elem = e.target as HTMLSelectElement;
+const changeWhetherToUseBookmark = (value: boolean) => {
   appSetting.updateAppSetting({
-    positionImageStyle: elem.value as PositionImageStyle,
+    useBookmarkAsPositionImageHeader: value,
   });
+};
+
+const changeType = (value: PositionImageStyle) => {
+  appSetting.updateAppSetting({ positionImageStyle: value });
 };
 
 const getRect = () => {
@@ -213,6 +240,9 @@ const close = () => {
 }
 .board.book {
   background-color: white;
+}
+.form-item > * {
+  vertical-align: middle;
 }
 input.size {
   width: 50px;

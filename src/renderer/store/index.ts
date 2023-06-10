@@ -849,6 +849,10 @@ class Store {
     this.recordManager.updateComment(comment);
   }
 
+  updateRecordBookmark(bookmark: string): void {
+    this.recordManager.updateBookmark(bookmark);
+  }
+
   insertSpecialMove(specialMove: SpecialMove): void {
     if (
       this.appState !== AppState.NORMAL &&
@@ -947,6 +951,16 @@ class Store {
         this.recordManager.removeCurrentMove();
       },
     });
+  }
+
+  jumpToBookmark(bookmark: string): boolean {
+    if (
+      this.appState === AppState.NORMAL ||
+      this.appState === AppState.RESEARCH
+    ) {
+      return this.recordManager.jumpToBookmark(bookmark);
+    }
+    return false;
   }
 
   copyRecordKIF(): void {

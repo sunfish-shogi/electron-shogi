@@ -73,6 +73,7 @@ export const ja: Texts = {
   impass: "持将棋",
   repetitionDraw: "千日手",
   mate: "詰み",
+  noMate: "不詰",
   mateSearch: "詰み探索",
   startMateSearch: "詰み探索開始",
   stopMateSearch: "詰み探索終了",

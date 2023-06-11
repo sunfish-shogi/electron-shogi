@@ -87,6 +87,9 @@ export function setup(): void {
       case MenuEvent.INSERT_MATE:
         store.insertSpecialMove(SpecialMove.MATE);
         break;
+      case MenuEvent.INSERT_NO_MATE:
+        store.insertSpecialMove(SpecialMove.NO_MATE);
+        break;
       case MenuEvent.INSERT_TIMEOUT:
         store.insertSpecialMove(SpecialMove.TIMEOUT);
         break;

@@ -265,6 +265,7 @@ const stringToSpecialMove: { [move: string]: SpecialMove } = {
   持将棋: SpecialMove.IMPASS,
   千日手: SpecialMove.REPETITION_DRAW,
   詰み: SpecialMove.MATE,
+  不詰: SpecialMove.NO_MATE,
   切れ負け: SpecialMove.TIMEOUT,
   反則勝ち: SpecialMove.FOUL_WIN,
   反則負け: SpecialMove.FOUL_LOSE,
@@ -280,7 +281,7 @@ const moveRegExp =
 const timeRegExp = /\( *([0-9]+):([0-9]+)\/[0-9: ]*\)/;
 
 const specialMoveRegExp =
-  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗|封じ手) *(.*)$/;
+  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|不詰|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗|封じ手) *(.*)$/;
 
 function readBoard(board: Board, data: string): Error | undefined {
   if (data.length < 21) {
@@ -488,20 +489,21 @@ export function importKakinoki(data: string): Record | Error {
 }
 
 const specialMoveToString = {
-  start: "",
-  resign: "投了",
-  interrupt: "中断",
-  impass: "持将棋",
-  draw: "持将棋",
-  repetitionDraw: "千日手",
-  mate: "詰み",
-  timeout: "切れ負け",
-  foulWin: "反則勝ち",
-  foulLose: "反則負け",
-  enteringOfKing: "入玉勝ち",
-  winByDefault: "不戦勝",
-  loseByDefault: "不戦敗",
-  sealedMove: "封じ手",
+  [SpecialMove.START]: "",
+  [SpecialMove.RESIGN]: "投了",
+  [SpecialMove.INTERRUPT]: "中断",
+  [SpecialMove.IMPASS]: "持将棋",
+  [SpecialMove.DRAW]: "持将棋",
+  [SpecialMove.REPETITION_DRAW]: "千日手",
+  [SpecialMove.MATE]: "詰み",
+  [SpecialMove.NO_MATE]: "不詰",
+  [SpecialMove.TIMEOUT]: "切れ負け",
+  [SpecialMove.FOUL_WIN]: "反則勝ち",
+  [SpecialMove.FOUL_LOSE]: "反則負け",
+  [SpecialMove.ENTERING_OF_KING]: "入玉勝ち",
+  [SpecialMove.WIN_BY_DEFAULT]: "不戦勝",
+  [SpecialMove.LOSE_BY_DEFAULT]: "不戦敗",
+  [SpecialMove.SEALED_MOVE]: "封じ手",
 };
 
 type KakinokiExportOptions = {

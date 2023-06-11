@@ -73,6 +73,7 @@ export const zh_tw: Texts = {
   impass: "持将棋",
   repetitionDraw: "千日手",
   mate: "詰死",
+  noMate: "不詰", // TODO: translate
   mateSearch: "詰搜尋",
   startMateSearch: "開始詰搜尋",
   stopMateSearch: "結束詰搜尋",

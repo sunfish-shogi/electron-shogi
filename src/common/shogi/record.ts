@@ -98,6 +98,7 @@ export enum SpecialMove {
   DRAW = "draw",
   REPETITION_DRAW = "repetitionDraw",
   MATE = "mate",
+  NO_MATE = "noMate",
   TIMEOUT = "timeout",
   FOUL_WIN = "foulWin", // 手番側の勝ち(直前の指し手が反則手)
   FOUL_LOSE = "foulLose", // 手番側の負け

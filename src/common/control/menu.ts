@@ -16,6 +16,7 @@ export enum MenuEvent {
   INSERT_IMPASS = "insertImpass",
   INSERT_REPETITION_DRAW = "insertRepetitionDraw",
   INSERT_MATE = "insertMate",
+  INSERT_NO_MATE = "insertNoMate",
   INSERT_TIMEOUT = "insertTimeout",
   INSERT_FOUL_WIN = "insertFoulWin",
   INSERT_FOUL_LOSE = "insertFoulLose",

@@ -71,6 +71,7 @@ export type Texts = {
   impass: string;
   repetitionDraw: string;
   mate: string;
+  noMate: string;
   mateSearch: string;
   startMateSearch: string;
   stopMateSearch: string;

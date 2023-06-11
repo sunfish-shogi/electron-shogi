@@ -146,6 +146,10 @@ function createMenuTemplate() {
               AppState.NORMAL,
               AppState.RESEARCH,
             ]),
+            menuItem(t.noMate, MenuEvent.INSERT_NO_MATE, [
+              AppState.NORMAL,
+              AppState.RESEARCH,
+            ]),
             menuItem(t.timeout, MenuEvent.INSERT_TIMEOUT, [
               AppState.NORMAL,
               AppState.RESEARCH,

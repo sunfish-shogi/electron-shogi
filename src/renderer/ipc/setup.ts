@@ -150,6 +150,9 @@ export function setup(): void {
       case MenuEvent.INIT_POSITION_HANDICAP_8PIECES:
         store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
         break;
+      case MenuEvent.INIT_POSITION_HANDICAP_10PIECES:
+        store.initializePosition(InitialPositionType.HANDICAP_10PIECES);
+        break;
       case MenuEvent.INIT_POSITION_TSUME_SHOGI:
         store.initializePosition(InitialPositionType.TSUME_SHOGI);
         break;

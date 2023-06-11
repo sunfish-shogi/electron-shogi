@@ -264,6 +264,7 @@ export const zh_tw: Texts = {
   fourPiecesHandicap: "四枚落",
   sixPiecesHandicap: "六枚落",
   eightPiecesHandicap: "八枚落",
+  tenPiecesHandicap: "十枚落",
   tsumeShogi: "詰將棋",
   doubleKingTsumeShogi: "雙玉詰將棋",
   startDateTime: "開始日時",

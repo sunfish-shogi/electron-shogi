@@ -262,6 +262,7 @@ export type Texts = {
   fourPiecesHandicap: string;
   sixPiecesHandicap: string;
   eightPiecesHandicap: string;
+  tenPiecesHandicap: string;
   tsumeShogi: string;
   doubleKingTsumeShogi: string;
   startDateTime: string;

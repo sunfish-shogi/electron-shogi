@@ -128,6 +128,7 @@ export class Position {
       case InitialPositionType.HANDICAP_4PIECES:
       case InitialPositionType.HANDICAP_6PIECES:
       case InitialPositionType.HANDICAP_8PIECES:
+      case InitialPositionType.HANDICAP_10PIECES:
         this._color = Color.WHITE;
         break;
     }

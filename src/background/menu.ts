@@ -239,6 +239,11 @@ function createMenuTemplate() {
               MenuEvent.INIT_POSITION_HANDICAP_8PIECES,
               [AppState.POSITION_EDITING]
             ),
+            menuItem(
+              t.tenPiecesHandicap,
+              MenuEvent.INIT_POSITION_HANDICAP_10PIECES,
+              [AppState.POSITION_EDITING]
+            ),
             menuItem(t.tsumeShogi, MenuEvent.INIT_POSITION_TSUME_SHOGI, [
               AppState.POSITION_EDITING,
             ]),

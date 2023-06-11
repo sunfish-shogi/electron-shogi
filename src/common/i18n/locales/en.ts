@@ -265,6 +265,7 @@ export const en: Texts = {
   fourPiecesHandicap: "4 Pieces Handicap",
   sixPiecesHandicap: "6 Pieces Handicap",
   eightPiecesHandicap: "8 Pieces Handicap",
+  tenPiecesHandicap: "10 Pieces Handicap",
   tsumeShogi: "Tsume Shogi",
   doubleKingTsumeShogi: "2-Kings Tsume Shogi",
   startDateTime: "Start",

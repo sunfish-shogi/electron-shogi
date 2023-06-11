@@ -252,6 +252,9 @@ function readHandicap(position: Position, data: string): Error | undefined {
     case "八枚落ち":
       position.reset(InitialPositionType.HANDICAP_8PIECES);
       return;
+    case "十枚落ち":
+      position.reset(InitialPositionType.HANDICAP_10PIECES);
+      return;
     case "その他":
       position.reset(InitialPositionType.EMPTY);
       return;

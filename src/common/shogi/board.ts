@@ -21,6 +21,7 @@ export enum InitialPositionType {
   HANDICAP_4PIECES = "handicap4Pieces",
   HANDICAP_6PIECES = "handicap6Pieces",
   HANDICAP_8PIECES = "handicap8Pieces",
+  HANDICAP_10PIECES = "handicap10Pieces",
   TSUME_SHOGI = "tsumeShogi",
   TSUME_SHOGI_2KINGS = "tsumeShogi2Kings",
 }
@@ -339,6 +340,18 @@ export class Board {
         this.squares[new Square(1, 1).index] = null;
         this.squares[new Square(2, 1).index] = null;
         this.squares[new Square(3, 1).index] = null;
+        this.squares[new Square(7, 1).index] = null;
+        this.squares[new Square(8, 1).index] = null;
+        this.squares[new Square(9, 1).index] = null;
+        return;
+      case InitialPositionType.HANDICAP_10PIECES:
+        this.squares[new Square(8, 2).index] = null;
+        this.squares[new Square(2, 2).index] = null;
+        this.squares[new Square(1, 1).index] = null;
+        this.squares[new Square(2, 1).index] = null;
+        this.squares[new Square(3, 1).index] = null;
+        this.squares[new Square(4, 1).index] = null;
+        this.squares[new Square(6, 1).index] = null;
         this.squares[new Square(7, 1).index] = null;
         this.squares[new Square(8, 1).index] = null;
         this.squares[new Square(9, 1).index] = null;

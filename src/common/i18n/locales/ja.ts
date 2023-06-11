@@ -264,6 +264,7 @@ export const ja: Texts = {
   fourPiecesHandicap: "四枚落ち",
   sixPiecesHandicap: "六枚落ち",
   eightPiecesHandicap: "八枚落ち",
+  tenPiecesHandicap: "十枚落ち",
   tsumeShogi: "詰将棋",
   doubleKingTsumeShogi: "双玉詰将棋",
   startDateTime: "開始日時",

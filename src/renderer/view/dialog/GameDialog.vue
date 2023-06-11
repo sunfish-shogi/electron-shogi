@@ -105,23 +105,38 @@
             <div class="form-item-label">{{ t.startPosition }}</div>
             <select ref="startPosition">
               <option value="current">{{ t.currentPosition }}</option>
-              <option value="standard">{{ t.nonHandicap }}</option>
-              <option value="handicapLance">{{ t.lanceHandicap }}</option>
-              <option value="handicapRightLance">
+              <option :value="InitialPositionType.STANDARD">
+                {{ t.nonHandicap }}
+              </option>
+              <option :value="InitialPositionType.HANDICAP_LANCE">
+                {{ t.lanceHandicap }}
+              </option>
+              <option :value="InitialPositionType.HANDICAP_RIGHT_LANCE">
                 {{ t.rightLanceHandicap }}
               </option>
-              <option value="handicapBishop">{{ t.bishopHandicap }}</option>
-              <option value="handicapRook">{{ t.rookHandicap }}</option>
-              <option value="handicapRookLance">
+              <option :value="InitialPositionType.HANDICAP_BISHOP">
+                {{ t.bishopHandicap }}
+              </option>
+              <option :value="InitialPositionType.HANDICAP_ROOK">
+                {{ t.rookHandicap }}
+              </option>
+              <option :value="InitialPositionType.HANDICAP_ROOK_LANCE">
                 {{ t.rookLanceHandicap }}
               </option>
-              <option value="handicap2Pieces">{{ t.twoPiecesHandicap }}</option>
-              <option value="handicap4Pieces">
+              <option :value="InitialPositionType.HANDICAP_2PIECES">
+                {{ t.twoPiecesHandicap }}
+              </option>
+              <option :value="InitialPositionType.HANDICAP_4PIECES">
                 {{ t.fourPiecesHandicap }}
               </option>
-              <option value="handicap6Pieces">{{ t.sixPiecesHandicap }}</option>
-              <option value="handicap8Pieces">
+              <option :value="InitialPositionType.HANDICAP_6PIECES">
+                {{ t.sixPiecesHandicap }}
+              </option>
+              <option :value="InitialPositionType.HANDICAP_8PIECES">
                 {{ t.eightPiecesHandicap }}
+              </option>
+              <option :value="InitialPositionType.HANDICAP_10PIECES">
+                {{ t.tenPiecesHandicap }}
               </option>
             </select>
           </div>
@@ -215,6 +230,7 @@ import {
   uninstallHotKeyForDialog,
 } from "@/renderer/keyboard/hotkey";
 import ToggleButton from "../primitive/ToggleButton.vue";
+import { InitialPositionType } from "@/common/shogi";
 
 const store = useStore();
 const dialog = ref();

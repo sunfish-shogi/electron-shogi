@@ -1,6 +1,10 @@
 import { RecordMetadataKey } from "@/common/shogi";
 import { ImmutableRecordMetadata } from "@/common/shogi/record";
 import { getDateString } from "@/common/helpers/datetime";
+import {
+  getBlackPlayerName,
+  getWhitePlayerName,
+} from "@/common/helpers/metadata";
 
 export function dirname(path: string): string {
   return path.substring(
@@ -63,15 +67,11 @@ export function defaultRecordFileName(
   if (title) {
     ret += "_" + title;
   }
-  const black =
-    metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.BLACK_SHORT_NAME);
+  const black = getBlackPlayerName(metadata);
   if (black) {
     ret += "_" + black;
   }
-  const white =
-    metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME) ||
-    metadata.getStandardMetadata(RecordMetadataKey.WHITE_SHORT_NAME);
+  const white = getWhitePlayerName(metadata);
   if (white) {
     ret += "_" + white;
   }

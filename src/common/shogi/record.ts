@@ -17,12 +17,15 @@ export enum RecordMetadataKey {
   TITLE = "title", // 表題
   BLACK_NAME = "blackName", // 先手
   WHITE_NAME = "whiteName", // 後手
+  SHITATE_NAME = "shitateName", // 下手
+  UWATE_NAME = "uwateName", // 上手
   START_DATETIME = "startDatetime", // 開始日時
   END_DATETIME = "endDatetime", // 終了日時
   DATE = "date", // 対局日
   TOURNAMENT = "tournament", // 棋戦
   STRATEGY = "strategy", // 戦型
   TIME_LIMIT = "timeLimit", // 持ち時間
+  BYOYOMI = "byoyomi", // 秒読み
   TIME_SPENT = "timeSpent", // 消費時間
   PLACE = "place", // 場所
   POSTED_ON = "postedOn", // 掲載
@@ -95,6 +98,7 @@ export enum SpecialMove {
   DRAW = "draw",
   REPETITION_DRAW = "repetitionDraw",
   MATE = "mate",
+  NO_MATE = "noMate",
   TIMEOUT = "timeout",
   FOUL_WIN = "foulWin", // 手番側の勝ち(直前の指し手が反則手)
   FOUL_LOSE = "foulLose", // 手番側の負け

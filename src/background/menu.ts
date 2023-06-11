@@ -146,6 +146,10 @@ function createMenuTemplate() {
               AppState.NORMAL,
               AppState.RESEARCH,
             ]),
+            menuItem(t.noMate, MenuEvent.INSERT_NO_MATE, [
+              AppState.NORMAL,
+              AppState.RESEARCH,
+            ]),
             menuItem(t.timeout, MenuEvent.INSERT_TIMEOUT, [
               AppState.NORMAL,
               AppState.RESEARCH,
@@ -233,6 +237,11 @@ function createMenuTemplate() {
             menuItem(
               t.eightPiecesHandicap,
               MenuEvent.INIT_POSITION_HANDICAP_8PIECES,
+              [AppState.POSITION_EDITING]
+            ),
+            menuItem(
+              t.tenPiecesHandicap,
+              MenuEvent.INIT_POSITION_HANDICAP_10PIECES,
               [AppState.POSITION_EDITING]
             ),
             menuItem(t.tsumeShogi, MenuEvent.INIT_POSITION_TSUME_SHOGI, [

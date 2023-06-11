@@ -43,6 +43,8 @@ import {
 const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
   先手: RecordMetadataKey.BLACK_NAME,
   後手: RecordMetadataKey.WHITE_NAME,
+  下手: RecordMetadataKey.SHITATE_NAME,
+  上手: RecordMetadataKey.UWATE_NAME,
   開始日時: RecordMetadataKey.START_DATETIME,
   終了日時: RecordMetadataKey.END_DATETIME,
   対局日: RecordMetadataKey.DATE,
@@ -50,6 +52,7 @@ const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
   戦型: RecordMetadataKey.STRATEGY,
   表題: RecordMetadataKey.TITLE,
   持ち時間: RecordMetadataKey.TIME_LIMIT,
+  秒読み: RecordMetadataKey.BYOYOMI,
   消費時間: RecordMetadataKey.TIME_SPENT,
   場所: RecordMetadataKey.PLACE,
   掲載: RecordMetadataKey.POSTED_ON,
@@ -69,31 +72,34 @@ const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
 };
 
 const metadataNameMap = {
-  blackName: "先手",
-  whiteName: "後手",
-  startDatetime: "開始日時",
-  endDatetime: "終了日時",
-  date: "対局日",
-  tournament: "棋戦",
-  strategy: "戦型",
-  title: "表題",
-  timeLimit: "持ち時間",
-  timeSpent: "消費時間",
-  place: "場所",
-  postedOn: "掲載",
-  note: "備考",
-  blackShortName: "先手省略名",
-  whiteShortName: "後手省略名",
-  opusNo: "作品番号",
-  opusName: "作品名",
-  author: "作者",
-  publishedBy: "発表誌",
-  publishedAt: "発表年月",
-  source: "出典",
-  length: "手数",
-  integrity: "完全性",
-  category: "分類",
-  award: "受賞",
+  [RecordMetadataKey.BLACK_NAME]: "先手",
+  [RecordMetadataKey.WHITE_NAME]: "後手",
+  [RecordMetadataKey.SHITATE_NAME]: "下手",
+  [RecordMetadataKey.UWATE_NAME]: "上手",
+  [RecordMetadataKey.START_DATETIME]: "開始日時",
+  [RecordMetadataKey.END_DATETIME]: "終了日時",
+  [RecordMetadataKey.DATE]: "対局日",
+  [RecordMetadataKey.TOURNAMENT]: "棋戦",
+  [RecordMetadataKey.STRATEGY]: "戦型",
+  [RecordMetadataKey.TITLE]: "表題",
+  [RecordMetadataKey.TIME_LIMIT]: "持ち時間",
+  [RecordMetadataKey.BYOYOMI]: "秒読み",
+  [RecordMetadataKey.TIME_SPENT]: "消費時間",
+  [RecordMetadataKey.PLACE]: "場所",
+  [RecordMetadataKey.POSTED_ON]: "掲載",
+  [RecordMetadataKey.NOTE]: "備考",
+  [RecordMetadataKey.BLACK_SHORT_NAME]: "先手省略名",
+  [RecordMetadataKey.WHITE_SHORT_NAME]: "後手省略名",
+  [RecordMetadataKey.OPUS_NO]: "作品番号",
+  [RecordMetadataKey.OPUS_NAME]: "作品名",
+  [RecordMetadataKey.AUTHOR]: "作者",
+  [RecordMetadataKey.PUBLISHED_BY]: "発表誌",
+  [RecordMetadataKey.PUBLISHED_AT]: "発表年月",
+  [RecordMetadataKey.SOURCE]: "出典",
+  [RecordMetadataKey.LENGTH]: "手数",
+  [RecordMetadataKey.INTEGRITY]: "完全性",
+  [RecordMetadataKey.CATEGORY]: "分類",
+  [RecordMetadataKey.AWARD]: "受賞",
 };
 
 enum LineType {
@@ -246,6 +252,9 @@ function readHandicap(position: Position, data: string): Error | undefined {
     case "八枚落ち":
       position.reset(InitialPositionType.HANDICAP_8PIECES);
       return;
+    case "十枚落ち":
+      position.reset(InitialPositionType.HANDICAP_10PIECES);
+      return;
     case "その他":
       position.reset(InitialPositionType.EMPTY);
       return;
@@ -259,6 +268,7 @@ const stringToSpecialMove: { [move: string]: SpecialMove } = {
   持将棋: SpecialMove.IMPASS,
   千日手: SpecialMove.REPETITION_DRAW,
   詰み: SpecialMove.MATE,
+  不詰: SpecialMove.NO_MATE,
   切れ負け: SpecialMove.TIMEOUT,
   反則勝ち: SpecialMove.FOUL_WIN,
   反則負け: SpecialMove.FOUL_LOSE,
@@ -274,7 +284,7 @@ const moveRegExp =
 const timeRegExp = /\( *([0-9]+):([0-9]+)\/[0-9: ]*\)/;
 
 const specialMoveRegExp =
-  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗|封じ手) *(.*)$/;
+  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|不詰|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗|封じ手) *(.*)$/;
 
 function readBoard(board: Board, data: string): Error | undefined {
   if (data.length < 21) {
@@ -482,20 +492,21 @@ export function importKakinoki(data: string): Record | Error {
 }
 
 const specialMoveToString = {
-  start: "",
-  resign: "投了",
-  interrupt: "中断",
-  impass: "持将棋",
-  draw: "持将棋",
-  repetitionDraw: "千日手",
-  mate: "詰み",
-  timeout: "切れ負け",
-  foulWin: "反則勝ち",
-  foulLose: "反則負け",
-  enteringOfKing: "入玉勝ち",
-  winByDefault: "不戦勝",
-  loseByDefault: "不戦敗",
-  sealedMove: "封じ手",
+  [SpecialMove.START]: "",
+  [SpecialMove.RESIGN]: "投了",
+  [SpecialMove.INTERRUPT]: "中断",
+  [SpecialMove.IMPASS]: "持将棋",
+  [SpecialMove.DRAW]: "持将棋",
+  [SpecialMove.REPETITION_DRAW]: "千日手",
+  [SpecialMove.MATE]: "詰み",
+  [SpecialMove.NO_MATE]: "不詰",
+  [SpecialMove.TIMEOUT]: "切れ負け",
+  [SpecialMove.FOUL_WIN]: "反則勝ち",
+  [SpecialMove.FOUL_LOSE]: "反則負け",
+  [SpecialMove.ENTERING_OF_KING]: "入玉勝ち",
+  [SpecialMove.WIN_BY_DEFAULT]: "不戦勝",
+  [SpecialMove.LOSE_BY_DEFAULT]: "不戦敗",
+  [SpecialMove.SEALED_MOVE]: "封じ手",
 };
 
 type KakinokiExportOptions = {

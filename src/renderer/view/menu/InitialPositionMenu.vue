@@ -49,6 +49,10 @@
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.eightPiecesHandicap }}</div>
           </button>
+          <button @click="onHandicap10Pieces">
+            <Icon :icon="IconType.GAME" />
+            <div class="label">{{ t.tenPiecesHandicap }}</div>
+          </button>
           <button @click="onTsumeShogi">
             <Icon :icon="IconType.QUIZ" />
             <div class="label">{{ t.tsumeShogi }}</div>
@@ -120,6 +124,10 @@ const onHandicap6Pieces = () => {
 };
 const onHandicap8Pieces = () => {
   store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
+  emit("close");
+};
+const onHandicap10Pieces = () => {
+  store.initializePosition(InitialPositionType.HANDICAP_10PIECES);
   emit("close");
 };
 const onTsumeShogi = () => {

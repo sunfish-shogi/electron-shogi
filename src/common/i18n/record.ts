@@ -7,6 +7,10 @@ export function getRecordMetadataName(key: RecordMetadataKey): string {
       return t.sente;
     case RecordMetadataKey.WHITE_NAME:
       return t.gote;
+    case RecordMetadataKey.SHITATE_NAME:
+      return t.shitate;
+    case RecordMetadataKey.UWATE_NAME:
+      return t.uwate;
     case RecordMetadataKey.START_DATETIME:
       return t.startDateTime;
     case RecordMetadataKey.END_DATETIME:
@@ -21,6 +25,8 @@ export function getRecordMetadataName(key: RecordMetadataKey): string {
       return t.gameTitle;
     case RecordMetadataKey.TIME_LIMIT:
       return t.timeLimit;
+    case RecordMetadataKey.BYOYOMI:
+      return t.byoyomi;
     case RecordMetadataKey.TIME_SPENT:
       return t.elapsedTime;
     case RecordMetadataKey.PLACE:

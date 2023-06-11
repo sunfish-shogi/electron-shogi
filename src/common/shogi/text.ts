@@ -169,20 +169,21 @@ export function pieceTypeToStringForBoard(pieceType: PieceType): string {
 }
 
 const specialMoveToDisplayStringMap = {
-  start: "開始局面",
-  resign: "投了",
-  interrupt: "中断",
-  impass: "持将棋",
-  draw: "引き分け",
-  repetitionDraw: "千日手",
-  mate: "詰み",
-  timeout: "切れ負け",
-  foulWin: "反則勝ち",
-  foulLose: "反則負け",
-  enteringOfKing: "入玉",
-  winByDefault: "不戦勝",
-  loseByDefault: "不戦敗",
-  sealedMove: "封じ手",
+  [SpecialMove.START]: "開始局面",
+  [SpecialMove.RESIGN]: "投了",
+  [SpecialMove.INTERRUPT]: "中断",
+  [SpecialMove.IMPASS]: "持将棋",
+  [SpecialMove.DRAW]: "引き分け",
+  [SpecialMove.REPETITION_DRAW]: "千日手",
+  [SpecialMove.MATE]: "詰み",
+  [SpecialMove.NO_MATE]: "不詰",
+  [SpecialMove.TIMEOUT]: "切れ負け",
+  [SpecialMove.FOUL_WIN]: "反則勝ち",
+  [SpecialMove.FOUL_LOSE]: "反則負け",
+  [SpecialMove.ENTERING_OF_KING]: "入玉",
+  [SpecialMove.WIN_BY_DEFAULT]: "不戦勝",
+  [SpecialMove.LOSE_BY_DEFAULT]: "不戦敗",
+  [SpecialMove.SEALED_MOVE]: "封じ手",
 };
 
 export function getSpecialMoveDisplayString(move: SpecialMove): string {

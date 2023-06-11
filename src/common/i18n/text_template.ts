@@ -71,6 +71,7 @@ export type Texts = {
   impass: string;
   repetitionDraw: string;
   mate: string;
+  noMate: string;
   mateSearch: string;
   startMateSearch: string;
   stopMateSearch: string;
@@ -177,8 +178,10 @@ export type Texts = {
   expandTabView: string;
   sente: string;
   senteOrShitate: string;
+  shitate: string;
   gote: string;
   goteOrUwate: string;
+  uwate: string;
   swapSenteGote: string;
   currentPosition: string;
   time: string;
@@ -259,6 +262,7 @@ export type Texts = {
   fourPiecesHandicap: string;
   sixPiecesHandicap: string;
   eightPiecesHandicap: string;
+  tenPiecesHandicap: string;
   tsumeShogi: string;
   doubleKingTsumeShogi: string;
   startDateTime: string;

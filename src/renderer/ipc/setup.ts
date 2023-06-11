@@ -87,6 +87,9 @@ export function setup(): void {
       case MenuEvent.INSERT_MATE:
         store.insertSpecialMove(SpecialMove.MATE);
         break;
+      case MenuEvent.INSERT_NO_MATE:
+        store.insertSpecialMove(SpecialMove.NO_MATE);
+        break;
       case MenuEvent.INSERT_TIMEOUT:
         store.insertSpecialMove(SpecialMove.TIMEOUT);
         break;
@@ -146,6 +149,9 @@ export function setup(): void {
         break;
       case MenuEvent.INIT_POSITION_HANDICAP_8PIECES:
         store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
+        break;
+      case MenuEvent.INIT_POSITION_HANDICAP_10PIECES:
+        store.initializePosition(InitialPositionType.HANDICAP_10PIECES);
         break;
       case MenuEvent.INIT_POSITION_TSUME_SHOGI:
         store.initializePosition(InitialPositionType.TSUME_SHOGI);

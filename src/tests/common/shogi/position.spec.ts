@@ -70,6 +70,10 @@ describe("shogi/position", () => {
     expect(position.sfen).toBe(
       "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
     );
+    position.reset(InitialPositionType.HANDICAP_10PIECES);
+    expect(position.sfen).toBe(
+      "4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+    );
     position.reset(InitialPositionType.TSUME_SHOGI);
     expect(position.sfen).toBe("4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1");
     position.reset(InitialPositionType.TSUME_SHOGI_2KINGS);

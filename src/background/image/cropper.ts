@@ -16,7 +16,7 @@ export function getCroppedPieceImageBaseURL(srcURL: string): string {
 }
 
 const pieces = [
-  "king2",
+  "king",
   "rook",
   "bishop",
   "gold",
@@ -27,7 +27,7 @@ const pieces = [
 ];
 
 const promPieces = [
-  "king",
+  "king2",
   "dragon",
   "horse",
   "",

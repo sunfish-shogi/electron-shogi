@@ -25,6 +25,7 @@ export enum RecordMetadataKey {
   TOURNAMENT = "tournament", // 棋戦
   STRATEGY = "strategy", // 戦型
   TIME_LIMIT = "timeLimit", // 持ち時間
+  BYOYOMI = "byoyomi", // 秒読み
   TIME_SPENT = "timeSpent", // 消費時間
   PLACE = "place", // 場所
   POSTED_ON = "postedOn", // 掲載

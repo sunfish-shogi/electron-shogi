@@ -37,7 +37,7 @@ You can try web version from the website.
 
 https://github.com/sunfish-shogi/electron-shogi/wiki
 
-## (Screenshots)
+## Screenshots
 
 ![Screenshot1](docs/screenshots/screenshot001.png)
 

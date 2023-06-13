@@ -21,6 +21,7 @@ import {
   RecordMetadataKey,
   reverseColor,
   SpecialMove,
+  SpecialMoveType,
 } from "@/common/shogi";
 import { getSituationText } from "./score";
 import { CommentBehavior } from "@/common/settings/analysis";
@@ -153,7 +154,7 @@ type GameStartMetadata = {
 };
 
 type AppendMoveParams = {
-  move: Move | SpecialMove;
+  move: Move | SpecialMove | SpecialMoveType;
   moveOption?: DoMoveOption;
   elapsedMs?: number;
 };

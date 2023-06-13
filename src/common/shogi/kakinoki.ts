@@ -19,15 +19,16 @@ import {
   InvalidMoveNumberError,
   InvalidDestinationError,
   InvalidLineError,
+  SpecialMoveType,
+  isKnownSpecialMove,
+  anySpecialMove,
+  SpecialMove,
+  specialMove,
 } from ".";
 import { Board, InitialPositionType } from "./board";
 import { Hand, ImmutableHand } from "./hand";
 import { Piece, PieceType } from "./piece";
-import {
-  ImmutableRecord,
-  ImmutableRecordMetadata,
-  SpecialMove,
-} from "./record";
+import { ImmutableRecord, ImmutableRecordMetadata } from "./record";
 import {
   charToNumber,
   fileToMultiByteChar,
@@ -262,29 +263,28 @@ function readHandicap(position: Position, data: string): Error | undefined {
   return new InvalidHandicapError(data);
 }
 
-const stringToSpecialMove: { [move: string]: SpecialMove } = {
-  中断: SpecialMove.INTERRUPT,
-  投了: SpecialMove.RESIGN,
-  持将棋: SpecialMove.IMPASS,
-  千日手: SpecialMove.REPETITION_DRAW,
-  詰み: SpecialMove.MATE,
-  不詰: SpecialMove.NO_MATE,
-  切れ負け: SpecialMove.TIMEOUT,
-  反則勝ち: SpecialMove.FOUL_WIN,
-  反則負け: SpecialMove.FOUL_LOSE,
-  入玉勝ち: SpecialMove.ENTERING_OF_KING,
-  不戦勝: SpecialMove.WIN_BY_DEFAULT,
-  不戦敗: SpecialMove.LOSE_BY_DEFAULT,
-  封じ手: SpecialMove.SEALED_MOVE,
-};
+const stringToSpecialMoveType: { [move: string]: SpecialMoveType | undefined } =
+  {
+    中断: SpecialMoveType.INTERRUPT,
+    投了: SpecialMoveType.RESIGN,
+    持将棋: SpecialMoveType.IMPASS,
+    千日手: SpecialMoveType.REPETITION_DRAW,
+    詰み: SpecialMoveType.MATE,
+    不詰: SpecialMoveType.NO_MATE,
+    切れ負け: SpecialMoveType.TIMEOUT,
+    反則勝ち: SpecialMoveType.FOUL_WIN,
+    反則負け: SpecialMoveType.FOUL_LOSE,
+    入玉勝ち: SpecialMoveType.ENTERING_OF_KING,
+    不戦勝: SpecialMoveType.WIN_BY_DEFAULT,
+    不戦敗: SpecialMoveType.LOSE_BY_DEFAULT,
+  };
 
 const moveRegExp =
   /^ *([0-9]+) +[▲△]?([１２３４５６７８９][一二三四五六七八九]|同\u3000*)(王|玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)\u3000*(成?)(打|\([1-9][1-9]\)) *(.*)$/;
 
 const timeRegExp = /\( *([0-9]+):([0-9]+)\/[0-9: ]*\)/;
 
-const specialMoveRegExp =
-  /^ *([0-9]+) +(中断|投了|持将棋|千日手|詰み|不詰|切れ負け|反則勝ち|反則負け|入玉勝ち|不戦勝|不戦敗|封じ手) *(.*)$/;
+const specialMoveRegExp = /^ *([0-9]+) +([^ \u3000]+) *(.*)$/;
 
 function readBoard(board: Board, data: string): Error | undefined {
   if (data.length < 21) {
@@ -339,22 +339,24 @@ function readMoveTime(record: Record, data: string): void {
 }
 
 function readMove(record: Record, data: string): Error | undefined {
-  let result = specialMoveRegExp.exec(data);
-  if (result) {
-    const num = Number(result[1]);
-    const move = stringToSpecialMove[result[2]];
-    const time = result[3];
-    record.goto(num - 1);
-    record.append(move, {
-      ignoreValidation: true,
-    });
-    readMoveTime(record, time);
+  const result = readRegularMove(record, data);
+  if (result instanceof Error) {
+    return result;
+  } else if (result) {
     return;
   }
 
-  result = moveRegExp.exec(data);
+  if (readSpecialMove(record, data)) {
+    return;
+  }
+
+  return new InvalidMoveError(data);
+}
+
+function readRegularMove(record: Record, data: string): Error | boolean {
+  const result = moveRegExp.exec(data);
   if (!result) {
-    return new InvalidMoveError(data);
+    return false;
   }
   const num = Number(result[1]);
   const toStr = result[2];
@@ -397,7 +399,29 @@ function readMove(record: Record, data: string): Error | undefined {
     ignoreValidation: true,
   });
   readMoveTime(record, time);
-  return;
+  return true;
+}
+
+function readSpecialMove(record: Record, data: string): boolean {
+  const result = specialMoveRegExp.exec(data);
+  if (!result) {
+    return false;
+  }
+  const num = Number(result[1]);
+  const type = stringToSpecialMoveType[result[2]];
+  const time = result[3];
+  record.goto(num - 1);
+  let move: SpecialMove;
+  if (type) {
+    move = specialMove(type);
+  } else {
+    move = anySpecialMove(result[2]);
+  }
+  record.append(move, {
+    ignoreValidation: true,
+  });
+  readMoveTime(record, time);
+  return true;
 }
 
 export function importKakinoki(data: string): Record | Error {
@@ -492,21 +516,20 @@ export function importKakinoki(data: string): Record | Error {
 }
 
 const specialMoveToString = {
-  [SpecialMove.START]: "",
-  [SpecialMove.RESIGN]: "投了",
-  [SpecialMove.INTERRUPT]: "中断",
-  [SpecialMove.IMPASS]: "持将棋",
-  [SpecialMove.DRAW]: "持将棋",
-  [SpecialMove.REPETITION_DRAW]: "千日手",
-  [SpecialMove.MATE]: "詰み",
-  [SpecialMove.NO_MATE]: "不詰",
-  [SpecialMove.TIMEOUT]: "切れ負け",
-  [SpecialMove.FOUL_WIN]: "反則勝ち",
-  [SpecialMove.FOUL_LOSE]: "反則負け",
-  [SpecialMove.ENTERING_OF_KING]: "入玉勝ち",
-  [SpecialMove.WIN_BY_DEFAULT]: "不戦勝",
-  [SpecialMove.LOSE_BY_DEFAULT]: "不戦敗",
-  [SpecialMove.SEALED_MOVE]: "封じ手",
+  [SpecialMoveType.START]: "",
+  [SpecialMoveType.RESIGN]: "投了",
+  [SpecialMoveType.INTERRUPT]: "中断",
+  [SpecialMoveType.IMPASS]: "持将棋",
+  [SpecialMoveType.DRAW]: "持将棋",
+  [SpecialMoveType.REPETITION_DRAW]: "千日手",
+  [SpecialMoveType.MATE]: "詰み",
+  [SpecialMoveType.NO_MATE]: "不詰",
+  [SpecialMoveType.TIMEOUT]: "切れ負け",
+  [SpecialMoveType.FOUL_WIN]: "反則勝ち",
+  [SpecialMoveType.FOUL_LOSE]: "反則負け",
+  [SpecialMoveType.ENTERING_OF_KING]: "入玉勝ち",
+  [SpecialMoveType.WIN_BY_DEFAULT]: "不戦勝",
+  [SpecialMoveType.LOSE_BY_DEFAULT]: "不戦敗",
 };
 
 type KakinokiExportOptions = {
@@ -615,8 +638,10 @@ export function exportKakinoki(
       ret += node.ply + " ";
       if (node.move instanceof Move) {
         ret += formatMove(node.move);
+      } else if (isKnownSpecialMove(node.move)) {
+        ret += specialMoveToString[node.move.type];
       } else {
-        ret += specialMoveToString[node.move];
+        ret += node.move.name;
       }
       const elapsed = millisecondsToMSS(node.elapsedMs);
       const totalElapsed = millisecondsToHMMSS(node.totalElapsedMs);

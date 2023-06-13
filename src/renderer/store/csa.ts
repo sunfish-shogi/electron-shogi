@@ -21,8 +21,8 @@ import {
   RecordFormatType,
   parseCSAMove,
   formatCSAMove,
-  SpecialMove,
   Move,
+  SpecialMoveType,
 } from "@/common/shogi";
 import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
@@ -429,39 +429,39 @@ export class CSAGameManager {
   private gameResultToSpecialMove(
     move: CSASpecialMove,
     gameResult: CSAGameResult
-  ): SpecialMove {
+  ): SpecialMoveType {
     const color = this.recordManager.record.position.color;
     switch (move) {
       case CSASpecialMove.RESIGN:
-        return SpecialMove.RESIGN;
+        return SpecialMoveType.RESIGN;
       case CSASpecialMove.SENNICHITE:
-        return SpecialMove.REPETITION_DRAW;
+        return SpecialMoveType.REPETITION_DRAW;
       case CSASpecialMove.OUTE_SENNICHITE:
       case CSASpecialMove.ILLEGAL_MOVE:
       case CSASpecialMove.ILLEGAL_ACTION:
         switch (gameResult) {
           case CSAGameResult.WIN:
             return color === this.gameSummary.myColor
-              ? SpecialMove.FOUL_WIN
-              : SpecialMove.FOUL_LOSE;
+              ? SpecialMoveType.FOUL_WIN
+              : SpecialMoveType.FOUL_LOSE;
           case CSAGameResult.LOSE:
             return color === this.gameSummary.myColor
-              ? SpecialMove.FOUL_LOSE
-              : SpecialMove.FOUL_WIN;
+              ? SpecialMoveType.FOUL_LOSE
+              : SpecialMoveType.FOUL_WIN;
         }
         break;
       case CSASpecialMove.TIME_UP:
-        return SpecialMove.TIMEOUT;
+        return SpecialMoveType.TIMEOUT;
       case CSASpecialMove.JISHOGI:
-        return SpecialMove.ENTERING_OF_KING;
+        return SpecialMoveType.ENTERING_OF_KING;
       case CSASpecialMove.MAX_MOVES:
-        return SpecialMove.IMPASS;
+        return SpecialMoveType.IMPASS;
     }
 
     if (gameResult === CSAGameResult.DRAW) {
-      return SpecialMove.DRAW;
+      return SpecialMoveType.DRAW;
     }
-    return SpecialMove.INTERRUPT;
+    return SpecialMoveType.INTERRUPT;
   }
 
   onClose(): void {

@@ -4,19 +4,24 @@ import {
   PieceType,
   Position,
   Record,
-  SpecialMove,
+  SpecialMoveType,
   Square,
   getMoveDisplayText,
   getPVText,
   getSpecialMoveDisplayString,
   importKakinoki,
   parsePVText,
+  specialMove,
+  anySpecialMove,
 } from "@/common/shogi";
 
 describe("shogi/text", () => {
   it("getSpecialMoveDisplayString", () => {
-    expect(getSpecialMoveDisplayString(SpecialMove.RESIGN)).toBe("投了");
-    expect(getSpecialMoveDisplayString(SpecialMove.TIMEOUT)).toBe("切れ負け");
+    expect(getSpecialMoveDisplayString(SpecialMoveType.RESIGN)).toBe("投了");
+    expect(
+      getSpecialMoveDisplayString(specialMove(SpecialMoveType.TIMEOUT))
+    ).toBe("切れ負け");
+    expect(getSpecialMoveDisplayString(anySpecialMove("休憩"))).toBe("休憩");
   });
 
   it("getMoveDisplayText/black", () => {

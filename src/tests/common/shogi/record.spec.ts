@@ -5,14 +5,15 @@ import {
   importKakinoki,
   Move,
   Record,
-  SpecialMove,
+  specialMove,
+  SpecialMoveType,
   Square,
 } from "@/common/shogi";
 
 describe("shogi/record", () => {
   it("constructor", () => {
     const record = new Record();
-    expect(record.first.move).toBe(SpecialMove.START);
+    expect(record.first.move).toStrictEqual(specialMove(SpecialMoveType.START));
     expect(record.first.next).toBeNull();
     expect(record.first.comment).toBe("");
     expect(record.first.customData).toBeUndefined();
@@ -24,12 +25,12 @@ describe("shogi/record", () => {
     const record = new Record();
     record.first.comment = "abc";
     record.first.customData = "foo bar baz";
-    record.append(SpecialMove.INTERRUPT);
+    record.append(SpecialMoveType.INTERRUPT);
     expect(record.first.next).toBe(record.current);
     expect(record.first.comment).toBe("abc");
     expect(record.first.customData).toBe("foo bar baz");
     record.clear();
-    expect(record.first.move).toBe(SpecialMove.START);
+    expect(record.first.move).toStrictEqual(specialMove(SpecialMoveType.START));
     expect(record.first.next).toBeNull();
     expect(record.first.comment).toBe("");
     expect(record.first.customData).toBeUndefined();

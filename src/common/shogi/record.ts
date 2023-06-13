@@ -8,6 +8,9 @@ import {
   parseUSIMove,
   InvalidUSIError,
   InvalidMoveError,
+  SpecialMove,
+  SpecialMoveType,
+  specialMove,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
 import { getMoveDisplayText, getSpecialMoveDisplayString } from "./text";
@@ -88,24 +91,6 @@ export class RecordMetadata {
       this.custom.delete(key);
     }
   }
-}
-
-export enum SpecialMove {
-  START = "start",
-  INTERRUPT = "interrupt",
-  RESIGN = "resign",
-  IMPASS = "impass",
-  DRAW = "draw",
-  REPETITION_DRAW = "repetitionDraw",
-  MATE = "mate",
-  NO_MATE = "noMate",
-  TIMEOUT = "timeout",
-  FOUL_WIN = "foulWin", // 手番側の勝ち(直前の指し手が反則手)
-  FOUL_LOSE = "foulLose", // 手番側の負け
-  ENTERING_OF_KING = "enteringOfKing",
-  WIN_BY_DEFAULT = "winByDefault",
-  LOSE_BY_DEFAULT = "loseByDefault",
-  SEALED_MOVE = "sealedMove",
 }
 
 export interface ImmutableNode {
@@ -215,7 +200,7 @@ class NodeImpl implements Node {
       0, // branchIndex
       true, // activeBranch
       color, // color
-      SpecialMove.START, // move
+      specialMove(SpecialMoveType.START), // move
       false, // isCheck
       "開始局面" // displayText
     );
@@ -433,7 +418,14 @@ export class Record {
     return ok;
   }
 
-  append(move: Move | SpecialMove, opt?: DoMoveOption): boolean {
+  append(
+    move: Move | SpecialMove | SpecialMoveType,
+    opt?: DoMoveOption
+  ): boolean {
+    // convert SpecialMoveType to SpecialMove
+    if (typeof move === "string") {
+      move = specialMove(move);
+    }
     // 指し手を表す文字列を取得する。
     const prevMove =
       this.current.move instanceof Move ? this.current.move : undefined;

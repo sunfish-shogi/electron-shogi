@@ -83,3 +83,45 @@ export function parseUSIMove(usiMove: string): {
   const promote = usiMove.length >= 5 && usiMove[4] === "+";
   return { from, to, promote };
 }
+
+export enum SpecialMoveType {
+  START = "start",
+  INTERRUPT = "interrupt",
+  RESIGN = "resign",
+  IMPASS = "impass",
+  DRAW = "draw",
+  REPETITION_DRAW = "repetitionDraw",
+  MATE = "mate",
+  NO_MATE = "noMate",
+  TIMEOUT = "timeout",
+  FOUL_WIN = "foulWin", // 手番側の勝ち(直前の指し手が反則手)
+  FOUL_LOSE = "foulLose", // 手番側の負け
+  ENTERING_OF_KING = "enteringOfKing",
+  WIN_BY_DEFAULT = "winByDefault",
+  LOSE_BY_DEFAULT = "loseByDefault",
+}
+
+export type PredefinedSpecialMove = {
+  type: SpecialMoveType;
+};
+
+export type AnySpecialMove = {
+  type: "any";
+  name: string;
+};
+
+export type SpecialMove = PredefinedSpecialMove | AnySpecialMove;
+
+export function specialMove(type: SpecialMoveType): PredefinedSpecialMove {
+  return { type };
+}
+
+export function anySpecialMove(name: string): AnySpecialMove {
+  return { type: "any", name };
+}
+
+export function isKnownSpecialMove(
+  move: Move | SpecialMove
+): move is PredefinedSpecialMove {
+  return !(move instanceof Move) && move.type !== "any";
+}

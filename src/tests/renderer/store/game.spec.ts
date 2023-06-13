@@ -2,7 +2,7 @@ import {
   InitialPositionType,
   Move,
   RecordMetadataKey,
-  SpecialMove,
+  SpecialMoveType,
 } from "@/common/shogi";
 import { Clock } from "@/renderer/store/clock";
 import { GameManager, GameResults } from "@/renderer/store/game";
@@ -37,14 +37,14 @@ function invoke(
   handlers: MockGameHandlers,
   gameSetting: GameSetting,
   playerBuilder: PlayerBuilder,
-  assert: (gameResults: GameResults, specialMove: SpecialMove) => void,
+  assert: (gameResults: GameResults, specialMoveType: SpecialMoveType) => void,
   interrupt?: (manager: GameManager) => void
 ) {
   return new Promise<void>((resolve, reject) => {
     const manager = new GameManager(recordManager, new Clock(), new Clock())
-      .on("gameEnd", (gameResults, specialMove) => {
+      .on("gameEnd", (gameResults, specialMoveType) => {
         try {
-          assert(gameResults, specialMove);
+          assert(gameResults, specialMoveType);
           resolve();
         } catch (e) {
           reject(e);
@@ -107,7 +107,7 @@ describe("store/game", () => {
       mockHandlers,
       gameSetting10m30s,
       mockPlayerBuilder,
-      (gameResults, specialMove) => {
+      (gameResults, specialMoveType) => {
         expect(gameResults).toStrictEqual({
           player1: { name: "USI Engine 01", win: 1 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -115,7 +115,7 @@ describe("store/game", () => {
           invalid: 0,
           total: 1,
         });
-        expect(specialMove).toBe(SpecialMove.RESIGN);
+        expect(specialMoveType).toBe(SpecialMoveType.RESIGN);
         expect(mockBlackPlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
@@ -223,7 +223,7 @@ describe("store/game", () => {
       mockHandlers,
       gameSetting10m30s,
       mockPlayerBuilder,
-      (gameResults, specialMove) => {
+      (gameResults, specialMoveType) => {
         expect(gameResults).toStrictEqual({
           player1: { name: "USI Engine 01", win: 0 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -231,7 +231,7 @@ describe("store/game", () => {
           invalid: 1,
           total: 1,
         });
-        expect(specialMove).toBe(SpecialMove.INTERRUPT);
+        expect(specialMoveType).toBe(SpecialMoveType.INTERRUPT);
         expect(mockBlackPlayer.readyNewGame).toBeCalledTimes(1);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
@@ -252,7 +252,7 @@ describe("store/game", () => {
         );
       },
       (manager) => {
-        setTimeout(() => manager.endGame(SpecialMove.INTERRUPT), 100);
+        setTimeout(() => manager.endGame(SpecialMoveType.INTERRUPT), 100);
       }
     );
   });
@@ -295,7 +295,7 @@ describe("store/game", () => {
         repeat: 2,
       },
       mockPlayerBuilder,
-      (gameResults, specialMove) => {
+      (gameResults, specialMoveType) => {
         expect(gameResults).toStrictEqual({
           player1: { name: "USI Engine 02", win: 0 },
           player2: { name: "USI Engine 01", win: 2 },
@@ -303,7 +303,7 @@ describe("store/game", () => {
           invalid: 0,
           total: 2,
         });
-        expect(specialMove).toBe(SpecialMove.RESIGN);
+        expect(specialMoveType).toBe(SpecialMoveType.RESIGN);
         expect(
           recordManager.record.metadata.getStandardMetadata(
             RecordMetadataKey.TITLE
@@ -362,7 +362,7 @@ describe("store/game", () => {
         swapPlayers: false,
       },
       mockPlayerBuilder,
-      (gameResults, specialMove) => {
+      (gameResults, specialMoveType) => {
         expect(gameResults).toStrictEqual({
           player1: { name: "USI Engine 01", win: 2 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -370,7 +370,7 @@ describe("store/game", () => {
           invalid: 0,
           total: 2,
         });
-        expect(specialMove).toBe(SpecialMove.RESIGN);
+        expect(specialMoveType).toBe(SpecialMoveType.RESIGN);
         expect(
           recordManager.record.metadata.getStandardMetadata(
             RecordMetadataKey.TITLE
@@ -424,7 +424,7 @@ describe("store/game", () => {
         maxMoves: 4,
       },
       mockPlayerBuilder,
-      (gameResults, specialMove) => {
+      (gameResults, specialMoveType) => {
         expect(gameResults).toStrictEqual({
           player1: { name: "USI Engine 01", win: 0 },
           player2: { name: "USI Engine 02", win: 0 },
@@ -432,7 +432,7 @@ describe("store/game", () => {
           invalid: 0,
           total: 1,
         });
-        expect(specialMove).toBe(SpecialMove.IMPASS);
+        expect(specialMoveType).toBe(SpecialMoveType.IMPASS);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(2);
         expect(mockBlackPlayer.gameover).toBeCalledTimes(1);

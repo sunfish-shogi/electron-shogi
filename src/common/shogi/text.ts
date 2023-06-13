@@ -6,10 +6,9 @@ import {
   directionToVDirection,
   reverseDirection,
 } from "./direction";
-import { Move } from "./move";
+import { Move, SpecialMove, SpecialMoveType, isKnownSpecialMove } from "./move";
 import { PieceType, Piece } from "./piece";
 import { ImmutablePosition, isPromotableRank } from "./position";
-import { SpecialMove } from "./record";
 import { Square } from "./square";
 
 const multiByteCharToNumberMap: { [file: string]: number } = {
@@ -169,25 +168,32 @@ export function pieceTypeToStringForBoard(pieceType: PieceType): string {
 }
 
 const specialMoveToDisplayStringMap = {
-  [SpecialMove.START]: "開始局面",
-  [SpecialMove.RESIGN]: "投了",
-  [SpecialMove.INTERRUPT]: "中断",
-  [SpecialMove.IMPASS]: "持将棋",
-  [SpecialMove.DRAW]: "引き分け",
-  [SpecialMove.REPETITION_DRAW]: "千日手",
-  [SpecialMove.MATE]: "詰み",
-  [SpecialMove.NO_MATE]: "不詰",
-  [SpecialMove.TIMEOUT]: "切れ負け",
-  [SpecialMove.FOUL_WIN]: "反則勝ち",
-  [SpecialMove.FOUL_LOSE]: "反則負け",
-  [SpecialMove.ENTERING_OF_KING]: "入玉",
-  [SpecialMove.WIN_BY_DEFAULT]: "不戦勝",
-  [SpecialMove.LOSE_BY_DEFAULT]: "不戦敗",
-  [SpecialMove.SEALED_MOVE]: "封じ手",
+  [SpecialMoveType.START]: "開始局面",
+  [SpecialMoveType.RESIGN]: "投了",
+  [SpecialMoveType.INTERRUPT]: "中断",
+  [SpecialMoveType.IMPASS]: "持将棋",
+  [SpecialMoveType.DRAW]: "引き分け",
+  [SpecialMoveType.REPETITION_DRAW]: "千日手",
+  [SpecialMoveType.MATE]: "詰み",
+  [SpecialMoveType.NO_MATE]: "不詰",
+  [SpecialMoveType.TIMEOUT]: "切れ負け",
+  [SpecialMoveType.FOUL_WIN]: "反則勝ち",
+  [SpecialMoveType.FOUL_LOSE]: "反則負け",
+  [SpecialMoveType.ENTERING_OF_KING]: "入玉",
+  [SpecialMoveType.WIN_BY_DEFAULT]: "不戦勝",
+  [SpecialMoveType.LOSE_BY_DEFAULT]: "不戦敗",
 };
 
-export function getSpecialMoveDisplayString(move: SpecialMove): string {
-  return specialMoveToDisplayStringMap[move];
+export function getSpecialMoveDisplayString(
+  move: SpecialMove | SpecialMoveType
+): string {
+  if (typeof move === "string") {
+    return specialMoveToDisplayStringMap[move];
+  }
+  if (isKnownSpecialMove(move)) {
+    return specialMoveToDisplayStringMap[move.type];
+  }
+  return move.name;
 }
 
 export function getMoveDisplayText(

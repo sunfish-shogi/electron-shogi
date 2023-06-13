@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import { SpecialMove, InitialPositionType } from "@/common/shogi";
+import { InitialPositionType, SpecialMoveType } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import {
   onUSIBestMove,
@@ -70,43 +70,43 @@ export function setup(): void {
         store.showPasteDialog();
         break;
       case MenuEvent.INSERT_INTERRUPT:
-        store.insertSpecialMove(SpecialMove.INTERRUPT);
+        store.insertSpecialMove(SpecialMoveType.INTERRUPT);
         break;
       case MenuEvent.INSERT_RESIGN:
-        store.insertSpecialMove(SpecialMove.RESIGN);
+        store.insertSpecialMove(SpecialMoveType.RESIGN);
         break;
       case MenuEvent.INSERT_DRAW:
-        store.insertSpecialMove(SpecialMove.DRAW);
+        store.insertSpecialMove(SpecialMoveType.DRAW);
         break;
       case MenuEvent.INSERT_IMPASS:
-        store.insertSpecialMove(SpecialMove.IMPASS);
+        store.insertSpecialMove(SpecialMoveType.IMPASS);
         break;
       case MenuEvent.INSERT_REPETITION_DRAW:
-        store.insertSpecialMove(SpecialMove.REPETITION_DRAW);
+        store.insertSpecialMove(SpecialMoveType.REPETITION_DRAW);
         break;
       case MenuEvent.INSERT_MATE:
-        store.insertSpecialMove(SpecialMove.MATE);
+        store.insertSpecialMove(SpecialMoveType.MATE);
         break;
       case MenuEvent.INSERT_NO_MATE:
-        store.insertSpecialMove(SpecialMove.NO_MATE);
+        store.insertSpecialMove(SpecialMoveType.NO_MATE);
         break;
       case MenuEvent.INSERT_TIMEOUT:
-        store.insertSpecialMove(SpecialMove.TIMEOUT);
+        store.insertSpecialMove(SpecialMoveType.TIMEOUT);
         break;
       case MenuEvent.INSERT_FOUL_WIN:
-        store.insertSpecialMove(SpecialMove.FOUL_WIN);
+        store.insertSpecialMove(SpecialMoveType.FOUL_WIN);
         break;
       case MenuEvent.INSERT_FOUL_LOSE:
-        store.insertSpecialMove(SpecialMove.FOUL_LOSE);
+        store.insertSpecialMove(SpecialMoveType.FOUL_LOSE);
         break;
       case MenuEvent.INSERT_ENTERING_OF_KING:
-        store.insertSpecialMove(SpecialMove.ENTERING_OF_KING);
+        store.insertSpecialMove(SpecialMoveType.ENTERING_OF_KING);
         break;
       case MenuEvent.INSERT_WIN_BY_DEFAULT:
-        store.insertSpecialMove(SpecialMove.WIN_BY_DEFAULT);
+        store.insertSpecialMove(SpecialMoveType.WIN_BY_DEFAULT);
         break;
       case MenuEvent.INSERT_LOSE_BY_DEFAULT:
-        store.insertSpecialMove(SpecialMove.LOSE_BY_DEFAULT);
+        store.insertSpecialMove(SpecialMoveType.LOSE_BY_DEFAULT);
         break;
       case MenuEvent.REMOVE_CURRENT_MOVE:
         store.removeCurrentMove();

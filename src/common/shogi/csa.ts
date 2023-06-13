@@ -13,7 +13,7 @@ import {
 import { InitialPositionType } from "./board";
 import { Color } from "./color";
 import { ImmutableHand } from "./hand";
-import { Move } from "./move";
+import { Move, SpecialMove, SpecialMoveType } from "./move";
 import { Piece, PieceType, promotedPieceType } from "./piece";
 import {
   Position,
@@ -25,7 +25,6 @@ import {
   ImmutableRecordMetadata,
   RecordMetadata,
   RecordMetadataKey,
-  SpecialMove,
 } from "./record";
 import { Square } from "./square";
 import { getBlackPlayerName, getWhitePlayerName } from "../helpers/metadata";
@@ -271,26 +270,26 @@ function parseMove(line: string, position: ImmutablePosition): Move | Error {
   return move;
 }
 
-function parseSpecialMove(line: string): SpecialMove | undefined {
+function parseSpecialMove(line: string): SpecialMoveType | undefined {
   switch (line) {
     case "%CHUDAN":
-      return SpecialMove.INTERRUPT;
+      return SpecialMoveType.INTERRUPT;
     case "%TORYO":
-      return SpecialMove.RESIGN;
+      return SpecialMoveType.RESIGN;
     case "%JISHOGI":
-      return SpecialMove.IMPASS;
+      return SpecialMoveType.IMPASS;
     case "%HIKIWAKE":
-      return SpecialMove.DRAW;
+      return SpecialMoveType.DRAW;
     case "%SENNICHITE":
-      return SpecialMove.REPETITION_DRAW;
+      return SpecialMoveType.REPETITION_DRAW;
     case "%TSUMI":
-      return SpecialMove.MATE;
+      return SpecialMoveType.MATE;
     case "%TIME_UP":
-      return SpecialMove.TIMEOUT;
+      return SpecialMoveType.TIMEOUT;
     case "%ILLEGAL_MOVE":
-      return SpecialMove.FOUL_LOSE;
+      return SpecialMoveType.FOUL_LOSE;
     case "%KACHI":
-      return SpecialMove.ENTERING_OF_KING;
+      return SpecialMoveType.ENTERING_OF_KING;
   }
 }
 
@@ -529,24 +528,24 @@ function formatMove(move: Move): string {
 }
 
 function formatSpecialMove(move: SpecialMove): string | undefined {
-  switch (move) {
-    case SpecialMove.INTERRUPT:
+  switch (move.type) {
+    case SpecialMoveType.INTERRUPT:
       return "%CHUDAN";
-    case SpecialMove.RESIGN:
+    case SpecialMoveType.RESIGN:
       return "%TORYO";
-    case SpecialMove.IMPASS:
+    case SpecialMoveType.IMPASS:
       return "%JISHOGI";
-    case SpecialMove.DRAW:
+    case SpecialMoveType.DRAW:
       return "%HIKIWAKE";
-    case SpecialMove.REPETITION_DRAW:
+    case SpecialMoveType.REPETITION_DRAW:
       return "%SENNICHITE";
-    case SpecialMove.MATE:
+    case SpecialMoveType.MATE:
       return "%TSUMI";
-    case SpecialMove.TIMEOUT:
+    case SpecialMoveType.TIMEOUT:
       return "%TIME_UP";
-    case SpecialMove.FOUL_LOSE:
+    case SpecialMoveType.FOUL_LOSE:
       return "%ILLEGAL_MOVE";
-    case SpecialMove.ENTERING_OF_KING:
+    case SpecialMoveType.ENTERING_OF_KING:
       return "%KACHI";
   }
 }

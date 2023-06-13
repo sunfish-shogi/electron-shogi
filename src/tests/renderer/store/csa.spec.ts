@@ -1,7 +1,14 @@
 import api, { API } from "@/renderer/ipc/api";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAProtocolVersion } from "@/common/settings/csa";
-import { Color, Move, PieceType, SpecialMove, Square } from "@/common/shogi";
+import {
+  Color,
+  Move,
+  PieceType,
+  SpecialMoveType,
+  Square,
+  specialMove,
+} from "@/common/shogi";
 import { Clock } from "@/renderer/store/clock";
 import {
   CSAGameManager,
@@ -151,7 +158,9 @@ describe("store/csa", () => {
         "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n"
       );
       expect(recordManager.record.moves[4].comment).toBe("");
-      expect(recordManager.record.moves[5].move).toBe(SpecialMove.RESIGN);
+      expect(recordManager.record.moves[5].move).toStrictEqual(
+        specialMove(SpecialMoveType.RESIGN)
+      );
     });
   });
 

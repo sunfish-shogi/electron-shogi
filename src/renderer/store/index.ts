@@ -7,12 +7,12 @@ import {
   Move,
   PositionChange,
   Record,
-  SpecialMove,
   getSpecialMoveDisplayString,
   exportKakinoki,
   RecordMetadataKey,
   ImmutablePosition,
   DoMoveOption,
+  SpecialMoveType,
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
@@ -547,10 +547,10 @@ class Store {
         if (this.gameManager.setting.repeat >= 2) {
           this.showConfirmation({
             message: t.areYouSureWantToQuitGames,
-            onOk: () => this.gameManager.endGame(SpecialMove.INTERRUPT),
+            onOk: () => this.gameManager.endGame(SpecialMoveType.INTERRUPT),
           });
         } else {
-          this.gameManager.endGame(SpecialMove.INTERRUPT);
+          this.gameManager.endGame(SpecialMoveType.INTERRUPT);
         }
         break;
       case AppState.CSA_GAME:
@@ -578,7 +578,7 @@ class Store {
     this.usiMonitor.clear();
   }
 
-  onGameEnd(results: GameResults, specialMove: SpecialMove): void {
+  onGameEnd(results: GameResults, specialMoveType: SpecialMoveType): void {
     if (this.appState !== AppState.GAME) {
       return;
     }
@@ -587,9 +587,11 @@ class Store {
         text: t.allGamesCompleted,
         attachments: getMessageAttachmentsByGameResults(results),
       });
-    } else if (specialMove) {
+    } else if (specialMoveType) {
       this.enqueueMessage({
-        text: `${t.gameEnded}（${getSpecialMoveDisplayString(specialMove)})`,
+        text: `${t.gameEnded}（${getSpecialMoveDisplayString(
+          specialMoveType
+        )})`,
       });
     }
     this._appState = AppState.NORMAL;
@@ -853,14 +855,14 @@ class Store {
     this.recordManager.updateBookmark(bookmark);
   }
 
-  insertSpecialMove(specialMove: SpecialMove): void {
+  insertSpecialMove(specialMoveType: SpecialMoveType): void {
     if (
       this.appState !== AppState.NORMAL &&
       this.appState !== AppState.RESEARCH
     ) {
       return;
     }
-    this.recordManager.appendMove({ move: specialMove });
+    this.recordManager.appendMove({ move: specialMoveType });
   }
 
   startPositionEditing(): void {

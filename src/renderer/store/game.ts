@@ -7,7 +7,7 @@ import {
   getMoveDisplayText,
   Move,
   reverseColor,
-  SpecialMove,
+  SpecialMoveType,
 } from "@/common/shogi";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
@@ -42,7 +42,10 @@ export type GameResults = {
 
 type SaveRecordCallback = () => void;
 type GameNextCallback = () => void;
-type GameEndCallback = (results: GameResults, specialMove: SpecialMove) => void;
+type GameEndCallback = (
+  results: GameResults,
+  specialMoveType: SpecialMoveType
+) => void;
 type FlipBoardCallback = (flip: boolean) => void;
 type PieceBeatCallback = () => void;
 type BeepShortCallback = () => void;
@@ -290,7 +293,7 @@ export class GameManager {
       this._setting.maxMoves &&
       this.recordManager.record.current.ply >= this._setting.maxMoves
     ) {
-      this.endGame(SpecialMove.IMPASS);
+      this.endGame(SpecialMoveType.IMPASS);
       return;
     }
     // 手番側の時計をスタートする。
@@ -361,7 +364,7 @@ export class GameManager {
         "反則手: " +
           getMoveDisplayText(this.recordManager.record.position, move)
       );
-      this.endGame(SpecialMove.FOUL_LOSE);
+      this.endGame(SpecialMoveType.FOUL_LOSE);
       return;
     }
     // 手番側の時計をストップする。
@@ -391,15 +394,15 @@ export class GameManager {
     if (faulColor) {
       // 連続王手の場合は王手した側を反則負けとする。
       if (faulColor === this.recordManager.record.position.color) {
-        this.endGame(SpecialMove.FOUL_LOSE);
+        this.endGame(SpecialMoveType.FOUL_LOSE);
         return;
       } else {
-        this.endGame(SpecialMove.FOUL_WIN);
+        this.endGame(SpecialMoveType.FOUL_WIN);
         return;
       }
     } else if (this.recordManager.record.repetition) {
       // シンプルな千日手の場合は引き分けとする。
-      this.endGame(SpecialMove.REPETITION_DRAW);
+      this.endGame(SpecialMoveType.REPETITION_DRAW);
       return;
     }
     // 次の手番へ移る。
@@ -421,7 +424,7 @@ export class GameManager {
       );
       return;
     }
-    this.endGame(SpecialMove.RESIGN);
+    this.endGame(SpecialMoveType.RESIGN);
   }
 
   private onWin(eventID: number): void {
@@ -436,7 +439,7 @@ export class GameManager {
       );
       return;
     }
-    this.endGame(SpecialMove.ENTERING_OF_KING);
+    this.endGame(SpecialMoveType.ENTERING_OF_KING);
   }
 
   private timeout(color: Color): void {
@@ -453,10 +456,10 @@ export class GameManager {
       return;
     }
     // 時間切れ負けで対局を終了する。
-    this.endGame(SpecialMove.TIMEOUT);
+    this.endGame(SpecialMoveType.TIMEOUT);
   }
 
-  endGame(specialMove: SpecialMove): void {
+  endGame(specialMoveType: SpecialMoveType): void {
     if (this.state !== GameState.ACTIVE && this.state !== GameState.PENDING) {
       return;
     }
@@ -465,26 +468,26 @@ export class GameManager {
     Promise.resolve()
       .then(() => {
         // プレイヤーに対局結果を通知する。
-        return this.sendGameResults(color, specialMove);
+        return this.sendGameResults(color, specialMoveType);
       })
       .then(() => {
         // インクリメントせずに時計を停止する。
         this.getActiveClock().pause();
         // 終局理由を棋譜に記録する。
         this.recordManager.appendMove({
-          move: specialMove,
+          move: specialMoveType,
           elapsedMs: this.getActiveClock().elapsedMs,
         });
         this.recordManager.setGameEndMetadata();
         // 連続対局の記録に追加する。
-        this.addGameResults(color, specialMove);
+        this.addGameResults(color, specialMoveType);
         // 自動保存が有効な場合は棋譜を保存する。
         if (this._setting.enableAutoSave) {
           this.onSaveRecord();
         }
         // 連続対局の終了条件を満たしているか中断が要求されていれば終了する。
         const complete =
-          specialMove === SpecialMove.INTERRUPT ||
+          specialMoveType === SpecialMoveType.INTERRUPT ||
           this.repeat >= this.setting.repeat;
         if (complete) {
           // プレイヤーを解放する。
@@ -494,7 +497,7 @@ export class GameManager {
             })
             .finally(() => {
               this.state = GameState.IDLE;
-              this.onGameEnd(this.results, specialMove);
+              this.onGameEnd(this.results, specialMoveType);
             });
           return;
         }
@@ -520,11 +523,11 @@ export class GameManager {
       });
   }
 
-  private addGameResults(color: Color, specialMove: SpecialMove): void {
+  private addGameResults(color: Color, specialMoveType: SpecialMoveType): void {
     const gameResult = specialMoveToPlayerGameResult(
       color,
       Color.BLACK,
-      specialMove
+      specialMoveType
     );
     switch (gameResult) {
       case GameResult.WIN:
@@ -559,13 +562,13 @@ export class GameManager {
 
   private async sendGameResults(
     color: Color,
-    specialMove: SpecialMove
+    specialMoveType: SpecialMoveType
   ): Promise<void> {
     if (this.blackPlayer) {
       const gameResult = specialMoveToPlayerGameResult(
         color,
         Color.BLACK,
-        specialMove
+        specialMoveType
       );
       if (gameResult) {
         await this.blackPlayer.gameover(gameResult);
@@ -575,7 +578,7 @@ export class GameManager {
       const gameResult = specialMoveToPlayerGameResult(
         color,
         Color.WHITE,
-        specialMove
+        specialMoveType
       );
       if (gameResult) {
         await this.whitePlayer.gameover(gameResult);
@@ -630,19 +633,19 @@ export class GameManager {
 function specialMoveToPlayerGameResult(
   currentColor: Color,
   playerColor: Color,
-  specialMove: SpecialMove
+  specialMoveType: SpecialMoveType
 ): GameResult | null {
-  switch (specialMove) {
-    case SpecialMove.FOUL_WIN:
-    case SpecialMove.ENTERING_OF_KING:
+  switch (specialMoveType) {
+    case SpecialMoveType.FOUL_WIN:
+    case SpecialMoveType.ENTERING_OF_KING:
       return currentColor == playerColor ? GameResult.WIN : GameResult.LOSE;
-    case SpecialMove.RESIGN:
-    case SpecialMove.MATE:
-    case SpecialMove.TIMEOUT:
-    case SpecialMove.FOUL_LOSE:
+    case SpecialMoveType.RESIGN:
+    case SpecialMoveType.MATE:
+    case SpecialMoveType.TIMEOUT:
+    case SpecialMoveType.FOUL_LOSE:
       return currentColor == playerColor ? GameResult.LOSE : GameResult.WIN;
-    case SpecialMove.IMPASS:
-    case SpecialMove.REPETITION_DRAW:
+    case SpecialMoveType.IMPASS:
+    case SpecialMoveType.REPETITION_DRAW:
       return GameResult.DRAW;
   }
   return null;

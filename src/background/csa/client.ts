@@ -1,4 +1,10 @@
-import { Color, SpecialMove, importCSA, reverseColor } from "@/common/shogi";
+import {
+  Color,
+  SpecialMoveType,
+  importCSA,
+  isKnownSpecialMove,
+  reverseColor,
+} from "@/common/shogi";
 import {
   emptyCSAGameSummary,
   CSAGameSummary,
@@ -331,7 +337,10 @@ export class Client {
       return;
     }
     for (const entry of record.moves) {
-      if (entry.move === SpecialMove.START) {
+      if (
+        isKnownSpecialMove(entry.move) &&
+        entry.move.type === SpecialMoveType.START
+      ) {
         continue;
       }
       const color = reverseColor(entry.nextColor);

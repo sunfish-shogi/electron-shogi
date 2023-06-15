@@ -414,6 +414,8 @@ export const ja: Texts = {
     "悪手には大悪手より小さい値を指定してください。",
   thisEngineNotSupportsMateSearch:
     "このエンジンは詰将棋探索をサポートしていません。",
+  pleaseEndActiveFeaturesBeforeOpenRecord:
+    "棋譜を開くには現在利用している機能を終了してください。",
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `CSAサーバーへのログインを${n}秒後に再試行します。`,
   mateInNPlyDoYouWantToDisplay: (n) =>

@@ -597,7 +597,7 @@ describe("store/index", () => {
     store.openRecord();
     const moves = store.record.moves;
     expect(moves.length).toBe(1);
-    expect(store.hasError).toBeFalsy();
+    expect(store.hasError).toBeTruthy();
     expect(store.recordFilePath).toBeUndefined();
   });
 

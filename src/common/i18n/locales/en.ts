@@ -408,6 +408,8 @@ export const en: Texts = {
   mistakeThresholdMustBeLessThanBlunderThreshold:
     "Mistake threshold must be less than blunder threshold.",
   thisEngineNotSupportsMateSearch: "This engine does not support mate search.",
+  pleaseEndActiveFeaturesBeforeOpenRecord:
+    "Please end active features before open record.",
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `Try to relogin to CSA server ${n} seconds later.`,
   mateInNPlyDoYouWantToDisplay: (n) =>

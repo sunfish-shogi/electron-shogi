@@ -379,6 +379,7 @@ export type Texts = {
   dubiousThresholdMustBeLessThanMistakeThreshold: string;
   mistakeThresholdMustBeLessThanBlunderThreshold: string;
   thisEngineNotSupportsMateSearch: string;
+  pleaseEndActiveFeaturesBeforeOpenRecord: string;
   tryToReloginToCSAServerNSecondsLater: (n: number) => string;
   mateInNPlyDoYouWantToDisplay: (n: number) => string;
   insertedNMovesToRecord: (n: number) => string;

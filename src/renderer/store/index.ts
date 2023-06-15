@@ -1009,6 +1009,7 @@ class Store {
 
   openRecord(path?: string): void {
     if (this.appState !== AppState.NORMAL || this.isBussy) {
+      this.pushError(t.pleaseEndActiveFeaturesBeforeOpenRecord);
       return;
     }
     this.retainBussyState();

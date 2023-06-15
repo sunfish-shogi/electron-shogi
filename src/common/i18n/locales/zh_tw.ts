@@ -395,6 +395,8 @@ export const zh_tw: Texts = {
   dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手門檻應小於惡手門檻。",
   mistakeThresholdMustBeLessThanBlunderThreshold: "惡手門檻應小於大惡手門檻。",
   thisEngineNotSupportsMateSearch: "這個引擎不支援詰將棋搜索。",
+  pleaseEndActiveFeaturesBeforeOpenRecord:
+    "棋譜を開くには現在利用している機能を終了してください。", // TODO: translate
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
   mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,

@@ -49,6 +49,14 @@ input {
   font-size: 0.9rem;
 }
 
+input:disabled {
+  background: var(--text-bg-color-disabled);
+}
+
+input:read-only {
+  background: var(--text-bg-color-disabled);
+}
+
 select {
   color: var(--text-color);
   background-color: var(--text-bg-color);
@@ -63,4 +71,12 @@ textarea {
   background-color: var(--text-bg-color);
   border-width: 0.8px;
   font-size: 0.9rem;
+}
+
+textarea:disabled {
+  background: var(--text-bg-color-disabled);
+}
+
+textarea:read-only {
+  background: var(--text-bg-color-disabled);
 }

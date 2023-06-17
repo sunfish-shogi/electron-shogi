@@ -9,6 +9,7 @@
   --text-color-danger: white;
   --text-color: black;
   --text-bg-color: white;
+  --text-bg-color-disabled: lightgray;
   --text-bg-color-selected: #a6eaff;
   --text-bg-color-warning: #ffff88;
   --text-bg-color-danger: red;
@@ -64,6 +65,7 @@
   --text-color-danger: white;
   --text-color: black;
   --text-bg-color: #fdeeed;
+  --text-bg-color-disabled: #f8c3bf;
   --text-bg-color-selected: #a6eaff;
   --text-bg-color-warning: #ffff88;
   --text-bg-color-danger: red;
@@ -119,6 +121,7 @@
   --text-color-danger: white;
   --text-color: black;
   --text-bg-color: #ead2ae;
+  --text-bg-color-disabled: #d4a65e;
   --text-bg-color-selected: #bc8e7e;
   --text-bg-color-warning: #ffff88;
   --text-bg-color-danger: red;
@@ -174,6 +177,7 @@
   --text-color-danger: white;
   --text-color: black;
   --text-bg-color: #fcfcfd;
+  --text-bg-color-disabled: #dddde9;
   --text-bg-color-selected: #a6eaff;
   --text-bg-color-warning: #ffff88;
   --text-bg-color-danger: red;
@@ -229,6 +233,7 @@
   --text-color-danger: white;
   --text-color: white;
   --text-bg-color: #202020;
+  --text-bg-color-disabled: gray;
   --text-bg-color-selected: #4444b3;
   --text-bg-color-warning: #b08000;
   --text-bg-color-danger: red;

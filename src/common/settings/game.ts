@@ -11,7 +11,7 @@ export type TimeLimitSetting = {
 export function defaultTimeLimitSetting(): TimeLimitSetting {
   return {
     timeSeconds: 0,
-    byoyomi: 0,
+    byoyomi: 30,
     increment: 0,
   };
 }
@@ -20,6 +20,7 @@ export type GameSetting = {
   black: PlayerSetting;
   white: PlayerSetting;
   timeLimit: TimeLimitSetting;
+  whiteTimeLimit?: TimeLimitSetting;
   startPosition?: InitialPositionType;
   enableEngineTimeout: boolean;
   humanIsFront: boolean;
@@ -34,11 +35,7 @@ export function defaultGameSetting(): GameSetting {
   return {
     black: defaultPlayerSetting(),
     white: defaultPlayerSetting(),
-    timeLimit: {
-      timeSeconds: 0,
-      byoyomi: 30,
-      increment: 0,
-    },
+    timeLimit: defaultTimeLimitSetting(),
     enableEngineTimeout: false,
     humanIsFront: true,
     enableComment: true,
@@ -80,6 +77,20 @@ export function validateGameSetting(
   if (
     gameSetting.timeLimit.byoyomi !== 0 &&
     gameSetting.timeLimit.increment !== 0
+  ) {
+    return new Error(t.canNotUseByoyomiWithFischer);
+  }
+  if (
+    gameSetting.whiteTimeLimit &&
+    gameSetting.whiteTimeLimit.timeSeconds === 0 &&
+    gameSetting.whiteTimeLimit.byoyomi === 0
+  ) {
+    return new Error(t.bothTimeLimitAndByoyomiAreNotSet);
+  }
+  if (
+    gameSetting.whiteTimeLimit &&
+    gameSetting.whiteTimeLimit.byoyomi !== 0 &&
+    gameSetting.whiteTimeLimit.increment !== 0
   ) {
     return new Error(t.canNotUseByoyomiWithFischer);
   }

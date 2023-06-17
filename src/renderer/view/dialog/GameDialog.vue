@@ -2,9 +2,9 @@
   <div>
     <dialog ref="dialog">
       <div class="title">{{ t.game }}</div>
-      <div class="form-group players">
+      <div class="form-group full-column">
         <div class="row regular-interval">
-          <div class="player">
+          <div class="half-column">
             <div class="top-label">{{ t.senteOrShitate }}</div>
             <PlayerSelector
               :player-uri="blackPlayerURI"
@@ -17,7 +17,7 @@
               @select-player="onSelectBlackPlayer"
             />
           </div>
-          <div class="player">
+          <div class="half-column">
             <div class="top-label">{{ t.goteOrUwate }}</div>
             <PlayerSelector
               v-if="whitePlayerURI"
@@ -32,6 +32,125 @@
             />
           </div>
         </div>
+        <div class="row regular-interval">
+          <div class="half-column">
+            <div class="form-item">
+              <div class="form-item-label">{{ t.allottedTime }}</div>
+              <input
+                ref="hours"
+                class="time"
+                type="number"
+                min="0"
+                max="99"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.hoursSuffix }}</div>
+              <input
+                ref="minutes"
+                class="time"
+                type="number"
+                min="0"
+                max="59"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.minutesSuffix }}</div>
+            </div>
+            <div class="form-item">
+              <div class="form-item-label">{{ t.byoyomi }}</div>
+              <input
+                ref="byoyomi"
+                class="time"
+                type="number"
+                min="0"
+                max="60"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+            </div>
+            <div class="form-item">
+              <div class="form-item-label">{{ t.increments }}</div>
+              <input
+                ref="increment"
+                class="time"
+                type="number"
+                min="0"
+                max="99"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+            </div>
+            <div class="form-item">
+              <ToggleButton
+                :label="t.enableEngineTimeout"
+                :value="enableEngineTimeout"
+                @change="
+                (value: boolean) => {
+                  enableEngineTimeout = value;
+                }
+              "
+              />
+            </div>
+          </div>
+          <div class="half-column">
+            <div class="form-item">
+              <div class="form-item-label">{{ t.allottedTime }}</div>
+              <input
+                ref="whiteHours"
+                class="time"
+                type="number"
+                min="0"
+                max="99"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.hoursSuffix }}</div>
+              <input
+                ref="whiteMinutes"
+                class="time"
+                type="number"
+                min="0"
+                max="59"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.minutesSuffix }}</div>
+            </div>
+            <div class="form-item">
+              <div class="form-item-label">{{ t.byoyomi }}</div>
+              <input
+                ref="whiteByoyomi"
+                class="time"
+                type="number"
+                min="0"
+                max="60"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+            </div>
+            <div class="form-item">
+              <div class="form-item-label">{{ t.increments }}</div>
+              <input
+                ref="whiteIncrement"
+                class="time"
+                type="number"
+                min="0"
+                max="99"
+                step="1"
+              />
+              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+            </div>
+            <div class="form-item">
+              <ToggleButton
+                :label="t.setDifferentTimeForGote"
+                :value="setDifferentTime"
+                @change="
+                (value: boolean) => {
+                  setDifferentTime = value;
+                  onUpdateSetDifferentTime();
+                }
+              "
+              />
+            </div>
+          </div>
+        </div>
         <div class="players-control">
           <button @click="onSwapColor">
             <Icon :icon="IconType.SWAP_H" />
@@ -39,158 +158,102 @@
           </button>
         </div>
       </div>
-      <div class="row regular-interval">
-        <div class="form-group time-limit">
-          <div class="top-label">{{ t.time }}</div>
-          <div class="form-item">
-            <div class="form-item-label">{{ t.allottedTime }}</div>
-            <input
-              ref="hours"
-              class="time"
-              type="number"
-              min="0"
-              max="99"
-              step="1"
-            />
-            <div class="form-item-unit">{{ t.hoursSuffix }}</div>
-            <input
-              ref="minutes"
-              class="time"
-              type="number"
-              min="0"
-              max="59"
-              step="1"
-            />
-            <div class="form-item-unit">{{ t.minutesSuffix }}</div>
+      <div class="form-group full-column">
+        <div class="row regular-interval">
+          <div class="half-column">
+            <div class="form-item">
+              <div class="form-item-label">{{ t.startPosition }}</div>
+              <select ref="startPosition">
+                <option value="current">{{ t.currentPosition }}</option>
+                <option :value="InitialPositionType.STANDARD">
+                  {{ t.nonHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_LANCE">
+                  {{ t.lanceHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_RIGHT_LANCE">
+                  {{ t.rightLanceHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_BISHOP">
+                  {{ t.bishopHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_ROOK">
+                  {{ t.rookHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_ROOK_LANCE">
+                  {{ t.rookLanceHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_2PIECES">
+                  {{ t.twoPiecesHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_4PIECES">
+                  {{ t.fourPiecesHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_6PIECES">
+                  {{ t.sixPiecesHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_8PIECES">
+                  {{ t.eightPiecesHandicap }}
+                </option>
+                <option :value="InitialPositionType.HANDICAP_10PIECES">
+                  {{ t.tenPiecesHandicap }}
+                </option>
+              </select>
+            </div>
+            <div class="form-item">
+              <div class="form-item-label">{{ t.maxMoves }}</div>
+              <input ref="maxMoves" class="number" type="number" min="1" />
+            </div>
+            <div class="form-item">
+              <div class="form-item-label">{{ t.gameRepetition }}</div>
+              <input ref="repeat" class="number" type="number" min="1" />
+            </div>
           </div>
-          <div class="form-item">
-            <div class="form-item-label">{{ t.byoyomi }}</div>
-            <input
-              ref="byoyomi"
-              class="time"
-              type="number"
-              min="0"
-              max="60"
-              step="1"
-            />
-            <div class="form-item-unit">{{ t.secondsSuffix }}</div>
-          </div>
-          <div class="form-item">
-            <div class="form-item-label">{{ t.increments }}</div>
-            <input
-              ref="increment"
-              class="time"
-              type="number"
-              min="0"
-              max="99"
-              step="1"
-            />
-            <div class="form-item-unit">{{ t.secondsSuffix }}</div>
-          </div>
-          <div class="form-item">
-            <ToggleButton
-              :label="t.enableEngineTimeout"
-              :value="enableEngineTimeout"
-              @change="
-                (value: boolean) => {
-                  enableEngineTimeout = value;
-                }
-              "
-            />
-          </div>
-        </div>
-        <div class="form-group others">
-          <div class="top-label">{{ t.others }}</div>
-          <div class="form-item">
-            <div class="form-item-label">{{ t.startPosition }}</div>
-            <select ref="startPosition">
-              <option value="current">{{ t.currentPosition }}</option>
-              <option :value="InitialPositionType.STANDARD">
-                {{ t.nonHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_LANCE">
-                {{ t.lanceHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_RIGHT_LANCE">
-                {{ t.rightLanceHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_BISHOP">
-                {{ t.bishopHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_ROOK">
-                {{ t.rookHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_ROOK_LANCE">
-                {{ t.rookLanceHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_2PIECES">
-                {{ t.twoPiecesHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_4PIECES">
-                {{ t.fourPiecesHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_6PIECES">
-                {{ t.sixPiecesHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_8PIECES">
-                {{ t.eightPiecesHandicap }}
-              </option>
-              <option :value="InitialPositionType.HANDICAP_10PIECES">
-                {{ t.tenPiecesHandicap }}
-              </option>
-            </select>
-          </div>
-          <div class="form-item">
-            <div class="form-item-label">{{ t.maxMoves }}</div>
-            <input ref="maxMoves" class="number" type="number" min="1" />
-          </div>
-          <div class="form-item">
-            <div class="form-item-label">{{ t.gameRepetition }}</div>
-            <input ref="repeat" class="number" type="number" min="1" />
-          </div>
-          <div class="form-item">
-            <ToggleButton
-              :label="t.swapTurnWhenGameRepetition"
-              :value="swapPlayers"
-              @change="
+          <div class="half-column">
+            <div class="form-item">
+              <ToggleButton
+                :label="t.swapTurnWhenGameRepetition"
+                :value="swapPlayers"
+                @change="
                 (value: boolean) => {
                   swapPlayers = value;
                 }
               "
-            />
-          </div>
-          <div class="form-item">
-            <ToggleButton
-              :label="t.outputComments"
-              :value="enableComment"
-              @change="
+              />
+            </div>
+            <div class="form-item">
+              <ToggleButton
+                :label="t.outputComments"
+                :value="enableComment"
+                @change="
                 (value: boolean) => {
                   enableComment = value;
                 }
               "
-            />
-          </div>
-          <div class="form-item">
-            <ToggleButton
-              :label="t.saveRecordAutomatically"
-              :value="enableAutoSave"
-              @change="
+              />
+            </div>
+            <div class="form-item">
+              <ToggleButton
+                :label="t.saveRecordAutomatically"
+                :value="enableAutoSave"
+                @change="
                 (value: boolean) => {
                   enableAutoSave = value;
                 }
               "
-            />
-          </div>
-          <div class="form-item">
-            <ToggleButton
-              :label="t.adjustBoardToHumanPlayer"
-              :value="humanIsFront"
-              @change="
+              />
+            </div>
+            <div class="form-item">
+              <ToggleButton
+                :label="t.adjustBoardToHumanPlayer"
+                :value="humanIsFront"
+                @change="
                 (value: boolean) => {
                   humanIsFront = value;
                 }
               "
-            />
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -238,8 +301,13 @@ const hours = ref();
 const minutes = ref();
 const byoyomi = ref();
 const increment = ref();
-const startPosition = ref();
 const enableEngineTimeout = ref(false);
+const whiteHours = ref();
+const whiteMinutes = ref();
+const whiteByoyomi = ref();
+const whiteIncrement = ref();
+const setDifferentTime = ref(false);
+const startPosition = ref();
 const maxMoves = ref();
 const repeat = ref();
 const swapPlayers = ref(false);
@@ -276,6 +344,13 @@ onBeforeUnmount(() => {
   uninstallHotKeyForDialog(dialog.value);
 });
 
+const onUpdateSetDifferentTime = () => {
+  whiteHours.value.disabled = !setDifferentTime.value;
+  whiteMinutes.value.disabled = !setDifferentTime.value;
+  whiteByoyomi.value.disabled = !setDifferentTime.value;
+  whiteIncrement.value.disabled = !setDifferentTime.value;
+};
+
 onUpdated(() => {
   if (!defaultValueLoaded || defaultValueApplied) {
     return;
@@ -287,11 +362,18 @@ onUpdated(() => {
     Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
   byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
   increment.value.value = gameSetting.value.timeLimit.increment;
+  enableEngineTimeout.value = gameSetting.value.enableEngineTimeout;
+  const whiteTimeLimit =
+    gameSetting.value.whiteTimeLimit || gameSetting.value.timeLimit;
+  whiteHours.value.value = Math.floor(whiteTimeLimit.timeSeconds / 3600);
+  whiteMinutes.value.value = Math.floor(whiteTimeLimit.timeSeconds / 60) % 60;
+  whiteByoyomi.value.value = whiteTimeLimit.byoyomi;
+  whiteIncrement.value.value = whiteTimeLimit.increment;
+  setDifferentTime.value = !!gameSetting.value.whiteTimeLimit;
   startPosition.value.value =
     gameSetting.value.startPosition !== undefined
       ? gameSetting.value.startPosition
       : "current";
-  enableEngineTimeout.value = gameSetting.value.enableEngineTimeout;
   maxMoves.value.value = gameSetting.value.maxMoves;
   repeat.value.value = gameSetting.value.repeat;
   swapPlayers.value = gameSetting.value.swapPlayers;
@@ -299,6 +381,7 @@ onUpdated(() => {
   enableAutoSave.value = gameSetting.value.enableAutoSave;
   humanIsFront.value = gameSetting.value.humanIsFront;
   defaultValueApplied = true;
+  onUpdateSetDifferentTime();
 });
 
 const buildPlayerSetting = (playerURI: string): PlayerSetting => {
@@ -330,11 +413,11 @@ const onStart = () => {
       byoyomi: readInputAsNumber(byoyomi.value),
       increment: readInputAsNumber(increment.value),
     },
+    enableEngineTimeout: enableEngineTimeout.value,
     startPosition:
       startPosition.value.value !== "current"
         ? startPosition.value.value
         : undefined,
-    enableEngineTimeout: enableEngineTimeout.value,
     maxMoves: readInputAsNumber(maxMoves.value),
     repeat: readInputAsNumber(repeat.value),
     swapPlayers: swapPlayers.value,
@@ -342,6 +425,16 @@ const onStart = () => {
     enableAutoSave: enableAutoSave.value,
     humanIsFront: humanIsFront.value,
   };
+  if (setDifferentTime.value) {
+    gameSetting.whiteTimeLimit = {
+      timeSeconds:
+        (readInputAsNumber(whiteHours.value) * 60 +
+          readInputAsNumber(whiteMinutes.value)) *
+        60,
+      byoyomi: readInputAsNumber(whiteByoyomi.value),
+      increment: readInputAsNumber(whiteIncrement.value),
+    };
+  }
   const error = isNative()
     ? validateGameSetting(gameSetting)
     : validateGameSettingForWeb(gameSetting);
@@ -372,6 +465,24 @@ const onSwapColor = () => {
     whitePlayerURI.value,
     blackPlayerURI.value,
   ];
+  if (setDifferentTime.value) {
+    [hours.value.value, whiteHours.value.value] = [
+      whiteHours.value.value,
+      hours.value.value,
+    ];
+    [minutes.value.value, whiteMinutes.value.value] = [
+      whiteMinutes.value.value,
+      minutes.value.value,
+    ];
+    [byoyomi.value.value, whiteByoyomi.value.value] = [
+      whiteByoyomi.value.value,
+      byoyomi.value.value,
+    ];
+    [increment.value.value, whiteIncrement.value.value] = [
+      whiteIncrement.value.value,
+      increment.value.value,
+    ];
+  }
 };
 </script>
 
@@ -379,10 +490,10 @@ const onSwapColor = () => {
 .top-label {
   text-align: center;
 }
-.players {
+.full-column {
   width: 580px;
 }
-.player {
+.half-column {
   width: 280px;
 }
 .players-control {
@@ -391,9 +502,6 @@ const onSwapColor = () => {
 .players-control > * {
   margin-top: 5px;
 }
-.time-limit {
-  width: 265px;
-}
 input.time {
   text-align: right;
   width: 40px;
@@ -401,8 +509,5 @@ input.time {
 input.number {
   text-align: right;
   width: 80px;
-}
-.others {
-  width: 280px;
 }
 </style>

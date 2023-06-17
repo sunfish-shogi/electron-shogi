@@ -410,6 +410,13 @@ export const en: Texts = {
   thisEngineNotSupportsMateSearch: "This engine does not support mate search.",
   pleaseEndActiveFeaturesBeforeOpenRecord:
     "Please end active features before open record.",
+  bothTimeLimitAndByoyomiAreNotSet: "Both time limit and byoyomi are not set.",
+  canNotUseByoyomiWithFischer: "You can not use Byoyomi with Fischer.",
+  protocolVersionNotSelected: "Protocol version is not selected.",
+  hostNameIsEmpty: "Host name is empty.",
+  invalidPortNumber: "Invalid port number.",
+  idIsEmpty: "ID is empty.",
+  engineNotSelected: "Engine is not selected.",
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `Try to relogin to CSA server ${n} seconds later.`,
   mateInNPlyDoYouWantToDisplay: (n) =>

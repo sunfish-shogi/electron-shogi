@@ -380,6 +380,13 @@ export type Texts = {
   mistakeThresholdMustBeLessThanBlunderThreshold: string;
   thisEngineNotSupportsMateSearch: string;
   pleaseEndActiveFeaturesBeforeOpenRecord: string;
+  bothTimeLimitAndByoyomiAreNotSet: string;
+  canNotUseByoyomiWithFischer: string;
+  protocolVersionNotSelected: string;
+  hostNameIsEmpty: string;
+  invalidPortNumber: string;
+  idIsEmpty: string;
+  engineNotSelected: string;
   tryToReloginToCSAServerNSecondsLater: (n: number) => string;
   mateInNPlyDoYouWantToDisplay: (n: number) => string;
   insertedNMovesToRecord: (n: number) => string;

@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { USIEngineSetting } from "./usi";
 
 export type SecondaryResearchSetting = {
@@ -32,11 +33,11 @@ export function validateResearchSetting(
   setting: ResearchSetting
 ): Error | undefined {
   if (!setting.usi) {
-    return new Error("エンジンが選択されていません。");
+    return new Error(t.engineNotSelected);
   }
   for (const secondary of setting.secondaries || []) {
     if (!secondary.usi) {
-      return new Error("エンジンが選択されていません。");
+      return new Error(t.engineNotSelected);
     }
   }
 }

@@ -416,6 +416,13 @@ export const ja: Texts = {
     "このエンジンは詰将棋探索をサポートしていません。",
   pleaseEndActiveFeaturesBeforeOpenRecord:
     "棋譜を開くには現在利用している機能を終了してください。",
+  bothTimeLimitAndByoyomiAreNotSet: "持ち時間と秒読みが両方とも0です。",
+  canNotUseByoyomiWithFischer: "秒読みとフィッシャールールは併用できません。",
+  protocolVersionNotSelected: "プロトコルのバージョンを選択してください。",
+  hostNameIsEmpty: "ホスト名が空です。",
+  invalidPortNumber: "無効なポート番号です。",
+  idIsEmpty: "IDが空です。",
+  engineNotSelected: "エンジンが選択されていません。",
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `CSAサーバーへのログインを${n}秒後に再試行します。`,
   mateInNPlyDoYouWantToDisplay: (n) =>

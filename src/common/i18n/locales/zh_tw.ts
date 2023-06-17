@@ -397,6 +397,13 @@ export const zh_tw: Texts = {
   thisEngineNotSupportsMateSearch: "這個引擎不支援詰將棋搜索。",
   pleaseEndActiveFeaturesBeforeOpenRecord:
     "棋譜を開くには現在利用している機能を終了してください。", // TODO: translate
+  bothTimeLimitAndByoyomiAreNotSet: "持ち時間と秒読みが両方とも0です。", // TODO: translate
+  canNotUseByoyomiWithFischer: "秒読みとフィッシャールールは併用できません。", // TODO: translate
+  protocolVersionNotSelected: "プロトコルのバージョンを選択してください。", // TODO: translate
+  hostNameIsEmpty: "ホスト名が空です。", // TODO: translate
+  invalidPortNumber: "無効なポート番号です。", // TODO: translate
+  idIsEmpty: "IDが空です。", // TODO: translate
+  engineNotSelected: "エンジンが選択されていません。", // TODO: translate
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
   mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,

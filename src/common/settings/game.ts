@@ -1,5 +1,6 @@
 import { InitialPositionType } from "@/common/shogi";
 import { PlayerSetting, defaultPlayerSetting } from "./player";
+import { t } from "../i18n";
 
 export type TimeLimitSetting = {
   timeSeconds: number;
@@ -74,13 +75,13 @@ export function validateGameSetting(
     gameSetting.timeLimit.timeSeconds === 0 &&
     gameSetting.timeLimit.byoyomi === 0
   ) {
-    return new Error("持ち時間と秒読みが両方とも0です。");
+    return new Error(t.bothTimeLimitAndByoyomiAreNotSet);
   }
   if (
     gameSetting.timeLimit.byoyomi !== 0 &&
     gameSetting.timeLimit.increment !== 0
   ) {
-    return new Error("秒読みとフィッシャールールは併用できません。");
+    return new Error(t.canNotUseByoyomiWithFischer);
   }
   return;
 }

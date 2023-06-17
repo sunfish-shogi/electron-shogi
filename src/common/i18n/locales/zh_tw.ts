@@ -73,7 +73,7 @@ export const zh_tw: Texts = {
   impass: "持将棋",
   repetitionDraw: "千日手",
   mate: "詰死",
-  noMate: "不詰", // TODO: translate
+  noMate: "無詰",
   mateSearch: "詰搜尋",
   startMateSearch: "開始詰搜尋",
   stopMateSearch: "結束詰搜尋",
@@ -132,7 +132,7 @@ export const zh_tw: Texts = {
   clockSoundTarget: "棋鐘音效對象",
   anyTurn: "所有手番",
   onlyHumanTurn: "只有玩家手番",
-  defaultRecordFileFormat: "デフォルトの保存形式", // TODO: translate
+  defaultRecordFileFormat: "預設保存格式",
   textEncoding: "文字編碼",
   strict: "檔案原始編碼",
   autoDetect: "自動判定",
@@ -159,13 +159,13 @@ export const zh_tw: Texts = {
   deleteMove: "刪除該手",
   recordProperties: "棋譜情報",
   comments: "備註",
-  commentsAndBookmarks: "備註・しおり", // TODO: translate
-  bookmark: "しおり", // TODO: translate
-  bookmarkList: "しおり一覧", // TODO: translate
-  useBookmarkAsHeader: "しおりを見出しに使う", // TODO: translate
+  commentsAndBookmarks: "備註・書籤",
+  bookmark: "書籤",
+  bookmarkList: "書籤一覽",
+  useBookmarkAsHeader: "將書籤名稱作為標題",
   moveComments: "棋步備註",
   searchLog: "思考",
-  pv: "読み筋", // TODO: translate
+  pv: "預測手順",
   mateShort: "詰",
   displayPVShort: "再現",
   evaluation: "評價值",
@@ -218,8 +218,8 @@ export const zh_tw: Texts = {
   noOutputs: "不輸出",
   insertCommentToTop: "加入到前方",
   appendCommentToBottom: "在後方新增",
-  insertToComment: "コメントに挿入", // TODO: translate
-  insertToRecord: "棋譜に挿入", // TODO: translate
+  insertToComment: "加入到備註欄",
+  insertToRecord: "加入到棋譜",
   overwrite: "覆寫原檔案",
   fromPrefix: "從",
   fromSuffix: "",
@@ -307,7 +307,7 @@ export const zh_tw: Texts = {
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",
-  insertedComment: "コメントを挿入しました。", // TODO: translate
+  insertedComment: "已加入備註。",
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中 log 會於 console 中顯示，並無視此處的設定。",
@@ -338,24 +338,23 @@ export const zh_tw: Texts = {
   areYouSureWantToClearRecord: "將會刪除現在的棋譜。請問您要繼續嗎？",
   areYouSureWantToDiscardPosition: "將不會保存現在的局面。請問您要繼續嗎？",
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
-    "現在の棋譜を閉じて別のファイルを開きます。よろしいですか？", // TODO: translate
+    "會將現在的棋譜關閉並開啟別的檔案，請問您要繼續嗎？",
   youCanNotCloseAppWhileCSAOnlineGame:
     "由於CSA協定正在使用中，本程式無法被關閉。",
   fileExtensionNotSupported: "無法支援的副檔名。",
   errorOccuredWhileDisconnectingFromCSAServer:
     "在與CSA伺服器中斷連線時發生錯誤。",
   failedToConnectToCSAServer: "無法連接CSA伺服器。",
-  errorOccuredWhileLogoutFromCSAServer:
-    "CSAサーバーからのログアウト中にエラーが発生しました。", // TODO: translate
+  errorOccuredWhileLogoutFromCSAServer: "在登出 CSA 伺服器時發生錯誤。",
   disconnectedFromCSAServer: "與CSA伺服器的連接結束。",
   csaServerLoginDenied: "您對CSA伺服器的登入被拒絕。",
   thisFeatureNotAvailableOnWebApp: "Web版無法使用本機能",
-  failedToStartNewGame: "対局の開始に失敗しました。", // TODO: translate
-  errorOccuredWhileEndingGame: "対局の終了中にエラーが発生しました。", // TODO: translate
+  failedToStartNewGame: "對局開始失敗。",
+  errorOccuredWhileEndingGame: "在對局結束時發生錯誤。",
   failedToSendGoCommand: "無法送出go指令。",
   failedToSendPonderCommand: "無法送出ponder指令。",
   failedToSendStopCommand: "無法送出stop指令。",
-  failedToShutdownEngines: "エンジンを正常に終了できませんでした。", // TODO: translate
+  failedToShutdownEngines: "引擎無法正常結束。",
   failedToSaveRecord: "棋譜保存失敗。",
   failedToParseSFEN: "SFEN讀取失敗。",
   failedToDetectRecordFormat: "無法判別棋譜形式。",
@@ -395,19 +394,18 @@ export const zh_tw: Texts = {
   dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手門檻應小於惡手門檻。",
   mistakeThresholdMustBeLessThanBlunderThreshold: "惡手門檻應小於大惡手門檻。",
   thisEngineNotSupportsMateSearch: "這個引擎不支援詰將棋搜索。",
-  pleaseEndActiveFeaturesBeforeOpenRecord:
-    "棋譜を開くには現在利用している機能を終了してください。", // TODO: translate
-  bothTimeLimitAndByoyomiAreNotSet: "持ち時間と秒読みが両方とも0です。", // TODO: translate
-  canNotUseByoyomiWithFischer: "秒読みとフィッシャールールは併用できません。", // TODO: translate
-  protocolVersionNotSelected: "プロトコルのバージョンを選択してください。", // TODO: translate
-  hostNameIsEmpty: "ホスト名が空です。", // TODO: translate
-  invalidPortNumber: "無効なポート番号です。", // TODO: translate
-  idIsEmpty: "IDが空です。", // TODO: translate
-  engineNotSelected: "エンジンが選択されていません。", // TODO: translate
+  pleaseEndActiveFeaturesBeforeOpenRecord: "請關閉現正運行的功能再開啟棋譜。",
+  bothTimeLimitAndByoyomiAreNotSet: "持時間與讀秒尚未設置。",
+  canNotUseByoyomiWithFischer: "讀秒與 Fischer 選項無法同時併用。",
+  protocolVersionNotSelected: "請選擇協定版本。",
+  hostNameIsEmpty: "主機名稱為空。",
+  invalidPortNumber: "不可用的連接埠號碼。",
+  idIsEmpty: "ID 為空。",
+  engineNotSelected: "尚未選擇引擎。",
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
   mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,
-  insertedNMovesToRecord: (n: number) => `${n}手を棋譜に挿入しました。`, // TODO: translate
+  insertedNMovesToRecord: (n: number) => `已加入${n}手到棋譜。`,
   errorsOccurred: (n) => `發生 ${n} 種類的錯誤。`,
   between: (a, b) => `自 ${a} 到 ${b} `,
   addNthEngine: (n) => `追加第 ${n} 個引擎`,

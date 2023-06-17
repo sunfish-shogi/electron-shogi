@@ -1,5 +1,6 @@
 import * as uri from "@/common/uri";
 import { PlayerSetting, defaultPlayerSetting } from "./player";
+import { t } from "../i18n";
 
 export enum CSAProtocolVersion {
   V121 = "v121",
@@ -56,16 +57,16 @@ export function validateCSAGameSetting(
     csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121 &&
     csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121_FLOODGATE
   ) {
-    return new Error("プロトコルのバージョンを選択してください。");
+    return new Error(t.protocolVersionNotSelected);
   }
   if (csaGameSetting.server.host === "") {
-    return new Error("ホスト名が空です。");
+    return new Error(t.hostNameIsEmpty);
   }
   if (csaGameSetting.server.port < 0 || csaGameSetting.server.port > 65535) {
-    return new Error("無効なポート番号です。");
+    return new Error(t.invalidPortNumber);
   }
   if (csaGameSetting.server.id === "") {
-    return new Error("IDが空です。");
+    return new Error(t.idIsEmpty);
   }
   return;
 }

@@ -236,26 +236,8 @@ export class GameManager {
       timeLimit: this.setting.timeLimit,
     });
     // 対局時計を設定する。
-    const clockSetting = {
-      timeMs: this.setting.timeLimit.timeSeconds * 1e3,
-      byoyomi: this.setting.timeLimit.byoyomi,
-      increment: this.setting.timeLimit.increment,
-      onBeepShort: () => this.onBeepShort(),
-      onBeepUnlimited: () => this.onBeepUnlimited(),
-      onStopBeep: () => this.onStopBeep(),
-    };
-    this.blackClock.setup({
-      ...clockSetting,
-      onTimeout: () => {
-        this.timeout(Color.BLACK);
-      },
-    });
-    this.whiteClock.setup({
-      ...clockSetting,
-      onTimeout: () => {
-        this.timeout(Color.WHITE);
-      },
-    });
+    this.blackClock.setup(this.getBlackClockSetting());
+    this.whiteClock.setup(this.getWhiteClockSetting());
     // プレイヤーに対局開始を通知する。
     await Promise.all([
       this.blackPlayer.readyNewGame(),
@@ -269,6 +251,44 @@ export class GameManager {
     this.adjustBoardOrientation();
     // 最初の手番へ移る。
     setTimeout(() => this.nextMove());
+  }
+
+  private getCommonClockSetting() {
+    return {
+      timeMs: this.setting.timeLimit.timeSeconds * 1e3,
+      byoyomi: this.setting.timeLimit.byoyomi,
+      increment: this.setting.timeLimit.increment,
+      onBeepShort: () => this.onBeepShort(),
+      onBeepUnlimited: () => this.onBeepUnlimited(),
+      onStopBeep: () => this.onStopBeep(),
+    };
+  }
+
+  private getBlackClockSetting() {
+    return {
+      ...this.getCommonClockSetting(),
+      onTimeout: () => {
+        this.timeout(Color.BLACK);
+      },
+    };
+  }
+
+  private getWhiteClockSetting() {
+    const setting = {
+      ...this.getCommonClockSetting(),
+      onTimeout: () => {
+        this.timeout(Color.WHITE);
+      },
+    };
+    if (!this.setting.whiteTimeLimit) {
+      return setting;
+    }
+    return {
+      ...setting,
+      timeMs: this.setting.whiteTimeLimit.timeSeconds * 1e3,
+      byoyomi: this.setting.whiteTimeLimit.byoyomi,
+      increment: this.setting.whiteTimeLimit.increment,
+    };
   }
 
   private adjustBoardOrientation(): void {
@@ -552,6 +572,13 @@ export class GameManager {
       black: this.setting.white,
       white: this.setting.black,
     };
+    if (this._setting.whiteTimeLimit) {
+      this._setting = {
+        ...this.setting,
+        timeLimit: this._setting.whiteTimeLimit,
+        whiteTimeLimit: this._setting.timeLimit,
+      };
+    }
     [this.blackPlayer, this.whitePlayer] = [this.whitePlayer, this.blackPlayer];
     this._results = {
       ...this.results,

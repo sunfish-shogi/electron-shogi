@@ -1,4 +1,4 @@
-type ClockSetting = {
+export type ClockSetting = {
   timeMs?: number;
   byoyomi?: number;
   increment?: number;

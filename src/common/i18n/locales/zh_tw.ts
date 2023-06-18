@@ -186,9 +186,8 @@ export const zh_tw: Texts = {
   uwate: "上手",
   swapSenteGote: "先後交換",
   currentPosition: "現在局面",
-  time: "時間",
   enableEngineTimeout: "開啟引擎時間限制",
-  others: "其他",
+  setDifferentTimeForGote: "後手に異なる時間を設定", // TODO: translate
   nextTurn: "手番",
   elapsedTime: "消費時間",
   elapsed: "經過時間",

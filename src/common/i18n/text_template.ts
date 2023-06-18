@@ -184,9 +184,8 @@ export type Texts = {
   uwate: string;
   swapSenteGote: string;
   currentPosition: string;
-  time: string;
   enableEngineTimeout: string;
-  others: string;
+  setDifferentTimeForGote: string;
   nextTurn: string;
   elapsedTime: string;
   elapsed: string;

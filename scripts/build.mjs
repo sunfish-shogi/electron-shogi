@@ -68,6 +68,7 @@ const config = {
     },
   },
   linux: {
+    target: "AppImage",
     fileAssociations: [
       { name: "KIF", ext: "kif", },
       { name: "KIFU", ext: "kifu" },

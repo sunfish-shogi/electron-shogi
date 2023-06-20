@@ -68,10 +68,11 @@ const config = {
     },
   },
   linux: {
-    fileAssociations: {
-      name: "Kifu",
-      ext: ["kif", "kifu", "csa"],
-    },
+    fileAssociations: [
+      { name: "KIF", ext: "kif", },
+      { name: "KIFU", ext: "kifu" },
+      { name: "CSA", ext: "csa" },
+    ],
   },
   publish: null,
 };

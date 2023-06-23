@@ -41,7 +41,7 @@
         :style="square.backgroundStyle"
       />
       <div v-for="piece in layout.piece" :key="piece.id" :style="piece.style">
-        <img class="full" :src="piece.imagePath" />
+        <img class="piece-image" :src="piece.imagePath" />
       </div>
       <div v-for="label in layout.labels" :key="label.id" :style="label.style">
         {{ label.character }}
@@ -70,7 +70,7 @@
           :key="piece.id"
           :style="piece.style"
         >
-          <img class="full" :src="piece.imagePath" />
+          <img class="piece-image" :src="piece.imagePath" />
         </div>
         <div
           v-for="pointer in layout.blackHand.pointers"
@@ -96,7 +96,7 @@
           :key="piece.id"
           :style="piece.style"
         >
-          <img class="full" :src="piece.imagePath" />
+          <img class="piece-image" :src="piece.imagePath" />
         </div>
         <div
           v-for="pointer in layout.whiteHand.pointers"
@@ -111,10 +111,13 @@
         :style="layout.promotion.style"
       >
         <div class="select-button promote" @click="clickPromote($event)">
-          <img class="full" :src="layout.promotion.promoteImagePath" />
+          <img class="piece-image" :src="layout.promotion.promoteImagePath" />
         </div>
         <div class="select-button not-promote" @click="clickNotPromote($event)">
-          <img class="full" :src="layout.promotion.notPromoteImagePath" />
+          <img
+            class="piece-image"
+            :src="layout.promotion.notPromoteImagePath"
+          />
         </div>
       </div>
       <div class="turn" :style="layout.turn.style">{{ nextMoveLabel }}</div>
@@ -507,5 +510,9 @@ const whitePlayerTimeSeverity = computed(() => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.piece-image {
+  max-width: 100%;
+  max-height: 100%;
 }
 </style>

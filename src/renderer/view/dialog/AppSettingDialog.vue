@@ -93,23 +93,25 @@
               class="selector"
               :value="pieceImage"
               :items="[
-                { label: t.singleKanjiPiece, value: PieceImageType.HITOMOJI },
+                { label: t.shinryu, value: PieceImage.SHINRYU },
+                { label: t.shinryuSogyoku, value: PieceImage.SHINRYU_SOGYOKU },
+                { label: t.singleKanjiPiece, value: PieceImage.HITOMOJI },
                 {
                   label: t.singleKanjiGothicPiece,
-                  value: PieceImageType.HITOMOJI_GOTHIC,
+                  value: PieceImage.HITOMOJI_GOTHIC,
                 },
                 {
                   label: t.singleKanjiDarkPiece,
-                  value: PieceImageType.HITOMOJI_DARK,
+                  value: PieceImage.HITOMOJI_DARK,
                 },
                 {
                   label: t.singleKanjiGothicDarkPiece,
-                  value: PieceImageType.HITOMOJI_GOTHIC_DARK,
+                  value: PieceImage.HITOMOJI_GOTHIC_DARK,
                 },
-                { label: t.customImage, value: PieceImageType.CUSTOM_IMAGE },
+                { label: t.customImage, value: PieceImage.CUSTOM_IMAGE },
               ]"
               @change="
-                (value: PieceImageType) => {
+                (value: PieceImage) => {
                   pieceImage = value;
                 }
               "
@@ -118,7 +120,7 @@
               ref="pieceImageSelector"
               class="form-item"
               :class="{
-                hidden: pieceImage !== PieceImageType.CUSTOM_IMAGE,
+                hidden: pieceImage !== PieceImage.CUSTOM_IMAGE,
               }"
             >
               <div class="form-item-label-wide"></div>
@@ -612,6 +614,8 @@ import {
   RecordFileFormat,
   TextDecodingRule,
   ClockSoundTarget,
+  AppSetting,
+  KingPieceType,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
@@ -627,6 +631,78 @@ import {
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
+
+enum PieceImage {
+  SHINRYU = "shinryu",
+  SHINRYU_SOGYOKU = "shinryuSogyoku",
+  HITOMOJI = "hitomoji",
+  HITOMOJI_DARK = "hitomojiDark",
+  HITOMOJI_GOTHIC = "hitomojiGothic",
+  HITOMOJI_GOTHIC_DARK = "hitomojiGothicDark",
+  CUSTOM_IMAGE = "custom-image",
+}
+
+function toPieceImage(setting: AppSetting): PieceImage {
+  switch (setting.pieceImage) {
+    case PieceImageType.SHINRYU:
+      switch (setting.kingPieceType) {
+        default:
+          return PieceImage.SHINRYU;
+        case KingPieceType.GYOKU_AND_GYOKU:
+          return PieceImage.SHINRYU_SOGYOKU;
+      }
+    case PieceImageType.HITOMOJI:
+      return PieceImage.HITOMOJI;
+    case PieceImageType.HITOMOJI_DARK:
+      return PieceImage.HITOMOJI_DARK;
+    case PieceImageType.HITOMOJI_GOTHIC:
+      return PieceImage.HITOMOJI_GOTHIC;
+    case PieceImageType.HITOMOJI_GOTHIC_DARK:
+      return PieceImage.HITOMOJI_GOTHIC_DARK;
+    case PieceImageType.CUSTOM_IMAGE:
+      return PieceImage.CUSTOM_IMAGE;
+  }
+}
+
+function pieceImageToSetting(pieceImage: PieceImage) {
+  switch (pieceImage) {
+    case PieceImage.SHINRYU:
+      return {
+        pieceImage: PieceImageType.SHINRYU,
+        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
+      };
+    case PieceImage.SHINRYU_SOGYOKU:
+      return {
+        pieceImage: PieceImageType.SHINRYU,
+        kingPieceType: KingPieceType.GYOKU_AND_GYOKU,
+      };
+    case PieceImage.HITOMOJI:
+      return {
+        pieceImage: PieceImageType.HITOMOJI,
+        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
+      };
+    case PieceImage.HITOMOJI_DARK:
+      return {
+        pieceImage: PieceImageType.HITOMOJI_DARK,
+        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
+      };
+    case PieceImage.HITOMOJI_GOTHIC:
+      return {
+        pieceImage: PieceImageType.HITOMOJI_GOTHIC,
+        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
+      };
+    case PieceImage.HITOMOJI_GOTHIC_DARK:
+      return {
+        pieceImage: PieceImageType.HITOMOJI_GOTHIC_DARK,
+        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
+      };
+    case PieceImage.CUSTOM_IMAGE:
+      return {
+        pieceImage: PieceImageType.CUSTOM_IMAGE,
+        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
+      };
+  }
+}
 
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
@@ -647,7 +723,7 @@ const language = ref(appSetting.language);
 const thema = ref(appSetting.thema);
 const backgroundImageType = ref(appSetting.backgroundImageType);
 const backgroundImageSelector = ref();
-const pieceImage = ref(appSetting.pieceImage);
+const pieceImage = ref(toPieceImage(appSetting));
 const boardImage = ref(appSetting.boardImage);
 const boardImageSelector = ref();
 const pieceStandImage = ref(appSetting.pieceStandImage);
@@ -704,7 +780,7 @@ const saveAndClose = async () => {
       language: language.value,
       thema: thema.value,
       backgroundImageType: backgroundImageType.value,
-      pieceImage: pieceImage.value,
+      ...pieceImageToSetting(pieceImage.value),
       boardImage: boardImage.value,
       pieceImageFileURL: pieceImageFileURL.value,
       croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,

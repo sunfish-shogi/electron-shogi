@@ -110,6 +110,8 @@ export const en: Texts = {
   snow: "Snow",
   dark: "Dark",
   piece: "Piece",
+  shinryu: "新龍/Shinryu",
+  shinryuSogyoku: "新龍/Shinryu (玉&玉)",
   singleKanjiPiece: "Single Kanji",
   singleKanjiGothicPiece: "Single Kanji (Gothic)",
   singleKanjiDarkPiece: "Single Kanji (Dark)",

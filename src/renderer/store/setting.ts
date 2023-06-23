@@ -6,6 +6,7 @@ import {
   BoardLabelType,
   ClockSoundTarget,
   EvaluationViewFrom,
+  KingPieceType,
   LeftSideControlType,
   PieceImageType,
   PieceStandImageType,
@@ -38,6 +39,9 @@ class AppSettingStore {
   }
   get pieceImage(): PieceImageType {
     return this.setting.pieceImage;
+  }
+  get kingPieceType(): KingPieceType {
+    return this.setting.kingPieceType;
   }
   get backgroundImageType(): BackgroundImageType {
     return this.setting.backgroundImageType;

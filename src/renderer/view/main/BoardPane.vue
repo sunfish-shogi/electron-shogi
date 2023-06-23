@@ -5,6 +5,7 @@
       :piece-stand-image-type="appSetting.pieceStandImage"
       :board-label-type="appSetting.boardLabelType"
       :piece-image-base-url="getPieceImageBaseURL(appSetting)"
+      :king-piece-type="appSetting.kingPieceType"
       :custom-board-image-url="appSetting.boardImageFileURL"
       :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
       :max-size="maxSize"

@@ -144,6 +144,7 @@ import { computed, reactive, watch, PropType } from "vue";
 import {
   BoardImageType,
   BoardLabelType,
+  KingPieceType,
   PieceStandImageType,
 } from "@/common/settings/app";
 import { RectSize } from "@/common/graphics";
@@ -162,6 +163,10 @@ const props = defineProps({
   },
   pieceImageBaseUrl: {
     type: String,
+    required: true,
+  },
+  kingPieceType: {
+    type: String as PropType<KingPieceType>,
     required: true,
   },
   customBoardImageUrl: {
@@ -385,6 +390,7 @@ const layoutBuilder = computed(() => {
     props.pieceStandImageType,
     props.boardLabelType,
     props.pieceImageBaseUrl,
+    props.kingPieceType,
     props.customBoardImageUrl,
     props.customPieceStandImageUrl
   );

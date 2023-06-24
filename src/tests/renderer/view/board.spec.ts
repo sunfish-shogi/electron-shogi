@@ -5,6 +5,7 @@ import { RectSize } from "@/common/graphics";
 import {
   BoardImageType,
   BoardLabelType,
+  KingPieceType,
   PieceStandImageType,
 } from "@/common/settings/app";
 
@@ -16,6 +17,7 @@ describe("BoardView", () => {
         boardImageType: BoardImageType.LIGHT,
         pieceStandImageType: PieceStandImageType.STANDARD,
         pieceImageBaseUrl: "./piece/hitomoji",
+        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
         boardLabelType: BoardLabelType.STANDARD,
         maxSize: new RectSize(800, 600),
         position,

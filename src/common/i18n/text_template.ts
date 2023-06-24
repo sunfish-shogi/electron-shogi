@@ -107,6 +107,8 @@ export type Texts = {
   snow: string;
   dark: string;
   piece: string;
+  shinryu: string;
+  shinryuSogyoku: string;
   singleKanjiPiece: string;
   singleKanjiGothicPiece: string;
   singleKanjiDarkPiece: string;

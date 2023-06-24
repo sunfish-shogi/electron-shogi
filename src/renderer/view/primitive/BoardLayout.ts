@@ -1,6 +1,7 @@
 import {
   BoardImageType,
   BoardLabelType,
+  KingPieceType,
   PieceStandImageType,
 } from "@/common/settings/app";
 import {
@@ -156,8 +157,11 @@ const layoutTemplate = {
   },
 };
 
-function getPieceTextureMap(baseURL: string): PieceImages {
-  return {
+function getPieceTextureMap(
+  baseURL: string,
+  kingPieceType: KingPieceType
+): PieceImages {
+  const m = {
     black: {
       pawn: join(baseURL, "black_pawn.png"),
       lance: join(baseURL, "black_lance.png"),
@@ -193,6 +197,11 @@ function getPieceTextureMap(baseURL: string): PieceImages {
       dragon: join(baseURL, "white_dragon.png"),
     },
   };
+  if (kingPieceType === KingPieceType.GYOKU_AND_GYOKU) {
+    m.black.king = m.black.king2;
+    m.white.king = m.white.king2;
+  }
+  return m;
 }
 
 function getBoardGridURL(type: BoardImageType): string {
@@ -405,10 +414,11 @@ export default class LayoutBuilder {
     private pieceStandImageType: PieceStandImageType,
     private boardLabelType: BoardLabelType,
     pieceImageBaseURL: string,
+    kingPieceType: KingPieceType,
     customBoardImageURL?: string,
     customPieceStandImageURL?: string
   ) {
-    this.pieceImages = getPieceTextureMap(pieceImageBaseURL);
+    this.pieceImages = getPieceTextureMap(pieceImageBaseURL, kingPieceType);
     this.boardGridImage = getBoardGridURL(boardImageType);
     this.boardTextureImage = getBoardTextureURL(
       boardImageType,

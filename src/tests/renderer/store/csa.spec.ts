@@ -285,6 +285,114 @@ describe("store/csa", () => {
     });
   });
 
+  it("CSAManager/initialMoves", () => {
+    mockAPI.csaLogin.mockResolvedValueOnce(123);
+    mockAPI.csaAgree.mockResolvedValueOnce();
+    mockAPI.csaMove.mockResolvedValue();
+    mockAPI.csaLogout.mockResolvedValueOnce();
+    const mockPlayer = createMockPlayer({
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b":
+        { usi: "4h3g" },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d":
+        { usi: "2g2f" },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d 2g2f 8d8e":
+        { usi: "resign" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI]: mockPlayer,
+    });
+    const recordManager = new RecordManager();
+    const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+    const mockHandlers = applyMockHandlers(manager);
+    return manager.login(csaGameSetting, mockPlayerBuilder).then(() => {
+      expect(mockAPI.csaLogin).toBeCalledTimes(1);
+      expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+      expect(mockAPI.csaAgree).toBeCalledTimes(0);
+      onCSAGameSummary(123, {
+        ...csaGameSummary,
+        position: `\
+P1-KY-KE-GI-KI-OU-KI-GI-KE-KY
+P2 * -HI *  *  *  *  * -KA * 
+P3-FU-FU-FU-FU-FU-FU-FU-FU-FU
+P4 *  *  *  *  *  *  *  *  * 
+P5 *  *  *  *  *  *  *  *  * 
+P6 *  *  *  *  *  *  *  *  * 
+P7+FU+FU+FU+FU+FU+FU+FU+FU+FU
+P8 * +KA *  *  *  *  * +HI * 
+P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
+P+
+P-
++
++3736FU,T5
+-3334FU,T5
++3948GI,T5
+`,
+      });
+      expect(mockAPI.csaAgree).toBeCalledTimes(1);
+      expect(mockAPI.csaMove).toBeCalledTimes(0);
+      expect(mockPlayer.startSearch).toBeCalledTimes(0);
+      onCSAStart(123, { black: { time: 590 }, white: { time: 595 } });
+      expect(mockAPI.csaMove).toBeCalledTimes(0);
+      expect(mockPlayer.startSearch).toBeCalledTimes(0);
+      expect(mockPlayer.startPonder).toBeCalledTimes(1);
+      onCSAMove(123, "-4132KI", {
+        black: { time: 585 },
+        white: { time: 588 },
+      });
+      expect(mockAPI.csaMove).toBeCalledTimes(1);
+      expect(mockAPI.csaMove.mock.calls[0][0]).toBe(123);
+      expect(mockAPI.csaMove.mock.calls[0][1]).toBe("+4837GI");
+      expect(mockPlayer.startSearch).toBeCalledTimes(1);
+      expect(mockPlayer.startPonder).toBeCalledTimes(1);
+      onCSAMove(123, "+4837GI", {
+        black: { time: 585 },
+        white: { time: 588 },
+      });
+      expect(mockAPI.csaMove).toBeCalledTimes(1);
+      expect(mockPlayer.startSearch).toBeCalledTimes(1);
+      expect(mockPlayer.startPonder).toBeCalledTimes(2);
+      onCSAMove(123, "-8384FU", {
+        black: { time: 585 },
+        white: { time: 585 },
+      });
+      expect(mockAPI.csaMove).toBeCalledTimes(2);
+      expect(mockAPI.csaMove.mock.calls[1][0]).toBe(123);
+      expect(mockAPI.csaMove.mock.calls[1][1]).toBe("+2726FU");
+      expect(mockPlayer.startSearch).toBeCalledTimes(2);
+      expect(mockPlayer.startPonder).toBeCalledTimes(2);
+      onCSAMove(123, "+2726FU", {
+        black: { time: 570 },
+        white: { time: 585 },
+      });
+      expect(mockAPI.csaMove).toBeCalledTimes(2);
+      expect(mockAPI.csaResign).toBeCalledTimes(0);
+      expect(mockPlayer.startSearch).toBeCalledTimes(2);
+      expect(mockPlayer.startPonder).toBeCalledTimes(3);
+      onCSAMove(123, "-8485FU", {
+        black: { time: 570 },
+        white: { time: 560 },
+      });
+      expect(mockAPI.csaLogout).toBeCalledTimes(0);
+      expect(mockAPI.csaMove).toBeCalledTimes(2);
+      expect(mockAPI.csaResign).toBeCalledTimes(1);
+      expect(mockPlayer.startSearch).toBeCalledTimes(3);
+      expect(mockPlayer.startPonder).toBeCalledTimes(3);
+      expect(mockPlayer.close).toBeCalledTimes(0);
+      expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
+      onCSAGameResult(123, CSASpecialMove.RESIGN, CSAGameResult.WIN);
+      jest.runOnlyPendingTimers();
+      expect(mockAPI.csaLogout).toBeCalledTimes(1);
+      expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(123);
+      expect(mockPlayer.close).toBeCalledTimes(1);
+      expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
+      expect(mockHandlers.onError).toBeCalledTimes(0);
+      expect(recordManager.record.moves).toHaveLength(10);
+      expect(recordManager.record.moves[9].move).toStrictEqual(
+        specialMove(SpecialMoveType.RESIGN)
+      );
+    });
+  });
+
   describe("CSAManager/onPlayerMove", () => {
     mockAPI.csaMove.mockResolvedValue();
     const recordManager = new RecordManager();

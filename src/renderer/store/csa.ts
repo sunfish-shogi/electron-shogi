@@ -300,7 +300,7 @@ export class CSAGameManager {
   onGameSummary(gameSummary: CSAGameSummary): void {
     this.gameSummary = gameSummary;
 
-    // 局面を初期化する。
+    // 開始局面（途中再開の場合は再開局面までの指し手）を読み込む。
     const error = this.recordManager.importRecord(
       this.gameSummary.position,
       RecordFormatType.CSA
@@ -310,6 +310,8 @@ export class CSAGameManager {
       this.close(ReloginBehavior.DO_NOT_RELOGIN);
       return;
     }
+    // 指し手が含まれる場合は棋譜の末尾へ移動する。
+    this.recordManager.changePly(Number.MAX_SAFE_INTEGER);
 
     api.csaAgree(this.sessionID, this.gameSummary.id);
   }

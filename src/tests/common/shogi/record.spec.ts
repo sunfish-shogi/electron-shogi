@@ -51,6 +51,8 @@ describe("shogi/record", () => {
 
   it("append/goBack/goForward/goto", () => {
     const record = new Record();
+    const onChangePosition = jest.fn();
+    record.on("changePosition", onChangePosition);
     const move = (ff: number, fr: number, tf: number, tr: number): Move => {
       return record.position.createMove(
         new Square(ff, fr),
@@ -58,36 +60,54 @@ describe("shogi/record", () => {
       ) as Move;
     };
     expect(record.append(move(7, 7, 7, 6))).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(1);
     expect(record.current.nextColor).toBe(Color.WHITE);
     expect(record.append(move(3, 3, 3, 4))).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(2);
     expect(record.current.nextColor).toBe(Color.BLACK);
     expect(record.append(move(2, 7, 2, 6))).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(3);
     expect(record.current.nextColor).toBe(Color.WHITE);
     expect(record.goBack()).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(4);
     expect(record.goBack()).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(5);
     expect(record.append(move(8, 3, 8, 4))).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(6);
     expect(record.append(move(7, 9, 7, 8))).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(7);
 
     expect(record.goBack()).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(8);
     expect(record.goBack()).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(9);
     expect(record.goBack()).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(10);
     expect(record.usi).toBe(
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves"
     );
     expect(record.goBack()).toBeFalsy();
+    expect(onChangePosition).toBeCalledTimes(10); // not called
 
     expect(record.goForward()).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(11);
     record.goto(Number.MAX_SAFE_INTEGER);
+    expect(onChangePosition).toBeCalledTimes(12);
     expect(record.usi).toBe(
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d 7i7h"
     );
     expect(record.goForward()).toBeFalsy();
+    expect(onChangePosition).toBeCalledTimes(12); // not called
 
     record.goto(2);
+    expect(onChangePosition).toBeCalledTimes(13);
     expect(record.usi).toBe(
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d"
     );
-    record.switchBranchByIndex(0);
+    record.goto(2);
+    expect(onChangePosition).toBeCalledTimes(13); // not called
+    expect(record.switchBranchByIndex(0)).toBeTruthy();
+    expect(onChangePosition).toBeCalledTimes(14);
     expect(record.usi).toBe(
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d"
     );

@@ -366,6 +366,7 @@ export class Record {
   }
 
   goto(ply: number): void {
+    const orgPly = this._current.ply;
     while (ply < this._current.ply) {
       if (!this._goBack()) {
         break;
@@ -376,7 +377,9 @@ export class Record {
         break;
       }
     }
-    this.onChangePosition();
+    if (orgPly !== this._current.ply) {
+      this.onChangePosition();
+    }
   }
 
   resetAllBranchSelection(): void {
@@ -582,6 +585,10 @@ export class Record {
   }
 
   jumpToBookmark(bookmark: string): boolean {
+    // 既に該当する局面にいる場合は何もしない。
+    if (this._current.bookmark === bookmark) {
+      return true;
+    }
     // 一致するブックマークを探す。
     const node = this.find((node) => node.bookmark === bookmark);
     if (!node) {

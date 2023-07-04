@@ -5,11 +5,16 @@ import path from "path";
 export class ChildProcess {
   private handle: ChildProcessWithoutNullStreams;
   private readline: Readline | null = null;
+  private _lastSended: string | null = null;
 
   constructor(cmd: string) {
     this.handle = spawn(cmd, {
       cwd: path.dirname(cmd),
     }).on("close", this.onClose.bind(this));
+  }
+
+  get lastSended(): string | null {
+    return this._lastSended;
   }
 
   on(event: "receive", listener: (line: string) => void): this;
@@ -42,6 +47,7 @@ export class ChildProcess {
 
   send(line: string): void {
     this.handle.stdin.write(line + "\n");
+    this._lastSended = line;
   }
 
   kill(): void {

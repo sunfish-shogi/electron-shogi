@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as log4js from "log4js";
 import { EngineProcess, GameResult } from "@/background/usi/engine";
 import { ChildProcess } from "@/background/usi/process";
@@ -6,6 +8,17 @@ jest.mock("@/background/log");
 jest.mock("@/background/usi/process");
 
 const mockChildProcess = ChildProcess as jest.MockedClass<typeof ChildProcess>;
+
+function getChildProcessHandler(
+  mock: jest.MockedClass<typeof ChildProcess>,
+  name: string
+): any {
+  for (const call of mock.prototype.on.mock.calls) {
+    if (call[0] === name) {
+      return call[1];
+    }
+  }
+}
 
 function bindHandlers(engine: EngineProcess) {
   const handlers = {
@@ -35,7 +48,6 @@ function bindHandlers(engine: EngineProcess) {
   return handlers;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 describe("ipc/background/usi/engine", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -69,8 +81,8 @@ describe("ipc/background/usi/engine", () => {
       "receive",
       expect.any(Function)
     );
-    const onClose = mockChildProcess.prototype.on.mock.calls[1][1] as any;
-    const onReceive = mockChildProcess.prototype.on.mock.calls[2][1] as any;
+    const onClose = getChildProcessHandler(mockChildProcess, "close");
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
     onReceive("id name DummyEngine");
     onReceive("id author Ryosuke Kubo");
     onReceive("option name StringA type string default foo");
@@ -151,8 +163,8 @@ describe("ipc/background/usi/engine", () => {
     );
     const handlers = bindHandlers(engine);
     engine.launch();
-    const onClose = mockChildProcess.prototype.on.mock.calls[1][1] as any;
-    const onReceive = mockChildProcess.prototype.on.mock.calls[2][1] as any;
+    const onClose = getChildProcessHandler(mockChildProcess, "close");
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
     onReceive("id name DummyEngine");
     onReceive("option name Button type button");
     onReceive("usiok");
@@ -181,8 +193,8 @@ describe("ipc/background/usi/engine", () => {
     );
     const handlers = bindHandlers(engine);
     engine.launch();
-    const onClose = mockChildProcess.prototype.on.mock.calls[1][1] as any;
-    const onReceive = mockChildProcess.prototype.on.mock.calls[2][1] as any;
+    const onClose = getChildProcessHandler(mockChildProcess, "close");
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
     onReceive("id name DummyEngine");
     onReceive("usiok");
     engine.ready();
@@ -192,6 +204,10 @@ describe("ipc/background/usi/engine", () => {
     expect(handlers.ready).toBeCalledTimes(1);
     expect(mockChildProcess.prototype.send).toBeCalledTimes(3);
     expect(mockChildProcess.prototype.send).lastCalledWith("usinewgame");
+    engine.ready(); // 連続して ready を呼び出した場合は自動的に gameover コマンドを送信する。
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(5);
+    expect(mockChildProcess.prototype.send).nthCalledWith(4, "gameover draw");
+    expect(mockChildProcess.prototype.send).lastCalledWith("isready");
     engine.quit();
     onClose();
     expect(handlers.timeout).not.toBeCalled();
@@ -207,8 +223,8 @@ describe("ipc/background/usi/engine", () => {
     );
     const handlers = bindHandlers(engine);
     engine.launch();
-    const onClose = mockChildProcess.prototype.on.mock.calls[1][1] as any;
-    const onReceive = mockChildProcess.prototype.on.mock.calls[2][1] as any;
+    const onClose = getChildProcessHandler(mockChildProcess, "close");
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
     onReceive("id name DummyEngine");
     onReceive("usiok");
 
@@ -334,8 +350,8 @@ describe("ipc/background/usi/engine", () => {
     );
     const handlers = bindHandlers(engine);
     engine.launch();
-    const onClose = mockChildProcess.prototype.on.mock.calls[1][1] as any;
-    const onReceive = mockChildProcess.prototype.on.mock.calls[2][1] as any;
+    const onClose = getChildProcessHandler(mockChildProcess, "close");
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
     onReceive("id name DummyEngine");
     onReceive("usiok");
     engine.ready();
@@ -372,5 +388,125 @@ describe("ipc/background/usi/engine", () => {
     onClose();
     expect(handlers.timeout).not.toBeCalled();
     expect(handlers.error).not.toBeCalled();
+  });
+
+  it("first_game_interrupted_in_my_turn", async () => {
+    const engine = new EngineProcess(
+      "/path/to/engine",
+      123,
+      log4js.getLogger(),
+      {}
+    );
+    const handlers = bindHandlers(engine);
+    engine.launch();
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
+    onReceive("id name DummyEngine");
+    onReceive("usiok");
+
+    engine.ready();
+    onReceive("readyok");
+    engine.go("position test01", {
+      btime: 60e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(5);
+
+    // go コマンドに対する bestmove を待たずに次の対局を開始する。
+    // CSA サーバーとの接続が切れた場合等に発生する。
+    engine.ready();
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(8);
+    expect(mockChildProcess.prototype.send).nthCalledWith(6, "stop");
+    expect(mockChildProcess.prototype.send).nthCalledWith(7, "gameover draw");
+    expect(mockChildProcess.prototype.send).nthCalledWith(8, "isready");
+    onReceive("readyok");
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(9);
+    expect(mockChildProcess.prototype.send).lastCalledWith("usinewgame");
+    engine.go("position test02", {
+      btime: 60e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(11);
+    expect(mockChildProcess.prototype.send).nthCalledWith(
+      10,
+      "position test02"
+    );
+    expect(mockChildProcess.prototype.send).nthCalledWith(
+      11,
+      "go btime 60000 wtime 60000 binc 5000 winc 5000"
+    );
+    onReceive("bestmove 7g7f ponder 3c3d");
+    expect(handlers.bestmove).not.toBeCalled(); // 1 局目で要求していた bestmove は無視される。
+    onReceive("bestmove 2g2f ponder 8c8d");
+    expect(handlers.bestmove).lastCalledWith("position test02", "2g2f", "8c8d");
+  });
+
+  it("first_game_interrupted_in_ponder", async () => {
+    const engine = new EngineProcess(
+      "/path/to/engine",
+      123,
+      log4js.getLogger(),
+      {}
+    );
+    const handlers = bindHandlers(engine);
+    engine.launch();
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
+    onReceive("id name DummyEngine");
+    onReceive("usiok");
+
+    engine.ready();
+    onReceive("readyok");
+    engine.goPonder("position test01-ponder", {
+      btime: 60e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(5);
+    engine.go("position test01", {
+      btime: 60e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(6);
+    expect(mockChildProcess.prototype.send).lastCalledWith("stop");
+
+    // ponder 後の stop コマンドに対する bestmove を待たずに次の対局を開始する。
+    // CSA サーバーとの接続が切れた場合等に発生する。
+    engine.ready();
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(8);
+    expect(mockChildProcess.prototype.send).nthCalledWith(7, "gameover draw");
+    expect(mockChildProcess.prototype.send).nthCalledWith(8, "isready");
+    onReceive("readyok");
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(9);
+    expect(mockChildProcess.prototype.send).lastCalledWith("usinewgame");
+    engine.go("position test02", {
+      btime: 60e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(11);
+    expect(mockChildProcess.prototype.send).nthCalledWith(
+      10,
+      "position test02"
+    );
+    expect(mockChildProcess.prototype.send).nthCalledWith(
+      11,
+      "go btime 60000 wtime 60000 binc 5000 winc 5000"
+    );
+    onReceive("bestmove 7g7f ponder 3c3d");
+    expect(handlers.bestmove).not.toBeCalled(); // 1 局目で要求していた bestmove は無視される。
+    onReceive("bestmove 2g2f ponder 8c8d");
+    expect(handlers.bestmove).lastCalledWith("position test02", "2g2f", "8c8d");
   });
 });

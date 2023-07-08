@@ -171,6 +171,7 @@ export class EngineProcess {
   private _engineOptions = {} as USIEngineOptions;
   private state = State.WaitingForUSIOK;
   private currentPosition = "";
+  private invalidBestMoveCount = 0;
   private reservedGoCommand?: ReservedGoCommand;
   private launchTimeout?: NodeJS.Timeout;
   private quitTimeout?: NodeJS.Timeout;
@@ -295,14 +296,30 @@ export class EngineProcess {
     }
   }
 
-  ready(): void {
+  ready(): Error | undefined {
+    // ゲームを終了するには通常 gameover が送られるが、通信対局の異常時には gameover が呼ばれない場合がある。
+    // ゲームを正常終了せずに ready 関数を呼ぶことを許容し、ここで必要に応じて gameover を送信する。
+    if (this.state === State.WaitingForReadyOK) {
+      // 既に isready を送っているので readyok を待つ。
+      return;
+    } else if (
+      this.state === State.Ready ||
+      this.state === State.WaitingForBestMove ||
+      this.state === State.Ponder ||
+      this.state === State.WaitingForPonderBestMove ||
+      this.state === State.WaitingForCheckmate
+    ) {
+      // CSA サーバーから REJECT された場合や通信エラーの場合に勝ち負けは必ずしも判断できないので DRAW として扱う。
+      this.gameover(GameResult.DRAW);
+    }
+
     if (this.state !== State.NotReady) {
       this.logger.warn(
         "sid=%d: ready: unexpected state: %s",
         this.sessionID,
         this.state
       );
-      return;
+      return new Error("unexpected state");
     }
     this.send("isready");
     this.state = State.WaitingForReadyOK;
@@ -386,6 +403,10 @@ export class EngineProcess {
       );
       return;
     }
+    if (this.process?.lastSended === "stop") {
+      // stop コマンドは連続して送信しない。
+      return;
+    }
     this.send("stop");
     if (this.state === State.Ponder) {
       this.state = State.WaitingForPonderBestMove;
@@ -406,11 +427,20 @@ export class EngineProcess {
         return;
       case State.WaitingForBestMove:
       case State.Ponder:
+        // ゲームを終了するので思考を中断する。
+        this.stop();
+        // bestmove を待たずにゲームを終了するので、次に来た bestmove を無視する。
+        this.invalidBestMoveCount++;
+        break;
+      case State.WaitingForPonderBestMove:
+        // bestmove を待たずにゲームを終了するので、次に来た bestmove を無視する。
+        this.invalidBestMoveCount++;
+        break;
       case State.WaitingForCheckmate:
+        // ゲームを終了するので思考を中断する。
         this.stop();
         break;
       case State.Ready:
-      case State.WaitingForPonderBestMove:
         // do nothing
         break;
     }
@@ -627,6 +657,16 @@ export class EngineProcess {
   }
 
   private onBestMove(args: string): void {
+    if (this.invalidBestMoveCount > 0) {
+      // 前回の終局までに受け取れなかった bestmove を無視する。
+      this.invalidBestMoveCount--;
+      this.logger.warn(
+        "sid=%d: onBestMove: ignore bestmove: %s",
+        this.sessionID,
+        args
+      );
+      return;
+    }
     if (
       this.state !== State.WaitingForBestMove &&
       this.state !== State.WaitingForPonderBestMove

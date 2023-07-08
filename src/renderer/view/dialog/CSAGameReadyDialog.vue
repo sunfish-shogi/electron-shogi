@@ -58,18 +58,17 @@ onBeforeUnmount(() => {
   window.clearInterval(remainingTimer);
 });
 
-watch(
-  () => store.csaGameState,
-  (newState) => {
-    window.clearInterval(remainingTimer);
-    if (newState === CSAGameState.LOGIN_RETRY_INTERVAL) {
-      remainingSeconds.value = loginRetryIntervalSeconds;
-      remainingTimer = window.setInterval(() => {
-        remainingSeconds.value--;
-      }, 1000);
-    }
+const onCSAGameStateUpdated = (newState: CSAGameState) => {
+  window.clearInterval(remainingTimer);
+  if (newState === CSAGameState.LOGIN_RETRY_INTERVAL) {
+    remainingSeconds.value = loginRetryIntervalSeconds;
+    remainingTimer = window.setInterval(() => {
+      remainingSeconds.value--;
+    }, 1000);
   }
-);
+};
+onCSAGameStateUpdated(store.csaGameState);
+watch(() => store.csaGameState, onCSAGameStateUpdated);
 
 const onLogout = () => {
   store.cancelCSAGame();

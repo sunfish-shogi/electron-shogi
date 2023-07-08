@@ -163,7 +163,11 @@ export function setupPlayer(
 export function ready(sessionID: number): Promise<void> {
   const session = getSession(sessionID);
   return new Promise<void>((resolve, reject) => {
-    session.process.on("ready", resolve).on("error", reject).ready();
+    session.process.on("ready", resolve).on("error", reject);
+    const error = session.process.ready();
+    if (error) {
+      reject(error);
+    }
   });
 }
 

@@ -277,6 +277,10 @@ export class USIPlayer implements Player {
 
   private updateUSIInfo(info: SearchInfo) {
     this.info = info;
+    // Ponder 中はハンドラーを呼ばない。
+    if (this.inPonder) {
+      return;
+    }
     // 高頻度でコマンドが送られてくると描画が追いつかないので、一定時間ごとに反映する。
     if (this.usiInfoTimeout) {
       return;

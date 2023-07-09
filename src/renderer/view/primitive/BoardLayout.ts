@@ -237,6 +237,8 @@ const boardBackgroundColorMap = {
   [BoardImageType.DARK]: "#333333",
   [BoardImageType.GREEN]: "#598459",
   [BoardImageType.CHERRY_BLOSSOM]: "#ecb6b6",
+  [BoardImageType.AUTUMN]: "#d09f51",
+  [BoardImageType.SNOW]: "#c3c0d3",
   [BoardImageType.CUSTOM_IMAGE]: "rgba(0, 0, 0, 0)",
 };
 
@@ -256,6 +258,8 @@ const pieceStandBackgroundColorMap = {
   [PieceStandImageType.DARK]: "#333333",
   [PieceStandImageType.GREEN]: "#527a52",
   [PieceStandImageType.CHERRY_BLOSSOM]: "#e8a9a9",
+  [PieceStandImageType.AUTUMN]: "#792509",
+  [PieceStandImageType.SNOW]: "#9c98b7",
   [PieceStandImageType.CUSTOM_IMAGE]: "rgba(0, 0, 0, 0)",
 };
 

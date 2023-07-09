@@ -149,6 +149,8 @@
                   label: t.cherryBlossom,
                   value: BoardImageType.CHERRY_BLOSSOM,
                 },
+                { label: t.autumn, value: BoardImageType.AUTUMN },
+                { label: t.snow, value: BoardImageType.SNOW },
                 { label: t.customImage, value: BoardImageType.CUSTOM_IMAGE },
               ]"
               @change="
@@ -186,6 +188,8 @@
                   label: t.cherryBlossom,
                   value: PieceStandImageType.CHERRY_BLOSSOM,
                 },
+                { label: t.autumn, value: PieceStandImageType.AUTUMN },
+                { label: t.snow, value: PieceStandImageType.SNOW },
                 {
                   label: t.customImage,
                   value: PieceStandImageType.CUSTOM_IMAGE,

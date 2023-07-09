@@ -39,6 +39,8 @@ export enum BoardImageType {
   DARK = "dark",
   GREEN = "green",
   CHERRY_BLOSSOM = "cherry-blossom",
+  AUTUMN = "autumn",
+  SNOW = "snow",
   CUSTOM_IMAGE = "custom-image",
 }
 
@@ -47,6 +49,8 @@ export enum PieceStandImageType {
   DARK = "dark",
   GREEN = "green",
   CHERRY_BLOSSOM = "cherry-blossom",
+  AUTUMN = "autumn",
+  SNOW = "snow",
   CUSTOM_IMAGE = "custom-image",
 }
 

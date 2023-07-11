@@ -234,6 +234,11 @@ export class CSAGameManager {
       return;
     }
 
+    // 自動保存が有効な場合は棋譜を保存する。
+    if (this._state === CSAGameState.GAME && this.setting.enableAutoSave) {
+      this.onSaveRecord();
+    }
+
     // 停止が要求されている場合は連続対局や再試行をしない。
     if (this.stopRequested) {
       reloginBehavior = ReloginBehavior.DO_NOT_RELOGIN;
@@ -419,10 +424,6 @@ export class CSAGameManager {
           break;
       }
       this.player.gameover(result);
-    }
-    // 自動保存が有効な場合は棋譜を保存する。
-    if (this.setting.enableAutoSave) {
-      this.onSaveRecord();
     }
     // セッションを終了する。
     this.close(ReloginBehavior.RELOGIN_IMMEDIATELY);

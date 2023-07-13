@@ -2,9 +2,29 @@
   <div>
     <dialog ref="dialog">
       <div class="title">{{ t.appSettings }}</div>
+      <div class="row">
+        <div class="section-link" @click="gotoSection('view')">
+          {{ t.view }}
+        </div>
+        <div class="section-link" @click="gotoSection('sounds')">
+          {{ t.sounds }}
+        </div>
+        <div class="section-link" @click="gotoSection('file')">
+          {{ t.file }}
+        </div>
+        <div class="section-link" @click="gotoSection('usi')">
+          {{ t.usiProtocol }}
+        </div>
+        <div class="section-link" @click="gotoSection('eval')">
+          {{ t.evaluationAndEstimatedWinRate }}
+        </div>
+        <div class="section-link" @click="gotoSection('dev')">
+          {{ t.forDevelopers }}
+        </div>
+      </div>
       <div class="form-group scroll settings">
         <!-- 表示 -->
-        <div class="section">
+        <div id="app-setting-dialog-view" class="section">
           <div class="section-title">{{ t.view }}</div>
           <!-- 言語 -->
           <div class="form-item">
@@ -266,7 +286,7 @@
         </div>
         <hr />
         <!-- 音 -->
-        <div class="section">
+        <div id="app-setting-dialog-sounds" class="section">
           <div class="section-title">{{ t.sounds }}</div>
           <!-- 駒音の大きさ -->
           <div class="form-item">
@@ -326,7 +346,7 @@
         </div>
         <hr />
         <!-- ファイル -->
-        <div class="section">
+        <div id="app-setting-dialog-file" class="section">
           <div class="section-title">{{ t.file }}</div>
           <!-- デフォルトの保存形式 -->
           <div class="form-item">
@@ -405,7 +425,7 @@
         </div>
         <hr />
         <!-- USI プロトコル -->
-        <div class="section">
+        <div id="app-setting-dialog-usi" class="section">
           <div class="section-title">{{ t.usiProtocol }}</div>
           <!-- オプション名を翻訳 -->
           <div class="form-item">
@@ -437,7 +457,7 @@
         </div>
         <hr />
         <!-- 評価値と推定勝率 -->
-        <div class="section">
+        <div id="app-setting-dialog-eval" class="section">
           <div class="section-title">{{ t.evaluationAndEstimatedWinRate }}</div>
           <!-- 評価値の符号 -->
           <div class="form-item">
@@ -528,7 +548,7 @@
         </div>
         <hr />
         <!-- 開発者向け -->
-        <div class="section">
+        <div id="app-setting-dialog-dev" class="section">
           <div class="section-title">{{ t.forDevelopers }}</div>
           <div class="form-group warning">
             <div v-if="!isNative()" class="note">
@@ -864,6 +884,13 @@ const selectAutoSaveDirectory = async () => {
   }
 };
 
+const gotoSection = (section: string) => {
+  const element = dialog.value.querySelector(`#app-setting-dialog-${section}`);
+  if (element) {
+    element.scrollIntoView();
+  }
+};
+
 const cancel = () => {
   store.closeAppSettingDialog();
 };
@@ -873,6 +900,13 @@ const cancel = () => {
 .settings {
   width: 590px;
   height: 540px;
+}
+.section-link {
+  font-size: 0.8em;
+  cursor: pointer;
+  text-decoration: underline;
+  color: blue;
+  margin-left: 10px;
 }
 .section {
   margin: 20px 0px 20px 0px;

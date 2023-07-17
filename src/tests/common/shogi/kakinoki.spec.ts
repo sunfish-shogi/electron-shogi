@@ -814,6 +814,33 @@ describe("shogi/kakinoki", () => {
     expect(record.current.move).toStrictEqual(anySpecialMove("封じ手"));
   });
 
+  it("import/half-size-colon", () => {
+    const data = `
+手合割:平手
+棋戦:関ヶ原の戦い
+先手:徳川家康
+後手:石田三成
+手数----指手---------消費時間--
+   1 ２六歩(27)   ( 0:00/00:00:00)
+   2 ８四歩(83)   ( 0:00/00:00:00)
+   3 ７六歩(77)   ( 0:00/00:00:00)
+`;
+    const record = importKakinoki(data) as Record;
+    expect(record).toBeInstanceOf(Record);
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)
+    ).toBe("関ヶ原の戦い");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+    ).toBe("徳川家康");
+    expect(
+      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+    ).toBe("石田三成");
+    expect(record.initialPosition.sfen).toBe(
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+    );
+  });
+
   it("import/bookmark", () => {
     const data = `
 #KIF version=2.0 encoding=Shift_JIS

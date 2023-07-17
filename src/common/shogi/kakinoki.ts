@@ -127,19 +127,19 @@ const linePatterns = [
     isPosition: false,
   },
   {
-    prefix: /^手合割：/,
+    prefix: /^手合割[：:]/,
     type: LineType.HANDICAP,
     removePrefix: true,
     isPosition: true,
   },
   {
-    prefix: /^先手の持駒：/,
+    prefix: /^先手の持駒[：:]/,
     type: LineType.BLACK_HAND,
     removePrefix: true,
     isPosition: true,
   },
   {
-    prefix: /^後手の持駒：/,
+    prefix: /^後手の持駒[：:]/,
     type: LineType.WHITE_HAND,
     removePrefix: true,
     isPosition: true,
@@ -203,7 +203,7 @@ function parseLine(line: string): Line {
       };
     }
   }
-  const metadataPrefix = line.match(/^[^ ]+：/);
+  const metadataPrefix = line.match(/^[^ ]+[：:]/);
   if (metadataPrefix) {
     const prefix = metadataPrefix[0];
     return {

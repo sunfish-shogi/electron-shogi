@@ -118,7 +118,6 @@ enum LineType {
   UNKNOWN,
 }
 
-// & で始まる行はしおりを意味するらしいが用途がよくわらず実際の使用例を見たことがない。
 const linePatterns = [
   {
     prefix: /^#/,

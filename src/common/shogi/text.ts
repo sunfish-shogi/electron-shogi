@@ -385,7 +385,7 @@ export function parsePVText(position: ImmutablePosition, text: string): Move[] {
       const rank = charToNumber(fromStr[2]);
       from = new Square(file, rank);
     } else {
-      const squares = p
+      let squares = p
         .listAttackersByPiece(to, new Piece(p.color, pieceType))
         .filter((square) => {
           let dir = square.directionTo(to);
@@ -401,17 +401,42 @@ export function parsePVText(position: ImmutablePosition, text: string): Move[] {
           if (verStr.indexOf("上") >= 0 && vDir !== VDirection.UP) {
             return false;
           }
-          if (horStr.indexOf("左") >= 0 && hDir !== HDirection.RIGHT) {
+          if (
+            horStr.indexOf("直") >= 0 &&
+            (hDir !== HDirection.NONE || vDir !== VDirection.UP)
+          ) {
             return false;
           }
-          if (horStr.indexOf("直") >= 0 && hDir !== HDirection.NONE) {
-            return false;
-          }
-          if (horStr.indexOf("右") >= 0 && hDir !== HDirection.LEFT) {
-            return false;
+          if (pieceType === PieceType.HORSE || pieceType === PieceType.DRAGON) {
+            // 馬や龍の場合は "左" や "右" でも真っ直ぐ進む場合があるので明らかに違うものだけを除外する。
+            if (horStr.indexOf("左") >= 0 && hDir === HDirection.LEFT) {
+              return false;
+            }
+            if (horStr.indexOf("右") >= 0 && hDir === HDirection.RIGHT) {
+              return false;
+            }
+          } else {
+            if (horStr.indexOf("左") >= 0 && hDir !== HDirection.RIGHT) {
+              return false;
+            }
+            if (horStr.indexOf("右") >= 0 && hDir !== HDirection.LEFT) {
+              return false;
+            }
           }
           return true;
         });
+      if (
+        squares.length === 2 &&
+        (pieceType === PieceType.HORSE || pieceType === PieceType.DRAGON)
+      ) {
+        // 馬や龍で "左" や "右" が使われ、 1 つに絞れなかった場合は真っ直ぐ進むものを除外する。
+        squares = squares.filter((square) => {
+          let dir = square.directionTo(to);
+          dir = p.color === Color.BLACK ? dir : reverseDirection(dir);
+          const hDir = directionToHDirection(dir);
+          return hDir !== HDirection.NONE;
+        });
+      }
       if (squares.length === 1) {
         from = squares[0];
       } else if (

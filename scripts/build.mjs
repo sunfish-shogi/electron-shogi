@@ -43,7 +43,7 @@ const config = {
   win: {
     fileAssociations: {
       name: "Kifu",
-      ext: ["kif", "kifu", "csa"],
+      ext: ["kif", "kifu", "ki2", "ki2u", "csa"],
     },
   },
   nsis: {
@@ -54,12 +54,12 @@ const config = {
     electronLanguages: ["en", "ja"],
     fileAssociations: {
       name: "Kifu",
-      ext: ["kif", "kifu", "csa"],
+      ext: ["kif", "kifu", "ki2", "ki2u", "csa"],
     },
     extendInfo: {
       CFBundleDocumentTypes: [
         {
-          CFBundleTypeExtensions: ["kif", "kifu", "csa"],
+          CFBundleTypeExtensions: ["kif", "kifu", "ki2", "ki2u", "csa"],
           CFBundleTypeName: "Kifu",
           CFBundleTypeRole: "Editor",
           LSHandlerRank: "Owner",
@@ -72,6 +72,8 @@ const config = {
     fileAssociations: [
       { name: "KIF", ext: "kif", },
       { name: "KIFU", ext: "kifu" },
+      { name: "KI2", ext: "ki2", },
+      { name: "KI2U", ext: "ki2u" },
       { name: "CSA", ext: "csa" },
     ],
   },

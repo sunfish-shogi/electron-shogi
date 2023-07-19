@@ -5,15 +5,17 @@ import {
   detectRecordFormat,
   DoMoveOption,
   exportCSA,
-  exportKakinoki,
-  getPVText,
+  exportKI2,
+  exportKIF,
+  formatPV,
   ImmutablePosition,
   ImmutableRecord,
   importCSA,
-  importKakinoki,
+  importKI2,
+  importKIF,
   InitialPositionType,
   Move,
-  parsePVText,
+  parsePV,
   Position,
   PositionChange,
   Record,
@@ -115,7 +117,7 @@ function buildSearchComment(
     comment += `${prefix}評価値=${searchInfo.score}\n`;
   }
   if (searchInfo.pv && searchInfo.pv.length !== 0) {
-    comment += `${prefix}読み筋=${getPVText(position, searchInfo.pv)}\n`;
+    comment += `${prefix}読み筋=${formatPV(position, searchInfo.pv)}\n`;
   }
   if (searchInfo.depth) {
     comment += `${prefix}深さ=${searchInfo.depth}\n`;
@@ -134,7 +136,7 @@ function getPVsFromSearchComment(
     .split("\n")
     .filter((line) => line.match(/^[#*]読み筋=/))
     .map((line) => {
-      return parsePVText(position, line.split("=", 2)[1]);
+      return parsePV(position, line.split("=", 2)[1]);
     });
 }
 
@@ -233,7 +235,10 @@ export class RecordManager {
         recordOrError = Record.newByUSI(data);
         break;
       case RecordFormatType.KIF:
-        recordOrError = importKakinoki(data);
+        recordOrError = importKIF(data);
+        break;
+      case RecordFormatType.KI2:
+        recordOrError = importKI2(data);
         break;
       case RecordFormatType.CSA:
         recordOrError = importCSA(data);
@@ -260,7 +265,12 @@ export class RecordManager {
     let recordOrError: Record | Error;
     if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
       const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
-      recordOrError = importKakinoki(
+      recordOrError = importKIF(
+        decodeText(data, { encoding, autoDetect: option?.autoDetect })
+      );
+    } else if (path.match(/\.ki2$/) || path.match(/\.ki2u$/)) {
+      const encoding = path.match(/\.ki2$/) ? "SJIS" : "UTF8";
+      recordOrError = importKI2(
         decodeText(data, { encoding, autoDetect: option?.autoDetect })
       );
     } else if (path.match(/\.csa$/)) {
@@ -284,8 +294,18 @@ export class RecordManager {
     let data: Uint8Array;
     let garbled = false;
     if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-      const str = exportKakinoki(this.record, opt);
+      const str = exportKIF(this.record, opt);
       const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
+      data = encodeText(str, encoding);
+      if (encoding === "SJIS" && opt.detectGarbled) {
+        const restored = decodeText(data, { encoding: "SJIS" });
+        if (restored !== str) {
+          garbled = true;
+        }
+      }
+    } else if (path.match(/\.ki2$/) || path.match(/\.ki2u$/)) {
+      const str = exportKI2(this.record, opt);
+      const encoding = path.match(/\.ki2$/) ? "SJIS" : "UTF8";
       data = encodeText(str, encoding);
       if (encoding === "SJIS" && opt.detectGarbled) {
         const restored = decodeText(data, { encoding: "SJIS" });

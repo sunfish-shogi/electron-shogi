@@ -1,6 +1,6 @@
 import {
   Color,
-  importKakinoki,
+  importKIF,
   InitialPositionType,
   Move,
   Piece,
@@ -132,7 +132,7 @@ describe("shogi/position", () => {
 先手の持駒：歩六　香二　桂　銀　金　飛　
 先手番
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = (ff: number, fr: number, tf: number, tr: number) =>
         position.createMove(new Square(ff, fr), new Square(tf, tr)) as Move;
       const drop = (type: PieceType, tf: number, tr: number) =>
@@ -191,7 +191,7 @@ describe("shogi/position", () => {
 先手の持駒：歩八　香二　桂二　銀二　金二　
 後手番
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = (ff: number, fr: number, tf: number, tr: number) =>
         position.createMove(new Square(ff, fr), new Square(tf, tr)) as Move;
       const drop = (type: PieceType, tf: number, tr: number) =>
@@ -253,7 +253,7 @@ describe("shogi/position", () => {
 +---------------------------+
 先手の持駒：歩 
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(4, 4)
@@ -279,7 +279,7 @@ describe("shogi/position", () => {
 +---------------------------+
 先手の持駒：歩 
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(4, 4)
@@ -305,7 +305,7 @@ describe("shogi/position", () => {
 +---------------------------+
 先手の持駒：歩 
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(4, 4)
@@ -331,7 +331,7 @@ describe("shogi/position", () => {
 +---------------------------+
 先手の持駒：歩 
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(4, 4)
@@ -358,7 +358,7 @@ describe("shogi/position", () => {
 先手の持駒：なし
 後手番
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(6, 4)
@@ -385,7 +385,7 @@ describe("shogi/position", () => {
 先手の持駒：なし
 後手番
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(6, 4)
@@ -412,7 +412,7 @@ describe("shogi/position", () => {
 先手の持駒：なし
 後手番
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(6, 4)
@@ -439,7 +439,7 @@ describe("shogi/position", () => {
 先手の持駒：なし
 後手番
 `;
-      const position = (importKakinoki(data) as Record).position;
+      const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
         new Square(6, 4)

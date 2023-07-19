@@ -55,6 +55,9 @@ export function setup(): void {
       case MenuEvent.COPY_RECORD:
         store.copyRecordKIF();
         break;
+      case MenuEvent.COPY_RECORD_KI2:
+        store.copyRecordKI2();
+        break;
       case MenuEvent.COPY_RECORD_CSA:
         store.copyRecordCSA();
         break;

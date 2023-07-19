@@ -18,12 +18,14 @@ export const en: Texts = {
   quit: "Quit",
   editing: "Edit",
   copyAsKIF: "Copy (KIF)",
+  copyAsKI2: "Copy (KI2)",
   copyAsCSA: "Copy (CSA)",
   copyAsUSI: "Copy (USI)",
   copyAsSFEN: "Copy (SFEN)",
   paste: "Paste",
   copyRecord: "Copy Record",
   asKIF: "as KIF",
+  asKI2: "as KI2",
   asCSA: "as CSA",
   asUSIUntilCurrentMove: "as USI (until current move)",
   asUSIAll: "as USI (all)",
@@ -323,7 +325,7 @@ export const en: Texts = {
   processingPleaseWait: "Processing, please wait.",
   importingFollowingRecordOrPosition:
     "Importing the following record(or position).",
-  supportsKIFCSAUSI: "*Supports KIF, CSA, USI.",
+  supportsKIF_KI2_CSA_USI: "*Supports KIF, KI2, CSA, and USI.",
   plesePasteRecordIntoTextArea: "*Please paste record data into the text area.",
   desktopVersionPastesAutomatically:
     "*In desktop version, it will paste automatically from clipboard.",

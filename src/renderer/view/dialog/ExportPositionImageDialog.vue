@@ -97,7 +97,7 @@ import {
 } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { Rect, RectSize } from "@/common/graphics";
-import { Color, Move, getMoveDisplayText } from "@/common/shogi";
+import { Color, Move, formatMove } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
@@ -174,10 +174,7 @@ const header = computed(() => {
     (appSetting.useBookmarkAsPositionImageHeader && record.current.bookmark) ||
     appSetting.positionImageHeader ||
     (lastMove
-      ? `${record.current.ply}手目 ${getMoveDisplayText(
-          record.position,
-          lastMove
-        )}まで`
+      ? `${record.current.ply}手目 ${formatMove(record.position, lastMove)}まで`
       : record.current.nextColor === Color.BLACK
       ? "先手番"
       : "後手番")

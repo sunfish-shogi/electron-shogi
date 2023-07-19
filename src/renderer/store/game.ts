@@ -4,7 +4,7 @@ import { Player, SearchInfo } from "@/renderer/players/player";
 import { defaultGameSetting, GameSetting } from "@/common/settings/game";
 import {
   Color,
-  getMoveDisplayText,
+  formatMove,
   Move,
   reverseColor,
   SpecialMoveType,
@@ -381,8 +381,7 @@ export class GameManager {
     // 合法手かどうかをチェックする。
     if (!this.recordManager.record.position.isValidMove(move)) {
       this.onError(
-        "反則手: " +
-          getMoveDisplayText(this.recordManager.record.position, move)
+        "反則手: " + formatMove(this.recordManager.record.position, move)
       );
       this.endGame(SpecialMoveType.FOUL_LOSE);
       return;

@@ -7,12 +7,13 @@ import {
   Move,
   PositionChange,
   Record,
-  getSpecialMoveDisplayString,
-  exportKakinoki,
+  formatSpecialMove,
+  exportKIF,
   RecordMetadataKey,
   ImmutablePosition,
   DoMoveOption,
   SpecialMoveType,
+  exportKI2,
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
@@ -589,9 +590,7 @@ class Store {
       });
     } else if (specialMoveType) {
       this.enqueueMessage({
-        text: `${t.gameEnded}（${getSpecialMoveDisplayString(
-          specialMoveType
-        )})`,
+        text: `${t.gameEnded}（${formatSpecialMove(specialMoveType)})`,
       });
     }
     this._appState = AppState.NORMAL;
@@ -967,7 +966,15 @@ class Store {
 
   copyRecordKIF(): void {
     const appSetting = useAppSetting();
-    const str = exportKakinoki(this.recordManager.record, {
+    const str = exportKIF(this.recordManager.record, {
+      returnCode: appSetting.returnCode,
+    });
+    navigator.clipboard.writeText(str);
+  }
+
+  copyRecordKI2(): void {
+    const appSetting = useAppSetting();
+    const str = exportKI2(this.recordManager.record, {
       returnCode: appSetting.returnCode,
     });
     navigator.clipboard.writeText(str);

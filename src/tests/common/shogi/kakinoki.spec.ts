@@ -1,13 +1,16 @@
 import {
   anySpecialMove,
   Color,
-  exportKakinoki,
-  importKakinoki,
+  exportKI2,
+  exportKIF,
+  importKI2,
+  importKIF,
   Move,
   Piece,
   PieceType,
   Record,
   RecordMetadataKey,
+  SpecialMove,
   specialMove,
   SpecialMoveType,
   Square,
@@ -117,7 +120,7 @@ describe("shogi/kakinoki", () => {
   93 ２五金打     ( 0:00/00:00:00)
   94 １三玉(24)   ( 0:00/00:00:00)
 `;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(
       record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
@@ -325,7 +328,7 @@ describe("shogi/kakinoki", () => {
 177   ５一玉(61)   (0:10/0:28:42)
 178   投了   (0:11/0:22:44)
 `;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(
       record.metadata.getStandardMetadata(RecordMetadataKey.SHITATE_NAME)
@@ -649,7 +652,7 @@ describe("shogi/kakinoki", () => {
  114 投了         ( 0:00/00:09:19)
 まで113手で先手の勝ち
 `;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(record.current.move).toStrictEqual(
       specialMove(SpecialMoveType.START)
@@ -701,7 +704,7 @@ describe("shogi/kakinoki", () => {
   22 ２二歩打     ( 0:03/00:00:16)
   23 ４五馬(23)   ( 0:02/00:00:28)
   24 同銀(54)     ( 0:01/00:00:17)`;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     record.goto(5);
     expect((record.current.move as Move).to).toStrictEqual(new Square(8, 8));
@@ -740,7 +743,7 @@ describe("shogi/kakinoki", () => {
   22 ２二歩打     ( 0:03/00:00:16)
   23 ４五馬(23)   ( 0:02/00:00:28)
   24 同銀　(54)   ( 0:01/00:00:17)`;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     record.goto(5);
     expect((record.current.move as Move).to).toStrictEqual(new Square(8, 8));
@@ -774,7 +777,7 @@ describe("shogi/kakinoki", () => {
 1 ２六歩(27) ( 0:00/0:00:00)
 2 ８四歩(83) ( 0:00/0:00:00)
 `;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(record.current.comment).toBe(`【コメントのテスト】
 
@@ -808,7 +811,7 @@ describe("shogi/kakinoki", () => {
 2 ８四歩(83) (90:00/1:30:00)
 3 封じ手 (90:00/3:00:00)
 `;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     record.goto(3);
     expect(record.current.move).toStrictEqual(anySpecialMove("封じ手"));
@@ -825,7 +828,7 @@ describe("shogi/kakinoki", () => {
    2 ８四歩(83)   ( 0:00/00:00:00)
    3 ７六歩(77)   ( 0:00/00:00:00)
 `;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(
       record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)
@@ -889,7 +892,7 @@ describe("shogi/kakinoki", () => {
   32 ７三銀(72)   ( 0:03/00:00:37)
   33 ３七銀(38)   ( 0:10/00:01:29)
 `;
-    const record = importKakinoki(data) as Record;
+    const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(record.first.bookmark).toBe("開始局面");
     expect(record.first.comment).toBe("開始局面のコメント\n");
@@ -901,6 +904,123 @@ describe("shogi/kakinoki", () => {
     record.goto(25);
     expect(record.current.bookmark).toBe("途中図");
     expect(record.current.comment).toBe("25手目のコメント\n");
+  });
+
+  it("import/ki2", () => {
+    const data = `
+開始日時：1582/06/02 04:00:00
+棋戦：本能寺の変
+戦型：中飛車
+場所：本能寺
+先手：織田信長
+後手：明智光秀
+
+&開始局面
+▲２六歩    △３四歩    ▲７六歩    △５四歩    ▲４八銀    △５二飛
+▲６八玉    △５五歩    ▲７八玉
+&第9手、▲７八玉
+△４二銀    ▲５六歩
+*角が浮いた瞬間に反発する。
+△３三銀    ▲５五歩    △４四銀    ▲５七銀    △５五銀    ▲５六歩
+△４四銀    ▲５八金右
+まで19手で中断
+
+変化：10手
+△３三角    ▲６八銀    △４二銀    ▲５八金右
+まで13手で投了
+`;
+    const record = importKI2(data) as Record;
+    expect(record).toBeInstanceOf(Record);
+    expect(record.first.bookmark).toBe("開始局面");
+    record.goto(9);
+    expect(record.current.bookmark).toBe("第9手、▲７八玉");
+    record.goto(11);
+    expect(record.current.comment).toBe("角が浮いた瞬間に反発する。\n");
+    record.goto(19);
+    expect((record.current.move as Move).usi).toBe("4i5h"); // 最終手５八金右
+    expect(record.position.sfen).toBe(
+      "lnsgkg1nl/4r2b1/pppp1p1pp/5sp2/9/2P1P2P1/PP1PSPP1P/1BK1G2R1/LNSG3NL w p 1"
+    );
+    record.goto(20);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.INTERRUPT)
+    );
+
+    // 10 手目の変化手順を確認する。
+    record.goto(10);
+    expect(record.switchBranchByIndex(1)).toBeTruthy();
+    record.goto(13);
+    expect(record.position.sfen).toBe(
+      "lnsgkg1nl/4rs3/pppp1pbpp/6p2/4p4/2P4P1/PP1PPPP1P/1BKSGS1R1/LN1G3NL w - 1"
+    );
+    record.goto(14);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.RESIGN)
+    );
+  });
+
+  it("import/ki2/half-size-number", () => {
+    const data = `
+▲26歩 ▽34歩 ▲76歩 ▽54歩 ▲48銀 ▽52飛 ▲68玉 ▽55歩 ▲78玉 ▽42銀 ▲56歩 ▽33銀
+▲55歩 ▽44銀 ▲57銀 ▽55銀 ▲56歩 ▽44銀 ▲58金右`;
+    const record = importKI2(data) as Record;
+    expect(record).toBeInstanceOf(Record);
+    record.goto(1);
+    expect((record.current.move as Move).usi).toBe("2g2f"); // 初手２六歩
+    record.goto(19);
+    expect((record.current.move as Move).usi).toBe("4i5h"); // 最終手５八金右
+    expect(record.position.sfen).toBe(
+      "lnsgkg1nl/4r2b1/pppp1p1pp/5sp2/9/2P1P2P1/PP1PSPP1P/1BK1G2R1/LNSG3NL w p 1"
+    );
+  });
+
+  it("import/ki2/end-of-game", () => {
+    const data = `
+まで0手で先手の勝ち
+まで1手で後手の勝ち
+まで2手で中断
+まで3手で千日手
+まで4手で持将棋
+まで105手で時間切れにより先手の勝ち
+まで106手で先手の反則勝ち
+まで107手で後手の反則負け
+まで108手で詰
+まで109手で不詰
+`;
+    const record = importKI2(data) as Record;
+    expect(record).toBeInstanceOf(Record);
+    record.goto(1);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.RESIGN)
+    );
+    record.switchBranchByIndex(1);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.RESIGN)
+    );
+    record.switchBranchByIndex(2);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.INTERRUPT)
+    );
+    record.switchBranchByIndex(3);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.REPETITION_DRAW)
+    );
+    record.switchBranchByIndex(4);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.IMPASS)
+    );
+    record.switchBranchByIndex(5);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.TIMEOUT)
+    );
+    record.switchBranchByIndex(6);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.FOUL_WIN)
+    );
+    record.switchBranchByIndex(7);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.FOUL_LOSE)
+    );
   });
 
   it("export/standard", () => {
@@ -924,7 +1044,7 @@ describe("shogi/kakinoki", () => {
     record.current.setElapsedMs(5 * 1e3);
     record.append(SpecialMoveType.RESIGN);
     record.current.setElapsedMs(7 * 1e3);
-    expect(exportKakinoki(record, {})).toBe(
+    expect(exportKIF(record, {})).toBe(
       `# KIF形式棋譜ファイル Generated by Electron Shogi
 先手：藤井
 後手：大山
@@ -972,7 +1092,7 @@ describe("shogi/kakinoki", () => {
     record.append(record.position.createMoveByUSI("B*4e") as Move);
     record.current.bookmark = "途中図";
     record.append(SpecialMoveType.INTERRUPT);
-    expect(exportKakinoki(record, {})).toBe(
+    expect(exportKIF(record, {})).toBe(
       `# KIF形式棋譜ファイル Generated by Electron Shogi
 後手の持駒：
   ９ ８ ７ ６ ５ ４ ３ ２ １
@@ -1009,7 +1129,7 @@ describe("shogi/kakinoki", () => {
     record.append(record.position.createMoveByUSI("2g2f") as Move);
     record.append(record.position.createMoveByUSI("8c8d") as Move);
     record.append(anySpecialMove("封じ手"));
-    expect(exportKakinoki(record, {})).toBe(
+    expect(exportKIF(record, {})).toBe(
       `# KIF形式棋譜ファイル Generated by Electron Shogi
 後手の持駒：
   ９ ８ ７ ６ ５ ４ ３ ２ １
@@ -1030,6 +1150,100 @@ describe("shogi/kakinoki", () => {
 1 ２六歩(27) ( 0:00/0:00:00)
 2 ８四歩(83) ( 0:00/0:00:00)
 3 封じ手 ( 0:00/0:00:00)
+`
+    );
+  });
+
+  it("export/ki2", () => {
+    const record = new Record();
+    record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "藤井");
+    record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "大山");
+    record.current.bookmark = "開始局面";
+    record.append(record.position.createMoveByUSI("7g7f") as Move);
+    record.append(record.position.createMoveByUSI("3c3d") as Move);
+    record.current.comment = "2手目へのコメント\n2手目へのコメント2\n";
+    record.append(record.position.createMoveByUSI("8h2b+") as Move);
+    record.append(record.position.createMoveByUSI("3a2b") as Move);
+    record.current.bookmark = "基本図";
+    record.append(record.position.createMoveByUSI("B*4e") as Move);
+    record.append(SpecialMoveType.INTERRUPT);
+    record.goto(3);
+    record.append(record.position.createMoveByUSI("8b2b") as Move);
+    record.append(SpecialMoveType.RESIGN);
+    expect(exportKI2(record, {})).toBe(
+      `先手：藤井
+後手：大山
+後手の持駒：
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+|v香v桂v銀v金v玉v金v銀v桂v香|一
+| ・v飛 ・ ・ ・ ・ ・v角 ・|二
+|v歩v歩v歩v歩v歩v歩v歩v歩v歩|三
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| 歩 歩 歩 歩 歩 歩 歩 歩 歩|七
+| ・ 角 ・ ・ ・ ・ ・ 飛 ・|八
+| 香 桂 銀 金 玉 金 銀 桂 香|九
++---------------------------+
+先手の持駒：
+先手番
+&開始局面
+▲７六歩△３四歩
+*2手目へのコメント
+*2手目へのコメント2
+▲２二角成△同　銀
+&基本図
+▲４五角
+まで5手で中断
+
+変化：4手
+△同　飛
+まで4手で後手の勝ち
+`
+    );
+  });
+
+  it("export/ki2/end-of-game", () => {
+    const record = new Record();
+    record.append(SpecialMoveType.RESIGN);
+    record.append(SpecialMoveType.TIMEOUT);
+    record.append(SpecialMoveType.FOUL_WIN);
+    record.append(SpecialMoveType.FOUL_LOSE);
+    record.append(SpecialMoveType.IMPASS);
+    record.append(anySpecialMove("foo"));
+    expect(exportKI2(record, {})).toBe(
+      `後手の持駒：
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+|v香v桂v銀v金v玉v金v銀v桂v香|一
+| ・v飛 ・ ・ ・ ・ ・v角 ・|二
+|v歩v歩v歩v歩v歩v歩v歩v歩v歩|三
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| 歩 歩 歩 歩 歩 歩 歩 歩 歩|七
+| ・ 角 ・ ・ ・ ・ ・ 飛 ・|八
+| 香 桂 銀 金 玉 金 銀 桂 香|九
++---------------------------+
+先手の持駒：
+先手番
+まで0手で後手の勝ち
+
+変化：1手
+まで0手で時間切れにより後手の勝ち
+
+変化：1手
+まで0手で先手の反則勝ち
+
+変化：1手
+まで0手で先手の反則負け
+
+変化：1手
+まで0手で持将棋
+
+変化：1手
+まで0手でfoo
 `
     );
   });

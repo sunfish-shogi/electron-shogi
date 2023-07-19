@@ -316,6 +316,9 @@ function readBoard(board: Board, data: string): Error | undefined {
 }
 
 function readHand(hand: Hand, data: string): Error | undefined {
+  // NOTE:
+  //   スペースで区切られていないものでも Kifu for Windows や ShogiGUI は読み込める。
+  //   See: https://github.com/sunfish-shogi/electron-shogi/issues/572
   const sections = data.split(/[ 　]/);
   for (const section of sections) {
     if (!section || section === "なし") {

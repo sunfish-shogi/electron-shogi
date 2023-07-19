@@ -168,6 +168,12 @@ const linePatterns = [
     isPosition: false,
   },
   {
+    prefix: /^変化[：:]/,
+    type: LineType.BRANCH,
+    removePrefix: true,
+    isPosition: false,
+  },
+  {
     prefix: /^\*/,
     type: LineType.COMMENT,
     removePrefix: true,
@@ -476,6 +482,8 @@ export function importKakinoki(data: string): Record | Error {
           inMoveSection = true;
         }
         e = readMove(record, parsed.data);
+        break;
+      case LineType.BRANCH:
         break;
       case LineType.COMMENT:
         if (inMoveSection) {

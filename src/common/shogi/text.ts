@@ -6,12 +6,22 @@ import {
   directionToVDirection,
   reverseDirection,
 } from "./direction";
+import { InvalidMoveError } from "./errors";
 import { Move, SpecialMove, SpecialMoveType, isKnownSpecialMove } from "./move";
 import { PieceType, Piece } from "./piece";
 import { ImmutablePosition, isPromotableRank } from "./position";
 import { Square } from "./square";
 
-const multiByteCharToNumberMap: { [file: string]: number } = {
+const stringToNumberMap: { [s: string]: number } = {
+  "1": 1,
+  "2": 2,
+  "3": 3,
+  "4": 4,
+  "5": 5,
+  "6": 6,
+  "7": 7,
+  "8": 8,
+  "9": 9,
   "１": 1,
   "２": 2,
   "３": 3,
@@ -21,8 +31,6 @@ const multiByteCharToNumberMap: { [file: string]: number } = {
   "７": 7,
   "８": 8,
   "９": 9,
-};
-const kanjiToNumberMap: { [kansuji: string]: number } = {
   一: 1,
   二: 2,
   三: 3,
@@ -42,17 +50,7 @@ const kanjiToNumberMap: { [kansuji: string]: number } = {
   十七: 17,
   十八: 18,
 };
-const charToNumberMap: { [number: string]: number } = {
-  "1": 1,
-  "2": 2,
-  "3": 3,
-  "4": 4,
-  "5": 5,
-  "6": 6,
-  "7": 7,
-  "8": 8,
-  "9": 9,
-};
+
 const stringToPieceTypeMap: { [kanji: string]: PieceType } = {
   王: PieceType.KING,
   玉: PieceType.KING,
@@ -75,16 +73,8 @@ const stringToPieceTypeMap: { [kanji: string]: PieceType } = {
   と: PieceType.PROM_PAWN,
 };
 
-export function multiByteCharToNumber(file: string): number {
-  return multiByteCharToNumberMap[file];
-}
-
-export function kanjiToNumber(kanji: string): number {
-  return kanjiToNumberMap[kanji];
-}
-
-export function charToNumber(char: string): number {
-  return charToNumberMap[char];
+export function stringToNumber(s: string): number {
+  return stringToNumberMap[s];
 }
 
 export function stringToPieceType(piece: string): PieceType {
@@ -184,9 +174,7 @@ const specialMoveToDisplayStringMap = {
   [SpecialMoveType.LOSE_BY_DEFAULT]: "不戦敗",
 };
 
-export function getSpecialMoveDisplayString(
-  move: SpecialMove | SpecialMoveType
-): string {
+export function formatSpecialMove(move: SpecialMove | SpecialMoveType): string {
   if (typeof move === "string") {
     return specialMoveToDisplayStringMap[move];
   }
@@ -196,12 +184,17 @@ export function getSpecialMoveDisplayString(
   return move.name;
 }
 
-export function getMoveDisplayText(
+/**
+ * 指し手を表す文字列を返します。
+ * @param position 指し手の直前の局面
+ * @param move 対象の指し手
+ */
+export function formatMove(
   position: ImmutablePosition,
   move: Move,
   opt?: {
-    prev?: Move;
-    compatible?: boolean;
+    lastMove?: Move; // 直前の指し手を指定します。移動先が同じ場合に "同" を使った表記を使用します。
+    compatible?: boolean; // Shift_JIS で文字化けしない記号を使用します。 true の場合 KI2 形式と同等です。
   }
 ): string {
   let ret = "";
@@ -217,7 +210,7 @@ export function getMoveDisplayText(
   }
 
   // 移動先の筋・段を付与する。
-  if (opt?.prev && opt.prev.to.equals(move.to)) {
+  if (opt?.lastMove && opt.lastMove.to.equals(move.to)) {
     ret += "同　";
   } else {
     ret += fileToMultiByteChar(move.to.file);
@@ -322,25 +315,39 @@ export function getMoveDisplayText(
   return ret;
 }
 
-export function getPVText(position: ImmutablePosition, pv: Move[]): string {
+export function formatPV(position: ImmutablePosition, pv: Move[]): string {
   let ret = "";
-  let prev: Move | undefined;
+  let lastMove: Move | undefined;
   const p = position.clone();
   for (const move of pv) {
-    ret += `${getMoveDisplayText(p, move, {
-      prev,
+    ret += `${formatMove(p, move, {
+      lastMove,
       compatible: true,
     })}`;
     p.doMove(move, { ignoreValidation: true });
-    prev = move;
+    lastMove = move;
   }
   return ret;
 }
 
 const moveRegExp =
-  /^[▲△☗☖]?([１２３４５６７８９][一二三四五六七八九]|同)(王|玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)(左|直|右|)(引|寄|上|)(成|不成|打|)(\([1-9][1-9]\)|)/;
+  /^[▲△▼▽☗☖]?([１２３４５６７８９一二三四五六七八九1-9]{2}|同)(王|玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)(左|直|右|)(引|寄|上|)(成|不成|打|)(\([1-9][1-9]\)|)/;
 
-export function parsePVText(position: ImmutablePosition, text: string): Move[] {
+export function parsePV(position: ImmutablePosition, text: string): Move[] {
+  return parseMoves(position, text)[0];
+}
+
+/**
+ * テキストから指し手を読み込みます。 KI2 と互換性があります。
+ * @param position 指し手の直前の局面
+ * @param text 対象の文字列
+ * @param lastMove 直前の指し手（1 手目が "同" を使った表記の場合に使用する。）
+ */
+export function parseMoves(
+  position: ImmutablePosition,
+  text: string,
+  lastMove?: Move
+): [Move[], Error | undefined] {
   const clean = text.replaceAll(/[\s\u3000]/g, "");
 
   // 1手ずつ分割する。
@@ -348,7 +355,15 @@ export function parsePVText(position: ImmutablePosition, text: string): Move[] {
   let lastIndex = 0;
   for (let i = 1; i <= clean.length; i++) {
     const char = clean[i];
-    if (!char || char === "▲" || char === "△" || char === "☗" || char === "☖") {
+    if (
+      !char ||
+      char === "▲" ||
+      char === "△" ||
+      char === "▼" ||
+      char === "▽" ||
+      char === "☗" ||
+      char === "☖"
+    ) {
       sections.push(clean.substring(lastIndex, i));
       lastIndex = i;
     }
@@ -360,7 +375,7 @@ export function parsePVText(position: ImmutablePosition, text: string): Move[] {
   for (const section of sections) {
     const result = moveRegExp.exec(section);
     if (!result) {
-      break;
+      return [pv, new InvalidMoveError(section)];
     }
     const toStr = result[1];
     const pieceType = stringToPieceType(result[2]);
@@ -371,21 +386,27 @@ export function parsePVText(position: ImmutablePosition, text: string): Move[] {
 
     let to: Square;
     if (toStr.startsWith("同")) {
-      to = pv[pv.length - 1].to;
+      if (pv.length > 0) {
+        to = pv[pv.length - 1].to;
+      } else if (lastMove) {
+        to = lastMove.to;
+      } else {
+        return [pv, new InvalidMoveError(section)];
+      }
     } else {
-      const file = multiByteCharToNumber(toStr[0]);
-      const rank = kanjiToNumber(toStr[1]);
+      const file = stringToNumber(toStr[0]);
+      const rank = stringToNumber(toStr[1]);
       to = new Square(file, rank);
     }
     let from: Square | PieceType;
     if (promOrDropStr === "打") {
       from = pieceType;
     } else if (fromStr) {
-      const file = charToNumber(fromStr[1]);
-      const rank = charToNumber(fromStr[2]);
+      const file = stringToNumber(fromStr[1]);
+      const rank = stringToNumber(fromStr[2]);
       from = new Square(file, rank);
     } else {
-      const squares = p
+      let squares = p
         .listAttackersByPiece(to, new Piece(p.color, pieceType))
         .filter((square) => {
           let dir = square.directionTo(to);
@@ -401,17 +422,42 @@ export function parsePVText(position: ImmutablePosition, text: string): Move[] {
           if (verStr.indexOf("上") >= 0 && vDir !== VDirection.UP) {
             return false;
           }
-          if (horStr.indexOf("左") >= 0 && hDir !== HDirection.RIGHT) {
+          if (
+            horStr.indexOf("直") >= 0 &&
+            (hDir !== HDirection.NONE || vDir !== VDirection.UP)
+          ) {
             return false;
           }
-          if (horStr.indexOf("直") >= 0 && hDir !== HDirection.NONE) {
-            return false;
-          }
-          if (horStr.indexOf("右") >= 0 && hDir !== HDirection.LEFT) {
-            return false;
+          if (pieceType === PieceType.HORSE || pieceType === PieceType.DRAGON) {
+            // 馬や龍の場合は "左" や "右" でも真っ直ぐ進む場合があるので明らかに違うものだけを除外する。
+            if (horStr.indexOf("左") >= 0 && hDir === HDirection.LEFT) {
+              return false;
+            }
+            if (horStr.indexOf("右") >= 0 && hDir === HDirection.RIGHT) {
+              return false;
+            }
+          } else {
+            if (horStr.indexOf("左") >= 0 && hDir !== HDirection.RIGHT) {
+              return false;
+            }
+            if (horStr.indexOf("右") >= 0 && hDir !== HDirection.LEFT) {
+              return false;
+            }
           }
           return true;
         });
+      if (
+        squares.length === 2 &&
+        (pieceType === PieceType.HORSE || pieceType === PieceType.DRAGON)
+      ) {
+        // 馬や龍で "左" や "右" が使われ、 1 つに絞れなかった場合は真っ直ぐ進むものを除外する。
+        squares = squares.filter((square) => {
+          let dir = square.directionTo(to);
+          dir = p.color === Color.BLACK ? dir : reverseDirection(dir);
+          const hDir = directionToHDirection(dir);
+          return hDir !== HDirection.NONE;
+        });
+      }
       if (squares.length === 1) {
         from = squares[0];
       } else if (
@@ -420,20 +466,20 @@ export function parsePVText(position: ImmutablePosition, text: string): Move[] {
       ) {
         from = pieceType;
       } else {
-        break;
+        return [pv, new InvalidMoveError(section)];
       }
     }
     let move = p.createMove(from, to);
     if (!move) {
-      break;
+      return [pv, new InvalidMoveError(section)];
     }
     if (promOrDropStr === "成") {
       move = move.withPromote();
     }
     if (!p.doMove(move, { ignoreValidation: true })) {
-      break;
+      return [pv, new InvalidMoveError(section)];
     }
     pv.push(move);
   }
-  return pv;
+  return [pv, undefined];
 }

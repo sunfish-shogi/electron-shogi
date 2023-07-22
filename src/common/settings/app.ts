@@ -87,6 +87,8 @@ export enum Tab {
 export enum RecordFileFormat {
   KIF = ".kif",
   KIFU = ".kifu",
+  KI2 = ".ki2",
+  KI2U = ".ki2u",
   CSA = ".csa",
 }
 

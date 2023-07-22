@@ -339,6 +339,8 @@
               :items="[
                 { label: '.kif (Shift_JIS)', value: RecordFileFormat.KIF },
                 { label: '.kifu (UTF-8)', value: RecordFileFormat.KIFU },
+                { label: '.ki2 (Shift_JIS)', value: RecordFileFormat.KI2 },
+                { label: '.ki2u (UTF-8)', value: RecordFileFormat.KI2U },
                 { label: '.csa', value: RecordFileFormat.CSA },
               ]"
               @change="

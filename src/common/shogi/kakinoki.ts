@@ -30,16 +30,21 @@ import { Hand, ImmutableHand } from "./hand";
 import { Piece, PieceType } from "./piece";
 import { ImmutableRecord, ImmutableRecordMetadata } from "./record";
 import {
-  charToNumber,
   fileToMultiByteChar,
-  kanjiToNumber,
-  multiByteCharToNumber,
+  formatMove as formatMove2,
   numberToKanji,
+  parseMoves,
   pieceTypeToStringForBoard,
   pieceTypeToStringForMove,
   rankToKanji,
+  stringToNumber,
   stringToPieceType,
 } from "./text";
+
+export enum KakinokiFormatType {
+  KIF = "KIF",
+  KI2 = "KI2",
+}
 
 const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
   先手: RecordMetadataKey.BLACK_NAME,
@@ -113,12 +118,14 @@ enum LineType {
   BLACK_TURN,
   WHITE_TURN,
   MOVE,
+  MOVE2,
+  BRANCH,
   COMMENT,
   BOOKMARK,
+  END_OF_GAME,
   UNKNOWN,
 }
 
-// & で始まる行はしおりを意味するらしいが用途がよくわらず実際の使用例を見たことがない。
 const linePatterns = [
   {
     prefix: /^#/,
@@ -169,6 +176,18 @@ const linePatterns = [
     isPosition: false,
   },
   {
+    prefix: /^[ \u3000]*[▲△▼▽☗☖]/,
+    type: LineType.MOVE2,
+    removePrefix: false,
+    isPosition: false,
+  },
+  {
+    prefix: /^[ \u3000]*変化[：:][ \u3000]*/,
+    type: LineType.BRANCH,
+    removePrefix: true,
+    isPosition: false,
+  },
+  {
     prefix: /^\*/,
     type: LineType.COMMENT,
     removePrefix: true,
@@ -177,6 +196,12 @@ const linePatterns = [
   {
     prefix: /^&/,
     type: LineType.BOOKMARK,
+    removePrefix: true,
+    isPosition: false,
+  },
+  {
+    prefix: /^まで、?([0-9]+手で)?/,
+    type: LineType.END_OF_GAME,
     removePrefix: true,
     isPosition: false,
   },
@@ -270,6 +295,7 @@ const stringToSpecialMoveType: { [move: string]: SpecialMoveType | undefined } =
     持将棋: SpecialMoveType.IMPASS,
     千日手: SpecialMoveType.REPETITION_DRAW,
     詰み: SpecialMoveType.MATE,
+    詰: SpecialMoveType.MATE,
     不詰: SpecialMoveType.NO_MATE,
     切れ負け: SpecialMoveType.TIMEOUT,
     反則勝ち: SpecialMoveType.FOUL_WIN,
@@ -280,18 +306,20 @@ const stringToSpecialMoveType: { [move: string]: SpecialMoveType | undefined } =
   };
 
 const moveRegExp =
-  /^ *([0-9]+) +[▲△]?([１２３４５６７８９][一二三四五六七八九]|同\u3000*)(王|玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)\u3000*(成?)(打|\([1-9][1-9]\)) *(.*)$/;
+  /^ *([0-9]+) +[▲△▼▽]?([１２３４５６７８９][一二三四五六七八九]|同\u3000*)(王|玉|飛|龍|竜|角|馬|金|銀|成銀|全|桂|成桂|圭|香|成香|杏|歩|と)\u3000*(成?)(打|\([1-9][1-9]\)) *(.*)$/;
 
 const timeRegExp = /\( *([0-9]+):([0-9]+)\/[0-9: ]*\)/;
 
 const specialMoveRegExp = /^ *([0-9]+) +([^ \u3000]+) *(.*)$/;
+
+const branchRegExp = /^ *([0-9]+)/;
 
 function readBoard(board: Board, data: string): Error | undefined {
   if (data.length < 21) {
     return new InvalidBoardError(data);
   }
   const rankStr = data[20];
-  const rank = kanjiToNumber(rankStr);
+  const rank = stringToNumber(rankStr);
   if (!rank) {
     return new InvalidBoardError(data);
   }
@@ -311,6 +339,9 @@ function readBoard(board: Board, data: string): Error | undefined {
 }
 
 function readHand(hand: Hand, data: string): Error | undefined {
+  // NOTE:
+  //   スペースで区切られていないものでも Kifu for Windows や ShogiGUI は読み込める。
+  //   See: https://github.com/sunfish-shogi/electron-shogi/issues/572
   const sections = data.split(/[ 　]/);
   for (const section of sections) {
     if (!section || section === "なし") {
@@ -319,7 +350,7 @@ function readHand(hand: Hand, data: string): Error | undefined {
     const pieceStr = section[0];
     const numberStr = section.substring(1);
     const pieceType = stringToPieceType(pieceStr);
-    const n = kanjiToNumber(numberStr) || 1;
+    const n = stringToNumber(numberStr) || 1;
     if (!pieceType) {
       return new InvalidHandPieceError(section);
     }
@@ -377,15 +408,15 @@ function readRegularMove(record: Record, data: string): Error | boolean {
     }
     to = record.current.move.to;
   } else {
-    const file = multiByteCharToNumber(toStr[0]);
-    const rank = kanjiToNumber(toStr[1]);
+    const file = stringToNumber(toStr[0]);
+    const rank = stringToNumber(toStr[1]);
     to = new Square(file, rank);
   }
   if (fromStr === "打") {
     from = stringToPieceType(pieceTypeStr);
   } else {
-    const file = charToNumber(fromStr[1]);
-    const rank = charToNumber(fromStr[2]);
+    const file = stringToNumber(fromStr[1]);
+    const rank = stringToNumber(fromStr[2]);
     from = new Square(file, rank);
   }
   let move = record.position.createMove(from, to);
@@ -424,20 +455,85 @@ function readSpecialMove(record: Record, data: string): boolean {
   return true;
 }
 
-export function importKakinoki(data: string): Record | Error {
+function readMove2(record: Record, data: string): Error | undefined {
+  const lastMove =
+    record.current.move instanceof Move ? record.current.move : undefined;
+  const [moves, e] = parseMoves(record.position, data, lastMove);
+  if (e) {
+    return e;
+  }
+  for (const move of moves) {
+    record.append(move, { ignoreValidation: true });
+  }
+}
+
+function readBranch(record: Record, data: string): Error | undefined {
+  const result = branchRegExp.exec(data);
+  if (!result) {
+    return new InvalidMoveNumberError(data);
+  }
+  const num = Number(result[1]);
+  if (num === 0 || num > record.current.ply + 1) {
+    return new InvalidMoveNumberError(data);
+  }
+  record.goto(num - 1);
+}
+
+function readEndOfGame(record: Record, data: string): void {
+  const clean = data.replaceAll(/[\s\u3000]/g, "");
+  // NOTE: 末尾 "勝ち" は "時間切れにより...の勝ち" "反則勝ち" ともマッチするので最後に判定する必要がある。
+  if (clean.startsWith("時間切れ")) {
+    record.append(specialMove(SpecialMoveType.TIMEOUT));
+  } else if (clean.endsWith("反則勝ち")) {
+    record.append(specialMove(SpecialMoveType.FOUL_WIN));
+  } else if (clean.endsWith("反則負け")) {
+    record.append(specialMove(SpecialMoveType.FOUL_LOSE));
+  } else if (clean.endsWith("勝ち")) {
+    record.append(specialMove(SpecialMoveType.RESIGN));
+  } else {
+    const type = stringToSpecialMoveType[clean];
+    if (type) {
+      record.append(specialMove(type));
+    } else {
+      record.append(anySpecialMove(clean));
+    }
+  }
+}
+
+export function importKIF(data: string): Record | Error {
+  return importKakinoki(data, KakinokiFormatType.KIF);
+}
+
+export function importKI2(data: string): Record | Error {
+  return importKakinoki(data, KakinokiFormatType.KI2);
+}
+
+function importKakinoki(
+  data: string,
+  formatType: KakinokiFormatType
+): Record | Error {
   const metadata = new RecordMetadata();
   const record = new Record();
   const lines = data.split(/\r?\n/);
   const position = new Position();
   let preMoveComment = "";
   let preMoveBookmark = "";
-  let inMoveSection = false;
+  let isMoveSection = false;
+  const startMoveSectionIfNot = () => {
+    if (isMoveSection) {
+      return;
+    }
+    record.clear(position);
+    record.first.comment = preMoveComment;
+    record.first.bookmark = preMoveBookmark;
+    isMoveSection = true;
+  };
   for (const line of lines) {
     if (line === "") {
       continue;
     }
     const parsed = parseLine(line);
-    if (inMoveSection && parsed.isPosition) {
+    if (isMoveSection && parsed.isPosition) {
       return new InvalidLineError(line);
     }
     let e: Error | undefined;
@@ -470,16 +566,31 @@ export function importKakinoki(data: string): Record | Error {
         position.setColor(Color.WHITE);
         break;
       case LineType.MOVE:
-        if (!inMoveSection) {
-          record.clear(position);
-          record.first.comment = preMoveComment;
-          record.first.bookmark = preMoveBookmark;
-          inMoveSection = true;
+        if (formatType !== KakinokiFormatType.KIF) {
+          return new InvalidLineError(line);
         }
+        startMoveSectionIfNot();
         e = readMove(record, parsed.data);
         break;
+      case LineType.MOVE2:
+        if (formatType !== KakinokiFormatType.KI2) {
+          return new InvalidLineError(line);
+        }
+        startMoveSectionIfNot();
+        e = readMove2(record, parsed.data);
+        break;
+      case LineType.BRANCH:
+        // NOTE:
+        //   KIF では指し手の先頭に手数が付与されるので必要ない。
+        //   https://github.com/sunfish-shogi/electron-shogi/issues/570
+        //   の不具合により、ヘッダー部に "変化：" で始まる行が存在する場合がある。
+        //   指し手が始まるより前に "変化：" が出現しても無視しなければならない。
+        if (isMoveSection && formatType === KakinokiFormatType.KI2) {
+          e = readBranch(record, parsed.data);
+        }
+        break;
       case LineType.COMMENT:
-        if (inMoveSection) {
+        if (isMoveSection) {
           record.current.comment = appendLine(
             record.current.comment,
             parsed.data
@@ -489,10 +600,19 @@ export function importKakinoki(data: string): Record | Error {
         }
         break;
       case LineType.BOOKMARK:
-        if (inMoveSection) {
+        if (isMoveSection) {
           record.current.bookmark = parsed.data;
         } else {
           preMoveBookmark = parsed.data;
+        }
+        break;
+      case LineType.END_OF_GAME:
+        // NOTE:
+        //   KI2 では "までn手で" で始まる行から終局理由を読み取らなければいけない。
+        //   KIF では指し手の一つとしても記載されるので必要ない。
+        if (formatType === KakinokiFormatType.KI2) {
+          startMoveSectionIfNot();
+          readEndOfGame(record, parsed.data);
         }
         break;
       case LineType.PROGRAM_COMMENT:
@@ -504,11 +624,7 @@ export function importKakinoki(data: string): Record | Error {
       return e;
     }
   }
-  if (!inMoveSection) {
-    record.clear(position);
-    record.first.comment = preMoveComment;
-    record.first.bookmark = preMoveBookmark;
-  }
+  startMoveSectionIfNot();
   record.goto(0);
   record.resetAllBranchSelection();
   record.metadata = metadata;
@@ -619,7 +735,7 @@ function formatHand(hand: ImmutableHand): string {
   return ret;
 }
 
-export function exportKakinoki(
+export function exportKIF(
   record: ImmutableRecord,
   options: KakinokiExportOptions
 ): string {
@@ -658,6 +774,81 @@ export function exportKakinoki(
       ret += "*" + comment.replaceAll("\n", returnCode + "*") + returnCode;
     }
     if (node.bookmark.length !== 0) {
+      ret += "&" + node.bookmark + returnCode;
+    }
+  });
+  return ret;
+}
+
+export function exportKI2(
+  record: ImmutableRecord,
+  options: KakinokiExportOptions
+): string {
+  let ret = "";
+  const returnCode = options.returnCode ? options.returnCode : "\n";
+  ret += formatMetadata(record.metadata, options);
+  ret += formatPosition(record.initialPosition, options);
+  record.forEach((node) => {
+    if (node.ply !== 0) {
+      if (!node.isFirstBranch) {
+        if (!ret.endsWith(returnCode)) {
+          ret += returnCode;
+        }
+        ret += returnCode;
+        ret += "変化：" + node.ply + "手" + returnCode;
+      }
+      if (node.move instanceof Move) {
+        ret += formatMove2(record.position, node.move, {
+          lastMove:
+            node.prev?.move instanceof Move ? node.prev.move : undefined,
+          compatible: true,
+        });
+      } else {
+        if (!ret.endsWith(returnCode)) {
+          ret += returnCode;
+        }
+        ret += `まで${node.ply - 1}手で`;
+        if (isKnownSpecialMove(node.move)) {
+          const [next, last] =
+            node.nextColor === Color.BLACK
+              ? ["先手", "後手"]
+              : ["後手", "先手"];
+          switch (node.move.type) {
+            case SpecialMoveType.RESIGN:
+              ret += `${last}の勝ち`;
+              break;
+            case SpecialMoveType.TIMEOUT:
+              ret += `時間切れにより${last}の勝ち`;
+              break;
+            case SpecialMoveType.FOUL_WIN:
+              ret += `${next}の反則勝ち`;
+              break;
+            case SpecialMoveType.FOUL_LOSE:
+              ret += `${next}の反則負け`;
+              break;
+            default:
+              ret += specialMoveToString[node.move.type];
+              break;
+          }
+        } else {
+          ret += node.move.name;
+        }
+        ret += returnCode;
+      }
+    }
+    if (node.comment.length !== 0) {
+      if (!ret.endsWith(returnCode)) {
+        ret += returnCode;
+      }
+      const comment = node.comment.endsWith("\n")
+        ? node.comment.slice(0, -1)
+        : node.comment;
+      ret += "*" + comment.replaceAll("\n", returnCode + "*") + returnCode;
+    }
+    if (node.bookmark.length !== 0) {
+      if (!ret.endsWith(returnCode)) {
+        ret += returnCode;
+      }
       ret += "&" + node.bookmark + returnCode;
     }
   });

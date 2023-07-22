@@ -35,6 +35,10 @@
             <Icon :icon="IconType.COPY" />
             <div class="label">{{ t.copyAsKIF }}</div>
           </button>
+          <button @click="onCopyKI2">
+            <Icon :icon="IconType.COPY" />
+            <div class="label">{{ t.copyAsKI2 }}</div>
+          </button>
           <button @click="onCopyCSA">
             <Icon :icon="IconType.COPY" />
             <div class="label">{{ t.copyAsCSA }}</div>
@@ -98,6 +102,10 @@ const onExportImage = () => {
 };
 const onCopyKIF = () => {
   store.copyRecordKIF();
+  emit("close");
+};
+const onCopyKI2 = () => {
+  store.copyRecordKI2();
   emit("close");
 };
 const onCopyCSA = () => {

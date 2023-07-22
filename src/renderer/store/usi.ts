@@ -1,10 +1,5 @@
 import { USIInfoCommand } from "@/common/usi";
-import {
-  ImmutablePosition,
-  Move,
-  Position,
-  getMoveDisplayText,
-} from "@/common/shogi";
+import { ImmutablePosition, Move, Position, formatMove } from "@/common/shogi";
 import { Color } from "@/common/shogi";
 
 export type USIIteration = {
@@ -25,16 +20,16 @@ export type USIIteration = {
 
 function formatPV(position: ImmutablePosition, pv: string[]): string {
   const p = position.clone();
-  let prev: Move | undefined;
+  let lastMove: Move | undefined;
   let result = "";
   for (const usiMove of pv) {
     const move = p.createMoveByUSI(usiMove);
     if (!move) {
       break;
     }
-    result += getMoveDisplayText(p, move, { prev });
+    result += formatMove(p, move, { lastMove });
     p.doMove(move, { ignoreValidation: true });
-    prev = move;
+    lastMove = move;
   }
   return result;
 }
@@ -122,7 +117,7 @@ export class USIPlayerMonitor {
       this.currentMove = update.currmove;
       const move = position.createMoveByUSI(update.currmove);
       if (move) {
-        this.currentMoveText = getMoveDisplayText(position, move);
+        this.currentMoveText = formatMove(position, move);
       }
     }
     if (update.hashfullPerMill !== undefined) {
@@ -142,7 +137,7 @@ export class USIPlayerMonitor {
       }
       this.iterates.unshift(iterate);
     }
-    this.ponderMove = ponderMove && getMoveDisplayText(position, ponderMove);
+    this.ponderMove = ponderMove && formatMove(position, ponderMove);
   }
 }
 

@@ -13,7 +13,7 @@ import {
   specialMove,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
-import { getMoveDisplayText, getSpecialMoveDisplayString } from "./text";
+import { formatMove, formatSpecialMove } from "./text";
 
 export enum RecordMetadataKey {
   // 柿木形式で規定されている項目
@@ -430,12 +430,12 @@ export class Record {
       move = specialMove(move);
     }
     // 指し手を表す文字列を取得する。
-    const prevMove =
+    const lastMove =
       this.current.move instanceof Move ? this.current.move : undefined;
     const displayText =
       move instanceof Move
-        ? getMoveDisplayText(this.position, move, { prev: prevMove })
-        : getSpecialMoveDisplayString(move);
+        ? formatMove(this.position, move, { lastMove })
+        : formatSpecialMove(move);
 
     // 局面を動かす。
     let isCheck = false;

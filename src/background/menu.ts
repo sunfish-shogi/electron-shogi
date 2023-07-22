@@ -102,6 +102,7 @@ function createMenuTemplate() {
           label: t.copyRecord,
           submenu: [
             menuItem(t.asKIF, MenuEvent.COPY_RECORD, null, "CmdOrCtrl+C"),
+            menuItem(t.asKI2, MenuEvent.COPY_RECORD_KI2, null),
             menuItem(t.asCSA, MenuEvent.COPY_RECORD_CSA, null),
             menuItem(
               t.asUSIUntilCurrentMove,

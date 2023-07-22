@@ -15,12 +15,14 @@ export type Texts = {
   quit: string;
   editing: string;
   copyAsKIF: string;
+  copyAsKI2: string;
   copyAsCSA: string;
   copyAsUSI: string;
   copyAsSFEN: string;
   paste: string;
   copyRecord: string;
   asKIF: string;
+  asKI2: string;
   asCSA: string;
   asUSIUntilCurrentMove: string;
   asUSIAll: string;
@@ -314,7 +316,7 @@ export type Texts = {
   hasNoOldLogCleanUpFeature: string;
   processingPleaseWait: string;
   importingFollowingRecordOrPosition: string;
-  supportsKIFCSAUSI: string;
+  supportsKIF_KI2_CSA_USI: string;
   plesePasteRecordIntoTextArea: string;
   desktopVersionPastesAutomatically: string;
   someLogsDisabled: string;

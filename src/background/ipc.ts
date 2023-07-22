@@ -140,7 +140,11 @@ ipcMain.on(Background.OPEN_EXPLORER, (_, targetPath: string) => {
 
 function isValidRecordFilePath(path: string) {
   return (
-    path.endsWith(".kif") || path.endsWith(".kifu") || path.endsWith(".csa")
+    path.endsWith(".kif") ||
+    path.endsWith(".kifu") ||
+    path.endsWith(".ki2") ||
+    path.endsWith(".ki2u") ||
+    path.endsWith(".csa")
   );
 }
 
@@ -157,7 +161,12 @@ ipcMain.handle(
     const results = dialog.showOpenDialogSync(win, {
       defaultPath: appSetting.lastRecordFilePath,
       properties: ["openFile"],
-      filters: [{ name: t.recordFile, extensions: ["kif", "kifu", "csa"] }],
+      filters: [
+        {
+          name: t.recordFile,
+          extensions: ["kif", "kifu", "ki2", "ki2u", "csa"],
+        },
+      ],
     });
     getAppLogger().debug(`open-record dialog result: ${results}`);
     if (!results || results.length !== 1) {
@@ -194,6 +203,8 @@ ipcMain.handle(
     const filters = [
       { name: "KIF (Shift_JIS)", extensions: ["kif"] },
       { name: "KIF (UTF-8)", extensions: ["kifu"] },
+      { name: "KI2 (Shift_JIS)", extensions: ["ki2"] },
+      { name: "KI2 (UTF-8)", extensions: ["ki2u"] },
       { name: "CSA", extensions: ["csa"] },
     ];
     filters.sort((lhs, rhs) => {

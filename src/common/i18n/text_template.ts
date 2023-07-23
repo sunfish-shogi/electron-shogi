@@ -107,6 +107,7 @@ export type Texts = {
   customImage: string;
   autumn: string;
   snow: string;
+  darkGreen: string;
   dark: string;
   piece: string;
   shinryu: string;

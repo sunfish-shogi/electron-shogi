@@ -6,6 +6,7 @@ export enum Thema {
   CHERRY_BLOSSOM = "cherry-blossom",
   AUTUMN = "autumn",
   SNOW = "snow",
+  DARK_GREEN = "dark-green",
   DARK = "dark",
 }
 
@@ -36,21 +37,23 @@ export enum BoardImageType {
   RESIN = "resin",
   RESIN2 = "resin2",
   RESIN3 = "resin3",
-  DARK = "dark",
   GREEN = "green",
   CHERRY_BLOSSOM = "cherry-blossom",
   AUTUMN = "autumn",
   SNOW = "snow",
+  DARK_GREEN = "dark-green",
+  DARK = "dark",
   CUSTOM_IMAGE = "custom-image",
 }
 
 export enum PieceStandImageType {
   STANDARD = "standard",
-  DARK = "dark",
   GREEN = "green",
   CHERRY_BLOSSOM = "cherry-blossom",
   AUTUMN = "autumn",
   SNOW = "snow",
+  DARK_GREEN = "dark-green",
+  DARK = "dark",
   CUSTOM_IMAGE = "custom-image",
 }
 

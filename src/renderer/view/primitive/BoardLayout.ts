@@ -234,11 +234,12 @@ const boardBackgroundColorMap = {
   [BoardImageType.RESIN]: "#d69b00",
   [BoardImageType.RESIN2]: "#efbf63",
   [BoardImageType.RESIN3]: "#ad7624",
-  [BoardImageType.DARK]: "#333333",
   [BoardImageType.GREEN]: "#598459",
   [BoardImageType.CHERRY_BLOSSOM]: "#ecb6b6",
   [BoardImageType.AUTUMN]: "#d09f51",
   [BoardImageType.SNOW]: "#c3c0d3",
+  [BoardImageType.DARK_GREEN]: "#465e5e",
+  [BoardImageType.DARK]: "#333333",
   [BoardImageType.CUSTOM_IMAGE]: "rgba(0, 0, 0, 0)",
 };
 
@@ -255,11 +256,12 @@ function getPieceStandTextureURL(
 
 const pieceStandBackgroundColorMap = {
   [PieceStandImageType.STANDARD]: "#8b4513",
-  [PieceStandImageType.DARK]: "#333333",
   [PieceStandImageType.GREEN]: "#527a52",
   [PieceStandImageType.CHERRY_BLOSSOM]: "#e8a9a9",
   [PieceStandImageType.AUTUMN]: "#792509",
   [PieceStandImageType.SNOW]: "#9c98b7",
+  [PieceStandImageType.DARK_GREEN]: "#465e5e",
+  [PieceStandImageType.DARK]: "#333333",
   [PieceStandImageType.CUSTOM_IMAGE]: "rgba(0, 0, 0, 0)",
 };
 

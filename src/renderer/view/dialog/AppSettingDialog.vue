@@ -44,6 +44,7 @@
                 { label: t.cherryBlossom, value: Thema.CHERRY_BLOSSOM },
                 { label: t.autumn, value: Thema.AUTUMN },
                 { label: t.snow, value: Thema.SNOW },
+                { label: t.darkGreen, value: Thema.DARK_GREEN },
                 { label: t.dark, value: Thema.DARK },
               ]"
               @change="
@@ -143,7 +144,6 @@
                 { label: t.regin, value: BoardImageType.RESIN },
                 { label: t.regin + '2', value: BoardImageType.RESIN2 },
                 { label: t.regin + '3', value: BoardImageType.RESIN3 },
-                { label: t.dark, value: BoardImageType.DARK },
                 { label: t.green, value: BoardImageType.GREEN },
                 {
                   label: t.cherryBlossom,
@@ -151,6 +151,8 @@
                 },
                 { label: t.autumn, value: BoardImageType.AUTUMN },
                 { label: t.snow, value: BoardImageType.SNOW },
+                { label: t.darkGreen, value: BoardImageType.DARK_GREEN },
+                { label: t.dark, value: BoardImageType.DARK },
                 { label: t.customImage, value: BoardImageType.CUSTOM_IMAGE },
               ]"
               @change="
@@ -182,7 +184,6 @@
               :value="pieceStandImage"
               :items="[
                 { label: t.standard, value: PieceStandImageType.STANDARD },
-                { label: t.dark, value: PieceStandImageType.DARK },
                 { label: t.green, value: PieceStandImageType.GREEN },
                 {
                   label: t.cherryBlossom,
@@ -190,6 +191,8 @@
                 },
                 { label: t.autumn, value: PieceStandImageType.AUTUMN },
                 { label: t.snow, value: PieceStandImageType.SNOW },
+                { label: t.darkGreen, value: PieceStandImageType.DARK_GREEN },
+                { label: t.dark, value: PieceStandImageType.DARK },
                 {
                   label: t.customImage,
                   value: PieceStandImageType.CUSTOM_IMAGE,

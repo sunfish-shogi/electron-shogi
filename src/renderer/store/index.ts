@@ -3,7 +3,6 @@ import {
   Color,
   exportCSA,
   ImmutableRecord,
-  InitialPositionType,
   Move,
   PositionChange,
   Record,
@@ -883,14 +882,14 @@ class Store {
     }
   }
 
-  initializePosition(initialPositionType: InitialPositionType): void {
+  initializePositionBySFEN(sfen: string): void {
     if (this.appState != AppState.POSITION_EDITING) {
       return;
     }
     this.showConfirmation({
       message: t.areYouSureWantToDiscardPosition,
       onOk: () => {
-        this.recordManager.reset(initialPositionType);
+        this.recordManager.resetBySFEN(sfen);
       },
     });
   }

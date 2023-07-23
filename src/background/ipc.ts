@@ -645,8 +645,9 @@ export function sendError(e: Error): void {
   mainWindow.webContents.send(Renderer.SEND_ERROR, e);
 }
 
-export function onMenuEvent(event: MenuEvent): void {
-  mainWindow.webContents.send(Renderer.MENU_EVENT, event);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function onMenuEvent(event: MenuEvent, ...args: any[]): void {
+  mainWindow.webContents.send(Renderer.MENU_EVENT, event, ...args);
 }
 
 export function onUpdateAppSetting(setting: AppSettingUpdate): void {

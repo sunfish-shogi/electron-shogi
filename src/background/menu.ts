@@ -16,6 +16,7 @@ import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
 import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
 import { t } from "@/common/i18n";
+import { InitialPositionSFEN } from "@/common/shogi";
 
 const isMac = process.platform === "darwin";
 
@@ -26,7 +27,9 @@ function menuItem(
   label: string,
   event: MenuEvent,
   appStates: AppState[] | null,
-  accelerator?: string
+  accelerator?: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
 ): MenuItemConstructorOptions {
   const index = stateChangeCallbacks.length;
   const id = "menuItem" + index;
@@ -49,7 +52,7 @@ function menuItem(
     id,
     label,
     accelerator,
-    click: () => onMenuEvent(event),
+    click: () => onMenuEvent(event, ...args),
   };
 }
 
@@ -196,62 +199,96 @@ function createMenuTemplate() {
         {
           label: t.initializePosition,
           submenu: [
-            menuItem(t.nonHandicap, MenuEvent.INIT_POSITION_STANDARD, [
-              AppState.POSITION_EDITING,
-            ]),
-            menuItem(t.lanceHandicap, MenuEvent.INIT_POSITION_HANDICAP_LANCE, [
-              AppState.POSITION_EDITING,
-            ]),
+            menuItem(
+              t.nonHandicap,
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.STANDARD
+            ),
+            menuItem(
+              t.lanceHandicap,
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_LANCE
+            ),
             menuItem(
               t.rightLanceHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_RIGHT_LANCE,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_RIGHT_LANCE
             ),
             menuItem(
               t.bishopHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_BISHOP,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_BISHOP
             ),
-            menuItem(t.rookHandicap, MenuEvent.INIT_POSITION_HANDICAP_ROOK, [
-              AppState.POSITION_EDITING,
-            ]),
+            menuItem(
+              t.rookHandicap,
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_ROOK
+            ),
             menuItem(
               t.rookLanceHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_ROOK_LANCE,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_ROOK_LANCE
             ),
             menuItem(
               t.twoPiecesHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_2PIECES,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_2PIECES
             ),
             menuItem(
               t.fourPiecesHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_4PIECES,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_4PIECES
             ),
             menuItem(
               t.sixPiecesHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_6PIECES,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_6PIECES
             ),
             menuItem(
               t.eightPiecesHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_8PIECES,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_8PIECES
             ),
             menuItem(
               t.tenPiecesHandicap,
-              MenuEvent.INIT_POSITION_HANDICAP_10PIECES,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.HANDICAP_10PIECES
             ),
-            menuItem(t.tsumeShogi, MenuEvent.INIT_POSITION_TSUME_SHOGI, [
-              AppState.POSITION_EDITING,
-            ]),
+            menuItem(
+              t.tsumeShogi,
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.TSUME_SHOGI
+            ),
             menuItem(
               t.doubleKingTsumeShogi,
-              MenuEvent.INIT_POSITION_TSUME_SHOGI_2KINGS,
-              [AppState.POSITION_EDITING]
+              MenuEvent.INIT_POSITION,
+              [AppState.POSITION_EDITING],
+              undefined,
+              InitialPositionSFEN.TSUME_SHOGI_2KINGS
             ),
           ],
         },

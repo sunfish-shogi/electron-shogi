@@ -14,6 +14,7 @@ import {
   importKI2,
   importKIF,
   InitialPositionType,
+  initialPositionTypeToSFEN,
   Move,
   parsePV,
   Position,
@@ -203,9 +204,15 @@ export class RecordManager {
   }
 
   reset(startPosition?: InitialPositionType): void {
-    if (startPosition) {
+    this.resetBySFEN(
+      startPosition ? initialPositionTypeToSFEN(startPosition) : undefined
+    );
+  }
+
+  resetBySFEN(sfen?: string): void {
+    if (sfen) {
       const position = new Position();
-      position.reset(startPosition);
+      position.resetBySFEN(sfen);
       this._record.clear(position);
     } else {
       this._record.clear();

@@ -1,4 +1,4 @@
-import { Board, ImmutableBoard, InitialPositionType } from "./board";
+import { Board, ImmutableBoard } from "./board";
 import {
   Color,
   reverseColor,
@@ -18,6 +18,69 @@ import {
   resolveMoveType,
   vectorToDirectionAndDistance,
 } from "./direction";
+
+// Deprecated: Use InitialPositionSFEN instead.
+// NOTICE: GameSetting で使用しているため互換性のために残す。
+export enum InitialPositionType {
+  STANDARD = "standard",
+  EMPTY = "empty",
+  HANDICAP_LANCE = "handicapLance",
+  HANDICAP_RIGHT_LANCE = "handicapRightLance",
+  HANDICAP_BISHOP = "handicapBishop",
+  HANDICAP_ROOK = "handicapRook",
+  HANDICAP_ROOK_LANCE = "handicapRookLance",
+  HANDICAP_2PIECES = "handicap2Pieces",
+  HANDICAP_4PIECES = "handicap4Pieces",
+  HANDICAP_6PIECES = "handicap6Pieces",
+  HANDICAP_8PIECES = "handicap8Pieces",
+  HANDICAP_10PIECES = "handicap10Pieces",
+  TSUME_SHOGI = "tsumeShogi",
+  TSUME_SHOGI_2KINGS = "tsumeShogi2Kings",
+}
+
+export enum InitialPositionSFEN {
+  STANDARD = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
+  EMPTY = "9/9/9/9/9/9/9/9/9 b - 1",
+  HANDICAP_LANCE = "lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_RIGHT_LANCE = "1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_BISHOP = "lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_ROOK = "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_ROOK_LANCE = "lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_2PIECES = "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_4PIECES = "1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_6PIECES = "2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_8PIECES = "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  HANDICAP_10PIECES = "4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
+  TSUME_SHOGI = "4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1",
+  TSUME_SHOGI_2KINGS = "4k4/9/9/9/9/9/9/9/4K4 b 2r2b4g4s4n4l18p 1",
+}
+
+export function initialPositionTypeToSFEN(type: InitialPositionType): string {
+  return {
+    [InitialPositionType.STANDARD]: InitialPositionSFEN.STANDARD,
+    [InitialPositionType.EMPTY]: InitialPositionSFEN.EMPTY,
+    [InitialPositionType.HANDICAP_LANCE]: InitialPositionSFEN.HANDICAP_LANCE,
+    [InitialPositionType.HANDICAP_RIGHT_LANCE]:
+      InitialPositionSFEN.HANDICAP_RIGHT_LANCE,
+    [InitialPositionType.HANDICAP_BISHOP]: InitialPositionSFEN.HANDICAP_BISHOP,
+    [InitialPositionType.HANDICAP_ROOK]: InitialPositionSFEN.HANDICAP_ROOK,
+    [InitialPositionType.HANDICAP_ROOK_LANCE]:
+      InitialPositionSFEN.HANDICAP_ROOK_LANCE,
+    [InitialPositionType.HANDICAP_2PIECES]:
+      InitialPositionSFEN.HANDICAP_2PIECES,
+    [InitialPositionType.HANDICAP_4PIECES]:
+      InitialPositionSFEN.HANDICAP_4PIECES,
+    [InitialPositionType.HANDICAP_6PIECES]:
+      InitialPositionSFEN.HANDICAP_6PIECES,
+    [InitialPositionType.HANDICAP_8PIECES]:
+      InitialPositionSFEN.HANDICAP_8PIECES,
+    [InitialPositionType.HANDICAP_10PIECES]:
+      InitialPositionSFEN.HANDICAP_10PIECES,
+    [InitialPositionType.TSUME_SHOGI]: InitialPositionSFEN.TSUME_SHOGI,
+    [InitialPositionType.TSUME_SHOGI_2KINGS]:
+      InitialPositionSFEN.TSUME_SHOGI_2KINGS,
+  }[type];
+}
 
 const invalidRankMap: {
   [color: string]: { [pieceType: string]: { [rank: number]: boolean } };
@@ -106,44 +169,6 @@ export class Position {
 
   get whiteHand(): Hand {
     return this._whiteHand;
-  }
-
-  reset(type: InitialPositionType): void {
-    this._board.reset(type);
-    this._blackHand = new Hand();
-    this._whiteHand = new Hand();
-    switch (type) {
-      case InitialPositionType.STANDARD:
-      case InitialPositionType.EMPTY:
-      case InitialPositionType.TSUME_SHOGI:
-      case InitialPositionType.TSUME_SHOGI_2KINGS:
-        this._color = Color.BLACK;
-        break;
-      case InitialPositionType.HANDICAP_LANCE:
-      case InitialPositionType.HANDICAP_RIGHT_LANCE:
-      case InitialPositionType.HANDICAP_BISHOP:
-      case InitialPositionType.HANDICAP_ROOK:
-      case InitialPositionType.HANDICAP_ROOK_LANCE:
-      case InitialPositionType.HANDICAP_2PIECES:
-      case InitialPositionType.HANDICAP_4PIECES:
-      case InitialPositionType.HANDICAP_6PIECES:
-      case InitialPositionType.HANDICAP_8PIECES:
-      case InitialPositionType.HANDICAP_10PIECES:
-        this._color = Color.WHITE;
-        break;
-    }
-    if (
-      type === InitialPositionType.TSUME_SHOGI ||
-      type === InitialPositionType.TSUME_SHOGI_2KINGS
-    ) {
-      this._whiteHand.set(PieceType.PAWN, 18);
-      this._whiteHand.set(PieceType.LANCE, 4);
-      this._whiteHand.set(PieceType.KNIGHT, 4);
-      this._whiteHand.set(PieceType.SILVER, 4);
-      this._whiteHand.set(PieceType.GOLD, 4);
-      this._whiteHand.set(PieceType.BISHOP, 2);
-      this._whiteHand.set(PieceType.ROOK, 2);
-    }
   }
 
   hand(color: Color): Hand {
@@ -413,6 +438,11 @@ export class Position {
       }
     }
     return true;
+  }
+
+  // Deprecated: Use resetBySFEN() instead.
+  reset(type: InitialPositionType): void {
+    this.resetBySFEN(initialPositionTypeToSFEN(type));
   }
 
   get sfen(): string {

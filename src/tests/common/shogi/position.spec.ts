@@ -8,6 +8,7 @@ import {
   Record,
   Square,
   PieceType,
+  InitialPositionSFEN,
 } from "@/common/shogi";
 
 describe("shogi/position", () => {
@@ -78,6 +79,31 @@ describe("shogi/position", () => {
     expect(position.sfen).toBe("4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1");
     position.reset(InitialPositionType.TSUME_SHOGI_2KINGS);
     expect(position.sfen).toBe("4k4/9/9/9/9/9/9/9/4K4 b 2r2b4g4s4n4l18p 1");
+  });
+
+  it("resetBySFEN", () => {
+    const testCases = [
+      InitialPositionSFEN.STANDARD,
+      InitialPositionSFEN.EMPTY,
+      InitialPositionSFEN.HANDICAP_LANCE,
+      InitialPositionSFEN.HANDICAP_RIGHT_LANCE,
+      InitialPositionSFEN.HANDICAP_BISHOP,
+      InitialPositionSFEN.HANDICAP_ROOK,
+      InitialPositionSFEN.HANDICAP_ROOK_LANCE,
+      InitialPositionSFEN.HANDICAP_2PIECES,
+      InitialPositionSFEN.HANDICAP_4PIECES,
+      InitialPositionSFEN.HANDICAP_6PIECES,
+      InitialPositionSFEN.HANDICAP_8PIECES,
+      InitialPositionSFEN.HANDICAP_10PIECES,
+      InitialPositionSFEN.TSUME_SHOGI,
+      InitialPositionSFEN.TSUME_SHOGI_2KINGS,
+      "l+B5nl/4g1gk1/2b1p2p1/p1p2pp2/3s1P2p/P1P3PP1/1P2PSN1P/2G2GK2/L7L b RSNPrsn2p 1",
+    ];
+    for (const tc of testCases) {
+      const position = Position.newBySFEN(tc);
+      expect(position).toBeInstanceOf(Position);
+      expect(position?.sfen).toBe(tc);
+    }
   });
 
   it("doMove", () => {

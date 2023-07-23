@@ -109,6 +109,7 @@ export const zh_tw: Texts = {
   customImage: "自定義圖片",
   autumn: "紅葉",
   snow: "雪",
+  darkGreen: "深緑", // TODO: translate
   dark: "深色主題",
   piece: "棋駒",
   shinryu: "新龍",

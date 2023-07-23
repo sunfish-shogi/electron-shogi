@@ -222,6 +222,62 @@
   --toggle-inactive-color: darkgray;
 }
 
+.dark-green {
+  --main-color: white;
+  --main-bg-color: #293737;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --tab-color: white;
+  --tab-bg-color: #374b4b;
+  --tab-highlight-color: white;
+  --tab-content-bg-color: #293737;
+  --text-color-danger: white;
+  --text-color: white;
+  --text-bg-color: #222d2d;
+  --text-bg-color-disabled: gray;
+  --text-bg-color-selected: #4444b3;
+  --text-bg-color-warning: #b08000;
+  --text-bg-color-danger: red;
+  --text-separator-color: gainsboro;
+  --text-dashed-separator-color: lightgray;
+  --input-border-color: gray;
+  --chart-bg-color: #222d2d;
+  --promote-bg-color: #547272;
+  --not-promote-bg-color: #293737;
+  --turn-label-color: lightyellow;
+  --turn-label-bg-color: #131a1a;
+  --turn-label-border-color: lightyellow;
+  --control-button-color: white;
+  --control-button-bg-color: #3f5454;
+  --control-button-border-color: #374b4b;
+  --disabled-control-button-bg-color: #656565;
+  --hovered-control-button-bg-color: #638585;
+  --close-button-bg-color: #aa141b;
+  --hovered-close-button-bg-color: #c91720;
+  --dialog-color: white;
+  --dialog-bg-color: #222d2d;
+  --dialog-border-color: dimgray;
+  --info-dialog-color: white;
+  --info-dialog-bg-color: #222d2d;
+  --info-dialog-border-color: white;
+  --error-dialog-color: white;
+  --error-dialog-bg-color: #aa0000;
+  --error-dialog-border-color: white;
+  --error-dialog-button-color: white;
+  --error-dialog-button-bg-color: #cc7777;
+  --hovered-error-dialog-button-bg-color: #aa5555;
+  --bussy-dialog-color: white;
+  --bussy-dialog-bg-color: dimgray;
+  --bussy-dialog-border-color: white;
+  --control-shadow-color: black;
+  --selector-color: white;
+  --selector-bg-color: #3c3c3c;
+  --pushed-selector-color: white;
+  --pushed-selector-bg-color: #547272;
+  --toggle-knob-color: #ddd;
+  --toggle-active-color: #259625;
+  --toggle-inactive-color: #5c5c5c;
+}
+
 .dark {
   --main-color: white;
   --main-bg-color: black;

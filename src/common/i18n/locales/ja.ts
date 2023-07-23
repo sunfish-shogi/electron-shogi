@@ -109,6 +109,7 @@ export const ja: Texts = {
   customImage: "カスタム画像",
   autumn: "紅葉",
   snow: "雪",
+  darkGreen: "深緑",
   dark: "ダーク",
   piece: "駒",
   shinryu: "新龍",

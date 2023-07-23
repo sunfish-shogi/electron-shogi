@@ -10,7 +10,6 @@ import {
   PieceNotExistsError,
   Record,
 } from ".";
-import { InitialPositionType } from "./board";
 import { Color } from "./color";
 import { ImmutableHand } from "./hand";
 import { Move, SpecialMove, SpecialMoveType } from "./move";
@@ -19,6 +18,7 @@ import {
   Position,
   countNotExistingPieces,
   ImmutablePosition,
+  InitialPositionSFEN,
 } from "./position";
 import {
   ImmutableRecord,
@@ -173,7 +173,7 @@ const csaNameToPieceType: { [name: string]: PieceType } = {
 };
 
 function parsePosition(line: string, position: Position): void {
-  position.reset(InitialPositionType.STANDARD);
+  position.resetBySFEN(InitialPositionSFEN.STANDARD);
   for (let i = 2; i + 4 <= line.length; i += 4) {
     const file = Number(line[i]);
     const rank = Number(line[i + 1]);
@@ -304,7 +304,7 @@ export function importCSA(data: string): Record | Error {
   const metadata = new RecordMetadata();
   const record = new Record();
   const position = new Position();
-  position.reset(InitialPositionType.EMPTY);
+  position.resetBySFEN(InitialPositionSFEN.EMPTY);
   let preMoveComment = "";
   let inMoveSection = false;
   const lines = data.replace(/\r?\n\/(\r?\n[\s\S]*)?$/, "").split(/\r?\n/);

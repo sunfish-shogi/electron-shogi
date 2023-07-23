@@ -24,8 +24,9 @@ import {
   anySpecialMove,
   SpecialMove,
   specialMove,
+  InitialPositionSFEN,
 } from ".";
-import { Board, InitialPositionType } from "./board";
+import { Board } from "./board";
 import { Hand, ImmutableHand } from "./hand";
 import { Piece, PieceType } from "./piece";
 import { ImmutableRecord, ImmutableRecordMetadata } from "./record";
@@ -249,40 +250,40 @@ function parseLine(line: string): Line {
 function readHandicap(position: Position, data: string): Error | undefined {
   switch (data.trim()) {
     case "平手":
-      position.reset(InitialPositionType.STANDARD);
+      position.resetBySFEN(InitialPositionSFEN.STANDARD);
       return;
     case "香落ち":
-      position.reset(InitialPositionType.HANDICAP_LANCE);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_LANCE);
       return;
     case "右香落ち":
-      position.reset(InitialPositionType.HANDICAP_RIGHT_LANCE);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_RIGHT_LANCE);
       return;
     case "角落ち":
-      position.reset(InitialPositionType.HANDICAP_BISHOP);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_BISHOP);
       return;
     case "飛車落ち":
-      position.reset(InitialPositionType.HANDICAP_ROOK);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_ROOK);
       return;
     case "飛香落ち":
-      position.reset(InitialPositionType.HANDICAP_ROOK_LANCE);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_ROOK_LANCE);
       return;
     case "二枚落ち":
-      position.reset(InitialPositionType.HANDICAP_2PIECES);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_2PIECES);
       return;
     case "四枚落ち":
-      position.reset(InitialPositionType.HANDICAP_4PIECES);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_4PIECES);
       return;
     case "六枚落ち":
-      position.reset(InitialPositionType.HANDICAP_6PIECES);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_6PIECES);
       return;
     case "八枚落ち":
-      position.reset(InitialPositionType.HANDICAP_8PIECES);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_8PIECES);
       return;
     case "十枚落ち":
-      position.reset(InitialPositionType.HANDICAP_10PIECES);
+      position.resetBySFEN(InitialPositionSFEN.HANDICAP_10PIECES);
       return;
     case "その他":
-      position.reset(InitialPositionType.EMPTY);
+      position.resetBySFEN(InitialPositionSFEN.EMPTY);
       return;
   }
   return new InvalidHandicapError(data);
@@ -675,8 +676,34 @@ function formatPosition(
   position: ImmutablePosition,
   options: KakinokiExportOptions
 ): string {
+  const returnCode = options.returnCode || "\n";
+
+  switch (position.sfen) {
+    case "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1":
+      return "手合割：平手" + returnCode;
+    case "lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：香落ち" + returnCode;
+    case "1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：右香落ち" + returnCode;
+    case "lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：角落ち" + returnCode;
+    case "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：飛車落ち" + returnCode;
+    case "lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：飛香落ち" + returnCode;
+    case "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：二枚落ち" + returnCode;
+    case "1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：四枚落ち" + returnCode;
+    case "2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：六枚落ち" + returnCode;
+    case "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：八枚落ち" + returnCode;
+    case "4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+      return "手合割：十枚落ち" + returnCode;
+  }
+
   let ret = "";
-  const returnCode = options.returnCode ? options.returnCode : "\n";
   ret += "後手の持駒：" + formatHand(position.whiteHand) + returnCode;
   ret += "  ９ ８ ７ ６ ５ ４ ３ ２ １" + returnCode;
   ret += "+---------------------------+" + returnCode;

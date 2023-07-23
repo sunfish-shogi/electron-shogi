@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import { InitialPositionType, SpecialMoveType } from "@/common/shogi";
+import { SpecialMoveType } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import {
   onUSIBestMove,
@@ -32,7 +32,8 @@ export function setup(): void {
   bridge.onSendError((e: Error) => {
     store.pushError(e);
   });
-  bridge.onMenuEvent((event: MenuEvent) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  bridge.onMenuEvent((event: MenuEvent, ...args: any[]) => {
     if (store.isBussy) {
       return;
     }
@@ -124,44 +125,8 @@ export function setup(): void {
       case MenuEvent.CHANGE_TURN:
         store.changeTurn();
         break;
-      case MenuEvent.INIT_POSITION_STANDARD:
-        store.initializePosition(InitialPositionType.STANDARD);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_LANCE:
-        store.initializePosition(InitialPositionType.HANDICAP_LANCE);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_RIGHT_LANCE:
-        store.initializePosition(InitialPositionType.HANDICAP_RIGHT_LANCE);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_BISHOP:
-        store.initializePosition(InitialPositionType.HANDICAP_BISHOP);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_ROOK:
-        store.initializePosition(InitialPositionType.HANDICAP_ROOK);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_ROOK_LANCE:
-        store.initializePosition(InitialPositionType.HANDICAP_ROOK_LANCE);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_2PIECES:
-        store.initializePosition(InitialPositionType.HANDICAP_2PIECES);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_4PIECES:
-        store.initializePosition(InitialPositionType.HANDICAP_4PIECES);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_6PIECES:
-        store.initializePosition(InitialPositionType.HANDICAP_6PIECES);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_8PIECES:
-        store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
-        break;
-      case MenuEvent.INIT_POSITION_HANDICAP_10PIECES:
-        store.initializePosition(InitialPositionType.HANDICAP_10PIECES);
-        break;
-      case MenuEvent.INIT_POSITION_TSUME_SHOGI:
-        store.initializePosition(InitialPositionType.TSUME_SHOGI);
-        break;
-      case MenuEvent.INIT_POSITION_TSUME_SHOGI_2KINGS:
-        store.initializePosition(InitialPositionType.TSUME_SHOGI_2KINGS);
+      case MenuEvent.INIT_POSITION:
+        store.initializePositionBySFEN(args[0]);
         break;
       case MenuEvent.START_MATE_SEARCH:
         store.showMateSearchDialog();

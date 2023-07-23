@@ -9,55 +9,55 @@
           </button>
         </div>
         <div class="group">
-          <button @click="onStandard">
+          <button @click="onPush(InitialPositionSFEN.STANDARD)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.nonHandicap }}</div>
           </button>
-          <button @click="onHandicapLance">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_LANCE)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.lanceHandicap }}</div>
           </button>
-          <button @click="onHandicapRightLance">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_RIGHT_LANCE)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.rightLanceHandicap }}</div>
           </button>
-          <button @click="onHandicapBishop">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_BISHOP)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.bishopHandicap }}</div>
           </button>
-          <button @click="onHandicapRook">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_ROOK)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.rookHandicap }}</div>
           </button>
-          <button @click="onHandicapRookLance">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_ROOK_LANCE)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.rookLanceHandicap }}</div>
           </button>
-          <button @click="onHandicap2Pieces">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_2PIECES)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.twoPiecesHandicap }}</div>
           </button>
-          <button @click="onHandicap4Pieces">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_4PIECES)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.fourPiecesHandicap }}</div>
           </button>
-          <button @click="onHandicap6Pieces">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_6PIECES)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.sixPiecesHandicap }}</div>
           </button>
-          <button @click="onHandicap8Pieces">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_8PIECES)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.eightPiecesHandicap }}</div>
           </button>
-          <button @click="onHandicap10Pieces">
+          <button @click="onPush(InitialPositionSFEN.HANDICAP_10PIECES)">
             <Icon :icon="IconType.GAME" />
             <div class="label">{{ t.tenPiecesHandicap }}</div>
           </button>
-          <button @click="onTsumeShogi">
+          <button @click="onPush(InitialPositionSFEN.TSUME_SHOGI)">
             <Icon :icon="IconType.QUIZ" />
             <div class="label">{{ t.tsumeShogi }}</div>
           </button>
-          <button @click="onTsumeShogi2Kings">
+          <button @click="onPush(InitialPositionSFEN.TSUME_SHOGI_2KINGS)">
             <Icon :icon="IconType.QUIZ" />
             <div class="label">{{ t.doubleKingTsumeShogi }}</div>
           </button>
@@ -74,7 +74,7 @@ import { onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
-import { InitialPositionType } from "@/common/shogi";
+import { InitialPositionSFEN } from "@/common/shogi";
 
 const emit = defineEmits(["close"]);
 
@@ -83,59 +83,11 @@ const dialog = ref();
 const onClose = () => {
   emit("close");
 };
+const onPush = (sfen: string) => {
+  store.initializePositionBySFEN(sfen);
+  emit("close");
+};
 onMounted(() => {
   showModalDialog(dialog.value, onClose);
 });
-const onStandard = () => {
-  store.initializePosition(InitialPositionType.STANDARD);
-  emit("close");
-};
-const onHandicapLance = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_LANCE);
-  emit("close");
-};
-const onHandicapRightLance = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_RIGHT_LANCE);
-  emit("close");
-};
-const onHandicapBishop = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_BISHOP);
-  emit("close");
-};
-const onHandicapRook = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_ROOK);
-  emit("close");
-};
-const onHandicapRookLance = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_ROOK_LANCE);
-  emit("close");
-};
-const onHandicap2Pieces = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_2PIECES);
-  emit("close");
-};
-const onHandicap4Pieces = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_4PIECES);
-  emit("close");
-};
-const onHandicap6Pieces = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_6PIECES);
-  emit("close");
-};
-const onHandicap8Pieces = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_8PIECES);
-  emit("close");
-};
-const onHandicap10Pieces = () => {
-  store.initializePosition(InitialPositionType.HANDICAP_10PIECES);
-  emit("close");
-};
-const onTsumeShogi = () => {
-  store.initializePosition(InitialPositionType.TSUME_SHOGI);
-  emit("close");
-};
-const onTsumeShogi2Kings = () => {
-  store.initializePosition(InitialPositionType.TSUME_SHOGI_2KINGS);
-  emit("close");
-};
 </script>

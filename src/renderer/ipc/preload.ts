@@ -238,8 +238,11 @@ const api: Bridge = {
       callback(e);
     });
   },
-  onMenuEvent(callback: (event: MenuEvent) => void): void {
-    ipcRenderer.on(Renderer.MENU_EVENT, (_, event) => callback(event));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onMenuEvent(callback: (event: MenuEvent, ...args: any[]) => void): void {
+    ipcRenderer.on(Renderer.MENU_EVENT, (_, event, ...args) =>
+      callback(event, ...args)
+    );
   },
   onUpdateAppSetting(callback: (json: string) => void): void {
     ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));

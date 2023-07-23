@@ -180,7 +180,9 @@ export class CSAGameManager {
     this.player = await this.playerBuilder.build(this._setting.player, (info) =>
       this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info)
     );
-    await this.relogin();
+    // サーバーへのログインと対局開始を試みる。
+    // NOTICE: エラーの場合は自動的にリトライするのでこの関数の呼び元にはエラーを伝搬しない。
+    this.relogin().catch(this.onError);
   }
 
   private async relogin(): Promise<void> {

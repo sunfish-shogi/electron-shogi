@@ -273,6 +273,7 @@ onUpdated(() => {
 .branch-list-area {
   margin-top: 2px;
   width: 100%;
+  height: calc(30% - 50px);
 }
 .branch-list {
   width: auto;

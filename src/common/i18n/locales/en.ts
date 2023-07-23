@@ -110,7 +110,7 @@ export const en: Texts = {
   customImage: "Custom Image",
   autumn: "Autumn",
   snow: "Snow",
-  darkGreen: "DarkGreen",
+  darkGreen: "Dark Green",
   dark: "Dark",
   piece: "Piece",
   shinryu: "新龍/Shinryu",

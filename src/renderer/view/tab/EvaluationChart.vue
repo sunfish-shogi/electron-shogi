@@ -143,6 +143,7 @@ function getColorPalette(thema: Thema): ColorPalette {
         researcher3: "#6C22FF",
         researcher4: "#FFB912",
       };
+    case Thema.DARK_GREEN:
     case Thema.DARK:
       return {
         main: "white",

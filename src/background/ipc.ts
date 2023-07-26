@@ -13,6 +13,7 @@ import url from "url";
 import {
   loadAnalysisSetting,
   loadAppSetting,
+  loadBatchConversionSetting,
   loadCSAGameSettingHistory,
   loadGameSetting,
   loadMateSearchSetting,
@@ -20,6 +21,7 @@ import {
   loadUSIEngineSetting,
   saveAnalysisSetting,
   saveAppSetting,
+  saveBatchConversionSetting,
   saveCSAGameSettingHistory,
   saveGameSetting,
   saveMateSearchSetting,
@@ -46,8 +48,8 @@ import {
   stop as usiStop,
 } from "@/background/usi";
 import { GameResult } from "@/common/player";
-import { LogLevel } from "@/common/log";
-import { getAppLogger } from "./log";
+import { LogLevel, LogType } from "@/common/log";
+import { getAppLogger, openLogFile } from "./log";
 import {
   login as csaLogin,
   logout as csaLogout,
@@ -74,6 +76,8 @@ import { getRelativePath, resolvePath } from "./path";
 import { fileURLToPath } from "./helpers/url";
 import { AppSettingUpdate } from "@/common/settings/app";
 import { getCroppedPieceImageBaseURL } from "@/background/image/cropper";
+import { convertRecordFiles } from "./conversion";
+import { BatchConversionSetting } from "@/common/settings/conversion";
 
 const isWindows = process.platform === "win32";
 
@@ -345,6 +349,15 @@ ipcMain.handle(
   }
 );
 
+ipcMain.handle(
+  Background.CONVERT_RECORD_FILES,
+  (event, json: string): string => {
+    validateIPCSender(event.senderFrame);
+    const setting = JSON.parse(json) as BatchConversionSetting;
+    return JSON.stringify(convertRecordFiles(setting));
+  }
+);
+
 ipcMain.handle(Background.LOAD_APP_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load app setting");
@@ -356,6 +369,21 @@ ipcMain.handle(Background.SAVE_APP_SETTING, (event, json: string): void => {
   getAppLogger().debug("save app setting");
   saveAppSetting(JSON.parse(json));
 });
+
+ipcMain.handle(Background.LOAD_BATCH_CONVERSION_SETTING, (event): string => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load batch conversion setting");
+  return JSON.stringify(loadBatchConversionSetting());
+});
+
+ipcMain.handle(
+  Background.SAVE_BATCH_CONVERSION_SETTING,
+  (event, json: string): void => {
+    validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save batch conversion setting");
+    saveBatchConversionSetting(JSON.parse(json));
+  }
+);
 
 ipcMain.handle(Background.LOAD_RESEARCH_SETTING, (event): string => {
   validateIPCSender(event.senderFrame);
@@ -621,6 +649,11 @@ ipcMain.handle(Background.CSA_STOP, (event, sessionID: number): void => {
 ipcMain.handle(Background.IS_ENCRYPTION_AVAILABLE, (event): boolean => {
   validateIPCSender(event.senderFrame);
   return isEncryptionAvailable();
+});
+
+ipcMain.handle(Background.OPEN_LOG_FILE, (event, logType: LogType) => {
+  validateIPCSender(event.senderFrame);
+  openLogFile(logType);
 });
 
 ipcMain.handle(Background.LOG, (event, level: LogLevel, message: string) => {

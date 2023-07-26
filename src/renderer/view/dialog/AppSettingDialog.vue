@@ -620,7 +620,6 @@ import {
   AppSettingUpdate,
   Thema,
   BackgroundImageType,
-  RecordFileFormat,
   TextDecodingRule,
   ClockSoundTarget,
   AppSetting,
@@ -640,6 +639,7 @@ import {
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
+import { RecordFileFormat } from "@/common/file";
 
 enum PieceImage {
   SHINRYU = "shinryu",

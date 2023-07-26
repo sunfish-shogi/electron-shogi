@@ -372,6 +372,12 @@ class Store {
     }
   }
 
+  showBatchConversionDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.BATCH_CONVERSION_DIALOG;
+    }
+  }
+
   showExportBoardImageDialog() {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.EXPORT_POSITION_IMAGE_DIALOG;
@@ -387,7 +393,8 @@ class Store {
       this.appState === AppState.ANALYSIS_DIALOG ||
       this.appState === AppState.MATE_SEARCH_DIALOG ||
       this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
-      this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG
+      this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG ||
+      this.appState === AppState.BATCH_CONVERSION_DIALOG
     ) {
       this._appState = AppState.NORMAL;
     }

@@ -8,10 +8,12 @@ import { Bridge } from "./api";
 import { t } from "@/common/i18n";
 import { defaultCSAGameSettingHistory } from "@/common/settings/csa";
 import { defaultMateSearchSetting } from "@/common/settings/mate";
+import { defaultBatchConversionSetting } from "@/common/settings/conversion";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
   RESEARCH_SETTING = "researchSetting",
+  BATCH_CONVERSION_SETTING = "batchConversionSetting",
   ANALYSIS_SETTING = "analysisSetting",
   GAME_SETTING = "gameSetting",
   MATE_SEARCH_SETTING = "mateSearchSetting",
@@ -62,6 +64,9 @@ export const webAPI: Bridge = {
   async exportCaptureAsJPEG(): Promise<void> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
+  async convertRecordFiles(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   async loadAppSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.APP_SETTING);
     if (!json) {
@@ -74,6 +79,19 @@ export const webAPI: Bridge = {
   },
   async saveAppSetting(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.APP_SETTING, json);
+  },
+  async loadBatchConversionSetting(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.BATCH_CONVERSION_SETTING);
+    if (!json) {
+      return JSON.stringify(defaultBatchConversionSetting());
+    }
+    return JSON.stringify({
+      ...defaultBatchConversionSetting(),
+      ...JSON.parse(json),
+    });
+  },
+  async saveBatchConversionSetting(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.BATCH_CONVERSION_SETTING, json);
   },
   async loadResearchSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.RESEARCH_SETTING);
@@ -208,6 +226,9 @@ export const webAPI: Bridge = {
   },
   async isEncryptionAvailable(): Promise<boolean> {
     return false;
+  },
+  openLogFile(): void {
+    // Do Nothing
   },
   log(level: LogLevel, message: string): void {
     switch (level) {

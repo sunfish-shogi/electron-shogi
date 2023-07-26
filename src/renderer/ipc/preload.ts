@@ -4,7 +4,7 @@ import { GameResult } from "@/common/player";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import { Bridge } from "./api";
-import { LogLevel } from "@/common/log";
+import { LogType, LogLevel } from "@/common/log";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 
 const api: Bridge = {
@@ -68,11 +68,20 @@ const api: Bridge = {
   async exportCaptureAsJPEG(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_JPEG, json);
   },
+  async convertRecordFiles(json: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.CONVERT_RECORD_FILES, json);
+  },
   async loadAppSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_APP_SETTING);
   },
   async saveAppSetting(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_APP_SETTING, json);
+  },
+  async loadBatchConversionSetting(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_BATCH_CONVERSION_SETTING);
+  },
+  async saveBatchConversionSetting(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_BATCH_CONVERSION_SETTING, json);
   },
   async loadResearchSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_RESEARCH_SETTING);
@@ -229,6 +238,9 @@ const api: Bridge = {
   },
   async isEncryptionAvailable(): Promise<boolean> {
     return await ipcRenderer.invoke(Background.IS_ENCRYPTION_AVAILABLE);
+  },
+  openLogFile(logType: LogType): void {
+    ipcRenderer.invoke(Background.OPEN_LOG_FILE, logType);
   },
   log(level: LogLevel, message: string): void {
     ipcRenderer.invoke(Background.LOG, level, message);

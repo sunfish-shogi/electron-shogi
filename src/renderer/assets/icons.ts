@@ -48,6 +48,8 @@ export enum IconType {
   ADD = "add",
   TREE = "tree",
   NOTE = "note",
+  BATCH = "batch",
+  OPEN_FOLDER = "openFolder",
 }
 
 export const iconSourceMap = {
@@ -98,6 +100,8 @@ export const iconSourceMap = {
   [IconType.ADD]: "icon/add_circle_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.TREE]: "icon/account_tree_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.NOTE]: "icon/note_alt_FILL0_wght400_GRAD0_opsz48.svg",
+  [IconType.BATCH]: "icon/home_storage_FILL0_wght400_GRAD0_opsz48.svg",
+  [IconType.OPEN_FOLDER]: "icon/folder_open_FILL0_wght400_GRAD0_opsz48.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

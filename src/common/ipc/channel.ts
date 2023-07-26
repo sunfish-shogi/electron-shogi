@@ -13,8 +13,11 @@ export enum Background {
   CROP_PIECE_IMAGE = "cropPieceImage",
   EXPORT_CAPTURE_AS_PNG = "exportCaptureAsPNG",
   EXPORT_CAPTURE_AS_JPEG = "exportCaptureAsJPEG",
+  CONVERT_RECORD_FILES = "convertRecordFiles",
   LOAD_APP_SETTING = "loadAppSetting",
   SAVE_APP_SETTING = "saveAppSetting",
+  LOAD_BATCH_CONVERSION_SETTING = "loadBatchConversionSetting",
+  SAVE_BATCH_CONVERSION_SETTING = "saveBatchConversionSetting",
   LOAD_RESEARCH_SETTING = "loadResearchSetting",
   SAVE_RESEARCH_SETTING = "saveResearchSetting",
   LOAD_ANALYSIS_SETTING = "loadAnalysisSetting",
@@ -48,6 +51,7 @@ export enum Background {
   CSA_WIN = "csaWin",
   CSA_STOP = "csaStop",
   IS_ENCRYPTION_AVAILABLE = "isEncryptionAvailable",
+  OPEN_LOG_FILE = "openLogFile",
   LOG = "log",
 }
 

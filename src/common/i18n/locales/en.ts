@@ -14,6 +14,8 @@ export const en: Texts = {
   openAutoSavingDirectory: "Open Auto-Saving Directory",
   exportPositionImage: "Export Position Image",
   positionImage: "Position Image",
+  batchConversion: "Batch Conversion",
+  recordFileBatchConversion: "Record File Batch Conversion",
   close: "Close",
   quit: "Quit",
   editing: "Edit",
@@ -49,6 +51,19 @@ export const en: Texts = {
   openWebSite: "Open Web Site",
   howToUse: "How to Use",
   checkForUpdates: "Check for Updates",
+  inputs: "Inputs",
+  outputs: "Outputs",
+  format: "Format",
+  formats: "Formats",
+  subdirectory: "Subdirectory",
+  nameConflictAction: "Name Conflict Action",
+  numberSuffix: "Number Suffix",
+  skip: "Skip",
+  convert: "Convert",
+  openLogFile: "Open Log File",
+  succeeded: "Succeeded",
+  failed: "Failed",
+  skipped: "Skipped",
   game: "Game",
   player: "Player",
   selectFromHistory: "Select from History",
@@ -313,6 +328,7 @@ export const en: Texts = {
   displayEmptyElements: "Display Empty Elements",
   waitingForNewGame: "Waiting for new game.",
   insertedComment: "Inserted comment.",
+  conversionCompleted: "Conversion completed.",
   tryingToConnectAndLoginToCSAServer:
     "Trying to connect and login to CSA server.",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
@@ -421,6 +437,10 @@ export const en: Texts = {
   invalidPortNumber: "Invalid port number.",
   idIsEmpty: "ID is empty.",
   engineNotSelected: "Engine is not selected.",
+  forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
+    "For exporting conversion log, please enable app logs, set log level to DEBUG and restart this app.",
+  totalNumber: (n: number) => `Total: ${n}`,
+  number: (n: number) => "" + n,
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `Try to relogin to CSA server ${n} seconds later.`,
   mateInNPlyDoYouWantToDisplay: (n) =>

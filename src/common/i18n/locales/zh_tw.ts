@@ -13,6 +13,8 @@ export const zh_tw: Texts = {
   openAutoSavingDirectory: "打開自動保存目錄",
   exportPositionImage: "輸出局面圖",
   positionImage: "局面圖",
+  batchConversion: "一括変換", // TODO: translate
+  recordFileBatchConversion: "棋譜ファイル一括変換", // TODO: translate
   close: "關閉",
   quit: "離開",
   editing: "編輯",
@@ -48,6 +50,19 @@ export const zh_tw: Texts = {
   openWebSite: "官方網站",
   howToUse: "使用教學",
   checkForUpdates: "檢查最新版本",
+  inputs: "入力", // TODO: translate
+  outputs: "出力", // TODO: translate
+  format: "フォーマット", // TODO: translate
+  formats: "フォーマット", // TODO: translate
+  subdirectory: "サブディレクトリ", // TODO: translate
+  nameConflictAction: "名前衝突時の動作", // TODO: translate
+  numberSuffix: "番号付与", // TODO: translate
+  skip: "スキップ", // TODO: translate
+  convert: "変換", // TODO: translate
+  openLogFile: "ログファイルを開く", // TODO: translate
+  succeeded: "成功", // TODO: translate
+  failed: "失敗", // TODO: translate
+  skipped: "スキップ", // TODO: translate
   game: "對局",
   player: "玩家",
   selectFromHistory: "從紀錄選取",
@@ -312,6 +327,7 @@ export const zh_tw: Texts = {
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",
   insertedComment: "已加入備註。",
+  conversionCompleted: "変換が完了しました。", // TODO: Translate
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中 log 會於 console 中顯示，並無視此處的設定。",
@@ -406,6 +422,10 @@ export const zh_tw: Texts = {
   invalidPortNumber: "不可用的連接埠號碼。",
   idIsEmpty: "ID 為空。",
   engineNotSelected: "尚未選擇引擎。",
+  forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
+    "変換ログを出力するにはアプリログを有効にし、ログレベルをデバッグに設定してアプリを再起動してください。", // TODO: translate
+  totalNumber: (n: number) => `合計 ${n} 件`, // TODO: translate
+  number: (n: number) => `${n} 件`, // TODO: translate
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
   mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,

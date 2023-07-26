@@ -4,7 +4,6 @@ import * as log4js from "log4js";
 import { EngineProcess, GameResult } from "@/background/usi/engine";
 import { ChildProcess } from "@/background/usi/process";
 
-jest.mock("@/background/log");
 jest.mock("@/background/usi/process");
 
 const mockChildProcess = ChildProcess as jest.MockedClass<typeof ChildProcess>;

@@ -11,6 +11,8 @@ export type Texts = {
   openAutoSavingDirectory: string;
   exportPositionImage: string;
   positionImage: string;
+  batchConversion: string;
+  recordFileBatchConversion: string;
   close: string;
   quit: string;
   editing: string;
@@ -46,6 +48,19 @@ export type Texts = {
   openWebSite: string;
   howToUse: string;
   checkForUpdates: string;
+  inputs: string;
+  outputs: string;
+  format: string;
+  formats: string;
+  subdirectory: string;
+  nameConflictAction: string;
+  numberSuffix: string;
+  skip: string;
+  convert: string;
+  openLogFile: string;
+  succeeded: string;
+  failed: string;
+  skipped: string;
   game: string;
   player: string;
   selectFromHistory: string;
@@ -310,6 +325,7 @@ export type Texts = {
   displayEmptyElements: string;
   waitingForNewGame: string;
   insertedComment: string;
+  conversionCompleted: string;
   tryingToConnectAndLoginToCSAServer: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;
@@ -391,6 +407,9 @@ export type Texts = {
   invalidPortNumber: string;
   idIsEmpty: string;
   engineNotSelected: string;
+  forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart: string;
+  totalNumber: (n: number) => string;
+  number: (n: number) => string;
   tryToReloginToCSAServerNSecondsLater: (n: number) => string;
   mateInNPlyDoYouWantToDisplay: (n: number) => string;
   insertedNMovesToRecord: (n: number) => string;

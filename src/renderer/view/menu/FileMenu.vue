@@ -36,6 +36,10 @@
             <Icon :icon="IconType.GRID" />
             <div class="label">{{ t.positionImage }}</div>
           </button>
+          <button @click="onOpenAutoSaveDirectory">
+            <Icon :icon="IconType.OPEN_FOLDER" />
+            <div class="label">{{ t.openAutoSavingDirectory }}</div>
+          </button>
         </div>
         <div class="group">
           <button @click="onCopyKIF">
@@ -76,10 +80,13 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
+import api from "@/renderer/ipc/api";
+import { useAppSetting } from "@/renderer/store/setting";
 
 const emit = defineEmits(["close"]);
 
 const store = useStore();
+const appSetting = useAppSetting();
 const dialog = ref();
 const onClose = () => {
   emit("close");
@@ -109,6 +116,10 @@ const onBatchConversion = () => {
 };
 const onExportImage = () => {
   store.showExportBoardImageDialog();
+  emit("close");
+};
+const onOpenAutoSaveDirectory = () => {
+  api.openExplorer(appSetting.autoSaveDirectory);
   emit("close");
 };
 const onCopyKIF = () => {

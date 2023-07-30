@@ -406,6 +406,10 @@
             <button class="thin" @click="selectAutoSaveDirectory">
               {{ t.select }}
             </button>
+            <button @click="onOpenAutoSaveDirectory">
+              <Icon :icon="IconType.OPEN_FOLDER" />
+              <div class="label">{{ t.openAutoSavingDirectory }}</div>
+            </button>
           </div>
         </div>
         <hr />
@@ -640,6 +644,8 @@ import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import { RecordFileFormat } from "@/common/file";
+import { IconType } from "@/renderer/assets/icons";
+import Icon from "@/renderer/view/primitive/Icon.vue";
 
 enum PieceImage {
   SHINRYU = "shinryu",
@@ -867,6 +873,10 @@ const selectAutoSaveDirectory = async () => {
   } finally {
     store.releaseBussyState();
   }
+};
+
+const onOpenAutoSaveDirectory = () => {
+  api.openExplorer(appSetting.autoSaveDirectory);
 };
 
 const cancel = () => {

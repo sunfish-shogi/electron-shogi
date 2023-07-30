@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, toRef } from "vue";
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
 import api from "@/renderer/ipc/api";
@@ -23,7 +23,11 @@ const props = defineProps({
 const emit = defineEmits(["select"]);
 
 const store = useStore();
-const url = ref(props.defaultUrl);
+const url = ref(toRef(() => props.defaultUrl).value);
+
+onMounted(() => {
+  url.value = props.defaultUrl;
+});
 
 const select = async () => {
   store.retainBussyState();

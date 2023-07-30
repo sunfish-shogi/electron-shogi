@@ -393,7 +393,7 @@
             />
           </div>
           <!-- 自動保存先 -->
-          <div class="form-item">
+          <div class="form-item row">
             <div class="form-item-label-wide">
               {{ t.autoSavingDirectory }}
             </div>
@@ -406,9 +406,8 @@
             <button class="thin" @click="selectAutoSaveDirectory">
               {{ t.select }}
             </button>
-            <button @click="onOpenAutoSaveDirectory">
+            <button class="thin open-dir" @click="onOpenAutoSaveDirectory">
               <Icon :icon="IconType.OPEN_FOLDER" />
-              <div class="label">{{ t.openAutoSavingDirectory }}</div>
             </button>
           </div>
         </div>
@@ -909,5 +908,10 @@ input.file-path {
 }
 .selector {
   max-width: 400px;
+}
+button.open-dir {
+  margin-left: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 </style>

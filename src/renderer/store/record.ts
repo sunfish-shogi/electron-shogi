@@ -4,9 +4,6 @@ import { TimeLimitSetting } from "@/common/settings/game";
 import {
   detectRecordFormat,
   DoMoveOption,
-  exportCSA,
-  exportKI2,
-  exportKIF,
   formatPV,
   ImmutablePosition,
   ImmutableRecord,
@@ -30,7 +27,13 @@ import { getSituationText } from "./score";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { t } from "@/common/i18n";
 import { localizeError } from "@/common/i18n";
-import { decodeText, encodeText } from "@/renderer/helpers/encode";
+import {
+  ExportOptions,
+  ExportResult,
+  detectRecordFileFormatByPath,
+  exportRecordAsBuffer,
+  importRecordFromBuffer,
+} from "@/common/file";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -162,16 +165,6 @@ type AppendMoveParams = {
   elapsedMs?: number;
 };
 
-type ExportOptions = {
-  returnCode?: string;
-  detectGarbled?: boolean;
-};
-
-type ExportResult = {
-  data: Uint8Array;
-  garbled: boolean;
-};
-
 type ChangeFilePathHandler = (path?: string) => void;
 type ChangePositionHandler = () => void;
 
@@ -269,24 +262,11 @@ export class RecordManager {
     path: string,
     option?: { autoDetect?: boolean }
   ): Error | undefined {
-    let recordOrError: Record | Error;
-    if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-      const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
-      recordOrError = importKIF(
-        decodeText(data, { encoding, autoDetect: option?.autoDetect })
-      );
-    } else if (path.match(/\.ki2$/) || path.match(/\.ki2u$/)) {
-      const encoding = path.match(/\.ki2$/) ? "SJIS" : "UTF8";
-      recordOrError = importKI2(
-        decodeText(data, { encoding, autoDetect: option?.autoDetect })
-      );
-    } else if (path.match(/\.csa$/)) {
-      recordOrError = importCSA(
-        decodeText(data, { encoding: "UTF8", autoDetect: option?.autoDetect })
-      );
-    } else {
-      recordOrError = new Error(`${t.unknownFileExtension}: ${path}`);
+    const format = detectRecordFileFormatByPath(path);
+    if (!format) {
+      return new Error(`${t.unknownFileExtension}: ${path}`);
     }
+    const recordOrError = importRecordFromBuffer(data, format, option);
     if (recordOrError instanceof Error) {
       return localizeError(recordOrError);
     }
@@ -298,38 +278,13 @@ export class RecordManager {
   }
 
   exportRecordAsBuffer(path: string, opt: ExportOptions): ExportResult | Error {
-    let data: Uint8Array;
-    let garbled = false;
-    if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
-      const str = exportKIF(this.record, opt);
-      const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
-      data = encodeText(str, encoding);
-      if (encoding === "SJIS" && opt.detectGarbled) {
-        const restored = decodeText(data, { encoding: "SJIS" });
-        if (restored !== str) {
-          garbled = true;
-        }
-      }
-    } else if (path.match(/\.ki2$/) || path.match(/\.ki2u$/)) {
-      const str = exportKI2(this.record, opt);
-      const encoding = path.match(/\.ki2$/) ? "SJIS" : "UTF8";
-      data = encodeText(str, encoding);
-      if (encoding === "SJIS" && opt.detectGarbled) {
-        const restored = decodeText(data, { encoding: "SJIS" });
-        if (restored !== str) {
-          garbled = true;
-        }
-      }
-    } else if (path.match(/\.csa$/)) {
-      data = encodeText(exportCSA(this.record, opt), "UTF8");
-    } else {
+    const format = detectRecordFileFormatByPath(path);
+    if (!format) {
       return new Error(`${t.unknownFileExtension}: ${path}`);
     }
+    const result = exportRecordAsBuffer(this._record, format, opt);
     this.updateRecordFilePath(path);
-    return {
-      data,
-      garbled,
-    };
+    return result;
   }
 
   swapNextTurn(): void {

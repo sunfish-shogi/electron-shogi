@@ -5,6 +5,7 @@ import { loadAppSetting } from "@/background/settings";
 import { getDateTimeString } from "@/common/helpers/datetime";
 import { isTest } from "./environment";
 import { AppSetting } from "@/common/settings/app";
+import { LogType } from "@/common/log";
 
 const rootDir = !isTest() ? app.getPath("logs") : "";
 
@@ -17,12 +18,6 @@ const datetime = getDateTimeString()
   .replaceAll("/", "")
   .replaceAll(":", "");
 
-enum LogType {
-  APP = "app",
-  USI = "usi",
-  CSA = "csa",
-}
-
 const appLogPath = path.join(rootDir, `app-${datetime}.log`);
 const usiLogPath = path.join(rootDir, `usi-${datetime}.log`);
 const csaLogPath = path.join(rootDir, `csa-${datetime}.log`);
@@ -30,6 +25,7 @@ const csaLogPath = path.join(rootDir, `csa-${datetime}.log`);
 const config: log4js.Configuration = {
   appenders: {
     stdout: { type: "stdout" },
+    recording: { type: "recording" },
   },
   categories: {
     default: { appenders: ["stdout"], level: "info" },
@@ -72,7 +68,7 @@ function getLogger(type: LogType): log4js.Logger {
         ? [type]
         : !isTest()
         ? ["stdout"]
-        : [],
+        : ["recording"],
       level: appSetting.logLevel,
     };
   }
@@ -95,6 +91,10 @@ export function getCSALogger(): log4js.Logger {
 
 export function shutdownLoggers(): void {
   log4js.shutdown((e) => {
-    console.error("failed to shutdown app logger:", e);
+    console.error("failed to shutdown loggers:", e);
   });
+}
+
+export function openLogFile(logType: LogType): void {
+  shell.openPath(getFilePath(logType));
 }

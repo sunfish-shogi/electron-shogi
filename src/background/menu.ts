@@ -81,6 +81,9 @@ function createMenuTemplate() {
           "CmdOrCtrl+Shift+S"
         ),
         { type: "separator" },
+        menuItem(t.batchConversion, MenuEvent.BATCH_CONVERSION, [
+          AppState.NORMAL,
+        ]),
         menuItem(
           t.exportPositionImage,
           MenuEvent.EXPORT_POSITION_IMAGE,

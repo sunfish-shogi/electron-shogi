@@ -13,6 +13,8 @@ export const ja: Texts = {
   openAutoSavingDirectory: "自動保存先を開く",
   exportPositionImage: "局面図を出力",
   positionImage: "局面図",
+  batchConversion: "一括変換",
+  recordFileBatchConversion: "棋譜ファイル一括変換",
   close: "閉じる",
   quit: "終了",
   editing: "編集",
@@ -48,6 +50,19 @@ export const ja: Texts = {
   openWebSite: "Webサイトを開く",
   howToUse: "使い方を開く",
   checkForUpdates: "最新バージョンを確認",
+  inputs: "入力",
+  outputs: "出力",
+  format: "フォーマット",
+  formats: "フォーマット",
+  subdirectory: "サブディレクトリ",
+  nameConflictAction: "名前衝突時の動作",
+  numberSuffix: "番号付与",
+  skip: "スキップ",
+  convert: "変換",
+  openLogFile: "ログファイルを開く",
+  succeeded: "成功",
+  failed: "失敗",
+  skipped: "スキップ",
   game: "対局",
   player: "プレイヤー",
   selectFromHistory: "履歴から選ぶ",
@@ -312,6 +327,7 @@ export const ja: Texts = {
   displayEmptyElements: "未入力の項目を表示",
   waitingForNewGame: "対局開始を待っています。",
   insertedComment: "コメントを挿入しました。",
+  conversionCompleted: "変換が完了しました。",
   tryingToConnectAndLoginToCSAServer:
     "CSAサーバーへの接続とログインを試みています。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
@@ -427,6 +443,10 @@ export const ja: Texts = {
   invalidPortNumber: "無効なポート番号です。",
   idIsEmpty: "IDが空です。",
   engineNotSelected: "エンジンが選択されていません。",
+  forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
+    "変換ログを出力するにはアプリログを有効にし、ログレベルをデバッグに設定してアプリを再起動してください。",
+  totalNumber: (n: number) => `合計 ${n} 件`,
+  number: (n: number) => `${n} 件`,
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `CSAサーバーへのログインを${n}秒後に再試行します。`,
   mateInNPlyDoYouWantToDisplay: (n) =>

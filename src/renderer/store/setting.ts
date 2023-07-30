@@ -11,7 +11,6 @@ import {
   PieceImageType,
   PieceStandImageType,
   PositionImageStyle,
-  RecordFileFormat,
   RightSideControlType,
   Tab,
   TabPaneType,
@@ -24,6 +23,7 @@ import { UnwrapNestedRefs, reactive } from "vue";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
 import { Language } from "@/common/i18n";
+import { RecordFileFormat } from "@/common/file";
 
 class AppSettingStore {
   private setting = defaultAppSetting();

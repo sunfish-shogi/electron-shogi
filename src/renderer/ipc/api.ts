@@ -7,11 +7,13 @@ import { ResearchSetting } from "@/common/settings/research";
 import { AppState } from "@/common/control/state";
 import { GameResult } from "@/common/player";
 import { AnalysisSetting } from "@/common/settings/analysis";
-import { LogLevel } from "@/common/log";
+import { LogLevel, LogType } from "@/common/log";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAGameSettingHistory, CSAServerSetting } from "@/common/settings/csa";
 import { Rect } from "@/common/graphics";
 import { MateSearchSetting } from "@/common/settings/mate";
+import { BatchConversionSetting } from "@/common/settings/conversion";
+import { BatchConversionResult } from "@/common/conversion";
 
 type AppInfo = {
   appVersion?: string;
@@ -32,8 +34,11 @@ export interface Bridge {
   showSelectImageDialog(defaultURL?: string): Promise<string>;
   exportCaptureAsPNG(json: string): Promise<void>;
   exportCaptureAsJPEG(json: string): Promise<void>;
+  convertRecordFiles(json: string): Promise<string>;
   loadAppSetting(): Promise<string>;
   saveAppSetting(setting: string): Promise<void>;
+  loadBatchConversionSetting(): Promise<string>;
+  saveBatchConversionSetting(setting: string): Promise<void>;
   loadResearchSetting(): Promise<string>;
   saveResearchSetting(setting: string): Promise<void>;
   loadAnalysisSetting(): Promise<string>;
@@ -88,6 +93,7 @@ export interface Bridge {
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
   isEncryptionAvailable(): Promise<boolean>;
+  openLogFile(logType: LogType): void;
   log(level: LogLevel, message: string): void;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
@@ -148,8 +154,13 @@ export interface API {
   showSelectImageDialog(defaultURL?: string): Promise<string>;
   exportCaptureAsPNG(rect: Rect): Promise<void>;
   exportCaptureAsJPEG(rect: Rect): Promise<void>;
+  convertRecordFiles(
+    setting: BatchConversionSetting
+  ): Promise<BatchConversionResult>;
   loadAppSetting(): Promise<AppSetting>;
   saveAppSetting(setting: AppSetting): Promise<void>;
+  loadBatchConversionSetting(): Promise<BatchConversionSetting>;
+  saveBatchConversionSetting(setting: BatchConversionSetting): Promise<void>;
   loadResearchSetting(): Promise<ResearchSetting>;
   saveResearchSetting(setting: ResearchSetting): Promise<void>;
   loadAnalysisSetting(): Promise<AnalysisSetting>;
@@ -207,6 +218,7 @@ export interface API {
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
   isEncryptionAvailable(): Promise<boolean>;
+  openLogFile(logType: LogType): void;
   log(level: LogLevel, message: string): void;
 }
 
@@ -237,11 +249,22 @@ const api: API = {
   exportCaptureAsJPEG(rect: Rect): Promise<void> {
     return bridge.exportCaptureAsJPEG(rect.json);
   },
+  async convertRecordFiles(
+    setting: BatchConversionSetting
+  ): Promise<BatchConversionResult> {
+    return JSON.parse(await bridge.convertRecordFiles(JSON.stringify(setting)));
+  },
   async loadAppSetting(): Promise<AppSetting> {
     return JSON.parse(await bridge.loadAppSetting());
   },
   saveAppSetting(setting: AppSetting): Promise<void> {
     return bridge.saveAppSetting(JSON.stringify(setting));
+  },
+  async loadBatchConversionSetting(): Promise<BatchConversionSetting> {
+    return JSON.parse(await bridge.loadBatchConversionSetting());
+  },
+  saveBatchConversionSetting(setting: BatchConversionSetting): Promise<void> {
+    return bridge.saveBatchConversionSetting(JSON.stringify(setting));
   },
   async loadResearchSetting(): Promise<ResearchSetting> {
     return JSON.parse(await bridge.loadResearchSetting());

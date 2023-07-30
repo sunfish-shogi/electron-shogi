@@ -42,6 +42,10 @@ import {
   defaultMateSearchSetting,
   normalizeMateSearchSetting,
 } from "@/common/settings/mate";
+import {
+  BatchConversionSetting,
+  defaultBatchConversionSetting,
+} from "@/common/settings/conversion";
 
 const userDir = !isTest() ? app.getPath("userData") : "";
 const rootDir = getPortableExeDir() || userDir;
@@ -121,6 +125,28 @@ export function loadAppSetting(): AppSetting {
       autoSaveDirectory: docDir,
     }
   );
+}
+
+const batchConversionSettingPath = path.join(
+  rootDir,
+  "batch_conversion_setting.json"
+);
+
+export function saveBatchConversionSetting(
+  setting: BatchConversionSetting
+): void {
+  fs.writeFileSync(
+    batchConversionSettingPath,
+    JSON.stringify(setting, undefined, 2),
+    "utf8"
+  );
+}
+
+export function loadBatchConversionSetting(): BatchConversionSetting {
+  if (!fs.existsSync(batchConversionSettingPath)) {
+    return defaultBatchConversionSetting();
+  }
+  return JSON.parse(fs.readFileSync(batchConversionSettingPath, "utf8"));
 }
 
 const gameSettingPath = path.join(rootDir, "game_setting.json");

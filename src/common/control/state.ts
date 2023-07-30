@@ -14,4 +14,5 @@ export enum AppState {
   MATE_SEARCH = "mateSearch",
   MATE_SEARCH_DIALOG = "mateSearchDialog",
   USI_ENGINE_SETTING_DIALOG = "usiEngineSettingDialog",
+  BATCH_CONVERSION_DIALOG = "batchConversionDialog",
 }

@@ -9,6 +9,9 @@
     <USIEngineManagementDialog
       v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG"
     />
+    <BatchConversionDialog
+      v-if="store.appState === AppState.BATCH_CONVERSION_DIALOG"
+    />
     <ExportPositionImageDialog
       v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG"
     />
@@ -64,6 +67,7 @@ import { useAppSetting } from "./store/setting";
 import { BackgroundImageType } from "@/common/settings/app";
 import MateSearchDialog from "./view/dialog/MateSearchDialog.vue";
 import PVPreviewDialog from "./view/dialog/PVPreviewDialog.vue";
+import BatchConversionDialog from "./view/dialog/BatchConversionDialog.vue";
 
 const appSetting = useAppSetting();
 const store = useStore();

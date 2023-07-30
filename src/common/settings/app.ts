@@ -1,5 +1,6 @@
 import { Language, t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
+import { RecordFileFormat } from "../file";
 
 export enum Thema {
   STANDARD = "standard",
@@ -85,14 +86,6 @@ export enum Tab {
   CHART = "chart",
   PERCENTAGE_CHART = "percentageChart",
   INVISIBLE = "invisible", // Deprecated
-}
-
-export enum RecordFileFormat {
-  KIF = ".kif",
-  KIFU = ".kifu",
-  KI2 = ".ki2",
-  KI2U = ".ki2u",
-  CSA = ".csa",
 }
 
 export enum TextDecodingRule {

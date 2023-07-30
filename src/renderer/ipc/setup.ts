@@ -50,6 +50,9 @@ export function setup(): void {
       case MenuEvent.SAVE_RECORD_AS:
         store.saveRecord();
         break;
+      case MenuEvent.BATCH_CONVERSION:
+        store.showBatchConversionDialog();
+        break;
       case MenuEvent.EXPORT_POSITION_IMAGE:
         store.showExportBoardImageDialog();
         break;

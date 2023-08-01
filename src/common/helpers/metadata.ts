@@ -1,7 +1,7 @@
 import { ImmutableRecordMetadata, RecordMetadataKey } from "@/common/shogi";
 
 export function getBlackPlayerName(
-  metadata: ImmutableRecordMetadata
+  metadata: ImmutableRecordMetadata,
 ): string | undefined {
   return (
     metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME) ||
@@ -11,7 +11,7 @@ export function getBlackPlayerName(
 }
 
 export function getWhitePlayerName(
-  metadata: ImmutableRecordMetadata
+  metadata: ImmutableRecordMetadata,
 ): string | undefined {
   return (
     metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME) ||

@@ -63,7 +63,7 @@ function getSeriesName(series: Series): string {
 
 function getSearchInfo(
   node: ImmutableNode,
-  series: Series
+  series: Series,
 ): SearchInfo | undefined {
   const data = node.customData as RecordCustomData;
   if (!data) {
@@ -94,7 +94,7 @@ function getSearchInfo(
 function getScore(
   searchInfo: SearchInfo,
   type: EvaluationChartType,
-  coefficientInSigmoid: number
+  coefficientInSigmoid: number,
 ): number | undefined {
   const score =
     searchInfo.score !== undefined
@@ -185,7 +185,7 @@ const buildDataset = (
   borderColor: ChartColor,
   series: Series,
   record: ImmutableRecord,
-  appSetting: AppSetting
+  appSetting: AppSetting,
 ) => {
   const dataPoints: { x: number; y: number }[] = [];
   const nodes = record.moves;
@@ -197,7 +197,7 @@ const buildDataset = (
     const score = getScore(
       searchInfo,
       props.type,
-      appSetting.coefficientInSigmoid
+      appSetting.coefficientInSigmoid,
     );
     if (score !== undefined) {
       dataPoints.push({
@@ -216,7 +216,7 @@ const buildDataset = (
       const score = getScore(
         data.opponentSearchInfo,
         props.type,
-        appSetting.coefficientInSigmoid
+        appSetting.coefficientInSigmoid,
       );
       if (score !== undefined) {
         dataPoints.push({
@@ -251,7 +251,7 @@ const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
 const buildDatasets = (
   record: ImmutableRecord,
   appSetting: AppSetting,
-  palette: ColorPalette
+  palette: ColorPalette,
 ) => {
   const series = [
     { borderColor: palette.blackPlayer, type: Series.BLACK_PLAYER },
@@ -335,7 +335,7 @@ onMounted(() => {
     () => [store.record, appSetting],
     ([record, appSetting]) =>
       updateChart(record as ImmutableRecord, appSetting as AppSetting),
-    { deep: true }
+    { deep: true },
   );
 });
 

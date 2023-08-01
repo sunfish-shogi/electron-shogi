@@ -118,7 +118,7 @@ function createWindow() {
         sendError(new Error(`${origin}: ${e}`));
       } catch (ipcError) {
         getAppLogger().error(
-          `failed to send error to renderer: ${ipcError}: ${e}`
+          `failed to send error to renderer: ${ipcError}: ${e}`,
         );
       }
     });

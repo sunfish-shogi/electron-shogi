@@ -69,7 +69,7 @@ const getValue = () => {
       if (input.checked) {
         return input.value;
       }
-    }
+    },
   );
   if (checked.length > 0) {
     return checked[0].value;

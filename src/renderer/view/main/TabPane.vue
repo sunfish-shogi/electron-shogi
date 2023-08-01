@@ -98,7 +98,7 @@ const emit = defineEmits(["onChangeTab", "onMinimize"]);
 const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
 const minimize = () => emit("onMinimize");
 const contentSize = computed(() =>
-  props.size.reduce(new RectSize(0, headerHeight))
+  props.size.reduce(new RectSize(0, headerHeight)),
 );
 
 const tabs = {

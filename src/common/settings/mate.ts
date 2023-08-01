@@ -9,7 +9,7 @@ export function defaultMateSearchSetting(): MateSearchSetting {
 }
 
 export function normalizeMateSearchSetting(
-  setting: MateSearchSetting
+  setting: MateSearchSetting,
 ): MateSearchSetting {
   return {
     ...defaultMateSearchSetting(),

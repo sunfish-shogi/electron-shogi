@@ -24,15 +24,15 @@ export function login(setting: CSAServerSetting): number {
   const sessionID = issueSessionID();
   const client = new Client(sessionID, setting, getCSALogger())
     .on("gameSummary", (gameSummary) =>
-      onCSAGameSummary(sessionID, gameSummary)
+      onCSAGameSummary(sessionID, gameSummary),
     )
     .on("reject", () => onCSAReject(sessionID))
     .on("start", (playerStates) => onCSAStart(sessionID, playerStates))
     .on("move", (move, playerStates) =>
-      onCSAMove(sessionID, move, playerStates)
+      onCSAMove(sessionID, move, playerStates),
     )
     .on("gameResult", (specialMove, gameResult) =>
-      onCSAGameResult(sessionID, specialMove, gameResult)
+      onCSAGameResult(sessionID, specialMove, gameResult),
     )
     .on("close", () => {
       clients.delete(sessionID);
@@ -62,7 +62,7 @@ export function doMove(
   sessionID: number,
   move: string,
   score?: number,
-  pv?: string
+  pv?: string,
 ): void {
   const client = clients.get(sessionID);
   if (client) {

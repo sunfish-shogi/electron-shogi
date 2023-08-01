@@ -250,7 +250,7 @@ const doFlip = () => {
 const getDisplayScore = (
   score: number,
   color: Color,
-  evaluationViewFrom: EvaluationViewFrom
+  evaluationViewFrom: EvaluationViewFrom,
 ) => {
   return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK
     ? score
@@ -270,8 +270,8 @@ const info = computed(() => {
       `評価値=${getDisplayScore(
         props.score,
         props.position.color,
-        appSetting.evaluationViewFrom
-      )}`
+        appSetting.evaluationViewFrom,
+      )}`,
     );
     if (props.lowerBound) {
       elements.push("（下界値）");
@@ -285,8 +285,8 @@ const info = computed(() => {
       `詰み手数=${getDisplayScore(
         props.mate,
         props.position.color,
-        appSetting.evaluationViewFrom
-      )}`
+        appSetting.evaluationViewFrom,
+      )}`,
     );
   }
   if (props.multiPv) {
@@ -296,7 +296,7 @@ const info = computed(() => {
 });
 
 const lastMove = computed(() =>
-  record.current.move instanceof Move ? record.current.move : null
+  record.current.move instanceof Move ? record.current.move : null,
 );
 
 const displayPV = computed(() => {
@@ -334,7 +334,7 @@ const insertToComment = () => {
       mate: props.mate,
       pv: props.pv,
     },
-    CommentBehavior.APPEND
+    CommentBehavior.APPEND,
   );
   store.enqueueMessage({
     text: t.insertedComment,

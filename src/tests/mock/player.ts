@@ -25,7 +25,7 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
         t: TimeLimitSetting,
         bt: number,
         wt: number,
-        h: SearchHandler
+        h: SearchHandler,
       ) => {
         const m = moves[r.usi];
         if (m.usi === "no-reply") {
@@ -46,10 +46,10 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
             pv:
               m.info?.pv &&
               parseUSIPV(r.position, [m.usi].concat(...m.info.pv)).slice(1),
-          }
+          },
         );
         return Promise.resolve();
-      }
+      },
     ),
     startPonder: jest.fn(() => Promise.resolve()),
     startMateSearch: jest.fn(() => Promise.resolve()),

@@ -10,7 +10,7 @@ const mockChildProcess = ChildProcess as jest.MockedClass<typeof ChildProcess>;
 
 function getChildProcessHandler(
   mock: jest.MockedClass<typeof ChildProcess>,
-  name: string
+  name: string,
 ): any {
   for (const call of mock.prototype.on.mock.calls) {
     if (call[0] === name) {
@@ -57,7 +57,7 @@ describe("ipc/background/usi/engine", () => {
       "/path/to/engine",
       123,
       log4js.getLogger(),
-      {}
+      {},
     );
     const handlers = bindHandlers(engine);
     engine.launch();
@@ -68,17 +68,17 @@ describe("ipc/background/usi/engine", () => {
     expect(mockChildProcess.prototype.on).nthCalledWith(
       1,
       "error",
-      expect.any(Function)
+      expect.any(Function),
     );
     expect(mockChildProcess.prototype.on).nthCalledWith(
       2,
       "close",
-      expect.any(Function)
+      expect.any(Function),
     );
     expect(mockChildProcess.prototype.on).nthCalledWith(
       3,
       "receive",
-      expect.any(Function)
+      expect.any(Function),
     );
     const onClose = getChildProcessHandler(mockChildProcess, "close");
     const onReceive = getChildProcessHandler(mockChildProcess, "receive");
@@ -158,7 +158,7 @@ describe("ipc/background/usi/engine", () => {
             value: 32,
           },
         ],
-      }
+      },
     );
     const handlers = bindHandlers(engine);
     engine.launch();
@@ -169,12 +169,12 @@ describe("ipc/background/usi/engine", () => {
     onReceive("usiok");
     expect(mockChildProcess.prototype.send).toBeCalledTimes(2);
     expect(mockChildProcess.prototype.send).lastCalledWith(
-      "setoption name USI_Hash value 32"
+      "setoption name USI_Hash value 32",
     );
     engine.setOption("Button");
     expect(mockChildProcess.prototype.send).toBeCalledTimes(3);
     expect(mockChildProcess.prototype.send).lastCalledWith(
-      "setoption name Button"
+      "setoption name Button",
     );
     engine.quit();
     onClose();
@@ -188,7 +188,7 @@ describe("ipc/background/usi/engine", () => {
       "/path/to/engine",
       123,
       log4js.getLogger(),
-      {}
+      {},
     );
     const handlers = bindHandlers(engine);
     engine.launch();
@@ -218,7 +218,7 @@ describe("ipc/background/usi/engine", () => {
       "/path/to/engine",
       123,
       log4js.getLogger(),
-      {}
+      {},
     );
     const handlers = bindHandlers(engine);
     engine.launch();
@@ -242,10 +242,10 @@ describe("ipc/background/usi/engine", () => {
     expect(mockChildProcess.prototype.send).nthCalledWith(4, "position test01");
     expect(mockChildProcess.prototype.send).nthCalledWith(
       5,
-      "go btime 60000 wtime 60000 binc 5000 winc 5000"
+      "go btime 60000 wtime 60000 binc 5000 winc 5000",
     );
     onReceive(
-      "info depth 5 seldepth 10 time 79 nodes 432 nps 7654321 multipv 1 score cp 123 currmove 7g7f hashfull 300 pv 7g7f 3c3d 2g2f"
+      "info depth 5 seldepth 10 time 79 nodes 432 nps 7654321 multipv 1 score cp 123 currmove 7g7f hashfull 300 pv 7g7f 3c3d 2g2f",
     );
     expect(handlers.info).lastCalledWith("position test01", {
       depth: 5,
@@ -275,11 +275,11 @@ describe("ipc/background/usi/engine", () => {
     expect(mockChildProcess.prototype.send).toBeCalledTimes(7);
     expect(mockChildProcess.prototype.send).nthCalledWith(
       6,
-      "position test01-ponder"
+      "position test01-ponder",
     );
     expect(mockChildProcess.prototype.send).nthCalledWith(
       7,
-      "go ponder btime 53000 wtime 60000 binc 5000 winc 5000"
+      "go ponder btime 53000 wtime 60000 binc 5000 winc 5000",
     );
     onReceive("info depth 5 seldepth 10 currmove 2g2f");
     expect(handlers.ponderInfo).lastCalledWith("position test01-ponder", {
@@ -293,7 +293,7 @@ describe("ipc/background/usi/engine", () => {
     expect(handlers.bestmove).lastCalledWith(
       "position test01-ponder",
       "1g1f",
-      undefined
+      undefined,
     );
     engine.gameover(GameResult.WIN);
     expect(mockChildProcess.prototype.send).lastCalledWith("gameover win");
@@ -312,11 +312,11 @@ describe("ipc/background/usi/engine", () => {
     expect(mockChildProcess.prototype.send).toBeCalledTimes(13);
     expect(mockChildProcess.prototype.send).nthCalledWith(
       12,
-      "position test02"
+      "position test02",
     );
     expect(mockChildProcess.prototype.send).nthCalledWith(
       13,
-      "go btime 60000 wtime 60000 binc 5000 winc 5000"
+      "go btime 60000 wtime 60000 binc 5000 winc 5000",
     );
     onReceive("info depth 3 score mate -");
     expect(handlers.info).lastCalledWith("position test02", {
@@ -329,7 +329,7 @@ describe("ipc/background/usi/engine", () => {
     expect(handlers.bestmove).lastCalledWith(
       "position test02",
       "2g2f",
-      undefined
+      undefined,
     );
     engine.gameover(GameResult.LOSE);
     expect(mockChildProcess.prototype.send).lastCalledWith("gameover lose");
@@ -345,7 +345,7 @@ describe("ipc/background/usi/engine", () => {
       "/path/to/engine",
       123,
       log4js.getLogger(),
-      {}
+      {},
     );
     const handlers = bindHandlers(engine);
     engine.launch();
@@ -362,7 +362,7 @@ describe("ipc/background/usi/engine", () => {
     expect(mockChildProcess.prototype.send).nthCalledWith(4, "position test01");
     expect(mockChildProcess.prototype.send).nthCalledWith(
       5,
-      "go mate infinite"
+      "go mate infinite",
     );
     onReceive("checkmate 2c2b 3a2b 3c3a+");
     expect(handlers.checkmate).lastCalledWith("position test01", [
@@ -394,7 +394,7 @@ describe("ipc/background/usi/engine", () => {
       "/path/to/engine",
       123,
       log4js.getLogger(),
-      {}
+      {},
     );
     const handlers = bindHandlers(engine);
     engine.launch();
@@ -433,11 +433,11 @@ describe("ipc/background/usi/engine", () => {
     expect(mockChildProcess.prototype.send).toBeCalledTimes(11);
     expect(mockChildProcess.prototype.send).nthCalledWith(
       10,
-      "position test02"
+      "position test02",
     );
     expect(mockChildProcess.prototype.send).nthCalledWith(
       11,
-      "go btime 60000 wtime 60000 binc 5000 winc 5000"
+      "go btime 60000 wtime 60000 binc 5000 winc 5000",
     );
     onReceive("bestmove 7g7f ponder 3c3d");
     expect(handlers.bestmove).not.toBeCalled(); // 1 局目で要求していた bestmove は無視される。
@@ -450,7 +450,7 @@ describe("ipc/background/usi/engine", () => {
       "/path/to/engine",
       123,
       log4js.getLogger(),
-      {}
+      {},
     );
     const handlers = bindHandlers(engine);
     engine.launch();
@@ -497,11 +497,11 @@ describe("ipc/background/usi/engine", () => {
     expect(mockChildProcess.prototype.send).toBeCalledTimes(11);
     expect(mockChildProcess.prototype.send).nthCalledWith(
       10,
-      "position test02"
+      "position test02",
     );
     expect(mockChildProcess.prototype.send).nthCalledWith(
       11,
-      "go btime 60000 wtime 60000 binc 5000 winc 5000"
+      "go btime 60000 wtime 60000 binc 5000 winc 5000",
     );
     onReceive("bestmove 7g7f ponder 3c3d");
     expect(handlers.bestmove).not.toBeCalled(); // 1 局目で要求していた bestmove は無視される。

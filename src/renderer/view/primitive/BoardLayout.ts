@@ -159,7 +159,7 @@ const layoutTemplate = {
 
 function getPieceTextureMap(
   baseURL: string,
-  kingPieceType: KingPieceType
+  kingPieceType: KingPieceType,
 ): PieceImages {
   const m = {
     black: {
@@ -215,7 +215,7 @@ function getBoardGridURL(type: BoardImageType): string {
 
 function getBoardTextureURL(
   type: BoardImageType,
-  customURL?: string
+  customURL?: string,
 ): string | null {
   switch (type) {
     case BoardImageType.LIGHT:
@@ -245,7 +245,7 @@ const boardBackgroundColorMap = {
 
 function getPieceStandTextureURL(
   type: PieceStandImageType,
-  customURL?: string
+  customURL?: string,
 ): string | null {
   switch (type) {
     case PieceStandImageType.CUSTOM_IMAGE:
@@ -422,17 +422,17 @@ export default class LayoutBuilder {
     pieceImageBaseURL: string,
     kingPieceType: KingPieceType,
     customBoardImageURL?: string,
-    customPieceStandImageURL?: string
+    customPieceStandImageURL?: string,
   ) {
     this.pieceImages = getPieceTextureMap(pieceImageBaseURL, kingPieceType);
     this.boardGridImage = getBoardGridURL(boardImageType);
     this.boardTextureImage = getBoardTextureURL(
       boardImageType,
-      customBoardImageURL
+      customBoardImageURL,
     );
     this.pieceStandImage = getPieceStandTextureURL(
       pieceStandImageType,
-      customPieceStandImageURL
+      customPieceStandImageURL,
     );
   }
 
@@ -454,7 +454,7 @@ export default class LayoutBuilder {
     lastMove: Move | null | undefined,
     pointer: Square | Piece | null | undefined,
     reservedMoveForPromotion: Move | null | undefined,
-    flip?: boolean
+    flip?: boolean,
   ): FullLayout {
     let ratio = upperSizeLimit.width / layoutTemplate.frame.width;
     if (layoutTemplate.frame.height * ratio > upperSizeLimit.height) {
@@ -737,7 +737,7 @@ export default class LayoutBuilder {
 
     const buildPromotionLayout = (
       boardLayout: BoardLayout,
-      move: Move | null | undefined
+      move: Move | null | undefined,
     ): PromotionLayout | null => {
       if (!move) {
         return null;
@@ -851,15 +851,15 @@ export default class LayoutBuilder {
     const squareLayout = buildSquareLayout(boardLayout);
     const blackHandLayout = buildHandLayout(
       Color.BLACK,
-      position.hand(Color.BLACK)
+      position.hand(Color.BLACK),
     );
     const whiteHandLayout = buildHandLayout(
       Color.WHITE,
-      position.hand(Color.WHITE)
+      position.hand(Color.WHITE),
     );
     const promotionLayout = buildPromotionLayout(
       boardLayout,
-      reservedMoveForPromotion
+      reservedMoveForPromotion,
     );
     const turnLayout = buildTurnLayout();
     const blackPlayerNameLayout = buildPlayerNameLayout(Color.BLACK);

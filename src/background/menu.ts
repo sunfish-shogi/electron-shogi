@@ -66,19 +66,19 @@ function createMenuTemplate() {
           t.openRecord,
           MenuEvent.OPEN_RECORD,
           [AppState.NORMAL],
-          "CmdOrCtrl+O"
+          "CmdOrCtrl+O",
         ),
         menuItem(
           t.saveRecord,
           MenuEvent.SAVE_RECORD,
           [AppState.NORMAL],
-          "CmdOrCtrl+S"
+          "CmdOrCtrl+S",
         ),
         menuItem(
           t.saveRecordAs,
           MenuEvent.SAVE_RECORD_AS,
           [AppState.NORMAL],
-          "CmdOrCtrl+Shift+S"
+          "CmdOrCtrl+Shift+S",
         ),
         { type: "separator" },
         menuItem(t.batchConversion, MenuEvent.BATCH_CONVERSION, [
@@ -88,7 +88,7 @@ function createMenuTemplate() {
           t.exportPositionImage,
           MenuEvent.EXPORT_POSITION_IMAGE,
           [AppState.NORMAL],
-          "CmdOrCtrl+Shift+E"
+          "CmdOrCtrl+Shift+E",
         ),
         { type: "separator" },
         {
@@ -113,7 +113,7 @@ function createMenuTemplate() {
             menuItem(
               t.asUSIUntilCurrentMove,
               MenuEvent.COPY_RECORD_USI_BEFORE,
-              null
+              null,
             ),
             menuItem(t.asUSIAll, MenuEvent.COPY_RECORD_USI_ALL, null),
           ],
@@ -123,7 +123,7 @@ function createMenuTemplate() {
           t.pasteRecordOrPosition,
           MenuEvent.PASTE_RECORD,
           [AppState.NORMAL],
-          "CmdOrCtrl+V"
+          "CmdOrCtrl+V",
         ),
         { type: "separator" },
         {
@@ -187,7 +187,7 @@ function createMenuTemplate() {
           t.deleteMoves,
           MenuEvent.REMOVE_CURRENT_MOVE,
           [AppState.NORMAL, AppState.RESEARCH, AppState.MATE_SEARCH],
-          "CmdOrCtrl+D"
+          "CmdOrCtrl+D",
         ),
         { type: "separator" },
         menuItem(t.startPositionSetup, MenuEvent.START_POSITION_EDITING, [
@@ -207,91 +207,91 @@ function createMenuTemplate() {
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.STANDARD
+              InitialPositionSFEN.STANDARD,
             ),
             menuItem(
               t.lanceHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_LANCE
+              InitialPositionSFEN.HANDICAP_LANCE,
             ),
             menuItem(
               t.rightLanceHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_RIGHT_LANCE
+              InitialPositionSFEN.HANDICAP_RIGHT_LANCE,
             ),
             menuItem(
               t.bishopHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_BISHOP
+              InitialPositionSFEN.HANDICAP_BISHOP,
             ),
             menuItem(
               t.rookHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_ROOK
+              InitialPositionSFEN.HANDICAP_ROOK,
             ),
             menuItem(
               t.rookLanceHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_ROOK_LANCE
+              InitialPositionSFEN.HANDICAP_ROOK_LANCE,
             ),
             menuItem(
               t.twoPiecesHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_2PIECES
+              InitialPositionSFEN.HANDICAP_2PIECES,
             ),
             menuItem(
               t.fourPiecesHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_4PIECES
+              InitialPositionSFEN.HANDICAP_4PIECES,
             ),
             menuItem(
               t.sixPiecesHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_6PIECES
+              InitialPositionSFEN.HANDICAP_6PIECES,
             ),
             menuItem(
               t.eightPiecesHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_8PIECES
+              InitialPositionSFEN.HANDICAP_8PIECES,
             ),
             menuItem(
               t.tenPiecesHandicap,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.HANDICAP_10PIECES
+              InitialPositionSFEN.HANDICAP_10PIECES,
             ),
             menuItem(
               t.tsumeShogi,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.TSUME_SHOGI
+              InitialPositionSFEN.TSUME_SHOGI,
             ),
             menuItem(
               t.doubleKingTsumeShogi,
               MenuEvent.INIT_POSITION,
               [AppState.POSITION_EDITING],
               undefined,
-              InitialPositionSFEN.TSUME_SHOGI_2KINGS
+              InitialPositionSFEN.TSUME_SHOGI_2KINGS,
             ),
           ],
         },
@@ -304,7 +304,7 @@ function createMenuTemplate() {
           t.game,
           MenuEvent.START_GAME,
           [AppState.NORMAL],
-          "CmdOrCtrl+G"
+          "CmdOrCtrl+G",
         ),
         menuItem(t.csaOnlineGame, MenuEvent.START_CSA_GAME, [AppState.NORMAL]),
         menuItem(t.interrupt, MenuEvent.STOP_GAME, [AppState.GAME]),
@@ -324,7 +324,7 @@ function createMenuTemplate() {
           t.mateSearch,
           MenuEvent.START_MATE_SEARCH,
           [AppState.NORMAL],
-          "CmdOrCtrl+M"
+          "CmdOrCtrl+M",
         ),
         menuItem(t.stopMateSearch, MenuEvent.STOP_MATE_SEARCH, [
           AppState.MATE_SEARCH,
@@ -338,7 +338,7 @@ function createMenuTemplate() {
           t.startResearch,
           MenuEvent.START_RESEARCH,
           [AppState.NORMAL],
-          "CmdOrCtrl+R"
+          "CmdOrCtrl+R",
         ),
         menuItem(t.endResearch, MenuEvent.STOP_RESEARCH, [AppState.RESEARCH]),
         { type: "separator" },
@@ -346,7 +346,7 @@ function createMenuTemplate() {
           t.analyze,
           MenuEvent.START_ANALYSIS,
           [AppState.NORMAL],
-          "CmdOrCtrl+A"
+          "CmdOrCtrl+A",
         ),
         menuItem(t.stopAnalysis, MenuEvent.STOP_ANALYSIS, [AppState.ANALYSIS]),
       ],
@@ -391,13 +391,13 @@ function createMenuTemplate() {
           t.appSettings,
           MenuEvent.APP_SETTING_DIALOG,
           null,
-          "CmdOrCtrl+,"
+          "CmdOrCtrl+,",
         ),
         menuItem(
           t.engineSettings,
           MenuEvent.USI_ENGINE_SETTING_DIALOG,
           [AppState.NORMAL],
-          "CmdOrCtrl+."
+          "CmdOrCtrl+.",
         ),
       ],
     },
@@ -461,6 +461,6 @@ export function setupMenu(): void {
 
 export function updateAppState(appState: AppState, bussy: boolean): void {
   Array.from(stateChangeCallbacks).forEach((callback) =>
-    callback(appState, bussy)
+    callback(appState, bussy),
   );
 }

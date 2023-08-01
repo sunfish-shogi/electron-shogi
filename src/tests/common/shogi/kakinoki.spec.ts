@@ -125,16 +125,16 @@ describe("shogi/kakinoki", () => {
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME),
     ).toBe("奨励会員");
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME),
     ).toBe("久保");
     expect(record.current.comment).toBe("");
     record.goto(64);
     expect(record.current.comment).toBe("4六桂の方が良かった。\n");
     expect(record.sfen).toBe(
-      "l+B5nl/4g1gk1/2b1p2p1/p1p2pp2/3s1P2p/P1P3PP1/1P2PSN1P/2G2GK2/L7L b RSNPrsn2p 65"
+      "l+B5nl/4g1gk1/2b1p2p1/p1p2pp2/3s1P2p/P1P3PP1/1P2PSN1P/2G2GK2/L7L b RSNPrsn2p 65",
     );
     record.goto(999);
     expect(record.current.ply).toBe(94);
@@ -333,14 +333,14 @@ describe("shogi/kakinoki", () => {
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.SHITATE_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.SHITATE_NAME),
     ).toBe("ZhangJingding");
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.UWATE_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.UWATE_NAME),
     ).toBe("Sota_FUJII");
     expect(record.position.board.at(new Square(2, 2))).toBeNull();
     expect(record.position.board.at(new Square(8, 2))).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.ROOK)
+      new Piece(Color.WHITE, PieceType.ROOK),
     );
     record.goto(104);
     expect(record.current.displayText).toBe("☗９一角成");
@@ -349,7 +349,7 @@ describe("shogi/kakinoki", () => {
     record.goto(999);
     expect(record.current.ply).toBe(178);
     expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN)
+      specialMove(SpecialMoveType.RESIGN),
     );
     expect(record.current.elapsedMs).toBe(11000);
     expect(record.current.totalElapsedMs).toBe(1364000);
@@ -657,7 +657,7 @@ describe("shogi/kakinoki", () => {
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.START)
+      specialMove(SpecialMoveType.START),
     );
     expect(record.current.comment).toHaveLength(235);
     record.goto(97);
@@ -665,11 +665,11 @@ describe("shogi/kakinoki", () => {
     expect(record.current.comment).toHaveLength(101);
     record.goto(114);
     expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN)
+      specialMove(SpecialMoveType.RESIGN),
     );
     expect(record.current.comment).toBe("");
     expect(record.sfen).toBe(
-      "lnkg2b+Rl/6r2/p2p1G2p/5pp2/1SpNp2NP/1P1P1PP2/P1G1P4/4G4/L2KB3L w S4P2sn 115"
+      "lnkg2b+Rl/6r2/p2p1G2p/5pp2/1SpNp2NP/1P1P1PP2/P1G1P4/4G4/L2KB3L w S4P2sn 115",
     );
   });
 
@@ -833,16 +833,16 @@ describe("shogi/kakinoki", () => {
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)
+      record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT),
     ).toBe("関ヶ原の戦い");
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME),
     ).toBe("徳川家康");
     expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME),
     ).toBe("石田三成");
     expect(record.initialPosition.sfen).toBe(
-      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
   });
 
@@ -941,11 +941,11 @@ describe("shogi/kakinoki", () => {
     record.goto(19);
     expect((record.current.move as Move).usi).toBe("4i5h"); // 最終手５八金右
     expect(record.position.sfen).toBe(
-      "lnsgkg1nl/4r2b1/pppp1p1pp/5sp2/9/2P1P2P1/PP1PSPP1P/1BK1G2R1/LNSG3NL w p 1"
+      "lnsgkg1nl/4r2b1/pppp1p1pp/5sp2/9/2P1P2P1/PP1PSPP1P/1BK1G2R1/LNSG3NL w p 1",
     );
     record.goto(20);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.INTERRUPT)
+      specialMove(SpecialMoveType.INTERRUPT),
     );
 
     // 10 手目の変化手順を確認する。
@@ -953,11 +953,11 @@ describe("shogi/kakinoki", () => {
     expect(record.switchBranchByIndex(1)).toBeTruthy();
     record.goto(13);
     expect(record.position.sfen).toBe(
-      "lnsgkg1nl/4rs3/pppp1pbpp/6p2/4p4/2P4P1/PP1PPPP1P/1BKSGS1R1/LN1G3NL w - 1"
+      "lnsgkg1nl/4rs3/pppp1pbpp/6p2/4p4/2P4P1/PP1PPPP1P/1BKSGS1R1/LN1G3NL w - 1",
     );
     record.goto(14);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN)
+      specialMove(SpecialMoveType.RESIGN),
     );
   });
 
@@ -972,7 +972,7 @@ describe("shogi/kakinoki", () => {
     record.goto(19);
     expect((record.current.move as Move).usi).toBe("4i5h"); // 最終手５八金右
     expect(record.position.sfen).toBe(
-      "lnsgkg1nl/4r2b1/pppp1p1pp/5sp2/9/2P1P2P1/PP1PSPP1P/1BK1G2R1/LNSG3NL w p 1"
+      "lnsgkg1nl/4r2b1/pppp1p1pp/5sp2/9/2P1P2P1/PP1PSPP1P/1BK1G2R1/LNSG3NL w p 1",
     );
   });
 
@@ -993,35 +993,35 @@ describe("shogi/kakinoki", () => {
     expect(record).toBeInstanceOf(Record);
     record.goto(1);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN)
+      specialMove(SpecialMoveType.RESIGN),
     );
     record.switchBranchByIndex(1);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN)
+      specialMove(SpecialMoveType.RESIGN),
     );
     record.switchBranchByIndex(2);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.INTERRUPT)
+      specialMove(SpecialMoveType.INTERRUPT),
     );
     record.switchBranchByIndex(3);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.REPETITION_DRAW)
+      specialMove(SpecialMoveType.REPETITION_DRAW),
     );
     record.switchBranchByIndex(4);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.IMPASS)
+      specialMove(SpecialMoveType.IMPASS),
     );
     record.switchBranchByIndex(5);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.TIMEOUT)
+      specialMove(SpecialMoveType.TIMEOUT),
     );
     record.switchBranchByIndex(6);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.FOUL_WIN)
+      specialMove(SpecialMoveType.FOUL_WIN),
     );
     record.switchBranchByIndex(7);
     expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.FOUL_LOSE)
+      specialMove(SpecialMoveType.FOUL_LOSE),
     );
   });
 
@@ -1064,7 +1064,7 @@ describe("shogi/kakinoki", () => {
 変化：4手
 4 ２二飛(82) ( 0:05/0:00:17)
 5 投了 ( 0:07/0:00:30)
-`
+`,
     );
   });
 
@@ -1094,7 +1094,7 @@ describe("shogi/kakinoki", () => {
 5 ４五角打 ( 0:00/0:00:00)
 &途中図
 6 中断 ( 0:00/0:00:00)
-`
+`,
     );
   });
 
@@ -1110,7 +1110,7 @@ describe("shogi/kakinoki", () => {
 1 ２六歩(27) ( 0:00/0:00:00)
 2 ８四歩(83) ( 0:00/0:00:00)
 3 封じ手 ( 0:00/0:00:00)
-`
+`,
     );
   });
 
@@ -1155,7 +1155,7 @@ describe("shogi/kakinoki", () => {
     for (const tc of testCases) {
       const record = new Record(Position.newBySFEN(tc.sfen) as Position);
       expect(exportKIF(record, {})).toBe(
-        `# KIF形式棋譜ファイル Generated by Electron Shogi\n${tc.want}\n手数----指手---------消費時間--\n`
+        `# KIF形式棋譜ファイル Generated by Electron Shogi\n${tc.want}\n手数----指手---------消費時間--\n`,
       );
     }
   });
@@ -1192,7 +1192,7 @@ describe("shogi/kakinoki", () => {
 変化：4手
 △同　飛
 まで4手で後手の勝ち
-`
+`,
     );
   });
 
@@ -1222,7 +1222,7 @@ describe("shogi/kakinoki", () => {
 
 変化：1手
 まで0手でfoo
-`
+`,
     );
   });
 });

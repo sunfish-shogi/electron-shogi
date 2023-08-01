@@ -20,7 +20,7 @@ export function toString(data: unknown): string {
 export function formatPercentage(
   numerator: number,
   denominator: number,
-  fractionDigits: number
+  fractionDigits: number,
 ): string {
   if (denominator === 0) {
     return "0%";

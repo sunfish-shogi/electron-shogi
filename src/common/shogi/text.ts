@@ -195,7 +195,7 @@ export function formatMove(
   opt?: {
     lastMove?: Move; // 直前の指し手を指定します。移動先が同じ場合に "同" を使った表記を使用します。
     compatible?: boolean; // Shift_JIS で文字化けしない記号を使用します。 true の場合 KI2 形式と同等です。
-  }
+  },
 ): string {
   let ret = "";
 
@@ -346,7 +346,7 @@ export function parsePV(position: ImmutablePosition, text: string): Move[] {
 export function parseMoves(
   position: ImmutablePosition,
   text: string,
-  lastMove?: Move
+  lastMove?: Move,
 ): [Move[], Error | undefined] {
   const clean = text.replaceAll(/[\s\u3000]/g, "");
 

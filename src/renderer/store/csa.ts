@@ -101,7 +101,7 @@ export class CSAGameManager {
   constructor(
     private recordManager: RecordManager,
     private blackClock: Clock,
-    private whiteClock: Clock
+    private whiteClock: Clock,
   ) {}
 
   on(event: "saveRecord", handler: SaveRecordCallback): this;
@@ -164,7 +164,7 @@ export class CSAGameManager {
    */
   async login(
     setting: CSAGameSetting,
-    playerBuilder: PlayerBuilder
+    playerBuilder: PlayerBuilder,
   ): Promise<void> {
     if (this.sessionID) {
       throw new Error("CSAGameManager#start: session already exists");
@@ -178,7 +178,7 @@ export class CSAGameManager {
     this.repeat = 0;
     // プレイヤーを初期化する。
     this.player = await this.playerBuilder.build(this._setting.player, (info) =>
-      this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info)
+      this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
     );
     // サーバーへのログインと対局開始を試みる。
     // NOTICE: エラーの場合は自動的にリトライするのでこの関数の呼び元にはエラーを伝搬しない。
@@ -205,7 +205,7 @@ export class CSAGameManager {
       this._state = CSAGameState.LOGIN_FAILED;
       this.close(ReloginBehavior.RELOGIN_WITH_INTERVAL);
       throw new Error(
-        `CSAGameManager#relogin: ${t.failedToStartNewGame}: ${e}`
+        `CSAGameManager#relogin: ${t.failedToStartNewGame}: ${e}`,
       );
     }
   }
@@ -253,8 +253,8 @@ export class CSAGameManager {
       api.csaLogout(this.sessionID).catch((e) => {
         this.onError(
           new Error(
-            `CSAGameManager#close: ${t.errorOccuredWhileLogoutFromCSAServer}: ${e}`
-          )
+            `CSAGameManager#close: ${t.errorOccuredWhileLogoutFromCSAServer}: ${e}`,
+          ),
         );
       });
       this.sessionID = 0;
@@ -282,8 +282,8 @@ export class CSAGameManager {
         this.player.close().catch((e) => {
           this.onError(
             new Error(
-              `CSAGameManager#close: ${t.failedToShutdownEngines}: ${e}`
-            )
+              `CSAGameManager#close: ${t.failedToShutdownEngines}: ${e}`,
+            ),
           );
         });
         this.player = undefined;
@@ -299,7 +299,7 @@ export class CSAGameManager {
       this._state = CSAGameState.LOGIN_RETRY_INTERVAL;
       this.retryTimer = setTimeout(
         () => this.relogin().catch(this.onError),
-        loginRetryIntervalSeconds * 1e3
+        loginRetryIntervalSeconds * 1e3,
       );
     }
   }
@@ -310,7 +310,7 @@ export class CSAGameManager {
     // 開始局面（途中再開の場合は再開局面までの指し手）を読み込む。
     const error = this.recordManager.importRecord(
       this.gameSummary.position,
-      RecordFormatType.CSA
+      RecordFormatType.CSA,
     );
     if (error) {
       this.onError(`CSAGameManager#onGameSummary: ${error}`);
@@ -362,7 +362,7 @@ export class CSAGameManager {
     const move = parseCSAMove(this.recordManager.record.position, data);
     if (move instanceof Error) {
       this.onError(
-        `CSAGameManager#onMove: 解釈できない指し手 [${data}]: ${move.message}`
+        `CSAGameManager#onMove: 解釈できない指し手 [${data}]: ${move.message}`,
       );
       return;
     }
@@ -380,7 +380,7 @@ export class CSAGameManager {
     if (isMyMove && this.searchInfo) {
       this.recordManager.updateSearchInfo(
         SearchInfoSenderType.PLAYER,
-        this.searchInfo
+        this.searchInfo,
       );
     }
 
@@ -389,7 +389,7 @@ export class CSAGameManager {
       this.recordManager.appendSearchComment(
         SearchInfoSenderType.PLAYER,
         this.searchInfo,
-        CommentBehavior.APPEND
+        CommentBehavior.APPEND,
       );
     }
 
@@ -433,7 +433,7 @@ export class CSAGameManager {
 
   private gameResultToSpecialMove(
     move: CSASpecialMove,
-    gameResult: CSAGameResult
+    gameResult: CSAGameResult,
   ): SpecialMoveType {
     const color = this.recordManager.record.position.color;
     switch (move) {
@@ -473,7 +473,7 @@ export class CSAGameManager {
     this.close(
       this.setting.autoRelogin
         ? ReloginBehavior.RELOGIN_WITH_INTERVAL
-        : ReloginBehavior.DO_NOT_RELOGIN
+        : ReloginBehavior.DO_NOT_RELOGIN,
     );
   }
 
@@ -533,11 +533,11 @@ export class CSAGameManager {
           onResign: this.onPlayerResign.bind(this),
           onWin: this.onPlayerWin.bind(this),
           onError: this.onPlayerError.bind(this),
-        }
+        },
       )
       .catch((e) => {
         this.onError(
-          new Error(`CSAGameManager#next: ${t.failedToSendGoCommand}: ${e}`)
+          new Error(`CSAGameManager#next: ${t.failedToSendGoCommand}: ${e}`),
         );
       });
   }
@@ -552,11 +552,13 @@ export class CSAGameManager {
         this.recordManager.record,
         this.buildTimeLimitSetting(),
         this.blackClock.timeMs,
-        this.whiteClock.timeMs
+        this.whiteClock.timeMs,
       )
       .catch((e) => {
         this.onError(
-          new Error(`CSAGameManager#next: ${t.failedToSendPonderCommand}: ${e}`)
+          new Error(
+            `CSAGameManager#next: ${t.failedToSendPonderCommand}: ${e}`,
+          ),
         );
       });
   }
@@ -626,7 +628,7 @@ function releaseSession(sessionID: number): void {
 
 export function onCSAGameSummary(
   sessionID: number,
-  gameSummary: CSAGameSummary
+  gameSummary: CSAGameSummary,
 ): void {
   const manager = csaGameManagers[sessionID];
   if (manager) {
@@ -643,7 +645,7 @@ export function onCSAReject(sessionID: number): void {
 
 export function onCSAStart(
   sessionID: number,
-  playerStates: CSAPlayerStates
+  playerStates: CSAPlayerStates,
 ): void {
   const manager = csaGameManagers[sessionID];
   if (manager) {
@@ -654,7 +656,7 @@ export function onCSAStart(
 export function onCSAMove(
   sessionID: number,
   move: string,
-  playerStates: CSAPlayerStates
+  playerStates: CSAPlayerStates,
 ): void {
   const manager = csaGameManagers[sessionID];
   if (manager) {
@@ -665,7 +667,7 @@ export function onCSAMove(
 export function onCSAGameResult(
   sessionID: number,
   specialMove: CSASpecialMove,
-  gameResult: CSAGameResult
+  gameResult: CSAGameResult,
 ) {
   const manager = csaGameManagers[sessionID];
   if (manager) {

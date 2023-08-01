@@ -32,7 +32,7 @@ interface Window {
 
 export function buildWindowSetting(
   latest: WindowSetting,
-  win: Window
+  win: Window,
 ): WindowSetting {
   const normal = !win.isMaximized() && !win.isFullScreen();
   return {

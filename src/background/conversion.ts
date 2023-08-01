@@ -18,7 +18,7 @@ import { loadAppSetting } from "./settings";
 
 function getAlternativeFilePathWithNumberSuffix(
   filePath: string,
-  maxNumber: number
+  maxNumber: number,
 ): string | Error {
   const parsed = path.parse(filePath);
   let suffix = 2;
@@ -33,7 +33,7 @@ function getAlternativeFilePathWithNumberSuffix(
 }
 
 export function convertRecordFiles(
-  setting: BatchConversionSetting
+  setting: BatchConversionSetting,
 ): BatchConversionResult {
   const appSetting = loadAppSetting();
   const result: BatchConversionResult = {
@@ -46,7 +46,7 @@ export function convertRecordFiles(
   };
 
   getAppLogger().debug(
-    `batch conversion: start ${setting.source} -> ${setting.destination}`
+    `batch conversion: start ${setting.source} -> ${setting.destination}`,
   );
   listFiles(setting.source, setting.subdirectories ? Infinity : 0)
     .filter((file) => {
@@ -55,7 +55,7 @@ export function convertRecordFiles(
     })
     .forEach((source) => {
       const sourceFormat = detectRecordFileFormatByPath(
-        source
+        source,
       ) as RecordFileFormat;
       try {
         // Import record
@@ -73,7 +73,7 @@ export function convertRecordFiles(
         let destination = path.join(
           setting.destination,
           parsed.dir,
-          parsed.name + setting.destinationFormat
+          parsed.name + setting.destinationFormat,
         );
         if (fs.existsSync(destination)) {
           switch (setting.fileNameConflictAction) {
@@ -83,7 +83,7 @@ export function convertRecordFiles(
               {
                 const alt = getAlternativeFilePathWithNumberSuffix(
                   destination,
-                  100
+                  100,
                 );
                 if (alt instanceof Error) {
                   throw alt;
@@ -110,14 +110,14 @@ export function convertRecordFiles(
           setting.destinationFormat,
           {
             returnCode: appSetting.returnCode,
-          }
+          },
         );
         fs.writeFileSync(destination, exportResult.data);
         result.succeededTotal++;
         result.succeeded[sourceFormat] =
           (result.succeeded[sourceFormat] || 0) + 1;
         getAppLogger().debug(
-          `batch conversion: succeeded: ${source} -> ${destination}`
+          `batch conversion: succeeded: ${source} -> ${destination}`,
         );
       } catch (e) {
         result.failedTotal++;

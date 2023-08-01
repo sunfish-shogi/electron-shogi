@@ -118,7 +118,7 @@ type ReadyCallback = () => void;
 type BestmoveCallback = (
   position: string,
   move: string,
-  ponder?: string
+  ponder?: string,
 ) => void;
 type CheckmateCallback = (position: string, moves: string[]) => void;
 type CheckmateNotImplementedCallback = () => void;
@@ -191,7 +191,7 @@ export class EngineProcess {
     private _path: string,
     private sessionID: number,
     private logger: Logger,
-    private option: EngineProcessOption
+    private option: EngineProcessOption,
   ) {}
 
   get path(): string {
@@ -218,7 +218,7 @@ export class EngineProcess {
   on(event: "checkmate", callback: CheckmateCallback): this;
   on(
     event: "checkmateNotImplemented",
-    callback: CheckmateNotImplementedCallback
+    callback: CheckmateNotImplementedCallback,
   ): this;
   on(event: "checkmateTimeout", callback: CheckmateTimeoutCallback): this;
   on(event: "noMate", callback: NoMateCallback): this;
@@ -317,7 +317,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: ready: unexpected state: %s",
         this.sessionID,
-        this.state
+        this.state,
       );
       return new Error("unexpected state");
     }
@@ -382,7 +382,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: ponderHit: unexpected state: %s",
         this.sessionID,
-        this.state
+        this.state,
       );
       return;
     }
@@ -399,7 +399,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: stop: unexpected state: %s",
         this.sessionID,
-        this.state
+        this.state,
       );
       return;
     }
@@ -422,7 +422,7 @@ export class EngineProcess {
         this.logger.warn(
           "sid=%d: gameover: unexpected state: %s",
           this.sessionID,
-          this.state
+          this.state,
         );
         return;
       case State.WaitingForBestMove:
@@ -494,7 +494,7 @@ export class EngineProcess {
       "sid=%d: engine process closed: close=%s signal=%s",
       this.sessionID,
       code,
-      signal
+      signal,
     );
     if (this.state !== State.WillQuit && this.errorCallback) {
       this.errorCallback(new Error("closed unexpectedly"));
@@ -513,7 +513,7 @@ export class EngineProcess {
       "go " +
         (this.reservedGoCommand.ponder ? "ponder " : "") +
         (this.reservedGoCommand.mate ? "mate " : "") +
-        buildTimeOptions(this.reservedGoCommand.timeState)
+        buildTimeOptions(this.reservedGoCommand.timeState),
     );
     this.currentPosition = this.reservedGoCommand.position;
     this.state = this.reservedGoCommand.ponder
@@ -602,7 +602,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: onUSIOk: unexpected state: %s",
         this.sessionID,
-        this.state
+        this.state,
       );
       return;
     }
@@ -644,7 +644,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: onReadyOk: unexpected state: %s",
         this.sessionID,
-        this.state
+        this.state,
       );
       return;
     }
@@ -663,7 +663,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: onBestMove: ignore bestmove: %s",
         this.sessionID,
-        args
+        args,
       );
       return;
     }
@@ -674,7 +674,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: onBestMove: unexpected state: %s",
         this.sessionID,
-        this.state
+        this.state,
       );
       return;
     }
@@ -694,7 +694,7 @@ export class EngineProcess {
       this.logger.warn(
         "sid=%d: onCheckmate: unexpected state: %s",
         this.sessionID,
-        this.state
+        this.state,
       );
       return;
     }

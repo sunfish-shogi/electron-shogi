@@ -70,7 +70,7 @@ export type PVPreview = {
 };
 
 function getMessageAttachmentsByGameResults(
-  results: GameResults
+  results: GameResults,
 ): Attachment[] {
   const validTotal = results.total - results.invalid;
   return [
@@ -117,12 +117,12 @@ class Store {
   private gameManager = new GameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock
+    this.whiteClock,
   );
   private csaGameManager = new CSAGameManager(
     this.recordManager,
     this.blackClock,
-    this.whiteClock
+    this.whiteClock,
   );
   private researchManager = new ResearchManager();
   private analysisManager = new AnalysisManager(this.recordManager);
@@ -260,7 +260,7 @@ class Store {
     options?: {
       header?: string;
       engineName?: string;
-    }
+    },
   ): void {
     this.recordManager.appendSearchComment(type, searchInfo, behavior, options);
   }
@@ -288,7 +288,7 @@ class Store {
         "Store#showConfirmation: 確認ダイアログを多重に表示しようとしました。" +
           ` appState=${this.appState}` +
           ` currentMessage=${this._confirmation.message}` +
-          ` newMessage=${confirmation.message}`
+          ` newMessage=${confirmation.message}`,
       );
     }
     this._confirmation = {
@@ -305,7 +305,7 @@ class Store {
     this._confirmation = undefined;
     if (this.appState !== confirmation.appState) {
       this.pushError(
-        "確認ダイアログ表示中に他の操作が行われたため処理が中止されました。"
+        "確認ダイアログ表示中に他の操作が行われたため処理が中止されました。",
       );
       return;
     }
@@ -426,7 +426,7 @@ class Store {
     sessionID: number,
     usi: string,
     name: string,
-    info: USIInfoCommand
+    info: USIInfoCommand,
   ): void {
     if (this.recordManager.record.usi !== usi) {
       return;
@@ -435,7 +435,7 @@ class Store {
       sessionID,
       this.recordManager.record.position,
       name,
-      info
+      info,
     );
   }
 
@@ -443,7 +443,7 @@ class Store {
     sessionID: number,
     usi: string,
     name: string,
-    info: USIInfoCommand
+    info: USIInfoCommand,
   ): void {
     const record = Record.newByUSI(usi);
     if (record instanceof Error) {
@@ -539,7 +539,7 @@ class Store {
     }
     if (this.csaGameManager.state === CSAGameState.GAME) {
       this.pushError(
-        "対局が始まっているため通信対局をキャンセルできませんでした。"
+        "対局が始まっているため通信対局をキャンセルできませんでした。",
       );
       return;
     }
@@ -620,7 +620,7 @@ class Store {
     const appSetting = useAppSetting();
     const fname = defaultRecordFileName(
       this.recordManager.record.metadata,
-      appSetting.defaultRecordFileFormat
+      appSetting.defaultRecordFileFormat,
     );
     const path = join(appSetting.autoSaveDirectory, fname);
     this.saveRecordByPath(path).catch((e) => {
@@ -765,8 +765,8 @@ class Store {
       .then(() =>
         this.mateSearchManager.start(
           mateSearchSetting,
-          this.recordManager.record
-        )
+          this.recordManager.record,
+        ),
       )
       .then(() => {
         this._appState = AppState.MATE_SEARCH;
@@ -952,7 +952,7 @@ class Store {
     }
     this.showConfirmation({
       message: t.areYouSureWantToDeleteFollowingMove(
-        this.recordManager.record.current.ply
+        this.recordManager.record.current.ply,
       ),
       onOk: () => {
         this.recordManager.removeCurrentMove();
@@ -1068,7 +1068,7 @@ class Store {
           path ||
           defaultRecordFileName(
             this.recordManager.record.metadata,
-            appSetting.defaultRecordFileFormat
+            appSetting.defaultRecordFileFormat,
           );
         return api.showSaveRecordDialog(defaultPath);
       })
@@ -1088,7 +1088,7 @@ class Store {
 
   private async saveRecordByPath(
     path: string,
-    opt?: { detectGarbled: boolean }
+    opt?: { detectGarbled: boolean },
   ): Promise<void> {
     const appSetting = useAppSetting();
     const result = this.recordManager.exportRecordAsBuffer(path, {

@@ -27,7 +27,7 @@ function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
 
 type UpdateSearchInfoCallback = (
   type: SearchInfoSenderType,
-  info: SearchInfo
+  info: SearchInfo,
 ) => void;
 
 export class ResearchManager {
@@ -66,13 +66,13 @@ export class ResearchManager {
     for (const s of setting.secondaries || []) {
       if (s.usi === undefined) {
         throw new Error(
-          "ResearchManager#launch: USIエンジンの設定は必須です。"
+          "ResearchManager#launch: USIエンジンの設定は必須です。",
         );
       }
     }
     if (this.engines.length > 0) {
       throw new Error(
-        "ResearchManager#launch: 前回のエンジンが終了していません。数秒待ってからもう一度試してください。"
+        "ResearchManager#launch: 前回のエンジンが終了していません。数秒待ってからもう一度試してください。",
       );
     }
 
@@ -91,7 +91,7 @@ export class ResearchManager {
           if (type !== undefined) {
             this.onUpdateSearchInfo(type, info);
           }
-        }
+        },
       );
     });
 

@@ -139,7 +139,7 @@ class NodeImpl implements Node {
     public nextColor: Color,
     public move: Move | SpecialMove,
     public isCheck: boolean,
-    public displayText: string
+    public displayText: string,
   ) {}
 
   get timeText(): string {
@@ -202,7 +202,7 @@ class NodeImpl implements Node {
       color, // color
       specialMove(SpecialMoveType.START), // move
       false, // isCheck
-      "開始局面" // displayText
+      "開始局面", // displayText
     );
   }
 }
@@ -423,7 +423,7 @@ export class Record {
 
   append(
     move: Move | SpecialMove | SpecialMoveType,
-    opt?: DoMoveOption
+    opt?: DoMoveOption,
   ): boolean {
     // convert SpecialMoveType to SpecialMove
     if (typeof move === "string") {
@@ -462,7 +462,7 @@ export class Record {
         this.position.color, // nextColor
         move,
         isCheck,
-        displayText
+        displayText,
       );
       this._current = this._current.next;
       this._current.setElapsedMs(0);
@@ -502,7 +502,7 @@ export class Record {
       this.position.color, // nextColor
       move,
       isCheck,
-      displayText
+      displayText,
     );
     this._current.setElapsedMs(0);
     lastBranch.branch = this._current;
@@ -748,14 +748,14 @@ export class Record {
     if (data.startsWith(prefixPositionStartpos)) {
       return Record.newByUSIFromMoves(
         new Position(),
-        data.slice(prefixPositionStartpos.length)
+        data.slice(prefixPositionStartpos.length),
       );
     } else if (data.startsWith(prefixPositionSfen)) {
       return Record.newByUSIFromSFEN(data.slice(prefixPositionSfen.length));
     } else if (data.startsWith(prefixStartpos)) {
       return Record.newByUSIFromMoves(
         new Position(),
-        data.slice(prefixStartpos.length)
+        data.slice(prefixStartpos.length),
       );
     } else if (data.startsWith(prefixSfen)) {
       return Record.newByUSIFromSFEN(data.slice(prefixSfen.length));
@@ -780,7 +780,7 @@ export class Record {
 
   private static newByUSIFromMoves(
     position: ImmutablePosition,
-    data: string
+    data: string,
   ): Record | Error {
     const record = new Record(position);
     if (data.length === 0) {

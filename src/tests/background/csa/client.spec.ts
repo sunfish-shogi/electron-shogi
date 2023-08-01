@@ -230,7 +230,7 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onConnect();
     expect(mockSocket.prototype.write).toBeCalledTimes(1);
     expect(mockSocket.prototype.write.mock.calls[0][0]).toBe(
-      "LOGIN TestPlayer test-password"
+      "LOGIN TestPlayer test-password",
     );
     expect(mockSocket.prototype.write).toBeCalledTimes(1);
     socketHandlers.onRead("LOGIN:TestPlayer OK");
@@ -254,7 +254,7 @@ describe("ipc/background/csa/client", () => {
     client.agree("20150505-CSA25-3-5-7");
     expect(mockSocket.prototype.write).toBeCalledTimes(2);
     expect(mockSocket.prototype.write.mock.calls[1][0]).toBe(
-      "AGREE 20150505-CSA25-3-5-7"
+      "AGREE 20150505-CSA25-3-5-7",
     );
     expect(clientHandlers.mockOnStart).toBeCalledTimes(0);
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
@@ -289,10 +289,10 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onRead("#WIN");
     expect(clientHandlers.mockOnGameResult).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameResult.mock.calls[0][0]).toBe(
-      CSASpecialMove.RESIGN
+      CSASpecialMove.RESIGN,
     );
     expect(clientHandlers.mockOnGameResult.mock.calls[0][1]).toBe(
-      CSAGameResult.WIN
+      CSAGameResult.WIN,
     );
     expect(mockSocket.prototype.write).toBeCalledTimes(3);
     client.logout();
@@ -328,10 +328,10 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onRead("#LOSE");
     expect(clientHandlers.mockOnGameResult).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameResult.mock.calls[0][0]).toBe(
-      CSASpecialMove.RESIGN
+      CSASpecialMove.RESIGN,
     );
     expect(clientHandlers.mockOnGameResult.mock.calls[0][1]).toBe(
-      CSAGameResult.LOSE
+      CSAGameResult.LOSE,
     );
     expect(mockSocket.prototype.write).toBeCalledTimes(3);
     client.logout();
@@ -357,7 +357,7 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onConnect();
     expect(mockSocket.prototype.write).toBeCalledTimes(1);
     expect(mockSocket.prototype.write.mock.calls[0][0]).toBe(
-      "LOGIN TestPlayer test-password"
+      "LOGIN TestPlayer test-password",
     );
     expect(mockSocket.prototype.write).toBeCalledTimes(1);
     socketHandlers.onRead("LOGIN:TestPlayer OK");
@@ -381,7 +381,7 @@ describe("ipc/background/csa/client", () => {
     client.agree("20150505-CSA25-3-5-7");
     expect(mockSocket.prototype.write).toBeCalledTimes(2);
     expect(mockSocket.prototype.write.mock.calls[1][0]).toBe(
-      "AGREE 20150505-CSA25-3-5-7"
+      "AGREE 20150505-CSA25-3-5-7",
     );
     expect(clientHandlers.mockOnStart).toBeCalledTimes(0);
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
@@ -421,7 +421,7 @@ describe("ipc/background/csa/client", () => {
     client.doMove("-8384FU", 60, "+2625FU -8485FU +6978KI -4132KI");
     expect(mockSocket.prototype.write).toBeCalledTimes(4);
     expect(mockSocket.prototype.write.mock.calls[3][0]).toBe(
-      "-8384FU,'* 60 +2625FU -8485FU +6978KI -4132KI"
+      "-8384FU,'* 60 +2625FU -8485FU +6978KI -4132KI",
     );
     expect(clientHandlers.mockOnMove).toBeCalledTimes(3);
     socketHandlers.onRead("-8384FU,T5");
@@ -437,10 +437,10 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onRead("#WIN");
     expect(clientHandlers.mockOnGameResult).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameResult.mock.calls[0][0]).toBe(
-      CSASpecialMove.RESIGN
+      CSASpecialMove.RESIGN,
     );
     expect(clientHandlers.mockOnGameResult.mock.calls[0][1]).toBe(
-      CSAGameResult.WIN
+      CSAGameResult.WIN,
     );
     expect(mockSocket.prototype.write).toBeCalledTimes(4);
     client.logout();
@@ -466,7 +466,7 @@ describe("ipc/background/csa/client", () => {
     client.reject("20150505-CSA25-3-5-7");
     expect(mockSocket.prototype.write).toBeCalledTimes(2);
     expect(mockSocket.prototype.write.mock.calls[1][0]).toBe(
-      "REJECT 20150505-CSA25-3-5-7"
+      "REJECT 20150505-CSA25-3-5-7",
     );
     expect(clientHandlers.mockOnReject).toBeCalledTimes(0);
     socketHandlers.onRead("REJECT:20150505-CSA25-3-5-7 by Player1");
@@ -526,10 +526,10 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onRead("#CHUDAN");
     expect(clientHandlers.mockOnGameResult).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameResult.mock.calls[0][0]).toBe(
-      CSASpecialMove.UNKNOWN
+      CSASpecialMove.UNKNOWN,
     );
     expect(clientHandlers.mockOnGameResult.mock.calls[0][1]).toBe(
-      CSAGameResult.CHUDAN
+      CSAGameResult.CHUDAN,
     );
     expect(mockSocket.prototype.write).toBeCalledTimes(3);
     client.logout();
@@ -553,13 +553,13 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onRead("LOGIN:incorrect");
     expect(clientHandlers.mockOnError).toBeCalledTimes(1);
     expect(clientHandlers.mockOnError.mock.calls[0][0].toString()).toBe(
-      "Error: CSAサーバーへのログインが拒否されました。"
+      "Error: CSAサーバーへのログインが拒否されました。",
     );
     expect(mockSocket.prototype.end).toBeCalledTimes(1);
     socketHandlers.onClose(false);
     expect(clientHandlers.mockOnError).toBeCalledTimes(2);
     expect(clientHandlers.mockOnError.mock.calls[1][0].toString()).toBe(
-      "Error: CSAサーバーへの接続が切れました。"
+      "Error: CSAサーバーへの接続が切れました。",
     );
   });
 
@@ -573,7 +573,7 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onClose(true);
     expect(clientHandlers.mockOnError).toBeCalledTimes(1);
     expect(clientHandlers.mockOnError.mock.calls[0][0].toString()).toBe(
-      "Error: CSAサーバーに接続できませんでした。"
+      "Error: CSAサーバーに接続できませんでした。",
     );
     expect(clientHandlers.mockOnClose).toBeCalledTimes(1);
   });
@@ -823,7 +823,7 @@ describe("ipc/background/csa/client", () => {
     socketHandlers.onConnect();
     expect(mockSocket.prototype.write).toBeCalledTimes(1);
     expect(mockSocket.prototype.write.mock.calls[0][0]).toBe(
-      "LOGIN TestPlayer test-password"
+      "LOGIN TestPlayer test-password",
     );
     expect(mockSocket.prototype.write).toBeCalledTimes(1);
     socketHandlers.onRead("LOGIN:TestPlayer OK");

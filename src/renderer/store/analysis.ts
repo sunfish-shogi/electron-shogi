@@ -69,14 +69,14 @@ export class AnalysisManager {
   private async setupEngine(setting: USIEngineSetting): Promise<void> {
     if (this.researcher) {
       throw new Error(
-        "AnalysisManager#setupEngine: 前回のエンジンが終了していません。数秒待ってからもう一度試してください。"
+        "AnalysisManager#setupEngine: 前回のエンジンが終了していません。数秒待ってからもう一度試してください。",
       );
     }
     const appSetting = useAppSetting();
     const researcher = new USIPlayer(
       setting,
       appSetting.engineTimeoutSeconds,
-      this.updateSearchInfo.bind(this)
+      this.updateSearchInfo.bind(this),
     );
     await researcher.launch();
     await researcher.readyNewGame();
@@ -194,7 +194,7 @@ export class AnalysisManager {
       const text = getMoveAccuracyText(
         negaScore - scoreDelta,
         negaScore,
-        appSetting
+        appSetting,
       );
       if (text) {
         header = `【${text}】`;
@@ -208,7 +208,7 @@ export class AnalysisManager {
       {
         header,
         engineName: this.setting.usi?.name,
-      }
+      },
     );
   }
 
@@ -221,7 +221,7 @@ export class AnalysisManager {
 function getMoveAccuracyText(
   before: number,
   after: number,
-  appSetting: AppSetting
+  appSetting: AppSetting,
 ): string | null {
   const loss =
     scoreToPercentage(before, appSetting.coefficientInSigmoid) -

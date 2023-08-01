@@ -15,7 +15,7 @@ import { setLanguage, t } from "@/common/i18n";
 
 api.log(
   LogLevel.INFO,
-  `start renderer process: APP_VERSION=${appInfo.appVersion}`
+  `start renderer process: APP_VERSION=${appInfo.appVersion}`,
 );
 
 Chart.register(...registerables);
@@ -42,7 +42,7 @@ Promise.allSettled([
     .loadAppSetting()
     .catch((e) => {
       store.pushError(
-        new Error("アプリ設定の読み込み中にエラーが発生しました: " + e)
+        new Error("アプリ設定の読み込み中にエラーが発生しました: " + e),
       );
     }),
   api

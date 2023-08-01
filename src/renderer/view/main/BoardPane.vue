@@ -391,10 +391,10 @@ const lastMove = computed(() => {
 });
 
 const blackPlayerName = computed(
-  () => getBlackPlayerName(store.record.metadata) || t.sente
+  () => getBlackPlayerName(store.record.metadata) || t.sente,
 );
 const whitePlayerName = computed(
-  () => getWhitePlayerName(store.record.metadata) || t.gote
+  () => getWhitePlayerName(store.record.metadata) || t.gote,
 );
 
 const clock = computed(() => {

@@ -44,7 +44,10 @@ export class USIPlayerMonitor {
   public currentMoveText?: string;
   public ponderMove?: string;
 
-  constructor(public sessionID: number, public name: string) {}
+  constructor(
+    public sessionID: number,
+    public name: string,
+  ) {}
 
   get latestIteration(): USIIteration[] {
     const result: USIIteration[] = [];
@@ -172,7 +175,7 @@ export class USIMonitor {
     position: ImmutablePosition,
     name: string,
     info: USIInfoCommand,
-    ponderMove?: Move
+    ponderMove?: Move,
   ): void {
     this.updateQueue.push({
       sessionID,
@@ -199,7 +202,7 @@ export class USIMonitor {
 
   private _update(update: USIUpdate) {
     let monitor = this._sessions.find(
-      (session) => session.sessionID === update.sessionID
+      (session) => session.sessionID === update.sessionID,
     );
     if (!monitor) {
       monitor = this.addSession(update.sessionID, update.name);

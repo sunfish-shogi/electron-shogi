@@ -255,7 +255,10 @@ rotateMap.set(PieceType.HORSE, { type: PieceType.BISHOP, reverseColor: true });
 rotateMap.set(PieceType.DRAGON, { type: PieceType.ROOK, reverseColor: true });
 
 export class Piece {
-  constructor(public color: Color, public type: PieceType) {}
+  constructor(
+    public color: Color,
+    public type: PieceType,
+  ) {}
 
   black(): Piece {
     return this.withColor(Color.BLACK);

@@ -52,7 +52,8 @@ import BookmarkListDialog from "../dialog/BookmarkListDialog.vue";
 
 const store = useStore();
 const readonly = computed(
-  () => store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH
+  () =>
+    store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH,
 );
 const textarea = ref();
 const comment = computed(() => store.record.current.comment);

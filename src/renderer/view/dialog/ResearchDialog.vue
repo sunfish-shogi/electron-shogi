@@ -10,10 +10,10 @@
           :display-multi-pv-state="true"
           @update-engine-setting="onUpdatePlayerSetting"
           @select-player="
-              (uri: string) => {
-                engineURI = uri;
-              }
-            "
+            (uri: string) => {
+              engineURI = uri;
+            }
+          "
         />
       </div>
       <div
@@ -28,10 +28,10 @@
           :display-multi-pv-state="true"
           @update-engine-setting="onUpdatePlayerSetting"
           @select-player="
-              (uri: string) => {
-                secondaryEngineURIs[index] = uri;
-              }
-            "
+            (uri: string) => {
+              secondaryEngineURIs[index] = uri;
+            }
+          "
         />
         <button
           class="remove-button"
@@ -122,7 +122,7 @@ onMounted(async () => {
     engineURI.value = researchSetting.value.usi?.uri || "";
     secondaryEngineURIs.value =
       researchSetting.value.secondaries?.map(
-        (setting) => setting.usi?.uri || ""
+        (setting) => setting.usi?.uri || "",
       ) || [];
     enableMaxSeconds.value = researchSetting.value.enableMaxSeconds;
   } catch (e) {

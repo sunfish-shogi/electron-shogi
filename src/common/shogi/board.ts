@@ -45,7 +45,7 @@ export interface ImmutableBoard {
   hasPower(
     target: Square,
     color: Color,
-    option?: PowerDetectionOption
+    option?: PowerDetectionOption,
   ): boolean;
   isChecked(kingColor: Color, option?: PowerDetectionOption): boolean;
   readonly sfen: string;
@@ -60,7 +60,7 @@ export class Board {
       this.squares.push(null);
     }
     this.resetBySFEN(
-      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL"
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL",
     );
   }
 
@@ -177,7 +177,7 @@ export class Board {
   hasPower(
     target: Square,
     color: Color,
-    option?: PowerDetectionOption
+    option?: PowerDetectionOption,
   ): boolean {
     return !!directions.find((dir) => {
       let step = 0;

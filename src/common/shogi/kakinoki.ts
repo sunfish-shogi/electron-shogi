@@ -511,7 +511,7 @@ export function importKI2(data: string): Record | Error {
 
 function importKakinoki(
   data: string,
-  formatType: KakinokiFormatType
+  formatType: KakinokiFormatType,
 ): Record | Error {
   const metadata = new RecordMetadata();
   const record = new Record();
@@ -594,7 +594,7 @@ function importKakinoki(
         if (isMoveSection) {
           record.current.comment = appendLine(
             record.current.comment,
-            parsed.data
+            parsed.data,
           );
         } else {
           preMoveComment = appendLine(preMoveComment, parsed.data);
@@ -655,7 +655,7 @@ type KakinokiExportOptions = {
 
 function formatMetadata(
   metadata: ImmutableRecordMetadata,
-  options: KakinokiExportOptions
+  options: KakinokiExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
@@ -674,7 +674,7 @@ function formatMetadata(
 
 function formatPosition(
   position: ImmutablePosition,
-  options: KakinokiExportOptions
+  options: KakinokiExportOptions,
 ): string {
   const returnCode = options.returnCode || "\n";
 
@@ -764,7 +764,7 @@ function formatHand(hand: ImmutableHand): string {
 
 export function exportKIF(
   record: ImmutableRecord,
-  options: KakinokiExportOptions
+  options: KakinokiExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
@@ -809,7 +809,7 @@ export function exportKIF(
 
 export function exportKI2(
   record: ImmutableRecord,
-  options: KakinokiExportOptions
+  options: KakinokiExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";

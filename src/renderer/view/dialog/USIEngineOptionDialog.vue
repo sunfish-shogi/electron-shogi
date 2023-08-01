@@ -63,7 +63,11 @@
                 <!-- 数値 (spin) -->
                 <input
                   v-if="option.type === 'spin'"
-                  :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
+                  :ref="
+                    (el) => {
+                      inputs[option.name] = el as HTMLInputElement;
+                    }
+                  "
                   class="option-value-number"
                   type="number"
                   :min="option.min"
@@ -74,7 +78,11 @@
                 <!-- 文字列 (string) -->
                 <input
                   v-if="option.type === 'string'"
-                  :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
+                  :ref="
+                    (el) => {
+                      inputs[option.name] = el as HTMLInputElement;
+                    }
+                  "
                   class="option-value-text"
                   type="text"
                   :name="option.name"
@@ -82,7 +90,11 @@
                 <!-- ファイル名 (filename) -->
                 <input
                   v-if="option.type === 'filename'"
-                  :ref="(el) => { inputs[option.name] = el as HTMLInputElement }"
+                  :ref="
+                    (el) => {
+                      inputs[option.name] = el as HTMLInputElement;
+                    }
+                  "
                   class="option-value-filename"
                   type="text"
                   :name="option.name"
@@ -99,7 +111,9 @@
                   v-if="option.type === 'check'"
                   :ref="
                     (el: unknown) => {
-                      selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
+                      selectors[option.name] = el as InstanceType<
+                        typeof HorizontalSelector
+                      >;
                     }
                   "
                   value=""
@@ -119,7 +133,11 @@
                 <!-- 選択 (combo) -->
                 <select
                   v-if="option.type === 'combo'"
-                  :ref="(el) => { inputs[option.name] = el as HTMLSelectElement }"
+                  :ref="
+                    (el) => {
+                      inputs[option.name] = el as HTMLSelectElement;
+                    }
+                  "
                   class="option-value-combo"
                 >
                   <option value="">{{ t.defaultValue }}</option>
@@ -222,10 +240,10 @@ const engineNameInput = ref();
 const filter = ref();
 const filterWords = ref([] as string[]);
 const inputs = ref(
-  {} as { [key: string]: HTMLInputElement | HTMLSelectElement }
+  {} as { [key: string]: HTMLInputElement | HTMLSelectElement },
 );
 const selectors = ref(
-  {} as { [key: string]: InstanceType<typeof HorizontalSelector> }
+  {} as { [key: string]: InstanceType<typeof HorizontalSelector> },
 );
 const engine = ref(emptyUSIEngineSetting());
 let defaultValueLoaded = false;
@@ -238,7 +256,7 @@ onMounted(async () => {
     const timeoutSeconds = appSetting.engineTimeoutSeconds;
     engine.value = await api.getUSIEngineInfo(
       props.latestEngineSetting.path,
-      timeoutSeconds
+      timeoutSeconds,
     );
     mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
     engineNameInput.value.value = engine.value.name;
@@ -270,7 +288,7 @@ const options = computed(() =>
           filterString(ret.name, filterWords.value);
       }
       return ret;
-    })
+    }),
 );
 onUpdated(() => {
   if (!defaultValueLoaded || defaultValueApplied) {

@@ -130,7 +130,7 @@ const props = defineProps({
 
 const layout = computed(() => {
   const param = buildParams(
-    Math.min(props.maxSize.width, props.maxSize.height)
+    Math.min(props.maxSize.width, props.maxSize.height),
   );
   return {
     frameStyle: {

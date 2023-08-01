@@ -40,12 +40,12 @@ describe("shogi/record", () => {
   it("usi", () => {
     expect(getNextColorFromUSI("position startpos moves ")).toBe(Color.BLACK);
     expect(getNextColorFromUSI("position startpos moves 2g2f 8c8d 2f2e")).toBe(
-      Color.WHITE
+      Color.WHITE,
     );
     expect(
       getNextColorFromUSI(
-        "position sfen lnsgkgsnl/1r5b1/p1ppppppp/1p7/7P1/9/PPPPPPP1P/1B5R1/LNSGKGSNL w - 1 moves 8d8e"
-      )
+        "position sfen lnsgkgsnl/1r5b1/p1ppppppp/1p7/7P1/9/PPPPPPP1P/1B5R1/LNSGKGSNL w - 1 moves 8d8e",
+      ),
     ).toBe(Color.BLACK);
   });
 
@@ -56,7 +56,7 @@ describe("shogi/record", () => {
     const move = (ff: number, fr: number, tf: number, tr: number): Move => {
       return record.position.createMove(
         new Square(ff, fr),
-        new Square(tf, tr)
+        new Square(tf, tr),
       ) as Move;
     };
     expect(record.append(move(7, 7, 7, 6))).toBeTruthy();
@@ -84,7 +84,7 @@ describe("shogi/record", () => {
     expect(record.goBack()).toBeTruthy();
     expect(onChangePosition).toBeCalledTimes(10);
     expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves"
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves",
     );
     expect(record.goBack()).toBeFalsy();
     expect(onChangePosition).toBeCalledTimes(10); // not called
@@ -94,7 +94,7 @@ describe("shogi/record", () => {
     record.goto(Number.MAX_SAFE_INTEGER);
     expect(onChangePosition).toBeCalledTimes(12);
     expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d 7i7h"
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d 7i7h",
     );
     expect(record.goForward()).toBeFalsy();
     expect(onChangePosition).toBeCalledTimes(12); // not called
@@ -102,14 +102,14 @@ describe("shogi/record", () => {
     record.goto(2);
     expect(onChangePosition).toBeCalledTimes(13);
     expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d"
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d",
     );
     record.goto(2);
     expect(onChangePosition).toBeCalledTimes(13); // not called
     expect(record.switchBranchByIndex(0)).toBeTruthy();
     expect(onChangePosition).toBeCalledTimes(14);
     expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d"
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d",
     );
   });
 
@@ -310,7 +310,7 @@ describe("shogi/record", () => {
 変化：4手
 4 ８四歩(83) ( 0:00/0:00:00)
 5 ７八飛(28) ( 0:00/0:00:00)
-`
+`,
     );
   });
 

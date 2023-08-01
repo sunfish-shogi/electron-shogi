@@ -69,7 +69,7 @@ export function saveWindowSetting(setting: WindowSetting): void {
     fs.writeFileSync(
       windowSettingPath,
       JSON.stringify(setting, undefined, 2),
-      "utf8"
+      "utf8",
     );
   } catch (e) {
     getAppLogger().error("failed to write window setting: %s", e);
@@ -79,7 +79,7 @@ export function saveWindowSetting(setting: WindowSetting): void {
 export function loadWindowSetting(): WindowSetting {
   try {
     return normalizeWindowSetting(
-      JSON.parse(fs.readFileSync(windowSettingPath, "utf8"))
+      JSON.parse(fs.readFileSync(windowSettingPath, "utf8")),
     );
   } catch (e) {
     getAppLogger().error("failed to read window setting: %s", e);
@@ -106,7 +106,7 @@ export function saveAppSetting(setting: AppSetting): void {
   fs.writeFileSync(
     appSettingPath,
     JSON.stringify(setting, undefined, 2),
-    "utf8"
+    "utf8",
   );
 }
 
@@ -123,22 +123,22 @@ export function loadAppSetting(): AppSetting {
     {
       returnCode: defautlReturnCode,
       autoSaveDirectory: docDir,
-    }
+    },
   );
 }
 
 const batchConversionSettingPath = path.join(
   rootDir,
-  "batch_conversion_setting.json"
+  "batch_conversion_setting.json",
 );
 
 export function saveBatchConversionSetting(
-  setting: BatchConversionSetting
+  setting: BatchConversionSetting,
 ): void {
   fs.writeFileSync(
     batchConversionSettingPath,
     JSON.stringify(setting, undefined, 2),
-    "utf8"
+    "utf8",
   );
 }
 
@@ -155,7 +155,7 @@ export function saveGameSetting(setting: GameSetting): void {
   fs.writeFileSync(
     gameSettingPath,
     JSON.stringify(setting, undefined, 2),
-    "utf8"
+    "utf8",
   );
 }
 
@@ -164,26 +164,26 @@ export function loadGameSetting(): GameSetting {
     return defaultGameSetting();
   }
   return normalizeGameSetting(
-    JSON.parse(fs.readFileSync(gameSettingPath, "utf8"))
+    JSON.parse(fs.readFileSync(gameSettingPath, "utf8")),
   );
 }
 
 const csaGameSettingHistoryPath = path.join(
   rootDir,
-  "csa_game_setting_history.json"
+  "csa_game_setting_history.json",
 );
 
 export function saveCSAGameSettingHistory(
-  setting: CSAGameSettingHistory
+  setting: CSAGameSettingHistory,
 ): void {
   const encrypted = encryptCSAGameSettingHistory(
     setting,
-    isEncryptionAvailable() ? EncryptString : undefined
+    isEncryptionAvailable() ? EncryptString : undefined,
   );
   fs.writeFileSync(
     csaGameSettingHistoryPath,
     JSON.stringify(encrypted, undefined, 2),
-    "utf8"
+    "utf8",
   );
 }
 
@@ -192,11 +192,11 @@ export function loadCSAGameSettingHistory(): CSAGameSettingHistory {
     return defaultCSAGameSettingHistory();
   }
   const encrypted = JSON.parse(
-    fs.readFileSync(csaGameSettingHistoryPath, "utf8")
+    fs.readFileSync(csaGameSettingHistoryPath, "utf8"),
   );
   return decryptCSAGameSettingHistory(
     normalizeSecureCSAGameSettingHistory(encrypted),
-    isEncryptionAvailable() ? DecryptString : undefined
+    isEncryptionAvailable() ? DecryptString : undefined,
   );
 }
 
@@ -206,7 +206,7 @@ export function saveResearchSetting(setting: ResearchSetting): void {
   fs.writeFileSync(
     researchSettingPath,
     JSON.stringify(setting, undefined, 2),
-    "utf8"
+    "utf8",
   );
 }
 
@@ -215,7 +215,7 @@ export function loadResearchSetting(): ResearchSetting {
     return defaultResearchSetting();
   }
   return normalizeResearchSetting(
-    JSON.parse(fs.readFileSync(researchSettingPath, "utf8"))
+    JSON.parse(fs.readFileSync(researchSettingPath, "utf8")),
   );
 }
 
@@ -225,7 +225,7 @@ export function saveAnalysisSetting(setting: AnalysisSetting): void {
   fs.writeFileSync(
     analysisSettingPath,
     JSON.stringify(setting, undefined, 2),
-    "utf8"
+    "utf8",
   );
 }
 
@@ -234,7 +234,7 @@ export function loadAnalysisSetting(): AnalysisSetting {
     return defaultAnalysisSetting();
   }
   return normalizeAnalysisSetting(
-    JSON.parse(fs.readFileSync(analysisSettingPath, "utf8"))
+    JSON.parse(fs.readFileSync(analysisSettingPath, "utf8")),
   );
 }
 
@@ -244,7 +244,7 @@ export function saveMateSearchSetting(setting: MateSearchSetting): void {
   fs.writeFileSync(
     mateSearchSettingPath,
     JSON.stringify(setting, undefined, 2),
-    "utf8"
+    "utf8",
   );
 }
 
@@ -253,6 +253,6 @@ export function loadMateSearchSetting(): MateSearchSetting {
     return defaultMateSearchSetting();
   }
   return normalizeMateSearchSetting(
-    JSON.parse(fs.readFileSync(mateSearchSettingPath, "utf8"))
+    JSON.parse(fs.readFileSync(mateSearchSettingPath, "utf8")),
   );
 }

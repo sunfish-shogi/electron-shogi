@@ -31,7 +31,7 @@ describe("store/research", () => {
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(1);
     expect(mockAPI.usiGoInfinite).toBeCalledWith(
       100,
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves"
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves",
     );
 
     // 時間制限が無いので stop コマンドは送信されない。
@@ -44,7 +44,7 @@ describe("store/research", () => {
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(2);
     expect(mockAPI.usiGoInfinite).toBeCalledWith(
       100,
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f"
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f",
     );
   });
 

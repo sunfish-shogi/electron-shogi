@@ -44,7 +44,7 @@ type SaveRecordCallback = () => void;
 type GameNextCallback = () => void;
 type GameEndCallback = (
   results: GameResults,
-  specialMoveType: SpecialMoveType
+  specialMoveType: SpecialMoveType,
 ) => void;
 type FlipBoardCallback = (flip: boolean) => void;
 type PieceBeatCallback = () => void;
@@ -104,7 +104,7 @@ export class GameManager {
   constructor(
     private recordManager: RecordManager,
     private blackClock: Clock,
-    private whiteClock: Clock
+    private whiteClock: Clock,
   ) {
     this.state = GameState.IDLE;
     this._setting = defaultGameSetting();
@@ -163,11 +163,11 @@ export class GameManager {
 
   async startGame(
     setting: GameSetting,
-    playerBuilder: PlayerBuilder
+    playerBuilder: PlayerBuilder,
   ): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
-        "GameManager#startGame: 前回の対局が正常に終了できていません。アプリを再起動してください。"
+        "GameManager#startGame: 前回の対局が正常に終了できていません。アプリを再起動してください。",
       );
     }
     this.state = GameState.STARTING;
@@ -186,16 +186,16 @@ export class GameManager {
         (info) =>
           this.recordManager.updateSearchInfo(
             SearchInfoSenderType.OPPONENT,
-            info
-          )
+            info,
+          ),
       );
       this.whitePlayer = await this.playerBuilder.build(
         this.setting.white,
         (info) =>
           this.recordManager.updateSearchInfo(
             SearchInfoSenderType.OPPONENT,
-            info
-          )
+            info,
+          ),
       );
       await this.nextGame();
     } catch (e) {
@@ -213,7 +213,7 @@ export class GameManager {
   private async nextGame(): Promise<void> {
     if (this.blackPlayer === undefined || this.whitePlayer === undefined) {
       throw new Error(
-        "GameManager#nextGame: プレイヤーが初期化されていません。"
+        "GameManager#nextGame: プレイヤーが初期化されていません。",
       );
     }
     // 連続対局の回数をカウントアップする。
@@ -324,7 +324,7 @@ export class GameManager {
     const ponderPlayer = this.getPlayer(reverseColor(color));
     if (!player || !ponderPlayer) {
       this.onError(
-        new Error("GameManager#nextMove: プレイヤーが初期化されていません。")
+        new Error("GameManager#nextMove: プレイヤーが初期化されていません。"),
       );
       return;
     }
@@ -342,11 +342,11 @@ export class GameManager {
           onResign: () => this.onResign(eventID),
           onWin: () => this.onWin(eventID),
           onError: (e) => this.onError(e),
-        }
+        },
       )
       .catch((e) => {
         this.onError(
-          new Error(`GameManager#nextMove: ${t.failedToSendGoCommand}: ${e}`)
+          new Error(`GameManager#nextMove: ${t.failedToSendGoCommand}: ${e}`),
         );
       });
     // Ponder を開始する。
@@ -355,13 +355,13 @@ export class GameManager {
         this.recordManager.record,
         this.setting.timeLimit,
         this.blackClock.timeMs,
-        this.whiteClock.timeMs
+        this.whiteClock.timeMs,
       )
       .catch((e) => {
         this.onError(
           new Error(
-            `GameManager#nextMove: ${t.failedToSendPonderCommand}: ${e}`
-          )
+            `GameManager#nextMove: ${t.failedToSendPonderCommand}: ${e}`,
+          ),
         );
       });
   }
@@ -374,14 +374,14 @@ export class GameManager {
     if (this.state !== GameState.ACTIVE) {
       api.log(
         LogLevel.ERROR,
-        "GameManager#onMove: invalid state: " + this.state
+        "GameManager#onMove: invalid state: " + this.state,
       );
       return;
     }
     // 合法手かどうかをチェックする。
     if (!this.recordManager.record.position.isValidMove(move)) {
       this.onError(
-        "反則手: " + formatMove(this.recordManager.record.position, move)
+        "反則手: " + formatMove(this.recordManager.record.position, move),
       );
       this.endGame(SpecialMoveType.FOUL_LOSE);
       return;
@@ -403,7 +403,7 @@ export class GameManager {
       this.recordManager.appendSearchComment(
         SearchInfoSenderType.PLAYER,
         info,
-        CommentBehavior.APPEND
+        CommentBehavior.APPEND,
       );
     }
     // 駒音を鳴らす。
@@ -432,14 +432,14 @@ export class GameManager {
     if (eventID !== this.lastEventID) {
       api.log(
         LogLevel.ERROR,
-        "GameManager#onResign: event ID already disabled"
+        "GameManager#onResign: event ID already disabled",
       );
       return;
     }
     if (this.state !== GameState.ACTIVE) {
       api.log(
         LogLevel.ERROR,
-        "GameManager#onResign: invalid state: " + this.state
+        "GameManager#onResign: invalid state: " + this.state,
       );
       return;
     }
@@ -454,7 +454,7 @@ export class GameManager {
     if (this.state !== GameState.ACTIVE) {
       api.log(
         LogLevel.ERROR,
-        "GameManager#onWin: invalid state: " + this.state
+        "GameManager#onWin: invalid state: " + this.state,
       );
       return;
     }
@@ -469,7 +469,7 @@ export class GameManager {
     if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
         this.onError(
-          new Error(`GameManager#timeout: ${t.failedToSendStopCommand}: ${e}`)
+          new Error(`GameManager#timeout: ${t.failedToSendStopCommand}: ${e}`),
         );
       });
       return;
@@ -528,15 +528,15 @@ export class GameManager {
         this.state = GameState.STARTING;
         this.nextGame().catch((e) => {
           this.onError(
-            new Error(`GameManager#endGame: ${t.failedToStartNewGame}: ${e}`)
+            new Error(`GameManager#endGame: ${t.failedToStartNewGame}: ${e}`),
           );
         });
       })
       .catch((e) => {
         this.onError(
           new Error(
-            `GameManager#endGame: ${t.errorOccuredWhileEndingGame}: ${e}`
-          )
+            `GameManager#endGame: ${t.errorOccuredWhileEndingGame}: ${e}`,
+          ),
         );
         this.state = GameState.PENDING;
       });
@@ -546,7 +546,7 @@ export class GameManager {
     const gameResult = specialMoveToPlayerGameResult(
       color,
       Color.BLACK,
-      specialMoveType
+      specialMoveType,
     );
     switch (gameResult) {
       case GameResult.WIN:
@@ -588,13 +588,13 @@ export class GameManager {
 
   private async sendGameResults(
     color: Color,
-    specialMoveType: SpecialMoveType
+    specialMoveType: SpecialMoveType,
   ): Promise<void> {
     if (this.blackPlayer) {
       const gameResult = specialMoveToPlayerGameResult(
         color,
         Color.BLACK,
-        specialMoveType
+        specialMoveType,
       );
       if (gameResult) {
         await this.blackPlayer.gameover(gameResult);
@@ -604,7 +604,7 @@ export class GameManager {
       const gameResult = specialMoveToPlayerGameResult(
         color,
         Color.WHITE,
-        specialMoveType
+        specialMoveType,
       );
       if (gameResult) {
         await this.whitePlayer.gameover(gameResult);
@@ -626,7 +626,7 @@ export class GameManager {
       await Promise.all(tasks);
     } catch (e) {
       throw new Error(
-        `GameManager#closePlayers: ${t.failedToShutdownEngines}: ${e}`
+        `GameManager#closePlayers: ${t.failedToShutdownEngines}: ${e}`,
       );
     }
   }
@@ -659,7 +659,7 @@ export class GameManager {
 function specialMoveToPlayerGameResult(
   currentColor: Color,
   playerColor: Color,
-  specialMoveType: SpecialMoveType
+  specialMoveType: SpecialMoveType,
 ): GameResult | null {
   switch (specialMoveType) {
     case SpecialMoveType.FOUL_WIN:

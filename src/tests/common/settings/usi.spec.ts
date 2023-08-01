@@ -18,7 +18,7 @@ describe("settings/usi", () => {
         max: 10,
         vars: [],
         value: 8,
-      })
+      }),
     ).toBe(8);
     expect(
       getUSIEngineOptionCurrentValue({
@@ -29,7 +29,7 @@ describe("settings/usi", () => {
         min: 0,
         max: 10,
         vars: [],
-      })
+      }),
     ).toBe(5);
     expect(
       getUSIEngineOptionCurrentValue({
@@ -39,7 +39,7 @@ describe("settings/usi", () => {
         default: "foo",
         vars: [],
         value: "bar",
-      })
+      }),
     ).toBe("bar");
     expect(
       getUSIEngineOptionCurrentValue({
@@ -48,7 +48,7 @@ describe("settings/usi", () => {
         order: 1,
         default: "foo",
         vars: [],
-      })
+      }),
     ).toBe("foo");
     expect(
       getUSIEngineOptionCurrentValue({
@@ -56,7 +56,7 @@ describe("settings/usi", () => {
         type: "string",
         order: 1,
         vars: [],
-      })
+      }),
     ).toBeUndefined();
     expect(
       getUSIEngineOptionCurrentValue({
@@ -65,7 +65,7 @@ describe("settings/usi", () => {
         order: 1,
         default: "<empty>",
         vars: [],
-      })
+      }),
     ).toBe("");
     expect(
       getUSIEngineOptionCurrentValue({
@@ -74,7 +74,7 @@ describe("settings/usi", () => {
         order: 1,
         default: "<empty>",
         vars: [],
-      })
+      }),
     ).toBe("");
     expect(getUSIEngineOptionCurrentValue(null)).toBeUndefined();
   });
@@ -194,7 +194,7 @@ describe("settings/usi", () => {
             options: {},
           },
         },
-      })
+      }),
     );
     settings.addEngine({
       uri: "es://usi-engine/b",
@@ -208,25 +208,25 @@ describe("settings/usi", () => {
     expect(settings.hasEngine("es://usi-engine/b")).toBeTruthy();
     expect(settings.hasEngine("es://usi-engine/c")).toBeFalsy();
     expect(
-      (settings.getEngine("es://usi-engine/a") as USIEngineSetting).name
+      (settings.getEngine("es://usi-engine/a") as USIEngineSetting).name,
     ).toBe("Engine A");
     expect(
-      (settings.getEngine("es://usi-engine/b") as USIEngineSetting).name
+      (settings.getEngine("es://usi-engine/b") as USIEngineSetting).name,
     ).toBe("Engine B");
     expect(settings.engineList).toHaveLength(2);
     expect(settings.engineList[0].name).toBe("Engine A");
     expect(settings.engineList[1].name).toBe("Engine B");
     expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe(
-      "Engine A"
+      "Engine A",
     );
     expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe(
-      "Engine A"
+      "Engine A",
     );
     expect(
-      JSON.parse(settings.json).engines["es://usi-engine/c"]
+      JSON.parse(settings.json).engines["es://usi-engine/c"],
     ).toBeUndefined();
     expect(JSON.parse(settings.jsonWithIndent)).toStrictEqual(
-      JSON.parse(settings.json)
+      JSON.parse(settings.json),
     );
     settings.updateEngine({
       uri: "es://usi-engine/a",
@@ -237,10 +237,10 @@ describe("settings/usi", () => {
       options: {},
     });
     expect(
-      (settings.getEngine("es://usi-engine/a") as USIEngineSetting).name
+      (settings.getEngine("es://usi-engine/a") as USIEngineSetting).name,
     ).toBe("Engine A Updated");
     expect(
-      (settings.getEngine("es://usi-engine/b") as USIEngineSetting).name
+      (settings.getEngine("es://usi-engine/b") as USIEngineSetting).name,
     ).toBe("Engine B");
     settings.removeEngine("es://usi-engine/b");
     expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();

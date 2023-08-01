@@ -51,7 +51,7 @@ export function defaultCSAGameSetting(): CSAGameSetting {
 }
 
 export function validateCSAGameSetting(
-  csaGameSetting: CSAGameSetting
+  csaGameSetting: CSAGameSetting,
 ): Error | undefined {
   if (
     csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121 &&
@@ -98,7 +98,7 @@ export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
 
 export function buildCSAGameSettingByHistory(
   history: CSAGameSettingHistory,
-  index: number
+  index: number,
 ): CSAGameSetting {
   return {
     player: history.player,
@@ -118,7 +118,7 @@ export const maxServerHistoryLength = 10;
 
 export function appendCSAGameSettingHistory(
   history: CSAGameSettingHistory,
-  setting: CSAGameSetting
+  setting: CSAGameSetting,
 ): CSAGameSettingHistory {
   const newServerHistory = [setting.server];
   for (const server of history.serverHistory) {
@@ -190,7 +190,7 @@ export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistor
 }
 
 export function normalizeSecureCSAGameSettingHistory(
-  history: SecureCSAGameSettingHistory
+  history: SecureCSAGameSettingHistory,
 ): SecureCSAGameSettingHistory {
   const serverHistory = [] as SecureCSAServerSetting[];
   for (const setting of history.serverHistory) {
@@ -212,7 +212,7 @@ export function normalizeSecureCSAGameSettingHistory(
 
 export function encryptCSAGameSettingHistory(
   history: CSAGameSettingHistory,
-  encryptor?: (plainText: string) => string
+  encryptor?: (plainText: string) => string,
 ): SecureCSAGameSettingHistory {
   const serverHistory = [] as SecureCSAServerSetting[];
   for (const setting of history.serverHistory) {
@@ -242,7 +242,7 @@ export function encryptCSAGameSettingHistory(
 
 export function decryptCSAGameSettingHistory(
   history: SecureCSAGameSettingHistory,
-  decryptor?: (encrypted: string) => string
+  decryptor?: (encrypted: string) => string,
 ): CSAGameSettingHistory {
   const serverHistory = [] as CSAServerSetting[];
   for (const setting of history.serverHistory) {

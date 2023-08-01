@@ -21,7 +21,7 @@ describe("settings/window", () => {
             height: 900,
           };
         },
-      })
+      }),
     ).toStrictEqual({
       width: 1100,
       height: 900,
@@ -38,7 +38,7 @@ describe("settings/window", () => {
             height: 900,
           };
         },
-      })
+      }),
     ).toStrictEqual({
       width: 1000,
       height: 800,
@@ -55,7 +55,7 @@ describe("settings/window", () => {
             height: 900,
           };
         },
-      })
+      }),
     ).toStrictEqual({
       width: 1000,
       height: 800,

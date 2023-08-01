@@ -121,10 +121,10 @@ const aspectRatio = 16 / 9;
 const store = useStore();
 const appSetting = useAppSetting();
 const blackPlayerName = computed(
-  () => getBlackPlayerName(store.record.metadata) || t.sente
+  () => getBlackPlayerName(store.record.metadata) || t.sente,
 );
 const whitePlayerName = computed(
-  () => getWhitePlayerName(store.record.metadata) || t.gote
+  () => getWhitePlayerName(store.record.metadata) || t.gote,
 );
 const record = store.record;
 const lastMove =
@@ -134,7 +134,7 @@ const board = ref();
 const imageSize = ref();
 const headerText = ref();
 const windowSize = reactive(
-  new RectSize(window.innerWidth, window.innerHeight)
+  new RectSize(window.innerWidth, window.innerHeight),
 );
 const zoom = ref(window.devicePixelRatio);
 
@@ -165,7 +165,7 @@ const maxSize = computed(() => {
   const width = height * aspectRatio;
   return new RectSize(
     Math.min(width, windowSize.width - marginHor),
-    Math.min(height, windowSize.height - marginVer)
+    Math.min(height, windowSize.height - marginVer),
   );
 });
 

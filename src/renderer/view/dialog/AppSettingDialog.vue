@@ -236,7 +236,9 @@
             </div>
             <ToggleButton
               :value="displayLeftSideControls"
-              @change="(checked: boolean) => (displayLeftSideControls = checked)"
+              @change="
+                (checked: boolean) => (displayLeftSideControls = checked)
+              "
             />
           </div>
           <!-- 右コントロールの表示 -->
@@ -246,7 +248,9 @@
             </div>
             <ToggleButton
               :value="displayRightSideControls"
-              @change="(checked: boolean) => (displayRightSideControls = checked)"
+              @change="
+                (checked: boolean) => (displayRightSideControls = checked)
+              "
             />
           </div>
           <!-- タブビューの形式 -->
@@ -422,7 +426,9 @@
             </div>
             <ToggleButton
               :value="translateEngineOptionName"
-              @change="(checked: boolean) => (translateEngineOptionName = checked)"
+              @change="
+                (checked: boolean) => (translateEngineOptionName = checked)
+              "
             />
             <div class="form-item-unit">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
@@ -743,13 +749,13 @@ const boardImageSelector = ref();
 const pieceStandImage = ref(appSetting.pieceStandImage);
 const pieceStandImageSelector = ref();
 const displayBoardLabels = ref(
-  appSetting.boardLabelType != BoardLabelType.NONE
+  appSetting.boardLabelType != BoardLabelType.NONE,
 );
 const displayLeftSideControls = ref(
-  appSetting.leftSideControlType != LeftSideControlType.NONE
+  appSetting.leftSideControlType != LeftSideControlType.NONE,
 );
 const displayRightSideControls = ref(
-  appSetting.rightSideControlType != RightSideControlType.NONE
+  appSetting.rightSideControlType != RightSideControlType.NONE,
 );
 const tabPaneType = ref(appSetting.tabPaneType);
 const pieceVolume = ref();
@@ -838,7 +844,7 @@ const saveAndClose = async () => {
         await api.cropPieceImage(pieceImageFileURL.value);
         update.pieceImageFileURL = pieceImageFileURL.value;
         update.croppedPieceImageBaseURL = await api.getPieceImageBaseURL(
-          pieceImageFileURL.value
+          pieceImageFileURL.value,
         );
       }
     }
@@ -862,7 +868,7 @@ const selectAutoSaveDirectory = async () => {
   store.retainBussyState();
   try {
     const path = await api.showSelectDirectoryDialog(
-      autoSaveDirectory.value.value
+      autoSaveDirectory.value.value,
     );
     if (path) {
       autoSaveDirectory.value.value = path;

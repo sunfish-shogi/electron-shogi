@@ -26,7 +26,7 @@ function newTimeoutError(timeoutSeconds: number): Error {
 
 export async function getUSIEngineInfo(
   path: string,
-  timeoutSeconds: number
+  timeoutSeconds: number,
 ): Promise<USIEngineSetting> {
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
@@ -36,7 +36,7 @@ export async function getUSIEngineInfo(
       getUSILogger(),
       {
         timeout: timeoutSeconds * 1e3,
-      }
+      },
     )
       .on("error", reject)
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
@@ -58,7 +58,7 @@ export async function getUSIEngineInfo(
 export function sendSetOptionCommand(
   path: string,
   name: string,
-  timeoutSeconds: number
+  timeoutSeconds: number,
 ): Promise<void> {
   const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ export function sendSetOptionCommand(
       getUSILogger(),
       {
         timeout: timeoutSeconds * 1e3,
-      }
+      },
     )
       .on("error", reject)
       .on("timeout", () => {
@@ -118,7 +118,7 @@ function getSession(sessionID: number): Session {
 
 export function setupPlayer(
   setting: USIEngineSetting,
-  timeoutSeconds: number
+  timeoutSeconds: number,
 ): Promise<number> {
   const sessionID = issueSessionID();
   const process = new EngineProcess(
@@ -128,7 +128,7 @@ export function setupPlayer(
     {
       timeout: timeoutSeconds * 1e3,
       engineOptions: Object.values(setting.options),
-    }
+    },
   );
   sessions.set(sessionID, {
     name: setting.name,
@@ -141,7 +141,7 @@ export function setupPlayer(
       .on("error", reject)
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
       .on("bestmove", (usi, usiMove, ponder) =>
-        onUSIBestMove(sessionID, usi, usiMove, ponder)
+        onUSIBestMove(sessionID, usi, usiMove, ponder),
       )
       .on("checkmate", (position, moves) => {
         onUSICheckmate(sessionID, position, moves);
@@ -174,7 +174,7 @@ export function ready(sessionID: number): Promise<void> {
 function buildTimeState(
   timeLimit: TimeLimitSetting,
   blackTimeMs: number,
-  whiteTimeMs: number
+  whiteTimeMs: number,
 ): TimeState {
   // USI では btime + binc (または wtime + winc) が今回利用可能な時間を表すとしている。
   // Electron Shogi では既に加算した後の値を保持しているため、ここで減算する。
@@ -192,7 +192,7 @@ export function go(
   usi: string,
   timeLimit: TimeLimitSetting,
   blackTimeMs: number,
-  whiteTimeMs: number
+  whiteTimeMs: number,
 ): void {
   const session = getSession(sessionID);
   session.process.go(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
@@ -204,12 +204,12 @@ export function goPonder(
   usi: string,
   timeLimit: TimeLimitSetting,
   blackTimeMs: number,
-  whiteTimeMs: number
+  whiteTimeMs: number,
 ): void {
   const session = getSession(sessionID);
   session.process.goPonder(
     usi,
-    buildTimeState(timeLimit, blackTimeMs, whiteTimeMs)
+    buildTimeState(timeLimit, blackTimeMs, whiteTimeMs),
   );
   session.process.on("ponderInfo", (usi, info) => {
     onUSIPonderInfo(sessionID, usi, info);

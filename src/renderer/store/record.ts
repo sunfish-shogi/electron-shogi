@@ -109,7 +109,7 @@ function buildSearchComment(
   searchInfo: SearchInfo,
   options?: {
     engineName?: string;
-  }
+  },
 ): string {
   const prefix = searchCommentKeyPrefix(type);
   let comment = "";
@@ -134,7 +134,7 @@ function buildSearchComment(
 
 function getPVsFromSearchComment(
   position: ImmutablePosition,
-  comment: string
+  comment: string,
 ): Move[][] {
   return comment
     .split("\n")
@@ -198,7 +198,7 @@ export class RecordManager {
 
   reset(startPosition?: InitialPositionType): void {
     this.resetBySFEN(
-      startPosition ? initialPositionTypeToSFEN(startPosition) : undefined
+      startPosition ? initialPositionTypeToSFEN(startPosition) : undefined,
     );
   }
 
@@ -260,7 +260,7 @@ export class RecordManager {
   importRecordFromBuffer(
     data: Uint8Array,
     path: string,
-    option?: { autoDetect?: boolean }
+    option?: { autoDetect?: boolean },
   ): Error | undefined {
     const format = detectRecordFileFormatByPath(path);
     if (!format) {
@@ -365,13 +365,13 @@ export class RecordManager {
     options?: {
       header?: string;
       engineName?: string;
-    }
+    },
   ): void {
     let comment = buildSearchComment(
       this.record.position,
       type,
       searchInfo,
-      options
+      options,
     );
     if (options?.header) {
       comment = options.header + "\n" + comment;
@@ -382,7 +382,7 @@ export class RecordManager {
   get inCommentPVs(): Move[][] {
     return getPVsFromSearchComment(
       this.record.position,
-      this.record.current.comment
+      this.record.current.comment,
     );
   }
 
@@ -390,33 +390,33 @@ export class RecordManager {
     if (metadata.gameTitle) {
       this._record.metadata.setStandardMetadata(
         RecordMetadataKey.TITLE,
-        metadata.gameTitle
+        metadata.gameTitle,
       );
     }
     if (metadata.blackName) {
       this._record.metadata.setStandardMetadata(
         RecordMetadataKey.BLACK_NAME,
-        metadata.blackName
+        metadata.blackName,
       );
     }
     if (metadata.whiteName) {
       this._record.metadata.setStandardMetadata(
         RecordMetadataKey.WHITE_NAME,
-        metadata.whiteName
+        metadata.whiteName,
       );
     }
     this._record.metadata.setStandardMetadata(
       RecordMetadataKey.DATE,
-      getDateString()
+      getDateString(),
     );
     this._record.metadata.setStandardMetadata(
       RecordMetadataKey.START_DATETIME,
-      getDateTimeString()
+      getDateTimeString(),
     );
     if (metadata.timeLimit) {
       this._record.metadata.setStandardMetadata(
         RecordMetadataKey.TIME_LIMIT,
-        formatTimeLimitCSA(metadata.timeLimit)
+        formatTimeLimitCSA(metadata.timeLimit),
       );
     }
   }
@@ -424,7 +424,7 @@ export class RecordManager {
   setGameEndMetadata(): void {
     this._record.metadata.setStandardMetadata(
       RecordMetadataKey.END_DATETIME,
-      getDateTimeString()
+      getDateTimeString(),
     );
   }
 

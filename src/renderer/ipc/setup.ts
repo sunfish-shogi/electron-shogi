@@ -212,14 +212,14 @@ export function setup(): void {
   bridge.onCSAMove(
     (sessionID: number, move: string, playerStates: string): void => {
       onCSAMove(sessionID, move, JSON.parse(playerStates));
-    }
+    },
   );
   bridge.onCSAGameResult(onCSAGameResult);
   bridge.onCSAClose(onCSAClose);
   watch(
     () => [store.appState, store.isBussy],
     ([appState, bussy]) =>
-      bridge.updateAppState(appState as AppState, bussy as boolean)
+      bridge.updateAppState(appState as AppState, bussy as boolean),
   );
   bridge.updateAppState(store.appState, store.isBussy);
 }

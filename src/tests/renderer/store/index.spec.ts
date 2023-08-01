@@ -208,7 +208,7 @@ describe("store/index", () => {
     jest.runOnlyPendingTimers();
     expect(store.usiMonitors).toHaveLength(1);
     expect(store.usiMonitors[0].sfen).toBe(
-      "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     expect(store.usiMonitors[0].iterates.length).toBe(1);
     expect(store.usiMonitors[0].iterates[0].depth).toBe(8);
@@ -245,7 +245,7 @@ describe("store/index", () => {
     });
     jest.runOnlyPendingTimers();
     expect(store.usiMonitors[0].sfen).toBe(
-      "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1"
+      "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
     expect(store.usiMonitors[0].ponderMove).toBe("☖３四歩");
     expect(store.usiMonitors[0].iterates.length).toBe(1);
@@ -267,7 +267,7 @@ describe("store/index", () => {
       expect(mockAPI.saveGameSetting.mock.calls[0][0]).toBe(gameSetting10m30s);
       expect(mockGameManager.prototype.startGame).toBeCalledTimes(1);
       expect(mockGameManager.prototype.startGame.mock.calls[0][0]).toBe(
-        gameSetting10m30s
+        gameSetting10m30s,
       );
     });
   });
@@ -281,7 +281,7 @@ describe("store/index", () => {
 
   it("loginCSAGame/success", () => {
     mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
-      Promise.resolve(emptyCSAGameSettingHistory)
+      Promise.resolve(emptyCSAGameSettingHistory),
     );
     mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
@@ -295,18 +295,18 @@ describe("store/index", () => {
       expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(1);
       expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(1);
       expect(mockAPI.saveCSAGameSettingHistory.mock.calls[0][0]).toStrictEqual(
-        singleCSAGameSettingHistory
+        singleCSAGameSettingHistory,
       );
       expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
       expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
-        csaGameSetting
+        csaGameSetting,
       );
     });
   });
 
   it("loginCSAGame/doNotSaveHistory", () => {
     mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
-      Promise.resolve(emptyCSAGameSettingHistory)
+      Promise.resolve(emptyCSAGameSettingHistory),
     );
     mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
@@ -321,7 +321,7 @@ describe("store/index", () => {
       expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(0);
       expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
       expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(
-        csaGameSetting
+        csaGameSetting,
       );
     });
   });
@@ -375,12 +375,12 @@ describe("store/index", () => {
       expect(store.appState).toBe(AppState.ANALYSIS);
       expect(mockAPI.saveAnalysisSetting).toBeCalledTimes(1);
       expect(mockAPI.saveAnalysisSetting.mock.calls[0][0]).toBe(
-        analysisSetting
+        analysisSetting,
       );
       expect(mockAnalysisManager).toBeCalledTimes(1);
       expect(mockAnalysisManager.prototype.start).toBeCalledTimes(1);
       expect(mockAnalysisManager.prototype.start.mock.calls[0][0]).toBe(
-        analysisSetting
+        analysisSetting,
       );
     });
   });
@@ -400,14 +400,14 @@ describe("store/index", () => {
     store.doMove(store.record.position.createMoveByUSI("2g2f") as Move);
     expect(store.record.current.ply).toBe(3);
     expect(store.record.position.sfen).toBe(
-      "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P4P1/PP1PPPP1P/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P4P1/PP1PPPP1P/1B5R1/LNSGKGSNL w - 1",
     );
   });
 
   it("resetRecord", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
-      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array
+      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array,
     );
     const store = createStore();
     store.openRecord();
@@ -416,7 +416,7 @@ describe("store/index", () => {
       expect(store.recordFilePath).not.toBeUndefined();
       store.resetRecord();
       expect(store.confirmation).toBe(
-        "現在の棋譜は削除されます。よろしいですか？"
+        "現在の棋譜は削除されます。よろしいですか？",
       );
       store.confirmationOk();
       expect(store.record.moves.length).toBe(1);
@@ -455,7 +455,7 @@ describe("store/index", () => {
         clipboard: {
           writeText,
         },
-      })
+      }),
     );
     const store = createStore();
     store.copyRecordKIF();
@@ -481,7 +481,7 @@ describe("store/index", () => {
     expect(moves.length).toBe(13);
     store.changePly(1);
     expect(store.record.current.comment).toBe(
-      "初手へのコメント\n* 30011 2b2a\n"
+      "初手へのコメント\n* 30011 2b2a\n",
     );
     const customData1 = store.record.current.customData as RecordCustomData;
     expect(customData1.playerSearchInfo?.score).toBe(30011);
@@ -504,7 +504,7 @@ describe("store/index", () => {
   it("openRecord/kif/success", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
-      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array
+      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array,
     );
     const store = createStore();
     store.openRecord();
@@ -527,7 +527,7 @@ describe("store/index", () => {
   it("openRecord/kif-utf8/success", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
-      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" }))
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" })),
     );
     const store = createStore();
     store.openRecord();
@@ -550,7 +550,7 @@ describe("store/index", () => {
   it("openRecord/kifu/success", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kifu");
     mockAPI.openRecord.mockResolvedValueOnce(
-      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" }))
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" })),
     );
     const store = createStore();
     store.openRecord();
@@ -573,7 +573,7 @@ describe("store/index", () => {
   it("openRecord/csa/success", () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.csa");
     mockAPI.openRecord.mockResolvedValueOnce(
-      new TextEncoder().encode(sampleCSA)
+      new TextEncoder().encode(sampleCSA),
     );
     const store = createStore();
     store.openRecord();
@@ -615,7 +615,7 @@ describe("store/index", () => {
 
   it("saveRecord/success", () => {
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
-      new Promise((resolve) => resolve("/test/sample.csa"))
+      new Promise((resolve) => resolve("/test/sample.csa")),
     );
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();
@@ -628,10 +628,10 @@ describe("store/index", () => {
       expect(mockAPI.saveRecord).toBeCalledTimes(1);
       expect(mockAPI.saveRecord.mock.calls[0][0]).toBe("/test/sample.csa");
       const data = new TextDecoder().decode(
-        mockAPI.saveRecord.mock.calls[0][1]
+        mockAPI.saveRecord.mock.calls[0][1],
       );
       expect(data).toMatch(
-        /^' CSA形式棋譜ファイル Generated by Electron Shogi\r\n/
+        /^' CSA形式棋譜ファイル Generated by Electron Shogi\r\n/,
       );
     });
   });
@@ -646,7 +646,7 @@ describe("store/index", () => {
 
   it("saveRecord/cancel", () => {
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
-      new Promise((resolve) => resolve(""))
+      new Promise((resolve) => resolve("")),
     );
     const store = createStore();
     store.saveRecord();
@@ -661,10 +661,10 @@ describe("store/index", () => {
 
   it("saveRecord/noOverwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
-      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }))
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
-      new Promise((resolve) => resolve("/test/sample2.csa"))
+      new Promise((resolve) => resolve("/test/sample2.csa")),
     );
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();
@@ -681,10 +681,10 @@ describe("store/index", () => {
 
   it("saveRecord/overwrite", async () => {
     mockAPI.openRecord.mockResolvedValueOnce(
-      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }))
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
     mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
-      new Promise((resolve) => resolve("/test/sample2.csa"))
+      new Promise((resolve) => resolve("/test/sample2.csa")),
     );
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();

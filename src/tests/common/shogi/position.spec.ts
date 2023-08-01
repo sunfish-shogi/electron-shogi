@@ -16,7 +16,7 @@ describe("shogi/position", () => {
     const position = new Position();
     expect(position.color).toBe(Color.BLACK);
     expect(position.board.at(new Square(8, 2))).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.ROOK)
+      new Piece(Color.WHITE, PieceType.ROOK),
     );
     expect(position.hand(Color.BLACK).count(PieceType.PAWN)).toBe(0);
     expect(position.hand(Color.WHITE).count(PieceType.PAWN)).toBe(0);
@@ -33,47 +33,47 @@ describe("shogi/position", () => {
     expect(position.sfen).toBe("9/9/9/9/9/9/9/9/9 b - 1");
     position.reset(InitialPositionType.STANDARD);
     expect(position.sfen).toBe(
-      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
     position.reset(InitialPositionType.HANDICAP_LANCE);
     expect(position.sfen).toBe(
-      "lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_RIGHT_LANCE);
     expect(position.sfen).toBe(
-      "1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_BISHOP);
     expect(position.sfen).toBe(
-      "lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_ROOK);
     expect(position.sfen).toBe(
-      "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_ROOK_LANCE);
     expect(position.sfen).toBe(
-      "lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_2PIECES);
     expect(position.sfen).toBe(
-      "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_4PIECES);
     expect(position.sfen).toBe(
-      "1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_6PIECES);
     expect(position.sfen).toBe(
-      "2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_8PIECES);
     expect(position.sfen).toBe(
-      "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.HANDICAP_10PIECES);
     expect(position.sfen).toBe(
-      "4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"
+      "4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
     position.reset(InitialPositionType.TSUME_SHOGI);
     expect(position.sfen).toBe("4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1");
@@ -116,7 +116,7 @@ describe("shogi/position", () => {
     expect(position.doMove(move as Move)).toBeTruthy();
     expect(position.board.at(new Square(2, 7))).toBeNull();
     expect(position.board.at(new Square(2, 6))).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.PAWN)
+      new Piece(Color.BLACK, PieceType.PAWN),
     );
     // 34FU(33)
     move = position.createMove(new Square(3, 3), new Square(3, 4));
@@ -124,7 +124,7 @@ describe("shogi/position", () => {
     expect(position.doMove(move as Move)).toBeTruthy();
     expect(position.board.at(new Square(3, 3))).toBeNull();
     expect(position.board.at(new Square(3, 4))).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.PAWN)
+      new Piece(Color.WHITE, PieceType.PAWN),
     );
     // Invalid
     move = position.createMove(new Square(2, 8), new Square(2, 6));
@@ -133,12 +133,12 @@ describe("shogi/position", () => {
     expect(
       position.doMove(move as Move, {
         ignoreValidation: true,
-      })
+      }),
     ).toBeTruthy();
     expect(position.color).toBe(Color.WHITE);
     expect(position.board.at(new Square(2, 8))).toBe(null);
     expect(position.board.at(new Square(2, 6))).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.ROOK)
+      new Piece(Color.BLACK, PieceType.ROOK),
     );
   });
 
@@ -282,7 +282,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(4, 4)
+        new Square(4, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeTruthy();
       expect(position.isValidMove(move)).toBeFalsy();
@@ -308,7 +308,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(4, 4)
+        new Square(4, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
@@ -334,7 +334,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(4, 4)
+        new Square(4, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
@@ -360,7 +360,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(4, 4)
+        new Square(4, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
@@ -387,7 +387,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(6, 4)
+        new Square(6, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeTruthy();
       expect(position.isValidMove(move)).toBeFalsy();
@@ -414,7 +414,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(6, 4)
+        new Square(6, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
@@ -441,7 +441,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(6, 4)
+        new Square(6, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
@@ -468,7 +468,7 @@ describe("shogi/position", () => {
       const position = (importKIF(data) as Record).position;
       const move = position.createMove(
         PieceType.PAWN,
-        new Square(6, 4)
+        new Square(6, 4),
       ) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
@@ -482,13 +482,13 @@ describe("shogi/position", () => {
     expect(position).toBeInstanceOf(Position);
     expect(position?.color).toBe(Color.BLACK);
     expect(position?.board.at(new Square(4, 7))).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.KING)
+      new Piece(Color.BLACK, PieceType.KING),
     );
     expect(position?.board.at(new Square(4, 3))).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.LANCE)
+      new Piece(Color.WHITE, PieceType.LANCE),
     );
     expect(position?.board.at(new Square(2, 4))).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.HORSE)
+      new Piece(Color.WHITE, PieceType.HORSE),
     );
     expect(position?.blackHand.count(PieceType.PAWN)).toBe(4);
     expect(position?.blackHand.count(PieceType.LANCE)).toBe(1);

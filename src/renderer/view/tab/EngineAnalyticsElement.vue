@@ -67,13 +67,13 @@
                 ? getDisplayScore(
                     iterate.scoreMate,
                     iterate.color,
-                    evaluationViewFrom
+                    evaluationViewFrom,
                   )
                 : iterate.score
                 ? getDisplayScore(
                     iterate.score,
                     iterate.color,
-                    evaluationViewFrom
+                    evaluationViewFrom,
                   )
                 : ""
             }}
@@ -147,7 +147,7 @@ const evaluationViewFrom = computed(() => {
 const getDisplayScore = (
   score: number,
   color: Color,
-  evaluationViewFrom: EvaluationViewFrom
+  evaluationViewFrom: EvaluationViewFrom,
 ) => {
   return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK
     ? score

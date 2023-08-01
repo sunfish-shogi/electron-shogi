@@ -7,17 +7,17 @@ import * as uri from "@/common/uri";
 export interface PlayerBuilder {
   build(
     playerSetting: PlayerSetting,
-    onSearchInfo?: (info: SearchInfo) => void
+    onSearchInfo?: (info: SearchInfo) => void,
   ): Promise<Player>;
 }
 
 export function defaultPlayerBuilder(
-  engineTimeoutSeconds?: number
+  engineTimeoutSeconds?: number,
 ): PlayerBuilder {
   return {
     async build(
       playerSetting: PlayerSetting,
-      onSearchInfo?: (info: SearchInfo) => void
+      onSearchInfo?: (info: SearchInfo) => void,
     ): Promise<Player> {
       if (playerSetting.uri === uri.ES_HUMAN) {
         return humanPlayer;
@@ -25,14 +25,14 @@ export function defaultPlayerBuilder(
         const player = new USIPlayer(
           playerSetting.usi,
           engineTimeoutSeconds ?? 10,
-          onSearchInfo
+          onSearchInfo,
         );
         await player.launch();
         return player;
       }
       throw new Error(
         "defaultPlayerBuilder#build: 予期せぬプレイヤーURIです: " +
-          playerSetting.uri
+          playerSetting.uri,
       );
     },
   };

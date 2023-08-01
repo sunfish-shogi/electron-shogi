@@ -18,7 +18,7 @@ export class HumanPlayer implements Player {
     timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,
-    handler: SearchHandler
+    handler: SearchHandler,
   ): Promise<void> {
     this.searchHandler = handler;
   }

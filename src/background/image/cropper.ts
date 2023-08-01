@@ -41,7 +41,7 @@ export async function cropPieceImage(srcURL: string): Promise<void> {
   const srcPath = fileURLToPath(srcURL);
   const destDir = getCroppedPieceImageDir(srcURL);
   getAppLogger().debug(
-    `generate cropped piece images: src=${srcPath} dst=${destDir}`
+    `generate cropped piece images: src=${srcPath} dst=${destDir}`,
   );
 
   // create folder if there is no folder

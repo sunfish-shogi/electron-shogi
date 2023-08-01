@@ -6,12 +6,12 @@ export function openWebSite(): void {
 
 export function openHowToUse(): void {
   shell.openExternal(
-    "https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9"
+    "https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9",
   );
 }
 
 export function checkLatestVersion(): void {
   shell.openExternal(
-    "https://github.com/sunfish-shogi/electron-shogi/releases/latest"
+    "https://github.com/sunfish-shogi/electron-shogi/releases/latest",
   );
 }

@@ -9,7 +9,7 @@ export class Move {
     public promote: boolean,
     public color: Color,
     public pieceType: PieceType,
-    public capturedPieceType: PieceType | null
+    public capturedPieceType: PieceType | null,
   ) {}
 
   equals(move: Move | null | undefined): boolean {
@@ -38,7 +38,7 @@ export class Move {
       true,
       this.color,
       this.pieceType,
-      this.capturedPieceType
+      this.capturedPieceType,
     );
   }
 
@@ -121,7 +121,7 @@ export function anySpecialMove(name: string): AnySpecialMove {
 }
 
 export function isKnownSpecialMove(
-  move: Move | SpecialMove
+  move: Move | SpecialMove,
 ): move is PredefinedSpecialMove {
   return !(move instanceof Move) && move.type !== "any";
 }

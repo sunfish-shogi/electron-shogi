@@ -32,7 +32,7 @@ export type USIEngineOption = {
 };
 
 export function getUSIEngineOptionCurrentValue(
-  option: USIEngineOption | null | undefined
+  option: USIEngineOption | null | undefined,
 ): string | number | undefined {
   if (!option) {
     return;
@@ -75,7 +75,7 @@ export function emptyUSIEngineSetting(): USIEngineSetting {
 }
 
 export function duplicateEngineSetting(
-  src: USIEngineSetting
+  src: USIEngineSetting,
 ): USIEngineSetting {
   const engine: USIEngineSetting = JSON.parse(JSON.stringify(src));
   engine.uri = issueEngineURI();
@@ -85,7 +85,7 @@ export function duplicateEngineSetting(
 
 export function mergeUSIEngineSetting(
   engine: USIEngineSetting,
-  local: USIEngineSetting
+  local: USIEngineSetting,
 ): void {
   engine.uri = local.uri;
   engine.name = local.name;

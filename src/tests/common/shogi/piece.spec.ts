@@ -52,57 +52,57 @@ describe("shogi/piece", () => {
   it("color", () => {
     const blackKnight = new Piece(Color.BLACK, PieceType.KNIGHT);
     expect(blackKnight.black()).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.KNIGHT)
+      new Piece(Color.BLACK, PieceType.KNIGHT),
     );
     expect(blackKnight.white()).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.KNIGHT)
+      new Piece(Color.WHITE, PieceType.KNIGHT),
     );
 
     const whiteSilver = new Piece(Color.WHITE, PieceType.SILVER);
     expect(whiteSilver.black()).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.SILVER)
+      new Piece(Color.BLACK, PieceType.SILVER),
     );
     expect(whiteSilver.white()).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.SILVER)
+      new Piece(Color.WHITE, PieceType.SILVER),
     );
   });
 
   it("comparison", () => {
     const whiteGold = new Piece(Color.WHITE, PieceType.GOLD);
     expect(
-      whiteGold.equals(new Piece(Color.WHITE, PieceType.GOLD))
+      whiteGold.equals(new Piece(Color.WHITE, PieceType.GOLD)),
     ).toBeTruthy();
     expect(
-      whiteGold.equals(new Piece(Color.BLACK, PieceType.GOLD))
+      whiteGold.equals(new Piece(Color.BLACK, PieceType.GOLD)),
     ).toBeFalsy();
     expect(
-      whiteGold.equals(new Piece(Color.WHITE, PieceType.BISHOP))
+      whiteGold.equals(new Piece(Color.WHITE, PieceType.BISHOP)),
     ).toBeFalsy();
   });
 
   it("promotion", () => {
     expect(new Piece(Color.BLACK, PieceType.LANCE).promoted()).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.PROM_LANCE)
+      new Piece(Color.BLACK, PieceType.PROM_LANCE),
     );
     expect(new Piece(Color.WHITE, PieceType.BISHOP).promoted()).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.HORSE)
+      new Piece(Color.WHITE, PieceType.HORSE),
     );
     expect(new Piece(Color.WHITE, PieceType.HORSE).promoted()).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.HORSE)
+      new Piece(Color.WHITE, PieceType.HORSE),
     );
     expect(new Piece(Color.BLACK, PieceType.GOLD).promoted()).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.GOLD)
+      new Piece(Color.BLACK, PieceType.GOLD),
     );
 
     expect(new Piece(Color.WHITE, PieceType.BISHOP).unpromoted()).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.BISHOP)
+      new Piece(Color.WHITE, PieceType.BISHOP),
     );
     expect(new Piece(Color.WHITE, PieceType.HORSE).unpromoted()).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.BISHOP)
+      new Piece(Color.WHITE, PieceType.BISHOP),
     );
 
     expect(
-      new Piece(Color.WHITE, PieceType.BISHOP).isPromotable()
+      new Piece(Color.WHITE, PieceType.BISHOP).isPromotable(),
     ).toBeTruthy();
     expect(new Piece(Color.WHITE, PieceType.HORSE).isPromotable()).toBeFalsy();
     expect(new Piece(Color.WHITE, PieceType.GOLD).isPromotable()).toBeFalsy();
@@ -133,10 +133,10 @@ describe("shogi/piece", () => {
     expect(Piece.isValidSFEN(" ")).toBeFalsy();
 
     expect(Piece.newBySFEN("+N")).toStrictEqual(
-      new Piece(Color.BLACK, PieceType.PROM_KNIGHT)
+      new Piece(Color.BLACK, PieceType.PROM_KNIGHT),
     );
     expect(Piece.newBySFEN("k")).toStrictEqual(
-      new Piece(Color.WHITE, PieceType.KING)
+      new Piece(Color.WHITE, PieceType.KING),
     );
     expect(Piece.newBySFEN("XX")).toBeNull();
   });

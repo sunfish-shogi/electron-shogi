@@ -33,13 +33,13 @@ export interface Player {
     timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,
-    handler: SearchHandler
+    handler: SearchHandler,
   ): Promise<void>;
   startPonder(
     record: ImmutableRecord,
     timeLimit: TimeLimitSetting,
     blackTimeMs: number,
-    whiteTimeMs: number
+    whiteTimeMs: number,
   ): Promise<void>;
   startMateSearch(record: ImmutableRecord, handler: MateHandler): Promise<void>;
   stop(): Promise<void>;

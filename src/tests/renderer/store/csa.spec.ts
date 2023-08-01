@@ -156,15 +156,15 @@ describe("store/csa", () => {
         expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(6);
         expect(recordManager.record.moves[1].comment).toBe(
-          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n"
+          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n",
         );
         expect(recordManager.record.moves[2].comment).toBe("");
         expect(recordManager.record.moves[3].comment).toBe(
-          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n"
+          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n",
         );
         expect(recordManager.record.moves[4].comment).toBe("");
         expect(recordManager.record.moves[5].move).toStrictEqual(
-          specialMove(SpecialMoveType.RESIGN)
+          specialMove(SpecialMoveType.RESIGN),
         );
       });
   });
@@ -200,7 +200,7 @@ describe("store/csa", () => {
           ...csaGameSetting,
           repeat: 2,
         },
-        mockPlayerBuilder
+        mockPlayerBuilder,
       )
       .then(() => {
         // waiting login
@@ -406,7 +406,7 @@ P-
         expect(mockHandlers.onError).toBeCalledTimes(0);
         expect(recordManager.record.moves).toHaveLength(10);
         expect(recordManager.record.moves[9].move).toStrictEqual(
-          specialMove(SpecialMoveType.RESIGN)
+          specialMove(SpecialMoveType.RESIGN),
         );
       });
   });
@@ -420,7 +420,7 @@ P-
       false,
       Color.BLACK,
       PieceType.PAWN,
-      null
+      null,
     );
     const info = {
       usi: "",
@@ -432,7 +432,7 @@ P-
           false,
           Color.WHITE,
           PieceType.PAWN,
-          null
+          null,
         ),
         new Move(
           new Square(2, 7),
@@ -440,7 +440,7 @@ P-
           false,
           Color.BLACK,
           PieceType.PAWN,
-          null
+          null,
         ),
         new Move(
           new Square(2, 2),
@@ -448,7 +448,7 @@ P-
           true,
           Color.WHITE,
           PieceType.BISHOP,
-          PieceType.BISHOP
+          PieceType.BISHOP,
         ),
       ],
     };
@@ -457,7 +457,7 @@ P-
       const manager = new CSAGameManager(
         recordManager,
         new Clock(),
-        new Clock()
+        new Clock(),
       );
       manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121;
       manager["onPlayerMove"](move, info);
@@ -466,7 +466,7 @@ P-
         0,
         "+7776FU",
         undefined,
-        undefined
+        undefined,
       );
     });
 
@@ -474,7 +474,7 @@ P-
       const manager = new CSAGameManager(
         recordManager,
         new Clock(),
-        new Clock()
+        new Clock(),
       );
       manager["_setting"].server.protocolVersion =
         CSAProtocolVersion.V121_FLOODGATE;
@@ -484,7 +484,7 @@ P-
         0,
         "+7776FU",
         159,
-        "-3334FU +2726FU -2288UM"
+        "-3334FU +2726FU -2288UM",
       );
     });
   });

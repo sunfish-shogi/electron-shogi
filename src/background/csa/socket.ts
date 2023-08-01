@@ -20,7 +20,7 @@ export class Socket {
           port: port,
           host: host,
         },
-        handlers.onConnect
+        handlers.onConnect,
       )
       .setKeepAlive(true)
       .on("error", handlers.onError)

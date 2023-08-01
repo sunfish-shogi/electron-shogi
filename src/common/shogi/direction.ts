@@ -254,13 +254,13 @@ const movableDirectionMap: {
 
 export function movableDirections(piece: Piece): Direction[] {
   return Object.keys(
-    movableDirectionMap[piece.color as string][piece.type]
+    movableDirectionMap[piece.color as string][piece.type],
   ) as Direction[];
 }
 
 export function resolveMoveType(
   piece: Piece,
-  direction: Direction
+  direction: Direction,
 ): MoveType | undefined {
   return movableDirectionMap[piece.color as string][piece.type][direction];
 }
@@ -284,7 +284,7 @@ export const directionToDeltaMap: {
 
 export function vectorToDirectionAndDistance(
   x: number,
-  y: number
+  y: number,
 ): {
   direction: Direction;
   distance: number;

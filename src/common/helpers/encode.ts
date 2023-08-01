@@ -9,7 +9,7 @@ export function encodeText(data: string, encoding: Encoding): Uint8Array {
       type: "arraybuffer",
       from: "UNICODE",
       to: encoding,
-    })
+    }),
   );
 }
 
@@ -34,7 +34,7 @@ export function decodeText(data: Uint8Array, option?: DecodeOption): string {
 
 export function detectTextEncoding(
   data: Uint8Array,
-  defaultEncoding?: Encoding
+  defaultEncoding?: Encoding,
 ): Encoding {
   const detected = detect(data);
   if (detected) {

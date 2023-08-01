@@ -25,28 +25,31 @@ describe("BoardView", () => {
     });
     const imgs = wrapper.findAll("img");
     expect(
-      imgs.filter((img) => img.attributes()["src"] === "./board/wood_light.png")
+      imgs.filter(
+        (img) => img.attributes()["src"] === "./board/wood_light.png",
+      ),
     ).toHaveLength(1);
     expect(
       imgs.filter(
-        (img) => img.attributes()["src"] === "./piece/hitomoji/white_bishop.png"
-      )
+        (img) =>
+          img.attributes()["src"] === "./piece/hitomoji/white_bishop.png",
+      ),
     ).toHaveLength(1);
     expect(
       imgs.filter(
-        (img) => img.attributes()["src"] === "./piece/hitomoji/black_rook.png"
-      )
+        (img) => img.attributes()["src"] === "./piece/hitomoji/black_rook.png",
+      ),
     ).toHaveLength(1);
     expect(
       imgs.filter(
-        (img) => img.attributes()["src"] === "./piece/hitomoji/black_gold.png"
-      )
+        (img) => img.attributes()["src"] === "./piece/hitomoji/black_gold.png",
+      ),
     ).toHaveLength(2);
     expect(
       imgs.filter(
         (img) =>
-          img.attributes()["src"] === "./piece/hitomoji_gothic/black_gold.png"
-      )
+          img.attributes()["src"] === "./piece/hitomoji_gothic/black_gold.png",
+      ),
     ).toHaveLength(0);
   });
 });

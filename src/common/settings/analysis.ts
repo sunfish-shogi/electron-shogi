@@ -59,7 +59,7 @@ export function defaultAnalysisSetting(): AnalysisSetting {
 }
 
 export function normalizeAnalysisSetting(
-  setting: AnalysisSetting
+  setting: AnalysisSetting,
 ): AnalysisSetting {
   return {
     ...defaultAnalysisSetting(),

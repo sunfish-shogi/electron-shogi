@@ -106,7 +106,7 @@ ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, (event) => {
   validateIPCSender(event.senderFrame);
   if (isValidRecordFilePath(initialFilePath)) {
     getAppLogger().debug(
-      `record path from open-file event: ${initialFilePath}`
+      `record path from open-file event: ${initialFilePath}`,
     );
     return initialFilePath;
   }
@@ -121,11 +121,11 @@ ipcMain.on(
   Background.UPDATE_APP_STATE,
   (_, state: AppState, bussy: boolean) => {
     getAppLogger().debug(
-      `change app state: AppState=${state} BussyState=${bussy}`
+      `change app state: AppState=${state} BussyState=${bussy}`,
     );
     appState = state;
     updateAppState(state, bussy);
-  }
+  },
 );
 
 ipcMain.on(Background.OPEN_EXPLORER, (_, targetPath: string) => {
@@ -180,7 +180,7 @@ ipcMain.handle(
       lastRecordFilePath: results[0],
     });
     return results[0];
-  }
+  },
 );
 
 ipcMain.handle(
@@ -192,7 +192,7 @@ ipcMain.handle(
     }
     getAppLogger().debug(`open record: ${path}`);
     return fs.promises.readFile(path);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -222,7 +222,7 @@ ipcMain.handle(
     const result = dialog.showSaveDialogSync(win, {
       defaultPath: path.resolve(
         path.dirname(appSetting.lastRecordFilePath),
-        defaultPath
+        defaultPath,
       ),
       properties: ["createDirectory", "showOverwriteConfirmation"],
       filters,
@@ -235,7 +235,7 @@ ipcMain.handle(
       lastRecordFilePath: result,
     });
     return result;
-  }
+  },
 );
 
 ipcMain.handle(
@@ -249,7 +249,7 @@ ipcMain.handle(
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.promises.writeFile(filePath, data);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -274,7 +274,7 @@ ipcMain.handle(
       lastOtherFilePath: results[0],
     });
     return results[0];
-  }
+  },
 );
 
 ipcMain.handle(
@@ -292,7 +292,7 @@ ipcMain.handle(
     });
     getAppLogger().debug(`select-directory dialog result: ${results}`);
     return results && results.length === 1 ? results[0] : "";
-  }
+  },
 );
 
 ipcMain.handle(
@@ -314,7 +314,7 @@ ipcMain.handle(
     return results && results.length === 1
       ? url.pathToFileURL(results[0]).toString()
       : "";
-  }
+  },
 );
 
 ipcMain.handle(
@@ -322,7 +322,7 @@ ipcMain.handle(
   async (event, fileURL: string): Promise<string> => {
     validateIPCSender(event.senderFrame);
     return getCroppedPieceImageBaseURL(fileURL);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -330,7 +330,7 @@ ipcMain.handle(
   async (event, srcURL: string): Promise<void> => {
     validateIPCSender(event.senderFrame);
     await cropPieceImage(srcURL);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -338,7 +338,7 @@ ipcMain.handle(
   async (event, json: string): Promise<void> => {
     validateIPCSender(event.senderFrame);
     await exportCapturePNG(new Rect(json));
-  }
+  },
 );
 
 ipcMain.handle(
@@ -346,7 +346,7 @@ ipcMain.handle(
   async (event, json: string): Promise<void> => {
     validateIPCSender(event.senderFrame);
     await exportCaptureJPEG(new Rect(json));
-  }
+  },
 );
 
 ipcMain.handle(
@@ -355,7 +355,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const setting = JSON.parse(json) as BatchConversionSetting;
     return JSON.stringify(convertRecordFiles(setting));
-  }
+  },
 );
 
 ipcMain.handle(Background.LOAD_APP_SETTING, (event): string => {
@@ -382,7 +382,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     getAppLogger().debug("save batch conversion setting");
     saveBatchConversionSetting(JSON.parse(json));
-  }
+  },
 );
 
 ipcMain.handle(Background.LOAD_RESEARCH_SETTING, (event): string => {
@@ -397,7 +397,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     getAppLogger().debug("save research setting");
     saveResearchSetting(JSON.parse(json));
-  }
+  },
 );
 
 ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, (event): string => {
@@ -412,7 +412,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     getAppLogger().debug("save analysis setting");
     saveAnalysisSetting(JSON.parse(json));
-  }
+  },
 );
 
 ipcMain.handle(Background.LOAD_GAME_SETTING, (event): string => {
@@ -439,7 +439,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     getAppLogger().debug("save CSA game setting history");
     saveCSAGameSettingHistory(JSON.parse(json));
-  }
+  },
 );
 
 ipcMain.handle(Background.LOAD_MATE_SEARCH_SETTING, (event): string => {
@@ -454,7 +454,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     getAppLogger().debug("save mate search setting");
     saveMateSearchSetting(JSON.parse(json));
-  }
+  },
 );
 
 ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (event): string => {
@@ -469,7 +469,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     getAppLogger().debug("save USI engine setting");
     saveUSIEngineSetting(new USIEngineSettings(json));
-  }
+  },
 );
 
 ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
@@ -502,7 +502,7 @@ ipcMain.handle(
   async (event, path: string, timeoutSeconds: number): Promise<string> => {
     validateIPCSender(event.senderFrame);
     return JSON.stringify(await usiGetUSIEngineInfo(path, timeoutSeconds));
-  }
+  },
 );
 
 ipcMain.handle(
@@ -510,7 +510,7 @@ ipcMain.handle(
   async (event, path: string, name: string, timeoutSeconds: number) => {
     validateIPCSender(event.senderFrame);
     await usiSendSetOptionCommand(path, name, timeoutSeconds);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -519,7 +519,7 @@ ipcMain.handle(
     validateIPCSender(event.senderFrame);
     const setting = JSON.parse(json) as USIEngineSetting;
     return await usiSetupPlayer(setting, timeoutSeconds);
-  }
+  },
 );
 
 ipcMain.handle(Background.USI_READY, async (event, sessionID: number) => {
@@ -535,12 +535,12 @@ ipcMain.handle(
     usi: string,
     json: string,
     blackTimeMs: number,
-    whiteTimeMs: number
+    whiteTimeMs: number,
   ) => {
     validateIPCSender(event.senderFrame);
     const timeLimit = JSON.parse(json);
     usiGo(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -551,12 +551,12 @@ ipcMain.handle(
     usi: string,
     json: string,
     blackTimeMs: number,
-    whiteTimeMs: number
+    whiteTimeMs: number,
   ) => {
     validateIPCSender(event.senderFrame);
     const timeLimit = JSON.parse(json);
     usiGoPonder(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
-  }
+  },
 );
 
 ipcMain.handle(Background.USI_GO_PONDER_HIT, (event, sessionID: number) => {
@@ -569,7 +569,7 @@ ipcMain.handle(
   (event, sessionID: number, usi: string) => {
     validateIPCSender(event.senderFrame);
     usiGoInfinite(sessionID, usi);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -577,7 +577,7 @@ ipcMain.handle(
   (event, sessionID: number, usi: string) => {
     validateIPCSender(event.senderFrame);
     usiGoMate(sessionID, usi);
-  }
+  },
 );
 
 ipcMain.handle(Background.USI_STOP, (event, sessionID: number) => {
@@ -590,7 +590,7 @@ ipcMain.handle(
   (event, sessionID: number, result: GameResult) => {
     validateIPCSender(event.senderFrame);
     usiGameover(sessionID, result);
-  }
+  },
 );
 
 ipcMain.handle(Background.USI_QUIT, (event, sessionID: number) => {
@@ -614,7 +614,7 @@ ipcMain.handle(
   (event, sessionID: number, gameID: string): void => {
     validateIPCSender(event.senderFrame);
     csaAgree(sessionID, gameID);
-  }
+  },
 );
 
 ipcMain.handle(
@@ -624,11 +624,11 @@ ipcMain.handle(
     sessionID: number,
     move: string,
     score?: number,
-    pv?: string
+    pv?: string,
   ): void => {
     validateIPCSender(event.senderFrame);
     csaDoMove(sessionID, move, score, pv);
-  }
+  },
 );
 
 ipcMain.handle(Background.CSA_RESIGN, (event, sessionID: number): void => {
@@ -686,7 +686,7 @@ export function onMenuEvent(event: MenuEvent, ...args: any[]): void {
 export function onUpdateAppSetting(setting: AppSettingUpdate): void {
   mainWindow.webContents.send(
     Renderer.UPDATE_APP_SETTING,
-    JSON.stringify(setting)
+    JSON.stringify(setting),
   );
 }
 
@@ -700,21 +700,21 @@ export function onUSIBestMove(
   sessionID: number,
   usi: string,
   usiMove: string,
-  ponder?: string
+  ponder?: string,
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_BEST_MOVE,
     sessionID,
     usi,
     usiMove,
-    ponder
+    ponder,
   );
 }
 
 export function onUSICheckmate(
   sessionID: number,
   usi: string,
-  usiMoves: string[]
+  usiMoves: string[],
 ): void {
   mainWindow.webContents.send(Renderer.USI_CHECKMATE, sessionID, usi, usiMoves);
 }
@@ -722,7 +722,7 @@ export function onUSICheckmate(
 export function onUSICheckmateNotImplemented(sessionID: number): void {
   mainWindow.webContents.send(
     Renderer.USI_CHECKMATE_NOT_IMPLEMENTED,
-    sessionID
+    sessionID,
   );
 }
 
@@ -737,37 +737,37 @@ export function onUSINoMate(sessionID: number, usi: string): void {
 export function onUSIInfo(
   sessionID: number,
   usi: string,
-  info: USIInfoCommand
+  info: USIInfoCommand,
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_INFO,
     sessionID,
     usi,
-    JSON.stringify(info)
+    JSON.stringify(info),
   );
 }
 
 export function onUSIPonderInfo(
   sessionID: number,
   usi: string,
-  info: USIInfoCommand
+  info: USIInfoCommand,
 ): void {
   mainWindow.webContents.send(
     Renderer.USI_PONDER_INFO,
     sessionID,
     usi,
-    JSON.stringify(info)
+    JSON.stringify(info),
   );
 }
 
 export function onCSAGameSummary(
   sessionID: number,
-  gameSummary: CSAGameSummary
+  gameSummary: CSAGameSummary,
 ): void {
   mainWindow.webContents.send(
     Renderer.CSA_GAME_SUMMARY,
     sessionID,
-    JSON.stringify(gameSummary)
+    JSON.stringify(gameSummary),
   );
 }
 
@@ -777,38 +777,38 @@ export function onCSAReject(sessionID: number): void {
 
 export function onCSAStart(
   sessionID: number,
-  playerStates: CSAPlayerStates
+  playerStates: CSAPlayerStates,
 ): void {
   mainWindow.webContents.send(
     Renderer.CSA_START,
     sessionID,
-    JSON.stringify(playerStates)
+    JSON.stringify(playerStates),
   );
 }
 
 export function onCSAMove(
   sessionID: number,
   move: string,
-  playerStates: CSAPlayerStates
+  playerStates: CSAPlayerStates,
 ): void {
   mainWindow.webContents.send(
     Renderer.CSA_MOVE,
     sessionID,
     move,
-    JSON.stringify(playerStates)
+    JSON.stringify(playerStates),
   );
 }
 
 export function onCSAGameResult(
   sessionID: number,
   specialMove: CSASpecialMove,
-  gameResult: CSAGameResult
+  gameResult: CSAGameResult,
 ): void {
   mainWindow.webContents.send(
     Renderer.CSA_GAME_RESULT,
     sessionID,
     specialMove,
-    gameResult
+    gameResult,
   );
 }
 

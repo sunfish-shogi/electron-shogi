@@ -38,7 +38,7 @@ const emit = defineEmits(["close"]);
 const bookmarks = store.record.bookmarks;
 const isJumpDisabled = computed(
   () =>
-    store.appState !== AppState.NORMAL && store.appState !== AppState.RESEARCH
+    store.appState !== AppState.NORMAL && store.appState !== AppState.RESEARCH,
 );
 
 onMounted(() => {

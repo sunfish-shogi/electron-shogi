@@ -11,7 +11,7 @@ export function EncryptString(plainText: string): string {
 
 export function DecryptString(
   encrypted: string,
-  defaultValue?: string
+  defaultValue?: string,
 ): string {
   try {
     return safeStorage.decryptString(Buffer.from(encrypted, "base64"));

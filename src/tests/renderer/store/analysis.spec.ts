@@ -24,7 +24,7 @@ describe("store/analysis", () => {
     mockUSIPlayer.prototype.close.mockResolvedValue();
     const recordManager = new RecordManager();
     recordManager.importRecord(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d"
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d",
     );
     const analysisSetting = baseAnalysisSetting;
     analysisSetting.startCriteria.enableNumber = false;
@@ -80,19 +80,19 @@ describe("store/analysis", () => {
     expect(recordManager.record.current.comment).toBe("");
     recordManager.changePly(1);
     expect(recordManager.record.current.comment).toBe(
-      "互角\n#評価値=20\n#エンジン=my usi engine\n"
+      "互角\n#評価値=20\n#エンジン=my usi engine\n",
     );
     recordManager.changePly(2);
     expect(recordManager.record.current.comment).toBe(
-      "互角\n#評価値=30\n#エンジン=my usi engine\n"
+      "互角\n#評価値=30\n#エンジン=my usi engine\n",
     );
     recordManager.changePly(3);
     expect(recordManager.record.current.comment).toBe(
-      "互角\n#評価値=40\n#エンジン=my usi engine\n"
+      "互角\n#評価値=40\n#エンジン=my usi engine\n",
     );
     recordManager.changePly(4);
     expect(recordManager.record.current.comment).toBe(
-      "互角\n#評価値=50\n#エンジン=my usi engine\n"
+      "互角\n#評価値=50\n#エンジン=my usi engine\n",
     );
   });
 });

@@ -103,11 +103,11 @@ const lazyUpdateDelay = 100;
 
 const appSetting = useAppSetting();
 const windowSize = reactive(
-  new RectSize(window.innerWidth, window.innerHeight)
+  new RectSize(window.innerWidth, window.innerHeight),
 );
 const topPaneHeightPercentage = ref(appSetting.topPaneHeightPercentage);
 const bottomLeftPaneWidthPercentage = ref(
-  appSetting.bottomLeftPaneWidthPercentage
+  appSetting.bottomLeftPaneWidthPercentage,
 );
 const boardPaneSize = reactive(new RectSize(0, 0));
 
@@ -136,7 +136,7 @@ const updateAppSetting = (update: AppSettingUpdate) => {
   appSetting.updateAppSetting(update).catch((e) => {
     api.log(
       LogLevel.WARN,
-      "StandardLayout: failed to update app setting: " + toString(e)
+      "StandardLayout: failed to update app setting: " + toString(e),
     );
   });
 };
@@ -158,7 +158,7 @@ const onUnhideTabView = () => {
     appSetting.topPanePreviousHeightPercentage,
     ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) /
       windowSize.height) *
-      100
+      100,
   );
   topPaneHeightPercentage.value = newValue;
   updateAppSetting({ topPaneHeightPercentage: newValue });
@@ -207,8 +207,8 @@ const boardPaneMaxSize = computed(() => {
         (topPaneHeightPercentage.value / 100) -
         margin * 2 -
         (isBottomPaneVisible.value ? 0 : tabHeaderHeight),
-      0
-    )
+      0,
+    ),
   );
 });
 
@@ -239,7 +239,7 @@ const tabPaneSize = computed(() => {
       : (windowSize.width - splitterWidth) *
         (bottomLeftPaneWidthPercentage.value / 100),
     (windowSize.height - splitterWidth) *
-      (bottomPaneHeightPercentage.value / 100)
+      (bottomPaneHeightPercentage.value / 100),
   );
 });
 
@@ -248,7 +248,7 @@ const tabPaneSize2 = computed(() => {
     (windowSize.width - splitterWidth) *
       (1.0 - bottomLeftPaneWidthPercentage.value / 100),
     (windowSize.height - splitterWidth) *
-      (bottomPaneHeightPercentage.value / 100)
+      (bottomPaneHeightPercentage.value / 100),
   );
 });
 </script>

@@ -33,7 +33,7 @@ describe("store/record", () => {
             false,
             Color.BLACK,
             PieceType.PAWN,
-            null
+            null,
           ),
           new Move(
             new Square(3, 3),
@@ -41,17 +41,17 @@ describe("store/record", () => {
             false,
             Color.WHITE,
             PieceType.PAWN,
-            null
+            null,
           ),
         ],
       },
       CommentBehavior.INSERT,
       {
         engineName: "Engine01",
-      }
+      },
     );
     expect(recordManager.record.current.comment).toBe(
-      "互角\n#評価値=158\n#読み筋=▲７六歩△３四歩\n#深さ=8\n#エンジン=Engine01\n"
+      "互角\n#評価値=158\n#読み筋=▲７六歩△３四歩\n#深さ=8\n#エンジン=Engine01\n",
     );
     recordManager.appendSearchComment(
       SearchInfoSenderType.PLAYER,
@@ -65,7 +65,7 @@ describe("store/record", () => {
             false,
             Color.BLACK,
             PieceType.PAWN,
-            null
+            null,
           ),
           new Move(
             new Square(3, 3),
@@ -73,14 +73,14 @@ describe("store/record", () => {
             false,
             Color.WHITE,
             PieceType.PAWN,
-            null
+            null,
           ),
         ],
       },
-      CommentBehavior.INSERT
+      CommentBehavior.INSERT,
     );
     expect(recordManager.record.current.comment).toBe(
-      "先手有望\n*評価値=210\n*読み筋=▲２六歩△３四歩\n*深さ=10\n\n互角\n#評価値=158\n#読み筋=▲７六歩△３四歩\n#深さ=8\n#エンジン=Engine01\n"
+      "先手有望\n*評価値=210\n*読み筋=▲２六歩△３四歩\n*深さ=10\n\n互角\n#評価値=158\n#読み筋=▲７六歩△３四歩\n#深さ=8\n#エンジン=Engine01\n",
     );
   });
 
@@ -93,7 +93,7 @@ describe("store/record", () => {
         false,
         Color.BLACK,
         PieceType.PAWN,
-        null
+        null,
       ),
       new Move(
         new Square(3, 3),
@@ -101,7 +101,7 @@ describe("store/record", () => {
         false,
         Color.WHITE,
         PieceType.PAWN,
-        null
+        null,
       ),
     ]);
     expect(recordManager.record.current.ply).toBe(0);

@@ -204,7 +204,7 @@ export class Position {
       false,
       this.color,
       pieceType,
-      capturedPiece ? capturedPiece.type : null
+      capturedPiece ? capturedPiece.type : null,
     );
   }
 
@@ -231,7 +231,7 @@ export class Position {
       return false;
     }
     const kingSquare = move.to.neighbor(
-      move.color === Color.BLACK ? Direction.UP : Direction.DOWN
+      move.color === Color.BLACK ? Direction.UP : Direction.DOWN,
     );
     const king = this.board.at(kingSquare);
     if (!king || king.type !== PieceType.KING || king.color === move.color) {
@@ -366,7 +366,7 @@ export class Position {
       if (move.capturedPieceType) {
         const capturedPiece = new Piece(
           reverseColor(this.color),
-          move.capturedPieceType
+          move.capturedPieceType,
         );
         this._board.set(move.to, capturedPiece);
         if (capturedPiece.type !== PieceType.KING) {
@@ -603,7 +603,7 @@ export function countExistingPieces(position: ImmutablePosition): PieceCounts {
 }
 
 export function countNotExistingPieces(
-  position: ImmutablePosition
+  position: ImmutablePosition,
 ): PieceCounts {
   const existed = countExistingPieces(position);
   return {

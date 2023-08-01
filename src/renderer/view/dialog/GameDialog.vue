@@ -84,10 +84,10 @@
                 :label="t.enableEngineTimeout"
                 :value="enableEngineTimeout"
                 @change="
-                (value: boolean) => {
-                  enableEngineTimeout = value;
-                }
-              "
+                  (value: boolean) => {
+                    enableEngineTimeout = value;
+                  }
+                "
               />
             </div>
           </div>
@@ -142,11 +142,11 @@
                 :label="t.setDifferentTimeForGote"
                 :value="setDifferentTime"
                 @change="
-                (value: boolean) => {
-                  setDifferentTime = value;
-                  onUpdateSetDifferentTime();
-                }
-              "
+                  (value: boolean) => {
+                    setDifferentTime = value;
+                    onUpdateSetDifferentTime();
+                  }
+                "
               />
             </div>
           </div>
@@ -215,10 +215,10 @@
                 :label="t.swapTurnWhenGameRepetition"
                 :value="swapPlayers"
                 @change="
-                (value: boolean) => {
-                  swapPlayers = value;
-                }
-              "
+                  (value: boolean) => {
+                    swapPlayers = value;
+                  }
+                "
               />
             </div>
             <div class="form-item">
@@ -226,10 +226,10 @@
                 :label="t.outputComments"
                 :value="enableComment"
                 @change="
-                (value: boolean) => {
-                  enableComment = value;
-                }
-              "
+                  (value: boolean) => {
+                    enableComment = value;
+                  }
+                "
               />
             </div>
             <div class="form-item">
@@ -237,10 +237,10 @@
                 :label="t.saveRecordAutomatically"
                 :value="enableAutoSave"
                 @change="
-                (value: boolean) => {
-                  enableAutoSave = value;
-                }
-              "
+                  (value: boolean) => {
+                    enableAutoSave = value;
+                  }
+                "
               />
             </div>
             <div class="form-item">
@@ -248,10 +248,10 @@
                 :label="t.adjustBoardToHumanPlayer"
                 :value="humanIsFront"
                 @change="
-                (value: boolean) => {
-                  humanIsFront = value;
-                }
-              "
+                  (value: boolean) => {
+                    humanIsFront = value;
+                  }
+                "
               />
             </div>
           </div>
@@ -356,7 +356,7 @@ onUpdated(() => {
     return;
   }
   hours.value.value = Math.floor(
-    gameSetting.value.timeLimit.timeSeconds / 3600
+    gameSetting.value.timeLimit.timeSeconds / 3600,
   );
   minutes.value.value =
     Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
@@ -387,7 +387,7 @@ onUpdated(() => {
 const buildPlayerSetting = (playerURI: string): PlayerSetting => {
   if (uri.isUSIEngine(playerURI) && engineSettings.value.hasEngine(playerURI)) {
     const engine = engineSettings.value.getEngine(
-      playerURI
+      playerURI,
     ) as USIEngineSetting;
     return {
       name: engine.name,

@@ -60,7 +60,7 @@ export class Client {
   constructor(
     private sessionID: number,
     private setting: CSAServerSetting,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   on(event: "gameSummary", callback: GameSummaryCallback): this;
@@ -102,7 +102,7 @@ export class Client {
       "sid=%d: connecting to %s:%d",
       this.sessionID,
       this.setting.host,
-      this.setting.port
+      this.setting.port,
     );
     this.state = State.CONNECTING;
     this.socket = new Socket(this.setting.host, this.setting.port, {
@@ -201,14 +201,14 @@ export class Client {
       this.logger.info(
         "sid=%d: failed to send command caused by invalid socket: %s",
         this.sessionID,
-        command
+        command,
       );
       return;
     }
     this.logger.info(
       "sid=%d: > %s",
       this.sessionID,
-      this.hideSecureValues(command)
+      this.hideSecureValues(command),
     );
     this.socket.write(command);
   }
@@ -257,7 +257,7 @@ export class Client {
           this.logger.info("sid=%d: socket closed", this.sessionID);
         } else {
           this.onError(
-            new Error(t.errorOccuredWhileDisconnectingFromCSAServer)
+            new Error(t.errorOccuredWhileDisconnectingFromCSAServer),
           );
         }
         break;

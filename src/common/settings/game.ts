@@ -66,7 +66,7 @@ export function normalizeGameSetting(setting: GameSetting): GameSetting {
 }
 
 export function validateGameSetting(
-  gameSetting: GameSetting
+  gameSetting: GameSetting,
 ): Error | undefined {
   if (
     gameSetting.timeLimit.timeSeconds === 0 &&
@@ -98,7 +98,7 @@ export function validateGameSetting(
 }
 
 export function validateGameSettingForWeb(
-  gameSetting: GameSetting
+  gameSetting: GameSetting,
 ): Error | undefined {
   const result = validateGameSetting(gameSetting);
   if (result) {

@@ -103,7 +103,7 @@ const engines = computed(() =>
         filterString(engine.name, filterWords.value) ||
         filterString(engine.defaultName, filterWords.value),
     };
-  })
+  }),
 );
 
 const updateFilter = () => {

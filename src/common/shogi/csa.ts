@@ -295,7 +295,7 @@ function parseSpecialMove(line: string): SpecialMoveType | undefined {
 
 export function parseCSAMove(
   position: ImmutablePosition,
-  line: string
+  line: string,
 ): Move | Error {
   return parseMove(line, position);
 }
@@ -323,7 +323,7 @@ export function importCSA(data: string): Record | Error {
           if (inMoveSection) {
             record.current.comment = appendLine(
               record.current.comment,
-              parsed.args[0]
+              parsed.args[0],
             );
           } else {
             preMoveComment = appendLine(preMoveComment, parsed.args[0]);
@@ -334,13 +334,13 @@ export function importCSA(data: string): Record | Error {
         case LineType.BLACK_NAME:
           metadata.setStandardMetadata(
             RecordMetadataKey.BLACK_NAME,
-            parsed.args[0]
+            parsed.args[0],
           );
           break;
         case LineType.WHITE_NAME:
           metadata.setStandardMetadata(
             RecordMetadataKey.WHITE_NAME,
-            parsed.args[0]
+            parsed.args[0],
           );
           break;
         case LineType.METADATA: {
@@ -416,7 +416,7 @@ type CSAExportOptions = {
 
 function formatMetadata(
   metadata: ImmutableRecordMetadata,
-  options: CSAExportOptions
+  options: CSAExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
@@ -488,7 +488,7 @@ function formatHand(hand: ImmutableHand): string {
 
 function formatPosition(
   position: ImmutablePosition,
-  options: CSAExportOptions
+  options: CSAExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
@@ -556,7 +556,7 @@ export function formatCSAMove(move: Move): string {
 
 export function exportCSA(
   record: ImmutableRecord,
-  options: CSAExportOptions
+  options: CSAExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";

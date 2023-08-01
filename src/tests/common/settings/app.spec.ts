@@ -19,28 +19,28 @@ describe("settings/csa", () => {
       getPieceImageBaseURL({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI,
-      })
+      }),
     ).toBe("./piece/hitomoji");
 
     expect(
       getPieceImageBaseURL({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI_GOTHIC,
-      })
+      }),
     ).toBe("./piece/hitomoji_gothic");
 
     expect(
       getPieceImageBaseURL({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI_DARK,
-      })
+      }),
     ).toBe("./piece/hitomoji_dark");
 
     expect(
       getPieceImageBaseURL({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI_GOTHIC_DARK,
-      })
+      }),
     ).toBe("./piece/hitomoji_gothic_dark");
 
     expect(
@@ -49,7 +49,7 @@ describe("settings/csa", () => {
         pieceImage: PieceImageType.CUSTOM_IMAGE,
         pieceImageFileURL: "/home/user/pictures/piece.png",
         croppedPieceImageBaseURL: "file:///home/user/.cache/piece",
-      })
+      }),
     ).toBe("file:///home/user/.cache/piece");
   });
 });

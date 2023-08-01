@@ -21,35 +21,55 @@
               class="toggle"
               label=".kif"
               :value="sourceFormats.kif"
-              @change="(val: boolean) => { sourceFormats.kif = val }"
+              @change="
+                (val: boolean) => {
+                  sourceFormats.kif = val;
+                }
+              "
             />
             <ToggleButton
               ref="sourceFormatKIFU"
               class="toggle"
               label=".kifu"
               :value="sourceFormats.kifu"
-              @change="(val: boolean) => { sourceFormats.kifu = val }"
+              @change="
+                (val: boolean) => {
+                  sourceFormats.kifu = val;
+                }
+              "
             />
             <ToggleButton
               ref="sourceFormatKI2"
               class="toggle"
               label=".ki2"
               :value="sourceFormats.ki2"
-              @change="(val: boolean) => { sourceFormats.ki2 = val }"
+              @change="
+                (val: boolean) => {
+                  sourceFormats.ki2 = val;
+                }
+              "
             />
             <ToggleButton
               ref="sourceFormatKI2U"
               class="toggle"
               label=".ki2u"
               :value="sourceFormats.ki2u"
-              @change="(val: boolean) => { sourceFormats.ki2u = val }"
+              @change="
+                (val: boolean) => {
+                  sourceFormats.ki2u = val;
+                }
+              "
             />
             <ToggleButton
               ref="sourceFormatCSA"
               class="toggle"
               label=".csa"
               :value="sourceFormats.csa"
-              @change="(val: boolean) => { sourceFormats.csa = val }"
+              @change="
+                (val: boolean) => {
+                  sourceFormats.csa = val;
+                }
+              "
             />
           </div>
         </div>
@@ -58,7 +78,11 @@
           <ToggleButton
             class="toggle"
             :value="subdirectories"
-            @change="(val: boolean) => { subdirectories = val }"
+            @change="
+              (val: boolean) => {
+                subdirectories = val;
+              }
+            "
           />
         </div>
         <hr />
@@ -83,7 +107,11 @@
               { label: '.csa', value: RecordFileFormat.CSA },
             ]"
             :value="destinationFormat"
-            @change="(val: RecordFileFormat) => { destinationFormat = val }"
+            @change="
+              (val: RecordFileFormat) => {
+                destinationFormat = val;
+              }
+            "
           />
         </div>
         <div class="form-item row">
@@ -98,7 +126,11 @@
               { label: t.skip, value: FileNameConflictAction.SKIP },
             ]"
             :value="fileNameConflictAction"
-            @change="(val: FileNameConflictAction) => {fileNameConflictAction = val}"
+            @change="
+              (val: FileNameConflictAction) => {
+                fileNameConflictAction = val;
+              }
+            "
           />
         </div>
       </div>
@@ -175,11 +207,11 @@ onMounted(async () => {
     sourceFormats.value = {
       kif: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KIF),
       kifu: batchConversionSetting.sourceFormats.includes(
-        RecordFileFormat.KIFU
+        RecordFileFormat.KIFU,
       ),
       ki2: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KI2),
       ki2u: batchConversionSetting.sourceFormats.includes(
-        RecordFileFormat.KI2U
+        RecordFileFormat.KI2U,
       ),
       csa: batchConversionSetting.sourceFormats.includes(RecordFileFormat.CSA),
     };
@@ -250,7 +282,7 @@ const convert = async () => {
               children: [
                 t.totalNumber(result.succeededTotal),
                 ...Object.entries(result.succeeded).map(
-                  ([key, value]) => `${key}: ${t.number(value)}`
+                  ([key, value]) => `${key}: ${t.number(value)}`,
                 ),
               ],
             },
@@ -259,7 +291,7 @@ const convert = async () => {
               children: [
                 t.totalNumber(result.failedTotal),
                 ...Object.entries(result.failed).map(
-                  ([key, value]) => `${key}: ${t.number(value)}`
+                  ([key, value]) => `${key}: ${t.number(value)}`,
                 ),
               ],
             },
@@ -268,7 +300,7 @@ const convert = async () => {
               children: [
                 t.totalNumber(result.skippedTotal),
                 ...Object.entries(result.skipped).map(
-                  ([key, value]) => `${key}: ${t.number(value)}`
+                  ([key, value]) => `${key}: ${t.number(value)}`,
                 ),
               ],
             },

@@ -87,31 +87,31 @@ export class Hand {
     let ret = "";
     ret += buildSFEN(
       this.count(PieceType.ROOK) as number,
-      new Piece(color, PieceType.ROOK)
+      new Piece(color, PieceType.ROOK),
     );
     ret += buildSFEN(
       this.count(PieceType.BISHOP) as number,
-      new Piece(color, PieceType.BISHOP)
+      new Piece(color, PieceType.BISHOP),
     );
     ret += buildSFEN(
       this.count(PieceType.GOLD) as number,
-      new Piece(color, PieceType.GOLD)
+      new Piece(color, PieceType.GOLD),
     );
     ret += buildSFEN(
       this.count(PieceType.SILVER) as number,
-      new Piece(color, PieceType.SILVER)
+      new Piece(color, PieceType.SILVER),
     );
     ret += buildSFEN(
       this.count(PieceType.KNIGHT) as number,
-      new Piece(color, PieceType.KNIGHT)
+      new Piece(color, PieceType.KNIGHT),
     );
     ret += buildSFEN(
       this.count(PieceType.LANCE) as number,
-      new Piece(color, PieceType.LANCE)
+      new Piece(color, PieceType.LANCE),
     );
     ret += buildSFEN(
       this.count(PieceType.PAWN) as number,
-      new Piece(color, PieceType.PAWN)
+      new Piece(color, PieceType.PAWN),
     );
     if (ret === "") {
       return "-";
@@ -149,7 +149,7 @@ export class Hand {
       return null;
     }
     const sections = sfen.match(
-      /([0-9]*[PLNSGBRplnsgbr])/g
+      /([0-9]*[PLNSGBRplnsgbr])/g,
     ) as RegExpMatchArray;
     const black = new Hand();
     const white = new Hand();

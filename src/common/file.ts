@@ -18,7 +18,7 @@ export enum RecordFileFormat {
 }
 
 export function detectRecordFileFormatByPath(
-  path: string
+  path: string,
 ): RecordFileFormat | undefined {
   for (const ext of Object.values(RecordFileFormat)) {
     if (path.toLowerCase().endsWith(ext)) {
@@ -28,7 +28,7 @@ export function detectRecordFileFormatByPath(
 }
 
 function getRecommendedEncodingByFileFormat(
-  format: RecordFileFormat
+  format: RecordFileFormat,
 ): "UTF8" | "SJIS" {
   switch (format) {
     default:
@@ -42,7 +42,7 @@ function getRecommendedEncodingByFileFormat(
 export function importRecordFromBuffer(
   data: Uint8Array,
   format: RecordFileFormat,
-  option?: { autoDetect?: boolean }
+  option?: { autoDetect?: boolean },
 ): Record | Error {
   const text = decodeText(data, {
     encoding: getRecommendedEncodingByFileFormat(format),
@@ -73,7 +73,7 @@ export type ExportResult = {
 export function exportRecordAsBuffer(
   record: Record,
   format: RecordFileFormat,
-  opt: ExportOptions
+  opt: ExportOptions,
 ): ExportResult {
   const encoding = getRecommendedEncodingByFileFormat(format);
   let str: string;

@@ -9,7 +9,7 @@ import {
 export function dirname(path: string): string {
   return path.substring(
     0,
-    Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"))
+    Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")),
   );
 }
 
@@ -53,7 +53,7 @@ function getDateStringByMeta(metadata: ImmutableRecordMetadata): string {
 
 export function defaultRecordFileName(
   metadata: ImmutableRecordMetadata,
-  extension?: string
+  extension?: string,
 ): string {
   let ret = getDateStringByMeta(metadata);
   const title =

@@ -20,7 +20,7 @@ export function defaultResearchSetting(): ResearchSetting {
 }
 
 export function normalizeResearchSetting(
-  setting: ResearchSetting
+  setting: ResearchSetting,
 ): ResearchSetting {
   return {
     ...defaultResearchSetting(),
@@ -30,7 +30,7 @@ export function normalizeResearchSetting(
 }
 
 export function validateResearchSetting(
-  setting: ResearchSetting
+  setting: ResearchSetting,
 ): Error | undefined {
   if (!setting.usi) {
     return new Error(t.engineNotSelected);

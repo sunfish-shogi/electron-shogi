@@ -265,7 +265,7 @@ watch(
   [() => props.position, () => props.allowEdit, () => props.allowMove],
   () => {
     resetState();
-  }
+  },
 );
 
 const clickFrame = () => {
@@ -275,7 +275,7 @@ const clickFrame = () => {
 const updatePointer = (
   newPointer: Square | Piece,
   empty: boolean,
-  color: Color | undefined
+  color: Color | undefined,
 ) => {
   const prevPointer = state.pointer;
   resetState();
@@ -392,7 +392,7 @@ const layoutBuilder = computed(() => {
     props.pieceImageBaseUrl,
     props.kingPieceType,
     props.customBoardImageUrl,
-    props.customPieceStandImageUrl
+    props.customPieceStandImageUrl,
   );
   builder.preload();
   return builder;
@@ -405,7 +405,7 @@ const layout = computed(() => {
     props.lastMove,
     state.pointer,
     state.reservedMove,
-    props.flip
+    props.flip,
   );
   emit("resize", layout.frame.size);
   return layout;

@@ -38,7 +38,7 @@ function invoke(
   gameSetting: GameSetting,
   playerBuilder: PlayerBuilder,
   assert: (gameResults: GameResults, specialMoveType: SpecialMoveType) => void,
-  interrupt?: (manager: GameManager) => void
+  interrupt?: (manager: GameManager) => void,
 ) {
   return new Promise<void>((resolve, reject) => {
     const manager = new GameManager(recordManager, new Clock(), new Clock())
@@ -132,18 +132,18 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
         expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f",
         );
         expect(recordManager.record.moves[1].comment).toBe(
-          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n"
+          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n",
         );
         expect(recordManager.record.moves[2].comment).toBe(
-          "互角\n*評価値=64\n*読み筋=▲２六歩△８四歩\n"
+          "互角\n*評価値=64\n*読み筋=▲２六歩△８四歩\n",
         );
         expect(recordManager.record.moves[3].comment).toBe(
-          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n"
+          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n",
         );
-      }
+      },
     );
   });
 
@@ -192,9 +192,9 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
         expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f 2c2d"
+          "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f 2c2d",
         );
-      }
+      },
     );
   });
 
@@ -248,12 +248,12 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
         expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f",
         );
       },
       (manager) => {
         setTimeout(() => manager.endGame(SpecialMoveType.INTERRUPT), 100);
-      }
+      },
     );
   });
 
@@ -306,8 +306,8 @@ describe("store/game", () => {
         expect(specialMoveType).toBe(SpecialMoveType.RESIGN);
         expect(
           recordManager.record.metadata.getStandardMetadata(
-            RecordMetadataKey.TITLE
-          )
+            RecordMetadataKey.TITLE,
+          ),
         ).toBe("連続対局 2/2");
         expect(mockBlackPlayer.readyNewGame).toBeCalledTimes(2);
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(3);
@@ -325,9 +325,9 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(14);
         expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d"
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d",
         );
-      }
+      },
     );
   });
 
@@ -373,8 +373,8 @@ describe("store/game", () => {
         expect(specialMoveType).toBe(SpecialMoveType.RESIGN);
         expect(
           recordManager.record.metadata.getStandardMetadata(
-            RecordMetadataKey.TITLE
-          )
+            RecordMetadataKey.TITLE,
+          ),
         ).toBe("連続対局 2/2");
         expect(mockBlackPlayer.startSearch).toBeCalledTimes(2);
         expect(mockBlackPlayer.startPonder).toBeCalledTimes(4);
@@ -390,9 +390,9 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(12);
         expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f"
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f",
         );
-      }
+      },
     );
   });
 
@@ -447,9 +447,9 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(9);
         expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d"
+          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d",
         );
-      }
+      },
     );
   });
 });

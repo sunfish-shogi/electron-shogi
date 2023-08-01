@@ -19,7 +19,7 @@ export type USIInfoCommand = {
 
 export function parseUSIPV(
   position: ImmutablePosition,
-  usiPv: string[]
+  usiPv: string[],
 ): Move[] {
   const pv: Move[] = [];
   const pos = position.clone();

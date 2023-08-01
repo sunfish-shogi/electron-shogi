@@ -61,7 +61,7 @@ export class Clock {
         this._timeMs = 0;
         this._byoyomi = Math.max(
           Math.ceil((this.setting.byoyomi || 0) + timeMs / 1e3),
-          0
+          0,
         );
       }
       if (this.timeMs === 0 && this.byoyomi === 0) {

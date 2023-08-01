@@ -222,7 +222,7 @@ export type AppSettingUpdate = {
 
 export function buildUpdatedAppSetting(
   org: AppSetting,
-  update: AppSettingUpdate
+  update: AppSettingUpdate,
 ): AppSetting | Error {
   const updated = {
     ...org,
@@ -317,7 +317,7 @@ export function normalizeAppSetting(
   opt?: {
     returnCode?: string;
     autoSaveDirectory?: string;
-  }
+  },
 ): AppSetting {
   const result = {
     ...defaultAppSetting(opt),

@@ -12,11 +12,11 @@ describe("security", () => {
   it("validateIPCSender/notAllowed", () => {
     // unknown hostname
     expect(() =>
-      validateIPCSender({ url: "http://foo.bar/baz/qux.quux" } as any)
+      validateIPCSender({ url: "http://foo.bar/baz/qux.quux" } as any),
     ).toThrow();
     // https will not used with localhost
     expect(() =>
-      validateIPCSender({ url: "https://localhost:1234/foo/bar.baz" } as any)
+      validateIPCSender({ url: "https://localhost:1234/foo/bar.baz" } as any),
     ).toThrow();
   });
 
@@ -25,7 +25,7 @@ describe("security", () => {
     validateHTTPRequest("GET", "ws://localhost:1234/foo/bar.baz");
     validateHTTPRequest(
       "GET",
-      "file:///home/shogi/apps/electron-shogi/assets.asr"
+      "file:///home/shogi/apps/electron-shogi/assets.asr",
     );
     validateHTTPRequest("GET", "devtools://devtools/bundled/index.html");
   });
@@ -33,15 +33,15 @@ describe("security", () => {
   it("validateHTTPRequest/notAllowed", () => {
     // unknown hostname
     expect(() =>
-      validateHTTPRequest("GET", "http://foo.bar/baz/qux.quux")
+      validateHTTPRequest("GET", "http://foo.bar/baz/qux.quux"),
     ).toThrow();
     // https will not used with localhost
     expect(() =>
-      validateHTTPRequest("GET", "https://localhost:1234/foo/bar.baz")
+      validateHTTPRequest("GET", "https://localhost:1234/foo/bar.baz"),
     ).toThrow();
     // unexpected devtools URL
     expect(() =>
-      validateHTTPRequest("GET", "devtools://foo/bar/baz.qux")
+      validateHTTPRequest("GET", "devtools://foo/bar/baz.qux"),
     ).toThrow();
   });
 });

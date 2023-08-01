@@ -125,8 +125,6 @@ export type Texts = {
   darkGreen: string;
   dark: string;
   piece: string;
-  shinryu: string;
-  shinryuSogyoku: string;
   singleKanjiPiece: string;
   singleKanjiGothicPiece: string;
   singleKanjiDarkPiece: string;

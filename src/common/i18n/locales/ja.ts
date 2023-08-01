@@ -127,8 +127,6 @@ export const ja: Texts = {
   darkGreen: "深緑",
   dark: "ダーク",
   piece: "駒",
-  shinryu: "新龍",
-  shinryuSogyoku: "新龍（双玉）",
   singleKanjiPiece: "一文字駒",
   singleKanjiGothicPiece: "一文字駒（ゴシック体）",
   singleKanjiDarkPiece: "一文字駒（ダーク）",

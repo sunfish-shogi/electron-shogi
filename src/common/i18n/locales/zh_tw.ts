@@ -127,8 +127,6 @@ export const zh_tw: Texts = {
   darkGreen: "深緑", // TODO: translate
   dark: "深色主題",
   piece: "棋駒",
-  shinryu: "新龍",
-  shinryuSogyoku: "新龍（雙玉）",
   singleKanjiPiece: "一文字駒",
   singleKanjiGothicPiece: "一文字駒（黑體）",
   singleKanjiDarkPiece: "一文字駒（深色）",

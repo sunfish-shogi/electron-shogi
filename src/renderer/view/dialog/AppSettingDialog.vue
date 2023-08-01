@@ -94,8 +94,6 @@
               class="selector"
               :value="pieceImage"
               :items="[
-                { label: t.shinryu, value: PieceImage.SHINRYU },
-                { label: t.shinryuSogyoku, value: PieceImage.SHINRYU_SOGYOKU },
                 { label: t.singleKanjiPiece, value: PieceImage.HITOMOJI },
                 {
                   label: t.singleKanjiGothicPiece,
@@ -653,8 +651,6 @@ import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 
 enum PieceImage {
-  SHINRYU = "shinryu",
-  SHINRYU_SOGYOKU = "shinryuSogyoku",
   HITOMOJI = "hitomoji",
   HITOMOJI_DARK = "hitomojiDark",
   HITOMOJI_GOTHIC = "hitomojiGothic",
@@ -664,13 +660,6 @@ enum PieceImage {
 
 function toPieceImage(setting: AppSetting): PieceImage {
   switch (setting.pieceImage) {
-    case PieceImageType.SHINRYU:
-      switch (setting.kingPieceType) {
-        default:
-          return PieceImage.SHINRYU;
-        case KingPieceType.GYOKU_AND_GYOKU:
-          return PieceImage.SHINRYU_SOGYOKU;
-      }
     case PieceImageType.HITOMOJI:
       return PieceImage.HITOMOJI;
     case PieceImageType.HITOMOJI_DARK:
@@ -686,16 +675,6 @@ function toPieceImage(setting: AppSetting): PieceImage {
 
 function pieceImageToSetting(pieceImage: PieceImage) {
   switch (pieceImage) {
-    case PieceImage.SHINRYU:
-      return {
-        pieceImage: PieceImageType.SHINRYU,
-        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
-      };
-    case PieceImage.SHINRYU_SOGYOKU:
-      return {
-        pieceImage: PieceImageType.SHINRYU,
-        kingPieceType: KingPieceType.GYOKU_AND_GYOKU,
-      };
     case PieceImage.HITOMOJI:
       return {
         pieceImage: PieceImageType.HITOMOJI,

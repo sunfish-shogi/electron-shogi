@@ -19,7 +19,6 @@ export enum BackgroundImageType {
 }
 
 export enum PieceImageType {
-  SHINRYU = "shinryu",
   HITOMOJI = "hitomoji",
   HITOMOJI_DARK = "hitomojiDark",
   HITOMOJI_GOTHIC = "hitomojiGothic",
@@ -264,7 +263,7 @@ export function defaultAppSetting(opt?: {
     language: Language.JA,
     thema: Thema.STANDARD,
     backgroundImageType: BackgroundImageType.NONE,
-    pieceImage: PieceImageType.SHINRYU,
+    pieceImage: PieceImageType.HITOMOJI,
     kingPieceType: KingPieceType.GYOKU_AND_OSHO,
     boardImage: BoardImageType.RESIN2,
     pieceStandImage: PieceStandImageType.STANDARD,
@@ -430,8 +429,6 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
 
 export function getPieceImageBaseURL(setting: AppSetting): string {
   switch (setting.pieceImage) {
-    case PieceImageType.SHINRYU:
-      return "./piece/shinryu";
     case PieceImageType.HITOMOJI_DARK:
       return "./piece/hitomoji_dark";
     case PieceImageType.HITOMOJI_GOTHIC:

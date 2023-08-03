@@ -13,8 +13,8 @@ export const zh_tw: Texts = {
   openAutoSavingDirectory: "打開自動保存目錄",
   exportPositionImage: "輸出局面圖",
   positionImage: "局面圖",
-  batchConversion: "一括変換", // TODO: translate
-  recordFileBatchConversion: "棋譜ファイル一括変換", // TODO: translate
+  batchConversion: "棋譜大量轉換",
+  recordFileBatchConversion: "棋譜大量轉換",
   close: "關閉",
   quit: "離開",
   editing: "編輯",
@@ -50,19 +50,19 @@ export const zh_tw: Texts = {
   openWebSite: "官方網站",
   howToUse: "使用教學",
   checkForUpdates: "檢查最新版本",
-  inputs: "入力", // TODO: translate
-  outputs: "出力", // TODO: translate
-  format: "フォーマット", // TODO: translate
-  formats: "フォーマット", // TODO: translate
-  subdirectory: "サブディレクトリ", // TODO: translate
-  nameConflictAction: "名前衝突時の動作", // TODO: translate
-  numberSuffix: "番号付与", // TODO: translate
-  skip: "スキップ", // TODO: translate
-  convert: "変換", // TODO: translate
-  openLogFile: "ログファイルを開く", // TODO: translate
-  succeeded: "成功", // TODO: translate
-  failed: "失敗", // TODO: translate
-  skipped: "スキップ", // TODO: translate
+  inputs: "輸入目錄",
+  outputs: "輸出目錄",
+  format: "格式",
+  formats: "格式",
+  subdirectory: "子目錄",
+  nameConflictAction: "名稱衝突處理方式",
+  numberSuffix: "附加編號",
+  skip: "跳過該檔案",
+  convert: "開始轉換",
+  openLogFile: "打開記錄檔案",
+  succeeded: "成功",
+  failed: "失敗",
+  skipped: "跳過",
   game: "對局",
   player: "玩家",
   selectFromHistory: "從紀錄選取",
@@ -87,7 +87,7 @@ export const zh_tw: Texts = {
   stopGame: "對局中斷",
   resign: "投了",
   draw: "平手",
-  impass: "持将棋",
+  impass: "持將棋",
   repetitionDraw: "千日手",
   mate: "詰死",
   noMate: "無詰",
@@ -124,7 +124,7 @@ export const zh_tw: Texts = {
   customImage: "自定義圖片",
   autumn: "紅葉",
   snow: "雪",
-  darkGreen: "深緑", // TODO: translate
+  darkGreen: "深綠",
   dark: "深色主題",
   piece: "棋駒",
   singleKanjiPiece: "一文字駒",
@@ -205,7 +205,7 @@ export const zh_tw: Texts = {
   swapSenteGote: "先後交換",
   currentPosition: "現在局面",
   enableEngineTimeout: "開啟引擎時間限制",
-  setDifferentTimeForGote: "後手に異なる時間を設定", // TODO: translate
+  setDifferentTimeForGote: "先後手時間不相同",
   nextTurn: "手番",
   elapsedTime: "消費時間",
   elapsed: "經過時間",
@@ -325,7 +325,7 @@ export const zh_tw: Texts = {
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",
   insertedComment: "已加入備註。",
-  conversionCompleted: "変換が完了しました。", // TODO: Translate
+  conversionCompleted: "轉換完成。",
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中 log 會於 console 中顯示，並無視此處的設定。",
@@ -403,10 +403,10 @@ export const zh_tw: Texts = {
   mistakeThresholdMustBe1To100Percent: "請在0%～100%之間指定惡手門檻。",
   blunderThresholdMustBe1To100Percent: "請在0%～100%之間指定大惡手門檻。",
   recordSavedWithGarbledCharacters:
-    "保存した棋譜の一部が文字化けしている可能性があります。",
-  pleaseConsiderToUseKIFU: "KIFU形式(UTF-8)で保存することをお勧めします。",
+    "保存的棋譜有部分可能會造成亂碼。",
+  pleaseConsiderToUseKIFU: "建議您使用KIFU形式(UTF-8)儲存您的棋譜。",
   youCanChangeDefaultRecordFileFormatFromAppSettings:
-    "デフォルトの棋譜形式はアプリ設定で変更可能です。",
+    "預設棋譜檔案格式可以在程式設定中進行更動。",
   inaccuracyThresholdMustBeLessThanDubiousThreshold:
     "緩手門檻應小於疑問手門檻。",
   dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手門檻應小於惡手門檻。",
@@ -421,9 +421,9 @@ export const zh_tw: Texts = {
   idIsEmpty: "ID 為空。",
   engineNotSelected: "尚未選擇引擎。",
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
-    "変換ログを出力するにはアプリログを有効にし、ログレベルをデバッグに設定してアプリを再起動してください。", // TODO: translate
-  totalNumber: (n: number) => `合計 ${n} 件`, // TODO: translate
-  number: (n: number) => `${n} 件`, // TODO: translate
+    "如要監看轉換紀錄，請在程式設定內設定 log level 到 Debug 並重新啟動本程式。",
+  totalNumber: (n: number) => `總計 ${n} 筆`,
+  number: (n: number) => `${n} 筆`,
   tryToReloginToCSAServerNSecondsLater: (n) =>
     `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
   mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,

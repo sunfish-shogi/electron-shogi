@@ -402,8 +402,7 @@ export const zh_tw: Texts = {
   dubiousThresholdMustBe1To100Percent: "請在0%～100%之間指定疑問手門檻。",
   mistakeThresholdMustBe1To100Percent: "請在0%～100%之間指定惡手門檻。",
   blunderThresholdMustBe1To100Percent: "請在0%～100%之間指定大惡手門檻。",
-  recordSavedWithGarbledCharacters:
-    "保存的棋譜有部分可能會造成亂碼。",
+  recordSavedWithGarbledCharacters: "保存的棋譜有部分可能會造成亂碼。",
   pleaseConsiderToUseKIFU: "建議您使用KIFU形式(UTF-8)儲存您的棋譜。",
   youCanChangeDefaultRecordFileFormatFromAppSettings:
     "預設棋譜檔案格式可以在程式設定中進行更動。",

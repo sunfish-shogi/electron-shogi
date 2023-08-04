@@ -223,8 +223,10 @@ export interface ImmutableRecord {
   readonly usiAll: string;
   readonly sfen: string;
   readonly bookmarks: string[];
-  // 深さ優先で全てのノードを訪問します。
-  forEach(handler: (node: ImmutableNode) => void): void;
+  // 深さ優先で全てのノードを訪問します。ハンドラーの第2引数で着手前の局面を受け取ることができます。
+  forEach(
+    handler: (node: ImmutableNode, base: ImmutablePosition) => void,
+  ): void;
   on(event: "changePosition", handler: () => void): void;
 }
 
@@ -700,34 +702,50 @@ export class Record {
   }
 
   // 深さ優先で全てのノードを訪問します。
-  forEach(handler: (node: Node) => void): void {
+  forEach(handler: (node: Node, base: ImmutablePosition) => void): void {
     this._forEach(handler);
   }
 
-  private _forEach(handler: (node: NodeImpl) => void): void {
-    this.find((node) => {
-      handler(node);
+  private _forEach(
+    handler: (node: NodeImpl, base: ImmutablePosition) => void,
+  ): void {
+    this.find((node, base) => {
+      handler(node, base);
       return false;
     });
   }
 
-  private find(handler: (node: NodeImpl) => boolean): NodeImpl | null {
-    let p: NodeImpl | null = this._first;
+  private find(
+    handler: (node: NodeImpl, base: ImmutablePosition) => boolean,
+  ): NodeImpl | null {
+    let p: NodeImpl = this._first;
+    const pos = this.initialPosition.clone();
     const stack: NodeImpl[] = [];
-    while (p) {
-      if (handler(p)) {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (handler(p, pos)) {
         return p;
       }
-      if (p.branch) {
-        stack.push(p.branch);
-      }
       if (p.next) {
+        stack.push(p);
+        if (p.move instanceof Move) {
+          pos.doMove(p.move);
+        }
         p = p.next;
-      } else {
-        p = stack.pop() || null;
+        continue;
       }
+      while (!p.branch) {
+        const last = stack.pop();
+        if (!last) {
+          return null;
+        }
+        if (p.move instanceof Move) {
+          pos.undoMove(p.move);
+        }
+        p = last;
+      }
+      p = p.branch;
     }
-    return null;
   }
 
   on(event: "changePosition", handler: () => void): void;

@@ -452,7 +452,7 @@ export class Position {
   getSFEN(nextPly: number): string {
     let ret = `${this._board.sfen} ${colorToSFEN(this.color)} `;
     ret += Hand.formatSFEN(this._blackHand, this._whiteHand);
-    ret += " " + nextPly;
+    ret += " " + Math.max(nextPly, 1);
     return ret;
   }
 

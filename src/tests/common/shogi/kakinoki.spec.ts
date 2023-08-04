@@ -1225,4 +1225,32 @@ describe("shogi/kakinoki", () => {
 `,
     );
   });
+
+  it("export/ki2/long", () => {
+    const record = Record.newByUSI(
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2h5h 8c8d 7g7f 8d8e 8h7g 3c3d 6g6f 7a6b 1g1f 5a4b 5i4h 4b3b 4h3h 5c5d 7i7h 2b3c 5h6h 3c4b 1f1e 8e8f 8g8f 4b8f 7g8f 8b8f B*7g 8f8b 6f6e 3a2b P*8c 8b8c 6e6d 6a5b 7g2b+ 3b2b S*7b 8c8b 6d6c+ 6b6c 7b6c 5b4b P*8c 8b8c 6c5d P*5f 5g5f P*5c 5d4e P*8g 6h6b+ 8g8h+ 4e3d 8h7h 3d4c S*5a 4c4b 5a4b S*4c S*5a 4c4b 5a4b G*5b 4a5b 6b5b G*5a S*4c S*4a 5b7b 8c8i+ 6i5i B*4e P*6c B*9d P*8c 9d7f G*5e N*5g 5e4e 5g4i+ B*6f P*3c 5i4i 8i4i 3h2h 4i5h N*4h 5h6i 7b8a 6i6f 4c4b 4a4b S*6b 7f4i+ N*3d 3c3d 8a5a 4i3i 2h3i 6f6i G*4i 4b5a 6b5a B*7f B*5e P*4d S*3h N*1f 5e4d S*3c 4d3c+ 2a3c 1i1f G*1h S*1g R*7i N*5i 3c4e 1e1d 1c1d 5a6b+ B*1i 1f1d S*2h 1g2h 1h2h",
+    ) as Record;
+    record.append(SpecialMoveType.RESIGN);
+    expect(exportKI2(record, {})).toBe(`手合割：平手
+▲５八飛△８四歩▲７六歩△８五歩▲７七角△３四歩▲６六歩△６二銀
+▲１六歩△４二玉▲４八玉△３二玉▲３八玉△５四歩▲７八銀△３三角
+▲６八飛△４二角▲１五歩△８六歩▲同　歩△同　角▲同　角△同　飛
+▲７七角△８二飛▲６五歩△２二銀▲８三歩△同　飛▲６四歩
+△５二金右▲２二角成△同　玉▲７二銀△８二飛▲６三歩成△同　銀
+▲同　銀不成△４二金寄▲８三歩△同　飛▲５四銀不成△５六歩
+▲同　歩△５三歩▲４五銀△８七歩▲６二飛成△８八歩成▲３四銀
+△７八と▲４三銀不成△５一銀▲４二銀不成△同　銀▲４三銀
+△５一銀打▲４二銀不成△同　銀▲５二金△同　金▲同　龍△５一金
+▲４三銀△４一銀▲７二龍△８九飛成▲５九金左△４五角▲６三歩
+△９四角▲８三歩△７六角▲５五金△５七桂▲４五金△４九桂成
+▲６六角△３三歩▲４九金△同　龍▲２八玉△５八龍▲４八桂△６九龍
+▲８一龍△６六龍▲４二銀不成△同　銀▲６二銀△４九角成▲３四桂
+△同　歩▲５一龍△３九馬▲同　玉△６九龍▲４九金△５一銀
+▲同　銀不成△７六角▲５五角△４四歩▲３八銀△１六桂▲４四角
+△３三銀▲同　角成△同　桂▲１六香△１八金▲１七銀△７九飛
+▲５九桂△４五桂▲１四歩△同　歩▲６二銀成△１九角▲１四香
+△２八銀▲同　銀△同　金
+まで124手で後手の勝ち
+`);
+  });
 });

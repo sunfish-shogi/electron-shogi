@@ -1,7 +1,10 @@
 import {
   Color,
   exportKIF,
+  formatMove,
+  formatSpecialMove,
   getNextColorFromUSI,
+  importKI2,
   importKIF,
   Move,
   Record,
@@ -360,6 +363,86 @@ describe("shogi/record", () => {
     expect((record.current.move as Move).usi).toBe("8b2b");
     expect(record.jumpToBookmark("開始局面")).toBeTruthy();
     expect(record.current.ply).toBe(0);
+  });
+
+  it("forEach", () => {
+    const data = `
+手合割：平手
+▲５六歩△３四歩▲５八飛△３二飛▲７六歩△４二銀
+まで6手で中断
+変化：4手
+△６二銀▲７六歩
+変化：1手
+▲７六歩△３四歩▲６六歩△３二飛
+`;
+    const record = importKI2(data) as Record;
+    const results: [string, string][] = [];
+    record.forEach((node, pos) => {
+      results.push([
+        node.move instanceof Move
+          ? formatMove(pos, node.move)
+          : formatSpecialMove(node.move),
+        pos.getSFEN(node.ply),
+      ]);
+    });
+    expect(results).toStrictEqual([
+      [
+        "開始局面",
+        "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
+      ],
+      [
+        "☗５六歩",
+        "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
+      ],
+      [
+        "☖３四歩",
+        "lnsgkgsnl/1r5b1/ppppppppp/9/9/4P4/PPPP1PPPP/1B5R1/LNSGKGSNL w - 2",
+      ],
+      [
+        "☗５八飛",
+        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B5R1/LNSGKGSNL b - 3",
+      ],
+      [
+        "☖３二飛",
+        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL w - 4",
+      ],
+      [
+        "☗７六歩",
+        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5",
+      ],
+      [
+        "☖４二銀",
+        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/2P1P4/PP1P1PPPP/1B2R4/LNSGKGSNL w - 6",
+      ],
+      [
+        "中断",
+        "lnsgkg1nl/5srb1/pppppp1pp/6p2/9/2P1P4/PP1P1PPPP/1B2R4/LNSGKGSNL b - 7",
+      ],
+      [
+        "☖６二銀",
+        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 4",
+      ],
+      [
+        "☗７六歩",
+        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5",
+      ],
+      [
+        "☗７六歩",
+        "lnSgkgsnl/6rb1/ppppppPpp/9/9/4P4/PPpP1PPPP/1B5r1/LNSGKGSNL b - 1",
+      ],
+      [
+        "☖３四歩",
+        "lnSgkgsnl/6rb1/ppppppPpp/9/9/4P4/PPpP1PPPP/1B5r1/LNSGKGSNL b - 2",
+      ],
+      [
+        "☗６六歩",
+        "lnSgkgsnl/6rb1/ppppppPpp/9/9/4P4/PPpP1PPPP/1B5r1/LNSGKGSNL b - 3",
+      ],
+      [
+        "☖３二飛",
+        "lnSgkgsnl/6rb1/ppppppPpp/9/9/3PP4/PPp2PPPP/1B5r1/LNSGKGSNL w - 4",
+      ],
+    ]);
   });
 
   it("newByUSI/position-startpos", () => {

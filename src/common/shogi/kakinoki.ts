@@ -649,13 +649,13 @@ const specialMoveToString = {
   [SpecialMoveType.LOSE_BY_DEFAULT]: "不戦敗",
 };
 
-type KakinokiExportOptions = {
+type KIFExportOptions = {
   returnCode?: string;
 };
 
 function formatMetadata(
   metadata: ImmutableRecordMetadata,
-  options: KakinokiExportOptions,
+  options: KIFExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
@@ -674,7 +674,7 @@ function formatMetadata(
 
 function formatPosition(
   position: ImmutablePosition,
-  options: KakinokiExportOptions,
+  options: KIFExportOptions,
 ): string {
   const returnCode = options.returnCode || "\n";
 
@@ -764,7 +764,7 @@ function formatHand(hand: ImmutableHand): string {
 
 export function exportKIF(
   record: ImmutableRecord,
-  options: KakinokiExportOptions,
+  options: KIFExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
@@ -807,15 +807,21 @@ export function exportKIF(
   return ret;
 }
 
+type KI2ExportOptions = {
+  returnCode?: string;
+  maxLineLength?: number;
+};
+
 export function exportKI2(
   record: ImmutableRecord,
-  options: KakinokiExportOptions,
+  options: KI2ExportOptions,
 ): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
+  const maxLineLength = options.maxLineLength ? options.maxLineLength : 32;
   ret += formatMetadata(record.metadata, options);
   ret += formatPosition(record.initialPosition, options);
-  record.forEach((node) => {
+  record.forEach((node, pos) => {
     if (node.ply !== 0) {
       if (!node.isFirstBranch) {
         if (!ret.endsWith(returnCode)) {
@@ -825,11 +831,16 @@ export function exportKI2(
         ret += "変化：" + node.ply + "手" + returnCode;
       }
       if (node.move instanceof Move) {
-        ret += formatMove2(record.position, node.move, {
+        const str = formatMove2(pos, node.move, {
           lastMove:
             node.prev?.move instanceof Move ? node.prev.move : undefined,
           compatible: true,
         });
+        const lastLineLength = ret.length - ret.lastIndexOf(returnCode) - 1;
+        if (lastLineLength + str.length > maxLineLength) {
+          ret += returnCode;
+        }
+        ret += str;
       } else {
         if (!ret.endsWith(returnCode)) {
           ret += returnCode;

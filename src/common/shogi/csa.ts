@@ -486,12 +486,38 @@ function formatHand(hand: ImmutableHand): string {
   return ret;
 }
 
+const sfenToPCommand: { [sfen: string]: [string, string] } = {
+  [InitialPositionSFEN.STANDARD]: ["PI", "+"],
+  [InitialPositionSFEN.HANDICAP_LANCE]: ["PI11KY", "-"],
+  [InitialPositionSFEN.HANDICAP_RIGHT_LANCE]: ["PI91KY", "-"],
+  [InitialPositionSFEN.HANDICAP_BISHOP]: ["PI22KA", "-"],
+  [InitialPositionSFEN.HANDICAP_ROOK]: ["PI82HI", "-"],
+  [InitialPositionSFEN.HANDICAP_ROOK_LANCE]: ["PI82HI11KY", "-"],
+  [InitialPositionSFEN.HANDICAP_2PIECES]: ["PI82HI22KA", "-"],
+  [InitialPositionSFEN.HANDICAP_4PIECES]: ["PI82HI22KA11KY91KY", "-"],
+  [InitialPositionSFEN.HANDICAP_6PIECES]: ["PI82HI22KA21KE81KE11KY91KY", "-"],
+  [InitialPositionSFEN.HANDICAP_8PIECES]: [
+    "PI82HI22KA31GI71GI21KE81KE11KY91KY",
+    "-",
+  ],
+  [InitialPositionSFEN.HANDICAP_10PIECES]: [
+    "PI82HI22KA41KI61KI31GI71GI21KE81KE11KY91KY",
+    "-",
+  ],
+};
+
 function formatPosition(
   position: ImmutablePosition,
   options: CSAExportOptions,
 ): string {
-  let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
+
+  const p = sfenToPCommand[position.sfen];
+  if (p) {
+    return p[0] + returnCode + p[1] + returnCode;
+  }
+
+  let ret = "";
   for (let rank = 1; rank <= 9; rank += 1) {
     ret += "P" + rank;
     for (let file = 9; file >= 1; file -= 1) {

@@ -679,27 +679,27 @@ function formatPosition(
   const returnCode = options.returnCode || "\n";
 
   switch (position.sfen) {
-    case "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1":
+    case InitialPositionSFEN.STANDARD:
       return "手合割：平手" + returnCode;
-    case "lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_LANCE:
       return "手合割：香落ち" + returnCode;
-    case "1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_RIGHT_LANCE:
       return "手合割：右香落ち" + returnCode;
-    case "lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_BISHOP:
       return "手合割：角落ち" + returnCode;
-    case "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_ROOK:
       return "手合割：飛車落ち" + returnCode;
-    case "lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_ROOK_LANCE:
       return "手合割：飛香落ち" + returnCode;
-    case "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_2PIECES:
       return "手合割：二枚落ち" + returnCode;
-    case "1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_4PIECES:
       return "手合割：四枚落ち" + returnCode;
-    case "2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_6PIECES:
       return "手合割：六枚落ち" + returnCode;
-    case "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_8PIECES:
       return "手合割：八枚落ち" + returnCode;
-    case "4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1":
+    case InitialPositionSFEN.HANDICAP_10PIECES:
       return "手合割：十枚落ち" + returnCode;
   }
 

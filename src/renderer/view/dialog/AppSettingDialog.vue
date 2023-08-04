@@ -860,7 +860,7 @@ const selectAutoSaveDirectory = async () => {
 };
 
 const onOpenAutoSaveDirectory = () => {
-  api.openExplorer(appSetting.autoSaveDirectory);
+  api.openExplorer(autoSaveDirectory.value.value);
 };
 
 const cancel = () => {

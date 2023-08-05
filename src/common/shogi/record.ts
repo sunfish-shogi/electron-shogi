@@ -739,8 +739,8 @@ export class Record {
         if (!last) {
           return null;
         }
-        if (p.move instanceof Move) {
-          pos.undoMove(p.move);
+        if (last.move instanceof Move) {
+          pos.undoMove(last.move);
         }
         p = last;
       }

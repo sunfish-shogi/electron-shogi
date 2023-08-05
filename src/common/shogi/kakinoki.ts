@@ -229,7 +229,7 @@ function parseLine(line: string): Line {
       };
     }
   }
-  const metadataPrefix = line.match(/^[^ ]+[：:]/);
+  const metadataPrefix = line.match(/^[^ ：:]+[：:]/);
   if (metadataPrefix) {
     const prefix = metadataPrefix[0];
     return {

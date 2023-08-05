@@ -489,6 +489,8 @@ function readEndOfGame(record: Record, data: string): void {
     record.append(specialMove(SpecialMoveType.FOUL_WIN));
   } else if (clean.endsWith("反則負け")) {
     record.append(specialMove(SpecialMoveType.FOUL_LOSE));
+  } else if (clean.endsWith("入玉勝ち")) {
+    record.append(specialMove(SpecialMoveType.ENTERING_OF_KING));
   } else if (clean.endsWith("勝ち")) {
     record.append(specialMove(SpecialMoveType.RESIGN));
   } else {
@@ -857,6 +859,9 @@ export function exportKI2(
               break;
             case SpecialMoveType.TIMEOUT:
               ret += `時間切れにより${last}の勝ち`;
+              break;
+            case SpecialMoveType.ENTERING_OF_KING:
+              ret += `${next}の入玉勝ち`;
               break;
             case SpecialMoveType.FOUL_WIN:
               ret += `${next}の反則勝ち`;

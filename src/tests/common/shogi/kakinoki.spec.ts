@@ -988,6 +988,7 @@ describe("shogi/kakinoki", () => {
 まで107手で後手の反則負け
 まで108手で詰
 まで109手で不詰
+まで296手で先手の入玉勝ち
 `;
     const record = importKI2(data) as Record;
     expect(record).toBeInstanceOf(Record);
@@ -1022,6 +1023,18 @@ describe("shogi/kakinoki", () => {
     record.switchBranchByIndex(7);
     expect(record.current.move as SpecialMove).toStrictEqual(
       specialMove(SpecialMoveType.FOUL_LOSE),
+    );
+    record.switchBranchByIndex(8);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.MATE),
+    );
+    record.switchBranchByIndex(9);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.NO_MATE),
+    );
+    record.switchBranchByIndex(10);
+    expect(record.current.move as SpecialMove).toStrictEqual(
+      specialMove(SpecialMoveType.ENTERING_OF_KING),
     );
   });
 
@@ -1203,6 +1216,7 @@ describe("shogi/kakinoki", () => {
     record.append(SpecialMoveType.FOUL_WIN);
     record.append(SpecialMoveType.FOUL_LOSE);
     record.append(SpecialMoveType.IMPASS);
+    record.append(SpecialMoveType.ENTERING_OF_KING);
     record.append(anySpecialMove("foo"));
     expect(exportKI2(record, {})).toBe(
       `手合割：平手
@@ -1219,6 +1233,9 @@ describe("shogi/kakinoki", () => {
 
 変化：1手
 まで0手で持将棋
+
+変化：1手
+まで0手で先手の入玉勝ち
 
 変化：1手
 まで0手でfoo

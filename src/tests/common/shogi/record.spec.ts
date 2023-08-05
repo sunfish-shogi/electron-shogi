@@ -420,27 +420,27 @@ describe("shogi/record", () => {
       ],
       [
         "☖６二銀",
-        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 4",
+        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL w - 4",
       ],
       [
         "☗７六歩",
-        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5",
+        "ln1gkgsnl/1r1s3b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5",
       ],
       [
         "☗７六歩",
-        "lnSgkgsnl/6rb1/ppppppPpp/9/9/4P4/PPpP1PPPP/1B5r1/LNSGKGSNL b - 1",
+        "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
       ],
       [
         "☖３四歩",
-        "lnSgkgsnl/6rb1/ppppppPpp/9/9/4P4/PPpP1PPPP/1B5r1/LNSGKGSNL b - 2",
+        "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 2",
       ],
       [
         "☗６六歩",
-        "lnSgkgsnl/6rb1/ppppppPpp/9/9/4P4/PPpP1PPPP/1B5r1/LNSGKGSNL b - 3",
+        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 3",
       ],
       [
         "☖３二飛",
-        "lnSgkgsnl/6rb1/ppppppPpp/9/9/3PP4/PPp2PPPP/1B5r1/LNSGKGSNL w - 4",
+        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2PP5/PP2PPPPP/1B5R1/LNSGKGSNL w - 4",
       ],
     ]);
   });

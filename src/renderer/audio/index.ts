@@ -33,10 +33,7 @@ function beep(options?: {
   }
 }
 
-export function beepShort(options: {
-  frequency?: number;
-  volume?: number;
-}): void {
+export function beepShort(options: { frequency?: number; volume?: number }): void {
   beep({
     type: "sine",
     frequency: options.frequency,
@@ -45,10 +42,7 @@ export function beepShort(options: {
   });
 }
 
-export function beepUnlimited(options: {
-  frequency?: number;
-  volume?: number;
-}): void {
+export function beepUnlimited(options: { frequency?: number; volume?: number }): void {
   beep({
     type: "sine",
     frequency: options.frequency,

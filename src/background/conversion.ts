@@ -5,10 +5,7 @@ import {
   exportRecordAsBuffer,
   importRecordFromBuffer,
 } from "@/common/file";
-import {
-  BatchConversionSetting,
-  FileNameConflictAction,
-} from "@/common/settings/conversion";
+import { BatchConversionSetting, FileNameConflictAction } from "@/common/settings/conversion";
 import fs from "fs";
 import path from "path";
 import { getAppLogger } from "@/background/log";
@@ -32,9 +29,7 @@ function getAlternativeFilePathWithNumberSuffix(
   return filePath;
 }
 
-export function convertRecordFiles(
-  setting: BatchConversionSetting,
-): BatchConversionResult {
+export function convertRecordFiles(setting: BatchConversionSetting): BatchConversionResult {
   const appSetting = loadAppSetting();
   const result: BatchConversionResult = {
     succeeded: {},
@@ -45,24 +40,19 @@ export function convertRecordFiles(
     skippedTotal: 0,
   };
 
-  getAppLogger().debug(
-    `batch conversion: start ${setting.source} -> ${setting.destination}`,
-  );
+  getAppLogger().debug(`batch conversion: start ${setting.source} -> ${setting.destination}`);
   listFiles(setting.source, setting.subdirectories ? Infinity : 0)
     .filter((file) => {
       const ext = path.extname(file).toLowerCase();
       return setting.sourceFormats.includes(ext as RecordFileFormat);
     })
     .forEach((source) => {
-      const sourceFormat = detectRecordFileFormatByPath(
-        source,
-      ) as RecordFileFormat;
+      const sourceFormat = detectRecordFileFormatByPath(source) as RecordFileFormat;
       try {
         // Import record
         const sourceData = fs.readFileSync(source);
         const record = importRecordFromBuffer(sourceData, sourceFormat, {
-          autoDetect:
-            appSetting.textDecodingRule === TextDecodingRule.AUTO_DETECT,
+          autoDetect: appSetting.textDecodingRule === TextDecodingRule.AUTO_DETECT,
         });
         if (record instanceof Error) {
           throw record;
@@ -81,10 +71,7 @@ export function convertRecordFiles(
               break;
             case FileNameConflictAction.NUMBER_SUFFIX:
               {
-                const alt = getAlternativeFilePathWithNumberSuffix(
-                  destination,
-                  100,
-                );
+                const alt = getAlternativeFilePathWithNumberSuffix(destination, 100);
                 if (alt instanceof Error) {
                   throw alt;
                 }
@@ -93,8 +80,7 @@ export function convertRecordFiles(
               break;
             case FileNameConflictAction.SKIP:
               result.skippedTotal++;
-              result.skipped[sourceFormat] =
-                (result.skipped[sourceFormat] || 0) + 1;
+              result.skipped[sourceFormat] = (result.skipped[sourceFormat] || 0) + 1;
               getAppLogger().debug(`batch conversion: skipped: ${source}`);
               return;
           }
@@ -105,20 +91,13 @@ export function convertRecordFiles(
         fs.mkdirSync(destinationDir, { recursive: true });
 
         // Export record
-        const exportResult = exportRecordAsBuffer(
-          record,
-          setting.destinationFormat,
-          {
-            returnCode: appSetting.returnCode,
-          },
-        );
+        const exportResult = exportRecordAsBuffer(record, setting.destinationFormat, {
+          returnCode: appSetting.returnCode,
+        });
         fs.writeFileSync(destination, exportResult.data);
         result.succeededTotal++;
-        result.succeeded[sourceFormat] =
-          (result.succeeded[sourceFormat] || 0) + 1;
-        getAppLogger().debug(
-          `batch conversion: succeeded: ${source} -> ${destination}`,
-        );
+        result.succeeded[sourceFormat] = (result.succeeded[sourceFormat] || 0) + 1;
+        getAppLogger().debug(`batch conversion: succeeded: ${source} -> ${destination}`);
       } catch (e) {
         result.failedTotal++;
         result.failed[sourceFormat] = (result.failed[sourceFormat] || 0) + 1;

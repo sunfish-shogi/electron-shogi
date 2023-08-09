@@ -6,16 +6,9 @@ import {
   CSASpecialMove,
   emptyCSAGameSummary,
 } from "@/common/csa";
-import {
-  defaultPlayerBuilder,
-  PlayerBuilder,
-} from "@/renderer/players/builder";
+import { defaultPlayerBuilder, PlayerBuilder } from "@/renderer/players/builder";
 import { Player, SearchInfo } from "@/renderer/players/player";
-import {
-  CSAGameSetting,
-  CSAProtocolVersion,
-  defaultCSAGameSetting,
-} from "@/common/settings/csa";
+import { CSAGameSetting, CSAProtocolVersion, defaultCSAGameSetting } from "@/common/settings/csa";
 import {
   Color,
   RecordFormatType,
@@ -162,10 +155,7 @@ export class CSAGameManager {
   /**
    * CSA サーバーにログインする。
    */
-  async login(
-    setting: CSAGameSetting,
-    playerBuilder: PlayerBuilder,
-  ): Promise<void> {
+  async login(setting: CSAGameSetting, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.sessionID) {
       throw new Error("CSAGameManager#start: session already exists");
     }
@@ -204,9 +194,7 @@ export class CSAGameManager {
     } catch (e) {
       this._state = CSAGameState.LOGIN_FAILED;
       this.close(ReloginBehavior.RELOGIN_WITH_INTERVAL);
-      throw new Error(
-        `CSAGameManager#relogin: ${t.failedToStartNewGame}: ${e}`,
-      );
+      throw new Error(`CSAGameManager#relogin: ${t.failedToStartNewGame}: ${e}`);
     }
   }
 
@@ -229,10 +217,7 @@ export class CSAGameManager {
 
   private close(reloginBehavior: ReloginBehavior): void {
     // 既に停止済みであるかログインの非同期処理を待っている場合は何もしない。
-    if (
-      this._state === CSAGameState.OFFLINE ||
-      this._state === CSAGameState.WAITING_LOGIN
-    ) {
+    if (this._state === CSAGameState.OFFLINE || this._state === CSAGameState.WAITING_LOGIN) {
       return;
     }
 
@@ -252,9 +237,7 @@ export class CSAGameManager {
       releaseSession(this.sessionID);
       api.csaLogout(this.sessionID).catch((e) => {
         this.onError(
-          new Error(
-            `CSAGameManager#close: ${t.errorOccuredWhileLogoutFromCSAServer}: ${e}`,
-          ),
+          new Error(`CSAGameManager#close: ${t.errorOccuredWhileLogoutFromCSAServer}: ${e}`),
         );
       });
       this.sessionID = 0;
@@ -274,17 +257,10 @@ export class CSAGameManager {
     }
 
     // 連続対局の条件を満たしていない場合はプレイヤーセッションを閉じ、ハンドラーを呼び出して終了する。
-    if (
-      reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN ||
-      this.repeat >= this.setting.repeat
-    ) {
+    if (reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN || this.repeat >= this.setting.repeat) {
       if (this.player) {
         this.player.close().catch((e) => {
-          this.onError(
-            new Error(
-              `CSAGameManager#close: ${t.failedToShutdownEngines}: ${e}`,
-            ),
-          );
+          this.onError(new Error(`CSAGameManager#close: ${t.failedToShutdownEngines}: ${e}`));
         });
         this.player = undefined;
       }
@@ -308,10 +284,7 @@ export class CSAGameManager {
     this.gameSummary = gameSummary;
 
     // 開始局面（途中再開の場合は再開局面までの指し手）を読み込む。
-    const error = this.recordManager.importRecord(
-      this.gameSummary.position,
-      RecordFormatType.CSA,
-    );
+    const error = this.recordManager.importRecord(this.gameSummary.position, RecordFormatType.CSA);
     if (error) {
       this.onError(`CSAGameManager#onGameSummary: ${error}`);
       this.close(ReloginBehavior.DO_NOT_RELOGIN);
@@ -337,11 +310,9 @@ export class CSAGameManager {
       blackName: this.gameSummary.blackPlayerName,
       whiteName: this.gameSummary.whitePlayerName,
       timeLimit: {
-        timeSeconds:
-          (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3,
+        timeSeconds: (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3,
         byoyomi: (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3,
-        increment:
-          (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3,
+        increment: (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3,
       },
     });
 
@@ -361,9 +332,7 @@ export class CSAGameManager {
     // 指し手を読み取る。
     const move = parseCSAMove(this.recordManager.record.position, data);
     if (move instanceof Error) {
-      this.onError(
-        `CSAGameManager#onMove: 解釈できない指し手 [${data}]: ${move.message}`,
-      );
+      this.onError(`CSAGameManager#onMove: 解釈できない指し手 [${data}]: ${move.message}`);
       return;
     }
 
@@ -378,10 +347,7 @@ export class CSAGameManager {
 
     // 探索情報を記録する。
     if (isMyMove && this.searchInfo) {
-      this.recordManager.updateSearchInfo(
-        SearchInfoSenderType.PLAYER,
-        this.searchInfo,
-      );
+      this.recordManager.updateSearchInfo(SearchInfoSenderType.PLAYER, this.searchInfo);
     }
 
     // コメントを記録する。
@@ -399,9 +365,7 @@ export class CSAGameManager {
 
   private parseElapsedMs(data: string): number {
     const parsed = /^.*,T([0-9]+)$/.exec(data);
-    return parsed
-      ? Number(parseInt(parsed[1])) * this.gameSummary.timeUnitMs
-      : 0;
+    return parsed ? Number(parseInt(parsed[1])) * this.gameSummary.timeUnitMs : 0;
   }
 
   onGameResult(move: CSASpecialMove, gameResult: CSAGameResult): void {
@@ -536,9 +500,7 @@ export class CSAGameManager {
         },
       )
       .catch((e) => {
-        this.onError(
-          new Error(`CSAGameManager#next: ${t.failedToSendGoCommand}: ${e}`),
-        );
+        this.onError(new Error(`CSAGameManager#next: ${t.failedToSendGoCommand}: ${e}`));
       });
   }
 
@@ -555,21 +517,14 @@ export class CSAGameManager {
         this.whiteClock.timeMs,
       )
       .catch((e) => {
-        this.onError(
-          new Error(
-            `CSAGameManager#next: ${t.failedToSendPonderCommand}: ${e}`,
-          ),
-        );
+        this.onError(new Error(`CSAGameManager#next: ${t.failedToSendPonderCommand}: ${e}`));
       });
   }
 
   private buildTimeLimitSetting(): TimeLimitSetting {
-    const timeSeconds =
-      (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3;
-    const byoyomi =
-      (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3;
-    const increment =
-      (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3;
+    const timeSeconds = (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3;
+    const byoyomi = (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3;
+    const increment = (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3;
     return {
       timeSeconds,
       byoyomi,
@@ -626,10 +581,7 @@ function releaseSession(sessionID: number): void {
   delete csaGameManagers[sessionID];
 }
 
-export function onCSAGameSummary(
-  sessionID: number,
-  gameSummary: CSAGameSummary,
-): void {
+export function onCSAGameSummary(sessionID: number, gameSummary: CSAGameSummary): void {
   const manager = csaGameManagers[sessionID];
   if (manager) {
     manager.onGameSummary(gameSummary);
@@ -643,21 +595,14 @@ export function onCSAReject(sessionID: number): void {
   }
 }
 
-export function onCSAStart(
-  sessionID: number,
-  playerStates: CSAPlayerStates,
-): void {
+export function onCSAStart(sessionID: number, playerStates: CSAPlayerStates): void {
   const manager = csaGameManagers[sessionID];
   if (manager) {
     manager.onStart(playerStates);
   }
 }
 
-export function onCSAMove(
-  sessionID: number,
-  move: string,
-  playerStates: CSAPlayerStates,
-): void {
+export function onCSAMove(sessionID: number, move: string, playerStates: CSAPlayerStates): void {
   const manager = csaGameManagers[sessionID];
   if (manager) {
     manager.onMove(move, playerStates);

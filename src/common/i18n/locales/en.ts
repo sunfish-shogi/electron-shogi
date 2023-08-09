@@ -327,54 +327,42 @@ export const en: Texts = {
   waitingForNewGame: "Waiting for new game.",
   insertedComment: "Inserted comment.",
   conversionCompleted: "Conversion completed.",
-  tryingToConnectAndLoginToCSAServer:
-    "Trying to connect and login to CSA server.",
+  tryingToConnectAndLoginToCSAServer: "Trying to connect and login to CSA server.",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*In web browser version, it will output logs to console and ignore this setting.",
-  shouldRestartToApplyLogSettings:
-    "*You should restart this app to apply log settings.",
+  shouldRestartToApplyLogSettings: "*You should restart this app to apply log settings.",
   canOpenLogDirectoryFromMenu:
     '*You can open log directory from "Debug" - "Open Log Directory" menu.',
-  hasNoOldLogCleanUpFeature:
-    "*This app has no clean-up feature. Please remove old logs manually.",
+  hasNoOldLogCleanUpFeature: "*This app has no clean-up feature. Please remove old logs manually.",
   processingPleaseWait: "Processing, please wait.",
-  importingFollowingRecordOrPosition:
-    "Importing the following record(or position).",
+  importingFollowingRecordOrPosition: "Importing the following record(or position).",
   supportsKIF_KI2_CSA_USI: "*Supports KIF, KI2, CSA, and USI.",
   plesePasteRecordIntoTextArea: "*Please paste record data into the text area.",
   desktopVersionPastesAutomatically:
     "*In desktop version, it will paste automatically from clipboard.",
   someLogsDisabled: "Some log settings are disabled.",
-  logsRecommendedForCSAProtocol:
-    "Log settings are recommended for CSA protocol.",
-  pleaseEnableLogsAndRestart:
-    "Please enable log settings and restart this app.",
-  notSendPVOnStandardCSAProtocol:
-    "Client do not send PV on standard CSA protocol.",
-  csaProtocolSendPlaintextPassword:
-    "On CSA protocol, client send plaintext password.",
+  logsRecommendedForCSAProtocol: "Log settings are recommended for CSA protocol.",
+  pleaseEnableLogsAndRestart: "Please enable log settings and restart this app.",
+  notSendPVOnStandardCSAProtocol: "Client do not send PV on standard CSA protocol.",
+  csaProtocolSendPlaintextPassword: "On CSA protocol, client send plaintext password.",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:
     "Password will saved as plaintext because OS side encryption is not available.",
-  pleaseUncheckSaveHistoryIfNotWantSave:
-    "Please uncheck Save History, if you don't want to save.",
+  pleaseUncheckSaveHistoryIfNotWantSave: "Please uncheck Save History, if you don't want to save.",
   csaProtocolSendPlaintextPasswordRegardlessOfHistory:
     "On CSA protocol, client send plaintext password regardless of history.",
   areYouSureWantToQuitGames: "Are you sure you want to quit games?",
   areYouSureWantToRequestQuit:
     "You have possibility to be loser. Are you sure you want to request quit?",
   areYouSureWantToClearRecord: "Are you sure you want to clear record?",
-  areYouSureWantToDiscardPosition:
-    "Are you sure you want to discard the position?",
+  areYouSureWantToDiscardPosition: "Are you sure you want to discard the position?",
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "Are you sure you want to open the file instead of current record?",
-  youCanNotCloseAppWhileCSAOnlineGame:
-    "You can not close app while CSA online game.",
+  youCanNotCloseAppWhileCSAOnlineGame: "You can not close app while CSA online game.",
   fileExtensionNotSupported: "File extension is not supported.",
   errorOccuredWhileDisconnectingFromCSAServer:
     "An error occured while disconnecting from CSA server.",
   failedToConnectToCSAServer: "Failed to connect to CSA server.",
-  errorOccuredWhileLogoutFromCSAServer:
-    "An error occured while logout from CSA server.",
+  errorOccuredWhileLogoutFromCSAServer: "An error occured while logout from CSA server.",
   disconnectedFromCSAServer: "Disconnected from CSA server.",
   csaServerLoginDenied: "CSA server login denied.",
   thisFeatureNotAvailableOnWebApp: "This feature is not available on web app.",
@@ -408,14 +396,12 @@ export const en: Texts = {
   clockVolumeMustBe0To100Percent: "Clock volume must be 0% to 100%.",
   clockPitchMustBe220To880Hz: "Clock pitch must be 220Hz to 880Hz.",
   engineTimeoutMustBe1To300Seconds: "Engine timeout must be 1 to 300 seconds.",
-  coefficientInSigmoidMustBeGreaterThan0:
-    "Coefficient in sigmoid must be greater than 0.",
+  coefficientInSigmoidMustBeGreaterThan0: "Coefficient in sigmoid must be greater than 0.",
   inaccuracyThresholdMustBe1To100Percent: "Inaccuracy must be 1% to 100%.",
   dubiousThresholdMustBe1To100Percent: "Dubious threshold must be 1% to 100%.",
   mistakeThresholdMustBe1To100Percent: "Mistake threshold must be 1% to 100%.",
   blunderThresholdMustBe1To100Percent: "Blunder threshold must be 1% to 100%.",
-  recordSavedWithGarbledCharacters:
-    "The record has saved with some garbled characters.",
+  recordSavedWithGarbledCharacters: "The record has saved with some garbled characters.",
   pleaseConsiderToUseKIFU: "Please consider to use KIFU(UTF-8).",
   youCanChangeDefaultRecordFileFormatFromAppSettings:
     "You can change default record file format from App Settings.",
@@ -426,8 +412,7 @@ export const en: Texts = {
   mistakeThresholdMustBeLessThanBlunderThreshold:
     "Mistake threshold must be less than blunder threshold.",
   thisEngineNotSupportsMateSearch: "This engine does not support mate search.",
-  pleaseEndActiveFeaturesBeforeOpenRecord:
-    "Please end active features before open record.",
+  pleaseEndActiveFeaturesBeforeOpenRecord: "Please end active features before open record.",
   bothTimeLimitAndByoyomiAreNotSet: "Both time limit and byoyomi are not set.",
   canNotUseByoyomiWithFischer: "You can not use Byoyomi with Fischer.",
   protocolVersionNotSelected: "Protocol version is not selected.",
@@ -439,21 +424,17 @@ export const en: Texts = {
     "For exporting conversion log, please enable app logs, set log level to DEBUG and restart this app.",
   totalNumber: (n: number) => `Total: ${n}`,
   number: (n: number) => "" + n,
-  tryToReloginToCSAServerNSecondsLater: (n) =>
-    `Try to relogin to CSA server ${n} seconds later.`,
-  mateInNPlyDoYouWantToDisplay: (n) =>
-    `Mate in ${n} ply. Do you want to display?`,
+  tryToReloginToCSAServerNSecondsLater: (n) => `Try to relogin to CSA server ${n} seconds later.`,
+  mateInNPlyDoYouWantToDisplay: (n) => `Mate in ${n} ply. Do you want to display?`,
   insertedNMovesToRecord: (n: number) => `Inserted ${n} moves to the record.`,
-  errorsOccurred: (n) =>
-    n >= 2 ? `${n} errors have occurred.` : `${n} error has occurred.`,
+  errorsOccurred: (n) => (n >= 2 ? `${n} errors have occurred.` : `${n} error has occurred.`),
   between: (a, b) => `between ${a} and ${b}`,
   addNthEngine: (n) => `Add ${ordinal(n)} engine`,
   copyOf: (name) => `${name} (copy)`,
   keepLatest: (n) => `keep latest ${n}`,
   areYouSureWantToDeleteFollowingMove: (n) =>
     `Are you sure you want to delete ${n}th move and the following move?`,
-  failedToOpenDirectory: (path: string) =>
-    `Failed to open directory of the file: ${path}`,
+  failedToOpenDirectory: (path: string) => `Failed to open directory of the file: ${path}`,
   unexpectedEventSenderPleaseReport(sender) {
     return `Unexpected event sender. Please report this error message to developer. [${sender}]`;
   },

@@ -9,11 +9,7 @@
         @change="onPlayerChange"
       >
         <option v-if="containsHuman" :value="uri.ES_HUMAN">人</option>
-        <option
-          v-for="engine in engineSettings.engineList"
-          :key="engine.uri"
-          :value="engine.uri"
-        >
+        <option v-for="engine in engineSettings.engineList" :key="engine.uri" :value="engine.uri">
           {{ engine.name }}
         </option>
       </select>
@@ -29,11 +25,7 @@
         <span class="player-info-key">{{ t.multiPV }}:</span>
         <span class="player-info-value">{{ multiPVState || "---" }}</span>
       </div>
-      <button
-        class="player-setting"
-        :disabled="!isPlayerSettingEnabled"
-        @click="openPlayerSetting"
-      >
+      <button class="player-setting" :disabled="!isPlayerSettingEnabled" @click="openPlayerSetting">
         <Icon :icon="IconType.SETTINGS" />
         <span>{{ t.settings }}</span>
       </button>
@@ -106,8 +98,7 @@ const ponderState = computed(() => {
     return null;
   }
   const engine = props.engineSettings.getEngine(props.playerUri);
-  return engine &&
-    getUSIEngineOptionCurrentValue(engine.options[USIPonder]) === "true"
+  return engine && getUSIEngineOptionCurrentValue(engine.options[USIPonder]) === "true"
     ? "ON"
     : "OFF";
 });

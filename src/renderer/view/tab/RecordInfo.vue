@@ -1,11 +1,7 @@
 <template>
   <div>
     <div class="full column root">
-      <div
-        ref="root"
-        class="full column main"
-        :style="{ height: `${size.height - 25}px` }"
-      >
+      <div ref="root" class="full column main" :style="{ height: `${size.height - 25}px` }">
         <div class="row element">
           <div class="key">{{ t.file }}</div>
           <div class="value">
@@ -21,11 +17,7 @@
           }"
         >
           <div class="key">{{ element.displayName }}</div>
-          <input
-            class="value"
-            :value="element.value"
-            @input="change($event, element.key)"
-          />
+          <input class="value" :value="element.value" @input="change($event, element.key)" />
         </div>
       </div>
       <div class="options">

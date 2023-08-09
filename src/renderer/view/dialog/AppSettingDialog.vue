@@ -25,12 +25,9 @@
             />
           </div>
           <div class="form-group warning">
+            <div class="note">翻訳の改善にご協力ください。 We'd like your help to translate.</div>
             <div class="note">
-              翻訳の改善にご協力ください。 We'd like your help to translate.
-            </div>
-            <div class="note">
-              言語の変更には再起動が必要です。 You should restart this app to
-              change the language.
+              言語の変更には再起動が必要です。 You should restart this app to change the language.
             </div>
           </div>
           <!-- テーマ -->
@@ -234,9 +231,7 @@
             </div>
             <ToggleButton
               :value="displayLeftSideControls"
-              @change="
-                (checked: boolean) => (displayLeftSideControls = checked)
-              "
+              @change="(checked: boolean) => (displayLeftSideControls = checked)"
             />
           </div>
           <!-- 右コントロールの表示 -->
@@ -246,9 +241,7 @@
             </div>
             <ToggleButton
               :value="displayRightSideControls"
-              @change="
-                (checked: boolean) => (displayRightSideControls = checked)
-              "
+              @change="(checked: boolean) => (displayRightSideControls = checked)"
             />
           </div>
           <!-- タブビューの形式 -->
@@ -424,9 +417,7 @@
             </div>
             <ToggleButton
               :value="translateEngineOptionName"
-              @change="
-                (checked: boolean) => (translateEngineOptionName = checked)
-              "
+              @change="(checked: boolean) => (translateEngineOptionName = checked)"
             />
             <div class="form-item-unit">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
@@ -442,9 +433,7 @@
               max="300"
               min="1"
             />
-            <div class="form-item-unit">
-              {{ t.secondsSuffix }} ({{ t.between(1, 300) }})
-            </div>
+            <div class="form-item-unit">{{ t.secondsSuffix }} ({{ t.between(1, 300) }})</div>
           </div>
         </div>
         <hr />
@@ -485,9 +474,7 @@
               max="10000"
               min="1"
             />
-            <div class="form-item-unit">
-              ({{ t.recommended }}: {{ t.between(600, 1500) }})
-            </div>
+            <div class="form-item-unit">({{ t.recommended }}: {{ t.between(600, 1500) }})</div>
           </div>
           <!-- 緩手の閾値 -->
           <div class="form-item">
@@ -639,10 +626,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api, { isNative } from "@/renderer/ipc/api";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
@@ -727,15 +711,9 @@ const boardImage = ref(appSetting.boardImage);
 const boardImageSelector = ref();
 const pieceStandImage = ref(appSetting.pieceStandImage);
 const pieceStandImageSelector = ref();
-const displayBoardLabels = ref(
-  appSetting.boardLabelType != BoardLabelType.NONE,
-);
-const displayLeftSideControls = ref(
-  appSetting.leftSideControlType != LeftSideControlType.NONE,
-);
-const displayRightSideControls = ref(
-  appSetting.rightSideControlType != RightSideControlType.NONE,
-);
+const displayBoardLabels = ref(appSetting.boardLabelType != BoardLabelType.NONE);
+const displayLeftSideControls = ref(appSetting.leftSideControlType != LeftSideControlType.NONE);
+const displayRightSideControls = ref(appSetting.rightSideControlType != RightSideControlType.NONE);
 const tabPaneType = ref(appSetting.tabPaneType);
 const pieceVolume = ref();
 const clockVolume = ref();
@@ -784,9 +762,7 @@ const saveAndClose = async () => {
       pieceImageFileURL: pieceImageFileURL.value,
       croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,
       pieceStandImage: pieceStandImage.value,
-      boardLabelType: displayBoardLabels.value
-        ? BoardLabelType.STANDARD
-        : BoardLabelType.NONE,
+      boardLabelType: displayBoardLabels.value ? BoardLabelType.STANDARD : BoardLabelType.NONE,
       leftSideControlType: displayLeftSideControls.value
         ? LeftSideControlType.STANDARD
         : LeftSideControlType.NONE,
@@ -822,9 +798,7 @@ const saveAndClose = async () => {
       if (pieceImageFileURL.value) {
         await api.cropPieceImage(pieceImageFileURL.value);
         update.pieceImageFileURL = pieceImageFileURL.value;
-        update.croppedPieceImageBaseURL = await api.getPieceImageBaseURL(
-          pieceImageFileURL.value,
-        );
+        update.croppedPieceImageBaseURL = await api.getPieceImageBaseURL(pieceImageFileURL.value);
       }
     }
     if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
@@ -846,9 +820,7 @@ const saveAndClose = async () => {
 const selectAutoSaveDirectory = async () => {
   store.retainBussyState();
   try {
-    const path = await api.showSelectDirectoryDialog(
-      autoSaveDirectory.value.value,
-    );
+    const path = await api.showSelectDirectoryDialog(autoSaveDirectory.value.value);
     if (path) {
       autoSaveDirectory.value.value = path;
     }

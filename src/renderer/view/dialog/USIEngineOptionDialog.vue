@@ -111,9 +111,7 @@
                   v-if="option.type === 'check'"
                   :ref="
                     (el: unknown) => {
-                      selectors[option.name] = el as InstanceType<
-                        typeof HorizontalSelector
-                      >;
+                      selectors[option.name] = el as InstanceType<typeof HorizontalSelector>;
                     }
                   "
                   value=""
@@ -192,10 +190,7 @@ import { filter as filterString } from "@/common/helpers/string";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import {
   emptyUSIEngineSetting,
   getUSIEngineOptionCurrentValue,
@@ -204,14 +199,7 @@ import {
   USIEngineSetting,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  onUpdated,
-  PropType,
-  ref,
-} from "vue";
+import { computed, onBeforeUnmount, onMounted, onUpdated, PropType, ref } from "vue";
 import { useAppSetting } from "@/renderer/store/setting";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 
@@ -239,12 +227,8 @@ const dialog = ref();
 const engineNameInput = ref();
 const filter = ref();
 const filterWords = ref([] as string[]);
-const inputs = ref(
-  {} as { [key: string]: HTMLInputElement | HTMLSelectElement },
-);
-const selectors = ref(
-  {} as { [key: string]: InstanceType<typeof HorizontalSelector> },
-);
+const inputs = ref({} as { [key: string]: HTMLInputElement | HTMLSelectElement });
+const selectors = ref({} as { [key: string]: InstanceType<typeof HorizontalSelector> });
 const engine = ref(emptyUSIEngineSetting());
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
@@ -254,10 +238,7 @@ onMounted(async () => {
   installHotKeyForDialog(dialog.value);
   try {
     const timeoutSeconds = appSetting.engineTimeoutSeconds;
-    engine.value = await api.getUSIEngineInfo(
-      props.latestEngineSetting.path,
-      timeoutSeconds,
-    );
+    engine.value = await api.getUSIEngineInfo(props.latestEngineSetting.path, timeoutSeconds);
     mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
     engineNameInput.value.value = engine.value.name;
     defaultValueLoaded = true;
@@ -283,8 +264,7 @@ const options = computed(() =>
       }
       if (enableFilter) {
         ret.visible =
-          (ret.displayName &&
-            filterString(ret.displayName, filterWords.value)) ||
+          (ret.displayName && filterString(ret.displayName, filterWords.value)) ||
           filterString(ret.name, filterWords.value);
       }
       return ret;

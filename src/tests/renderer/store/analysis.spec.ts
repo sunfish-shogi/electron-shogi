@@ -31,9 +31,7 @@ describe("store/analysis", () => {
     analysisSetting.endCriteria.enableNumber = false;
     const onFinish = jest.fn();
     const onError = jest.fn();
-    const manager = new AnalysisManager(recordManager)
-      .on("finish", onFinish)
-      .on("error", onError);
+    const manager = new AnalysisManager(recordManager).on("finish", onFinish).on("error", onError);
     await manager.start(analysisSetting);
     expect(mockUSIPlayer).toBeCalledTimes(1);
     expect(mockUSIPlayer.prototype.launch).toBeCalled();

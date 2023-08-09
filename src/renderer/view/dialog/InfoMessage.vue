@@ -4,32 +4,17 @@
       <div class="message-box">
         <Icon :icon="IconType.INFO" />
         <div class="message">
-          <div
-            v-for="(line, index) of store.message.text.split('\n')"
-            :key="index"
-          >
+          <div v-for="(line, index) of store.message.text.split('\n')" :key="index">
             {{ line }}
           </div>
         </div>
       </div>
-      <div
-        v-for="(attachment, aidx) in store.message.attachments"
-        :key="aidx"
-        class="attachment"
-      >
+      <div v-for="(attachment, aidx) in store.message.attachments" :key="aidx" class="attachment">
         <ul v-if="attachment.type === 'list'" class="list">
-          <li
-            v-for="(item, iidx) in attachment.items"
-            :key="iidx"
-            class="list-item"
-          >
+          <li v-for="(item, iidx) in attachment.items" :key="iidx" class="list-item">
             {{ item.text }}
             <ul>
-              <li
-                v-for="(child, cidx) in item.children"
-                :key="cidx"
-                class="list-child-item"
-              >
+              <li v-for="(child, cidx) in item.children" :key="cidx" class="list-child-item">
                 {{ child }}
               </li>
             </ul>
@@ -52,10 +37,7 @@ import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 
 const store = useStore();
 const dialog = ref();

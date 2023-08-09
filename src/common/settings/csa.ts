@@ -50,9 +50,7 @@ export function defaultCSAGameSetting(): CSAGameSetting {
   };
 }
 
-export function validateCSAGameSetting(
-  csaGameSetting: CSAGameSetting,
-): Error | undefined {
+export function validateCSAGameSetting(csaGameSetting: CSAGameSetting): Error | undefined {
   if (
     csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121 &&
     csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121_FLOODGATE

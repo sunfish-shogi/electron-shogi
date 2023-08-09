@@ -19,10 +19,7 @@ export class ChildProcess {
 
   on(event: "receive", listener: (line: string) => void): this;
   on(event: "error", listener: (err: Error) => void): this;
-  on(
-    event: "close",
-    listener: (code: number | null, signal: NodeJS.Signals | null) => void,
-  ): this;
+  on(event: "close", listener: (code: number | null, signal: NodeJS.Signals | null) => void): this;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(event: string, listener: (...args: any[]) => void): this {
     switch (event) {

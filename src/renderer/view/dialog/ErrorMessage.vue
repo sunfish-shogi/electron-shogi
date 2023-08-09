@@ -32,10 +32,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 const store = useStore();
 const dialog = ref();
 
@@ -77,17 +74,9 @@ dialog.error {
 
 dialog.error button {
   color: var(--error-dialog-button-color);
-  background: linear-gradient(
-    to top,
-    var(--error-dialog-button-bg-color) 80%,
-    white 140%
-  );
+  background: linear-gradient(to top, var(--error-dialog-button-bg-color) 80%, white 140%);
 }
 dialog.error button:hover {
-  background: linear-gradient(
-    to top,
-    var(--hovered-error-dialog-button-bg-color) 80%,
-    white 140%
-  );
+  background: linear-gradient(to top, var(--hovered-error-dialog-button-bg-color) 80%, white 140%);
 }
 </style>

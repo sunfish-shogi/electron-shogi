@@ -15,16 +15,7 @@ export function getCroppedPieceImageBaseURL(srcURL: string): string {
   return url.pathToFileURL(getCroppedPieceImageDir(srcURL)).toString();
 }
 
-const pieces = [
-  "king",
-  "rook",
-  "bishop",
-  "gold",
-  "silver",
-  "knight",
-  "lance",
-  "pawn",
-];
+const pieces = ["king", "rook", "bishop", "gold", "silver", "knight", "lance", "pawn"];
 
 const promPieces = [
   "king2",
@@ -40,9 +31,7 @@ const promPieces = [
 export async function cropPieceImage(srcURL: string): Promise<void> {
   const srcPath = fileURLToPath(srcURL);
   const destDir = getCroppedPieceImageDir(srcURL);
-  getAppLogger().debug(
-    `generate cropped piece images: src=${srcPath} dst=${destDir}`,
-  );
+  getAppLogger().debug(`generate cropped piece images: src=${srcPath} dst=${destDir}`);
 
   // create folder if there is no folder
   if (!fs.existsSync(destDir)) {
@@ -90,9 +79,7 @@ export async function cropPieceImage(srcURL: string): Promise<void> {
       const destName = `${side}_${piecesSet[j]}.png`;
       if (!fs.existsSync(path.join(destDir, destName))) {
         await Jimp.read(srcPath).then((image) => {
-          image
-            .crop(j * width, i * height, width, height)
-            .writeAsync(path.join(destDir, destName));
+          image.crop(j * width, i * height, width, height).writeAsync(path.join(destDir, destName));
         });
         getAppLogger().debug(`${destName} extracted`);
       } else {

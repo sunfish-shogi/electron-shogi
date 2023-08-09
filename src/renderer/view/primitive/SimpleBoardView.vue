@@ -17,37 +17,19 @@
       <div v-for="rank of layout.ranks" :key="rank.image" :style="rank.style">
         <img :src="rank.image" :style="layout.rankImageStyle" />
       </div>
-      <div
-        v-for="piece of layout.boardPieces"
-        :key="piece.id"
-        :style="piece.style"
-      >
+      <div v-for="piece of layout.boardPieces" :key="piece.id" :style="piece.style">
         <img :src="piece.image" :style="piece.imageStyle" />
       </div>
       <div :style="layout.blackHandSymbol.style">
-        <img
-          :src="layout.blackHandSymbol.image"
-          :style="layout.blackHandImageStyle"
-        />
+        <img :src="layout.blackHandSymbol.image" :style="layout.blackHandImageStyle" />
       </div>
-      <div
-        v-for="hand of layout.blackHandPieces"
-        :key="hand.id"
-        :style="hand.style"
-      >
+      <div v-for="hand of layout.blackHandPieces" :key="hand.id" :style="hand.style">
         <img :src="hand.image" :style="layout.blackHandImageStyle" />
       </div>
       <div :style="layout.whiteHandSymbol.style">
-        <img
-          :src="layout.whiteHandSymbol.image"
-          :style="layout.whiteHandImageStyle"
-        />
+        <img :src="layout.whiteHandSymbol.image" :style="layout.whiteHandImageStyle" />
       </div>
-      <div
-        v-for="hand of layout.whiteHandPieces"
-        :key="hand.id"
-        :style="hand.style"
-      >
+      <div v-for="hand of layout.whiteHandPieces" :key="hand.id" :style="hand.style">
         <img :src="hand.image" :style="layout.whiteHandImageStyle" />
       </div>
     </div>
@@ -129,9 +111,7 @@ const props = defineProps({
 });
 
 const layout = computed(() => {
-  const param = buildParams(
-    Math.min(props.maxSize.width, props.maxSize.height),
-  );
+  const param = buildParams(Math.min(props.maxSize.width, props.maxSize.height));
   return {
     frameStyle: {
       width: `${param.size}px`,

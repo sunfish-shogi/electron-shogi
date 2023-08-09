@@ -1,22 +1,14 @@
 import { RecordMetadataKey } from "@/common/shogi";
 import { ImmutableRecordMetadata } from "@/common/shogi/record";
 import { getDateString } from "@/common/helpers/datetime";
-import {
-  getBlackPlayerName,
-  getWhitePlayerName,
-} from "@/common/helpers/metadata";
+import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 
 export function dirname(path: string): string {
-  return path.substring(
-    0,
-    Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")),
-  );
+  return path.substring(0, Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")));
 }
 
 function trimEnd(path: string): string {
-  return path.endsWith("/") || path.endsWith("\\")
-    ? path.substring(0, path.length - 1)
-    : path;
+  return path.endsWith("/") || path.endsWith("\\") ? path.substring(0, path.length - 1) : path;
 }
 
 function detectSeperator(path: string): string {
@@ -42,11 +34,7 @@ function getDateStringByMeta(metadata: ImmutableRecordMetadata): string {
     metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME) ||
     metadata.getStandardMetadata(RecordMetadataKey.DATE);
   if (date) {
-    return date
-      .trim()
-      .replaceAll(" ", "_")
-      .replaceAll("/", "")
-      .replaceAll(":", "");
+    return date.trim().replaceAll(" ", "_").replaceAll("/", "").replaceAll(":", "");
   }
   return getDateString().replaceAll("/", "");
 }
@@ -77,10 +65,6 @@ export function defaultRecordFileName(
   }
   return (
     escapePath(ret.trim()) +
-    (extension
-      ? extension.startsWith(".")
-        ? extension
-        : "." + extension
-      : ".kif")
+    (extension ? (extension.startsWith(".") ? extension : "." + extension) : ".kif")
   );
 }

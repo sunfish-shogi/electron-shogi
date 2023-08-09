@@ -326,31 +326,23 @@ export const ja: Texts = {
   waitingForNewGame: "対局開始を待っています。",
   insertedComment: "コメントを挿入しました。",
   conversionCompleted: "変換が完了しました。",
-  tryingToConnectAndLoginToCSAServer:
-    "CSAサーバーへの接続とログインを試みています。",
+  tryingToConnectAndLoginToCSAServer: "CSAサーバーへの接続とログインを試みています。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※ブラウザ版ではログがコンソールに出力され、ここでの設定は無視されます。",
-  shouldRestartToApplyLogSettings:
-    "※ログ設定の変更を反映するにはアプリの再起動が必要です。",
+  shouldRestartToApplyLogSettings: "※ログ設定の変更を反映するにはアプリの再起動が必要です。",
   canOpenLogDirectoryFromMenu:
     "※ログの出力先は「デバッグ」-「ログファイルの場所を開く」で開きます。",
-  hasNoOldLogCleanUpFeature:
-    "※現在、古いログファイルの自動削除機能はありません。",
+  hasNoOldLogCleanUpFeature: "※現在、古いログファイルの自動削除機能はありません。",
   processingPleaseWait: "処理中です。お待ちください。",
   importingFollowingRecordOrPosition: "以下の棋譜(または局面)を取り込みます。",
   supportsKIF_KI2_CSA_USI: "※KIF形式/KI2形式/CSA形式/SFENに対応しています。",
   plesePasteRecordIntoTextArea: "※テキストエリアに棋譜を貼り付けてください。",
-  desktopVersionPastesAutomatically:
-    "※インストールアプリ版では自動的に貼り付けられます。",
+  desktopVersionPastesAutomatically: "※インストールアプリ版では自動的に貼り付けられます。",
   someLogsDisabled: "一部のログが無効になっています。",
-  logsRecommendedForCSAProtocol:
-    "CSAプロトコルを使用した対局では各種ログの出力を推奨します。",
-  pleaseEnableLogsAndRestart:
-    "アプリ設定からログを有効にしてアプリを再起動してください。",
-  notSendPVOnStandardCSAProtocol:
-    "標準のCSAプロトコルでは評価値や読み筋が送信されません。",
-  csaProtocolSendPlaintextPassword:
-    "CSAプロトコルの規格上パスワードは平文で送信されます。",
+  logsRecommendedForCSAProtocol: "CSAプロトコルを使用した対局では各種ログの出力を推奨します。",
+  pleaseEnableLogsAndRestart: "アプリ設定からログを有効にしてアプリを再起動してください。",
+  notSendPVOnStandardCSAProtocol: "標準のCSAプロトコルでは評価値や読み筋が送信されません。",
+  csaProtocolSendPlaintextPassword: "CSAプロトコルの規格上パスワードは平文で送信されます。",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:
     "OSの暗号化機能が利用できないため、入力したパスワードは平文で保存されます。",
   pleaseUncheckSaveHistoryIfNotWantSave:
@@ -358,20 +350,16 @@ export const ja: Texts = {
   csaProtocolSendPlaintextPasswordRegardlessOfHistory:
     "なお、履歴の保存に関係なくCSAプロトコルの規格上パスワードは平文で送信されます。",
   areYouSureWantToQuitGames: "連続対局を中断しますか？",
-  areYouSureWantToRequestQuit:
-    "中断を要求すると負けになる可能性があります。よろしいですか？",
+  areYouSureWantToRequestQuit: "中断を要求すると負けになる可能性があります。よろしいですか？",
   areYouSureWantToClearRecord: "現在の棋譜は削除されます。よろしいですか？",
   areYouSureWantToDiscardPosition: "現在の局面は破棄されます。よろしいですか？",
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "現在の棋譜を閉じて別のファイルを開きます。よろしいですか？",
-  youCanNotCloseAppWhileCSAOnlineGame:
-    "CSAプロトコル使用中はアプリを終了できません。",
+  youCanNotCloseAppWhileCSAOnlineGame: "CSAプロトコル使用中はアプリを終了できません。",
   fileExtensionNotSupported: "取り扱いできないファイル拡張子です。",
-  errorOccuredWhileDisconnectingFromCSAServer:
-    "CSAサーバーからの切断中にエラーが発生しました。",
+  errorOccuredWhileDisconnectingFromCSAServer: "CSAサーバーからの切断中にエラーが発生しました。",
   failedToConnectToCSAServer: "CSAサーバーに接続できませんでした。",
-  errorOccuredWhileLogoutFromCSAServer:
-    "CSAサーバーからのログアウト中にエラーが発生しました。",
+  errorOccuredWhileLogoutFromCSAServer: "CSAサーバーからのログアウト中にエラーが発生しました。",
   disconnectedFromCSAServer: "CSAサーバーへの接続が切れました。",
   csaServerLoginDenied: "CSAサーバーへのログインが拒否されました。",
   thisFeatureNotAvailableOnWebApp: "Web版では利用できない機能です。",
@@ -401,39 +389,26 @@ export const ja: Texts = {
   pieceImageFileNotSelected: "駒画像のファイルが選択されていません。",
   boardImageFileNotSelected: "盤面画像のファイルが選択されていません。",
   pieceStandImageFileNotSelected: "駒台画像のファイルが選択されていません。",
-  pieceVolumeMustBe0To100Percent:
-    "駒音の大きさには0%～100%の値を指定してください。",
-  clockVolumeMustBe0To100Percent:
-    "時計音の大きさには0%～100%の値を指定してください。",
-  clockPitchMustBe220To880Hz:
-    "時計音の高さには220Hz～880Hzの値を指定してください。",
+  pieceVolumeMustBe0To100Percent: "駒音の大きさには0%～100%の値を指定してください。",
+  clockVolumeMustBe0To100Percent: "時計音の大きさには0%～100%の値を指定してください。",
+  clockPitchMustBe220To880Hz: "時計音の高さには220Hz～880Hzの値を指定してください。",
   engineTimeoutMustBe1To300Seconds:
     "エンジンのタイムアウト時間には1秒～300秒の値を指定してください。",
-  coefficientInSigmoidMustBeGreaterThan0:
-    "勝率換算係数には0より大きい値を指定してください。",
-  inaccuracyThresholdMustBe1To100Percent:
-    "緩手には1%～100%の値を指定してください。",
-  dubiousThresholdMustBe1To100Percent:
-    "疑問手には1%～100%の値を指定してください。",
-  mistakeThresholdMustBe1To100Percent:
-    "悪手には1%～100%の閾値を指定してください。",
-  blunderThresholdMustBe1To100Percent:
-    "大悪手には1%～100%の値を指定してください。",
-  recordSavedWithGarbledCharacters:
-    "保存した棋譜の一部が文字化けしている可能性があります。",
+  coefficientInSigmoidMustBeGreaterThan0: "勝率換算係数には0より大きい値を指定してください。",
+  inaccuracyThresholdMustBe1To100Percent: "緩手には1%～100%の値を指定してください。",
+  dubiousThresholdMustBe1To100Percent: "疑問手には1%～100%の値を指定してください。",
+  mistakeThresholdMustBe1To100Percent: "悪手には1%～100%の閾値を指定してください。",
+  blunderThresholdMustBe1To100Percent: "大悪手には1%～100%の値を指定してください。",
+  recordSavedWithGarbledCharacters: "保存した棋譜の一部が文字化けしている可能性があります。",
   pleaseConsiderToUseKIFU: "KIFU形式(UTF-8)で保存することをお勧めします。",
   youCanChangeDefaultRecordFileFormatFromAppSettings:
     "デフォルトの棋譜形式はアプリ設定で変更可能です。",
   inaccuracyThresholdMustBeLessThanDubiousThreshold:
     "緩手には疑問手より小さい値を指定してください。",
-  dubiousThresholdMustBeLessThanMistakeThreshold:
-    "疑問手には悪手より小さい値を指定してください。",
-  mistakeThresholdMustBeLessThanBlunderThreshold:
-    "悪手には大悪手より小さい値を指定してください。",
-  thisEngineNotSupportsMateSearch:
-    "このエンジンは詰将棋探索をサポートしていません。",
-  pleaseEndActiveFeaturesBeforeOpenRecord:
-    "棋譜を開くには現在利用している機能を終了してください。",
+  dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手には悪手より小さい値を指定してください。",
+  mistakeThresholdMustBeLessThanBlunderThreshold: "悪手には大悪手より小さい値を指定してください。",
+  thisEngineNotSupportsMateSearch: "このエンジンは詰将棋探索をサポートしていません。",
+  pleaseEndActiveFeaturesBeforeOpenRecord: "棋譜を開くには現在利用している機能を終了してください。",
   bothTimeLimitAndByoyomiAreNotSet: "持ち時間と秒読みが両方とも0です。",
   canNotUseByoyomiWithFischer: "秒読みとフィッシャールールは併用できません。",
   protocolVersionNotSelected: "プロトコルのバージョンを選択してください。",
@@ -445,18 +420,15 @@ export const ja: Texts = {
     "変換ログを出力するにはアプリログを有効にし、ログレベルをデバッグに設定してアプリを再起動してください。",
   totalNumber: (n: number) => `合計 ${n} 件`,
   number: (n: number) => `${n} 件`,
-  tryToReloginToCSAServerNSecondsLater: (n) =>
-    `CSAサーバーへのログインを${n}秒後に再試行します。`,
-  mateInNPlyDoYouWantToDisplay: (n) =>
-    `${n}手で詰みました。再生画面を表示しますか？`,
+  tryToReloginToCSAServerNSecondsLater: (n) => `CSAサーバーへのログインを${n}秒後に再試行します。`,
+  mateInNPlyDoYouWantToDisplay: (n) => `${n}手で詰みました。再生画面を表示しますか？`,
   insertedNMovesToRecord: (n: number) => `${n}手を棋譜に挿入しました。`,
   errorsOccurred: (n) => `${n} 種類のエラーが発生しました。`,
   between: (a, b) => `${a} から ${b} まで`,
   addNthEngine: (n) => `${n} 個目のエンジンを追加`,
   copyOf: (name) => `${name} のコピー`,
   keepLatest: (n) => `最新${n}件まで`,
-  areYouSureWantToDeleteFollowingMove: (n) =>
-    `${n}手目以降を削除します。よろしいですか？`,
+  areYouSureWantToDeleteFollowingMove: (n) => `${n}手目以降を削除します。よろしいですか？`,
   failedToOpenDirectory: (path) => `ファイルの場所を開けませんでした: ${path}`,
   unexpectedEventSenderPleaseReport(sender) {
     return `予期せぬイベントの送信元です。このエラーメッセージを開発者に報告してください。 [${sender}]`;

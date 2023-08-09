@@ -102,13 +102,9 @@ const margin = 10;
 const lazyUpdateDelay = 100;
 
 const appSetting = useAppSetting();
-const windowSize = reactive(
-  new RectSize(window.innerWidth, window.innerHeight),
-);
+const windowSize = reactive(new RectSize(window.innerWidth, window.innerHeight));
 const topPaneHeightPercentage = ref(appSetting.topPaneHeightPercentage);
-const bottomLeftPaneWidthPercentage = ref(
-  appSetting.bottomLeftPaneWidthPercentage,
-);
+const bottomLeftPaneWidthPercentage = ref(appSetting.bottomLeftPaneWidthPercentage);
 const boardPaneSize = reactive(new RectSize(0, 0));
 
 const windowLazyUpdate = new Lazy();
@@ -134,10 +130,7 @@ const onBoardPaneResize = (size: RectSize) => {
 
 const updateAppSetting = (update: AppSettingUpdate) => {
   appSetting.updateAppSetting(update).catch((e) => {
-    api.log(
-      LogLevel.WARN,
-      "StandardLayout: failed to update app setting: " + toString(e),
-    );
+    api.log(LogLevel.WARN, "StandardLayout: failed to update app setting: " + toString(e));
   });
 };
 
@@ -156,9 +149,7 @@ const onMinimizeTab = () => {
 const onUnhideTabView = () => {
   const newValue = Math.min(
     appSetting.topPanePreviousHeightPercentage,
-    ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) /
-      windowSize.height) *
-      100,
+    ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) / windowSize.height) * 100,
   );
   topPaneHeightPercentage.value = newValue;
   updateAppSetting({ topPaneHeightPercentage: newValue });
@@ -193,18 +184,14 @@ const onResizedBottom = (panes: { size: number }[]) => {
 };
 
 const isBottomPaneVisible = computed(() => {
-  return (
-    (windowSize.height * bottomPaneHeightPercentage.value) / 100 >=
-    tabHeaderHeight
-  );
+  return (windowSize.height * bottomPaneHeightPercentage.value) / 100 >= tabHeaderHeight;
 });
 
 const boardPaneMaxSize = computed(() => {
   return new RectSize(
     Math.max(windowSize.width - minRecordWidth - margin * 2, 0),
     Math.max(
-      (windowSize.height - splitterWidth) *
-        (topPaneHeightPercentage.value / 100) -
+      (windowSize.height - splitterWidth) * (topPaneHeightPercentage.value / 100) -
         margin * 2 -
         (isBottomPaneVisible.value ? 0 : tabHeaderHeight),
       0,
@@ -236,19 +223,15 @@ const tabPaneSize = computed(() => {
   return new RectSize(
     appSetting.tabPaneType === TabPaneType.SINGLE
       ? windowSize.width
-      : (windowSize.width - splitterWidth) *
-        (bottomLeftPaneWidthPercentage.value / 100),
-    (windowSize.height - splitterWidth) *
-      (bottomPaneHeightPercentage.value / 100),
+      : (windowSize.width - splitterWidth) * (bottomLeftPaneWidthPercentage.value / 100),
+    (windowSize.height - splitterWidth) * (bottomPaneHeightPercentage.value / 100),
   );
 });
 
 const tabPaneSize2 = computed(() => {
   return new RectSize(
-    (windowSize.width - splitterWidth) *
-      (1.0 - bottomLeftPaneWidthPercentage.value / 100),
-    (windowSize.height - splitterWidth) *
-      (bottomPaneHeightPercentage.value / 100),
+    (windowSize.width - splitterWidth) * (1.0 - bottomLeftPaneWidthPercentage.value / 100),
+    (windowSize.height - splitterWidth) * (bottomPaneHeightPercentage.value / 100),
   );
 });
 </script>

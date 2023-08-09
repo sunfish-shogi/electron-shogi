@@ -224,9 +224,7 @@ export interface ImmutableRecord {
   readonly sfen: string;
   readonly bookmarks: string[];
   // 深さ優先で全てのノードを訪問します。ハンドラーの第2引数で着手前の局面を受け取ることができます。
-  forEach(
-    handler: (node: ImmutableNode, base: ImmutablePosition) => void,
-  ): void;
+  forEach(handler: (node: ImmutableNode, base: ImmutablePosition) => void): void;
   on(event: "changePosition", handler: () => void): void;
 }
 
@@ -303,9 +301,7 @@ export class Record {
   }
 
   get branchBegin(): Node {
-    return this._current.prev
-      ? (this._current.prev.next as Node)
-      : this._current;
+    return this._current.prev ? (this._current.prev.next as Node) : this._current;
   }
 
   clear(position?: ImmutablePosition): void {
@@ -423,17 +419,13 @@ export class Record {
     return ok;
   }
 
-  append(
-    move: Move | SpecialMove | SpecialMoveType,
-    opt?: DoMoveOption,
-  ): boolean {
+  append(move: Move | SpecialMove | SpecialMoveType, opt?: DoMoveOption): boolean {
     // convert SpecialMoveType to SpecialMove
     if (typeof move === "string") {
       move = specialMove(move);
     }
     // 指し手を表す文字列を取得する。
-    const lastMove =
-      this.current.move instanceof Move ? this.current.move : undefined;
+    const lastMove = this.current.move instanceof Move ? this.current.move : undefined;
     const displayText =
       move instanceof Move
         ? formatMove(this.position, move, { lastMove })
@@ -482,9 +474,7 @@ export class Record {
     let lastBranch = this._current.next;
     for (p = this._current.next; p; p = p.branch) {
       if (
-        (p.move instanceof Move &&
-          move instanceof Move &&
-          move.equals(p.move)) ||
+        (p.move instanceof Move && move instanceof Move && move.equals(p.move)) ||
         move === p.move
       ) {
         this._current = p;
@@ -533,10 +523,7 @@ export class Record {
       pair.branch = target.branch;
       target.branch = pair;
       prev.next = target;
-      [target.branchIndex, pair.branchIndex] = [
-        pair.branchIndex,
-        target.branchIndex,
-      ];
+      [target.branchIndex, pair.branchIndex] = [pair.branchIndex, target.branchIndex];
       return true;
     }
     for (let p = prev.next; p.branch; p = p.branch) {
@@ -545,10 +532,7 @@ export class Record {
         pair.branch = target.branch;
         target.branch = pair;
         p.branch = target;
-        [target.branchIndex, pair.branchIndex] = [
-          pair.branchIndex,
-          target.branchIndex,
-        ];
+        [target.branchIndex, pair.branchIndex] = [pair.branchIndex, target.branchIndex];
         return true;
       }
     }
@@ -706,18 +690,14 @@ export class Record {
     this._forEach(handler);
   }
 
-  private _forEach(
-    handler: (node: NodeImpl, base: ImmutablePosition) => void,
-  ): void {
+  private _forEach(handler: (node: NodeImpl, base: ImmutablePosition) => void): void {
     this.find((node, base) => {
       handler(node, base);
       return false;
     });
   }
 
-  private find(
-    handler: (node: NodeImpl, base: ImmutablePosition) => boolean,
-  ): NodeImpl | null {
+  private find(handler: (node: NodeImpl, base: ImmutablePosition) => boolean): NodeImpl | null {
     let p: NodeImpl = this._first;
     const pos = this.initialPosition.clone();
     const stack: NodeImpl[] = [];
@@ -764,17 +744,11 @@ export class Record {
     const prefixSfen = "sfen ";
     const prefixMoves = "moves ";
     if (data.startsWith(prefixPositionStartpos)) {
-      return Record.newByUSIFromMoves(
-        new Position(),
-        data.slice(prefixPositionStartpos.length),
-      );
+      return Record.newByUSIFromMoves(new Position(), data.slice(prefixPositionStartpos.length));
     } else if (data.startsWith(prefixPositionSfen)) {
       return Record.newByUSIFromSFEN(data.slice(prefixPositionSfen.length));
     } else if (data.startsWith(prefixStartpos)) {
-      return Record.newByUSIFromMoves(
-        new Position(),
-        data.slice(prefixStartpos.length),
-      );
+      return Record.newByUSIFromMoves(new Position(), data.slice(prefixStartpos.length));
     } else if (data.startsWith(prefixSfen)) {
       return Record.newByUSIFromSFEN(data.slice(prefixSfen.length));
     } else if (data.startsWith(prefixMoves)) {
@@ -796,10 +770,7 @@ export class Record {
     return Record.newByUSIFromMoves(position, sections.slice(4).join(" "));
   }
 
-  private static newByUSIFromMoves(
-    position: ImmutablePosition,
-    data: string,
-  ): Record | Error {
+  private static newByUSIFromMoves(position: ImmutablePosition, data: string): Record | Error {
     const record = new Record(position);
     if (data.length === 0) {
       return record;

@@ -32,14 +32,7 @@ export class Move {
   }
 
   withPromote(): Move {
-    return new Move(
-      this.from,
-      this.to,
-      true,
-      this.color,
-      this.pieceType,
-      this.capturedPieceType,
-    );
+    return new Move(this.from, this.to, true, this.color, this.pieceType, this.capturedPieceType);
   }
 
   get usi(): string {
@@ -120,8 +113,6 @@ export function anySpecialMove(name: string): AnySpecialMove {
   return { type: "any", name };
 }
 
-export function isKnownSpecialMove(
-  move: Move | SpecialMove,
-): move is PredefinedSpecialMove {
+export function isKnownSpecialMove(move: Move | SpecialMove): move is PredefinedSpecialMove {
   return !(move instanceof Move) && move.type !== "any";
 }

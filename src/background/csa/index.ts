@@ -23,14 +23,10 @@ const clients = new Map<number, Client>();
 export function login(setting: CSAServerSetting): number {
   const sessionID = issueSessionID();
   const client = new Client(sessionID, setting, getCSALogger())
-    .on("gameSummary", (gameSummary) =>
-      onCSAGameSummary(sessionID, gameSummary),
-    )
+    .on("gameSummary", (gameSummary) => onCSAGameSummary(sessionID, gameSummary))
     .on("reject", () => onCSAReject(sessionID))
     .on("start", (playerStates) => onCSAStart(sessionID, playerStates))
-    .on("move", (move, playerStates) =>
-      onCSAMove(sessionID, move, playerStates),
-    )
+    .on("move", (move, playerStates) => onCSAMove(sessionID, move, playerStates))
     .on("gameResult", (specialMove, gameResult) =>
       onCSAGameResult(sessionID, specialMove, gameResult),
     )
@@ -58,12 +54,7 @@ export function agree(sessionID: number, gameID: string): void {
   }
 }
 
-export function doMove(
-  sessionID: number,
-  move: string,
-  score?: number,
-  pv?: string,
-): void {
+export function doMove(sessionID: number, move: string, score?: number, pv?: string): void {
   const client = clients.get(sessionID);
   if (client) {
     client.doMove(move, score, pv);

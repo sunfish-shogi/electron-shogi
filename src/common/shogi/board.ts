@@ -1,11 +1,6 @@
 import { Color } from ".";
 import { reverseColor } from "./color";
-import {
-  directions,
-  MoveType,
-  resolveMoveType,
-  reverseDirection,
-} from "./direction";
+import { directions, MoveType, resolveMoveType, reverseDirection } from "./direction";
 import { Piece, PieceType } from "./piece";
 import { Square } from "./square";
 
@@ -42,11 +37,7 @@ type PowerDetectionOption = {
 export interface ImmutableBoard {
   at(square: Square): Piece | null;
   listNonEmptySquares(): Square[];
-  hasPower(
-    target: Square,
-    color: Color,
-    option?: PowerDetectionOption,
-  ): boolean;
+  hasPower(target: Square, color: Color, option?: PowerDetectionOption): boolean;
   isChecked(kingColor: Color, option?: PowerDetectionOption): boolean;
   readonly sfen: string;
 }
@@ -59,9 +50,7 @@ export class Board {
     for (let i = 0; i < 81; i += 1) {
       this.squares.push(null);
     }
-    this.resetBySFEN(
-      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL",
-    );
+    this.resetBySFEN("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL");
   }
 
   at(square: Square): Piece | null {
@@ -174,18 +163,10 @@ export class Board {
     });
   }
 
-  hasPower(
-    target: Square,
-    color: Color,
-    option?: PowerDetectionOption,
-  ): boolean {
+  hasPower(target: Square, color: Color, option?: PowerDetectionOption): boolean {
     return !!directions.find((dir) => {
       let step = 0;
-      for (
-        let square = target.neighbor(dir);
-        square.valid;
-        square = square.neighbor(dir)
-      ) {
+      for (let square = target.neighbor(dir); square.valid; square = square.neighbor(dir)) {
         step += 1;
         if (option && option.filled && square.equals(option.filled)) {
           break;
@@ -200,9 +181,7 @@ export class Board {
           }
           const rdir = reverseDirection(dir);
           const type = resolveMoveType(piece, rdir);
-          return (
-            type === MoveType.LONG || (type === MoveType.SHORT && step === 1)
-          );
+          return type === MoveType.LONG || (type === MoveType.SHORT && step === 1);
         }
       }
       return false;

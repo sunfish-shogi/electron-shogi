@@ -9,12 +9,7 @@
         @input="change"
       />
       <div v-if="pvs.length !== 0" class="row play-buttons">
-        <button
-          v-for="(pv, index) of pvs"
-          :key="index"
-          class="play"
-          @click="play(pv)"
-        >
+        <button v-for="(pv, index) of pvs" :key="index" class="play" @click="play(pv)">
           <Icon :icon="IconType.PLAY" />
           <span>{{ t.pv }}{{ pvs.length >= 2 ? " " + (index + 1) : "" }}</span>
         </button>
@@ -52,8 +47,7 @@ import BookmarkListDialog from "../dialog/BookmarkListDialog.vue";
 
 const store = useStore();
 const readonly = computed(
-  () =>
-    store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH,
+  () => store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH,
 );
 const textarea = ref();
 const comment = computed(() => store.record.current.comment);

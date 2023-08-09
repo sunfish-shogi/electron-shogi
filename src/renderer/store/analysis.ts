@@ -1,9 +1,6 @@
 import { SearchInfo } from "@/renderer/players/player";
 import { USIPlayer } from "@/renderer/players/usi";
-import {
-  AnalysisSetting,
-  defaultAnalysisSetting,
-} from "@/common/settings/analysis";
+import { AnalysisSetting, defaultAnalysisSetting } from "@/common/settings/analysis";
 import { AppSetting } from "@/common/settings/app";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { Color, Move, reverseColor } from "@/common/shogi";
@@ -114,10 +111,7 @@ export class AnalysisManager {
       this.ply = 0;
     }
     // 終了条件を満たしている場合はここで打ち切る。
-    if (
-      this.setting.endCriteria.enableNumber &&
-      this.ply >= this.setting.endCriteria.number
-    ) {
+    if (this.setting.endCriteria.enableNumber && this.ply >= this.setting.endCriteria.number) {
       this.finish();
       return;
     }
@@ -135,8 +129,7 @@ export class AnalysisManager {
       return;
     }
     // 最後に指した手を取得する。
-    this.actualMove =
-      record.current.move instanceof Move ? record.current.move : undefined;
+    this.actualMove = record.current.move instanceof Move ? record.current.move : undefined;
     // タイマーをセットする。
     this.setTimer();
     // 探索を開始する。
@@ -173,13 +166,10 @@ export class AnalysisManager {
     const sign = color === Color.BLACK ? 1 : -1;
     // 手番側から見た評価値
     const negaScore =
-      this.searchInfo.score !== undefined
-        ? this.searchInfo.score * sign
-        : undefined;
+      this.searchInfo.score !== undefined ? this.searchInfo.score * sign : undefined;
     // 1 手前の局面からの評価値の変動
     const scoreDelta =
-      this.searchInfo.score !== undefined &&
-      this.lastSearchInfo.score !== undefined
+      this.searchInfo.score !== undefined && this.lastSearchInfo.score !== undefined
         ? (this.searchInfo.score - this.lastSearchInfo.score) * sign
         : undefined;
     // エンジンが示す最善手と一致しているかどうか
@@ -191,11 +181,7 @@ export class AnalysisManager {
     const appSetting = useAppSetting();
     let header = "";
     if (scoreDelta !== undefined && negaScore !== undefined && !isBestMove) {
-      const text = getMoveAccuracyText(
-        negaScore - scoreDelta,
-        negaScore,
-        appSetting,
-      );
+      const text = getMoveAccuracyText(negaScore - scoreDelta, negaScore, appSetting);
       if (text) {
         header = `【${text}】`;
       }
@@ -218,11 +204,7 @@ export class AnalysisManager {
   }
 }
 
-function getMoveAccuracyText(
-  before: number,
-  after: number,
-  appSetting: AppSetting,
-): string | null {
+function getMoveAccuracyText(before: number, after: number, appSetting: AppSetting): string | null {
   const loss =
     scoreToPercentage(before, appSetting.coefficientInSigmoid) -
     scoreToPercentage(after, appSetting.coefficientInSigmoid);

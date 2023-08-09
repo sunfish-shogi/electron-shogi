@@ -60,16 +60,8 @@
         <div>{{ t.endCriteria1Move }}</div>
         <div class="form-item">
           <div class="form-item-unit">{{ t.toPrefix }}</div>
-          <input
-            ref="maxSecondsPerMove"
-            class="small"
-            type="number"
-            min="0"
-            step="1"
-          />
-          <div class="form-item-unit">
-            {{ t.secondsSuffix }}{{ t.toSuffix }}
-          </div>
+          <input ref="maxSecondsPerMove" class="small" type="number" min="0" step="1" />
+          <div class="form-item-unit">{{ t.secondsSuffix }}{{ t.toSuffix }}</div>
         </div>
       </div>
       <div class="form-group">
@@ -94,9 +86,7 @@
         </div>
       </div>
       <div class="main-buttons">
-        <button data-hotkey="Enter" autofocus @click="onStart()">
-          解析実行
-        </button>
+        <button data-hotkey="Enter" autofocus @click="onStart()">解析実行</button>
         <button data-hotkey="Escape" @click="onCancel()">キャンセル</button>
       </div>
     </dialog>
@@ -114,10 +104,7 @@ import { useStore } from "@/renderer/store";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 

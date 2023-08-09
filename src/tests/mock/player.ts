@@ -20,13 +20,7 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
     },
     readyNewGame: jest.fn(() => Promise.resolve()),
     startSearch: jest.fn(
-      (
-        r: ImmutableRecord,
-        t: TimeLimitSetting,
-        bt: number,
-        wt: number,
-        h: SearchHandler,
-      ) => {
+      (r: ImmutableRecord, t: TimeLimitSetting, bt: number, wt: number, h: SearchHandler) => {
         const m = moves[r.usi];
         if (m.usi === "no-reply") {
           // eslint-disable-next-line  @typescript-eslint/no-empty-function
@@ -43,9 +37,7 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
             usi: r.usi,
             score: m.info?.score,
             mate: m.info?.mate,
-            pv:
-              m.info?.pv &&
-              parseUSIPV(r.position, [m.usi].concat(...m.info.pv)).slice(1),
+            pv: m.info?.pv && parseUSIPV(r.position, [m.usi].concat(...m.info.pv)).slice(1),
           },
         );
         return Promise.resolve();

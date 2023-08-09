@@ -109,8 +109,7 @@ export class Square {
   }
 
   directionTo(square: Square): Direction {
-    return vectorToDirectionAndDistance(square.x - this.x, square.y - this.y)
-      .direction;
+    return vectorToDirectionAndDistance(square.x - this.x, square.y - this.y).direction;
   }
 
   get valid(): boolean {

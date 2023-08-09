@@ -7,11 +7,7 @@
       <button :disabled="!operational" data-hotkey="ArrowUp" @click="goBack()">
         <Icon :icon="IconType.BACK" />
       </button>
-      <button
-        :disabled="!operational"
-        data-hotkey="ArrowDown"
-        @click="goForward"
-      >
+      <button :disabled="!operational" data-hotkey="ArrowDown" @click="goForward">
         <Icon :icon="IconType.NEXT" />
       </button>
       <button :disabled="!operational" data-hotkey="ArrowRight" @click="goEnd">
@@ -50,9 +46,7 @@
         >
           <div class="move-text">{{ branch.text }}</div>
           <div v-if="showComment" class="move-comment">
-            <span v-if="branch.bookmark" class="bookmark">{{
-              branch.bookmark
-            }}</span>
+            <span v-if="branch.bookmark" class="bookmark">{{ branch.bookmark }}</span>
             {{ branch.comment }}
           </div>
         </div>

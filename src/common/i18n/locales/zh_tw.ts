@@ -329,10 +329,8 @@ export const zh_tw: Texts = {
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中 log 會於 console 中顯示，並無視此處的設定。",
-  shouldRestartToApplyLogSettings:
-    "※您需要重新啟動本程式以使用變更後的 log 設定。",
-  canOpenLogDirectoryFromMenu:
-    "※log 的輸出檔案可以在「偵錯」-「開啟紀錄檔案資料夾」開啟。",
+  shouldRestartToApplyLogSettings: "※您需要重新啟動本程式以使用變更後的 log 設定。",
+  canOpenLogDirectoryFromMenu: "※log 的輸出檔案可以在「偵錯」-「開啟紀錄檔案資料夾」開啟。",
   hasNoOldLogCleanUpFeature: "※現在並沒有舊 log 的自動刪除機制。",
   processingPleaseWait: "現在處理中。請稍待一會。",
   importingFollowingRecordOrPosition: "將匯入以下棋譜（局面）。",
@@ -342,26 +340,21 @@ export const zh_tw: Texts = {
   someLogsDisabled: "部份 log 已被無效化。",
   logsRecommendedForCSAProtocol: "若使用CSA協定對局，建議輸出各項 log 。",
   pleaseEnableLogsAndRestart: "請在程式設定中開啟 log 並重新啟動本程式。",
-  notSendPVOnStandardCSAProtocol:
-    "在標準的CSA協定中不會送出評價值以及思考棋步。",
+  notSendPVOnStandardCSAProtocol: "在標準的CSA協定中不會送出評價值以及思考棋步。",
   csaProtocolSendPlaintextPassword: "在CSA協定中，密碼為明文傳輸。",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:
     "由於無法使用系統的加密機能，輸入的密碼將會以明文保存。",
-  pleaseUncheckSaveHistoryIfNotWantSave:
-    "若不想保存密碼，請不要將「保存紀錄」勾選。",
-  csaProtocolSendPlaintextPasswordRegardlessOfHistory:
-    "不過，CSA協定仍會以明文傳輸您的密碼。",
+  pleaseUncheckSaveHistoryIfNotWantSave: "若不想保存密碼，請不要將「保存紀錄」勾選。",
+  csaProtocolSendPlaintextPasswordRegardlessOfHistory: "不過，CSA協定仍會以明文傳輸您的密碼。",
   areYouSureWantToQuitGames: "要中斷連續對局嗎？",
   areYouSureWantToRequestQuit: "若提出中斷要求，可能會被判負。請問您要繼續嗎？",
   areYouSureWantToClearRecord: "將會刪除現在的棋譜。請問您要繼續嗎？",
   areYouSureWantToDiscardPosition: "將不會保存現在的局面。請問您要繼續嗎？",
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "會將現在的棋譜關閉並開啟別的檔案，請問您要繼續嗎？",
-  youCanNotCloseAppWhileCSAOnlineGame:
-    "由於CSA協定正在使用中，本程式無法被關閉。",
+  youCanNotCloseAppWhileCSAOnlineGame: "由於CSA協定正在使用中，本程式無法被關閉。",
   fileExtensionNotSupported: "無法支援的副檔名。",
-  errorOccuredWhileDisconnectingFromCSAServer:
-    "在與CSA伺服器中斷連線時發生錯誤。",
+  errorOccuredWhileDisconnectingFromCSAServer: "在與CSA伺服器中斷連線時發生錯誤。",
   failedToConnectToCSAServer: "無法連接CSA伺服器。",
   errorOccuredWhileLogoutFromCSAServer: "在登出 CSA 伺服器時發生錯誤。",
   disconnectedFromCSAServer: "與CSA伺服器的連接結束。",
@@ -404,10 +397,8 @@ export const zh_tw: Texts = {
   blunderThresholdMustBe1To100Percent: "請在0%～100%之間指定大惡手門檻。",
   recordSavedWithGarbledCharacters: "保存的棋譜有部分可能會造成亂碼。",
   pleaseConsiderToUseKIFU: "建議您使用KIFU形式(UTF-8)儲存您的棋譜。",
-  youCanChangeDefaultRecordFileFormatFromAppSettings:
-    "預設棋譜檔案格式可以在程式設定中進行更動。",
-  inaccuracyThresholdMustBeLessThanDubiousThreshold:
-    "緩手門檻應小於疑問手門檻。",
+  youCanChangeDefaultRecordFileFormatFromAppSettings: "預設棋譜檔案格式可以在程式設定中進行更動。",
+  inaccuracyThresholdMustBeLessThanDubiousThreshold: "緩手門檻應小於疑問手門檻。",
   dubiousThresholdMustBeLessThanMistakeThreshold: "疑問手門檻應小於惡手門檻。",
   mistakeThresholdMustBeLessThanBlunderThreshold: "惡手門檻應小於大惡手門檻。",
   thisEngineNotSupportsMateSearch: "這個引擎不支援詰將棋搜索。",
@@ -423,8 +414,7 @@ export const zh_tw: Texts = {
     "如要監看轉換紀錄，請在程式設定內設定 log level 到 Debug 並重新啟動本程式。",
   totalNumber: (n: number) => `總計 ${n} 筆`,
   number: (n: number) => `${n} 筆`,
-  tryToReloginToCSAServerNSecondsLater: (n) =>
-    `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
+  tryToReloginToCSAServerNSecondsLater: (n) => `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
   mateInNPlyDoYouWantToDisplay: (n) => `尋找到${n}手詰。要顯示結果嗎？`,
   insertedNMovesToRecord: (n: number) => `已加入${n}手到棋譜。`,
   errorsOccurred: (n) => `發生 ${n} 種類的錯誤。`,
@@ -432,8 +422,7 @@ export const zh_tw: Texts = {
   addNthEngine: (n) => `追加第 ${n} 個引擎`,
   copyOf: (name) => `${name} 的拷貝`,
   keepLatest: (n) => `到最新${n}件`,
-  areYouSureWantToDeleteFollowingMove: (n) =>
-    `將會刪除${n}手目以後的棋譜。請問您要繼續嗎？`,
+  areYouSureWantToDeleteFollowingMove: (n) => `將會刪除${n}手目以後的棋譜。請問您要繼續嗎？`,
   failedToOpenDirectory: (path) => `無法開啟檔案目錄：${path}`,
   unexpectedEventSenderPleaseReport(sender) {
     return `無法預期的事件發送方已發生。請將該錯誤訊息告知開發者，謝謝。 [${sender}]`;

@@ -32,10 +32,7 @@ export function decodeText(data: Uint8Array, option?: DecodeOption): string {
   });
 }
 
-export function detectTextEncoding(
-  data: Uint8Array,
-  defaultEncoding?: Encoding,
-): Encoding {
+export function detectTextEncoding(data: Uint8Array, defaultEncoding?: Encoding): Encoding {
   const detected = detect(data);
   if (detected) {
     return detected;

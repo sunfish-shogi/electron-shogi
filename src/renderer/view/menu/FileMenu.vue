@@ -25,10 +25,7 @@
             <Icon :icon="IconType.SAVE_AS" />
             <div class="label">{{ t.saveAs }}</div>
           </button>
-          <button
-            :disabled="!states.batchConversion"
-            @click="onBatchConversion"
-          >
+          <button :disabled="!states.batchConversion" @click="onBatchConversion">
             <Icon :icon="IconType.BATCH" />
             <div class="label">{{ t.batchConversion }}</div>
           </button>

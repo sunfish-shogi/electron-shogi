@@ -40,9 +40,7 @@
       </div>
       <div class="list" :style="{ height: `${height - 37}px` }">
         <div
-          v-for="(iterate, index) in historyMode
-            ? info.iterates
-            : info.latestIteration"
+          v-for="(iterate, index) in historyMode ? info.iterates : info.latestIteration"
           :key="index"
           class="row list-item"
           :class="{ highlight: enableHighlight && iterate.multiPV === 1 }"
@@ -54,8 +52,7 @@
             {{ iterate.multiPV || "" }}
           </div>
           <div class="list-column depth">
-            {{ iterate.depth
-            }}{{ iterate.selectiveDepth && iterate.depth ? "/" : ""
+            {{ iterate.depth }}{{ iterate.selectiveDepth && iterate.depth ? "/" : ""
             }}{{ iterate.selectiveDepth }}
           </div>
           <div class="list-column nodes">
@@ -64,17 +61,9 @@
           <div class="list-column score">
             {{
               iterate.scoreMate
-                ? getDisplayScore(
-                    iterate.scoreMate,
-                    iterate.color,
-                    evaluationViewFrom,
-                  )
+                ? getDisplayScore(iterate.scoreMate, iterate.color, evaluationViewFrom)
                 : iterate.score
-                ? getDisplayScore(
-                    iterate.score,
-                    iterate.color,
-                    evaluationViewFrom,
-                  )
+                ? getDisplayScore(iterate.score, iterate.color, evaluationViewFrom)
                 : ""
             }}
           </div>
@@ -144,14 +133,8 @@ const enableHighlight = computed(() => {
 const evaluationViewFrom = computed(() => {
   return useAppSetting().evaluationViewFrom;
 });
-const getDisplayScore = (
-  score: number,
-  color: Color,
-  evaluationViewFrom: EvaluationViewFrom,
-) => {
-  return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK
-    ? score
-    : -score;
+const getDisplayScore = (score: number, color: Color, evaluationViewFrom: EvaluationViewFrom) => {
+  return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK ? score : -score;
 };
 
 const showPreview = (ite: USIIteration) => {

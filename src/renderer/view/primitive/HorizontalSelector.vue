@@ -64,13 +64,11 @@ const setValue = (value: string) => {
   });
 };
 const getValue = () => {
-  const checked = Array.from(container.value.querySelectorAll("input")).filter(
-    (input) => {
-      if (input.checked) {
-        return input.value;
-      }
-    },
-  );
+  const checked = Array.from(container.value.querySelectorAll("input")).filter((input) => {
+    if (input.checked) {
+      return input.value;
+    }
+  });
   if (checked.length > 0) {
     return checked[0].value;
   }

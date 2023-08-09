@@ -13,10 +13,7 @@ export function openLogsDirectory(): void {
   shell.openPath(rootDir);
 }
 
-const datetime = getDateTimeString()
-  .replaceAll(" ", "_")
-  .replaceAll("/", "")
-  .replaceAll(":", "");
+const datetime = getDateTimeString().replaceAll(" ", "_").replaceAll("/", "").replaceAll(":", "");
 
 const appLogPath = path.join(rootDir, `app-${datetime}.log`);
 const usiLogPath = path.join(rootDir, `usi-${datetime}.log`);
@@ -64,11 +61,7 @@ function getLogger(type: LogType): log4js.Logger {
     const appSetting = loadAppSetting();
     config.appenders[type] = { type: "file", filename: getFilePath(type) };
     config.categories[type] = {
-      appenders: isLogEnabled(type, appSetting)
-        ? [type]
-        : !isTest()
-        ? ["stdout"]
-        : ["recording"],
+      appenders: isLogEnabled(type, appSetting) ? [type] : !isTest() ? ["stdout"] : ["recording"],
       level: appSetting.logLevel,
     };
   }

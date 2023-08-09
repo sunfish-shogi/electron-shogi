@@ -50,19 +50,13 @@ T40
 `;
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME),
-    ).toBe("Electron John");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME),
-    ).toBe("Mr.Vue");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe("Electron John");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe("Mr.Vue");
     expect(record.initialPosition.sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
     expect(record.current.ply).toBe(0);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.START),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.START));
     record.goto(1);
     expect(record.current.displayText).toBe("☗７六歩");
     expect(record.current.comment).toBe(
@@ -80,9 +74,7 @@ T40
     expect(record.current.displayText).toBe("☗４五角");
     expect(record.current.elapsedMs).toBe(30000);
     record.goto(6);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
     expect(record.current.comment).toBe("特殊な手に対するコメント\n");
     expect(record.current.elapsedMs).toBe(40000);
   });
@@ -131,39 +123,25 @@ T6
     expect(record.initialPosition.sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME),
-    ).toBe("NAKAHARA");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME),
-    ).toBe("YONENAGA");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe("NAKAHARA");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe("YONENAGA");
     expect(record.metadata.getStandardMetadata(RecordMetadataKey.TITLE)).toBe(
       "13th World Computer Shogi Championship",
     );
-    expect(record.metadata.getStandardMetadata(RecordMetadataKey.PLACE)).toBe(
-      "KAZUSA ARC",
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.PLACE)).toBe("KAZUSA ARC");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME)).toBe(
+      "2003/05/03 10:30:00",
     );
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME),
-    ).toBe("2003/05/03 10:30:00");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME),
-    ).toBe("2003/05/03 11:11:05");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT),
-    ).toBe("00:25+00");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.STRATEGY),
-    ).toBe("YAGURA");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME)).toBe(
+      "2003/05/03 11:11:05",
+    );
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)).toBe("00:25+00");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.STRATEGY)).toBe("YAGURA");
     expect(record.moves).toHaveLength(4);
-    expect(record.moves[0].move).toStrictEqual(
-      specialMove(SpecialMoveType.START),
-    );
+    expect(record.moves[0].move).toStrictEqual(specialMove(SpecialMoveType.START));
     expect((record.moves[1].move as Move).usi).toBe("2g2f");
     expect((record.moves[2].move as Move).usi).toBe("3c3d");
-    expect(record.moves[3].move).toStrictEqual(
-      specialMove(SpecialMoveType.INTERRUPT),
-    );
+    expect(record.moves[3].move).toStrictEqual(specialMove(SpecialMoveType.INTERRUPT));
   });
 
   it("import/illegal_move", () => {
@@ -177,9 +155,7 @@ PI
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
     record.goto(3);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.FOUL_LOSE),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.FOUL_LOSE));
   });
 
   it("import/jishogi", () => {
@@ -193,9 +169,7 @@ PI
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
     record.goto(3);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.IMPASS),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.IMPASS));
   });
 
   it("import/kachi", () => {
@@ -209,9 +183,7 @@ PI
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
     record.goto(3);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.ENTERING_OF_KING),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.ENTERING_OF_KING));
   });
 
   it("import/custom-position", () => {
@@ -244,13 +216,9 @@ P-00AL
 `;
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
-    expect(record.initialPosition.sfen).toBe(
-      "7n1/6gk1/6gpN/9/9/6b1P/9/9/9 b 2R2Gb4s2n4l16p 1",
-    );
+    expect(record.initialPosition.sfen).toBe("7n1/6gk1/6gpN/9/9/6b1P/9/9/9 b 2R2Gb4s2n4l16p 1");
     expect(record.current.ply).toBe(0);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.START),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.START));
     record.goto(1);
     expect(record.current.displayText).toBe("☗２一桂成");
     record.goto(10);
@@ -258,9 +226,7 @@ P-00AL
     record.goto(11);
     expect(record.current.displayText).toBe("☗１一飛");
     record.goto(12);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.MATE),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.MATE));
   });
 
   it("import/wcsc32", () => {
@@ -628,19 +594,15 @@ T16
 `;
     const record = importCSA(data) as Record;
     expect(record).toBeInstanceOf(Record);
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME),
-    ).toBe("二番絞り");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME),
-    ).toBe("dlshogi with HEROZ");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe("二番絞り");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe(
+      "dlshogi with HEROZ",
+    );
     expect(record.initialPosition.sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
     record.goto(177);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
     expect(record.position.sfen).toBe(
       "k1gl4l/9/3+P2+Rp1/p1p2N2p/1P1pG4/PNPg1P1PP/K1L1P4/2B2+n3/LNrP1b3 b S4Pg3s 1",
     );
@@ -680,15 +642,9 @@ PI
 
   it("export/standard", () => {
     const record = new Record();
-    record.metadata.setStandardMetadata(
-      RecordMetadataKey.BLACK_NAME,
-      "Electron John",
-    );
+    record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "Electron John");
     record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "Mr.Vue");
-    record.metadata.setStandardMetadata(
-      RecordMetadataKey.TITLE,
-      "TypeScript Festival",
-    );
+    record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, "TypeScript Festival");
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     record.append(record.position.createMoveByUSI("3c3d") as Move);
     record.current.comment = "2手目へのコメント\n2手目へのコメント2\n";
@@ -699,8 +655,7 @@ PI
     record.current.setElapsedMs(34567); // 34.567 seconds
     record.append(SpecialMoveType.RESIGN);
     record.current.setElapsedMs(56789); // 56.789 seconds
-    expect(exportCSA(record, {}))
-      .toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
+    expect(exportCSA(record, {})).toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
 V2.2
 N+Electron John
 N-Mr.Vue
@@ -731,8 +686,7 @@ T56
     const record = new Record(position) as Record;
     record.append(record.position.createMoveByUSI("1c2a+") as Move);
     record.append(record.position.createMoveByUSI("2b2a") as Move);
-    expect(exportCSA(record, {}))
-      .toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
+    expect(exportCSA(record, {})).toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
 V2.2
 P1 *  *  *  *  *  *  * -KE * 
 P2 *  *  *  *  *  * -KI-OU * 
@@ -758,8 +712,7 @@ T0
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     record.append(record.position.createMoveByUSI("3c3d") as Move);
     record.append(SpecialMoveType.TIMEOUT);
-    expect(exportCSA(record, {}))
-      .toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
+    expect(exportCSA(record, {})).toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
 V2.2
 PI
 +
@@ -777,8 +730,7 @@ T0
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     record.append(record.position.createMoveByUSI("3c3d") as Move);
     record.append(SpecialMoveType.FOUL_LOSE);
-    expect(exportCSA(record, {}))
-      .toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
+    expect(exportCSA(record, {})).toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
 V2.2
 PI
 +
@@ -796,8 +748,7 @@ T0
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     record.append(record.position.createMoveByUSI("3c3d") as Move);
     record.append(SpecialMoveType.IMPASS);
-    expect(exportCSA(record, {}))
-      .toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
+    expect(exportCSA(record, {})).toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
 V2.2
 PI
 +
@@ -815,8 +766,7 @@ T0
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     record.append(record.position.createMoveByUSI("3c3d") as Move);
     record.append(SpecialMoveType.ENTERING_OF_KING);
-    expect(exportCSA(record, {}))
-      .toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
+    expect(exportCSA(record, {})).toBe(`' CSA形式棋譜ファイル Generated by Electron Shogi
 V2.2
 PI
 +

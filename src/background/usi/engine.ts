@@ -115,11 +115,7 @@ type ErrorCallback = (e: Error) => void;
 type TimeoutCallback = () => void;
 type USIOKCallback = () => void;
 type ReadyCallback = () => void;
-type BestmoveCallback = (
-  position: string,
-  move: string,
-  ponder?: string,
-) => void;
+type BestmoveCallback = (position: string, move: string, ponder?: string) => void;
 type CheckmateCallback = (position: string, moves: string[]) => void;
 type CheckmateNotImplementedCallback = () => void;
 type CheckmateTimeoutCallback = (position: string) => void;
@@ -216,10 +212,7 @@ export class EngineProcess {
   on(event: "ready", callback: ReadyCallback): this;
   on(event: "bestmove", callback: BestmoveCallback): this;
   on(event: "checkmate", callback: CheckmateCallback): this;
-  on(
-    event: "checkmateNotImplemented",
-    callback: CheckmateNotImplementedCallback,
-  ): this;
+  on(event: "checkmateNotImplemented", callback: CheckmateNotImplementedCallback): this;
   on(event: "checkmateTimeout", callback: CheckmateTimeoutCallback): this;
   on(event: "noMate", callback: NoMateCallback): this;
   on(event: "info", callback: InfoCallback): this;
@@ -245,8 +238,7 @@ export class EngineProcess {
         this.checkmateCallback = callback as CheckmateCallback;
         break;
       case "checkmateNotImplemented":
-        this.checkmateNotImplementedCallback =
-          callback as CheckmateNotImplementedCallback;
+        this.checkmateNotImplementedCallback = callback as CheckmateNotImplementedCallback;
         break;
       case "checkmateTimeout":
         this.checkmateTimeoutCallback = callback as CheckmateTimeoutCallback;
@@ -314,11 +306,7 @@ export class EngineProcess {
     }
 
     if (this.state !== State.NotReady) {
-      this.logger.warn(
-        "sid=%d: ready: unexpected state: %s",
-        this.sessionID,
-        this.state,
-      );
+      this.logger.warn("sid=%d: ready: unexpected state: %s", this.sessionID, this.state);
       return new Error("unexpected state");
     }
     this.send("isready");
@@ -379,11 +367,7 @@ export class EngineProcess {
 
   ponderHit(): void {
     if (this.state !== State.Ponder) {
-      this.logger.warn(
-        "sid=%d: ponderHit: unexpected state: %s",
-        this.sessionID,
-        this.state,
-      );
+      this.logger.warn("sid=%d: ponderHit: unexpected state: %s", this.sessionID, this.state);
       return;
     }
     this.send("ponderhit");
@@ -396,11 +380,7 @@ export class EngineProcess {
       this.state !== State.Ponder &&
       this.state !== State.WaitingForCheckmate
     ) {
-      this.logger.warn(
-        "sid=%d: stop: unexpected state: %s",
-        this.sessionID,
-        this.state,
-      );
+      this.logger.warn("sid=%d: stop: unexpected state: %s", this.sessionID, this.state);
       return;
     }
     if (this.process?.lastSended === "stop") {
@@ -419,11 +399,7 @@ export class EngineProcess {
       case State.NotReady:
       case State.WaitingForReadyOK:
       case State.WillQuit:
-        this.logger.warn(
-          "sid=%d: gameover: unexpected state: %s",
-          this.sessionID,
-          this.state,
-        );
+        this.logger.warn("sid=%d: gameover: unexpected state: %s", this.sessionID, this.state);
         return;
       case State.WaitingForBestMove:
       case State.Ponder:
@@ -573,15 +549,13 @@ export class EngineProcess {
     const option: USIEngineOption = {
       name: args[1],
       type: args[3] as USIEngineOptionType,
-      order:
-        UserDefinedOptionOrderStart + Object.keys(this._engineOptions).length,
+      order: UserDefinedOptionOrderStart + Object.keys(this._engineOptions).length,
       vars: [],
     };
     for (let i = 4; i + 1 < args.length; i = i + 1) {
       switch (args[i]) {
         case "default":
-          option.default =
-            option.type === "spin" ? Number(args[i + 1]) : args[i + 1];
+          option.default = option.type === "spin" ? Number(args[i + 1]) : args[i + 1];
           break;
         case "min":
           option.min = Number(args[i + 1]);
@@ -599,11 +573,7 @@ export class EngineProcess {
 
   private onUSIOk(): void {
     if (this.state !== State.WaitingForUSIOK) {
-      this.logger.warn(
-        "sid=%d: onUSIOk: unexpected state: %s",
-        this.sessionID,
-        this.state,
-      );
+      this.logger.warn("sid=%d: onUSIOk: unexpected state: %s", this.sessionID, this.state);
       return;
     }
     if (!this.engineOptions[USIHash]) {
@@ -641,11 +611,7 @@ export class EngineProcess {
 
   private onReadyOk(): void {
     if (this.state !== State.WaitingForReadyOK) {
-      this.logger.warn(
-        "sid=%d: onReadyOk: unexpected state: %s",
-        this.sessionID,
-        this.state,
-      );
+      this.logger.warn("sid=%d: onReadyOk: unexpected state: %s", this.sessionID, this.state);
       return;
     }
     this.state = State.Ready;
@@ -660,22 +626,11 @@ export class EngineProcess {
     if (this.invalidBestMoveCount > 0) {
       // 前回の終局までに受け取れなかった bestmove を無視する。
       this.invalidBestMoveCount--;
-      this.logger.warn(
-        "sid=%d: onBestMove: ignore bestmove: %s",
-        this.sessionID,
-        args,
-      );
+      this.logger.warn("sid=%d: onBestMove: ignore bestmove: %s", this.sessionID, args);
       return;
     }
-    if (
-      this.state !== State.WaitingForBestMove &&
-      this.state !== State.WaitingForPonderBestMove
-    ) {
-      this.logger.warn(
-        "sid=%d: onBestMove: unexpected state: %s",
-        this.sessionID,
-        this.state,
-      );
+    if (this.state !== State.WaitingForBestMove && this.state !== State.WaitingForPonderBestMove) {
+      this.logger.warn("sid=%d: onBestMove: unexpected state: %s", this.sessionID, this.state);
       return;
     }
     if (this.bestMoveCallback && this.state === State.WaitingForBestMove) {
@@ -691,11 +646,7 @@ export class EngineProcess {
 
   private onCheckmate(args: string): void {
     if (this.state !== State.WaitingForCheckmate) {
-      this.logger.warn(
-        "sid=%d: onCheckmate: unexpected state: %s",
-        this.sessionID,
-        this.state,
-      );
+      this.logger.warn("sid=%d: onCheckmate: unexpected state: %s", this.sessionID, this.state);
       return;
     }
     this.state = State.Ready;

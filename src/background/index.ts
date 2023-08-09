@@ -2,18 +2,8 @@
 
 import path from "path";
 import { app, protocol, BrowserWindow, session } from "electron";
-import {
-  getAppState,
-  openRecord,
-  sendError,
-  setInitialFilePath,
-  setup,
-} from "@/background/ipc";
-import {
-  loadAppSetting,
-  loadWindowSetting,
-  saveWindowSetting,
-} from "@/background/settings";
+import { getAppState, openRecord, sendError, setInitialFilePath, setup } from "@/background/ipc";
+import { loadAppSetting, loadWindowSetting, saveWindowSetting } from "@/background/settings";
 import { buildWindowSetting } from "@/common/settings/window";
 import { getAppLogger, shutdownLoggers } from "@/background/log";
 import { quitAll as usiQuitAll } from "@/background/usi";
@@ -47,9 +37,7 @@ function createWindow() {
 
   getAppLogger().info("create BrowserWindow");
 
-  const preloadPath = isProduction()
-    ? "./preload.js"
-    : "../../packed/preload.js";
+  const preloadPath = isProduction() ? "./preload.js" : "../../packed/preload.js";
 
   // Create the browser window.
   const win = new BrowserWindow({
@@ -117,9 +105,7 @@ function createWindow() {
       try {
         sendError(new Error(`${origin}: ${e}`));
       } catch (ipcError) {
-        getAppLogger().error(
-          `failed to send error to renderer: ${ipcError}: ${e}`,
-        );
+        getAppLogger().error(`failed to send error to renderer: ${ipcError}: ${e}`);
       }
     });
     win.show();

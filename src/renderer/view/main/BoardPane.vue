@@ -30,15 +30,10 @@
           ref="rightControl"
           class="full column top-control"
           :class="{
-            hidden:
-              appSetting.rightSideControlType === RightSideControlType.NONE,
+            hidden: appSetting.rightSideControlType === RightSideControlType.NONE,
           }"
         >
-          <button
-            v-if="controlStates.game"
-            class="control-item"
-            @click="onGame"
-          >
+          <button v-if="controlStates.game" class="control-item" @click="onGame">
             <Icon :icon="IconType.GAME" />
             <span>{{ t.game }}</span>
           </button>
@@ -63,11 +58,7 @@
             <Icon :icon="IconType.CALL" />
             <span>{{ t.declareWinning }}</span>
           </button>
-          <button
-            v-if="controlStates.resign"
-            class="control-item"
-            @click="onResign"
-          >
+          <button v-if="controlStates.resign" class="control-item" @click="onResign">
             <Icon :icon="IconType.RESIGN" />
             <span>{{ t.resign }}</span>
           </button>
@@ -141,19 +132,11 @@
             <Icon :icon="IconType.CHECK" />
             <span>{{ t.completePositionSetup }}</span>
           </button>
-          <button
-            v-if="controlStates.initPosition"
-            class="control-item"
-            @click="onChangeTurn"
-          >
+          <button v-if="controlStates.initPosition" class="control-item" @click="onChangeTurn">
             <Icon :icon="IconType.SWAP" />
             <span>{{ t.changeTurn }}</span>
           </button>
-          <button
-            v-if="controlStates.initPosition"
-            class="control-item"
-            @click="onInitPosition"
-          >
+          <button v-if="controlStates.initPosition" class="control-item" @click="onInitPosition">
             <span>{{ t.initializePosition }}</span>
           </button>
         </div>
@@ -166,11 +149,7 @@
             hidden: appSetting.leftSideControlType === LeftSideControlType.NONE,
           }"
         >
-          <button
-            class="control-item"
-            data-hotkey="Control+,"
-            @click="onOpenAppSettings"
-          >
+          <button class="control-item" data-hotkey="Control+," @click="onOpenAppSettings">
             <Icon :icon="IconType.SETTINGS" />
             <span>{{ t.appSettings }}</span>
           </button>
@@ -214,14 +193,7 @@
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
-import {
-  computed,
-  onUpdated,
-  onBeforeUpdate,
-  ref,
-  onMounted,
-  onBeforeUnmount,
-} from "vue";
+import { computed, onUpdated, onBeforeUpdate, ref, onMounted, onBeforeUnmount } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import { Move, PositionChange } from "@/common/shogi";
 import { RectSize } from "@/common/graphics.js";
@@ -244,10 +216,7 @@ import {
   LeftSideControlType,
   getPieceImageBaseURL,
 } from "@/common/settings/app";
-import {
-  getBlackPlayerName,
-  getWhitePlayerName,
-} from "@/common/helpers/metadata";
+import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 
 defineProps({
   maxSize: {
@@ -291,10 +260,7 @@ const onResize = (size: RectSize) => {
 };
 
 const onMove = (move: Move) => {
-  if (
-    store.appState === AppState.GAME ||
-    store.appState === AppState.CSA_GAME
-  ) {
+  if (store.appState === AppState.GAME || store.appState === AppState.CSA_GAME) {
     humanPlayer.doMove(move);
   } else {
     store.doMove(move);
@@ -390,18 +356,11 @@ const lastMove = computed(() => {
   return move instanceof Move ? move : undefined;
 });
 
-const blackPlayerName = computed(
-  () => getBlackPlayerName(store.record.metadata) || t.sente,
-);
-const whitePlayerName = computed(
-  () => getWhitePlayerName(store.record.metadata) || t.gote,
-);
+const blackPlayerName = computed(() => getBlackPlayerName(store.record.metadata) || t.sente);
+const whitePlayerName = computed(() => getWhitePlayerName(store.record.metadata) || t.gote);
 
 const clock = computed(() => {
-  if (
-    store.appState === AppState.GAME ||
-    store.csaGameState === CSAGameState.GAME
-  ) {
+  if (store.appState === AppState.GAME || store.csaGameState === CSAGameState.GAME) {
     return {
       black: {
         time: store.blackTime,
@@ -419,14 +378,11 @@ const clock = computed(() => {
 const controlStates = computed(() => {
   return {
     game: store.appState === AppState.NORMAL,
-    showGameResults:
-      store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
-    stop:
-      store.appState === AppState.GAME || store.appState === AppState.CSA_GAME,
+    showGameResults: store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
+    stop: store.appState === AppState.GAME || store.appState === AppState.CSA_GAME,
     win: store.appState === AppState.CSA_GAME && store.isMovableByUser,
     resign:
-      (store.appState === AppState.GAME ||
-        store.appState === AppState.CSA_GAME) &&
+      (store.appState === AppState.GAME || store.appState === AppState.CSA_GAME) &&
       store.isMovableByUser,
     research: store.appState === AppState.NORMAL,
     endResearch: store.appState === AppState.RESEARCH,
@@ -437,9 +393,7 @@ const controlStates = computed(() => {
     startEditPosition: store.appState === AppState.NORMAL,
     endEditPosition: store.appState === AppState.POSITION_EDITING,
     initPosition: store.appState === AppState.POSITION_EDITING,
-    removeCurrentMove:
-      store.appState === AppState.NORMAL ||
-      store.appState === AppState.RESEARCH,
+    removeCurrentMove: store.appState === AppState.NORMAL || store.appState === AppState.RESEARCH,
     engineSettings: store.appState === AppState.NORMAL,
   };
 });

@@ -20,9 +20,6 @@ export function getSituationText(score: number): string {
   }
 }
 
-export function scoreToPercentage(
-  score: number,
-  coefficientInSigmoid: number,
-): number {
+export function scoreToPercentage(score: number, coefficientInSigmoid: number): number {
   return 100 / (1 + Math.exp(-score / coefficientInSigmoid));
 }

@@ -205,11 +205,7 @@ export class Client {
       );
       return;
     }
-    this.logger.info(
-      "sid=%d: > %s",
-      this.sessionID,
-      this.hideSecureValues(command),
-    );
+    this.logger.info("sid=%d: > %s", this.sessionID, this.hideSecureValues(command));
     this.socket.write(command);
   }
 
@@ -256,9 +252,7 @@ export class Client {
         if (!hadError) {
           this.logger.info("sid=%d: socket closed", this.sessionID);
         } else {
-          this.onError(
-            new Error(t.errorOccuredWhileDisconnectingFromCSAServer),
-          );
+          this.onError(new Error(t.errorOccuredWhileDisconnectingFromCSAServer));
         }
         break;
       case State.CONNECTING:
@@ -337,10 +331,7 @@ export class Client {
       return;
     }
     for (const entry of record.moves) {
-      if (
-        isKnownSpecialMove(entry.move) &&
-        entry.move.type === SpecialMoveType.START
-      ) {
+      if (isKnownSpecialMove(entry.move) && entry.move.type === SpecialMoveType.START) {
         continue;
       }
       const color = reverseColor(entry.nextColor);
@@ -498,8 +489,7 @@ export class Client {
 
   private updateTime(color: Color, elapsedMs: number): void {
     const elapsed = elapsedMs / this.gameSummary.timeUnitMs;
-    const time =
-      this.playerStates[color].time - elapsed + this.gameSummary.increment;
+    const time = this.playerStates[color].time - elapsed + this.gameSummary.increment;
     this.playerStates[color].time = Math.max(time, 0);
   }
 

@@ -27,22 +27,8 @@ describe("store/record", () => {
         depth: 8,
         score: 158,
         pv: [
-          new Move(
-            new Square(7, 7),
-            new Square(7, 6),
-            false,
-            Color.BLACK,
-            PieceType.PAWN,
-            null,
-          ),
-          new Move(
-            new Square(3, 3),
-            new Square(3, 4),
-            false,
-            Color.WHITE,
-            PieceType.PAWN,
-            null,
-          ),
+          new Move(new Square(7, 7), new Square(7, 6), false, Color.BLACK, PieceType.PAWN, null),
+          new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
         ],
       },
       CommentBehavior.INSERT,
@@ -59,22 +45,8 @@ describe("store/record", () => {
         depth: 10,
         score: 210,
         pv: [
-          new Move(
-            new Square(2, 7),
-            new Square(2, 6),
-            false,
-            Color.BLACK,
-            PieceType.PAWN,
-            null,
-          ),
-          new Move(
-            new Square(3, 3),
-            new Square(3, 4),
-            false,
-            Color.WHITE,
-            PieceType.PAWN,
-            null,
-          ),
+          new Move(new Square(2, 7), new Square(2, 6), false, Color.BLACK, PieceType.PAWN, null),
+          new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
         ],
       },
       CommentBehavior.INSERT,
@@ -87,22 +59,8 @@ describe("store/record", () => {
   it("appendMovesSilently", () => {
     const recordManager = new RecordManager();
     recordManager.appendMovesSilently([
-      new Move(
-        new Square(7, 7),
-        new Square(7, 6),
-        false,
-        Color.BLACK,
-        PieceType.PAWN,
-        null,
-      ),
-      new Move(
-        new Square(3, 3),
-        new Square(3, 4),
-        false,
-        Color.WHITE,
-        PieceType.PAWN,
-        null,
-      ),
+      new Move(new Square(7, 7), new Square(7, 6), false, Color.BLACK, PieceType.PAWN, null),
+      new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
     ]);
     expect(recordManager.record.current.ply).toBe(0);
     expect(recordManager.record.moves).toHaveLength(3);

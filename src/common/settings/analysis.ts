@@ -58,9 +58,7 @@ export function defaultAnalysisSetting(): AnalysisSetting {
   };
 }
 
-export function normalizeAnalysisSetting(
-  setting: AnalysisSetting,
-): AnalysisSetting {
+export function normalizeAnalysisSetting(setting: AnalysisSetting): AnalysisSetting {
   return {
     ...defaultAnalysisSetting(),
     ...setting,

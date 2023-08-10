@@ -4,10 +4,7 @@
       <div class="title">{{ t.bookmarkList }}</div>
       <div>
         <div v-for="bookmark of bookmarks" :key="bookmark" class="bookmark">
-          <button
-            :disabled="isJumpDisabled"
-            @click="onSelectBookmark(bookmark)"
-          >
+          <button :disabled="isJumpDisabled" @click="onSelectBookmark(bookmark)">
             {{ bookmark }}
           </button>
         </div>
@@ -25,10 +22,7 @@
 import { AppState } from "@/common/control/state";
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { useStore } from "@/renderer/store";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
@@ -37,8 +31,7 @@ const dialog = ref();
 const emit = defineEmits(["close"]);
 const bookmarks = store.record.bookmarks;
 const isJumpDisabled = computed(
-  () =>
-    store.appState !== AppState.NORMAL && store.appState !== AppState.RESEARCH,
+  () => store.appState !== AppState.NORMAL && store.appState !== AppState.RESEARCH,
 );
 
 onMounted(() => {

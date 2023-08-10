@@ -244,10 +244,7 @@ export function buildUpdatedAppSetting(
   }
 
   // 以前のサイズ比率を記憶する。
-  if (
-    org.topPaneHeightPercentage !== 0 &&
-    org.topPaneHeightPercentage !== 100
-  ) {
+  if (org.topPaneHeightPercentage !== 0 && org.topPaneHeightPercentage !== 100) {
     updated.topPanePreviousHeightPercentage = org.topPaneHeightPercentage;
   }
 
@@ -322,10 +319,7 @@ export function normalizeAppSetting(
     ...defaultAppSetting(opt),
     ...setting,
   };
-  if (
-    result.autoSaveDirectory.endsWith("\\") ||
-    result.autoSaveDirectory.endsWith("/")
-  ) {
+  if (result.autoSaveDirectory.endsWith("\\") || result.autoSaveDirectory.endsWith("/")) {
     result.autoSaveDirectory = result.autoSaveDirectory.slice(0, -1);
   }
   // 旧バージョンでは盤画像に合わせて自動で駒台の色が選ばれていた。
@@ -353,10 +347,7 @@ export function normalizeAppSetting(
 }
 
 export function validateAppSetting(setting: AppSetting): Error | undefined {
-  if (
-    setting.backgroundImageType !== BackgroundImageType.NONE &&
-    !setting.backgroundImageFileURL
-  ) {
+  if (setting.backgroundImageType !== BackgroundImageType.NONE && !setting.backgroundImageFileURL) {
     return new Error(t.backgroundImageFileNotSelected);
   }
   if (
@@ -365,10 +356,7 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   ) {
     return new Error(t.pieceImageFileNotSelected);
   }
-  if (
-    setting.boardImage === BoardImageType.CUSTOM_IMAGE &&
-    !setting.boardImageFileURL
-  ) {
+  if (setting.boardImage === BoardImageType.CUSTOM_IMAGE && !setting.boardImageFileURL) {
     return new Error(t.boardImageFileNotSelected);
   }
   if (
@@ -392,28 +380,16 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   if (setting.coefficientInSigmoid <= 0) {
     return new Error(t.coefficientInSigmoidMustBeGreaterThan0);
   }
-  if (
-    setting.badMoveLevelThreshold1 < 1 ||
-    setting.badMoveLevelThreshold1 > 100
-  ) {
+  if (setting.badMoveLevelThreshold1 < 1 || setting.badMoveLevelThreshold1 > 100) {
     return new Error(t.inaccuracyThresholdMustBe1To100Percent);
   }
-  if (
-    setting.badMoveLevelThreshold2 < 1 ||
-    setting.badMoveLevelThreshold2 > 100
-  ) {
+  if (setting.badMoveLevelThreshold2 < 1 || setting.badMoveLevelThreshold2 > 100) {
     return new Error(t.dubiousThresholdMustBe1To100Percent);
   }
-  if (
-    setting.badMoveLevelThreshold3 < 1 ||
-    setting.badMoveLevelThreshold3 > 100
-  ) {
+  if (setting.badMoveLevelThreshold3 < 1 || setting.badMoveLevelThreshold3 > 100) {
     return new Error(t.mistakeThresholdMustBe1To100Percent);
   }
-  if (
-    setting.badMoveLevelThreshold4 < 1 ||
-    setting.badMoveLevelThreshold4 > 100
-  ) {
+  if (setting.badMoveLevelThreshold4 < 1 || setting.badMoveLevelThreshold4 > 100) {
     return new Error(t.blunderThresholdMustBe1To100Percent);
   }
   if (setting.badMoveLevelThreshold1 >= setting.badMoveLevelThreshold2) {

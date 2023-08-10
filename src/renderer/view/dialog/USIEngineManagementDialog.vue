@@ -52,19 +52,12 @@
 import { t } from "@/common/i18n";
 import { filter as filterString } from "@/common/helpers/string";
 import api from "@/renderer/ipc/api";
-import {
-  duplicateEngineSetting,
-  USIEngineSetting,
-  USIEngineSettings,
-} from "@/common/settings/usi";
+import { duplicateEngineSetting, USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import USIEngineOptionDialog from "@/renderer/view/dialog/USIEngineOptionDialog.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 
 const store = useStore();

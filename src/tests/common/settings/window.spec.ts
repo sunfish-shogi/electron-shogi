@@ -1,7 +1,4 @@
-import {
-  buildWindowSetting,
-  normalizeWindowSetting,
-} from "@/common/settings/window";
+import { buildWindowSetting, normalizeWindowSetting } from "@/common/settings/window";
 
 describe("settings/window", () => {
   it("buildWindowSetting", () => {

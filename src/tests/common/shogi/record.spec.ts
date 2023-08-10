@@ -42,9 +42,7 @@ describe("shogi/record", () => {
 
   it("usi", () => {
     expect(getNextColorFromUSI("position startpos moves ")).toBe(Color.BLACK);
-    expect(getNextColorFromUSI("position startpos moves 2g2f 8c8d 2f2e")).toBe(
-      Color.WHITE,
-    );
+    expect(getNextColorFromUSI("position startpos moves 2g2f 8c8d 2f2e")).toBe(Color.WHITE);
     expect(
       getNextColorFromUSI(
         "position sfen lnsgkgsnl/1r5b1/p1ppppppp/1p7/7P1/9/PPPPPPP1P/1B5R1/LNSGKGSNL w - 1 moves 8d8e",
@@ -57,10 +55,7 @@ describe("shogi/record", () => {
     const onChangePosition = jest.fn();
     record.on("changePosition", onChangePosition);
     const move = (ff: number, fr: number, tf: number, tr: number): Move => {
-      return record.position.createMove(
-        new Square(ff, fr),
-        new Square(tf, tr),
-      ) as Move;
+      return record.position.createMove(new Square(ff, fr), new Square(tf, tr)) as Move;
     };
     expect(record.append(move(7, 7, 7, 6))).toBeTruthy();
     expect(onChangePosition).toBeCalledTimes(1);
@@ -336,13 +331,7 @@ describe("shogi/record", () => {
 &変化図
 `;
     const record = importKIF(data) as Record;
-    expect(record.bookmarks).toStrictEqual([
-      "開始局面",
-      "第1図",
-      "第2図",
-      "最終図",
-      "変化図",
-    ]);
+    expect(record.bookmarks).toStrictEqual(["開始局面", "第1図", "第2図", "最終図", "変化図"]);
     expect(record.jumpToBookmark("第1図")).toBeTruthy();
     expect(record.current.ply).toBe(2);
     expect((record.current.move as Move).usi).toBe("3c3d");
@@ -379,69 +368,25 @@ describe("shogi/record", () => {
     const results: [string, string][] = [];
     record.forEach((node, pos) => {
       results.push([
-        node.move instanceof Move
-          ? formatMove(pos, node.move)
-          : formatSpecialMove(node.move),
+        node.move instanceof Move ? formatMove(pos, node.move) : formatSpecialMove(node.move),
         pos.getSFEN(node.ply),
       ]);
     });
     expect(results).toStrictEqual([
-      [
-        "開始局面",
-        "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
-      ],
-      [
-        "☗５六歩",
-        "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
-      ],
-      [
-        "☖３四歩",
-        "lnsgkgsnl/1r5b1/ppppppppp/9/9/4P4/PPPP1PPPP/1B5R1/LNSGKGSNL w - 2",
-      ],
-      [
-        "☗５八飛",
-        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B5R1/LNSGKGSNL b - 3",
-      ],
-      [
-        "☖３二飛",
-        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL w - 4",
-      ],
-      [
-        "☗７六歩",
-        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5",
-      ],
-      [
-        "☖４二銀",
-        "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/2P1P4/PP1P1PPPP/1B2R4/LNSGKGSNL w - 6",
-      ],
-      [
-        "中断",
-        "lnsgkg1nl/5srb1/pppppp1pp/6p2/9/2P1P4/PP1P1PPPP/1B2R4/LNSGKGSNL b - 7",
-      ],
-      [
-        "☖６二銀",
-        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL w - 4",
-      ],
-      [
-        "☗７六歩",
-        "ln1gkgsnl/1r1s3b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5",
-      ],
-      [
-        "☗７六歩",
-        "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
-      ],
-      [
-        "☖３四歩",
-        "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 2",
-      ],
-      [
-        "☗６六歩",
-        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 3",
-      ],
-      [
-        "☖３二飛",
-        "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2PP5/PP2PPPPP/1B5R1/LNSGKGSNL w - 4",
-      ],
+      ["開始局面", "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"],
+      ["☗５六歩", "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"],
+      ["☖３四歩", "lnsgkgsnl/1r5b1/ppppppppp/9/9/4P4/PPPP1PPPP/1B5R1/LNSGKGSNL w - 2"],
+      ["☗５八飛", "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B5R1/LNSGKGSNL b - 3"],
+      ["☖３二飛", "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL w - 4"],
+      ["☗７六歩", "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5"],
+      ["☖４二銀", "lnsgkgsnl/6rb1/pppppp1pp/6p2/9/2P1P4/PP1P1PPPP/1B2R4/LNSGKGSNL w - 6"],
+      ["中断", "lnsgkg1nl/5srb1/pppppp1pp/6p2/9/2P1P4/PP1P1PPPP/1B2R4/LNSGKGSNL b - 7"],
+      ["☖６二銀", "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL w - 4"],
+      ["☗７六歩", "ln1gkgsnl/1r1s3b1/pppppp1pp/6p2/9/4P4/PPPP1PPPP/1B2R4/LNSGKGSNL b - 5"],
+      ["☗７六歩", "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"],
+      ["☖３四歩", "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 2"],
+      ["☗６六歩", "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 3"],
+      ["☖３二飛", "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2PP5/PP2PPPPP/1B5R1/LNSGKGSNL w - 4"],
     ]);
   });
 

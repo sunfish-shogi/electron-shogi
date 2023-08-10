@@ -19,9 +19,7 @@ import {
 describe("shogi/text", () => {
   it("formatSpecialMove", () => {
     expect(formatSpecialMove(SpecialMoveType.RESIGN)).toBe("投了");
-    expect(formatSpecialMove(specialMove(SpecialMoveType.TIMEOUT))).toBe(
-      "切れ負け",
-    );
+    expect(formatSpecialMove(specialMove(SpecialMoveType.TIMEOUT))).toBe("切れ負け");
     expect(formatSpecialMove(anySpecialMove("休憩"))).toBe("休憩");
   });
 
@@ -43,96 +41,36 @@ describe("shogi/text", () => {
 先手の持駒：金　桂二
 先手番`) as Record;
     const position = record.position;
-    expect(formatMove(position, position.createMoveByUSI("3b2b") as Move)).toBe(
-      "☗２二金",
-    );
-    expect(formatMove(position, position.createMoveByUSI("3b3c") as Move)).toBe(
-      "☗３三金引",
-    );
-    expect(formatMove(position, position.createMoveByUSI("2d3c") as Move)).toBe(
-      "☗３三金右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("4d3c") as Move)).toBe(
-      "☗３三金左",
-    );
-    expect(formatMove(position, position.createMoveByUSI("G*3c") as Move)).toBe(
-      "☗３三金打",
-    );
-    expect(formatMove(position, position.createMoveByUSI("8b7a") as Move)).toBe(
-      "☗７一銀不成",
-    );
-    expect(
-      formatMove(position, position.createMoveByUSI("8b7a+") as Move),
-    ).toBe("☗７一銀成");
-    expect(formatMove(position, position.createMoveByUSI("8b7c") as Move)).toBe(
-      "☗７三銀引不成",
-    );
-    expect(
-      formatMove(position, position.createMoveByUSI("8b7c+") as Move),
-    ).toBe("☗７三銀引成");
-    expect(formatMove(position, position.createMoveByUSI("8d7c") as Move)).toBe(
-      "☗７三銀左上不成",
-    );
-    expect(
-      formatMove(position, position.createMoveByUSI("8d7c+") as Move),
-    ).toBe("☗７三銀左上成");
-    expect(formatMove(position, position.createMoveByUSI("6d7c") as Move)).toBe(
-      "☗７三銀右不成",
-    );
-    expect(
-      formatMove(position, position.createMoveByUSI("6d7c+") as Move),
-    ).toBe("☗７三銀右成");
-    expect(formatMove(position, position.createMoveByUSI("6d7e") as Move)).toBe(
-      "☗７五銀右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("1h2f") as Move)).toBe(
-      "☗２六桂右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("3h2f") as Move)).toBe(
-      "☗２六桂左",
-    );
-    expect(formatMove(position, position.createMoveByUSI("N*2f") as Move)).toBe(
-      "☗２六桂打",
-    );
-    expect(formatMove(position, position.createMoveByUSI("N*1f") as Move)).toBe(
-      "☗１六桂",
-    );
-    expect(formatMove(position, position.createMoveByUSI("3h4f") as Move)).toBe(
-      "☗４六桂",
-    );
-    expect(formatMove(position, position.createMoveByUSI("5f5g") as Move)).toBe(
-      "☗５七と引",
-    );
-    expect(formatMove(position, position.createMoveByUSI("5h5g") as Move)).toBe(
-      "☗５七と直",
-    );
-    expect(formatMove(position, position.createMoveByUSI("4g5g") as Move)).toBe(
-      "☗５七と右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("6g5g") as Move)).toBe(
-      "☗５七と左寄",
-    );
-    expect(formatMove(position, position.createMoveByUSI("6h5g") as Move)).toBe(
-      "☗５七と左上",
-    );
-    expect(formatMove(position, position.createMoveByUSI("6g7g") as Move)).toBe(
-      "☗７七と寄",
-    );
-    expect(formatMove(position, position.createMoveByUSI("6h7g") as Move)).toBe(
-      "☗７七と上",
-    );
-    expect(formatMove(position, position.createMoveByUSI("8f8g") as Move)).toBe(
-      "☗８七馬右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("9f8g") as Move)).toBe(
-      "☗８七馬左",
-    );
-    expect(formatMove(position, position.createMoveByUSI("8h8g") as Move)).toBe(
-      "☗８七龍右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("9h8g") as Move)).toBe(
-      "☗８七龍左",
-    );
+    expect(formatMove(position, position.createMoveByUSI("3b2b") as Move)).toBe("☗２二金");
+    expect(formatMove(position, position.createMoveByUSI("3b3c") as Move)).toBe("☗３三金引");
+    expect(formatMove(position, position.createMoveByUSI("2d3c") as Move)).toBe("☗３三金右");
+    expect(formatMove(position, position.createMoveByUSI("4d3c") as Move)).toBe("☗３三金左");
+    expect(formatMove(position, position.createMoveByUSI("G*3c") as Move)).toBe("☗３三金打");
+    expect(formatMove(position, position.createMoveByUSI("8b7a") as Move)).toBe("☗７一銀不成");
+    expect(formatMove(position, position.createMoveByUSI("8b7a+") as Move)).toBe("☗７一銀成");
+    expect(formatMove(position, position.createMoveByUSI("8b7c") as Move)).toBe("☗７三銀引不成");
+    expect(formatMove(position, position.createMoveByUSI("8b7c+") as Move)).toBe("☗７三銀引成");
+    expect(formatMove(position, position.createMoveByUSI("8d7c") as Move)).toBe("☗７三銀左上不成");
+    expect(formatMove(position, position.createMoveByUSI("8d7c+") as Move)).toBe("☗７三銀左上成");
+    expect(formatMove(position, position.createMoveByUSI("6d7c") as Move)).toBe("☗７三銀右不成");
+    expect(formatMove(position, position.createMoveByUSI("6d7c+") as Move)).toBe("☗７三銀右成");
+    expect(formatMove(position, position.createMoveByUSI("6d7e") as Move)).toBe("☗７五銀右");
+    expect(formatMove(position, position.createMoveByUSI("1h2f") as Move)).toBe("☗２六桂右");
+    expect(formatMove(position, position.createMoveByUSI("3h2f") as Move)).toBe("☗２六桂左");
+    expect(formatMove(position, position.createMoveByUSI("N*2f") as Move)).toBe("☗２六桂打");
+    expect(formatMove(position, position.createMoveByUSI("N*1f") as Move)).toBe("☗１六桂");
+    expect(formatMove(position, position.createMoveByUSI("3h4f") as Move)).toBe("☗４六桂");
+    expect(formatMove(position, position.createMoveByUSI("5f5g") as Move)).toBe("☗５七と引");
+    expect(formatMove(position, position.createMoveByUSI("5h5g") as Move)).toBe("☗５七と直");
+    expect(formatMove(position, position.createMoveByUSI("4g5g") as Move)).toBe("☗５七と右");
+    expect(formatMove(position, position.createMoveByUSI("6g5g") as Move)).toBe("☗５七と左寄");
+    expect(formatMove(position, position.createMoveByUSI("6h5g") as Move)).toBe("☗５七と左上");
+    expect(formatMove(position, position.createMoveByUSI("6g7g") as Move)).toBe("☗７七と寄");
+    expect(formatMove(position, position.createMoveByUSI("6h7g") as Move)).toBe("☗７七と上");
+    expect(formatMove(position, position.createMoveByUSI("8f8g") as Move)).toBe("☗８七馬右");
+    expect(formatMove(position, position.createMoveByUSI("9f8g") as Move)).toBe("☗８七馬左");
+    expect(formatMove(position, position.createMoveByUSI("8h8g") as Move)).toBe("☗８七龍右");
+    expect(formatMove(position, position.createMoveByUSI("9h8g") as Move)).toBe("☗８七龍左");
     expect(
       formatMove(position, position.createMoveByUSI("9h8g") as Move, {
         lastMove: position.createMoveByUSI("9h8g") as Move,
@@ -163,94 +101,31 @@ describe("shogi/text", () => {
 先手の持駒：
 後手番`) as Record;
     const position = record.position;
-    expect(formatMove(position, position.createMoveByUSI("6h6i") as Move)).toBe(
-      "☖６九馬左",
-    );
-    expect(formatMove(position, position.createMoveByUSI("9f6i") as Move)).toBe(
-      "☖６九馬右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("6h9e") as Move)).toBe(
-      "☖９五馬左",
-    );
-    expect(formatMove(position, position.createMoveByUSI("9f9e") as Move)).toBe(
-      "☖９五馬右",
-    );
-    expect(
-      formatMove(position, position.createMoveByUSI("6f5g+") as Move),
-    ).toBe("☖５七銀成");
-    expect(formatMove(position, position.createMoveByUSI("6f5g") as Move)).toBe(
-      "☖５七銀不成",
-    );
-    expect(formatMove(position, position.createMoveByUSI("6f5e") as Move)).toBe(
-      "☖５五銀引",
-    );
-    expect(formatMove(position, position.createMoveByUSI("4d5e") as Move)).toBe(
-      "☖５五銀上",
-    );
-    expect(formatMove(position, position.createMoveByUSI("1h1g") as Move)).toBe(
-      "☖１七成桂引",
-    );
-    expect(formatMove(position, position.createMoveByUSI("1f1g") as Move)).toBe(
-      "☖１七成桂直",
-    );
-    expect(formatMove(position, position.createMoveByUSI("2f1g") as Move)).toBe(
-      "☖１七成桂右",
-    );
-    expect(formatMove(position, position.createMoveByUSI("7b8c") as Move)).toBe(
-      "☖８三金上",
-    );
-    expect(formatMove(position, position.createMoveByUSI("8d8c") as Move)).toBe(
-      "☖８三金引",
-    );
+    expect(formatMove(position, position.createMoveByUSI("6h6i") as Move)).toBe("☖６九馬左");
+    expect(formatMove(position, position.createMoveByUSI("9f6i") as Move)).toBe("☖６九馬右");
+    expect(formatMove(position, position.createMoveByUSI("6h9e") as Move)).toBe("☖９五馬左");
+    expect(formatMove(position, position.createMoveByUSI("9f9e") as Move)).toBe("☖９五馬右");
+    expect(formatMove(position, position.createMoveByUSI("6f5g+") as Move)).toBe("☖５七銀成");
+    expect(formatMove(position, position.createMoveByUSI("6f5g") as Move)).toBe("☖５七銀不成");
+    expect(formatMove(position, position.createMoveByUSI("6f5e") as Move)).toBe("☖５五銀引");
+    expect(formatMove(position, position.createMoveByUSI("4d5e") as Move)).toBe("☖５五銀上");
+    expect(formatMove(position, position.createMoveByUSI("1h1g") as Move)).toBe("☖１七成桂引");
+    expect(formatMove(position, position.createMoveByUSI("1f1g") as Move)).toBe("☖１七成桂直");
+    expect(formatMove(position, position.createMoveByUSI("2f1g") as Move)).toBe("☖１七成桂右");
+    expect(formatMove(position, position.createMoveByUSI("7b8c") as Move)).toBe("☖８三金上");
+    expect(formatMove(position, position.createMoveByUSI("8d8c") as Move)).toBe("☖８三金引");
   });
 
   it("formatPV", () => {
     const position = new Position();
     const pv = [
-      new Move(
-        new Square(7, 7),
-        new Square(7, 6),
-        false,
-        Color.BLACK,
-        PieceType.PAWN,
-        null,
-      ),
-      new Move(
-        new Square(3, 3),
-        new Square(3, 4),
-        false,
-        Color.WHITE,
-        PieceType.PAWN,
-        null,
-      ),
-      new Move(
-        new Square(4, 9),
-        new Square(5, 8),
-        false,
-        Color.BLACK,
-        PieceType.GOLD,
-        null,
-      ),
-      new Move(
-        new Square(2, 2),
-        new Square(8, 8),
-        true,
-        Color.WHITE,
-        PieceType.BISHOP,
-        null,
-      ),
-      new Move(
-        new Square(7, 9),
-        new Square(8, 8),
-        false,
-        Color.BLACK,
-        PieceType.SILVER,
-        null,
-      ),
+      new Move(new Square(7, 7), new Square(7, 6), false, Color.BLACK, PieceType.PAWN, null),
+      new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
+      new Move(new Square(4, 9), new Square(5, 8), false, Color.BLACK, PieceType.GOLD, null),
+      new Move(new Square(2, 2), new Square(8, 8), true, Color.WHITE, PieceType.BISHOP, null),
+      new Move(new Square(7, 9), new Square(8, 8), false, Color.BLACK, PieceType.SILVER, null),
     ];
-    expect(formatPV(position, pv)).toBe(
-      "▲７六歩△３四歩▲５八金右△８八角成▲同　銀",
-    );
+    expect(formatPV(position, pv)).toBe("▲７六歩△３四歩▲５八金右△８八角成▲同　銀");
   });
 
   it("parsePV", () => {
@@ -334,8 +209,7 @@ describe("shogi/text", () => {
     });
 
     it("ki2-half-size-number", () => {
-      const input =
-        "▲同銀 △76飛 ▲77銀 △74飛 ▲同飛 △同歩 ▲46角 △82角 ▲同角成 △同銀 ▲55角";
+      const input = "▲同銀 △76飛 ▲77銀 △74飛 ▲同飛 △同歩 ▲46角 △82角 ▲同角成 △同銀 ▲55角";
       const [moves, e] = parseMoves(record.position, input, lastMove);
       expect(e).toBeUndefined();
       expect(moves).toHaveLength(11);

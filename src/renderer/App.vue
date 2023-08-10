@@ -6,15 +6,9 @@
     <ResearchDialog v-if="store.appState === AppState.RESEARCH_DIALOG" />
     <AnalysisDialog v-if="store.appState === AppState.ANALYSIS_DIALOG" />
     <MateSearchDialog v-if="store.appState === AppState.MATE_SEARCH_DIALOG" />
-    <USIEngineManagementDialog
-      v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG"
-    />
-    <BatchConversionDialog
-      v-if="store.appState === AppState.BATCH_CONVERSION_DIALOG"
-    />
-    <ExportPositionImageDialog
-      v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG"
-    />
+    <USIEngineManagementDialog v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG" />
+    <BatchConversionDialog v-if="store.appState === AppState.BATCH_CONVERSION_DIALOG" />
+    <ExportPositionImageDialog v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG" />
     <AppSettingDialog v-if="store.isAppSettingDialogVisible" />
     <PasteDialog v-if="store.appState === AppState.PASTE_DIALOG" />
     <BussyMessage v-if="store.isBussy" />

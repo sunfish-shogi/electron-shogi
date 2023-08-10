@@ -53,11 +53,7 @@ export interface Bridge {
   saveUSIEngineSetting(setting: string): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
   getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<string>;
-  sendUSISetOption(
-    path: string,
-    name: string,
-    timeoutSeconds: number,
-  ): Promise<void>;
+  sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void>;
   usiLaunch(json: string, timeoutSeconds: number): Promise<number>;
   usiReady(sessionID: number): Promise<void>;
   usiGo(
@@ -83,12 +79,7 @@ export interface Bridge {
   csaLogin(json: string): Promise<number>;
   csaLogout(sessionID: number): Promise<void>;
   csaAgree(sessionID: number, gameID: string): Promise<void>;
-  csaMove(
-    sessionID: number,
-    move: string,
-    score?: number,
-    pv?: string,
-  ): Promise<void>;
+  csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void>;
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
@@ -100,41 +91,20 @@ export interface Bridge {
   onUpdateAppSetting(callback: (json: string) => void): void;
   onOpenRecord(callback: (path: string) => void): void;
   onUSIBestMove(
-    callback: (
-      sessionID: number,
-      usi: string,
-      usiMove: string,
-      ponder?: string,
-    ) => void,
+    callback: (sessionID: number, usi: string, usiMove: string, ponder?: string) => void,
   ): void;
-  onUSICheckmate(
-    callback: (sessionID: number, usi: string, usiMoves: string[]) => void,
-  ): void;
+  onUSICheckmate(callback: (sessionID: number, usi: string, usiMoves: string[]) => void): void;
   onUSICheckmateNotImplemented(callback: (sessionID: number) => void): void;
-  onUSICheckmateTimeout(
-    callback: (sessionID: number, usi: string) => void,
-  ): void;
+  onUSICheckmateTimeout(callback: (sessionID: number, usi: string) => void): void;
   onUSINoMate(callback: (sessionID: number, usi: string) => void): void;
-  onUSIInfo(
-    callback: (sessionID: number, usi: string, json: string) => void,
-  ): void;
-  onUSIPonderInfo(
-    callback: (sessionID: number, usi: string, json: string) => void,
-  ): void;
-  onCSAGameSummary(
-    callback: (sessionID: number, gameSummary: string) => void,
-  ): void;
+  onUSIInfo(callback: (sessionID: number, usi: string, json: string) => void): void;
+  onUSIPonderInfo(callback: (sessionID: number, usi: string, json: string) => void): void;
+  onCSAGameSummary(callback: (sessionID: number, gameSummary: string) => void): void;
   onCSAReject(callback: (sessionID: number) => void): void;
   onCSAStart(callback: (sessionID: number, playerStates: string) => void): void;
-  onCSAMove(
-    callback: (sessionID: number, mvoe: string, playerStates: string) => void,
-  ): void;
+  onCSAMove(callback: (sessionID: number, mvoe: string, playerStates: string) => void): void;
   onCSAGameResult(
-    callback: (
-      sessionID: number,
-      specialMove: CSASpecialMove,
-      gameResult: CSAGameResult,
-    ) => void,
+    callback: (sessionID: number, specialMove: CSASpecialMove, gameResult: CSAGameResult) => void,
   ): void;
   onCSAClose(callback: (sessionID: number) => void): void;
 }
@@ -154,9 +124,7 @@ export interface API {
   showSelectImageDialog(defaultURL?: string): Promise<string>;
   exportCaptureAsPNG(rect: Rect): Promise<void>;
   exportCaptureAsJPEG(rect: Rect): Promise<void>;
-  convertRecordFiles(
-    setting: BatchConversionSetting,
-  ): Promise<BatchConversionResult>;
+  convertRecordFiles(setting: BatchConversionSetting): Promise<BatchConversionResult>;
   loadAppSetting(): Promise<AppSetting>;
   saveAppSetting(setting: AppSetting): Promise<void>;
   loadBatchConversionSetting(): Promise<BatchConversionSetting>;
@@ -174,15 +142,8 @@ export interface API {
   loadUSIEngineSetting(): Promise<USIEngineSettings>;
   saveUSIEngineSetting(setting: USIEngineSettings): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
-  getUSIEngineInfo(
-    path: string,
-    timeoutSeconds: number,
-  ): Promise<USIEngineSetting>;
-  sendUSISetOption(
-    path: string,
-    name: string,
-    timeoutSeconds: number,
-  ): Promise<void>;
+  getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngineSetting>;
+  sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void>;
   usiLaunch(setting: USIEngineSetting, timeoutSeconds: number): Promise<number>;
   usiReady(sessionID: number): Promise<void>;
   usiGo(
@@ -208,12 +169,7 @@ export interface API {
   csaLogin(setting: CSAServerSetting): Promise<number>;
   csaLogout(sessionID: number): Promise<void>;
   csaAgree(sessionID: number, gameID: string): Promise<void>;
-  csaMove(
-    sessionID: number,
-    move: string,
-    score?: number,
-    pv?: string,
-  ): Promise<void>;
+  csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void>;
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
@@ -249,9 +205,7 @@ const api: API = {
   exportCaptureAsJPEG(rect: Rect): Promise<void> {
     return bridge.exportCaptureAsJPEG(rect.json);
   },
-  async convertRecordFiles(
-    setting: BatchConversionSetting,
-  ): Promise<BatchConversionResult> {
+  async convertRecordFiles(setting: BatchConversionSetting): Promise<BatchConversionResult> {
     return JSON.parse(await bridge.convertRecordFiles(JSON.stringify(setting)));
   },
   async loadAppSetting(): Promise<AppSetting> {
@@ -302,16 +256,10 @@ const api: API = {
   saveUSIEngineSetting(settings: USIEngineSettings): Promise<void> {
     return bridge.saveUSIEngineSetting(settings.json);
   },
-  async getUSIEngineInfo(
-    path: string,
-    timeoutSeconds: number,
-  ): Promise<USIEngineSetting> {
+  async getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngineSetting> {
     return JSON.parse(await bridge.getUSIEngineInfo(path, timeoutSeconds));
   },
-  usiLaunch(
-    setting: USIEngineSetting,
-    timeoutSeconds: number,
-  ): Promise<number> {
+  usiLaunch(setting: USIEngineSetting, timeoutSeconds: number): Promise<number> {
     return bridge.usiLaunch(JSON.stringify(setting), timeoutSeconds);
   },
   usiReady(sessionID: number): Promise<void> {
@@ -324,13 +272,7 @@ const api: API = {
     blackTimeMs: number,
     whiteTimeMs: number,
   ): Promise<void> {
-    return bridge.usiGo(
-      sessionID,
-      usi,
-      JSON.stringify(timeLimit),
-      blackTimeMs,
-      whiteTimeMs,
-    );
+    return bridge.usiGo(sessionID, usi, JSON.stringify(timeLimit), blackTimeMs, whiteTimeMs);
   },
   usiGoPonder(
     sessionID: number,
@@ -339,13 +281,7 @@ const api: API = {
     blackTimeMs: number,
     whiteTimeMs: number,
   ): Promise<void> {
-    return bridge.usiGoPonder(
-      sessionID,
-      usi,
-      JSON.stringify(timeLimit),
-      blackTimeMs,
-      whiteTimeMs,
-    );
+    return bridge.usiGoPonder(sessionID, usi, JSON.stringify(timeLimit), blackTimeMs, whiteTimeMs);
   },
   csaLogin(setting: CSAServerSetting): Promise<number> {
     return bridge.csaLogin(JSON.stringify(setting));

@@ -11,7 +11,5 @@ export function openHowToUse(): void {
 }
 
 export function checkLatestVersion(): void {
-  shell.openExternal(
-    "https://github.com/sunfish-shogi/electron-shogi/releases/latest",
-  );
+  shell.openExternal("https://github.com/sunfish-shogi/electron-shogi/releases/latest");
 }

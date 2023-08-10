@@ -157,10 +157,7 @@ const layoutTemplate = {
   },
 };
 
-function getPieceTextureMap(
-  baseURL: string,
-  kingPieceType: KingPieceType,
-): PieceImages {
+function getPieceTextureMap(baseURL: string, kingPieceType: KingPieceType): PieceImages {
   const m = {
     black: {
       pawn: join(baseURL, "black_pawn.png"),
@@ -213,10 +210,7 @@ function getBoardGridURL(type: BoardImageType): string {
   }
 }
 
-function getBoardTextureURL(
-  type: BoardImageType,
-  customURL?: string,
-): string | null {
+function getBoardTextureURL(type: BoardImageType, customURL?: string): string | null {
   switch (type) {
     case BoardImageType.LIGHT:
       return "./board/wood_light.png";
@@ -243,10 +237,7 @@ const boardBackgroundColorMap = {
   [BoardImageType.CUSTOM_IMAGE]: "rgba(0, 0, 0, 0)",
 };
 
-function getPieceStandTextureURL(
-  type: PieceStandImageType,
-  customURL?: string,
-): string | null {
+function getPieceStandTextureURL(type: PieceStandImageType, customURL?: string): string | null {
   switch (type) {
     case PieceStandImageType.CUSTOM_IMAGE:
       return customURL || null;
@@ -426,14 +417,8 @@ export default class LayoutBuilder {
   ) {
     this.pieceImages = getPieceTextureMap(pieceImageBaseURL, kingPieceType);
     this.boardGridImage = getBoardGridURL(boardImageType);
-    this.boardTextureImage = getBoardTextureURL(
-      boardImageType,
-      customBoardImageURL,
-    );
-    this.pieceStandImage = getPieceStandTextureURL(
-      pieceStandImageType,
-      customPieceStandImageURL,
-    );
+    this.boardTextureImage = getBoardTextureURL(boardImageType, customBoardImageURL);
+    this.pieceStandImage = getPieceStandTextureURL(pieceStandImageType, customPieceStandImageURL);
   }
 
   preload(): void {
@@ -518,8 +503,7 @@ export default class LayoutBuilder {
           boardLayout.y -
           fontSize * 0.5 +
           (layoutTemplate.board.topSquarePadding +
-            ((flip ? 10 - rank : rank) - 0.5) *
-              layoutTemplate.board.squreHeight) *
+            ((flip ? 10 - rank : rank) - 0.5) * layoutTemplate.board.squreHeight) *
             ratio;
         layouts.push({
           id: "rank" + rank,
@@ -536,8 +520,7 @@ export default class LayoutBuilder {
           boardLayout.x -
           fontSize * 0.5 +
           (layoutTemplate.board.leftPiecePadding +
-            (9.5 - (flip ? 10 - file : file)) *
-              layoutTemplate.board.squreWidth) *
+            (9.5 - (flip ? 10 - file : file)) * layoutTemplate.board.squreWidth) *
             ratio;
         const y =
           boardLayout.y -
@@ -564,21 +547,17 @@ export default class LayoutBuilder {
         const id = piece.id + square.index;
         const displayColor = flip ? reverseColor(piece.color) : piece.color;
         const pieceType =
-          piece.type == PieceType.KING && piece.color == Color.BLACK
-            ? "king2"
-            : piece.type;
+          piece.type == PieceType.KING && piece.color == Color.BLACK ? "king2" : piece.type;
         const imagePath = this.pieceImages[displayColor][pieceType];
         const x =
           boardLayout.x +
           (layoutTemplate.board.leftPiecePadding +
-            layoutTemplate.board.squreWidth *
-              (flip ? square.opposite : square).x) *
+            layoutTemplate.board.squreWidth * (flip ? square.opposite : square).x) *
             ratio;
         const y =
           boardLayout.y +
           (layoutTemplate.board.topPiecePadding +
-            layoutTemplate.board.squreHeight *
-              (flip ? square.opposite : square).y) *
+            layoutTemplate.board.squreHeight * (flip ? square.opposite : square).y) *
             ratio;
         const width = layoutTemplate.piece.width * ratio;
         const height = layoutTemplate.piece.height * ratio;
@@ -605,14 +584,12 @@ export default class LayoutBuilder {
         const x =
           boardLayout.x +
           (layoutTemplate.board.leftSquarePadding +
-            layoutTemplate.board.squreWidth *
-              (flip ? square.opposite : square).x) *
+            layoutTemplate.board.squreWidth * (flip ? square.opposite : square).x) *
             ratio;
         const y =
           boardLayout.y +
           (layoutTemplate.board.topSquarePadding +
-            layoutTemplate.board.squreHeight *
-              (flip ? square.opposite : square).y) *
+            layoutTemplate.board.squreHeight * (flip ? square.opposite : square).y) *
             ratio;
         const width = layoutTemplate.board.squreWidth * ratio;
         const height = layoutTemplate.board.squreHeight * ratio;
@@ -629,11 +606,7 @@ export default class LayoutBuilder {
             ...layoutTemplate.board.highlight.lastMoveTo,
           };
         }
-        if (
-          lastMove &&
-          lastMove.from instanceof Square &&
-          square.equals(lastMove.from)
-        ) {
+        if (lastMove && lastMove.from instanceof Square && square.equals(lastMove.from)) {
           backgroundStyle = {
             ...backgroundStyle,
             ...layoutTemplate.board.highlight.lastMoveFrom,
@@ -681,10 +654,8 @@ export default class LayoutBuilder {
         const areaY = areaHeight * rule.row;
         const pieceWidth = layoutTemplate.piece.width * ratio;
         const pieceHeight = layoutTemplate.piece.height * ratio;
-        const padding =
-          Math.max(areaWidth - pieceWidth * count, 0) / (count * 2);
-        const dx =
-          (areaWidth - pieceWidth - padding * 2) / Math.max(count - 1, 1);
+        const padding = Math.max(areaWidth - pieceWidth * count, 0) / (count * 2);
+        const dx = (areaWidth - pieceWidth - padding * 2) / Math.max(count - 1, 1);
         for (let i = count - 1; i >= 0; i -= 1) {
           const id = type + i;
           const imagePath = this.pieceImages[displayColor][type];
@@ -757,8 +728,7 @@ export default class LayoutBuilder {
           ratio;
       const y =
         boardLayout.y +
-        (layoutTemplate.board.topSquarePadding +
-          layoutTemplate.board.squreHeight * square.y) *
+        (layoutTemplate.board.topSquarePadding + layoutTemplate.board.squreHeight * square.y) *
           ratio;
       const width = layoutTemplate.board.squreWidth * 2 * ratio;
       const height = layoutTemplate.board.squreHeight * ratio;
@@ -782,8 +752,7 @@ export default class LayoutBuilder {
       const borderWidth = 2;
       return {
         style: {
-          left:
-            layoutTemplate.turn[displayColor].x * ratio - borderWidth + "px",
+          left: layoutTemplate.turn[displayColor].x * ratio - borderWidth + "px",
           top: layoutTemplate.turn[displayColor].y * ratio - borderWidth + "px",
           width: layoutTemplate.turn.width * ratio - borderWidth + "px",
           height: layoutTemplate.turn.height * ratio - borderWidth + "px",
@@ -849,18 +818,9 @@ export default class LayoutBuilder {
     const labelLayout = buildLabelLayout(boardLayout);
     const pieceLayout = buildPieceLayout(boardLayout);
     const squareLayout = buildSquareLayout(boardLayout);
-    const blackHandLayout = buildHandLayout(
-      Color.BLACK,
-      position.hand(Color.BLACK),
-    );
-    const whiteHandLayout = buildHandLayout(
-      Color.WHITE,
-      position.hand(Color.WHITE),
-    );
-    const promotionLayout = buildPromotionLayout(
-      boardLayout,
-      reservedMoveForPromotion,
-    );
+    const blackHandLayout = buildHandLayout(Color.BLACK, position.hand(Color.BLACK));
+    const whiteHandLayout = buildHandLayout(Color.WHITE, position.hand(Color.WHITE));
+    const promotionLayout = buildPromotionLayout(boardLayout, reservedMoveForPromotion);
     const turnLayout = buildTurnLayout();
     const blackPlayerNameLayout = buildPlayerNameLayout(Color.BLACK);
     const whitePlayerNameLayout = buildPlayerNameLayout(Color.WHITE);

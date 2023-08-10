@@ -1,13 +1,5 @@
 import { decodeText, encodeText } from "./helpers/encode";
-import {
-  Record,
-  exportCSA,
-  exportKI2,
-  exportKIF,
-  importCSA,
-  importKI2,
-  importKIF,
-} from "./shogi";
+import { Record, exportCSA, exportKI2, exportKIF, importCSA, importKI2, importKIF } from "./shogi";
 
 export enum RecordFileFormat {
   KIF = ".kif",
@@ -17,9 +9,7 @@ export enum RecordFileFormat {
   CSA = ".csa",
 }
 
-export function detectRecordFileFormatByPath(
-  path: string,
-): RecordFileFormat | undefined {
+export function detectRecordFileFormatByPath(path: string): RecordFileFormat | undefined {
   for (const ext of Object.values(RecordFileFormat)) {
     if (path.toLowerCase().endsWith(ext)) {
       return ext;
@@ -27,9 +17,7 @@ export function detectRecordFileFormatByPath(
   }
 }
 
-function getRecommendedEncodingByFileFormat(
-  format: RecordFileFormat,
-): "UTF8" | "SJIS" {
+function getRecommendedEncodingByFileFormat(format: RecordFileFormat): "UTF8" | "SJIS" {
   switch (format) {
     default:
       return "UTF8";

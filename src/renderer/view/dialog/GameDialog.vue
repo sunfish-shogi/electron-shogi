@@ -36,47 +36,19 @@
           <div class="half-column">
             <div class="form-item">
               <div class="form-item-label">{{ t.allottedTime }}</div>
-              <input
-                ref="hours"
-                class="time"
-                type="number"
-                min="0"
-                max="99"
-                step="1"
-              />
+              <input ref="hours" class="time" type="number" min="0" max="99" step="1" />
               <div class="form-item-unit">{{ t.hoursSuffix }}</div>
-              <input
-                ref="minutes"
-                class="time"
-                type="number"
-                min="0"
-                max="59"
-                step="1"
-              />
+              <input ref="minutes" class="time" type="number" min="0" max="59" step="1" />
               <div class="form-item-unit">{{ t.minutesSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.byoyomi }}</div>
-              <input
-                ref="byoyomi"
-                class="time"
-                type="number"
-                min="0"
-                max="60"
-                step="1"
-              />
+              <input ref="byoyomi" class="time" type="number" min="0" max="60" step="1" />
               <div class="form-item-unit">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.increments }}</div>
-              <input
-                ref="increment"
-                class="time"
-                type="number"
-                min="0"
-                max="99"
-                step="1"
-              />
+              <input ref="increment" class="time" type="number" min="0" max="99" step="1" />
               <div class="form-item-unit">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
@@ -94,47 +66,19 @@
           <div class="half-column">
             <div class="form-item">
               <div class="form-item-label">{{ t.allottedTime }}</div>
-              <input
-                ref="whiteHours"
-                class="time"
-                type="number"
-                min="0"
-                max="99"
-                step="1"
-              />
+              <input ref="whiteHours" class="time" type="number" min="0" max="99" step="1" />
               <div class="form-item-unit">{{ t.hoursSuffix }}</div>
-              <input
-                ref="whiteMinutes"
-                class="time"
-                type="number"
-                min="0"
-                max="59"
-                step="1"
-              />
+              <input ref="whiteMinutes" class="time" type="number" min="0" max="59" step="1" />
               <div class="form-item-unit">{{ t.minutesSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.byoyomi }}</div>
-              <input
-                ref="whiteByoyomi"
-                class="time"
-                type="number"
-                min="0"
-                max="60"
-                step="1"
-              />
+              <input ref="whiteByoyomi" class="time" type="number" min="0" max="60" step="1" />
               <div class="form-item-unit">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.increments }}</div>
-              <input
-                ref="whiteIncrement"
-                class="time"
-                type="number"
-                min="0"
-                max="99"
-                step="1"
-              />
+              <input ref="whiteIncrement" class="time" type="number" min="0" max="99" step="1" />
               <div class="form-item-unit">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
@@ -288,10 +232,7 @@ import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import ToggleButton from "../primitive/ToggleButton.vue";
 import { InitialPositionType } from "@/common/shogi";
 
@@ -355,25 +296,19 @@ onUpdated(() => {
   if (!defaultValueLoaded || defaultValueApplied) {
     return;
   }
-  hours.value.value = Math.floor(
-    gameSetting.value.timeLimit.timeSeconds / 3600,
-  );
-  minutes.value.value =
-    Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
+  hours.value.value = Math.floor(gameSetting.value.timeLimit.timeSeconds / 3600);
+  minutes.value.value = Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
   byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
   increment.value.value = gameSetting.value.timeLimit.increment;
   enableEngineTimeout.value = gameSetting.value.enableEngineTimeout;
-  const whiteTimeLimit =
-    gameSetting.value.whiteTimeLimit || gameSetting.value.timeLimit;
+  const whiteTimeLimit = gameSetting.value.whiteTimeLimit || gameSetting.value.timeLimit;
   whiteHours.value.value = Math.floor(whiteTimeLimit.timeSeconds / 3600);
   whiteMinutes.value.value = Math.floor(whiteTimeLimit.timeSeconds / 60) % 60;
   whiteByoyomi.value.value = whiteTimeLimit.byoyomi;
   whiteIncrement.value.value = whiteTimeLimit.increment;
   setDifferentTime.value = !!gameSetting.value.whiteTimeLimit;
   startPosition.value.value =
-    gameSetting.value.startPosition !== undefined
-      ? gameSetting.value.startPosition
-      : "current";
+    gameSetting.value.startPosition !== undefined ? gameSetting.value.startPosition : "current";
   maxMoves.value.value = gameSetting.value.maxMoves;
   repeat.value.value = gameSetting.value.repeat;
   swapPlayers.value = gameSetting.value.swapPlayers;
@@ -386,9 +321,7 @@ onUpdated(() => {
 
 const buildPlayerSetting = (playerURI: string): PlayerSetting => {
   if (uri.isUSIEngine(playerURI) && engineSettings.value.hasEngine(playerURI)) {
-    const engine = engineSettings.value.getEngine(
-      playerURI,
-    ) as USIEngineSetting;
+    const engine = engineSettings.value.getEngine(playerURI) as USIEngineSetting;
     return {
       name: engine.name,
       uri: playerURI,
@@ -406,18 +339,12 @@ const onStart = () => {
     black: buildPlayerSetting(blackPlayerURI.value),
     white: buildPlayerSetting(whitePlayerURI.value),
     timeLimit: {
-      timeSeconds:
-        (readInputAsNumber(hours.value) * 60 +
-          readInputAsNumber(minutes.value)) *
-        60,
+      timeSeconds: (readInputAsNumber(hours.value) * 60 + readInputAsNumber(minutes.value)) * 60,
       byoyomi: readInputAsNumber(byoyomi.value),
       increment: readInputAsNumber(increment.value),
     },
     enableEngineTimeout: enableEngineTimeout.value,
-    startPosition:
-      startPosition.value.value !== "current"
-        ? startPosition.value.value
-        : undefined,
+    startPosition: startPosition.value.value !== "current" ? startPosition.value.value : undefined,
     maxMoves: readInputAsNumber(maxMoves.value),
     repeat: readInputAsNumber(repeat.value),
     swapPlayers: swapPlayers.value,
@@ -428,9 +355,7 @@ const onStart = () => {
   if (setDifferentTime.value) {
     gameSetting.whiteTimeLimit = {
       timeSeconds:
-        (readInputAsNumber(whiteHours.value) * 60 +
-          readInputAsNumber(whiteMinutes.value)) *
-        60,
+        (readInputAsNumber(whiteHours.value) * 60 + readInputAsNumber(whiteMinutes.value)) * 60,
       byoyomi: readInputAsNumber(whiteByoyomi.value),
       increment: readInputAsNumber(whiteIncrement.value),
     };
@@ -461,15 +386,9 @@ const onSelectWhitePlayer = (uri: string) => {
 };
 
 const onSwapColor = () => {
-  [blackPlayerURI.value, whitePlayerURI.value] = [
-    whitePlayerURI.value,
-    blackPlayerURI.value,
-  ];
+  [blackPlayerURI.value, whitePlayerURI.value] = [whitePlayerURI.value, blackPlayerURI.value];
   if (setDifferentTime.value) {
-    [hours.value.value, whiteHours.value.value] = [
-      whiteHours.value.value,
-      hours.value.value,
-    ];
+    [hours.value.value, whiteHours.value.value] = [whiteHours.value.value, hours.value.value];
     [minutes.value.value, whiteMinutes.value.value] = [
       whiteMinutes.value.value,
       minutes.value.value,

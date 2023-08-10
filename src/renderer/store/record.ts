@@ -80,8 +80,7 @@ function restoreCustomData(record: Record): void {
     const data = (node.customData || {}) as RecordCustomData;
     const lines = node.comment.split("\n");
     for (const line of lines) {
-      const playerScore =
-        parsePlayerScoreComment(line) || parseFloodgateScoreComment(line);
+      const playerScore = parsePlayerScoreComment(line) || parseFloodgateScoreComment(line);
       if (playerScore !== undefined) {
         data.playerSearchInfo = { score: playerScore };
       }
@@ -132,10 +131,7 @@ function buildSearchComment(
   return comment;
 }
 
-function getPVsFromSearchComment(
-  position: ImmutablePosition,
-  comment: string,
-): Move[][] {
+function getPVsFromSearchComment(position: ImmutablePosition, comment: string): Move[][] {
   return comment
     .split("\n")
     .filter((line) => line.match(/^[#*]読み筋=/))
@@ -145,11 +141,7 @@ function getPVsFromSearchComment(
 }
 
 function formatTimeLimitCSA(setting: TimeLimitSetting): string {
-  return (
-    secondsToMSS(setting.timeSeconds) +
-    "+" +
-    String(setting.byoyomi).padStart(2, "0")
-  );
+  return secondsToMSS(setting.timeSeconds) + "+" + String(setting.byoyomi).padStart(2, "0");
 }
 
 type GameStartMetadata = {
@@ -197,9 +189,7 @@ export class RecordManager {
   }
 
   reset(startPosition?: InitialPositionType): void {
-    this.resetBySFEN(
-      startPosition ? initialPositionTypeToSFEN(startPosition) : undefined,
-    );
+    this.resetBySFEN(startPosition ? initialPositionTypeToSFEN(startPosition) : undefined);
   }
 
   resetBySFEN(sfen?: string): void {
@@ -226,9 +216,7 @@ export class RecordManager {
     switch (type) {
       case RecordFormatType.SFEN: {
         const position = Position.newBySFEN(data);
-        recordOrError = position
-          ? new Record(position)
-          : new Error(t.failedToParseSFEN);
+        recordOrError = position ? new Record(position) : new Error(t.failedToParseSFEN);
         break;
       }
       case RecordFormatType.USI:
@@ -367,12 +355,7 @@ export class RecordManager {
       engineName?: string;
     },
   ): void {
-    let comment = buildSearchComment(
-      this.record.position,
-      type,
-      searchInfo,
-      options,
-    );
+    let comment = buildSearchComment(this.record.position, type, searchInfo, options);
     if (options?.header) {
       comment = options.header + "\n" + comment;
     }
@@ -380,35 +363,20 @@ export class RecordManager {
   }
 
   get inCommentPVs(): Move[][] {
-    return getPVsFromSearchComment(
-      this.record.position,
-      this.record.current.comment,
-    );
+    return getPVsFromSearchComment(this.record.position, this.record.current.comment);
   }
 
   setGameStartMetadata(metadata: GameStartMetadata): void {
     if (metadata.gameTitle) {
-      this._record.metadata.setStandardMetadata(
-        RecordMetadataKey.TITLE,
-        metadata.gameTitle,
-      );
+      this._record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, metadata.gameTitle);
     }
     if (metadata.blackName) {
-      this._record.metadata.setStandardMetadata(
-        RecordMetadataKey.BLACK_NAME,
-        metadata.blackName,
-      );
+      this._record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, metadata.blackName);
     }
     if (metadata.whiteName) {
-      this._record.metadata.setStandardMetadata(
-        RecordMetadataKey.WHITE_NAME,
-        metadata.whiteName,
-      );
+      this._record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, metadata.whiteName);
     }
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.DATE,
-      getDateString(),
-    );
+    this._record.metadata.setStandardMetadata(RecordMetadataKey.DATE, getDateString());
     this._record.metadata.setStandardMetadata(
       RecordMetadataKey.START_DATETIME,
       getDateTimeString(),
@@ -422,10 +390,7 @@ export class RecordManager {
   }
 
   setGameEndMetadata(): void {
-    this._record.metadata.setStandardMetadata(
-      RecordMetadataKey.END_DATETIME,
-      getDateTimeString(),
-    );
+    this._record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, getDateTimeString());
   }
 
   updateSearchInfo(type: SearchInfoSenderType, searchInfo: SearchInfo): void {
@@ -490,10 +455,7 @@ export class RecordManager {
     }
   }
 
-  updateStandardMetadata(update: {
-    key: RecordMetadataKey;
-    value: string;
-  }): void {
+  updateStandardMetadata(update: { key: RecordMetadataKey; value: string }): void {
     this._record.metadata.setStandardMetadata(update.key, update.value);
   }
 

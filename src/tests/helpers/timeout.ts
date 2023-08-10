@@ -1,7 +1,4 @@
-export function promisedTimeout(
-  fn: () => void,
-  timeout?: number,
-): Promise<void> {
+export function promisedTimeout(fn: () => void, timeout?: number): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     setTimeout(() => {
       try {

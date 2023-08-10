@@ -1,14 +1,7 @@
 import api, { API } from "@/renderer/ipc/api";
 import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { CSAProtocolVersion } from "@/common/settings/csa";
-import {
-  Color,
-  Move,
-  PieceType,
-  SpecialMoveType,
-  Square,
-  specialMove,
-} from "@/common/shogi";
+import { Color, Move, PieceType, SpecialMoveType, Square, specialMove } from "@/common/shogi";
 import { Clock } from "@/renderer/store/clock";
 import {
   CSAGameManager,
@@ -71,18 +64,19 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        {
-          usi: "7g7f",
-          info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
-        },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+        usi: "7g7f",
+        info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
+      },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
         {
           usi: "2g2f",
           info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
-        { usi: "resign" },
+        {
+          usi: "resign",
+        },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
@@ -175,18 +169,19 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValue();
     const mockPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves":
-        {
-          usi: "7g7f",
-          info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
-        },
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+        usi: "7g7f",
+        info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
+      },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
         {
           usi: "2g2f",
           info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
         },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
-        { usi: "resign" },
+        {
+          usi: "resign",
+        },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
@@ -305,7 +300,9 @@ describe("store/csa", () => {
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b":
-        { usi: "4h3g" },
+        {
+          usi: "4h3g",
+        },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d":
         { usi: "2g2f" },
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d 2g2f 8d8e":
@@ -426,22 +423,8 @@ P-
       usi: "",
       score: 159,
       pv: [
-        new Move(
-          new Square(3, 3),
-          new Square(3, 4),
-          false,
-          Color.WHITE,
-          PieceType.PAWN,
-          null,
-        ),
-        new Move(
-          new Square(2, 7),
-          new Square(2, 6),
-          false,
-          Color.BLACK,
-          PieceType.PAWN,
-          null,
-        ),
+        new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
+        new Move(new Square(2, 7), new Square(2, 6), false, Color.BLACK, PieceType.PAWN, null),
         new Move(
           new Square(2, 2),
           new Square(8, 8),
@@ -454,38 +437,19 @@ P-
     };
 
     it("standard", () => {
-      const manager = new CSAGameManager(
-        recordManager,
-        new Clock(),
-        new Clock(),
-      );
+      const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
       manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121;
       manager["onPlayerMove"](move, info);
       expect(mockAPI.csaMove).toBeCalledTimes(1);
-      expect(mockAPI.csaMove).toBeCalledWith(
-        0,
-        "+7776FU",
-        undefined,
-        undefined,
-      );
+      expect(mockAPI.csaMove).toBeCalledWith(0, "+7776FU", undefined, undefined);
     });
 
     it("floodgate", () => {
-      const manager = new CSAGameManager(
-        recordManager,
-        new Clock(),
-        new Clock(),
-      );
-      manager["_setting"].server.protocolVersion =
-        CSAProtocolVersion.V121_FLOODGATE;
+      const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+      manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121_FLOODGATE;
       manager["onPlayerMove"](move, info);
       expect(mockAPI.csaMove).toBeCalledTimes(1);
-      expect(mockAPI.csaMove).toBeCalledWith(
-        0,
-        "+7776FU",
-        159,
-        "-3334FU +2726FU -2288UM",
-      );
+      expect(mockAPI.csaMove).toBeCalledWith(0, "+7776FU", 159, "-3334FU +2726FU -2288UM");
     });
   });
 });

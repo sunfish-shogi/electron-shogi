@@ -30,10 +30,7 @@ interface Window {
   };
 }
 
-export function buildWindowSetting(
-  latest: WindowSetting,
-  win: Window,
-): WindowSetting {
+export function buildWindowSetting(latest: WindowSetting, win: Window): WindowSetting {
   const normal = !win.isMaximized() && !win.isFullScreen();
   return {
     height: normal ? win.getBounds().height : latest.height,

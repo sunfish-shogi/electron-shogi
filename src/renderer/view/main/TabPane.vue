@@ -23,10 +23,7 @@
           class="full tab-content"
           :size="contentSize"
         />
-        <RecordComment
-          v-if="activeTab === Tab.COMMENT"
-          class="full tab-content"
-        />
+        <RecordComment v-if="activeTab === Tab.COMMENT" class="full tab-content" />
         <EngineAnalytics
           v-if="activeTab === Tab.SEARCH"
           class="full tab-content"
@@ -64,9 +61,7 @@ export const headerHeight = 30;
 import { PropType, computed } from "vue";
 import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import EngineAnalytics from "@/renderer/view/tab/EngineAnalytics.vue";
-import EvaluationChart, {
-  EvaluationChartType,
-} from "@/renderer/view/tab/EvaluationChart.vue";
+import EvaluationChart, { EvaluationChartType } from "@/renderer/view/tab/EvaluationChart.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
 import { RectSize } from "@/common/graphics.js";
 import Icon from "@/renderer/view/primitive/Icon.vue";
@@ -97,9 +92,7 @@ const emit = defineEmits(["onChangeTab", "onMinimize"]);
 
 const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
 const minimize = () => emit("onMinimize");
-const contentSize = computed(() =>
-  props.size.reduce(new RectSize(0, headerHeight)),
-);
+const contentSize = computed(() => props.size.reduce(new RectSize(0, headerHeight)));
 
 const tabs = {
   [Tab.RECORD_INFO]: {

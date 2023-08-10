@@ -16,11 +16,7 @@
           "
         />
       </div>
-      <div
-        v-for="(uri, index) in secondaryEngineURIs"
-        :key="index"
-        class="form-group"
-      >
+      <div v-for="(uri, index) in secondaryEngineURIs" :key="index" class="form-group">
         <PlayerSelector
           :player-uri="uri"
           :engine-settings="engineSettings"
@@ -33,10 +29,7 @@
             }
           "
         />
-        <button
-          class="remove-button"
-          @click="secondaryEngineURIs.splice(index, 1)"
-        >
+        <button class="remove-button" @click="secondaryEngineURIs.splice(index, 1)">
           {{ t.remove }}
         </button>
       </div>
@@ -63,9 +56,7 @@
             min="1"
             :disabled="!enableMaxSeconds"
           />
-          <div class="form-item-unit">
-            {{ t.secondsSuffix }}{{ t.toSuffix }}
-          </div>
+          <div class="form-item-unit">{{ t.secondsSuffix }}{{ t.toSuffix }}</div>
         </div>
       </div>
       <div class="main-buttons">
@@ -93,10 +84,7 @@ import { USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { readInputAsNumber } from "@/renderer/helpers/form";
 import ToggleButton from "../primitive/ToggleButton.vue";
 import Icon from "../primitive/Icon.vue";
@@ -121,9 +109,7 @@ onMounted(async () => {
     engineSettings.value = await api.loadUSIEngineSetting();
     engineURI.value = researchSetting.value.usi?.uri || "";
     secondaryEngineURIs.value =
-      researchSetting.value.secondaries?.map(
-        (setting) => setting.usi?.uri || "",
-      ) || [];
+      researchSetting.value.secondaries?.map((setting) => setting.usi?.uri || "") || [];
     enableMaxSeconds.value = researchSetting.value.enableMaxSeconds;
   } catch (e) {
     store.pushError(e);

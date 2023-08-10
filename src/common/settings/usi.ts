@@ -12,13 +12,7 @@ export const Threads = "Threads";
 export const NumberOfThreads = "NumberOfThreads";
 export const MultiPV = "MultiPV";
 
-export type USIEngineOptionType =
-  | "check"
-  | "spin"
-  | "combo"
-  | "button"
-  | "string"
-  | "filename";
+export type USIEngineOptionType = "check" | "spin" | "combo" | "button" | "string" | "filename";
 
 export type USIEngineOption = {
   name: string;
@@ -41,10 +35,7 @@ export function getUSIEngineOptionCurrentValue(
     return option.value;
   }
   if (option.default !== undefined) {
-    if (
-      (option.type === "string" || option.type === "filename") &&
-      option.default === "<empty>"
-    ) {
+    if ((option.type === "string" || option.type === "filename") && option.default === "<empty>") {
       return "";
     }
     return option.default;
@@ -74,19 +65,14 @@ export function emptyUSIEngineSetting(): USIEngineSetting {
   };
 }
 
-export function duplicateEngineSetting(
-  src: USIEngineSetting,
-): USIEngineSetting {
+export function duplicateEngineSetting(src: USIEngineSetting): USIEngineSetting {
   const engine: USIEngineSetting = JSON.parse(JSON.stringify(src));
   engine.uri = issueEngineURI();
   engine.name = t.copyOf(engine.name);
   return engine;
 }
 
-export function mergeUSIEngineSetting(
-  engine: USIEngineSetting,
-  local: USIEngineSetting,
-): void {
+export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngineSetting): void {
   engine.uri = local.uri;
   engine.name = local.name;
   Object.keys(local.options).forEach((name) => {

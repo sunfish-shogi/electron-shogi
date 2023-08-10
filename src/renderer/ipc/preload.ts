@@ -30,10 +30,7 @@ const api: Bridge = {
     return await ipcRenderer.invoke(Background.OPEN_RECORD, path);
   },
   async showSaveRecordDialog(defaultPath: string): Promise<string> {
-    return await ipcRenderer.invoke(
-      Background.SHOW_SAVE_RECORD_DIALOG,
-      defaultPath,
-    );
+    return await ipcRenderer.invoke(Background.SHOW_SAVE_RECORD_DIALOG, defaultPath);
   },
   async saveRecord(path: string, data: Uint8Array): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_RECORD, path, data);
@@ -42,22 +39,13 @@ const api: Bridge = {
     return await ipcRenderer.invoke(Background.SHOW_SELECT_FILE_DIALOG);
   },
   async showSelectDirectoryDialog(defaultPath?: string): Promise<string> {
-    return await ipcRenderer.invoke(
-      Background.SHOW_SELECT_DIRECTORY_DIALOG,
-      defaultPath,
-    );
+    return await ipcRenderer.invoke(Background.SHOW_SELECT_DIRECTORY_DIALOG, defaultPath);
   },
   async showSelectImageDialog(defaultURL?: string): Promise<string> {
-    return await ipcRenderer.invoke(
-      Background.SHOW_SELECT_IMAGE_DIALOG,
-      defaultURL,
-    );
+    return await ipcRenderer.invoke(Background.SHOW_SELECT_IMAGE_DIALOG, defaultURL);
   },
   async getPieceImageBaseURL(fileURL: string) {
-    return await ipcRenderer.invoke(
-      Background.GET_PIECE_IMAGE_BASE_URL,
-      fileURL,
-    );
+    return await ipcRenderer.invoke(Background.GET_PIECE_IMAGE_BASE_URL, fileURL);
   },
   async cropPieceImage(srcURL: string): Promise<void> {
     await ipcRenderer.invoke(Background.CROP_PIECE_IMAGE, srcURL);
@@ -122,34 +110,14 @@ const api: Bridge = {
   async showSelectUSIEngineDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_SELECT_USI_ENGINE_DIALOG);
   },
-  async getUSIEngineInfo(
-    path: string,
-    timeoutSeconds: number,
-  ): Promise<string> {
-    return await ipcRenderer.invoke(
-      Background.GET_USI_ENGINE_INFO,
-      path,
-      timeoutSeconds,
-    );
+  async getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<string> {
+    return await ipcRenderer.invoke(Background.GET_USI_ENGINE_INFO, path, timeoutSeconds);
   },
-  async sendUSISetOption(
-    path: string,
-    name: string,
-    timeoutSeconds: number,
-  ): Promise<void> {
-    await ipcRenderer.invoke(
-      Background.SEND_USI_SET_OPTION,
-      path,
-      name,
-      timeoutSeconds,
-    );
+  async sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void> {
+    await ipcRenderer.invoke(Background.SEND_USI_SET_OPTION, path, name, timeoutSeconds);
   },
   async usiLaunch(json: string, timeoutSeconds: number): Promise<number> {
-    return await ipcRenderer.invoke(
-      Background.LAUNCH_USI,
-      json,
-      timeoutSeconds,
-    );
+    return await ipcRenderer.invoke(Background.LAUNCH_USI, json, timeoutSeconds);
   },
   async usiReady(sessionID: number): Promise<void> {
     await ipcRenderer.invoke(Background.USI_READY, sessionID);
@@ -161,14 +129,7 @@ const api: Bridge = {
     blackTimeMs: number,
     whiteTimeMs: number,
   ): Promise<void> {
-    await ipcRenderer.invoke(
-      Background.USI_GO,
-      sessionID,
-      usi,
-      json,
-      blackTimeMs,
-      whiteTimeMs,
-    );
+    await ipcRenderer.invoke(Background.USI_GO, sessionID, usi, json, blackTimeMs, whiteTimeMs);
   },
   async usiGoPonder(
     sessionID: number,
@@ -213,19 +174,8 @@ const api: Bridge = {
   async csaAgree(sessionID: number, gameID: string): Promise<void> {
     return await ipcRenderer.invoke(Background.CSA_AGREE, sessionID, gameID);
   },
-  async csaMove(
-    sessionID: number,
-    move: string,
-    score?: number,
-    pv?: string,
-  ): Promise<void> {
-    return await ipcRenderer.invoke(
-      Background.CSA_MOVE,
-      sessionID,
-      move,
-      score,
-      pv,
-    );
+  async csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void> {
+    return await ipcRenderer.invoke(Background.CSA_MOVE, sessionID, move, score, pv);
   },
   async csaResign(sessionID: number): Promise<void> {
     return await ipcRenderer.invoke(Background.CSA_RESIGN, sessionID);
@@ -252,9 +202,7 @@ const api: Bridge = {
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onMenuEvent(callback: (event: MenuEvent, ...args: any[]) => void): void {
-    ipcRenderer.on(Renderer.MENU_EVENT, (_, event, ...args) =>
-      callback(event, ...args),
-    );
+    ipcRenderer.on(Renderer.MENU_EVENT, (_, event, ...args) => callback(event, ...args));
   },
   onUpdateAppSetting(callback: (json: string) => void): void {
     ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));
@@ -263,23 +211,13 @@ const api: Bridge = {
     ipcRenderer.on(Renderer.OPEN_RECORD, (_, path) => callback(path));
   },
   onUSIBestMove(
-    callback: (
-      sessionID: number,
-      usi: string,
-      usiMove: string,
-      ponder?: string,
-    ) => void,
+    callback: (sessionID: number, usi: string, usiMove: string, ponder?: string) => void,
   ): void {
-    ipcRenderer.on(
-      Renderer.USI_BEST_MOVE,
-      (_, sessionID, usi, usiMove, ponder) => {
-        callback(sessionID, usi, usiMove, ponder);
-      },
-    );
+    ipcRenderer.on(Renderer.USI_BEST_MOVE, (_, sessionID, usi, usiMove, ponder) => {
+      callback(sessionID, usi, usiMove, ponder);
+    });
   },
-  onUSICheckmate(
-    callback: (sessionID: number, usi: string, moves: string[]) => void,
-  ): void {
+  onUSICheckmate(callback: (sessionID: number, usi: string, moves: string[]) => void): void {
     ipcRenderer.on(Renderer.USI_CHECKMATE, (_, sessionID, usi, moves) => {
       callback(sessionID, usi, moves);
     });
@@ -289,9 +227,7 @@ const api: Bridge = {
       callback(sessionID);
     });
   },
-  onUSICheckmateTimeout(
-    callback: (sessionID: number, usi: string) => void,
-  ): void {
+  onUSICheckmateTimeout(callback: (sessionID: number, usi: string) => void): void {
     ipcRenderer.on(Renderer.USI_CHECKMATE_TIMEOUT, (_, sessionID, usi) => {
       callback(sessionID, usi);
     });
@@ -301,23 +237,17 @@ const api: Bridge = {
       callback(sessionID, usi);
     });
   },
-  onUSIInfo(
-    callback: (sessionID: number, usi: string, json: string) => void,
-  ): void {
+  onUSIInfo(callback: (sessionID: number, usi: string, json: string) => void): void {
     ipcRenderer.on(Renderer.USI_INFO, (_, sessionID, usi, json) => {
       callback(sessionID, usi, json);
     });
   },
-  onUSIPonderInfo(
-    callback: (sessionID: number, usi: string, json: string) => void,
-  ): void {
+  onUSIPonderInfo(callback: (sessionID: number, usi: string, json: string) => void): void {
     ipcRenderer.on(Renderer.USI_PONDER_INFO, (_, sessionID, usi, json) => {
       callback(sessionID, usi, json);
     });
   },
-  onCSAGameSummary(
-    callback: (sessionID: number, gameSummary: string) => void,
-  ): void {
+  onCSAGameSummary(callback: (sessionID: number, gameSummary: string) => void): void {
     ipcRenderer.on(Renderer.CSA_GAME_SUMMARY, (_, sessionID, gameSummary) => {
       callback(sessionID, gameSummary);
     });
@@ -327,33 +257,22 @@ const api: Bridge = {
       callback(sessionID);
     });
   },
-  onCSAStart(
-    callback: (sessionID: number, playerStates: string) => void,
-  ): void {
+  onCSAStart(callback: (sessionID: number, playerStates: string) => void): void {
     ipcRenderer.on(Renderer.CSA_START, (_, sessionID, playerStates) => {
       callback(sessionID, playerStates);
     });
   },
-  onCSAMove(
-    callback: (sessionID: number, mvoe: string, playerStates: string) => void,
-  ): void {
+  onCSAMove(callback: (sessionID: number, mvoe: string, playerStates: string) => void): void {
     ipcRenderer.on(Renderer.CSA_MOVE, (_, sessionID, move, playerStates) => {
       callback(sessionID, move, playerStates);
     });
   },
   onCSAGameResult(
-    callback: (
-      sessionID: number,
-      specialMove: CSASpecialMove,
-      gameResult: CSAGameResult,
-    ) => void,
+    callback: (sessionID: number, specialMove: CSASpecialMove, gameResult: CSAGameResult) => void,
   ): void {
-    ipcRenderer.on(
-      Renderer.CSA_GAME_RESULT,
-      (_, sessionID, specialMove, gameResult) => {
-        callback(sessionID, specialMove, gameResult);
-      },
-    );
+    ipcRenderer.on(Renderer.CSA_GAME_RESULT, (_, sessionID, specialMove, gameResult) => {
+      callback(sessionID, specialMove, gameResult);
+    });
   },
   onCSAClose(callback: (sessionID: number) => void): void {
     ipcRenderer.on(Renderer.CSA_CLOSE, (_, sessionID) => {

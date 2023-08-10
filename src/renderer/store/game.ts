@@ -2,20 +2,11 @@ import { LogLevel } from "@/common/log";
 import api from "@/renderer/ipc/api";
 import { Player, SearchInfo } from "@/renderer/players/player";
 import { defaultGameSetting, GameSetting } from "@/common/settings/game";
-import {
-  Color,
-  formatMove,
-  Move,
-  reverseColor,
-  SpecialMoveType,
-} from "@/common/shogi";
+import { Color, formatMove, Move, reverseColor, SpecialMoveType } from "@/common/shogi";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { Clock } from "./clock";
-import {
-  defaultPlayerBuilder,
-  PlayerBuilder,
-} from "@/renderer/players/builder";
+import { defaultPlayerBuilder, PlayerBuilder } from "@/renderer/players/builder";
 import { GameResult } from "@/common/player";
 import { t } from "@/common/i18n";
 
@@ -42,10 +33,7 @@ export type GameResults = {
 
 type SaveRecordCallback = () => void;
 type GameNextCallback = () => void;
-type GameEndCallback = (
-  results: GameResults,
-  specialMoveType: SpecialMoveType,
-) => void;
+type GameEndCallback = (results: GameResults, specialMoveType: SpecialMoveType) => void;
 type FlipBoardCallback = (flip: boolean) => void;
 type PieceBeatCallback = () => void;
 type BeepShortCallback = () => void;
@@ -161,10 +149,7 @@ export class GameManager {
     return this._results;
   }
 
-  async startGame(
-    setting: GameSetting,
-    playerBuilder: PlayerBuilder,
-  ): Promise<void> {
+  async startGame(setting: GameSetting, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
         "GameManager#startGame: 前回の対局が正常に終了できていません。アプリを再起動してください。",
@@ -181,21 +166,11 @@ export class GameManager {
     this._results = newGameResults(setting.black.name, setting.white.name);
     // プレイヤーを初期化する。
     try {
-      this.blackPlayer = await this.playerBuilder.build(
-        this.setting.black,
-        (info) =>
-          this.recordManager.updateSearchInfo(
-            SearchInfoSenderType.OPPONENT,
-            info,
-          ),
+      this.blackPlayer = await this.playerBuilder.build(this.setting.black, (info) =>
+        this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
-      this.whitePlayer = await this.playerBuilder.build(
-        this.setting.white,
-        (info) =>
-          this.recordManager.updateSearchInfo(
-            SearchInfoSenderType.OPPONENT,
-            info,
-          ),
+      this.whitePlayer = await this.playerBuilder.build(this.setting.white, (info) =>
+        this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
       await this.nextGame();
     } catch (e) {
@@ -212,9 +187,7 @@ export class GameManager {
 
   private async nextGame(): Promise<void> {
     if (this.blackPlayer === undefined || this.whitePlayer === undefined) {
-      throw new Error(
-        "GameManager#nextGame: プレイヤーが初期化されていません。",
-      );
+      throw new Error("GameManager#nextGame: プレイヤーが初期化されていません。");
     }
     // 連続対局の回数をカウントアップする。
     this.repeat++;
@@ -228,9 +201,7 @@ export class GameManager {
     // 対局のメタデータを設定する。
     this.recordManager.setGameStartMetadata({
       gameTitle:
-        this.setting.repeat >= 2
-          ? `連続対局 ${this.repeat}/${this.setting.repeat}`
-          : undefined,
+        this.setting.repeat >= 2 ? `連続対局 ${this.repeat}/${this.setting.repeat}` : undefined,
       blackName: this.setting.black.name,
       whiteName: this.setting.white.name,
       timeLimit: this.setting.timeLimit,
@@ -239,10 +210,7 @@ export class GameManager {
     this.blackClock.setup(this.getBlackClockSetting());
     this.whiteClock.setup(this.getWhiteClockSetting());
     // プレイヤーに対局開始を通知する。
-    await Promise.all([
-      this.blackPlayer.readyNewGame(),
-      this.whitePlayer.readyNewGame(),
-    ]);
+    await Promise.all([this.blackPlayer.readyNewGame(), this.whitePlayer.readyNewGame()]);
     // State を更新する。
     this.state = GameState.ACTIVE;
     // ハンドラーを呼び出す。
@@ -295,10 +263,7 @@ export class GameManager {
     if (this.setting.humanIsFront) {
       if (!this.blackPlayer?.isEngine() && this.whitePlayer?.isEngine()) {
         this.onFlipBoard(false);
-      } else if (
-        this.blackPlayer?.isEngine() &&
-        !this.whitePlayer?.isEngine()
-      ) {
+      } else if (this.blackPlayer?.isEngine() && !this.whitePlayer?.isEngine()) {
         this.onFlipBoard(true);
       }
     }
@@ -309,10 +274,7 @@ export class GameManager {
       return;
     }
     // 最大手数に到達したら終了する。
-    if (
-      this._setting.maxMoves &&
-      this.recordManager.record.current.ply >= this._setting.maxMoves
-    ) {
+    if (this._setting.maxMoves && this.recordManager.record.current.ply >= this._setting.maxMoves) {
       this.endGame(SpecialMoveType.IMPASS);
       return;
     }
@@ -323,9 +285,7 @@ export class GameManager {
     const player = this.getPlayer(color);
     const ponderPlayer = this.getPlayer(reverseColor(color));
     if (!player || !ponderPlayer) {
-      this.onError(
-        new Error("GameManager#nextMove: プレイヤーが初期化されていません。"),
-      );
+      this.onError(new Error("GameManager#nextMove: プレイヤーが初期化されていません。"));
       return;
     }
     // イベント ID を発行する。
@@ -345,9 +305,7 @@ export class GameManager {
         },
       )
       .catch((e) => {
-        this.onError(
-          new Error(`GameManager#nextMove: ${t.failedToSendGoCommand}: ${e}`),
-        );
+        this.onError(new Error(`GameManager#nextMove: ${t.failedToSendGoCommand}: ${e}`));
       });
     // Ponder を開始する。
     ponderPlayer
@@ -358,11 +316,7 @@ export class GameManager {
         this.whiteClock.timeMs,
       )
       .catch((e) => {
-        this.onError(
-          new Error(
-            `GameManager#nextMove: ${t.failedToSendPonderCommand}: ${e}`,
-          ),
-        );
+        this.onError(new Error(`GameManager#nextMove: ${t.failedToSendPonderCommand}: ${e}`));
       });
   }
 
@@ -372,17 +326,12 @@ export class GameManager {
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      api.log(
-        LogLevel.ERROR,
-        "GameManager#onMove: invalid state: " + this.state,
-      );
+      api.log(LogLevel.ERROR, "GameManager#onMove: invalid state: " + this.state);
       return;
     }
     // 合法手かどうかをチェックする。
     if (!this.recordManager.record.position.isValidMove(move)) {
-      this.onError(
-        "反則手: " + formatMove(this.recordManager.record.position, move),
-      );
+      this.onError("反則手: " + formatMove(this.recordManager.record.position, move));
       this.endGame(SpecialMoveType.FOUL_LOSE);
       return;
     }
@@ -430,17 +379,11 @@ export class GameManager {
 
   private onResign(eventID: number): void {
     if (eventID !== this.lastEventID) {
-      api.log(
-        LogLevel.ERROR,
-        "GameManager#onResign: event ID already disabled",
-      );
+      api.log(LogLevel.ERROR, "GameManager#onResign: event ID already disabled");
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      api.log(
-        LogLevel.ERROR,
-        "GameManager#onResign: invalid state: " + this.state,
-      );
+      api.log(LogLevel.ERROR, "GameManager#onResign: invalid state: " + this.state);
       return;
     }
     this.endGame(SpecialMoveType.RESIGN);
@@ -452,10 +395,7 @@ export class GameManager {
       return;
     }
     if (this.state !== GameState.ACTIVE) {
-      api.log(
-        LogLevel.ERROR,
-        "GameManager#onWin: invalid state: " + this.state,
-      );
+      api.log(LogLevel.ERROR, "GameManager#onWin: invalid state: " + this.state);
       return;
     }
     this.endGame(SpecialMoveType.ENTERING_OF_KING);
@@ -468,9 +408,7 @@ export class GameManager {
     const player = this.getPlayer(color);
     if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
-        this.onError(
-          new Error(`GameManager#timeout: ${t.failedToSendStopCommand}: ${e}`),
-        );
+        this.onError(new Error(`GameManager#timeout: ${t.failedToSendStopCommand}: ${e}`));
       });
       return;
     }
@@ -506,8 +444,7 @@ export class GameManager {
         }
         // 連続対局の終了条件を満たしているか中断が要求されていれば終了する。
         const complete =
-          specialMoveType === SpecialMoveType.INTERRUPT ||
-          this.repeat >= this.setting.repeat;
+          specialMoveType === SpecialMoveType.INTERRUPT || this.repeat >= this.setting.repeat;
         if (complete) {
           // プレイヤーを解放する。
           this.closePlayers()
@@ -527,27 +464,17 @@ export class GameManager {
         // 次の対局を開始する。
         this.state = GameState.STARTING;
         this.nextGame().catch((e) => {
-          this.onError(
-            new Error(`GameManager#endGame: ${t.failedToStartNewGame}: ${e}`),
-          );
+          this.onError(new Error(`GameManager#endGame: ${t.failedToStartNewGame}: ${e}`));
         });
       })
       .catch((e) => {
-        this.onError(
-          new Error(
-            `GameManager#endGame: ${t.errorOccuredWhileEndingGame}: ${e}`,
-          ),
-        );
+        this.onError(new Error(`GameManager#endGame: ${t.errorOccuredWhileEndingGame}: ${e}`));
         this.state = GameState.PENDING;
       });
   }
 
   private addGameResults(color: Color, specialMoveType: SpecialMoveType): void {
-    const gameResult = specialMoveToPlayerGameResult(
-      color,
-      Color.BLACK,
-      specialMoveType,
-    );
+    const gameResult = specialMoveToPlayerGameResult(color, Color.BLACK, specialMoveType);
     switch (gameResult) {
       case GameResult.WIN:
         this._results.player1.win++;
@@ -586,26 +513,15 @@ export class GameManager {
     };
   }
 
-  private async sendGameResults(
-    color: Color,
-    specialMoveType: SpecialMoveType,
-  ): Promise<void> {
+  private async sendGameResults(color: Color, specialMoveType: SpecialMoveType): Promise<void> {
     if (this.blackPlayer) {
-      const gameResult = specialMoveToPlayerGameResult(
-        color,
-        Color.BLACK,
-        specialMoveType,
-      );
+      const gameResult = specialMoveToPlayerGameResult(color, Color.BLACK, specialMoveType);
       if (gameResult) {
         await this.blackPlayer.gameover(gameResult);
       }
     }
     if (this.whitePlayer) {
-      const gameResult = specialMoveToPlayerGameResult(
-        color,
-        Color.WHITE,
-        specialMoveType,
-      );
+      const gameResult = specialMoveToPlayerGameResult(color, Color.WHITE, specialMoveType);
       if (gameResult) {
         await this.whitePlayer.gameover(gameResult);
       }
@@ -625,9 +541,7 @@ export class GameManager {
     try {
       await Promise.all(tasks);
     } catch (e) {
-      throw new Error(
-        `GameManager#closePlayers: ${t.failedToShutdownEngines}: ${e}`,
-      );
+      throw new Error(`GameManager#closePlayers: ${t.failedToShutdownEngines}: ${e}`);
     }
   }
 

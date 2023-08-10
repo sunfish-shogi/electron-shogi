@@ -220,11 +220,9 @@ export function formatMove(
   const piece = new Piece(move.color, move.pieceType);
 
   // 同じマス目へ移動可能な同種の駒を列挙
-  const others = position
-    .listAttackersByPiece(move.to, piece)
-    .filter((square) => {
-      return !(move.from instanceof Square) || !square.equals(move.from);
-    });
+  const others = position.listAttackersByPiece(move.to, piece).filter((square) => {
+    return !(move.from instanceof Square) || !square.equals(move.from);
+  });
   // 移動可能な同じ駒がある場合に移動元を区別する文字を付ける。
   if (move.from instanceof Square) {
     // この指し手の移動方向
@@ -248,10 +246,7 @@ export function formatMove(
     // 水平方向で区別すべき駒がある場合
     let noVertical = false;
     if (hDirections.length) {
-      if (
-        move.pieceType === PieceType.HORSE ||
-        move.pieceType === PieceType.DRAGON
-      ) {
+      if (move.pieceType === PieceType.HORSE || move.pieceType === PieceType.DRAGON) {
         // 竜や馬の場合は2枚しかないので「直」は使わない。
         if (
           myHDir === HDirection.LEFT ||
@@ -281,10 +276,7 @@ export function formatMove(
       }
     }
     // 垂直方向で区別すべき駒がある場合
-    if (
-      !noVertical &&
-      (vDirections.length || (!hDirections.length && others.length))
-    ) {
+    if (!noVertical && (vDirections.length || (!hDirections.length && others.length))) {
       switch (myVDir) {
         case VDirection.DOWN:
           ret += "引";
@@ -303,8 +295,7 @@ export function formatMove(
     } else if (
       move.from instanceof Square &&
       piece.isPromotable() &&
-      (isPromotableRank(move.color, move.from.rank) ||
-        isPromotableRank(move.color, move.to.rank))
+      (isPromotableRank(move.color, move.from.rank) || isPromotableRank(move.color, move.to.rank))
     ) {
       ret += "不成";
     }
@@ -406,46 +397,41 @@ export function parseMoves(
       const rank = stringToNumber(fromStr[2]);
       from = new Square(file, rank);
     } else {
-      let squares = p
-        .listAttackersByPiece(to, new Piece(p.color, pieceType))
-        .filter((square) => {
-          let dir = square.directionTo(to);
-          dir = p.color === Color.BLACK ? dir : reverseDirection(dir);
-          const vDir = directionToVDirection(dir);
-          const hDir = directionToHDirection(dir);
-          if (verStr.indexOf("引") >= 0 && vDir !== VDirection.DOWN) {
+      let squares = p.listAttackersByPiece(to, new Piece(p.color, pieceType)).filter((square) => {
+        let dir = square.directionTo(to);
+        dir = p.color === Color.BLACK ? dir : reverseDirection(dir);
+        const vDir = directionToVDirection(dir);
+        const hDir = directionToHDirection(dir);
+        if (verStr.indexOf("引") >= 0 && vDir !== VDirection.DOWN) {
+          return false;
+        }
+        if (verStr.indexOf("寄") >= 0 && vDir !== VDirection.NONE) {
+          return false;
+        }
+        if (verStr.indexOf("上") >= 0 && vDir !== VDirection.UP) {
+          return false;
+        }
+        if (horStr.indexOf("直") >= 0 && (hDir !== HDirection.NONE || vDir !== VDirection.UP)) {
+          return false;
+        }
+        if (pieceType === PieceType.HORSE || pieceType === PieceType.DRAGON) {
+          // 馬や龍の場合は "左" や "右" でも真っ直ぐ進む場合があるので明らかに違うものだけを除外する。
+          if (horStr.indexOf("左") >= 0 && hDir === HDirection.LEFT) {
             return false;
           }
-          if (verStr.indexOf("寄") >= 0 && vDir !== VDirection.NONE) {
+          if (horStr.indexOf("右") >= 0 && hDir === HDirection.RIGHT) {
             return false;
           }
-          if (verStr.indexOf("上") >= 0 && vDir !== VDirection.UP) {
+        } else {
+          if (horStr.indexOf("左") >= 0 && hDir !== HDirection.RIGHT) {
             return false;
           }
-          if (
-            horStr.indexOf("直") >= 0 &&
-            (hDir !== HDirection.NONE || vDir !== VDirection.UP)
-          ) {
+          if (horStr.indexOf("右") >= 0 && hDir !== HDirection.LEFT) {
             return false;
           }
-          if (pieceType === PieceType.HORSE || pieceType === PieceType.DRAGON) {
-            // 馬や龍の場合は "左" や "右" でも真っ直ぐ進む場合があるので明らかに違うものだけを除外する。
-            if (horStr.indexOf("左") >= 0 && hDir === HDirection.LEFT) {
-              return false;
-            }
-            if (horStr.indexOf("右") >= 0 && hDir === HDirection.RIGHT) {
-              return false;
-            }
-          } else {
-            if (horStr.indexOf("左") >= 0 && hDir !== HDirection.RIGHT) {
-              return false;
-            }
-            if (horStr.indexOf("右") >= 0 && hDir !== HDirection.LEFT) {
-              return false;
-            }
-          }
-          return true;
-        });
+        }
+        return true;
+      });
       if (
         squares.length === 2 &&
         (pieceType === PieceType.HORSE || pieceType === PieceType.DRAGON)
@@ -460,10 +446,7 @@ export function parseMoves(
       }
       if (squares.length === 1) {
         from = squares[0];
-      } else if (
-        squares.length === 0 &&
-        p.hand(p.color).count(pieceType) !== 0
-      ) {
+      } else if (squares.length === 0 && p.hand(p.color).count(pieceType) !== 0) {
         from = pieceType;
       } else {
         return [pv, new InvalidMoveError(section)];

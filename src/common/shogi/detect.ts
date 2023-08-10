@@ -26,10 +26,8 @@ export function detectRecordFormat(data: string): RecordFormatType {
   }
 
   // KIF vs KI2 vs CSA: 行頭の文字の出現頻度を比較する。
-  const pattKIF =
-    /(^|\n)[ \u3000]*[#0-9開終棋手戦表持秒記消場掲備先後作発出完分受]/g;
-  const pattKI2 =
-    /(^|\n)[ \u3000]*[#▲△▼▽☗☖開終棋手戦表持秒記消場掲備先後作発出完分受]/g;
+  const pattKIF = /(^|\n)[ \u3000]*[#0-9開終棋手戦表持秒記消場掲備先後作発出完分受]/g;
+  const pattKI2 = /(^|\n)[ \u3000]*[#▲△▼▽☗☖開終棋手戦表持秒記消場掲備先後作発出完分受]/g;
   const pattCSA = /(^|,|\n)[-+$%'VNPT]/g;
   const matchedKIF = data.match(pattKIF);
   const matchedKI2 = data.match(pattKI2);

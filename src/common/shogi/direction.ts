@@ -253,15 +253,10 @@ const movableDirectionMap: {
 };
 
 export function movableDirections(piece: Piece): Direction[] {
-  return Object.keys(
-    movableDirectionMap[piece.color as string][piece.type],
-  ) as Direction[];
+  return Object.keys(movableDirectionMap[piece.color as string][piece.type]) as Direction[];
 }
 
-export function resolveMoveType(
-  piece: Piece,
-  direction: Direction,
-): MoveType | undefined {
+export function resolveMoveType(piece: Piece, direction: Direction): MoveType | undefined {
   return movableDirectionMap[piece.color as string][piece.type][direction];
 }
 

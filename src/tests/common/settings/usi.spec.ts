@@ -207,27 +207,15 @@ describe("settings/usi", () => {
     expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();
     expect(settings.hasEngine("es://usi-engine/b")).toBeTruthy();
     expect(settings.hasEngine("es://usi-engine/c")).toBeFalsy();
-    expect(
-      (settings.getEngine("es://usi-engine/a") as USIEngineSetting).name,
-    ).toBe("Engine A");
-    expect(
-      (settings.getEngine("es://usi-engine/b") as USIEngineSetting).name,
-    ).toBe("Engine B");
+    expect((settings.getEngine("es://usi-engine/a") as USIEngineSetting).name).toBe("Engine A");
+    expect((settings.getEngine("es://usi-engine/b") as USIEngineSetting).name).toBe("Engine B");
     expect(settings.engineList).toHaveLength(2);
     expect(settings.engineList[0].name).toBe("Engine A");
     expect(settings.engineList[1].name).toBe("Engine B");
-    expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe(
-      "Engine A",
-    );
-    expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe(
-      "Engine A",
-    );
-    expect(
-      JSON.parse(settings.json).engines["es://usi-engine/c"],
-    ).toBeUndefined();
-    expect(JSON.parse(settings.jsonWithIndent)).toStrictEqual(
-      JSON.parse(settings.json),
-    );
+    expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe("Engine A");
+    expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe("Engine A");
+    expect(JSON.parse(settings.json).engines["es://usi-engine/c"]).toBeUndefined();
+    expect(JSON.parse(settings.jsonWithIndent)).toStrictEqual(JSON.parse(settings.json));
     settings.updateEngine({
       uri: "es://usi-engine/a",
       name: "Engine A Updated",
@@ -236,12 +224,10 @@ describe("settings/usi", () => {
       path: "path-a",
       options: {},
     });
-    expect(
-      (settings.getEngine("es://usi-engine/a") as USIEngineSetting).name,
-    ).toBe("Engine A Updated");
-    expect(
-      (settings.getEngine("es://usi-engine/b") as USIEngineSetting).name,
-    ).toBe("Engine B");
+    expect((settings.getEngine("es://usi-engine/a") as USIEngineSetting).name).toBe(
+      "Engine A Updated",
+    );
+    expect((settings.getEngine("es://usi-engine/b") as USIEngineSetting).name).toBe("Engine B");
     settings.removeEngine("es://usi-engine/b");
     expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();
     expect(settings.hasEngine("es://usi-engine/b")).toBeFalsy();

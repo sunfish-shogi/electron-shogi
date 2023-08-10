@@ -91,10 +91,7 @@ import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import SimpleBoardView from "@/renderer/view/primitive/SimpleBoardView.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { Rect, RectSize } from "@/common/graphics";
 import { Color, Move, formatMove } from "@/common/shogi";
@@ -102,14 +99,8 @@ import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
 import { Lazy } from "@/renderer/helpers/lazy";
-import {
-  PositionImageStyle,
-  getPieceImageBaseURL,
-} from "@/common/settings/app";
-import {
-  getBlackPlayerName,
-  getWhitePlayerName,
-} from "@/common/helpers/metadata";
+import { PositionImageStyle, getPieceImageBaseURL } from "@/common/settings/app";
+import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 import HorizontalSelector from "../primitive/HorizontalSelector.vue";
 import ToggleButton from "../primitive/ToggleButton.vue";
 
@@ -120,22 +111,15 @@ const aspectRatio = 16 / 9;
 
 const store = useStore();
 const appSetting = useAppSetting();
-const blackPlayerName = computed(
-  () => getBlackPlayerName(store.record.metadata) || t.sente,
-);
-const whitePlayerName = computed(
-  () => getWhitePlayerName(store.record.metadata) || t.gote,
-);
+const blackPlayerName = computed(() => getBlackPlayerName(store.record.metadata) || t.sente);
+const whitePlayerName = computed(() => getWhitePlayerName(store.record.metadata) || t.gote);
 const record = store.record;
-const lastMove =
-  record.current.move instanceof Move ? record.current.move : null;
+const lastMove = record.current.move instanceof Move ? record.current.move : null;
 const dialog = ref();
 const board = ref();
 const imageSize = ref();
 const headerText = ref();
-const windowSize = reactive(
-  new RectSize(window.innerWidth, window.innerHeight),
-);
+const windowSize = reactive(new RectSize(window.innerWidth, window.innerHeight));
 const zoom = ref(window.devicePixelRatio);
 
 const windowLazyUpdate = new Lazy();

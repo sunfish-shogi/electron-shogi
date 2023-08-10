@@ -201,9 +201,7 @@ export class USIMonitor {
   }
 
   private _update(update: USIUpdate) {
-    let monitor = this._sessions.find(
-      (session) => session.sessionID === update.sessionID,
-    );
+    let monitor = this._sessions.find((session) => session.sessionID === update.sessionID);
     if (!monitor) {
       monitor = this.addSession(update.sessionID, update.name);
     }

@@ -13,10 +13,7 @@ import { LogLevel } from "@/common/log";
 import { useAppSetting } from "./store/setting";
 import { setLanguage, t } from "@/common/i18n";
 
-api.log(
-  LogLevel.INFO,
-  `start renderer process: APP_VERSION=${appInfo.appVersion}`,
-);
+api.log(LogLevel.INFO, `start renderer process: APP_VERSION=${appInfo.appVersion}`);
 
 Chart.register(...registerables);
 
@@ -41,9 +38,7 @@ Promise.allSettled([
   useAppSetting()
     .loadAppSetting()
     .catch((e) => {
-      store.pushError(
-        new Error("アプリ設定の読み込み中にエラーが発生しました: " + e),
-      );
+      store.pushError(new Error("アプリ設定の読み込み中にエラーが発生しました: " + e));
     }),
   api
     .getRecordPathFromProcArg()

@@ -22,10 +22,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 
 const store = useStore();
 const dialog = ref();

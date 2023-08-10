@@ -32,11 +32,7 @@
               <option v-if="history.serverHistory.length === 0" value="0">
                 {{ t.noHistory }}
               </option>
-              <option
-                v-for="(server, index) in history.serverHistory"
-                :key="index"
-                :value="index"
-              >
+              <option v-for="(server, index) in history.serverHistory" :key="index" :value="index">
                 {{ server.host }}:{{ server.port }} {{ server.id }}
               </option>
             </select>
@@ -68,12 +64,7 @@
           </div>
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.hostToConnect }}</div>
-            <input
-              ref="host"
-              class="long-text"
-              list="csa-server-host"
-              type="text"
-            />
+            <input ref="host" class="long-text" list="csa-server-host" type="text" />
             <datalist id="csa-server-host">
               <option value="gserver.computer-shogi.org" />
               <option value="wdoor.c.u-tokyo.ac.jp" />
@@ -82,12 +73,7 @@
           </div>
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.portNumber }}</div>
-            <input
-              ref="port"
-              class="number"
-              list="csa-server-port-number"
-              type="number"
-            />
+            <input ref="port" class="number" list="csa-server-port-number" type="number" />
             <datalist id="csa-server-port-number">
               <option value="4081" />
             </datalist>
@@ -113,9 +99,7 @@
               {{ t.csaProtocolSendPlaintextPassword }}
             </div>
             <div v-else class="note">
-              {{
-                t.passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable
-              }}
+              {{ t.passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable }}
               {{ t.pleaseUncheckSaveHistoryIfNotWantSave }}
               {{ t.csaProtocolSendPlaintextPasswordRegardlessOfHistory }}
             </div>
@@ -219,10 +203,7 @@ import * as uri from "@/common/uri.js";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 
@@ -291,9 +272,7 @@ onUpdated(() => {
 
 const buildPlayerSetting = (playerURI: string): PlayerSetting => {
   if (uri.isUSIEngine(playerURI) && engineSettings.value.hasEngine(playerURI)) {
-    const engine = engineSettings.value.getEngine(
-      playerURI,
-    ) as USIEngineSetting;
+    const engine = engineSettings.value.getEngine(playerURI) as USIEngineSetting;
     return {
       name: engine.name,
       uri: playerURI,
@@ -352,8 +331,7 @@ const onChangeHistory = (event: Event) => {
   const select = event.target as HTMLSelectElement;
   const server = history.value.serverHistory[Number(select.value)];
   if (server) {
-    protocolVersion.value.value = selectedProtocolVersion.value =
-      server.protocolVersion;
+    protocolVersion.value.value = selectedProtocolVersion.value = server.protocolVersion;
     host.value.value = server.host;
     port.value.value = server.port;
     id.value.value = server.id;
@@ -367,11 +345,7 @@ const onChangeProtocolVersion = () => {
 
 const logEnabled = computed(() => {
   const appSetting = useAppSetting();
-  return (
-    appSetting.enableCSALog &&
-    appSetting.enableAppLog &&
-    appSetting.enableUSILog
-  );
+  return appSetting.enableCSALog && appSetting.enableAppLog && appSetting.enableUSILog;
 });
 </script>
 

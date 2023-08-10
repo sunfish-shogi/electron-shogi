@@ -1,7 +1,4 @@
-import {
-  ResearchSetting,
-  defaultResearchSetting,
-} from "@/common/settings/research";
+import { ResearchSetting, defaultResearchSetting } from "@/common/settings/research";
 import { USIPlayer } from "@/renderer/players/usi";
 import { SearchInfo } from "@/renderer/players/player";
 import { ImmutableRecord } from "@/common/shogi";
@@ -25,10 +22,7 @@ function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
   }
 }
 
-type UpdateSearchInfoCallback = (
-  type: SearchInfoSenderType,
-  info: SearchInfo,
-) => void;
+type UpdateSearchInfoCallback = (type: SearchInfoSenderType, info: SearchInfo) => void;
 
 export class ResearchManager {
   private setting = defaultResearchSetting();
@@ -65,9 +59,7 @@ export class ResearchManager {
     }
     for (const s of setting.secondaries || []) {
       if (s.usi === undefined) {
-        throw new Error(
-          "ResearchManager#launch: USIエンジンの設定は必須です。",
-        );
+        throw new Error("ResearchManager#launch: USIエンジンの設定は必須です。");
       }
     }
     if (this.engines.length > 0) {
@@ -78,21 +70,16 @@ export class ResearchManager {
 
     // エンジンを設定する。
     const appSetting = useAppSetting();
-    const engineSettings = [
-      setting.usi,
-      ...(setting.secondaries?.map((s) => s.usi) || []),
-    ].filter((usi) => !!usi);
+    const engineSettings = [setting.usi, ...(setting.secondaries?.map((s) => s.usi) || [])].filter(
+      (usi) => !!usi,
+    );
     this.engines = engineSettings.map((usi, index) => {
       const type = getSenderTypeByIndex(index);
-      return new USIPlayer(
-        usi as USIEngineSetting,
-        appSetting.engineTimeoutSeconds,
-        (info) => {
-          if (type !== undefined) {
-            this.onUpdateSearchInfo(type, info);
-          }
-        },
-      );
+      return new USIPlayer(usi as USIEngineSetting, appSetting.engineTimeoutSeconds, (info) => {
+        if (type !== undefined) {
+          this.onUpdateSearchInfo(type, info);
+        }
+      });
     });
 
     // エンジンを起動する。

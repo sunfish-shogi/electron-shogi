@@ -124,12 +124,8 @@ describe("shogi/kakinoki", () => {
 `;
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME),
-    ).toBe("奨励会員");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME),
-    ).toBe("久保");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe("奨励会員");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe("久保");
     expect(record.current.comment).toBe("");
     record.goto(64);
     expect(record.current.comment).toBe("4六桂の方が良かった。\n");
@@ -332,12 +328,10 @@ describe("shogi/kakinoki", () => {
 `;
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.SHITATE_NAME),
-    ).toBe("ZhangJingding");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.UWATE_NAME),
-    ).toBe("Sota_FUJII");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.SHITATE_NAME)).toBe(
+      "ZhangJingding",
+    );
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.UWATE_NAME)).toBe("Sota_FUJII");
     expect(record.position.board.at(new Square(2, 2))).toBeNull();
     expect(record.position.board.at(new Square(8, 2))).toStrictEqual(
       new Piece(Color.WHITE, PieceType.ROOK),
@@ -348,9 +342,7 @@ describe("shogi/kakinoki", () => {
     expect(record.current.totalElapsedMs).toBe(670000);
     record.goto(999);
     expect(record.current.ply).toBe(178);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
     expect(record.current.elapsedMs).toBe(11000);
     expect(record.current.totalElapsedMs).toBe(1364000);
   });
@@ -656,17 +648,13 @@ describe("shogi/kakinoki", () => {
 `;
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.START),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.START));
     expect(record.current.comment).toHaveLength(235);
     record.goto(97);
     expect(record.current.move).toBeInstanceOf(Move);
     expect(record.current.comment).toHaveLength(101);
     record.goto(114);
-    expect(record.current.move).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN),
-    );
+    expect(record.current.move).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
     expect(record.current.comment).toBe("");
     expect(record.sfen).toBe(
       "lnkg2b+Rl/6r2/p2p1G2p/5pp2/1SpNp2NP/1P1P1PP2/P1G1P4/4G4/L2KB3L w S4P2sn 115",
@@ -832,15 +820,9 @@ describe("shogi/kakinoki", () => {
 `;
     const record = importKIF(data) as Record;
     expect(record).toBeInstanceOf(Record);
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT),
-    ).toBe("関ヶ原の戦い");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME),
-    ).toBe("徳川家康");
-    expect(
-      record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME),
-    ).toBe("石田三成");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)).toBe("関ヶ原の戦い");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe("徳川家康");
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe("石田三成");
     expect(record.initialPosition.sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
@@ -956,9 +938,7 @@ describe("shogi/kakinoki", () => {
       "lnsgkg1nl/4rs3/pppp1pbpp/6p2/4p4/2P4P1/PP1PPPP1P/1BKSGS1R1/LN1G3NL w - 1",
     );
     record.goto(14);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
   });
 
   it("import/ki2/half-size-number", () => {
@@ -993,13 +973,9 @@ describe("shogi/kakinoki", () => {
     const record = importKI2(data) as Record;
     expect(record).toBeInstanceOf(Record);
     record.goto(1);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
     record.switchBranchByIndex(1);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.RESIGN),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
     record.switchBranchByIndex(2);
     expect(record.current.move as SpecialMove).toStrictEqual(
       specialMove(SpecialMoveType.INTERRUPT),
@@ -1009,29 +985,19 @@ describe("shogi/kakinoki", () => {
       specialMove(SpecialMoveType.REPETITION_DRAW),
     );
     record.switchBranchByIndex(4);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.IMPASS),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.IMPASS));
     record.switchBranchByIndex(5);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.TIMEOUT),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.TIMEOUT));
     record.switchBranchByIndex(6);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.FOUL_WIN),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.FOUL_WIN));
     record.switchBranchByIndex(7);
     expect(record.current.move as SpecialMove).toStrictEqual(
       specialMove(SpecialMoveType.FOUL_LOSE),
     );
     record.switchBranchByIndex(8);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.MATE),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.MATE));
     record.switchBranchByIndex(9);
-    expect(record.current.move as SpecialMove).toStrictEqual(
-      specialMove(SpecialMoveType.NO_MATE),
-    );
+    expect(record.current.move as SpecialMove).toStrictEqual(specialMove(SpecialMoveType.NO_MATE));
     record.switchBranchByIndex(10);
     expect(record.current.move as SpecialMove).toStrictEqual(
       specialMove(SpecialMoveType.ENTERING_OF_KING),

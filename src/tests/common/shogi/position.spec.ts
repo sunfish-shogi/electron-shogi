@@ -32,49 +32,27 @@ describe("shogi/position", () => {
     position.reset(InitialPositionType.EMPTY);
     expect(position.sfen).toBe("9/9/9/9/9/9/9/9/9 b - 1");
     position.reset(InitialPositionType.STANDARD);
-    expect(position.sfen).toBe(
-      "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
-    );
+    expect(position.sfen).toBe("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
     position.reset(InitialPositionType.HANDICAP_LANCE);
-    expect(position.sfen).toBe(
-      "lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_RIGHT_LANCE);
-    expect(position.sfen).toBe(
-      "1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_BISHOP);
-    expect(position.sfen).toBe(
-      "lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_ROOK);
-    expect(position.sfen).toBe(
-      "lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_ROOK_LANCE);
-    expect(position.sfen).toBe(
-      "lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_2PIECES);
-    expect(position.sfen).toBe(
-      "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_4PIECES);
-    expect(position.sfen).toBe(
-      "1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_6PIECES);
-    expect(position.sfen).toBe(
-      "2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_8PIECES);
-    expect(position.sfen).toBe(
-      "3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.HANDICAP_10PIECES);
-    expect(position.sfen).toBe(
-      "4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1",
-    );
+    expect(position.sfen).toBe("4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
     position.reset(InitialPositionType.TSUME_SHOGI);
     expect(position.sfen).toBe("4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1");
     position.reset(InitialPositionType.TSUME_SHOGI_2KINGS);
@@ -280,10 +258,7 @@ describe("shogi/position", () => {
 先手の持駒：歩 
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(4, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(4, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeTruthy();
       expect(position.isValidMove(move)).toBeFalsy();
     });
@@ -306,10 +281,7 @@ describe("shogi/position", () => {
 先手の持駒：歩 
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(4, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(4, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
     });
@@ -332,10 +304,7 @@ describe("shogi/position", () => {
 先手の持駒：歩 
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(4, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(4, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
     });
@@ -358,10 +327,7 @@ describe("shogi/position", () => {
 先手の持駒：歩 
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(4, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(4, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
     });
@@ -385,10 +351,7 @@ describe("shogi/position", () => {
 後手番
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(6, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(6, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeTruthy();
       expect(position.isValidMove(move)).toBeFalsy();
     });
@@ -412,10 +375,7 @@ describe("shogi/position", () => {
 後手番
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(6, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(6, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
     });
@@ -439,10 +399,7 @@ describe("shogi/position", () => {
 後手番
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(6, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(6, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
     });
@@ -466,18 +423,14 @@ describe("shogi/position", () => {
 後手番
 `;
       const position = (importKIF(data) as Record).position;
-      const move = position.createMove(
-        PieceType.PAWN,
-        new Square(6, 4),
-      ) as Move;
+      const move = position.createMove(PieceType.PAWN, new Square(6, 4)) as Move;
       expect(position.isPawnDropMate(move)).toBeFalsy();
       expect(position.isValidMove(move)).toBeTruthy();
     });
   });
 
   it("sfen", () => {
-    const sfen =
-      "l2R2s1+P/4gg1k1/p1+P2lPp1/4p1p+b1/1p3G3/3pP1nS1/PP3KSP1/R8/L4G2+b b NL4Ps2np 1";
+    const sfen = "l2R2s1+P/4gg1k1/p1+P2lPp1/4p1p+b1/1p3G3/3pP1nS1/PP3KSP1/R8/L4G2+b b NL4Ps2np 1";
     const position = Position.newBySFEN(sfen);
     expect(position).toBeInstanceOf(Position);
     expect(position?.color).toBe(Color.BLACK);

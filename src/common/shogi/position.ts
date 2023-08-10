@@ -1,11 +1,5 @@
 import { Board, ImmutableBoard } from "./board";
-import {
-  Color,
-  reverseColor,
-  colorToSFEN,
-  parseSFENColor,
-  isValidSFENColor,
-} from "./color";
+import { Color, reverseColor, colorToSFEN, parseSFENColor, isValidSFENColor } from "./color";
 import { Move, parseUSIMove } from "./move";
 import { Square } from "./square";
 import { Hand, ImmutableHand } from "./hand";
@@ -60,25 +54,17 @@ export function initialPositionTypeToSFEN(type: InitialPositionType): string {
     [InitialPositionType.STANDARD]: InitialPositionSFEN.STANDARD,
     [InitialPositionType.EMPTY]: InitialPositionSFEN.EMPTY,
     [InitialPositionType.HANDICAP_LANCE]: InitialPositionSFEN.HANDICAP_LANCE,
-    [InitialPositionType.HANDICAP_RIGHT_LANCE]:
-      InitialPositionSFEN.HANDICAP_RIGHT_LANCE,
+    [InitialPositionType.HANDICAP_RIGHT_LANCE]: InitialPositionSFEN.HANDICAP_RIGHT_LANCE,
     [InitialPositionType.HANDICAP_BISHOP]: InitialPositionSFEN.HANDICAP_BISHOP,
     [InitialPositionType.HANDICAP_ROOK]: InitialPositionSFEN.HANDICAP_ROOK,
-    [InitialPositionType.HANDICAP_ROOK_LANCE]:
-      InitialPositionSFEN.HANDICAP_ROOK_LANCE,
-    [InitialPositionType.HANDICAP_2PIECES]:
-      InitialPositionSFEN.HANDICAP_2PIECES,
-    [InitialPositionType.HANDICAP_4PIECES]:
-      InitialPositionSFEN.HANDICAP_4PIECES,
-    [InitialPositionType.HANDICAP_6PIECES]:
-      InitialPositionSFEN.HANDICAP_6PIECES,
-    [InitialPositionType.HANDICAP_8PIECES]:
-      InitialPositionSFEN.HANDICAP_8PIECES,
-    [InitialPositionType.HANDICAP_10PIECES]:
-      InitialPositionSFEN.HANDICAP_10PIECES,
+    [InitialPositionType.HANDICAP_ROOK_LANCE]: InitialPositionSFEN.HANDICAP_ROOK_LANCE,
+    [InitialPositionType.HANDICAP_2PIECES]: InitialPositionSFEN.HANDICAP_2PIECES,
+    [InitialPositionType.HANDICAP_4PIECES]: InitialPositionSFEN.HANDICAP_4PIECES,
+    [InitialPositionType.HANDICAP_6PIECES]: InitialPositionSFEN.HANDICAP_6PIECES,
+    [InitialPositionType.HANDICAP_8PIECES]: InitialPositionSFEN.HANDICAP_8PIECES,
+    [InitialPositionType.HANDICAP_10PIECES]: InitialPositionSFEN.HANDICAP_10PIECES,
     [InitialPositionType.TSUME_SHOGI]: InitialPositionSFEN.TSUME_SHOGI,
-    [InitialPositionType.TSUME_SHOGI_2KINGS]:
-      InitialPositionSFEN.TSUME_SHOGI_2KINGS,
+    [InitialPositionType.TSUME_SHOGI_2KINGS]: InitialPositionSFEN.TSUME_SHOGI_2KINGS,
   }[type];
 }
 
@@ -230,9 +216,7 @@ export class Position {
     if (move.pieceType !== PieceType.PAWN) {
       return false;
     }
-    const kingSquare = move.to.neighbor(
-      move.color === Color.BLACK ? Direction.UP : Direction.DOWN,
-    );
+    const kingSquare = move.to.neighbor(move.color === Color.BLACK ? Direction.UP : Direction.DOWN);
     const king = this.board.at(kingSquare);
     if (!king || king.type !== PieceType.KING || king.color === move.color) {
       return false;
@@ -323,10 +307,7 @@ export class Position {
       if (isInvalidRank(this.color, move.from, move.to.rank)) {
         return false;
       }
-      if (
-        move.from === PieceType.PAWN &&
-        pawnExists(this.color, this._board, move.to.file)
-      ) {
+      if (move.from === PieceType.PAWN && pawnExists(this.color, this._board, move.to.file)) {
         return false;
       }
       if (this._board.isChecked(this.color, { filled: move.to })) {
@@ -364,10 +345,7 @@ export class Position {
     if (move.from instanceof Square) {
       this._board.set(move.from, new Piece(this.color, move.pieceType));
       if (move.capturedPieceType) {
-        const capturedPiece = new Piece(
-          reverseColor(this.color),
-          move.capturedPieceType,
-        );
+        const capturedPiece = new Piece(reverseColor(this.color), move.capturedPieceType);
         this._board.set(move.to, capturedPiece);
         if (capturedPiece.type !== PieceType.KING) {
           this._hand(this.color).reduce(capturedPiece.unpromoted().type, 1);
@@ -602,9 +580,7 @@ export function countExistingPieces(position: ImmutablePosition): PieceCounts {
   return result;
 }
 
-export function countNotExistingPieces(
-  position: ImmutablePosition,
-): PieceCounts {
+export function countNotExistingPieces(position: ImmutablePosition): PieceCounts {
   const existed = countExistingPieces(position);
   return {
     pawn: 18 - existed.pawn - existed.promPawn,

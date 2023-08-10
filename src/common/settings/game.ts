@@ -65,19 +65,11 @@ export function normalizeGameSetting(setting: GameSetting): GameSetting {
   };
 }
 
-export function validateGameSetting(
-  gameSetting: GameSetting,
-): Error | undefined {
-  if (
-    gameSetting.timeLimit.timeSeconds === 0 &&
-    gameSetting.timeLimit.byoyomi === 0
-  ) {
+export function validateGameSetting(gameSetting: GameSetting): Error | undefined {
+  if (gameSetting.timeLimit.timeSeconds === 0 && gameSetting.timeLimit.byoyomi === 0) {
     return new Error(t.bothTimeLimitAndByoyomiAreNotSet);
   }
-  if (
-    gameSetting.timeLimit.byoyomi !== 0 &&
-    gameSetting.timeLimit.increment !== 0
-  ) {
+  if (gameSetting.timeLimit.byoyomi !== 0 && gameSetting.timeLimit.increment !== 0) {
     return new Error(t.canNotUseByoyomiWithFischer);
   }
   if (
@@ -97,9 +89,7 @@ export function validateGameSetting(
   return;
 }
 
-export function validateGameSettingForWeb(
-  gameSetting: GameSetting,
-): Error | undefined {
+export function validateGameSettingForWeb(gameSetting: GameSetting): Error | undefined {
   const result = validateGameSetting(gameSetting);
   if (result) {
     return result;

@@ -20,51 +20,26 @@
         <template #right-control>
           <div class="full column">
             <div class="row control-row">
-              <button
-                class="control-item"
-                data-hotkey="Control+t"
-                @click="doFlip"
-              >
+              <button class="control-item" data-hotkey="Control+t" @click="doFlip">
                 <Icon :icon="IconType.FLIP" />
               </button>
-              <button
-                class="control-item"
-                autofocus
-                data-hotkey="Escape"
-                @click="close"
-              >
+              <button class="control-item" autofocus data-hotkey="Escape" @click="close">
                 <Icon :icon="IconType.CLOSE" />
               </button>
             </div>
             <div class="row control-row">
-              <button
-                class="control-item"
-                data-hotkey="ArrowLeft"
-                @click="goBegin"
-              >
+              <button class="control-item" data-hotkey="ArrowLeft" @click="goBegin">
                 <Icon :icon="IconType.FIRST" />
               </button>
-              <button
-                class="control-item"
-                data-hotkey="ArrowRight"
-                @click="goEnd"
-              >
+              <button class="control-item" data-hotkey="ArrowRight" @click="goEnd">
                 <Icon :icon="IconType.LAST" />
               </button>
             </div>
             <div class="row control-row">
-              <button
-                class="control-item"
-                data-hotkey="ArrowUp"
-                @click="goBack"
-              >
+              <button class="control-item" data-hotkey="ArrowUp" @click="goBack">
                 <Icon :icon="IconType.BACK" />
               </button>
-              <button
-                class="control-item"
-                data-hotkey="ArrowDown"
-                @click="goForward"
-              >
+              <button class="control-item" data-hotkey="ArrowDown" @click="goForward">
                 <Icon :icon="IconType.NEXT" />
               </button>
             </div>
@@ -72,19 +47,11 @@
         </template>
         <template #left-control>
           <div class="full column reverse">
-            <button
-              class="control-item-wide"
-              :disabled="!enableInsertion"
-              @click="insertToRecord"
-            >
+            <button class="control-item-wide" :disabled="!enableInsertion" @click="insertToRecord">
               <Icon :icon="IconType.TREE" />
               <span>{{ t.insertToRecord }}</span>
             </button>
-            <button
-              class="control-item-wide"
-              :disabled="!enableInsertion"
-              @click="insertToComment"
-            >
+            <button class="control-item-wide" :disabled="!enableInsertion" @click="insertToComment">
               <Icon :icon="IconType.NOTE" />
               <span>{{ t.insertToComment }}</span>
             </button>
@@ -109,29 +76,16 @@
 
 <script setup lang="ts">
 import { Color, ImmutablePosition, Move, Record } from "@/common/shogi";
-import {
-  onMounted,
-  PropType,
-  ref,
-  reactive,
-  watch,
-  onBeforeUnmount,
-} from "vue";
+import { onMounted, PropType, ref, reactive, watch, onBeforeUnmount } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { RectSize } from "@/common/graphics.js";
 import { computed } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { IconType } from "@/renderer/assets/icons";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
-import {
-  EvaluationViewFrom,
-  getPieceImageBaseURL,
-} from "@/common/settings/app";
+import { EvaluationViewFrom, getPieceImageBaseURL } from "@/common/settings/app";
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
 import { SearchInfoSenderType } from "@/renderer/store/record";
@@ -247,14 +201,8 @@ const doFlip = () => {
   flip.value = !flip.value;
 };
 
-const getDisplayScore = (
-  score: number,
-  color: Color,
-  evaluationViewFrom: EvaluationViewFrom,
-) => {
-  return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK
-    ? score
-    : -score;
+const getDisplayScore = (score: number, color: Color, evaluationViewFrom: EvaluationViewFrom) => {
+  return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK ? score : -score;
 };
 
 const info = computed(() => {
@@ -267,11 +215,7 @@ const info = computed(() => {
   }
   if (props.score !== undefined) {
     elements.push(
-      `評価値=${getDisplayScore(
-        props.score,
-        props.position.color,
-        appSetting.evaluationViewFrom,
-      )}`,
+      `評価値=${getDisplayScore(props.score, props.position.color, appSetting.evaluationViewFrom)}`,
     );
     if (props.lowerBound) {
       elements.push("（下界値）");
@@ -295,9 +239,7 @@ const info = computed(() => {
   return elements.join(" / ");
 });
 
-const lastMove = computed(() =>
-  record.current.move instanceof Move ? record.current.move : null,
-);
+const lastMove = computed(() => (record.current.move instanceof Move ? record.current.move : null));
 
 const displayPV = computed(() => {
   return record.moves.slice(1).map((move) => {
@@ -310,8 +252,7 @@ const displayPV = computed(() => {
 
 const enableInsertion = computed(() => {
   return (
-    (store.appState === AppState.NORMAL ||
-      store.appState === AppState.RESEARCH) &&
+    (store.appState === AppState.NORMAL || store.appState === AppState.RESEARCH) &&
     store.record.position.sfen === props.position.sfen
   );
 });

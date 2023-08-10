@@ -1,9 +1,5 @@
 import { USIEngineSetting } from "@/common/settings/usi";
-import {
-  EngineProcess,
-  GameResult as USIGameResult,
-  TimeState,
-} from "./engine";
+import { EngineProcess, GameResult as USIGameResult, TimeState } from "./engine";
 import * as uri from "@/common/uri";
 import {
   onUSIBestMove,
@@ -30,14 +26,9 @@ export async function getUSIEngineInfo(
 ): Promise<USIEngineSetting> {
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
-    const process = new EngineProcess(
-      resolvePath(path),
-      sessionID,
-      getUSILogger(),
-      {
-        timeout: timeoutSeconds * 1e3,
-      },
-    )
+    const process = new EngineProcess(resolvePath(path), sessionID, getUSILogger(), {
+      timeout: timeoutSeconds * 1e3,
+    })
       .on("error", reject)
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
       .on("usiok", () => {
@@ -62,14 +53,9 @@ export function sendSetOptionCommand(
 ): Promise<void> {
   const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
-    const process = new EngineProcess(
-      resolvePath(path),
-      sessionID,
-      getUSILogger(),
-      {
-        timeout: timeoutSeconds * 1e3,
-      },
-    )
+    const process = new EngineProcess(resolvePath(path), sessionID, getUSILogger(), {
+      timeout: timeoutSeconds * 1e3,
+    })
       .on("error", reject)
       .on("timeout", () => {
         reject(newTimeoutError(timeoutSeconds));
@@ -116,20 +102,12 @@ function getSession(sessionID: number): Session {
   return session;
 }
 
-export function setupPlayer(
-  setting: USIEngineSetting,
-  timeoutSeconds: number,
-): Promise<number> {
+export function setupPlayer(setting: USIEngineSetting, timeoutSeconds: number): Promise<number> {
   const sessionID = issueSessionID();
-  const process = new EngineProcess(
-    resolvePath(setting.path),
-    sessionID,
-    getUSILogger(),
-    {
-      timeout: timeoutSeconds * 1e3,
-      engineOptions: Object.values(setting.options),
-    },
-  );
+  const process = new EngineProcess(resolvePath(setting.path), sessionID, getUSILogger(), {
+    timeout: timeoutSeconds * 1e3,
+    engineOptions: Object.values(setting.options),
+  });
   sessions.set(sessionID, {
     name: setting.name,
     process,
@@ -140,9 +118,7 @@ export function setupPlayer(
     process
       .on("error", reject)
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
-      .on("bestmove", (usi, usiMove, ponder) =>
-        onUSIBestMove(sessionID, usi, usiMove, ponder),
-      )
+      .on("bestmove", (usi, usiMove, ponder) => onUSIBestMove(sessionID, usi, usiMove, ponder))
       .on("checkmate", (position, moves) => {
         onUSICheckmate(sessionID, position, moves);
       })
@@ -207,10 +183,7 @@ export function goPonder(
   whiteTimeMs: number,
 ): void {
   const session = getSession(sessionID);
-  session.process.goPonder(
-    usi,
-    buildTimeState(timeLimit, blackTimeMs, whiteTimeMs),
-  );
+  session.process.goPonder(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
   session.process.on("ponderInfo", (usi, info) => {
     onUSIPonderInfo(sessionID, usi, info);
   });

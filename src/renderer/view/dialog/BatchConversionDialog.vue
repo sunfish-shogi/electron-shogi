@@ -146,9 +146,7 @@
       </button>
       <div v-else class="form-group warning">
         <div class="note">
-          {{
-            t.forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart
-          }}
+          {{ t.forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart }}
         </div>
       </div>
       <div class="main-buttons">
@@ -160,16 +158,10 @@
 
 <script setup lang="ts">
 import { RecordFileFormat } from "@/common/file";
-import {
-  BatchConversionSetting,
-  FileNameConflictAction,
-} from "@/common/settings/conversion";
+import { BatchConversionSetting, FileNameConflictAction } from "@/common/settings/conversion";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import api from "@/renderer/ipc/api";
-import {
-  installHotKeyForDialog,
-  uninstallHotKeyForDialog,
-} from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
@@ -206,20 +198,15 @@ onMounted(async () => {
     source.value.value = batchConversionSetting.source;
     sourceFormats.value = {
       kif: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KIF),
-      kifu: batchConversionSetting.sourceFormats.includes(
-        RecordFileFormat.KIFU,
-      ),
+      kifu: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KIFU),
       ki2: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KI2),
-      ki2u: batchConversionSetting.sourceFormats.includes(
-        RecordFileFormat.KI2U,
-      ),
+      ki2u: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KI2U),
       csa: batchConversionSetting.sourceFormats.includes(RecordFileFormat.CSA),
     };
     subdirectories.value = batchConversionSetting.subdirectories;
     destination.value.value = batchConversionSetting.destination;
     destinationFormat.value = batchConversionSetting.destinationFormat;
-    fileNameConflictAction.value =
-      batchConversionSetting.fileNameConflictAction;
+    fileNameConflictAction.value = batchConversionSetting.fileNameConflictAction;
   } catch (e) {
     store.pushError(e);
     store.destroyModalDialog();

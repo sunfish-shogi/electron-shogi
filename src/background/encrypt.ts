@@ -9,10 +9,7 @@ export function EncryptString(plainText: string): string {
   return safeStorage.encryptString(plainText).toString("base64");
 }
 
-export function DecryptString(
-  encrypted: string,
-  defaultValue?: string,
-): string {
+export function DecryptString(encrypted: string, defaultValue?: string): string {
   try {
     return safeStorage.decryptString(Buffer.from(encrypted, "base64"));
   } catch (e) {

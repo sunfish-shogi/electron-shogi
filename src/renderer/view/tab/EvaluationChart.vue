@@ -18,13 +18,7 @@ import { RectSize } from "@/common/graphics.js";
 import { useStore } from "@/renderer/store";
 import { RecordCustomData, SearchInfo } from "@/renderer/store/record";
 import { computed, onMounted, onUnmounted, PropType, ref, watch } from "vue";
-import {
-  ActiveElement,
-  Chart,
-  ChartEvent,
-  Color as ChartColor,
-  ChartDataset,
-} from "chart.js";
+import { ActiveElement, Chart, ChartEvent, Color as ChartColor, ChartDataset } from "chart.js";
 import { Color, ImmutableNode, ImmutableRecord } from "@/common/shogi";
 import { scoreToPercentage } from "@/renderer/store/score";
 import { AppSetting, Thema } from "@/common/settings/app";
@@ -61,10 +55,7 @@ function getSeriesName(series: Series): string {
   }
 }
 
-function getSearchInfo(
-  node: ImmutableNode,
-  series: Series,
-): SearchInfo | undefined {
+function getSearchInfo(node: ImmutableNode, series: Series): SearchInfo | undefined {
   const data = node.customData as RecordCustomData;
   if (!data) {
     return;
@@ -194,11 +185,7 @@ const buildDataset = (
     if (!searchInfo) {
       continue;
     }
-    const score = getScore(
-      searchInfo,
-      props.type,
-      appSetting.coefficientInSigmoid,
-    );
+    const score = getScore(searchInfo, props.type, appSetting.coefficientInSigmoid);
     if (score !== undefined) {
       dataPoints.push({
         x: node.ply,
@@ -213,11 +200,7 @@ const buildDataset = (
   ) {
     const data = lastNode.customData as RecordCustomData;
     if (data && data.opponentSearchInfo) {
-      const score = getScore(
-        data.opponentSearchInfo,
-        props.type,
-        appSetting.coefficientInSigmoid,
-      );
+      const score = getScore(data.opponentSearchInfo, props.type, appSetting.coefficientInSigmoid);
       if (score !== undefined) {
         dataPoints.push({
           x: lastNode.ply + 1,
@@ -248,11 +231,7 @@ const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
   };
 };
 
-const buildDatasets = (
-  record: ImmutableRecord,
-  appSetting: AppSetting,
-  palette: ColorPalette,
-) => {
+const buildDatasets = (record: ImmutableRecord, appSetting: AppSetting, palette: ColorPalette) => {
   const series = [
     { borderColor: palette.blackPlayer, type: Series.BLACK_PLAYER },
     { borderColor: palette.whitePlayer, type: Series.WHITE_PLAYER },
@@ -302,9 +281,7 @@ const onClick = (event: ChartEvent, _: ActiveElement[], chart: Chart) => {
   }
   const width = chart.scales.x.max - chart.scales.x.min;
   const displayWidth = chart.scales.x.right - chart.scales.x.left;
-  const x =
-    ((event.x - chart.scales.x.left) / displayWidth) * width +
-    chart.scales.x.min;
+  const x = ((event.x - chart.scales.x.left) / displayWidth) * width + chart.scales.x.min;
   const ply = Math.round(x);
   store.changePly(ply);
 };
@@ -333,8 +310,7 @@ onMounted(() => {
 
   watch(
     () => [store.record, appSetting],
-    ([record, appSetting]) =>
-      updateChart(record as ImmutableRecord, appSetting as AppSetting),
+    ([record, appSetting]) => updateChart(record as ImmutableRecord, appSetting as AppSetting),
     { deep: true },
   );
 });

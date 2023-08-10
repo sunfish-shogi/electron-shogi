@@ -209,17 +209,14 @@ export function setup(): void {
   bridge.onCSAStart((sessionID: number, playerStates: string): void => {
     onCSAStart(sessionID, JSON.parse(playerStates));
   });
-  bridge.onCSAMove(
-    (sessionID: number, move: string, playerStates: string): void => {
-      onCSAMove(sessionID, move, JSON.parse(playerStates));
-    },
-  );
+  bridge.onCSAMove((sessionID: number, move: string, playerStates: string): void => {
+    onCSAMove(sessionID, move, JSON.parse(playerStates));
+  });
   bridge.onCSAGameResult(onCSAGameResult);
   bridge.onCSAClose(onCSAClose);
   watch(
     () => [store.appState, store.isBussy],
-    ([appState, bussy]) =>
-      bridge.updateAppState(appState as AppState, bussy as boolean),
+    ([appState, bussy]) => bridge.updateAppState(appState as AppState, bussy as boolean),
   );
   bridge.updateAppState(store.appState, store.isBussy);
 }

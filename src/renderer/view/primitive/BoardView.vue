@@ -14,11 +14,7 @@
       >
         <span class="player-name-text">☗{{ blackPlayerName }}</span>
       </div>
-      <div
-        class="clock"
-        :class="blackPlayerTimeSeverity"
-        :style="layout.blackClock.style"
-      >
+      <div class="clock" :class="blackPlayerTimeSeverity" :style="layout.blackClock.style">
         <span class="clock-text">{{ blackPlayerTimeText }}</span>
       </div>
       <div
@@ -28,18 +24,10 @@
       >
         <span class="player-name-text">☖{{ whitePlayerName }}</span>
       </div>
-      <div
-        class="clock"
-        :class="whitePlayerTimeSeverity"
-        :style="layout.whiteClock.style"
-      >
+      <div class="clock" :class="whitePlayerTimeSeverity" :style="layout.whiteClock.style">
         <span class="clock-text">{{ whitePlayerTimeText }}</span>
       </div>
-      <div
-        v-for="square in layout.square"
-        :key="square.id"
-        :style="square.backgroundStyle"
-      />
+      <div v-for="square in layout.square" :key="square.id" :style="square.backgroundStyle" />
       <div v-for="piece in layout.piece" :key="piece.id" :style="piece.style">
         <img class="piece-image" :src="piece.imagePath" />
       </div>
@@ -53,10 +41,7 @@
         @click="clickSquare($event, square.file, square.rank)"
         @contextmenu="clickSquareR($event, square.file, square.rank)"
       />
-      <div
-        v-if="layout.blackHand.textureImagePath"
-        :style="layout.blackHand.style"
-      >
+      <div v-if="layout.blackHand.textureImagePath" :style="layout.blackHand.style">
         <img class="full" :src="layout.blackHand.textureImagePath" />
       </div>
       <div class="hand" :style="layout.blackHand.style">
@@ -65,11 +50,7 @@
           :key="pointer.id"
           :style="pointer.backgroundStyle"
         />
-        <div
-          v-for="piece in layout.blackHand.pieces"
-          :key="piece.id"
-          :style="piece.style"
-        >
+        <div v-for="piece in layout.blackHand.pieces" :key="piece.id" :style="piece.style">
           <img class="piece-image" :src="piece.imagePath" />
         </div>
         <div
@@ -79,10 +60,7 @@
           @click="clickHand($event, Color.BLACK, pointer.type)"
         />
       </div>
-      <div
-        v-if="layout.whiteHand.textureImagePath"
-        :style="layout.whiteHand.style"
-      >
+      <div v-if="layout.whiteHand.textureImagePath" :style="layout.whiteHand.style">
         <img class="full" :src="layout.whiteHand.textureImagePath" />
       </div>
       <div class="hand" :style="layout.whiteHand.style">
@@ -91,11 +69,7 @@
           :key="pointer.id"
           :style="pointer.backgroundStyle"
         />
-        <div
-          v-for="piece in layout.whiteHand.pieces"
-          :key="piece.id"
-          :style="piece.style"
-        >
+        <div v-for="piece in layout.whiteHand.pieces" :key="piece.id" :style="piece.style">
           <img class="piece-image" :src="piece.imagePath" />
         </div>
         <div
@@ -105,19 +79,12 @@
           @click="clickHand($event, Color.WHITE, pointer.type)"
         />
       </div>
-      <div
-        v-if="layout.promotion"
-        class="promotion-selector"
-        :style="layout.promotion.style"
-      >
+      <div v-if="layout.promotion" class="promotion-selector" :style="layout.promotion.style">
         <div class="select-button promote" @click="clickPromote($event)">
           <img class="piece-image" :src="layout.promotion.promoteImagePath" />
         </div>
         <div class="select-button not-promote" @click="clickNotPromote($event)">
-          <img
-            class="piece-image"
-            :src="layout.promotion.notPromoteImagePath"
-          />
+          <img class="piece-image" :src="layout.promotion.notPromoteImagePath" />
         </div>
       </div>
       <div class="turn" :style="layout.turn.style">{{ nextMoveLabel }}</div>
@@ -132,14 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PieceType,
-  Square,
-  Piece,
-  Color,
-  Move,
-  ImmutablePosition,
-} from "@/common/shogi";
+import { PieceType, Square, Piece, Color, Move, ImmutablePosition } from "@/common/shogi";
 import { computed, reactive, watch, PropType } from "vue";
 import {
   BoardImageType,
@@ -261,22 +221,15 @@ const resetState = () => {
   state.reservedMove = null;
 };
 
-watch(
-  [() => props.position, () => props.allowEdit, () => props.allowMove],
-  () => {
-    resetState();
-  },
-);
+watch([() => props.position, () => props.allowEdit, () => props.allowMove], () => {
+  resetState();
+});
 
 const clickFrame = () => {
   resetState();
 };
 
-const updatePointer = (
-  newPointer: Square | Piece,
-  empty: boolean,
-  color: Color | undefined,
-) => {
+const updatePointer = (newPointer: Square | Piece, empty: boolean, color: Color | undefined) => {
   const prevPointer = state.pointer;
   resetState();
   if (
@@ -306,8 +259,7 @@ const updatePointer = (
       return;
     }
     if (props.allowMove && newPointer instanceof Square) {
-      const moveFrom =
-        prevPointer instanceof Square ? prevPointer : prevPointer.type;
+      const moveFrom = prevPointer instanceof Square ? prevPointer : prevPointer.type;
       const moveTo = newPointer;
       const move = props.position.createMove(moveFrom, moveTo);
       if (!move) {

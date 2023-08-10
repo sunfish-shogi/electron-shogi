@@ -17,17 +17,8 @@ import {
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
 import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";
-import {
-  beepShort,
-  beepUnlimited,
-  playPieceBeat,
-  stopBeep,
-} from "@/renderer/audio";
-import {
-  RecordManager,
-  SearchInfoSenderType,
-  SearchInfo as SearchInfoParam,
-} from "./record";
+import { beepShort, beepUnlimited, playPieceBeat, stopBeep } from "@/renderer/audio";
+import { RecordManager, SearchInfoSenderType, SearchInfo as SearchInfoParam } from "./record";
 import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName, join } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
@@ -45,10 +36,7 @@ import { LogLevel } from "@/common/log";
 import { formatPercentage, toString } from "@/common/helpers/string";
 import { CSAGameManager, CSAGameState } from "./csa";
 import { Clock } from "./clock";
-import {
-  CSAGameSetting,
-  appendCSAGameSettingHistory,
-} from "@/common/settings/csa";
+import { CSAGameSetting, appendCSAGameSettingHistory } from "@/common/settings/csa";
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/usi";
 import { ResearchManager } from "./research";
@@ -69,9 +57,7 @@ export type PVPreview = {
   pv: Move[];
 };
 
-function getMessageAttachmentsByGameResults(
-  results: GameResults,
-): Attachment[] {
+function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] {
   const validTotal = results.total - results.invalid;
   return [
     {
@@ -114,16 +100,8 @@ class Store {
   private usiMonitor = new USIMonitor();
   private blackClock = new Clock();
   private whiteClock = new Clock();
-  private gameManager = new GameManager(
-    this.recordManager,
-    this.blackClock,
-    this.whiteClock,
-  );
-  private csaGameManager = new CSAGameManager(
-    this.recordManager,
-    this.blackClock,
-    this.whiteClock,
-  );
+  private gameManager = new GameManager(this.recordManager, this.blackClock, this.whiteClock);
+  private csaGameManager = new CSAGameManager(this.recordManager, this.blackClock, this.whiteClock);
   private researchManager = new ResearchManager();
   private analysisManager = new AnalysisManager(this.recordManager);
   private mateSearchManager = new MateSearchManager();
@@ -246,10 +224,7 @@ class Store {
     return this.recordManager.inCommentPVs;
   }
 
-  updateStandardRecordMetadata(update: {
-    key: RecordMetadataKey;
-    value: string;
-  }): void {
+  updateStandardRecordMetadata(update: { key: RecordMetadataKey; value: string }): void {
     this.recordManager.updateStandardMetadata(update);
   }
 
@@ -304,9 +279,7 @@ class Store {
     const confirmation = this._confirmation;
     this._confirmation = undefined;
     if (this.appState !== confirmation.appState) {
-      this.pushError(
-        "確認ダイアログ表示中に他の操作が行われたため処理が中止されました。",
-      );
+      this.pushError("確認ダイアログ表示中に他の操作が行われたため処理が中止されました。");
       return;
     }
     if (confirmation.onOk) {
@@ -422,29 +395,14 @@ class Store {
     return this.usiMonitor.sessions;
   }
 
-  updateUSIInfo(
-    sessionID: number,
-    usi: string,
-    name: string,
-    info: USIInfoCommand,
-  ): void {
+  updateUSIInfo(sessionID: number, usi: string, name: string, info: USIInfoCommand): void {
     if (this.recordManager.record.usi !== usi) {
       return;
     }
-    this.usiMonitor.update(
-      sessionID,
-      this.recordManager.record.position,
-      name,
-      info,
-    );
+    this.usiMonitor.update(sessionID, this.recordManager.record.position, name, info);
   }
 
-  updateUSIPonderInfo(
-    sessionID: number,
-    usi: string,
-    name: string,
-    info: USIInfoCommand,
-  ): void {
+  updateUSIPonderInfo(sessionID: number, usi: string, name: string, info: USIInfoCommand): void {
     const record = Record.newByUSI(usi);
     if (record instanceof Error) {
       api.log(LogLevel.ERROR, `invalid USI: ${usi} (updateUSIPonderInfo)`);
@@ -538,9 +496,7 @@ class Store {
       return;
     }
     if (this.csaGameManager.state === CSAGameState.GAME) {
-      this.pushError(
-        "対局が始まっているため通信対局をキャンセルできませんでした。",
-      );
+      this.pushError("対局が始まっているため通信対局をキャンセルできませんでした。");
       return;
     }
     this.csaGameManager.logout();
@@ -630,10 +586,7 @@ class Store {
 
   private onBeepShort(): void {
     const appSetting = useAppSetting();
-    if (
-      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
-      !this.isMovableByUser
-    ) {
+    if (appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER && !this.isMovableByUser) {
       return;
     }
     beepShort({
@@ -644,10 +597,7 @@ class Store {
 
   private onBeepUnlimited(): void {
     const appSetting = useAppSetting();
-    if (
-      appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER &&
-      !this.isMovableByUser
-    ) {
+    if (appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER && !this.isMovableByUser) {
       return;
     }
     beepUnlimited({
@@ -657,10 +607,7 @@ class Store {
   }
 
   doMove(move: Move): void {
-    if (
-      this.appState !== AppState.NORMAL &&
-      this.appState !== AppState.RESEARCH
-    ) {
+    if (this.appState !== AppState.NORMAL && this.appState !== AppState.RESEARCH) {
       return;
     }
     if (!this.recordManager.appendMove({ move })) {
@@ -762,12 +709,7 @@ class Store {
     }
     api
       .saveMateSearchSetting(mateSearchSetting)
-      .then(() =>
-        this.mateSearchManager.start(
-          mateSearchSetting,
-          this.recordManager.record,
-        ),
-      )
+      .then(() => this.mateSearchManager.start(mateSearchSetting, this.recordManager.record))
       .then(() => {
         this._appState = AppState.MATE_SEARCH;
         this.usiMonitor.clear();
@@ -861,10 +803,7 @@ class Store {
   }
 
   insertSpecialMove(specialMoveType: SpecialMoveType): void {
-    if (
-      this.appState !== AppState.NORMAL &&
-      this.appState !== AppState.RESEARCH
-    ) {
+    if (this.appState !== AppState.NORMAL && this.appState !== AppState.RESEARCH) {
       return;
     }
     this.recordManager.appendMove({ move: specialMoveType });
@@ -914,19 +853,13 @@ class Store {
   }
 
   changePly(ply: number): void {
-    if (
-      this.appState === AppState.NORMAL ||
-      this.appState === AppState.RESEARCH
-    ) {
+    if (this.appState === AppState.NORMAL || this.appState === AppState.RESEARCH) {
       this.recordManager.changePly(ply);
     }
   }
 
   changeBranch(index: number): void {
-    if (
-      this.appState === AppState.NORMAL ||
-      this.appState === AppState.RESEARCH
-    ) {
+    if (this.appState === AppState.NORMAL || this.appState === AppState.RESEARCH) {
       this.recordManager.changeBranch(index);
     }
   }
@@ -940,10 +873,7 @@ class Store {
   }
 
   removeCurrentMove(): void {
-    if (
-      this.appState !== AppState.NORMAL &&
-      this.appState !== AppState.RESEARCH
-    ) {
+    if (this.appState !== AppState.NORMAL && this.appState !== AppState.RESEARCH) {
       return;
     }
     if (this.recordManager.record.current.isLastMove) {
@@ -951,9 +881,7 @@ class Store {
       return;
     }
     this.showConfirmation({
-      message: t.areYouSureWantToDeleteFollowingMove(
-        this.recordManager.record.current.ply,
-      ),
+      message: t.areYouSureWantToDeleteFollowingMove(this.recordManager.record.current.ply),
       onOk: () => {
         this.recordManager.removeCurrentMove();
       },
@@ -961,10 +889,7 @@ class Store {
   }
 
   jumpToBookmark(bookmark: string): boolean {
-    if (
-      this.appState === AppState.NORMAL ||
-      this.appState === AppState.RESEARCH
-    ) {
+    if (this.appState === AppState.NORMAL || this.appState === AppState.RESEARCH) {
       return this.recordManager.jumpToBookmark(bookmark);
     }
     return false;
@@ -1035,8 +960,7 @@ class Store {
           return;
         }
         const appSetting = useAppSetting();
-        const autoDetect =
-          appSetting.textDecodingRule == TextDecodingRule.AUTO_DETECT;
+        const autoDetect = appSetting.textDecodingRule == TextDecodingRule.AUTO_DETECT;
         return api.openRecord(path).then((data) => {
           const e = this.recordManager.importRecordFromBuffer(data, path, {
             autoDetect,
@@ -1086,10 +1010,7 @@ class Store {
       });
   }
 
-  private async saveRecordByPath(
-    path: string,
-    opt?: { detectGarbled: boolean },
-  ): Promise<void> {
+  private async saveRecordByPath(path: string, opt?: { detectGarbled: boolean }): Promise<void> {
     const appSetting = useAppSetting();
     const result = this.recordManager.exportRecordAsBuffer(path, {
       returnCode: appSetting.returnCode,
@@ -1124,8 +1045,7 @@ class Store {
         );
       case AppState.CSA_GAME:
         return (
-          this.csaGameManager.isMyTurn &&
-          this.csaGameManager.setting.player.uri === uri.ES_HUMAN
+          this.csaGameManager.isMyTurn && this.csaGameManager.setting.player.uri === uri.ES_HUMAN
         );
     }
     return false;

@@ -53,6 +53,8 @@ export type Texts = {
   format: string;
   formats: string;
   subdirectory: string;
+  separately: string;
+  merge: string;
   nameConflictAction: string;
   numberSuffix: string;
   skip: string;
@@ -156,6 +158,9 @@ export type Texts = {
   old90sMac: string;
   autoSavingDirectory: string;
   select: string;
+  positionOfUSIOutput: string;
+  movesOfUSIOutput: string;
+  onlySFEN: string;
   usiProtocol: string;
   translateOptionName: string;
   functionalOnJapaneseOnly: string;
@@ -406,6 +411,10 @@ export type Texts = {
   idIsEmpty: string;
   engineNotSelected: string;
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart: string;
+  sourceDirectoryNotSpecified: string;
+  sourceFormatsNotSpecified: string;
+  destinationDirectoryNotSpecified: string;
+  destinationFileNotSpecified: string;
   totalNumber: (n: number) => string;
   number: (n: number) => string;
   tryToReloginToCSAServerNSecondsLater: (n: number) => string;

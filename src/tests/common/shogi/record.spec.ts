@@ -40,7 +40,40 @@ describe("shogi/record", () => {
     expect(record.current).toBe(record.first);
   });
 
-  it("usi", () => {
+  it("getUSI", () => {
+    const data = `手合割：平手
+   1 ２六歩(27)
+   2 ８四歩(83)
+   3 ７六歩(77)
+   4 ８五歩(84)
+   5 投了
+`;
+    const record = importKIF(data) as Record;
+    record.goto(2);
+    expect(record.usi).toBe(
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d",
+    );
+    expect(
+      record.getUSI({
+        startpos: true,
+      }),
+    ).toBe("position startpos moves 2g2f 8c8d");
+    expect(
+      record.getUSI({
+        startpos: true,
+        allMoves: true,
+      }),
+    ).toBe("position startpos moves 2g2f 8c8d 7g7f 8d8e");
+    expect(
+      record.getUSI({
+        startpos: true,
+        resign: true,
+        allMoves: true,
+      }),
+    ).toBe("position startpos moves 2g2f 8c8d 7g7f 8d8e resign");
+  });
+
+  it("getNextColorFromUSI", () => {
     expect(getNextColorFromUSI("position startpos moves ")).toBe(Color.BLACK);
     expect(getNextColorFromUSI("position startpos moves 2g2f 8c8d 2f2e")).toBe(Color.WHITE);
     expect(

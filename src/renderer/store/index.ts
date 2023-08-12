@@ -920,12 +920,21 @@ class Store {
   }
 
   copyRecordUSIBefore(): void {
-    const str = this.recordManager.record.usi;
+    const appSetting = useAppSetting();
+    const str = this.recordManager.record.getUSI({
+      startpos: appSetting.enableUSIStartpos,
+      resign: appSetting.enableUSIResign,
+    });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordUSIAll(): void {
-    const str = this.recordManager.record.usiAll;
+    const appSetting = useAppSetting();
+    const str = this.recordManager.record.getUSI({
+      startpos: appSetting.enableUSIStartpos,
+      resign: appSetting.enableUSIResign,
+      allMoves: true,
+    });
     navigator.clipboard.writeText(str);
   }
 

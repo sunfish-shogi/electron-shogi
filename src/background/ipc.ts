@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, shell, WebContents } from "electron";
+import { app, BrowserWindow, dialog, FileFilter, ipcMain, shell, WebContents } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import path from "path";
 import fs from "fs";
@@ -170,6 +170,30 @@ ipcMain.handle(Background.OPEN_RECORD, async (event, path: string): Promise<Uint
   return fs.promises.readFile(path);
 });
 
+// NOTE: This function mutates filters.
+function showSaveDialog(defaultPath: string, filters: FileFilter[], buttonLabel?: string): string {
+  const win = BrowserWindow.getFocusedWindow();
+  if (!win) {
+    throw new Error("failed to open dialog by unexpected error.");
+  }
+  filters.sort((lhs, rhs) => {
+    return defaultPath.endsWith("." + lhs.extensions[0])
+      ? -1
+      : defaultPath.endsWith("." + rhs.extensions[0])
+      ? 1
+      : 0;
+  });
+  getAppLogger().debug("show save-record dialog");
+  const result = dialog.showSaveDialogSync(win, {
+    defaultPath: defaultPath,
+    properties: ["createDirectory", "showOverwriteConfirmation"],
+    filters,
+    buttonLabel,
+  });
+  getAppLogger().debug(`save-record dialog result: ${result}`);
+  return result || "";
+}
+
 ipcMain.handle(
   Background.SHOW_SAVE_RECORD_DIALOG,
   async (event, defaultPath: string): Promise<string> => {
@@ -186,26 +210,13 @@ ipcMain.handle(
       { name: "KI2 (UTF-8)", extensions: ["ki2u"] },
       { name: "CSA", extensions: ["csa"] },
     ];
-    filters.sort((lhs, rhs) => {
-      return defaultPath.endsWith("." + lhs.extensions[0])
-        ? -1
-        : defaultPath.endsWith("." + rhs.extensions[0])
-        ? 1
-        : 0;
-    });
-    getAppLogger().debug("show save-record dialog");
-    const result = dialog.showSaveDialogSync(win, {
-      defaultPath: path.resolve(path.dirname(appSetting.lastRecordFilePath), defaultPath),
-      properties: ["createDirectory", "showOverwriteConfirmation"],
+    const result = showSaveDialog(
+      path.resolve(path.dirname(appSetting.lastRecordFilePath), defaultPath),
       filters,
-    });
-    getAppLogger().debug(`save-record dialog result: ${result}`);
-    if (!result) {
-      return "";
+    );
+    if (result) {
+      onUpdateAppSetting({ lastRecordFilePath: result });
     }
-    onUpdateAppSetting({
-      lastRecordFilePath: result,
-    });
     return result;
   },
 );
@@ -280,6 +291,19 @@ ipcMain.handle(
     });
     getAppLogger().debug(`select-image dialog result: ${results}`);
     return results && results.length === 1 ? url.pathToFileURL(results[0]).toString() : "";
+  },
+);
+
+ipcMain.handle(
+  Background.SHOW_SAVE_MERGED_RECORD_DIALOG,
+  async (event, defaultPath: string): Promise<string> => {
+    validateIPCSender(event.senderFrame);
+    const win = BrowserWindow.getFocusedWindow();
+    if (!win) {
+      throw new Error("failed to open dialog by unexpected error.");
+    }
+    const filters = [{ name: "SFEN", extensions: ["sfen"] }];
+    return showSaveDialog(path.resolve(defaultPath), filters, "OK");
   },
 );
 

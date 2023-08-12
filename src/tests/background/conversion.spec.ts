@@ -1,200 +1,298 @@
 import { convertRecordFiles } from "@/background/conversion";
 import { RecordFileFormat } from "@/common/file";
-import { FileNameConflictAction } from "@/common/settings/conversion";
+import {
+  DestinationType,
+  FileNameConflictAction,
+  defaultBatchConversionSetting,
+} from "@/common/settings/conversion";
 import fs from "fs";
 import path from "path";
 import os from "os";
 import { listFiles } from "@/background/helpers/file";
+import { defaultAppSetting } from "@/common/settings/app";
+import { saveAppSetting } from "@/background/settings";
 
 const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "es-test-conversion-"));
 
 describe("conversion", () => {
-  it("all-to-csa/with-subdir", () => {
-    const destination = path.join(tmpdir, "all-to-csa/with-subdir");
-    const result = convertRecordFiles({
-      source: "src/tests/testdata/conversion",
-      sourceFormats: [
-        RecordFileFormat.KIF,
-        RecordFileFormat.KIFU,
-        RecordFileFormat.KI2,
-        RecordFileFormat.KI2U,
-        RecordFileFormat.CSA,
-      ],
-      subdirectories: true,
-      destination: destination,
-      destinationFormat: RecordFileFormat.CSA,
-      fileNameConflictAction: FileNameConflictAction.OVERWRITE,
-    });
-    expect(result).toStrictEqual({
-      succeededTotal: 8,
-      succeeded: {
-        ".kif": 4,
-        ".kifu": 1,
-        ".ki2": 1,
-        ".ki2u": 1,
-        ".csa": 1,
+  it("separately", () => {
+    const testCases = [
+      {
+        sourceFormats: [
+          RecordFileFormat.KIF,
+          RecordFileFormat.KIFU,
+          RecordFileFormat.KI2,
+          RecordFileFormat.KI2U,
+          RecordFileFormat.CSA,
+        ],
+        subdirectories: true,
+        destination: "all-to-csa/with-subdir",
+        destinationFormat: RecordFileFormat.CSA,
+        fileNameConflictAction: FileNameConflictAction.OVERWRITE,
+        expectedReport: {
+          succeededTotal: 8,
+          succeeded: {
+            ".kif": 4,
+            ".kifu": 1,
+            ".ki2": 1,
+            ".ki2u": 1,
+            ".csa": 1,
+          },
+          failedTotal: 0,
+          failed: {},
+          skippedTotal: 0,
+          skipped: {},
+        },
+        expectedFiles: [
+          "csa-sjis.csa",
+          "ki2-sjis.csa",
+          "ki2u-utf8.csa",
+          "kif-sjis.csa",
+          "kifu-utf8.csa",
+          "sub01/kif-sjis.csa",
+          "sub01/sub0101/kif-sjis.csa",
+          "sub02/kif-sjis.csa",
+        ],
       },
-      failedTotal: 0,
-      failed: {},
-      skippedTotal: 0,
-      skipped: {},
-    });
-    expect(listFiles(destination, Infinity).sort()).toStrictEqual([
-      path.join(destination, "csa-sjis.csa"),
-      path.join(destination, "ki2-sjis.csa"),
-      path.join(destination, "ki2u-utf8.csa"),
-      path.join(destination, "kif-sjis.csa"),
-      path.join(destination, "kifu-utf8.csa"),
-      path.join(destination, "sub01/kif-sjis.csa"),
-      path.join(destination, "sub01/sub0101/kif-sjis.csa"),
-      path.join(destination, "sub02/kif-sjis.csa"),
-    ]);
-  });
-
-  it("all-to-csa/without-subdir", () => {
-    const destination = path.join(tmpdir, "all-to-csa/without-subdir");
-    const result = convertRecordFiles({
-      source: "src/tests/testdata/conversion",
-      sourceFormats: [
-        RecordFileFormat.KIF,
-        RecordFileFormat.KIFU,
-        RecordFileFormat.KI2,
-        RecordFileFormat.KI2U,
-        RecordFileFormat.CSA,
-      ],
-      subdirectories: false,
-      destination: destination,
-      destinationFormat: RecordFileFormat.CSA,
-      fileNameConflictAction: FileNameConflictAction.OVERWRITE,
-    });
-    expect(result).toStrictEqual({
-      succeededTotal: 5,
-      succeeded: {
-        ".kif": 1,
-        ".kifu": 1,
-        ".ki2": 1,
-        ".ki2u": 1,
-        ".csa": 1,
+      {
+        sourceFormats: [
+          RecordFileFormat.KIF,
+          RecordFileFormat.KIFU,
+          RecordFileFormat.KI2,
+          RecordFileFormat.KI2U,
+          RecordFileFormat.CSA,
+        ],
+        subdirectories: false,
+        destination: "all-to-csa/without-subdir",
+        destinationFormat: RecordFileFormat.CSA,
+        fileNameConflictAction: FileNameConflictAction.OVERWRITE,
+        expectedReport: {
+          succeededTotal: 5,
+          succeeded: {
+            ".kif": 1,
+            ".kifu": 1,
+            ".ki2": 1,
+            ".ki2u": 1,
+            ".csa": 1,
+          },
+          failedTotal: 0,
+          failed: {},
+          skippedTotal: 0,
+          skipped: {},
+        },
+        expectedFiles: [
+          "csa-sjis.csa",
+          "ki2-sjis.csa",
+          "ki2u-utf8.csa",
+          "kif-sjis.csa",
+          "kifu-utf8.csa",
+        ],
       },
-      failedTotal: 0,
-      failed: {},
-      skippedTotal: 0,
-      skipped: {},
-    });
-    expect(listFiles(destination, Infinity).sort()).toStrictEqual([
-      path.join(destination, "csa-sjis.csa"),
-      path.join(destination, "ki2-sjis.csa"),
-      path.join(destination, "ki2u-utf8.csa"),
-      path.join(destination, "kif-sjis.csa"),
-      path.join(destination, "kifu-utf8.csa"),
-    ]);
-  });
-
-  it("csa-to-ki2", () => {
-    const destination = path.join(tmpdir, "csa-to-ki2");
-    const result = convertRecordFiles({
-      source: "src/tests/testdata/conversion",
-      sourceFormats: [RecordFileFormat.CSA],
-      subdirectories: false,
-      destination: destination,
-      destinationFormat: RecordFileFormat.KI2,
-      fileNameConflictAction: FileNameConflictAction.OVERWRITE,
-    });
-    expect(result).toStrictEqual({
-      succeededTotal: 1,
-      succeeded: { ".csa": 1 },
-      failedTotal: 0,
-      failed: {},
-      skippedTotal: 0,
-      skipped: {},
-    });
-    expect(listFiles(destination, Infinity).sort()).toStrictEqual([
-      path.join(destination, "csa-sjis.ki2"),
-    ]);
-  });
-
-  it("ki2u-to-kifu/overwrite", () => {
-    const destination = path.join(tmpdir, "ki2u-to-kifu/overwrite");
-    for (let i = 0; i < 3; i++) {
-      const result = convertRecordFiles({
-        source: "src/tests/testdata/conversion",
+      {
+        sourceFormats: [RecordFileFormat.CSA],
+        subdirectories: false,
+        destination: "csa-to-ki2",
+        destinationFormat: RecordFileFormat.KI2,
+        fileNameConflictAction: FileNameConflictAction.OVERWRITE,
+        expectedReport: {
+          succeededTotal: 1,
+          succeeded: { ".csa": 1 },
+          failedTotal: 0,
+          failed: {},
+          skippedTotal: 0,
+          skipped: {},
+        },
+        expectedFiles: ["csa-sjis.ki2"],
+      },
+      {
         sourceFormats: [RecordFileFormat.KI2U],
         subdirectories: false,
-        destination: destination,
+        destination: "ki2u-to-kifu/overwrite",
         destinationFormat: RecordFileFormat.KIFU,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
-      });
-      expect(result).toStrictEqual({
-        succeededTotal: 1,
-        succeeded: { ".ki2u": 1 },
-        failedTotal: 0,
-        failed: {},
-        skippedTotal: 0,
-        skipped: {},
-      });
-    }
-    expect(listFiles(destination, Infinity).sort()).toStrictEqual([
-      path.join(destination, "ki2u-utf8.kifu"),
-    ]);
-  });
-
-  it("ki2u-to-kifu/number-suffix", () => {
-    const destination = path.join(tmpdir, "ki2u-to-kifu/number-suffix");
-    for (let i = 0; i < 3; i++) {
-      const result = convertRecordFiles({
-        source: "src/tests/testdata/conversion",
+        repeat: 2,
+        expectedReport: {
+          succeededTotal: 1,
+          succeeded: { ".ki2u": 1 },
+          failedTotal: 0,
+          failed: {},
+          skippedTotal: 0,
+          skipped: {},
+        },
+        expectedFiles: ["ki2u-utf8.kifu"],
+      },
+      {
         sourceFormats: [RecordFileFormat.KI2U],
         subdirectories: false,
-        destination: destination,
+        destination: "ki2u-to-kifu/number-suffix",
         destinationFormat: RecordFileFormat.KIFU,
         fileNameConflictAction: FileNameConflictAction.NUMBER_SUFFIX,
+        repeat: 2,
+        expectedReport: {
+          succeededTotal: 1,
+          succeeded: { ".ki2u": 1 },
+          failedTotal: 0,
+          failed: {},
+          skippedTotal: 0,
+          skipped: {},
+        },
+        expectedFiles: ["ki2u-utf8-2.kifu", "ki2u-utf8-3.kifu", "ki2u-utf8.kifu"],
+      },
+      {
+        sourceFormats: [RecordFileFormat.KI2U],
+        subdirectories: false,
+        destination: "ki2u-to-kifu/skip",
+        destinationFormat: RecordFileFormat.KIFU,
+        fileNameConflictAction: FileNameConflictAction.SKIP,
+        repeat: 1,
+        expectedReport: [
+          {
+            succeededTotal: 1,
+            succeeded: { ".ki2u": 1 },
+            failedTotal: 0,
+            failed: {},
+            skippedTotal: 0,
+            skipped: {},
+          },
+          {
+            succeededTotal: 0,
+            succeeded: {},
+            failedTotal: 0,
+            failed: {},
+            skippedTotal: 1,
+            skipped: { ".ki2u": 1 },
+          },
+        ],
+        expectedFiles: ["ki2u-utf8.kifu"],
+      },
+    ];
+    saveAppSetting({
+      ...defaultAppSetting(),
+      returnCode: "\n",
+    });
+    for (const testCase of testCases) {
+      const destinationFullPath = path.join(tmpdir, testCase.destination);
+      for (let i = 0; i < 1 + (testCase.repeat || 0); i++) {
+        const result = convertRecordFiles({
+          ...defaultBatchConversionSetting(),
+          source: "src/tests/testdata/conversion/input",
+          sourceFormats: testCase.sourceFormats,
+          subdirectories: testCase.subdirectories,
+          destinationType: DestinationType.DIRECTORY,
+          destination: destinationFullPath,
+          destinationFormat: testCase.destinationFormat,
+          fileNameConflictAction: testCase.fileNameConflictAction,
+        });
+        expect(result).toStrictEqual(
+          testCase.expectedReport instanceof Array
+            ? testCase.expectedReport[i]
+            : testCase.expectedReport,
+        );
+      }
+      const expectedFullPath = testCase.expectedFiles.map((f) => path.join(destinationFullPath, f));
+      const actualFilePaths = listFiles(destinationFullPath, Infinity).sort();
+      expect(actualFilePaths).toStrictEqual(expectedFullPath);
+      for (const filePath of actualFilePaths) {
+        const relPath = path.relative(tmpdir, filePath);
+        const expectedFilePath = path.join("src/tests/testdata/conversion/output", relPath);
+        const actual = fs.readFileSync(filePath);
+        const expected = fs.readFileSync(expectedFilePath);
+        expect(actual).toStrictEqual(expected);
+      }
+    }
+  });
+
+  it("sfen", () => {
+    const testCases = [
+      {
+        appSetting: defaultAppSetting(),
+        destination: "all.sfen",
+        expected: [
+          "startpos moves 2g2f 3c3d 7g7f 5c5d 3i4h 8b5b 5i6h 5d5e 6h7h 3a4b 5g5f 4b3c 5f5e 3c4d 4h5g 4d5e P*5f 5e4d 4i5h",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 2e2d 2c2d 2h2d P*2c 2d2f 6c6d 3g3f 3c3d 3h3g 5a4b 3g4f 2b4d 3f3e 3d3e 5i6i",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 5i6h 5a5b 3g3f 8e8f 8g8f 8b8f 7g7f",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 9g9f 5a4b 5i5h 6a5b 3g3f 3c3d",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 5i5h 5a5b 7g7f 8e8f 8g8f 8b8f 2e2d 2c2d 2h2d P*2c 2d2f 3c3d P*8g 8f8d",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 7g7f 4a3b 8h7g 3c3d 7i6h 2b7g+ 6h7g 3a2b",
+          "startpos moves 7g7f 8c8d 2h7h 8d8e 8h7g 3c3d 6g6f 7a6b 7i6h 5a4b 5i4h 4b3b",
+        ],
+      },
+      {
+        appSetting: {
+          ...defaultAppSetting(),
+          enableUSIResign: true,
+        },
+        destination: "all-noStartpos-resign.sfen",
+        expected: [
+          "startpos moves 2g2f 3c3d 7g7f 5c5d 3i4h 8b5b 5i6h 5d5e 6h7h 3a4b 5g5f 4b3c 5f5e 3c4d 4h5g 4d5e P*5f 5e4d 4i5h",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 2e2d 2c2d 2h2d P*2c 2d2f 6c6d 3g3f 3c3d 3h3g 5a4b 3g4f 2b4d 3f3e 3d3e 5i6i",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 5i6h 5a5b 3g3f 8e8f 8g8f 8b8f 7g7f",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 9g9f 5a4b 5i5h 6a5b 3g3f 3c3d",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 5i5h 5a5b 7g7f 8e8f 8g8f 8b8f 2e2d 2c2d 2h2d P*2c 2d2f 3c3d P*8g 8f8d",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b resign",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b resign",
+          "startpos moves 2g2f 8c8d 2f2e 8d8e 7g7f 4a3b 8h7g 3c3d 7i6h 2b7g+ 6h7g 3a2b",
+          "startpos moves 7g7f 8c8d 2h7h 8d8e 8h7g 3c3d 6g6f 7a6b 7i6h 5a4b 5i4h 4b3b",
+        ],
+      },
+      {
+        appSetting: {
+          ...defaultAppSetting(),
+          enableUSIStartpos: false,
+        },
+        destination: "all-noStartpos-resign.sfen",
+        expected: [
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 3c3d 7g7f 5c5d 3i4h 8b5b 5i6h 5d5e 6h7h 3a4b 5g5f 4b3c 5f5e 3c4d 4h5g 4d5e P*5f 5e4d 4i5h",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 2e2d 2c2d 2h2d P*2c 2d2f 6c6d 3g3f 3c3d 3h3g 5a4b 3g4f 2b4d 3f3e 3d3e 5i6i",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 5i6h 5a5b 3g3f 8e8f 8g8f 8b8f 7g7f",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 3i3h 7a7b 9g9f 5a4b 5i5h 6a5b 3g3f 3c3d",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b 5i5h 5a5b 7g7f 8e8f 8g8f 8b8f 2e2d 2c2d 2h2d P*2c 2d2f 3c3d P*8g 8f8d",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d 2f2e 8d8e 7g7f 4a3b 8h7g 3c3d 7i6h 2b7g+ 6h7g 3a2b",
+          "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d 2h7h 8d8e 8h7g 3c3d 6g6f 7a6b 7i6h 5a4b 5i4h 4b3b",
+        ],
+      },
+    ];
+    for (const testCase of testCases) {
+      saveAppSetting(testCase.appSetting);
+      const destinationFullPath = path.join(tmpdir, testCase.destination);
+      const result = convertRecordFiles({
+        ...defaultBatchConversionSetting(),
+        source: "src/tests/testdata/conversion/input",
+        sourceFormats: [
+          RecordFileFormat.KIF,
+          RecordFileFormat.KIFU,
+          RecordFileFormat.KI2,
+          RecordFileFormat.KI2U,
+          RecordFileFormat.CSA,
+        ],
+        subdirectories: true,
+        destinationType: DestinationType.SINGLE_FILE,
+        singleFileDestination: destinationFullPath,
       });
       expect(result).toStrictEqual({
-        succeededTotal: 1,
-        succeeded: { ".ki2u": 1 },
+        succeededTotal: 8,
+        succeeded: {
+          ".kif": 4,
+          ".kifu": 1,
+          ".ki2": 1,
+          ".ki2u": 1,
+          ".csa": 1,
+        },
         failedTotal: 0,
         failed: {},
         skippedTotal: 0,
         skipped: {},
       });
+      const list = new TextDecoder()
+        .decode(fs.readFileSync(destinationFullPath))
+        .trimEnd()
+        .split(/\r?\n/)
+        .sort();
+      expect(list).toStrictEqual(testCase.expected);
     }
-    expect(listFiles(destination, Infinity).sort()).toStrictEqual([
-      path.join(destination, "ki2u-utf8-2.kifu"),
-      path.join(destination, "ki2u-utf8-3.kifu"),
-      path.join(destination, "ki2u-utf8.kifu"),
-    ]);
-  });
-
-  it("ki2u-to-kifu/skip", () => {
-    const destination = path.join(tmpdir, "ki2u-to-kifu/skip");
-    const setting = {
-      source: "src/tests/testdata/conversion",
-      sourceFormats: [RecordFileFormat.KI2U],
-      subdirectories: false,
-      destination: destination,
-      destinationFormat: RecordFileFormat.KIFU,
-      fileNameConflictAction: FileNameConflictAction.SKIP,
-    };
-    const result = convertRecordFiles(setting);
-    expect(result).toStrictEqual({
-      succeededTotal: 1,
-      succeeded: { ".ki2u": 1 },
-      failedTotal: 0,
-      failed: {},
-      skippedTotal: 0,
-      skipped: {},
-    });
-    const result2 = convertRecordFiles(setting);
-    expect(result2).toStrictEqual({
-      succeededTotal: 0,
-      succeeded: {},
-      failedTotal: 0,
-      failed: {},
-      skippedTotal: 1,
-      skipped: { ".ki2u": 1 },
-    });
-    expect(listFiles(destination, Infinity).sort()).toStrictEqual([
-      path.join(destination, "ki2u-utf8.kifu"),
-    ]);
   });
 });

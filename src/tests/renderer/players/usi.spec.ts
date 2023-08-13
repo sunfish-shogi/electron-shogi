@@ -18,12 +18,9 @@ describe("usi", () => {
     mockAPI.usiGo.mockResolvedValueOnce();
     mockAPI.usiGoPonder.mockResolvedValueOnce();
     mockAPI.usiPonderHit.mockResolvedValueOnce();
-    const usi1 =
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d";
-    const usi2 =
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f";
-    const usi3 =
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d";
+    const usi1 = "position startpos moves 7g7f 3c3d";
+    const usi2 = "position startpos moves 7g7f 3c3d 2g2f";
+    const usi3 = "position startpos moves 7g7f 3c3d 2g2f 8c8d";
     const record1 = Record.newByUSI(usi1) as Record;
     const record2 = Record.newByUSI(usi2) as Record;
     const record3 = Record.newByUSI(usi3) as Record;

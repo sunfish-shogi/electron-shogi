@@ -193,8 +193,7 @@ describe("store/index", () => {
 
   it("updateUSIInfo", () => {
     jest.useFakeTimers();
-    const usi =
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f";
+    const usi = "position startpos moves 7g7f";
     const store = createStore();
     store.pasteRecord(usi);
     store.updateUSIInfo(101, usi, "Engine A", {
@@ -229,10 +228,8 @@ describe("store/index", () => {
 
   it("updateUSIPonderInfo", () => {
     jest.useFakeTimers();
-    const usi =
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f";
-    const usi2 =
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d";
+    const usi = "position startpos moves 7g7f";
+    const usi2 = "position startpos moves 7g7f 3c3d";
     const store = createStore();
     store.pasteRecord(usi);
     store.updateUSIPonderInfo(101, usi2, "Engine A", {

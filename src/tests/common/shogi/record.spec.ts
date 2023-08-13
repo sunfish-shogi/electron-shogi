@@ -50,14 +50,16 @@ describe("shogi/record", () => {
 `;
     const record = importKIF(data) as Record;
     record.goto(2);
-    expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d",
-    );
+    expect(record.usi).toBe("position startpos moves 2g2f 8c8d");
+    expect(record.getUSI()).toBe("position startpos moves 2g2f 8c8d");
+    expect(record.getUSI({ startpos: true })).toBe("position startpos moves 2g2f 8c8d");
     expect(
       record.getUSI({
-        startpos: true,
+        startpos: false,
       }),
-    ).toBe("position startpos moves 2g2f 8c8d");
+    ).toBe(
+      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2g2f 8c8d",
+    );
     expect(
       record.getUSI({
         startpos: true,
@@ -114,9 +116,7 @@ describe("shogi/record", () => {
     expect(onChangePosition).toBeCalledTimes(9);
     expect(record.goBack()).toBeTruthy();
     expect(onChangePosition).toBeCalledTimes(10);
-    expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves",
-    );
+    expect(record.usi).toBe("position startpos moves");
     expect(record.goBack()).toBeFalsy();
     expect(onChangePosition).toBeCalledTimes(10); // not called
 
@@ -124,24 +124,18 @@ describe("shogi/record", () => {
     expect(onChangePosition).toBeCalledTimes(11);
     record.goto(Number.MAX_SAFE_INTEGER);
     expect(onChangePosition).toBeCalledTimes(12);
-    expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d 7i7h",
-    );
+    expect(record.usi).toBe("position startpos moves 7g7f 8c8d 7i7h");
     expect(record.goForward()).toBeFalsy();
     expect(onChangePosition).toBeCalledTimes(12); // not called
 
     record.goto(2);
     expect(onChangePosition).toBeCalledTimes(13);
-    expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 8c8d",
-    );
+    expect(record.usi).toBe("position startpos moves 7g7f 8c8d");
     record.goto(2);
     expect(onChangePosition).toBeCalledTimes(13); // not called
     expect(record.switchBranchByIndex(0)).toBeTruthy();
     expect(onChangePosition).toBeCalledTimes(14);
-    expect(record.usi).toBe(
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d",
-    );
+    expect(record.usi).toBe("position startpos moves 7g7f 3c3d");
   });
 
   it("repetition", () => {

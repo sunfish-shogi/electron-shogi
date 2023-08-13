@@ -272,7 +272,7 @@ describe("ipc/background/usi/engine", () => {
     onReceive("info depth 3 score mate -");
     expect(handlers.info).lastCalledWith("position test02", {
       depth: 3,
-      scoreMate: -1,
+      scoreMate: -10000,
     });
     engine.stop();
     expect(mockChildProcess.prototype.send).lastCalledWith("stop");

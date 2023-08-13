@@ -1,5 +1,8 @@
 import { ImmutablePosition, Move } from "@/common/shogi";
 
+// SCORE_MATE_INFINITE は詰みを発見したが手数までは確定していない場合に使用する値です。
+export const SCORE_MATE_INFINITE = 10000;
+
 export type USIInfoCommand = {
   depth?: number;
   seldepth?: number;

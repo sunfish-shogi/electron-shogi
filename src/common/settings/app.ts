@@ -138,8 +138,8 @@ export type AppSetting = {
   textDecodingRule: TextDecodingRule;
   returnCode: string;
   autoSaveDirectory: string;
-  enableUSIStartpos: boolean;
-  enableUSIResign: boolean;
+  enableUSIFileStartpos: boolean;
+  enableUSIFileResign: boolean;
   translateEngineOptionName: boolean;
   engineTimeoutSeconds: number;
   evaluationViewFrom: EvaluationViewFrom;
@@ -196,8 +196,8 @@ export type AppSettingUpdate = {
   textDecodingRule?: TextDecodingRule;
   returnCode?: string;
   autoSaveDirectory?: string;
-  enableUSIStartpos?: boolean;
-  enableUSIResign?: boolean;
+  enableUSIFileStartpos?: boolean;
+  enableUSIFileResign?: boolean;
   translateEngineOptionName?: boolean;
   engineTimeoutSeconds?: number;
   evaluationViewFrom?: EvaluationViewFrom;
@@ -286,8 +286,8 @@ export function defaultAppSetting(opt?: {
     textDecodingRule: TextDecodingRule.AUTO_DETECT,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
-    enableUSIStartpos: true,
-    enableUSIResign: false,
+    enableUSIFileStartpos: true,
+    enableUSIFileResign: false,
     translateEngineOptionName: true,
     engineTimeoutSeconds: 10,
     evaluationViewFrom: EvaluationViewFrom.EACH,

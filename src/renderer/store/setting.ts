@@ -117,11 +117,11 @@ class AppSettingStore {
   get autoSaveDirectory(): string {
     return this.setting.autoSaveDirectory;
   }
-  get enableUSIStartpos(): boolean {
-    return this.setting.enableUSIStartpos;
+  get enableUSIFileStartpos(): boolean {
+    return this.setting.enableUSIFileStartpos;
   }
-  get enableUSIResign(): boolean {
-    return this.setting.enableUSIResign;
+  get enableUSIFileResign(): boolean {
+    return this.setting.enableUSIFileResign;
   }
   get translateEngineOptionName(): boolean {
     return this.setting.translateEngineOptionName;

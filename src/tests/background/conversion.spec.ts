@@ -222,7 +222,7 @@ describe("conversion", () => {
       {
         appSetting: {
           ...defaultAppSetting(),
-          enableUSIResign: true,
+          enableUSIFileResign: true,
         },
         destination: "all-noStartpos-resign.sfen",
         expected: [
@@ -240,7 +240,7 @@ describe("conversion", () => {
       {
         appSetting: {
           ...defaultAppSetting(),
-          enableUSIStartpos: false,
+          enableUSIFileStartpos: false,
         },
         destination: "all-noStartpos-resign.sfen",
         expected: [

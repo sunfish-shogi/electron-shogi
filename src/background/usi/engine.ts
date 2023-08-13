@@ -7,7 +7,7 @@ import {
   USIPonder,
 } from "@/common/settings/usi";
 import { Logger } from "log4js";
-import { USIInfoCommand } from "@/common/usi";
+import { SCORE_MATE_INFINITE, USIInfoCommand } from "@/common/usi";
 import { ChildProcess } from "./process";
 
 export type EngineProcessOption = {
@@ -34,10 +34,10 @@ function parseScoreMate(arg: string): number {
     case "+":
     case "+0":
     case "0":
-      return +1;
+      return +SCORE_MATE_INFINITE;
     case "-":
     case "-0":
-      return -1;
+      return -SCORE_MATE_INFINITE;
     default:
       return Number(arg);
   }

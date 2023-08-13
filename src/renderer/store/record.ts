@@ -34,6 +34,7 @@ import {
   exportRecordAsBuffer,
   importRecordFromBuffer,
 } from "@/common/file";
+import { SCORE_MATE_INFINITE } from "@/common/usi";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -60,6 +61,20 @@ export type RecordCustomData = {
   researchInfo4?: SearchInfo;
 };
 
+function parsePlayerMateScoreComment(line: string): number | undefined {
+  const matched = /^\*詰み=(先手勝ち|後手勝ち)(?::([0-9]+)手)?/.exec(line);
+  if (matched) {
+    return Number(matched[2] || SCORE_MATE_INFINITE) * (matched[1] === "先手勝ち" ? 1 : -1);
+  }
+}
+
+function parseResearchMateScoreComment(line: string): number | undefined {
+  const matched = /^#詰み=(先手勝ち|後手勝ち)(?::([0-9]+)手)?/.exec(line);
+  if (matched) {
+    return Number(matched[2] || SCORE_MATE_INFINITE) * (matched[1] === "先手勝ち" ? 1 : -1);
+  }
+}
+
 function parsePlayerScoreComment(line: string): number | undefined {
   const matched = /^\*評価値=([+-]?[.0-9]+)/.exec(line);
   return matched ? Number(matched[1]) : undefined;
@@ -80,26 +95,37 @@ function restoreCustomData(record: Record): void {
     const data = (node.customData || {}) as RecordCustomData;
     const lines = node.comment.split("\n");
     for (const line of lines) {
+      const playerMateScore = parsePlayerMateScoreComment(line);
+      if (playerMateScore !== undefined) {
+        data.playerSearchInfo = {
+          ...data.playerSearchInfo,
+          mate: playerMateScore,
+        };
+      }
+      const researchMateScore = parseResearchMateScoreComment(line);
+      if (researchMateScore !== undefined) {
+        data.researchInfo = {
+          ...data.researchInfo,
+          mate: researchMateScore,
+        };
+      }
       const playerScore = parsePlayerScoreComment(line) || parseFloodgateScoreComment(line);
       if (playerScore !== undefined) {
-        data.playerSearchInfo = { score: playerScore };
+        data.playerSearchInfo = {
+          ...data.playerSearchInfo,
+          score: playerScore,
+        };
       }
       const researchScore = parseResearchScoreComment(line);
       if (researchScore !== undefined) {
-        data.researchInfo = { score: researchScore };
+        data.researchInfo = {
+          ...data.researchInfo,
+          score: researchScore,
+        };
       }
     }
     node.customData = data;
   });
-}
-
-function searchCommentKeyPrefix(type: SearchInfoSenderType): string {
-  switch (type) {
-    case SearchInfoSenderType.PLAYER:
-      return "*";
-    default:
-      return "#";
-  }
 }
 
 function buildSearchComment(
@@ -110,10 +136,15 @@ function buildSearchComment(
     engineName?: string;
   },
 ): string {
-  const prefix = searchCommentKeyPrefix(type);
+  const prefix = type === SearchInfoSenderType.PLAYER ? "*" : "#";
   let comment = "";
   if (searchInfo.mate) {
-    comment += `${Math.abs(searchInfo.mate)}手詰\n`;
+    const result = searchInfo.mate >= 0 ? "先手勝ち" : "後手勝ち";
+    comment += `${prefix}詰み=${result}`;
+    if (Math.abs(searchInfo.mate) !== SCORE_MATE_INFINITE) {
+      comment += `:${Math.abs(searchInfo.mate)}手`;
+    }
+    comment += "\n";
   }
   if (searchInfo.score !== undefined) {
     comment += getSituationText(searchInfo.score) + "\n";

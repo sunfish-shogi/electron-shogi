@@ -209,7 +209,7 @@ class NodeImpl implements Node {
 }
 
 export type USIFormatOptions = {
-  // 平手の場合に "startpos" を使用するかを指定します。デフォルトは false です。
+  // 平手の場合に "startpos" を使用するかを指定します。デフォルトは true です。
   startpos?: boolean;
   // 投了 "resign" を出力に含めるかどうかを表します。デフォルトは false です。
   resign?: boolean;
@@ -661,7 +661,8 @@ export class Record {
 
   getUSI(opts?: USIFormatOptions): string {
     const sfen = this.initialPosition.sfen;
-    const useStartpos = opts?.startpos && sfen === InitialPositionSFEN.STANDARD;
+    const useStartpos =
+      (opts?.startpos === undefined || opts.startpos) && sfen === InitialPositionSFEN.STANDARD;
     let ret =
       "position " + (useStartpos ? "startpos" : "sfen " + this.initialPosition.sfen) + " moves";
     for (let p = this.first; ; p = p.next) {

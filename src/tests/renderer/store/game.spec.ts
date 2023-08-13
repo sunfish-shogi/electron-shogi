@@ -70,25 +70,23 @@ describe("store/game", () => {
 
   it("GameManager/resign", () => {
     const mockBlackPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+      "position startpos moves": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        {
-          usi: "2g2f",
-          info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
-        },
+      "position startpos moves 7g7f 3c3d": {
+        usi: "2g2f",
+        info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
+      },
     });
     const mockWhitePlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f": {
+      "position startpos moves 7g7f": {
         usi: "3c3d",
         info: { score: 64, pv: ["2g2f", "8c8d"] },
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        {
-          usi: "resign",
-        },
+      "position startpos moves 7g7f 3c3d 2g2f": {
+        usi: "resign",
+      },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -126,9 +124,7 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
-        expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f",
-        );
+        expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f");
         expect(recordManager.record.moves[1].comment).toBe(
           "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n",
         );
@@ -199,20 +195,18 @@ describe("store/game", () => {
 
   it("GameManager/endGame", () => {
     const mockBlackPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+      "position startpos moves": {
         usi: "7g7f",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { usi: "2g2f" },
+      "position startpos moves 7g7f 3c3d": { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f": {
+      "position startpos moves 7g7f": {
         usi: "3c3d",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        {
-          usi: "no-reply",
-        },
+      "position startpos moves 7g7f 3c3d 2g2f": {
+        usi: "no-reply",
+      },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -250,9 +244,7 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
-        expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f",
-        );
+        expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f");
       },
       (manager) => {
         setTimeout(() => manager.endGame(SpecialMoveType.INTERRUPT), 100);
@@ -263,33 +255,30 @@ describe("store/game", () => {
   it("GameManager/resign/twice", () => {
     const mockBlackPlayer = createMockPlayer({
       // 1st game
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+      "position startpos moves": {
         usi: "7g7f",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { usi: "2g2f" },
+      "position startpos moves 7g7f 3c3d": { usi: "2g2f" },
       // 2nd game
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f": {
+      "position startpos moves 7g7f": {
         usi: "3c3d",
       },
     });
     const mockWhitePlayer = createMockPlayer({
       // 1st game
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f": {
+      "position startpos moves 7g7f": {
         usi: "3c3d",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        {
-          usi: "resign",
-        },
+      "position startpos moves 7g7f 3c3d 2g2f": {
+        usi: "resign",
+      },
       // 2nd game
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+      "position startpos moves": {
         usi: "7g7f",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        {
-          usi: "resign",
-        },
+      "position startpos moves 7g7f 3c3d": {
+        usi: "resign",
+      },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -333,26 +322,22 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(14);
-        expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d",
-        );
+        expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d");
       },
     );
   });
 
   it("GameManager/noStartPosition/twice", () => {
     const mockBlackPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { usi: "2g2f" },
+      "position startpos moves 7g7f 3c3d": { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f": {
+      "position startpos moves 7g7f": {
         usi: "3c3d",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        {
-          usi: "resign",
-        },
+      "position startpos moves 7g7f 3c3d 2g2f": {
+        usi: "resign",
+      },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -399,29 +384,25 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(12);
-        expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f",
-        );
+        expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f");
       },
     );
   });
 
   it("GameManager/maxMoves", () => {
     const mockBlackPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+      "position startpos moves": {
         usi: "7g7f",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        { usi: "2g2f" },
+      "position startpos moves 7g7f 3c3d": { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f": {
+      "position startpos moves 7g7f": {
         usi: "3c3d",
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f":
-        {
-          usi: "8c8d",
-        },
+      "position startpos moves 7g7f 3c3d 2g2f": {
+        usi: "8c8d",
+      },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -460,9 +441,7 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(9);
-        expect(recordManager.record.usi).toBe(
-          "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d",
-        );
+        expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f 8c8d");
       },
     );
   });

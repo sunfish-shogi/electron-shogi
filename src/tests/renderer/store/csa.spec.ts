@@ -64,19 +64,17 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+      "position startpos moves": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        {
-          usi: "2g2f",
-          info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
-        },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
-        {
-          usi: "resign",
-        },
+      "position startpos moves 7g7f 3c3d": {
+        usi: "2g2f",
+        info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
+      },
+      "position startpos moves 7g7f 3c3d 2g2f 8c8d": {
+        usi: "resign",
+      },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
@@ -169,19 +167,17 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValue();
     const mockPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves": {
+      "position startpos moves": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d":
-        {
-          usi: "2g2f",
-          info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
-        },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d":
-        {
-          usi: "resign",
-        },
+      "position startpos moves 7g7f 3c3d": {
+        usi: "2g2f",
+        info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
+      },
+      "position startpos moves 7g7f 3c3d 2g2f 8c8d": {
+        usi: "resign",
+      },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,
@@ -299,14 +295,11 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b":
-        {
-          usi: "4h3g",
-        },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d":
-        { usi: "2g2f" },
-      "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d 2g2f 8d8e":
-        { usi: "resign" },
+      "position startpos moves 3g3f 3c3d 3i4h 4a3b": {
+        usi: "4h3g",
+      },
+      "position startpos moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d": { usi: "2g2f" },
+      "position startpos moves 3g3f 3c3d 3i4h 4a3b 4h3g 8c8d 2g2f 8d8e": { usi: "resign" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI]: mockPlayer,

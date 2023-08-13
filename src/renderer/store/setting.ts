@@ -1,5 +1,4 @@
 import {
-  AppSetting,
   AppSettingUpdate,
   BackgroundImageType,
   BoardImageType,
@@ -28,9 +27,6 @@ import { RecordFileFormat } from "@/common/file";
 class AppSettingStore {
   private setting = defaultAppSetting();
 
-  get raw(): AppSetting {
-    return this.setting;
-  }
   get language(): Language {
     return this.setting.language;
   }
@@ -120,6 +116,12 @@ class AppSettingStore {
   }
   get autoSaveDirectory(): string {
     return this.setting.autoSaveDirectory;
+  }
+  get enableUSIStartpos(): boolean {
+    return this.setting.enableUSIStartpos;
+  }
+  get enableUSIResign(): boolean {
+    return this.setting.enableUSIResign;
   }
   get translateEngineOptionName(): boolean {
     return this.setting.translateEngineOptionName;

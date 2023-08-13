@@ -1,5 +1,14 @@
 import { decodeText, encodeText } from "./helpers/encode";
-import { Record, exportCSA, exportKI2, exportKIF, importCSA, importKI2, importKIF } from "./shogi";
+import {
+  ImmutableRecord,
+  Record,
+  exportCSA,
+  exportKI2,
+  exportKIF,
+  importCSA,
+  importKI2,
+  importKIF,
+} from "./shogi";
 
 export enum RecordFileFormat {
   KIF = ".kif",
@@ -7,6 +16,7 @@ export enum RecordFileFormat {
   KI2 = ".ki2",
   KI2U = ".ki2u",
   CSA = ".csa",
+  SFEN = ".sfen",
 }
 
 export function detectRecordFileFormatByPath(path: string): RecordFileFormat | undefined {
@@ -45,6 +55,8 @@ export function importRecordFromBuffer(
       return importKI2(text);
     case RecordFileFormat.CSA:
       return importCSA(text);
+    case RecordFileFormat.SFEN:
+      return new Error(".sfen file import is not supported");
   }
 }
 
@@ -59,7 +71,7 @@ export type ExportResult = {
 };
 
 export function exportRecordAsBuffer(
-  record: Record,
+  record: ImmutableRecord,
   format: RecordFileFormat,
   opt: ExportOptions,
 ): ExportResult {
@@ -77,6 +89,8 @@ export function exportRecordAsBuffer(
     case RecordFileFormat.CSA:
       str = exportCSA(record, opt);
       break;
+    case RecordFileFormat.SFEN:
+      throw new Error(".sfen file export is not supported");
   }
   const data = encodeText(str, encoding);
   let garbled = false;

@@ -11,6 +11,7 @@ import {
   SpecialMove,
   SpecialMoveType,
   specialMove,
+  InitialPositionSFEN,
 } from ".";
 import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
 import { formatMove, formatSpecialMove } from "./text";
@@ -207,6 +208,15 @@ class NodeImpl implements Node {
   }
 }
 
+export type USIFormatOptions = {
+  // 平手の場合に "startpos" を使用するかを指定します。デフォルトは false です。
+  startpos?: boolean;
+  // 投了 "resign" を出力に含めるかどうかを表します。デフォルトは false です。
+  resign?: boolean;
+  // 全ての指し手を含めるかどうかを指定します。デフォルトは false です。
+  allMoves?: boolean;
+};
+
 export interface ImmutableRecord {
   readonly metadata: ImmutableRecordMetadata;
   readonly initialPosition: ImmutablePosition;
@@ -220,10 +230,9 @@ export interface ImmutableRecord {
   readonly repetition: boolean;
   readonly perpetualCheck: Color | null;
   readonly usi: string;
-  readonly usiAll: string;
+  getUSI(opts?: USIFormatOptions): string;
   readonly sfen: string;
   readonly bookmarks: string[];
-  // 深さ優先で全てのノードを訪問します。ハンドラーの第2引数で着手前の局面を受け取ることができます。
   forEach(handler: (node: ImmutableNode, base: ImmutablePosition) => void): void;
   on(event: "changePosition", handler: () => void): void;
 }
@@ -643,27 +652,29 @@ export class Record {
     return black ? Color.BLACK : white ? Color.WHITE : null;
   }
 
-  // USI プロトコルの position コマンドを返却します。
-  // USI プロトコルでは平手の場合に "position startpos" を使用することができるとされていますが、
-  // 一貫性を持たせるために "position sfen" のみを使用します。
+  /**
+   * getUSI をオプション無しで呼び出した場合と同じ値を返します。
+   */
   get usi(): string {
-    let ret = "position sfen " + this.initialPosition.sfen + " moves";
-    this.movesBefore.forEach((node) => {
-      if (node.move instanceof Move) {
-        ret += " " + node.move.usi;
-      }
-    });
-    return ret;
+    return this.getUSI();
   }
 
-  get usiAll(): string {
-    let ret = this.usi;
-    for (let p = this._current.next; p; p = p.next) {
+  getUSI(opts?: USIFormatOptions): string {
+    const sfen = this.initialPosition.sfen;
+    const useStartpos = opts?.startpos && sfen === InitialPositionSFEN.STANDARD;
+    let ret =
+      "position " + (useStartpos ? "startpos" : "sfen " + this.initialPosition.sfen) + " moves";
+    for (let p = this.first; ; p = p.next) {
       while (!p.activeBranch) {
         p = p.branch as NodeImpl;
       }
       if (p.move instanceof Move) {
         ret += " " + p.move.usi;
+      } else if (opts?.resign && p.move.type === SpecialMoveType.RESIGN) {
+        ret += " resign";
+      }
+      if (!p.next || (!opts?.allMoves && p === this.current)) {
+        break;
       }
     }
     return ret;

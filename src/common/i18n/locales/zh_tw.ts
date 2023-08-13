@@ -55,6 +55,8 @@ export const zh_tw: Texts = {
   format: "格式",
   formats: "格式",
   subdirectory: "子目錄",
+  separately: "個別", // TODO: translate
+  merge: "マージ", // TODO: translate
   nameConflictAction: "名稱衝突處理方式",
   numberSuffix: "附加編號",
   skip: "跳過該檔案",
@@ -158,6 +160,9 @@ export const zh_tw: Texts = {
   old90sMac: "90年代Mac",
   autoSavingDirectory: "棋譜自動保存地點",
   select: "選擇",
+  positionOfUSIOutput: "USI の局面表記", // TODO: translate
+  movesOfUSIOutput: "USI の指し手表記", // TODO: translate
+  onlySFEN: "SFEN のみ", // TODO: translate
   usiProtocol: "USI協定",
   translateOptionName: "選項名稱翻譯",
   functionalOnJapaneseOnly: "只有在日文選擇時有效",
@@ -412,6 +417,10 @@ export const zh_tw: Texts = {
   engineNotSelected: "尚未選擇引擎。",
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
     "如要監看轉換紀錄，請在程式設定內設定 log level 到 Debug 並重新啟動本程式。",
+  sourceDirectoryNotSpecified: "入力ディレクトリが指定されていません。", // TODO: translate
+  sourceFormatsNotSpecified: "入力の対象フォーマットが指定されていません。", // TODO: translate
+  destinationDirectoryNotSpecified: "出力ディレクトリが指定されていません。", // TODO: translate
+  destinationFileNotSpecified: "出力ファイルが指定されていません。", // TODO: translate
   totalNumber: (n: number) => `總計 ${n} 筆`,
   number: (n: number) => `${n} 筆`,
   tryToReloginToCSAServerNSecondsLater: (n) => `請在${n}秒後再次嘗試登入 CSA 伺服器。`,

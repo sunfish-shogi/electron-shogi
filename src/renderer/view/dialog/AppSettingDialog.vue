@@ -405,6 +405,40 @@
               <Icon :icon="IconType.OPEN_FOLDER" />
             </button>
           </div>
+          <!-- USI の局面表記 -->
+          <div class="form-item row">
+            <div class="form-item-label-wide">{{ t.positionOfUSIOutput }}</div>
+            <HorizontalSelector
+              class="selector"
+              :value="String(enableUSIStartpos)"
+              :items="[
+                { label: t.onlySFEN, value: 'false' },
+                { label: 'startpos / SFEN', value: 'true' },
+              ]"
+              @change="
+                (value: string) => {
+                  enableUSIStartpos = value === 'true';
+                }
+              "
+            />
+          </div>
+          <!-- USI の指し手表記 -->
+          <div class="form-item row">
+            <div class="form-item-label-wide">{{ t.movesOfUSIOutput }}</div>
+            <HorizontalSelector
+              class="selector"
+              :value="String(enableUSIResign)"
+              :items="[
+                { label: t.onlySFEN, value: 'false' },
+                { label: 'SFEN / resign', value: 'true' },
+              ]"
+              @change="
+                (value: string) => {
+                  enableUSIResign = value === 'true';
+                }
+              "
+            />
+          </div>
         </div>
         <hr />
         <!-- USI プロトコル -->
@@ -723,6 +757,8 @@ const defaultRecordFileFormat = ref(appSetting.defaultRecordFileFormat);
 const textDecodingRule = ref(appSetting.textDecodingRule);
 const returnCode = ref(returnCodeToName[appSetting.returnCode]);
 const autoSaveDirectory = ref();
+const enableUSIStartpos = ref(appSetting.enableUSIStartpos);
+const enableUSIResign = ref(appSetting.enableUSIResign);
 const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
 const engineTimeoutSeconds = ref();
 const evaluationViewFrom = ref(appSetting.evaluationViewFrom);
@@ -778,6 +814,8 @@ const saveAndClose = async () => {
       textDecodingRule: textDecodingRule.value,
       returnCode: nameToReturnCode[returnCode.value],
       autoSaveDirectory: autoSaveDirectory.value.value,
+      enableUSIStartpos: enableUSIStartpos.value,
+      enableUSIResign: enableUSIResign.value,
       translateEngineOptionName: translateEngineOptionName.value,
       engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
       evaluationViewFrom: evaluationViewFrom.value,

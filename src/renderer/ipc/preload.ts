@@ -44,6 +44,9 @@ const api: Bridge = {
   async showSelectImageDialog(defaultURL?: string): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_SELECT_IMAGE_DIALOG, defaultURL);
   },
+  async showSaveMergedRecordDialog(defaultPath: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.SHOW_SAVE_MERGED_RECORD_DIALOG, defaultPath);
+  },
   async getPieceImageBaseURL(fileURL: string) {
     return await ipcRenderer.invoke(Background.GET_PIECE_IMAGE_BASE_URL, fileURL);
   },

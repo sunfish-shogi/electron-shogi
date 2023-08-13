@@ -32,6 +32,7 @@ export interface Bridge {
   showSelectFileDialog(): Promise<string>;
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
   showSelectImageDialog(defaultURL?: string): Promise<string>;
+  showSaveMergedRecordDialog(defaultPath: string): Promise<string>;
   exportCaptureAsPNG(json: string): Promise<void>;
   exportCaptureAsJPEG(json: string): Promise<void>;
   convertRecordFiles(json: string): Promise<string>;
@@ -122,6 +123,7 @@ export interface API {
   showSelectFileDialog(): Promise<string>;
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
   showSelectImageDialog(defaultURL?: string): Promise<string>;
+  showSaveMergedRecordDialog(defaultPath: string): Promise<string>;
   exportCaptureAsPNG(rect: Rect): Promise<void>;
   exportCaptureAsJPEG(rect: Rect): Promise<void>;
   convertRecordFiles(setting: BatchConversionSetting): Promise<BatchConversionResult>;

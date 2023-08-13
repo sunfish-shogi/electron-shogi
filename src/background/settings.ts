@@ -1,4 +1,5 @@
 import fs from "fs";
+import os from "os";
 import { app, shell } from "electron";
 import path from "path";
 import { USIEngineSettings } from "@/common/settings/usi";
@@ -37,11 +38,12 @@ import {
 import {
   BatchConversionSetting,
   defaultBatchConversionSetting,
+  normalizeBatchConversionSetting,
 } from "@/common/settings/conversion";
 
-const userDir = !isTest() ? app.getPath("userData") : "";
+const userDir = !isTest() ? app.getPath("userData") : os.tmpdir();
 const rootDir = getPortableExeDir() || userDir;
-const docDir = !isTest() ? path.join(app.getPath("documents"), "ElectronShogi") : "";
+const docDir = !isTest() ? path.join(app.getPath("documents"), "ElectronShogi") : os.tmpdir();
 
 export function openSettingsDirectory(): void {
   shell.openPath(rootDir);
@@ -114,7 +116,9 @@ export function loadBatchConversionSetting(): BatchConversionSetting {
   if (!fs.existsSync(batchConversionSettingPath)) {
     return defaultBatchConversionSetting();
   }
-  return JSON.parse(fs.readFileSync(batchConversionSettingPath, "utf8"));
+  return normalizeBatchConversionSetting(
+    JSON.parse(fs.readFileSync(batchConversionSettingPath, "utf8")),
+  );
 }
 
 const gameSettingPath = path.join(rootDir, "game_setting.json");

@@ -87,7 +87,24 @@
         </div>
         <hr />
         <div>{{ t.outputs }}</div>
-        <div class="form-item row">
+        <div class="form-item center">
+          <HorizontalSelector
+            :items="[
+              { label: t.separately, value: DestinationType.DIRECTORY },
+              { label: t.merge, value: DestinationType.SINGLE_FILE },
+            ]"
+            :value="destinationType"
+            @change="
+              (val: DestinationType) => {
+                destinationType = val;
+              }
+            "
+          />
+        </div>
+        <div
+          class="form-item row"
+          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
+        >
           <input ref="destination" class="grow" type="text" />
           <button class="thin" @click="selectDirectory(destination)">
             {{ t.select }}
@@ -96,7 +113,10 @@
             <Icon :icon="IconType.OPEN_FOLDER" />
           </button>
         </div>
-        <div class="form-item row">
+        <div
+          class="form-item row"
+          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
+        >
           <div class="form-item-label-wide">{{ t.format }}</div>
           <HorizontalSelector
             :items="[
@@ -114,7 +134,10 @@
             "
           />
         </div>
-        <div class="form-item row">
+        <div
+          class="form-item row"
+          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
+        >
           <div class="form-item-label-wide">{{ t.nameConflictAction }}</div>
           <HorizontalSelector
             :items="[
@@ -132,6 +155,18 @@
               }
             "
           />
+        </div>
+        <div
+          class="form-item row"
+          :class="{ hidden: destinationType !== DestinationType.SINGLE_FILE }"
+        >
+          <input ref="singleFileDestination" class="grow" type="text" />
+          <button class="thin" @click="selectDestinationFile(singleFileDestination)">
+            {{ t.select }}
+          </button>
+          <button class="thin open-dir" @click="openDirectory(singleFileDestination)">
+            <Icon :icon="IconType.OPEN_FOLDER" />
+          </button>
         </div>
       </div>
       <button class="wide" data-hotkey="Enter" @click="convert">
@@ -158,7 +193,12 @@
 
 <script setup lang="ts">
 import { RecordFileFormat } from "@/common/file";
-import { BatchConversionSetting, FileNameConflictAction } from "@/common/settings/conversion";
+import {
+  BatchConversionSetting,
+  validateBatchConversionSetting,
+  DestinationType,
+  FileNameConflictAction,
+} from "@/common/settings/conversion";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import api from "@/renderer/ipc/api";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
@@ -184,9 +224,11 @@ const sourceFormats = ref({
   csa: false,
 });
 const subdirectories = ref(false);
+const destinationType = ref(DestinationType.DIRECTORY);
 const destination = ref();
 const destinationFormat = ref(RecordFileFormat.KIF);
 const fileNameConflictAction = ref(FileNameConflictAction.OVERWRITE);
+const singleFileDestination = ref();
 
 store.retainBussyState();
 
@@ -204,9 +246,11 @@ onMounted(async () => {
       csa: batchConversionSetting.sourceFormats.includes(RecordFileFormat.CSA),
     };
     subdirectories.value = batchConversionSetting.subdirectories;
+    destinationType.value = batchConversionSetting.destinationType;
     destination.value.value = batchConversionSetting.destination;
     destinationFormat.value = batchConversionSetting.destinationFormat;
     fileNameConflictAction.value = batchConversionSetting.fileNameConflictAction;
+    singleFileDestination.value.value = batchConversionSetting.singleFileDestination;
   } catch (e) {
     store.pushError(e);
     store.destroyModalDialog();
@@ -223,6 +267,20 @@ const selectDirectory = async (elem: HTMLInputElement) => {
   store.retainBussyState();
   try {
     const path = await api.showSelectDirectoryDialog(elem.value);
+    if (path) {
+      elem.value = path;
+    }
+  } catch (e) {
+    store.pushError(e);
+  } finally {
+    store.releaseBussyState();
+  }
+};
+
+const selectDestinationFile = async (elem: HTMLInputElement) => {
+  store.retainBussyState();
+  try {
+    const path = await api.showSaveMergedRecordDialog(elem.value);
     if (path) {
       elem.value = path;
     }
@@ -250,10 +308,17 @@ const convert = async () => {
       .filter(([, value]) => value)
       .map(([key]) => key as RecordFileFormat),
     subdirectories: subdirectories.value,
+    destinationType: destinationType.value,
     destination: destination.value.value,
     destinationFormat: destinationFormat.value,
     fileNameConflictAction: fileNameConflictAction.value,
+    singleFileDestination: singleFileDestination.value.value,
   };
+  const error = validateBatchConversionSetting(batchConversionSetting);
+  if (error) {
+    store.pushError(error);
+    return;
+  }
   store.retainBussyState();
   try {
     await api.saveBatchConversionSetting(batchConversionSetting);

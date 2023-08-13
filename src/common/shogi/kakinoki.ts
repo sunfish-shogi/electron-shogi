@@ -794,7 +794,7 @@ type KI2ExportOptions = {
 export function exportKI2(record: ImmutableRecord, options: KI2ExportOptions): string {
   let ret = "";
   const returnCode = options.returnCode ? options.returnCode : "\n";
-  const maxLineLength = options.maxLineLength ? options.maxLineLength : 32;
+  const maxLineLength = options.maxLineLength ? options.maxLineLength : 28;
   ret += formatMetadata(record.metadata, options);
   ret += formatPosition(record.initialPosition, options);
   record.forEach((node, pos) => {
@@ -811,7 +811,7 @@ export function exportKI2(record: ImmutableRecord, options: KI2ExportOptions): s
           lastMove: node.prev?.move instanceof Move ? node.prev.move : undefined,
           compatible: true,
         });
-        const lastLineLength = ret.length - ret.lastIndexOf(returnCode) - 1;
+        const lastLineLength = ret.length - ret.lastIndexOf(returnCode) + returnCode.length - 2;
         if (lastLineLength + str.length > maxLineLength) {
           ret += returnCode;
         }

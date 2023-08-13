@@ -172,7 +172,7 @@ class SingleFileWriter {
   writeUSI(record: ImmutableRecord) {
     let position: string;
     const sfen = record.initialPosition.sfen;
-    if (this.appSetting.enableUSIStartpos && sfen === InitialPositionSFEN.STANDARD) {
+    if (this.appSetting.enableUSIFileStartpos && sfen === InitialPositionSFEN.STANDARD) {
       position = "startpos";
     } else {
       position = "sfen " + sfen;
@@ -206,7 +206,7 @@ class SingleFileWriter {
       }
       if (p.move instanceof Move) {
         branches.push(moves + " " + p.move.usi);
-      } else if (this.appSetting.enableUSIResign && p.move.type === SpecialMoveType.RESIGN) {
+      } else if (this.appSetting.enableUSIFileResign && p.move.type === SpecialMoveType.RESIGN) {
         branches.push(moves + " resign");
       } else {
         branches.push(moves);

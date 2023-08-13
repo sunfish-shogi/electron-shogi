@@ -922,8 +922,8 @@ class Store {
   copyRecordUSIBefore(): void {
     const appSetting = useAppSetting();
     const str = this.recordManager.record.getUSI({
-      startpos: appSetting.enableUSIStartpos,
-      resign: appSetting.enableUSIResign,
+      startpos: appSetting.enableUSIFileStartpos,
+      resign: appSetting.enableUSIFileResign,
     });
     navigator.clipboard.writeText(str);
   }
@@ -931,8 +931,8 @@ class Store {
   copyRecordUSIAll(): void {
     const appSetting = useAppSetting();
     const str = this.recordManager.record.getUSI({
-      startpos: appSetting.enableUSIStartpos,
-      resign: appSetting.enableUSIResign,
+      startpos: appSetting.enableUSIFileStartpos,
+      resign: appSetting.enableUSIFileResign,
       allMoves: true,
     });
     navigator.clipboard.writeText(str);

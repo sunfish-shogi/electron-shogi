@@ -4,17 +4,11 @@ export enum Color {
 }
 
 export function reverseColor(color: Color): Color {
-  if (color === Color.BLACK) {
-    return Color.WHITE;
-  }
-  return Color.BLACK;
+  return color === Color.BLACK ? Color.WHITE : Color.BLACK;
 }
 
 export function colorToSFEN(color: Color): string {
-  if (color === Color.BLACK) {
-    return "b";
-  }
-  return "w";
+  return color === Color.BLACK ? "b" : "w";
 }
 
 export function isValidSFENColor(sfen: string): boolean {

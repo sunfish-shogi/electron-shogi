@@ -83,6 +83,10 @@ const promotable: { [pieceType: string]: boolean } = {
   dragon: false,
 };
 
+export function isPromotable(pieceType: PieceType): boolean {
+  return !!promotable[pieceType];
+}
+
 const promoteMap: { [pieceType: string]: PieceType } = {
   pawn: PieceType.PROM_PAWN,
   lance: PieceType.PROM_LANCE,
@@ -287,7 +291,7 @@ export class Piece {
   }
 
   isPromotable(): boolean {
-    return !!promotable[this.type];
+    return isPromotable(this.type);
   }
 
   rotate(): Piece {

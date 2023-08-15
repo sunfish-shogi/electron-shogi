@@ -10,7 +10,7 @@ import {
   PieceNotExistsError,
   Record,
 } from ".";
-import { Color } from "./color";
+import { Color, reverseColor } from "./color";
 import { ImmutableHand } from "./hand";
 import { Move, SpecialMove, SpecialMoveType } from "./move";
 import { Piece, PieceType, promotedPieceType } from "./piece";
@@ -267,25 +267,31 @@ function parseMove(line: string, position: ImmutablePosition): Move | Error {
   return move;
 }
 
-function parseSpecialMove(line: string): SpecialMoveType | undefined {
-  switch (line) {
-    case "%CHUDAN":
+export function getSpecialMoveByName(name: string, color: Color): SpecialMoveType | undefined {
+  switch (name) {
+    case "CHUDAN":
       return SpecialMoveType.INTERRUPT;
-    case "%TORYO":
+    case "TORYO":
       return SpecialMoveType.RESIGN;
-    case "%JISHOGI":
+    case "JISHOGI":
       return SpecialMoveType.IMPASS;
-    case "%HIKIWAKE":
+    case "HIKIWAKE":
       return SpecialMoveType.DRAW;
-    case "%SENNICHITE":
+    case "SENNICHITE":
       return SpecialMoveType.REPETITION_DRAW;
-    case "%TSUMI":
+    case "TSUMI":
       return SpecialMoveType.MATE;
-    case "%TIME_UP":
+    case "FUZUMI":
+      return SpecialMoveType.NO_MATE;
+    case "TIME_UP":
       return SpecialMoveType.TIMEOUT;
-    case "%ILLEGAL_MOVE":
+    case "ILLEGAL_MOVE":
       return SpecialMoveType.FOUL_LOSE;
-    case "%KACHI":
+    case "+ILLEGAL_ACTION":
+      return color == Color.BLACK ? SpecialMoveType.FOUL_WIN : SpecialMoveType.FOUL_LOSE;
+    case "-ILLEGAL_ACTION":
+      return color == Color.WHITE ? SpecialMoveType.FOUL_WIN : SpecialMoveType.FOUL_LOSE;
+    case "KACHI":
       return SpecialMoveType.ENTERING_OF_KING;
   }
 }
@@ -373,7 +379,7 @@ export function importCSA(data: string): Record | Error {
           break;
         }
         case LineType.SPECIAL_MOVE: {
-          const specialMove = parseSpecialMove(parsed.line);
+          const specialMove = getSpecialMoveByName(parsed.line.slice(1), record.position.color);
           if (specialMove) {
             record.append(specialMove, { ignoreValidation: true });
           }
@@ -524,26 +530,37 @@ function formatMove(move: Move): string {
   );
 }
 
-function formatSpecialMove(move: SpecialMove): string | undefined {
+export function getSpecialMoveName(move: SpecialMove, color: Color): string | undefined {
   switch (move.type) {
     case SpecialMoveType.INTERRUPT:
-      return "%CHUDAN";
+      return "CHUDAN";
     case SpecialMoveType.RESIGN:
-      return "%TORYO";
+      return "TORYO";
     case SpecialMoveType.IMPASS:
-      return "%JISHOGI";
+      return "JISHOGI";
     case SpecialMoveType.DRAW:
-      return "%HIKIWAKE";
+      return "HIKIWAKE";
     case SpecialMoveType.REPETITION_DRAW:
-      return "%SENNICHITE";
+      return "SENNICHITE";
     case SpecialMoveType.MATE:
-      return "%TSUMI";
+      return "TSUMI";
+    case SpecialMoveType.NO_MATE:
+      return "FUZUMI";
     case SpecialMoveType.TIMEOUT:
-      return "%TIME_UP";
+      return "TIME_UP";
     case SpecialMoveType.FOUL_LOSE:
-      return "%ILLEGAL_MOVE";
+      return "ILLEGAL_MOVE";
+    case SpecialMoveType.FOUL_WIN:
+      return color == Color.BLACK ? "+ILLEGAL_ACTION" : "-ILLEGAL_ACTION";
     case SpecialMoveType.ENTERING_OF_KING:
-      return "%KACHI";
+      return "KACHI";
+  }
+}
+
+function formatSpecialMove(move: SpecialMove, color: Color): string | undefined {
+  const name = getSpecialMoveName(move, color);
+  if (name) {
+    return "%" + name;
   }
 }
 
@@ -564,7 +581,7 @@ export function exportCSA(record: ImmutableRecord, options: CSAExportOptions): s
       if (node.move instanceof Move) {
         move = formatMove(node.move);
       } else {
-        move = formatSpecialMove(node.move);
+        move = formatSpecialMove(node.move, reverseColor(node.nextColor));
       }
       if (move) {
         ret += move + returnCode;

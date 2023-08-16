@@ -1130,6 +1130,24 @@ describe("shogi/kakinoki", () => {
 先手の持駒：歩二　
 後手番`,
       },
+      {
+        sfen: "ln1g2snl/1rs1k1gb1/p1ppppppp/9/1p5P1/9/PPPPPPP1P/1BGK2SR1/LNS2G1NL b - 1",
+        want: `後手の持駒：なし
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+|v香v桂 ・v金 ・ ・v銀v桂v香|一
+| ・v飛v銀 ・v玉 ・v金v角 ・|二
+|v歩 ・v歩v歩v歩v歩v歩v歩v歩|三
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|四
+| ・v歩 ・ ・ ・ ・ ・ 歩 ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| 歩 歩 歩 歩 歩 歩 歩 ・ 歩|七
+| ・ 角 金 玉 ・ ・ 銀 飛 ・|八
+| 香 桂 銀 ・ ・ 金 ・ 桂 香|九
++---------------------------+
+先手の持駒：なし
+先手番`,
+      },
     ];
     for (const tc of testCases) {
       const record = new Record(Position.newBySFEN(tc.sfen) as Position);

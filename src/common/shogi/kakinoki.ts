@@ -743,6 +743,9 @@ function formatHand(hand: ImmutableHand): string {
       ret += "　";
     }
   });
+  if (ret === "") {
+    ret = "なし";
+  }
   return ret;
 }
 

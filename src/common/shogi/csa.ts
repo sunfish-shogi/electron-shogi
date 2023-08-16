@@ -559,18 +559,17 @@ export function exportCSA(record: ImmutableRecord, options: CSAExportOptions): s
   ret += formatMetadata(record.metadata, options);
   ret += formatPosition(record.initialPosition, options);
   record.moves.forEach((node) => {
-    if (node.ply === 0) {
-      return;
-    }
-    let move: string | undefined;
-    if (node.move instanceof Move) {
-      move = formatMove(node.move);
-    } else {
-      move = formatSpecialMove(node.move);
-    }
-    if (move) {
-      ret += move + returnCode;
-      ret += "T" + Math.floor(node.elapsedMs / 1e3) + returnCode;
+    if (node.ply !== 0) {
+      let move: string | undefined;
+      if (node.move instanceof Move) {
+        move = formatMove(node.move);
+      } else {
+        move = formatSpecialMove(node.move);
+      }
+      if (move) {
+        ret += move + returnCode;
+        ret += "T" + Math.floor(node.elapsedMs / 1e3) + returnCode;
+      }
     }
     if (node.comment) {
       const comment = node.comment.endsWith("\n") ? node.comment.slice(0, -1) : node.comment;

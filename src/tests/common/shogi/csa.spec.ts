@@ -645,6 +645,7 @@ PI
     record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "Electron John");
     record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "Mr.Vue");
     record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, "TypeScript Festival");
+    record.current.comment = "初期局面へのコメント\n";
     record.append(record.position.createMoveByUSI("7g7f") as Move);
     record.append(record.position.createMoveByUSI("3c3d") as Move);
     record.current.comment = "2手目へのコメント\n2手目へのコメント2\n";
@@ -662,6 +663,7 @@ N-Mr.Vue
 $EVENT:TypeScript Festival
 PI
 +
+'*初期局面へのコメント
 +7776FU
 T0
 -3334FU

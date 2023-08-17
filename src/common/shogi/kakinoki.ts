@@ -2,7 +2,7 @@
 // See http://kakinoki.o.oo7.jp/kif_format.html
 
 import { appendLine } from "@/common/helpers/string";
-import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
+import { millisecondsToHHMMSS, millisecondsToMSS } from "@/common/helpers/time";
 import {
   Color,
   Move,
@@ -716,18 +716,22 @@ function formatPosition(position: ImmutablePosition, options: KIFExportOptions):
   return ret;
 }
 
-function formatMove(move: Move): string {
+function formatMove(move: Move, prev?: Move): string {
   let ret = "";
-  ret += fileToMultiByteChar(move.to.file);
-  ret += rankToKanji(move.to.rank);
+  if (prev && move.to.equals(prev.to)) {
+    ret += "同\u3000";
+  } else {
+    ret += fileToMultiByteChar(move.to.file);
+    ret += rankToKanji(move.to.rank);
+  }
   ret += pieceTypeToStringForMove(move.pieceType);
   if (move.promote) {
     ret += "成";
   }
   if (move.from instanceof Square) {
-    ret += "(" + move.from.file + move.from.rank + ")";
+    ret += "(" + move.from.file + move.from.rank + ")" + (ret.length === 3 ? "  " : "");
   } else {
-    ret += "打";
+    ret += "打    ";
   }
   return ret;
 }
@@ -762,16 +766,18 @@ export function exportKIF(record: ImmutableRecord, options: KIFExportOptions): s
         ret += returnCode;
         ret += "変化：" + node.ply + "手" + returnCode;
       }
-      ret += node.ply + " ";
+      ret += String(node.ply).padStart(4, " ") + " ";
       if (node.move instanceof Move) {
-        ret += formatMove(node.move);
+        const prev = node.prev?.move instanceof Move ? node.prev.move : undefined;
+        ret += formatMove(node.move, prev);
       } else if (isKnownSpecialMove(node.move)) {
-        ret += specialMoveToString[node.move.type];
+        const s = specialMoveToString[node.move.type];
+        ret += s + " ".repeat(Math.max(12 - s.length * 2, 0));
       } else {
-        ret += node.move.name;
+        ret += node.move.name + " ".repeat(Math.max(12 - node.move.name.length * 2, 0));
       }
       const elapsed = millisecondsToMSS(node.elapsedMs);
-      const totalElapsed = millisecondsToHMMSS(node.totalElapsedMs);
+      const totalElapsed = millisecondsToHHMMSS(node.totalElapsedMs);
       ret += ` (${elapsed}/${totalElapsed})`;
       if (node.isFirstBranch && node.hasBranch) {
         ret += "+";
@@ -791,13 +797,13 @@ export function exportKIF(record: ImmutableRecord, options: KIFExportOptions): s
 
 type KI2ExportOptions = {
   returnCode?: string;
-  maxLineLength?: number;
 };
 
 export function exportKI2(record: ImmutableRecord, options: KI2ExportOptions): string {
   let ret = "";
+  let moveCountInLine = 0;
+  let lastMoveLength = 0;
   const returnCode = options.returnCode ? options.returnCode : "\n";
-  const maxLineLength = options.maxLineLength ? options.maxLineLength : 28;
   ret += formatMetadata(record.metadata, options);
   ret += formatPosition(record.initialPosition, options);
   record.forEach((node, pos) => {
@@ -814,11 +820,17 @@ export function exportKI2(record: ImmutableRecord, options: KI2ExportOptions): s
           lastMove: node.prev?.move instanceof Move ? node.prev.move : undefined,
           compatible: true,
         });
-        const lastLineLength = ret.length - ret.lastIndexOf(returnCode) + returnCode.length - 2;
-        if (lastLineLength + str.length > maxLineLength) {
-          ret += returnCode;
+        if (ret.endsWith(returnCode)) {
+          moveCountInLine = 0;
+        } else {
+          ret += " ".repeat(Math.max(12 - lastMoveLength * 2, 0));
         }
         ret += str;
+        lastMoveLength = str.length;
+        moveCountInLine++;
+        if (moveCountInLine >= 6) {
+          ret += returnCode;
+        }
       } else {
         if (!ret.endsWith(returnCode)) {
           ret += returnCode;

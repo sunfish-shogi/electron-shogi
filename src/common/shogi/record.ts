@@ -13,7 +13,7 @@ import {
   specialMove,
   InitialPositionSFEN,
 } from ".";
-import { millisecondsToHMMSS, millisecondsToMSS } from "@/common/helpers/time";
+import { millisecondsToHHMMSS, millisecondsToMSS } from "@/common/helpers/time";
 import { formatMove, formatSpecialMove } from "./text";
 
 export enum RecordMetadataKey {
@@ -145,7 +145,7 @@ class NodeImpl implements Node {
 
   get timeText(): string {
     const elapsed = millisecondsToMSS(this.elapsedMs);
-    const totalElapsed = millisecondsToHMMSS(this.totalElapsedMs);
+    const totalElapsed = millisecondsToHHMMSS(this.totalElapsedMs);
     return `${elapsed} / ${totalElapsed}`;
   }
 

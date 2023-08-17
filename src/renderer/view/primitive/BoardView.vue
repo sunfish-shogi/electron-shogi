@@ -108,7 +108,7 @@ import {
   PieceStandImageType,
 } from "@/common/settings/app";
 import { RectSize } from "@/common/graphics";
-import { secondsToHMMSS } from "@/common/helpers/time";
+import { secondsToHHMMSS } from "@/common/helpers/time";
 import LayoutBuilder from "./BoardLayout";
 
 type State = {
@@ -365,7 +365,7 @@ const layout = computed(() => {
 
 const formatTime = (time?: number, byoyomi?: number): string => {
   if (time) {
-    return secondsToHMMSS(time);
+    return secondsToHHMMSS(time);
   } else if (byoyomi !== undefined) {
     return "" + byoyomi;
   }

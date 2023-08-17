@@ -779,7 +779,8 @@ export function exportKIF(record: ImmutableRecord, options: KIFExportOptions): s
       const elapsed = millisecondsToMSS(node.elapsedMs);
       const totalElapsed = millisecondsToHHMMSS(node.totalElapsedMs);
       ret += ` (${elapsed}/${totalElapsed})`;
-      if (node.isFirstBranch && node.hasBranch) {
+      if (node.branch) {
+        // Kifu for Windows にならい、後続の分岐が存在する場合は行末に "+" を付ける。
         ret += "+";
       }
       ret += returnCode;

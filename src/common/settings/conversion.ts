@@ -32,6 +32,7 @@ export function defaultBatchConversionSetting(): BatchConversionSetting {
       RecordFileFormat.KI2,
       RecordFileFormat.KI2U,
       RecordFileFormat.CSA,
+      RecordFileFormat.JKF,
     ],
     subdirectories: true,
     destinationType: DestinationType.DIRECTORY,

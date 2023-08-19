@@ -129,7 +129,8 @@ function isValidRecordFilePath(path: string) {
     path.endsWith(".kifu") ||
     path.endsWith(".ki2") ||
     path.endsWith(".ki2u") ||
-    path.endsWith(".csa")
+    path.endsWith(".csa") ||
+    path.endsWith(".jkf")
   );
 }
 
@@ -147,7 +148,7 @@ ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string
     filters: [
       {
         name: t.recordFile,
-        extensions: ["kif", "kifu", "ki2", "ki2u", "csa"],
+        extensions: ["kif", "kifu", "ki2", "ki2u", "csa", "jkf"],
       },
     ],
   });
@@ -209,6 +210,7 @@ ipcMain.handle(
       { name: "KI2 (Shift_JIS)", extensions: ["ki2"] },
       { name: "KI2 (UTF-8)", extensions: ["ki2u"] },
       { name: "CSA", extensions: ["csa"] },
+      { name: "JSON Kifu Format", extensions: ["jkf"] },
     ];
     const result = showSaveDialog(
       path.resolve(path.dirname(appSetting.lastRecordFilePath), defaultPath),

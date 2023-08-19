@@ -17,7 +17,6 @@
           <div class="form-item-label-wide">{{ t.formats }}</div>
           <div class="formats">
             <ToggleButton
-              ref="sourceFormatKIF"
               class="toggle"
               label=".kif"
               :value="sourceFormats.kif"
@@ -28,7 +27,6 @@
               "
             />
             <ToggleButton
-              ref="sourceFormatKIFU"
               class="toggle"
               label=".kifu"
               :value="sourceFormats.kifu"
@@ -39,7 +37,6 @@
               "
             />
             <ToggleButton
-              ref="sourceFormatKI2"
               class="toggle"
               label=".ki2"
               :value="sourceFormats.ki2"
@@ -50,7 +47,6 @@
               "
             />
             <ToggleButton
-              ref="sourceFormatKI2U"
               class="toggle"
               label=".ki2u"
               :value="sourceFormats.ki2u"
@@ -61,13 +57,22 @@
               "
             />
             <ToggleButton
-              ref="sourceFormatCSA"
               class="toggle"
               label=".csa"
               :value="sourceFormats.csa"
               @change="
                 (val: boolean) => {
                   sourceFormats.csa = val;
+                }
+              "
+            />
+            <ToggleButton
+              class="toggle"
+              label=".jkf"
+              :value="sourceFormats.jkf"
+              @change="
+                (val: boolean) => {
+                  sourceFormats.jkf = val;
                 }
               "
             />
@@ -125,6 +130,7 @@
               { label: '.ki2', value: RecordFileFormat.KI2 },
               { label: '.ki2u', value: RecordFileFormat.KI2U },
               { label: '.csa', value: RecordFileFormat.CSA },
+              { label: '.jkf', value: RecordFileFormat.JKF },
             ]"
             :value="destinationFormat"
             @change="
@@ -222,6 +228,7 @@ const sourceFormats = ref({
   ki2: false,
   ki2u: false,
   csa: false,
+  jkf: false,
 });
 const subdirectories = ref(false);
 const destinationType = ref(DestinationType.DIRECTORY);
@@ -244,6 +251,7 @@ onMounted(async () => {
       ki2: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KI2),
       ki2u: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KI2U),
       csa: batchConversionSetting.sourceFormats.includes(RecordFileFormat.CSA),
+      jkf: batchConversionSetting.sourceFormats.includes(RecordFileFormat.JKF),
     };
     subdirectories.value = batchConversionSetting.subdirectories;
     destinationType.value = batchConversionSetting.destinationType;
@@ -304,6 +312,7 @@ const convert = async () => {
       [RecordFileFormat.KI2]: sourceFormats.value.ki2,
       [RecordFileFormat.KI2U]: sourceFormats.value.ki2u,
       [RecordFileFormat.CSA]: sourceFormats.value.csa,
+      [RecordFileFormat.JKF]: sourceFormats.value.jkf,
     })
       .filter(([, value]) => value)
       .map(([key]) => key as RecordFileFormat),

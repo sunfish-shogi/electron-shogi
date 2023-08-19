@@ -340,6 +340,7 @@
                 { label: '.ki2 (Shift_JIS)', value: RecordFileFormat.KI2 },
                 { label: '.ki2u (UTF-8)', value: RecordFileFormat.KI2U },
                 { label: '.csa', value: RecordFileFormat.CSA },
+                { label: '.jkf', value: RecordFileFormat.JKF },
               ]"
               @change="
                 (value: RecordFileFormat) => {

@@ -6,6 +6,7 @@ export enum RecordFormatType {
   KIF,
   KI2,
   CSA,
+  JKF,
 }
 
 export function detectRecordFormat(data: string): RecordFormatType {
@@ -23,6 +24,11 @@ export function detectRecordFormat(data: string): RecordFormatType {
   // SFEN
   if (Position.isValidSFEN(data)) {
     return RecordFormatType.SFEN;
+  }
+
+  // JKF
+  if (data.match(/^ *{/) && data.match(/} *$/)) {
+    return RecordFormatType.JKF;
   }
 
   // KIF vs KI2 vs CSA: 行頭の文字の出現頻度を比較する。

@@ -78,6 +78,10 @@ const metadataKeyMap: { [key: string]: RecordMetadataKey | undefined } = {
   受賞: RecordMetadataKey.AWARD,
 };
 
+export function kakinokiToMetadataKey(key: string): RecordMetadataKey | undefined {
+  return metadataKeyMap[key];
+}
+
 const metadataNameMap = {
   [RecordMetadataKey.BLACK_NAME]: "先手",
   [RecordMetadataKey.WHITE_NAME]: "後手",
@@ -108,6 +112,10 @@ const metadataNameMap = {
   [RecordMetadataKey.CATEGORY]: "分類",
   [RecordMetadataKey.AWARD]: "受賞",
 };
+
+export function metadataKeyToKakinoki(key: RecordMetadataKey): string {
+  return metadataNameMap[key];
+}
 
 enum LineType {
   PROGRAM_COMMENT,
@@ -779,7 +787,8 @@ export function exportKIF(record: ImmutableRecord, options: KIFExportOptions): s
       const elapsed = millisecondsToMSS(node.elapsedMs);
       const totalElapsed = millisecondsToHHMMSS(node.totalElapsedMs);
       ret += ` (${elapsed}/${totalElapsed})`;
-      if (node.isFirstBranch && node.hasBranch) {
+      if (node.branch) {
+        // Kifu for Windows にならい、後続の分岐が存在する場合は行末に "+" を付ける。
         ret += "+";
       }
       ret += returnCode;

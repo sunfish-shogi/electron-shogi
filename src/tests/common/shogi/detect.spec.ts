@@ -108,4 +108,9 @@ T0
 `;
     expect(detectRecordFormat(data)).toBe(RecordFormatType.KI2);
   });
+
+  it("jkf", () => {
+    const data = `{ "header": {}, "moves": [] }`;
+    expect(detectRecordFormat(data)).toBe(RecordFormatType.JKF);
+  });
 });

@@ -35,6 +35,7 @@ import {
   importRecordFromBuffer,
 } from "@/common/file";
 import { SCORE_MATE_INFINITE } from "@/common/usi";
+import { importJKFString } from "@/common/shogi/jkf";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -261,6 +262,9 @@ export class RecordManager {
         break;
       case RecordFormatType.CSA:
         recordOrError = importCSA(data);
+        break;
+      case RecordFormatType.JKF:
+        recordOrError = importJKFString(data);
         break;
       default:
         recordOrError = new Error(t.failedToDetectRecordFormat);

@@ -44,6 +44,7 @@ import { SearchInfo } from "@/renderer/players/player";
 import { useAppSetting } from "./setting";
 import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
+import { exportJKFString } from "@/common/shogi/jkf";
 
 export type PVPreview = {
   position: ImmutablePosition;
@@ -940,6 +941,11 @@ class Store {
 
   copyBoardSFEN(): void {
     const str = this.recordManager.record.sfen;
+    navigator.clipboard.writeText(str);
+  }
+
+  copyRecordJKF(): void {
+    const str = exportJKFString(this.recordManager.record);
     navigator.clipboard.writeText(str);
   }
 

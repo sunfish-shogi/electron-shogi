@@ -21,6 +21,7 @@ export type Texts = {
   copyAsCSA: string;
   copyAsUSI: string;
   copyAsSFEN: string;
+  copyAsJKF: string;
   paste: string;
   copyRecord: string;
   asKIF: string;
@@ -28,6 +29,7 @@ export type Texts = {
   asCSA: string;
   asUSIUntilCurrentMove: string;
   asUSIAll: string;
+  asJSONKifuFormat: string;
   copyPositionAsSFEN: string;
   pasteRecordOrPosition: string;
   appendSpecialMove: string;
@@ -336,7 +338,7 @@ export type Texts = {
   hasNoOldLogCleanUpFeature: string;
   processingPleaseWait: string;
   importingFollowingRecordOrPosition: string;
-  supportsKIF_KI2_CSA_USI: string;
+  supportsKIF_KI2_CSA_USI_JKF: string;
   plesePasteRecordIntoTextArea: string;
   desktopVersionPastesAutomatically: string;
   someLogsDisabled: string;

@@ -8,7 +8,7 @@ import {
 } from "./direction";
 import { InvalidMoveError } from "./errors";
 import { Move, SpecialMove, SpecialMoveType, isKnownSpecialMove } from "./move";
-import { PieceType, Piece } from "./piece";
+import { PieceType, Piece, isPromotable } from "./piece";
 import { ImmutablePosition, isPromotableRank } from "./position";
 import { Square } from "./square";
 
@@ -184,47 +184,17 @@ export function formatSpecialMove(move: SpecialMove | SpecialMoveType): string {
   return move.name;
 }
 
-/**
- * 指し手を表す文字列を返します。
- * @param position 指し手の直前の局面
- * @param move 対象の指し手
- */
-export function formatMove(
-  position: ImmutablePosition,
-  move: Move,
-  opt?: {
-    lastMove?: Move; // 直前の指し手を指定します。移動先が同じ場合に "同" を使った表記を使用します。
-    compatible?: boolean; // Shift_JIS で文字化けしない記号を使用します。 true の場合 KI2 形式と同等です。
-  },
-): string {
-  let ret = "";
-
-  // 手番を表す記号を付与する。
-  switch (move.color) {
-    case Color.BLACK:
-      ret += opt?.compatible ? "▲" : "☗";
-      break;
-    case Color.WHITE:
-      ret += opt?.compatible ? "△" : "☖";
-      break;
-  }
-
-  // 移動先の筋・段を付与する。
-  if (opt?.lastMove && opt.lastMove.to.equals(move.to)) {
-    ret += "同　";
-  } else {
-    ret += fileToMultiByteChar(move.to.file);
-    ret += rankToKanji(move.to.rank);
-  }
-  ret += pieceTypeToStringForMove(move.pieceType);
+export function getDirectionModifier(move: Move, position: ImmutablePosition): string {
   const piece = new Piece(move.color, move.pieceType);
 
   // 同じマス目へ移動可能な同種の駒を列挙
   const others = position.listAttackersByPiece(move.to, piece).filter((square) => {
     return !(move.from instanceof Square) || !square.equals(move.from);
   });
+
   // 移動可能な同じ駒がある場合に移動元を区別する文字を付ける。
   if (move.from instanceof Square) {
+    let ret = "";
     // この指し手の移動方向
     let myDir = move.from.directionTo(move.to);
     myDir = move.color === Color.BLACK ? myDir : reverseDirection(myDir);
@@ -289,19 +259,60 @@ export function formatMove(
           break;
       }
     }
+    return ret;
+  } else if (others.length) {
+    // 盤上に移動可能な同じ駒がある場合は、駒台から打つことを明示する。
+    return "打";
+  }
+  return "";
+}
+
+/**
+ * 指し手を表す文字列を返します。
+ * @param position 指し手の直前の局面
+ * @param move 対象の指し手
+ */
+export function formatMove(
+  position: ImmutablePosition,
+  move: Move,
+  opt?: {
+    lastMove?: Move; // 直前の指し手を指定します。移動先が同じ場合に "同" を使った表記を使用します。
+    compatible?: boolean; // Shift_JIS で文字化けしない記号を使用します。 true の場合 KI2 形式と同等です。
+  },
+): string {
+  let ret = "";
+
+  // 手番を表す記号を付与する。
+  switch (move.color) {
+    case Color.BLACK:
+      ret += opt?.compatible ? "▲" : "☗";
+      break;
+    case Color.WHITE:
+      ret += opt?.compatible ? "△" : "☖";
+      break;
+  }
+
+  // 移動先の筋・段を付与する。
+  if (opt?.lastMove && opt.lastMove.to.equals(move.to)) {
+    ret += "同　";
+  } else {
+    ret += fileToMultiByteChar(move.to.file);
+    ret += rankToKanji(move.to.rank);
+  }
+  ret += pieceTypeToStringForMove(move.pieceType);
+  ret += getDirectionModifier(move, position);
+
+  if (move.from instanceof Square) {
     // 「成」または「不成」を付ける。
     if (move.promote) {
       ret += "成";
     } else if (
       move.from instanceof Square &&
-      piece.isPromotable() &&
+      isPromotable(move.pieceType) &&
       (isPromotableRank(move.color, move.from.rank) || isPromotableRank(move.color, move.to.rank))
     ) {
       ret += "不成";
     }
-  } else if (others.length) {
-    // 盤上に移動可能な同じ駒がある場合は、駒台から打つことを明示する。
-    ret += "打";
   }
   return ret;
 }
@@ -408,7 +419,7 @@ export function parseMoves(
         if (verStr.indexOf("寄") >= 0 && vDir !== VDirection.NONE) {
           return false;
         }
-        if (verStr.indexOf("上") >= 0 && vDir !== VDirection.UP) {
+        if ((verStr.indexOf("上") >= 0 || verStr.indexOf("行") >= 0) && vDir !== VDirection.UP) {
           return false;
         }
         if (horStr.indexOf("直") >= 0 && (hDir !== HDirection.NONE || vDir !== VDirection.UP)) {

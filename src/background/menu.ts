@@ -83,6 +83,7 @@ function createMenuTemplate() {
             menuItem(t.asCSA, MenuEvent.COPY_RECORD_CSA, null),
             menuItem(t.asUSIUntilCurrentMove, MenuEvent.COPY_RECORD_USI_BEFORE, null),
             menuItem(t.asUSIAll, MenuEvent.COPY_RECORD_USI_ALL, null),
+            menuItem(t.asJSONKifuFormat, MenuEvent.COPY_RECORD_JKF, null),
           ],
         },
         menuItem(t.copyPositionAsSFEN, MenuEvent.COPY_BOARD_SFEN, null),

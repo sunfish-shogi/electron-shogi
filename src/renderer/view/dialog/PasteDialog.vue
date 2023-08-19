@@ -4,7 +4,7 @@
       <div ref="content">
         <div class="form-group">
           <div class="message">{{ t.importingFollowingRecordOrPosition }}</div>
-          <div class="message">{{ t.supportsKIF_KI2_CSA_USI }}</div>
+          <div class="message">{{ t.supportsKIF_KI2_CSA_USI_JKF }}</div>
           <div v-if="!isNative()" class="message">
             {{ t.plesePasteRecordIntoTextArea }}
           </div>

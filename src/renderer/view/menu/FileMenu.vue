@@ -59,6 +59,10 @@
             <Icon :icon="IconType.COPY" />
             <div class="label">{{ t.copyAsSFEN }}</div>
           </button>
+          <button @click="onCopyJKF">
+            <Icon :icon="IconType.COPY" />
+            <div class="label">{{ t.copyAsJKF }}</div>
+          </button>
           <button :disabled="!states.paste" @click="onPaste">
             <Icon :icon="IconType.PASTE" />
             <div class="label">{{ t.paste }}</div>
@@ -137,6 +141,10 @@ const onCopyUSI = () => {
 };
 const onCopySFEN = () => {
   store.copyBoardSFEN();
+  emit("close");
+};
+const onCopyJKF = () => {
+  store.copyRecordJKF();
   emit("close");
 };
 const onPaste = () => {

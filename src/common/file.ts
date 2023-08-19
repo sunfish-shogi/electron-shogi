@@ -9,6 +9,7 @@ import {
   importKI2,
   importKIF,
 } from "./shogi";
+import { exportJKFString, importJKFString } from "./shogi/jkf";
 
 export enum RecordFileFormat {
   KIF = ".kif",
@@ -17,6 +18,7 @@ export enum RecordFileFormat {
   KI2U = ".ki2u",
   CSA = ".csa",
   SFEN = ".sfen",
+  JKF = ".jkf",
 }
 
 export function detectRecordFileFormatByPath(path: string): RecordFileFormat | undefined {
@@ -57,6 +59,8 @@ export function importRecordFromBuffer(
       return importCSA(text);
     case RecordFileFormat.SFEN:
       return new Error(".sfen file import is not supported");
+    case RecordFileFormat.JKF:
+      return importJKFString(text);
   }
 }
 
@@ -91,6 +95,8 @@ export function exportRecordAsBuffer(
       break;
     case RecordFileFormat.SFEN:
       throw new Error(".sfen file export is not supported");
+    case RecordFileFormat.JKF:
+      str = exportJKFString(record);
   }
   const data = encodeText(str, encoding);
   let garbled = false;

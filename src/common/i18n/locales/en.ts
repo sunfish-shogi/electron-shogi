@@ -186,6 +186,7 @@ export const en: Texts = {
   recordProperties: "Record Properties",
   comments: "Comments",
   commentsAndBookmarks: "Comments & Bookmarks",
+  branches: "Branches",
   bookmark: "Bookmark",
   bookmarkList: "Bookmarks",
   useBookmarkAsHeader: "Use Bookmark as Header",
@@ -443,6 +444,8 @@ export const en: Texts = {
   addNthEngine: (n) => `Add ${ordinal(n)} engine`,
   copyOf: (name) => `${name} (copy)`,
   keepLatest: (n) => `keep latest ${n}`,
+  followingDataNotSavedBecauseNotSupporetedBy: (fileFormat: string) =>
+    `Following data not saved because not supporeted by "${fileFormat}".`,
   areYouSureWantToDeleteFollowingMove: (n) =>
     `Are you sure you want to delete ${n}th move and the following move?`,
   failedToOpenDirectory: (path: string) => `Failed to open directory of the file: ${path}`,

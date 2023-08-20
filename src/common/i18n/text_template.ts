@@ -183,6 +183,7 @@ export type Texts = {
   recordProperties: string;
   comments: string;
   commentsAndBookmarks: string;
+  branches: string;
   bookmark: string;
   bookmarkList: string;
   useBookmarkAsHeader: string;
@@ -427,6 +428,7 @@ export type Texts = {
   addNthEngine: (n: number) => string;
   copyOf: (name: string) => string;
   keepLatest: (n: number) => string;
+  followingDataNotSavedBecauseNotSupporetedBy: (fileFormat: string) => string;
   areYouSureWantToDeleteFollowingMove: (n: number) => string;
   failedToOpenDirectory: (path: string) => string;
   unexpectedEventSenderPleaseReport: (sender: string) => string;

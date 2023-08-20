@@ -25,7 +25,7 @@ import { ResearchSetting } from "@/common/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { AppState } from "@/common/control/state";
-import { Message, MessageStore, Attachment } from "./message";
+import { Message, MessageStore, Attachment, ListItem } from "./message";
 import { ErrorEntry, ErrorStore } from "./error";
 import * as uri from "@/common/uri";
 import { Confirmation } from "./confirm";
@@ -45,6 +45,8 @@ import { useAppSetting } from "./setting";
 import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
 import { exportJKFString } from "@/common/shogi/jkf";
+import { detectUnsupportedRecordProperties } from "../helpers/record";
+import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file";
 
 export type PVPreview = {
   position: ImmutablePosition;
@@ -1015,7 +1017,31 @@ class Store {
         if (!path) {
           return;
         }
-        return this.saveRecordByPath(path, { detectGarbled: true });
+        return this.saveRecordByPath(path, { detectGarbled: true }).then(() => {
+          const fileFormat = detectRecordFileFormatByPath(path) as RecordFileFormat;
+          const props = detectUnsupportedRecordProperties(this.recordManager.record, fileFormat);
+          const items = Object.entries(props)
+            .filter(([, v]) => v)
+            .map(([k]) => {
+              switch (k) {
+                case "branch":
+                  return t.branches;
+                case "comment":
+                  return t.comments;
+                case "bookmark":
+                  return t.bookmark;
+                case "time":
+                  return t.elapsedTime;
+              }
+            })
+            .map((v) => ({ text: v })) as ListItem[];
+          if (items.length) {
+            this.enqueueMessage({
+              text: t.followingDataNotSavedBecauseNotSupporetedBy(fileFormat),
+              attachments: [{ type: "list", items }],
+            });
+          }
+        });
       })
       .catch((e) => {
         this.pushError(e);

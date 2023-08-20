@@ -258,12 +258,13 @@ export class RecordManager {
     option?: { autoDetect?: boolean }
   ): Error | undefined {
     let recordOrError: Record | Error;
-    if (path.match(/\.kif$/) || path.match(/\.kifu$/)) {
+    const lowerCasePath = path.toLowerCase();
+    if (lowerCasePath.match(/\.kif$/) || lowerCasePath.match(/\.kifu$/)) {
       const encoding = path.match(/\.kif$/) ? "SJIS" : "UTF8";
       recordOrError = importKakinoki(
         decodeText(data, { encoding, autoDetect: option?.autoDetect })
       );
-    } else if (path.match(/\.csa$/)) {
+    } else if (lowerCasePath.match(/\.csa$/)) {
       recordOrError = importCSA(
         decodeText(data, { encoding: "UTF8", autoDetect: option?.autoDetect })
       );

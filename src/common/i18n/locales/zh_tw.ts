@@ -185,6 +185,7 @@ export const zh_tw: Texts = {
   recordProperties: "棋譜情報",
   comments: "備註",
   commentsAndBookmarks: "備註・書籤",
+  branches: "分岐", // TODO: translate
   bookmark: "書籤",
   bookmarkList: "書籤一覽",
   useBookmarkAsHeader: "將書籤名稱作為標題",
@@ -433,6 +434,8 @@ export const zh_tw: Texts = {
   addNthEngine: (n) => `追加第 ${n} 個引擎`,
   copyOf: (name) => `${name} 的拷貝`,
   keepLatest: (n) => `到最新${n}件`,
+  followingDataNotSavedBecauseNotSupporetedBy: (fileFormat: string) =>
+    `以下の情報は ${fileFormat} 形式では対応していないため保存されませんでした。`, // TODO: translate
   areYouSureWantToDeleteFollowingMove: (n) => `將會刪除${n}手目以後的棋譜。請問您要繼續嗎？`,
   failedToOpenDirectory: (path) => `無法開啟檔案目錄：${path}`,
   unexpectedEventSenderPleaseReport(sender) {

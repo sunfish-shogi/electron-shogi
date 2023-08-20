@@ -185,6 +185,7 @@ export const ja: Texts = {
   recordProperties: "棋譜情報",
   comments: "コメント",
   commentsAndBookmarks: "コメント・しおり",
+  branches: "分岐",
   bookmark: "しおり",
   bookmarkList: "しおり一覧",
   useBookmarkAsHeader: "しおりを見出しに使う",
@@ -439,6 +440,8 @@ export const ja: Texts = {
   addNthEngine: (n) => `${n} 個目のエンジンを追加`,
   copyOf: (name) => `${name} のコピー`,
   keepLatest: (n) => `最新${n}件まで`,
+  followingDataNotSavedBecauseNotSupporetedBy: (fileFormat: string) =>
+    `以下の情報は ${fileFormat} 形式では対応していないため保存されませんでした。`,
   areYouSureWantToDeleteFollowingMove: (n) => `${n}手目以降を削除します。よろしいですか？`,
   failedToOpenDirectory: (path) => `ファイルの場所を開けませんでした: ${path}`,
   unexpectedEventSenderPleaseReport(sender) {

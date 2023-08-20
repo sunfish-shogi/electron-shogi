@@ -143,12 +143,13 @@ ipcMain.on(Background.OPEN_EXPLORER, (_, targetPath: string) => {
 });
 
 function isValidRecordFilePath(path: string) {
+  const lowerCasePath = path.toLowerCase();
   return (
-    path.endsWith(".kif") ||
-    path.endsWith(".kifu") ||
-    path.endsWith(".ki2") ||
-    path.endsWith(".ki2u") ||
-    path.endsWith(".csa")
+    lowerCasePath.endsWith(".kif") ||
+    lowerCasePath.endsWith(".kifu") ||
+    lowerCasePath.endsWith(".ki2") ||
+    lowerCasePath.endsWith(".ki2u") ||
+    lowerCasePath.endsWith(".csa")
   );
 }
 

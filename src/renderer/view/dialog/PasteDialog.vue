@@ -11,7 +11,7 @@
           <div v-if="!isNative()" class="message">
             {{ t.desktopVersionPastesAutomatically }}
           </div>
-          <textarea ref="textarea" />
+          <textarea ref="textarea"></textarea>
         </div>
       </div>
       <div class="main-buttons">

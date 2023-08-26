@@ -7,7 +7,8 @@
         :value="comment"
         :readonly="readonly"
         @input="change"
-      />
+      >
+      </textarea>
       <div v-if="pvs.length !== 0" class="row play-buttons">
         <button v-for="(pv, index) of pvs" :key="index" class="play" @click="play(pv)">
           <Icon :icon="IconType.PLAY" />

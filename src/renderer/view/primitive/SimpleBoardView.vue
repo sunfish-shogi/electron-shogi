@@ -7,7 +7,7 @@
       <div v-if="footer" class="footer" :style="layout.footerStyle">
         {{ footer }}
       </div>
-      <div v-if="layout.lastMoveStyle" :style="layout.lastMoveStyle" />
+      <div v-if="layout.lastMoveStyle" :style="layout.lastMoveStyle"></div>
       <div class="board-grid" :style="layout.boardStyle">
         <img src="/board/grid_square.svg" :style="layout.boardImageStyle" />
       </div>

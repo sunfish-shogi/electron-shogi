@@ -27,7 +27,7 @@
       <div class="clock" :class="whitePlayerTimeSeverity" :style="layout.whiteClock.style">
         <span class="clock-text">{{ whitePlayerTimeText }}</span>
       </div>
-      <div v-for="square in layout.square" :key="square.id" :style="square.backgroundStyle" />
+      <div v-for="square in layout.square" :key="square.id" :style="square.backgroundStyle"></div>
       <div v-for="piece in layout.piece" :key="piece.id" :style="piece.style">
         <img class="piece-image" :src="piece.imagePath" />
       </div>
@@ -40,7 +40,7 @@
         :style="square.style"
         @click="clickSquare($event, square.file, square.rank)"
         @contextmenu="clickSquareR($event, square.file, square.rank)"
-      />
+      ></div>
       <div v-if="layout.blackHand.textureImagePath" :style="layout.blackHand.style">
         <img class="full" :src="layout.blackHand.textureImagePath" />
       </div>
@@ -49,7 +49,7 @@
           v-for="pointer in layout.blackHand.pointers"
           :key="pointer.id"
           :style="pointer.backgroundStyle"
-        />
+        ></div>
         <div v-for="piece in layout.blackHand.pieces" :key="piece.id" :style="piece.style">
           <img class="piece-image" :src="piece.imagePath" />
         </div>
@@ -58,7 +58,7 @@
           :key="pointer.id"
           :style="pointer.style"
           @click="clickHand($event, Color.BLACK, pointer.type)"
-        />
+        ></div>
       </div>
       <div v-if="layout.whiteHand.textureImagePath" :style="layout.whiteHand.style">
         <img class="full" :src="layout.whiteHand.textureImagePath" />
@@ -68,7 +68,7 @@
           v-for="pointer in layout.whiteHand.pointers"
           :key="pointer.id"
           :style="pointer.backgroundStyle"
-        />
+        ></div>
         <div v-for="piece in layout.whiteHand.pieces" :key="piece.id" :style="piece.style">
           <img class="piece-image" :src="piece.imagePath" />
         </div>
@@ -77,7 +77,7 @@
           :key="pointer.id"
           :style="pointer.style"
           @click="clickHand($event, Color.WHITE, pointer.type)"
-        />
+        ></div>
       </div>
       <div v-if="layout.promotion" class="promotion-selector" :style="layout.promotion.style">
         <div class="select-button promote" @click="clickPromote($event)">

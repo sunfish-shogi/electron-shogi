@@ -110,7 +110,8 @@ T0
   });
 
   it("jkf", () => {
-    const data = `{ "header": {}, "moves": [] }`;
-    expect(detectRecordFormat(data)).toBe(RecordFormatType.JKF);
+    expect(detectRecordFormat(`{ "header": {}, "moves": [] }`)).toBe(RecordFormatType.JKF);
+    expect(detectRecordFormat(` { "header": {}, "moves": [] } `)).toBe(RecordFormatType.JKF);
+    expect(detectRecordFormat(`\n{ "header": {}, "moves": [] }\n`)).toBe(RecordFormatType.JKF);
   });
 });

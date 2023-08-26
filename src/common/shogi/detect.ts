@@ -27,7 +27,7 @@ export function detectRecordFormat(data: string): RecordFormatType {
   }
 
   // JKF
-  if (data.match(/^ *{/) && data.match(/} *$/)) {
+  if (data.match(/^[\s\r\n]*{/) && data.match(/}[\s\r\n]*$/)) {
     return RecordFormatType.JKF;
   }
 

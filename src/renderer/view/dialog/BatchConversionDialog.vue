@@ -79,7 +79,7 @@
           </div>
         </div>
         <div class="form-item row">
-          <div class="form-item-label-wide">{{ t.subdirectory }}</div>
+          <div class="form-item-label-wide">{{ t.subdirectories }}</div>
           <ToggleButton
             class="toggle"
             :value="subdirectories"
@@ -123,19 +123,36 @@
           :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
         >
           <div class="form-item-label-wide">{{ t.format }}</div>
-          <HorizontalSelector
-            :items="[
-              { label: '.kif', value: RecordFileFormat.KIF },
-              { label: '.kifu', value: RecordFileFormat.KIFU },
-              { label: '.ki2', value: RecordFileFormat.KI2 },
-              { label: '.ki2u', value: RecordFileFormat.KI2U },
-              { label: '.csa', value: RecordFileFormat.CSA },
-              { label: '.jkf', value: RecordFileFormat.JKF },
-            ]"
-            :value="destinationFormat"
+          <div class="formats">
+            <HorizontalSelector
+              :items="[
+                { label: '.kif', value: RecordFileFormat.KIF },
+                { label: '.kifu', value: RecordFileFormat.KIFU },
+                { label: '.ki2', value: RecordFileFormat.KI2 },
+                { label: '.ki2u', value: RecordFileFormat.KI2U },
+                { label: '.csa', value: RecordFileFormat.CSA },
+                { label: '.jkf', value: RecordFileFormat.JKF },
+              ]"
+              :value="destinationFormat"
+              @change="
+                (val: RecordFileFormat) => {
+                  destinationFormat = val;
+                }
+              "
+            />
+          </div>
+        </div>
+        <div
+          class="form-item row"
+          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
+        >
+          <div class="form-item-label-wide">{{ t.createSubdirectories }}</div>
+          <ToggleButton
+            class="toggle"
+            :value="createSubdirectories"
             @change="
-              (val: RecordFileFormat) => {
-                destinationFormat = val;
+              (val: boolean) => {
+                createSubdirectories = val;
               }
             "
           />
@@ -234,6 +251,7 @@ const subdirectories = ref(false);
 const destinationType = ref(DestinationType.DIRECTORY);
 const destination = ref();
 const destinationFormat = ref(RecordFileFormat.KIF);
+const createSubdirectories = ref(false);
 const fileNameConflictAction = ref(FileNameConflictAction.OVERWRITE);
 const singleFileDestination = ref();
 
@@ -257,6 +275,7 @@ onMounted(async () => {
     destinationType.value = batchConversionSetting.destinationType;
     destination.value.value = batchConversionSetting.destination;
     destinationFormat.value = batchConversionSetting.destinationFormat;
+    createSubdirectories.value = batchConversionSetting.createSubdirectories;
     fileNameConflictAction.value = batchConversionSetting.fileNameConflictAction;
     singleFileDestination.value.value = batchConversionSetting.singleFileDestination;
   } catch (e) {
@@ -320,6 +339,7 @@ const convert = async () => {
     destinationType: destinationType.value,
     destination: destination.value.value,
     destinationFormat: destinationFormat.value,
+    createSubdirectories: createSubdirectories.value,
     fileNameConflictAction: fileNameConflictAction.value,
     singleFileDestination: singleFileDestination.value.value,
   };

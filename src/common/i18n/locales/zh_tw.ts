@@ -56,9 +56,10 @@ export const zh_tw: Texts = {
   outputs: "輸出目錄",
   format: "格式",
   formats: "格式",
-  subdirectory: "子目錄",
+  subdirectories: "子目錄",
   separately: "個別", // TODO: translate
   merge: "マージ", // TODO: translate
+  createSubdirectories: "サブディレクトリ作成", // TODO: translate
   nameConflictAction: "名稱衝突處理方式",
   numberSuffix: "附加編號",
   skip: "跳過該檔案",

@@ -66,16 +66,16 @@
             <div class="form-item-label-wide">{{ t.hostToConnect }}</div>
             <input ref="host" class="long-text" list="csa-server-host" type="text" />
             <datalist id="csa-server-host">
-              <option value="gserver.computer-shogi.org" />
-              <option value="wdoor.c.u-tokyo.ac.jp" />
-              <option value="localhost" />
+              <option value="gserver.computer-shogi.org"></option>
+              <option value="wdoor.c.u-tokyo.ac.jp"></option>
+              <option value="localhost"></option>
             </datalist>
           </div>
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.portNumber }}</div>
             <input ref="port" class="number" list="csa-server-port-number" type="number" />
             <datalist id="csa-server-port-number">
-              <option value="4081" />
+              <option value="4081"></option>
             </datalist>
           </div>
           <div class="form-item">

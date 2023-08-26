@@ -142,6 +142,10 @@ export const zh_tw: Texts = {
   lightWoodyTexture: "木目（亮色）",
   warmWoodTexture: "木目（暖色）",
   regin: "樹脂",
+  transparent: "透過表示", // TODO: translate
+  boardOpacity: "盤の不透明度", // TODO: translate
+  pieceStandOpacity: "駒台の不透明度", // TODO: translate
+  recordOpacity: "棋譜の不透明度", // TODO: translate
   displayFileAndRank: "顯示段・筋",
   displayLeftControls: "顯示左側操作按鈕",
   displayRightControls: "顯示右側操作按鈕",

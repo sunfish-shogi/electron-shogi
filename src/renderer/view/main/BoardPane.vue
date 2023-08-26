@@ -8,6 +8,8 @@
       :king-piece-type="appSetting.kingPieceType"
       :custom-board-image-url="appSetting.boardImageFileURL"
       :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
+      :board-image-opacity="appSetting.enableTransparent ? appSetting.boardOpacity : 1"
+      :piece-stand-image-opacity="appSetting.enableTransparent ? appSetting.pieceStandOpacity : 1"
       :max-size="maxSize"
       :position="store.record.position"
       :last-move="lastMove"

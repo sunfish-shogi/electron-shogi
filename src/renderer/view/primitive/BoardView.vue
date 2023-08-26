@@ -143,6 +143,16 @@ const props = defineProps({
     required: false,
     default: undefined,
   },
+  boardImageOpacity: {
+    type: Number,
+    required: false,
+    default: 1.0,
+  },
+  pieceStandImageOpacity: {
+    type: Number,
+    required: false,
+    default: 1.0,
+  },
   boardLabelType: {
     type: String as PropType<BoardLabelType>,
     required: true,
@@ -337,27 +347,31 @@ const clickNotPromote = (event: Event) => {
 };
 
 const layoutBuilder = computed(() => {
-  const builder = new LayoutBuilder(
-    props.boardImageType,
-    props.pieceStandImageType,
-    props.boardLabelType,
-    props.pieceImageBaseUrl,
-    props.kingPieceType,
-    props.customBoardImageUrl,
-    props.customPieceStandImageUrl,
-  );
+  const builder = new LayoutBuilder({
+    boardImageType: props.boardImageType,
+    customBoardImageURL: props.customBoardImageUrl,
+    pieceStandImageType: props.pieceStandImageType,
+    customPieceStandImageURL: props.customPieceStandImageUrl,
+    pieceImageBaseURL: props.pieceImageBaseUrl,
+    kingPieceType: props.kingPieceType,
+  });
   builder.preload();
   return builder;
 });
 
 const layout = computed(() => {
   const layout = layoutBuilder.value.build(
-    props.maxSize,
+    {
+      boardImageOpacity: props.boardImageOpacity,
+      pieceStandImageOpacity: props.pieceStandImageOpacity,
+      boardLabelType: props.boardLabelType,
+      upperSizeLimit: props.maxSize,
+      flip: props.flip,
+    },
     props.position,
     props.lastMove,
     state.pointer,
     state.reservedMove,
-    props.flip,
   );
   emit("resize", layout.frame.size);
   return layout;

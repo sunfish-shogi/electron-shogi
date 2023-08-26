@@ -8,6 +8,7 @@
         :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
         :elapsed-time-toggle-label="t.elapsedTime"
         :comment-toggle-label="t.commentsAndBookmarks"
+        :opacity="appSetting.enableTransparent ? appSetting.recordOpacity : 1"
         @go-begin="goBegin"
         @go-back="goBack"
         @go-forward="goForward"

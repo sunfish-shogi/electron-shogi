@@ -140,6 +140,10 @@ export type Texts = {
   lightWoodyTexture: string;
   warmWoodTexture: string;
   regin: string;
+  transparent: string;
+  boardOpacity: string;
+  pieceStandOpacity: string;
+  recordOpacity: string;
   displayFileAndRank: string;
   displayLeftControls: string;
   displayRightControls: string;

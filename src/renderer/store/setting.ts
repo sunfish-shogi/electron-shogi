@@ -63,6 +63,18 @@ class AppSettingStore {
   get pieceStandImageFileURL(): string | undefined {
     return this.setting.pieceStandImageFileURL;
   }
+  get enableTransparent(): boolean {
+    return this.setting.enableTransparent;
+  }
+  get boardOpacity(): number {
+    return this.setting.boardOpacity;
+  }
+  get pieceStandOpacity(): number {
+    return this.setting.pieceStandOpacity;
+  }
+  get recordOpacity(): number {
+    return this.setting.recordOpacity;
+  }
   get boardLabelType(): BoardLabelType {
     return this.setting.boardLabelType;
   }

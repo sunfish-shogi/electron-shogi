@@ -14,27 +14,33 @@
         <Icon :icon="IconType.LAST" />
       </button>
     </div>
-    <div ref="moveList" class="move-list">
-      <div
-        v-for="move in moves"
-        :key="move.number"
-        class="row move-element"
-        :class="{ 'has-branch': move.hasBranch, selected: move.selected }"
-        :value="move.number"
-        @click="changeNumber(move.number)"
-      >
-        <div class="move-number">
-          {{ move.number !== 0 ? move.number : "" }}
-        </div>
-        <div class="move-text">{{ move.text }}</div>
-        <div v-if="showElapsedTime" class="move-time">{{ move.time }}</div>
-        <div v-if="showComment" class="move-comment">
-          <span v-if="move.bookmark" class="bookmark">{{ move.bookmark }}</span>
-          {{ move.comment }}
+    <div class="move-list-area">
+      <!-- NOTE: 背景だけを透過させるために背景専用の要素を作る。 -->
+      <div class="move-list-background" :style="{ opacity }"></div>
+      <div ref="moveList" class="move-list">
+        <div
+          v-for="move in moves"
+          :key="move.number"
+          class="row move-element"
+          :class="{ 'has-branch': move.hasBranch, selected: move.selected }"
+          :value="move.number"
+          @click="changeNumber(move.number)"
+        >
+          <div class="move-number">
+            {{ move.number !== 0 ? move.number : "" }}
+          </div>
+          <div class="move-text">{{ move.text }}</div>
+          <div v-if="showElapsedTime" class="move-time">{{ move.time }}</div>
+          <div v-if="showComment" class="move-comment">
+            <span v-if="move.bookmark" class="bookmark">{{ move.bookmark }}</span>
+            {{ move.comment }}
+          </div>
         </div>
       </div>
     </div>
     <div class="auto row branch-list-area">
+      <!-- NOTE: 背景だけを透過させるために背景専用の要素を作る。 -->
+      <div class="move-list-background" :style="{ opacity }"></div>
       <div ref="branchList" class="auto branch-list">
         <div
           v-for="branch in branches"
@@ -110,6 +116,11 @@ const props = defineProps({
   commentToggleLabel: {
     type: String,
     required: true,
+  },
+  opacity: {
+    type: Number,
+    required: false,
+    default: 1.0,
   },
 });
 
@@ -255,16 +266,32 @@ onUpdated(() => {
   width: 25%;
   padding: 0px;
 }
+.move-list-background {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--text-bg-color);
+}
+.move-list-area {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: calc(70% - 50px);
+}
 .move-list {
   margin-top: 1px;
   width: 100%;
-  height: calc(70% - 50px);
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--text-color);
-  background-color: var(--text-bg-color);
 }
 .branch-list-area {
+  position: relative;
+  z-index: 1;
   margin-top: 2px;
   width: 100%;
   height: calc(30% - 50px);
@@ -275,7 +302,6 @@ onUpdated(() => {
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--text-color);
-  background-color: var(--text-bg-color);
 }
 .branch-list-control {
   width: 40px;

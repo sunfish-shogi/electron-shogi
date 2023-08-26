@@ -214,6 +214,53 @@
               @select="(url: string) => (pieceStandImageFileURL = url)"
             />
           </div>
+          <!-- 透過表示 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.transparent }}</div>
+            <ToggleButton
+              :value="enableTransparent"
+              @change="(checked: boolean) => (enableTransparent = checked)"
+            />
+          </div>
+          <!-- 盤の不透明度 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.boardOpacity }}</div>
+            <input
+              ref="boardOpacity"
+              :value="appSetting.boardOpacity * 100"
+              :readonly="!enableTransparent"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="form-item-unit">%</div>
+          </div>
+          <!-- 駒台の不透明度 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.pieceStandOpacity }}</div>
+            <input
+              ref="pieceStandOpacity"
+              :value="appSetting.pieceStandOpacity * 100"
+              :readonly="!enableTransparent"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="form-item-unit">%</div>
+          </div>
+          <!-- 棋譜の不透明度 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.recordOpacity }}</div>
+            <input
+              ref="recordOpacity"
+              :value="appSetting.recordOpacity * 100"
+              :readonly="!enableTransparent"
+              type="number"
+              max="100"
+              min="0"
+            />
+            <div class="form-item-unit">%</div>
+          </div>
           <!-- 段・筋の表示 -->
           <div class="form-item">
             <div class="form-item-label-wide">
@@ -746,6 +793,10 @@ const boardImage = ref(appSetting.boardImage);
 const boardImageSelector = ref();
 const pieceStandImage = ref(appSetting.pieceStandImage);
 const pieceStandImageSelector = ref();
+const enableTransparent = ref(appSetting.enableTransparent);
+const boardOpacity = ref();
+const pieceStandOpacity = ref();
+const recordOpacity = ref();
 const displayBoardLabels = ref(appSetting.boardLabelType != BoardLabelType.NONE);
 const displayLeftSideControls = ref(appSetting.leftSideControlType != LeftSideControlType.NONE);
 const displayRightSideControls = ref(appSetting.rightSideControlType != RightSideControlType.NONE);
@@ -799,6 +850,10 @@ const saveAndClose = async () => {
       pieceImageFileURL: pieceImageFileURL.value,
       croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,
       pieceStandImage: pieceStandImage.value,
+      enableTransparent: enableTransparent.value,
+      boardOpacity: readInputAsNumber(boardOpacity.value) / 100,
+      pieceStandOpacity: readInputAsNumber(pieceStandOpacity.value) / 100,
+      recordOpacity: readInputAsNumber(recordOpacity.value) / 100,
       boardLabelType: displayBoardLabels.value ? BoardLabelType.STANDARD : BoardLabelType.NONE,
       leftSideControlType: displayLeftSideControls.value
         ? LeftSideControlType.STANDARD

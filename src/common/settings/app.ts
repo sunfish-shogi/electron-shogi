@@ -120,6 +120,10 @@ export type AppSetting = {
   boardImageFileURL?: string;
   pieceStandImage: PieceStandImageType;
   pieceStandImageFileURL?: string;
+  enableTransparent: boolean;
+  boardOpacity: number;
+  pieceStandOpacity: number;
+  recordOpacity: number;
   boardLabelType: BoardLabelType;
   leftSideControlType: LeftSideControlType;
   rightSideControlType: RightSideControlType;
@@ -178,6 +182,10 @@ export type AppSettingUpdate = {
   boardImageFileURL?: string;
   pieceStandImage?: PieceStandImageType;
   pieceStandImageFileURL?: string;
+  enableTransparent?: boolean;
+  boardOpacity?: number;
+  pieceStandOpacity?: number;
+  recordOpacity?: number;
   boardLabelType?: BoardLabelType;
   leftSideControlType?: LeftSideControlType;
   rightSideControlType?: RightSideControlType;
@@ -268,6 +276,10 @@ export function defaultAppSetting(opt?: {
     kingPieceType: KingPieceType.GYOKU_AND_OSHO,
     boardImage: BoardImageType.RESIN2,
     pieceStandImage: PieceStandImageType.STANDARD,
+    enableTransparent: false,
+    boardOpacity: 1.0,
+    pieceStandOpacity: 1.0,
+    recordOpacity: 1.0,
     boardLabelType: BoardLabelType.STANDARD,
     leftSideControlType: LeftSideControlType.STANDARD,
     rightSideControlType: RightSideControlType.STANDARD,

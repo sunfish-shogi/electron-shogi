@@ -400,25 +400,43 @@ const rankCharMap: { [n: number]: string } = {
   9: "九",
 };
 
+export type AssetConfig = {
+  boardImageType: BoardImageType;
+  customBoardImageURL?: string;
+  pieceStandImageType: PieceStandImageType;
+  customPieceStandImageURL?: string;
+  pieceImageBaseURL: string;
+  kingPieceType: KingPieceType;
+};
+
+export type LayoutConfig = {
+  boardImageOpacity: number;
+  pieceStandImageOpacity: number;
+  boardLabelType: BoardLabelType;
+  upperSizeLimit: RectSize;
+  flip?: boolean;
+};
+
 export default class LayoutBuilder {
   private pieceImages: PieceImages;
   private boardGridImage: string;
   private boardTextureImage: string | null;
   private pieceStandImage: string | null;
 
-  constructor(
-    private boardImageType: BoardImageType,
-    private pieceStandImageType: PieceStandImageType,
-    private boardLabelType: BoardLabelType,
-    pieceImageBaseURL: string,
-    kingPieceType: KingPieceType,
-    customBoardImageURL?: string,
-    customPieceStandImageURL?: string,
-  ) {
-    this.pieceImages = getPieceTextureMap(pieceImageBaseURL, kingPieceType);
-    this.boardGridImage = getBoardGridURL(boardImageType);
-    this.boardTextureImage = getBoardTextureURL(boardImageType, customBoardImageURL);
-    this.pieceStandImage = getPieceStandTextureURL(pieceStandImageType, customPieceStandImageURL);
+  constructor(private assetConfig: AssetConfig) {
+    this.pieceImages = getPieceTextureMap(
+      this.assetConfig.pieceImageBaseURL,
+      this.assetConfig.kingPieceType,
+    );
+    this.boardGridImage = getBoardGridURL(this.assetConfig.boardImageType);
+    this.boardTextureImage = getBoardTextureURL(
+      this.assetConfig.boardImageType,
+      this.assetConfig.customBoardImageURL,
+    );
+    this.pieceStandImage = getPieceStandTextureURL(
+      this.assetConfig.pieceStandImageType,
+      this.assetConfig.customPieceStandImageURL,
+    );
   }
 
   preload(): void {
@@ -434,16 +452,15 @@ export default class LayoutBuilder {
   }
 
   build(
-    upperSizeLimit: RectSize,
+    config: LayoutConfig,
     position: ImmutablePosition,
     lastMove: Move | null | undefined,
     pointer: Square | Piece | null | undefined,
     reservedMoveForPromotion: Move | null | undefined,
-    flip?: boolean,
   ): FullLayout {
-    let ratio = upperSizeLimit.width / layoutTemplate.frame.width;
-    if (layoutTemplate.frame.height * ratio > upperSizeLimit.height) {
-      ratio = upperSizeLimit.height / layoutTemplate.frame.height;
+    let ratio = config.upperSizeLimit.width / layoutTemplate.frame.width;
+    if (layoutTemplate.frame.height * ratio > config.upperSizeLimit.height) {
+      ratio = config.upperSizeLimit.height / layoutTemplate.frame.height;
     }
 
     const buildFrameLayout = (): FrameLayout => {
@@ -463,13 +480,14 @@ export default class LayoutBuilder {
       const y = layoutTemplate.board.y * ratio;
       const width = layoutTemplate.board.width * ratio;
       const height = layoutTemplate.board.height * ratio;
-      const bgColor = boardBackgroundColorMap[this.boardImageType];
+      const bgColor = boardBackgroundColorMap[this.assetConfig.boardImageType];
       const style = {
         "background-color": bgColor,
         left: x + "px",
         top: y + "px",
         height: height + "px",
         width: width + "px",
+        opacity: config.boardImageOpacity.toString(),
       };
       return {
         gridImagePath: this.boardGridImage,
@@ -482,7 +500,7 @@ export default class LayoutBuilder {
 
     const buildLabelLayout = (boardLayout: BoardLayout): LabelLayout[] => {
       const layouts: LabelLayout[] = [];
-      if (this.boardLabelType == BoardLabelType.NONE) {
+      if (config.boardLabelType == BoardLabelType.NONE) {
         return layouts;
       }
       const fontSize = layoutTemplate.label.fontSize * ratio;
@@ -497,13 +515,13 @@ export default class LayoutBuilder {
         const x =
           boardLayout.x -
           fontSize * 0.5 +
-          (flip ? 0 : layoutTemplate.board.width) * ratio +
-          layoutTemplate.board.leftPiecePadding * 0.5 * ratio * (flip ? 1 : -1);
+          (config.flip ? 0 : layoutTemplate.board.width) * ratio +
+          layoutTemplate.board.leftPiecePadding * 0.5 * ratio * (config.flip ? 1 : -1);
         const y =
           boardLayout.y -
           fontSize * 0.5 +
           (layoutTemplate.board.topSquarePadding +
-            ((flip ? 10 - rank : rank) - 0.5) * layoutTemplate.board.squreHeight) *
+            ((config.flip ? 10 - rank : rank) - 0.5) * layoutTemplate.board.squreHeight) *
             ratio;
         layouts.push({
           id: "rank" + rank,
@@ -520,13 +538,13 @@ export default class LayoutBuilder {
           boardLayout.x -
           fontSize * 0.5 +
           (layoutTemplate.board.leftPiecePadding +
-            (9.5 - (flip ? 10 - file : file)) * layoutTemplate.board.squreWidth) *
+            (9.5 - (config.flip ? 10 - file : file)) * layoutTemplate.board.squreWidth) *
             ratio;
         const y =
           boardLayout.y -
           fontSize * 0.6 +
-          (flip ? layoutTemplate.board.height : 0) * ratio +
-          layoutTemplate.board.topSquarePadding * 0.7 * ratio * (flip ? -1 : 1);
+          (config.flip ? layoutTemplate.board.height : 0) * ratio +
+          layoutTemplate.board.topSquarePadding * 0.7 * ratio * (config.flip ? -1 : 1);
         layouts.push({
           id: "file" + file,
           character: String(file),
@@ -545,19 +563,19 @@ export default class LayoutBuilder {
       position.board.listNonEmptySquares().forEach((square) => {
         const piece = position.board.at(square) as Piece;
         const id = piece.id + square.index;
-        const displayColor = flip ? reverseColor(piece.color) : piece.color;
+        const displayColor = config.flip ? reverseColor(piece.color) : piece.color;
         const pieceType =
           piece.type == PieceType.KING && piece.color == Color.BLACK ? "king2" : piece.type;
         const imagePath = this.pieceImages[displayColor][pieceType];
         const x =
           boardLayout.x +
           (layoutTemplate.board.leftPiecePadding +
-            layoutTemplate.board.squreWidth * (flip ? square.opposite : square).x) *
+            layoutTemplate.board.squreWidth * (config.flip ? square.opposite : square).x) *
             ratio;
         const y =
           boardLayout.y +
           (layoutTemplate.board.topPiecePadding +
-            layoutTemplate.board.squreHeight * (flip ? square.opposite : square).y) *
+            layoutTemplate.board.squreHeight * (config.flip ? square.opposite : square).y) *
             ratio;
         const width = layoutTemplate.piece.width * ratio;
         const height = layoutTemplate.piece.height * ratio;
@@ -584,12 +602,12 @@ export default class LayoutBuilder {
         const x =
           boardLayout.x +
           (layoutTemplate.board.leftSquarePadding +
-            layoutTemplate.board.squreWidth * (flip ? square.opposite : square).x) *
+            layoutTemplate.board.squreWidth * (config.flip ? square.opposite : square).x) *
             ratio;
         const y =
           boardLayout.y +
           (layoutTemplate.board.topSquarePadding +
-            layoutTemplate.board.squreHeight * (flip ? square.opposite : square).y) *
+            layoutTemplate.board.squreHeight * (config.flip ? square.opposite : square).y) *
             ratio;
         const width = layoutTemplate.board.squreWidth * ratio;
         const height = layoutTemplate.board.squreHeight * ratio;
@@ -630,8 +648,8 @@ export default class LayoutBuilder {
     };
 
     const buildHandLayout = (color: Color, hand: ImmutableHand): HandLayout => {
-      const displayColor = flip ? reverseColor(color) : color;
-      const bgColor = pieceStandBackgroundColorMap[this.pieceStandImageType];
+      const displayColor = config.flip ? reverseColor(color) : color;
+      const bgColor = pieceStandBackgroundColorMap[this.assetConfig.pieceStandImageType];
       const standX = layoutTemplate.hand[displayColor].x * ratio;
       const standY = layoutTemplate.hand[displayColor].y * ratio;
       const standWidth = layoutTemplate.hand.width * ratio;
@@ -642,6 +660,7 @@ export default class LayoutBuilder {
         top: standY + "px",
         width: standWidth + "px",
         height: standHeight + "px",
+        opacity: config.pieceStandImageOpacity.toString(),
       };
       const pieces: HandPieceLayout[] = [];
       const pointers: HandPointerLayout[] = [];
@@ -713,8 +732,8 @@ export default class LayoutBuilder {
       if (!move) {
         return null;
       }
-      const color = flip ? reverseColor(move.color) : move.color;
-      const square = flip ? move.to.opposite : move.to;
+      const color = config.flip ? reverseColor(move.color) : move.color;
+      const square = config.flip ? move.to.opposite : move.to;
       const piece = new Piece(color, move.pieceType);
       const promoted = piece.promoted();
       const notPromoted = piece.unpromoted();
@@ -748,7 +767,7 @@ export default class LayoutBuilder {
 
     const buildTurnLayout = (): TurnLayout => {
       const color = position.color;
-      const displayColor = flip ? reverseColor(color) : color;
+      const displayColor = config.flip ? reverseColor(color) : color;
       const borderWidth = 2;
       return {
         style: {
@@ -765,7 +784,7 @@ export default class LayoutBuilder {
     };
 
     const buildPlayerNameLayout = (color: Color): PlayerNameLayout => {
-      const displayColor = flip ? reverseColor(color) : color;
+      const displayColor = config.flip ? reverseColor(color) : color;
       return {
         style: {
           left: layoutTemplate.playerName[displayColor].x * ratio + "px",
@@ -778,7 +797,7 @@ export default class LayoutBuilder {
     };
 
     const buildClockLayout = (color: Color): ClockLayout => {
-      const displayColor = flip ? reverseColor(color) : color;
+      const displayColor = config.flip ? reverseColor(color) : color;
       return {
         style: {
           left: layoutTemplate.clock[displayColor].x * ratio + "px",

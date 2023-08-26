@@ -106,10 +106,10 @@ class DirectoryWriter {
   write(record: ImmutableRecord, source: string): boolean {
     // Generate destination path
     const parsed = path.parse(path.relative(this.setting.source, source));
+    const name = parsed.name + this.setting.destinationFormat;
     let destination = path.join(
       this.setting.destination,
-      parsed.dir,
-      parsed.name + this.setting.destinationFormat,
+      this.setting.createSubdirectories ? path.join(parsed.dir, name) : name,
     );
     if (fs.existsSync(destination)) {
       switch (this.setting.fileNameConflictAction) {
@@ -117,7 +117,7 @@ class DirectoryWriter {
           break;
         case FileNameConflictAction.NUMBER_SUFFIX:
           {
-            const alt = getAlternativeFilePathWithNumberSuffix(destination, 100);
+            const alt = getAlternativeFilePathWithNumberSuffix(destination, 1000);
             if (alt instanceof Error) {
               throw alt;
             }

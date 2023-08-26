@@ -54,9 +54,10 @@ export type Texts = {
   outputs: string;
   format: string;
   formats: string;
-  subdirectory: string;
+  subdirectories: string;
   separately: string;
   merge: string;
+  createSubdirectories: string;
   nameConflictAction: string;
   numberSuffix: string;
   skip: string;

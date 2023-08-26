@@ -18,6 +18,7 @@ export type BatchConversionSetting = {
   subdirectories: boolean;
   destinationType: DestinationType;
   destination: string;
+  createSubdirectories: boolean;
   destinationFormat: RecordFileFormat;
   fileNameConflictAction: FileNameConflictAction;
   singleFileDestination: string;
@@ -37,6 +38,7 @@ export function defaultBatchConversionSetting(): BatchConversionSetting {
     subdirectories: true,
     destinationType: DestinationType.DIRECTORY,
     destination: "",
+    createSubdirectories: true,
     destinationFormat: RecordFileFormat.KIF,
     fileNameConflictAction: FileNameConflictAction.NUMBER_SUFFIX,
     singleFileDestination: "",

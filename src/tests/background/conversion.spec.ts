@@ -28,6 +28,7 @@ describe("conversion", () => {
         subdirectories: true,
         destination: "all-to-csa/with-subdir",
         destinationFormat: RecordFileFormat.CSA,
+        createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         expectedReport: {
           succeededTotal: 8,
@@ -65,6 +66,7 @@ describe("conversion", () => {
         subdirectories: false,
         destination: "all-to-csa/without-subdir",
         destinationFormat: RecordFileFormat.CSA,
+        createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         expectedReport: {
           succeededTotal: 5,
@@ -89,10 +91,49 @@ describe("conversion", () => {
         ],
       },
       {
+        sourceFormats: [
+          RecordFileFormat.KIF,
+          RecordFileFormat.KIFU,
+          RecordFileFormat.KI2,
+          RecordFileFormat.KI2U,
+          RecordFileFormat.CSA,
+        ],
+        subdirectories: true,
+        destination: "all-to-csa/not-create-subdir",
+        destinationFormat: RecordFileFormat.CSA,
+        createSubdirectories: false,
+        fileNameConflictAction: FileNameConflictAction.NUMBER_SUFFIX,
+        expectedReport: {
+          succeededTotal: 8,
+          succeeded: {
+            ".kif": 4,
+            ".kifu": 1,
+            ".ki2": 1,
+            ".ki2u": 1,
+            ".csa": 1,
+          },
+          failedTotal: 0,
+          failed: {},
+          skippedTotal: 0,
+          skipped: {},
+        },
+        expectedFiles: [
+          "csa-sjis.csa",
+          "ki2-sjis.csa",
+          "ki2u-utf8.csa",
+          "kif-sjis-2.csa",
+          "kif-sjis-3.csa",
+          "kif-sjis-4.csa",
+          "kif-sjis.csa",
+          "kifu-utf8.csa",
+        ],
+      },
+      {
         sourceFormats: [RecordFileFormat.CSA],
         subdirectories: false,
         destination: "csa-to-ki2",
         destinationFormat: RecordFileFormat.KI2,
+        createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         expectedReport: {
           succeededTotal: 1,
@@ -109,6 +150,7 @@ describe("conversion", () => {
         subdirectories: false,
         destination: "ki2u-to-kifu/overwrite",
         destinationFormat: RecordFileFormat.KIFU,
+        createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         repeat: 2,
         expectedReport: {
@@ -126,6 +168,7 @@ describe("conversion", () => {
         subdirectories: false,
         destination: "ki2u-to-kifu/number-suffix",
         destinationFormat: RecordFileFormat.KIFU,
+        createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.NUMBER_SUFFIX,
         repeat: 2,
         expectedReport: {
@@ -143,6 +186,7 @@ describe("conversion", () => {
         subdirectories: false,
         destination: "ki2u-to-kifu/skip",
         destinationFormat: RecordFileFormat.KIFU,
+        createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.SKIP,
         repeat: 1,
         expectedReport: [
@@ -180,6 +224,7 @@ describe("conversion", () => {
           subdirectories: testCase.subdirectories,
           destinationType: DestinationType.DIRECTORY,
           destination: destinationFullPath,
+          createSubdirectories: testCase.createSubdirectories,
           destinationFormat: testCase.destinationFormat,
           fileNameConflictAction: testCase.fileNameConflictAction,
         });

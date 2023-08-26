@@ -123,22 +123,24 @@
           :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
         >
           <div class="form-item-label-wide">{{ t.format }}</div>
-          <HorizontalSelector
-            :items="[
-              { label: '.kif', value: RecordFileFormat.KIF },
-              { label: '.kifu', value: RecordFileFormat.KIFU },
-              { label: '.ki2', value: RecordFileFormat.KI2 },
-              { label: '.ki2u', value: RecordFileFormat.KI2U },
-              { label: '.csa', value: RecordFileFormat.CSA },
-              { label: '.jkf', value: RecordFileFormat.JKF },
-            ]"
-            :value="destinationFormat"
-            @change="
-              (val: RecordFileFormat) => {
-                destinationFormat = val;
-              }
-            "
-          />
+          <div class="formats">
+            <HorizontalSelector
+              :items="[
+                { label: '.kif', value: RecordFileFormat.KIF },
+                { label: '.kifu', value: RecordFileFormat.KIFU },
+                { label: '.ki2', value: RecordFileFormat.KI2 },
+                { label: '.ki2u', value: RecordFileFormat.KI2U },
+                { label: '.csa', value: RecordFileFormat.CSA },
+                { label: '.jkf', value: RecordFileFormat.JKF },
+              ]"
+              :value="destinationFormat"
+              @change="
+                (val: RecordFileFormat) => {
+                  destinationFormat = val;
+                }
+              "
+            />
+          </div>
         </div>
         <div
           class="form-item row"

@@ -82,18 +82,21 @@ section div {
   margin: 0.5em 0px 0.5em 0px;
 }
 
-hr {
-  margin: auto;
-  padding: 0px;
-  border: none;
-  border-top: solid;
-  border-color: darkslategray;
-  width: min(90vw, 120vh);
-}
-
-h1 {
+.title {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
   font-size: 3.5em;
   margin: 0.8em 0 0.4em 0;
+}
+
+.title > * {
+  margin: 0px 0.2em 0px 0.2em;
+}
+
+.title span {
+  display: inline-block;
 }
 
 h2 {

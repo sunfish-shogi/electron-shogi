@@ -1,12 +1,109 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   -webkit-text-size-adjust: 100%;
-  font-size: 18px;
+  font-size: 16px;
   font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", "Meiryo", "verdana", sans-serif;
-  color: white;
-  background-color: darkslategray;
+  background-color: white;
   margin: 0px;
   padding: 0px;
   text-align: center;
+}
+
+header {
+  font-size: 1.0em;
+  margin: 0px;
+  padding: 10px 5% 5px 5%;
+  color: white;
+  background-color: darkslategray;
+}
+
+header .link-buttons {
+  font-size: 1.2em;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: -5px;
+}
+
+header .link-buttons > * {
+  margin: 5px 0.5em 0px 0.5em;
+}
+
+nav {
+  font-size: 1.2em;
+  margin: 0px;
+  padding: 5px 0px 5px 0px;
+  color: white;
+  background-color: darkslategray;
+}
+
+nav.sticky {
+  position: sticky;
+  top: 0px;
+  z-index: 100;
+}
+
+nav ul {
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+
+nav li {
+  margin: 0px 0.5em 0px 0.5em;
+  white-space: nowrap;
+}
+
+article {
+  color: darkslategray;
+  margin: 0px;
+  padding: 1.0em 5% 1.0em 5%;
+}
+
+article a {
+  color: seagreen;
+  font-weight: bold;
+}
+
+section {
+  margin: 1.0em 0 7.0em 0;
+  scroll-margin-top: 120px;
+}
+
+section div {
+  margin: 0.5em 0px 0.5em 0px;
+}
+
+hr {
+  margin: auto;
+  padding: 0px;
+  border: none;
+  border-top: solid;
+  border-color: darkslategray;
+  width: min(90vw, 120vh);
+}
+
+h1 {
+  font-size: 3.5em;
+  margin: 0.8em 0 0.4em 0;
+}
+
+h2 {
+  font-size: 2.2em;
+  margin: 2.0em 0 0.0em 0;
+}
+
+h3 {
+  font-size: 1.2em;
+  margin: 1.0em 0 1.0em 0;
 }
 
 a {
@@ -16,6 +113,16 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.link-box > a {
+  display: inline-block;
+  font-size: 1.0em;
+  line-height: 2.0em;
+  color: lemonchiffon;
+  background-color: darkslategray;
+  padding: 0.5em 1.5em 0.5em 1.5em;
+  border-radius: 1.2em;
 }
 
 ul {
@@ -49,13 +156,8 @@ ul.faq li li {
   text-align: left;
 }
 
-.note {
-  font-size: 0.8em;
-}
-
 .images {
-  margin-left: auto;
-  margin-right: auto;
+  margin: 2.0em auto 2.0em auto;
   width: min(90vw, 110vh);
   display: flex;
   flex-wrap: wrap;
@@ -102,85 +204,14 @@ img.small-icon {
   margin: 0px;
 }
 
-header {
-  font-size: 1.0em;
-  padding: 1.0em 5% 1.0em 5%;
-}
-
-nav {
-  font-size: 1.1em;
-  margin: 1em 0px 0px 0px;
-  line-height: 2.0em;
-}
-
-nav ul {
-  padding: 0px;
-  list-style: none;
-}
-
-nav li {
-  margin: 0px 0.5em 0px 0.5em;
-  display: inline-block;
-}
-
-article {
-  color: darkslategray;
-  background-color: white;
-  margin: 0px;
-  padding: 1.0em 5% 1.0em 5%;
-}
-
-article a {
-  color: seagreen;
-  font-weight: bold;
-}
-
-section {
-  margin: 1.5em 0 3.0em 0;
-}
-
-section div {
-  margin: 0.5em 0px 0.5em 0px;
-}
-
-hr {
-  margin: auto;
-  padding: 0px;
-  border: none;
-  border-top: solid;
-  border-color: darkslategray;
-  width: min(90vw, 120vh);
-}
-
-h1 {
-  font-size: 3.5em;
-  margin: 0.5em 0 0.5em 0;
-}
-
-h2 {
-  font-size: 1.8em;
-  margin: 2.0em 0 0.4em 0;
-}
-
-h3 {
-  font-size: 1.3em;
-  margin: 1.8em 0 0.3em 0;
-}
-
-h4 {
-  font-size: 1.1em;
-  margin: 1.5em 0 0.2em 0;
-}
-
-header .link-buttons {
-  font-size: 1.2em;
+.row {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
   flex-wrap: wrap;
-  margin-top: -5px;
+  justify-content: center;
 }
 
-header .link-buttons > * {
-  margin: 5px 0.5em 0px 0.5em;
+.row > * {
+  margin-left: 1.0em;
+  margin-right: 1.0em;
 }

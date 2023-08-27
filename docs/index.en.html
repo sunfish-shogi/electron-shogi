@@ -30,6 +30,12 @@
           </a>
         </div>
         <div>
+          <a href="https://github.com/sunfish-shogi/electron-shogi/wiki">
+            <img class="large-icon" src="./icons/github.png" alt="GitHub" />
+            Wiki
+          </a>
+        </div>
+        <div>
           <a href="./index.html">
             <img class="large-icon" src="./icons/language_white.svg" alt="Language" />
             日本語
@@ -44,23 +50,20 @@
         <img class="icon" src="icon.png" alt="" />
         Electron Shogi
       </h1>
-      <nav>
-        <ul>
-          <li><a href="#whatis">What's Electron Shogi</a></li>
-          <li><a href="#screenshot">Screenshots</a></li>
-          <li><a href="#license">License</a></li>
-          <li><a href="#pcapp">Desktop App</a></li>
-          <li><a href="#webapp">Web App</a></li>
-          <li><a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9">How to Use</a></li>
-          <li><a href="#milestones">Milestones</a></li>
-          <li><a href="#faq">FAQ</a></li>
-          <li><a href="https://github.com/sunfish-shogi/electron-shogi/wiki">Wiki</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <li><a href="#images">Image Assets</a></li>
-          <li><a href="https://github.com/sunfish-shogi/electron-shogi/wiki/Links">Links</a></li>
-        </ul>
-      </nav>
     </header>
+    <nav class="sticky">
+      <ul>
+        <li><a href="#whatis">What's Electron Shogi</a></li>
+        <li><a href="#license">License</a></li>
+        <li><a href="#pcapp">Desktop App</a></li>
+        <li><a href="#webapp">Web App</a></li>
+        <li><a href="#howtouse">How to Use</a></li>
+        <li><a href="#milestones">Milestones</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#images">Image Assets</a></li>
+      </ul>
+    </nav>
     <article>
       <section id="whatis">
         <h2>What's Electron Shogi</h2>
@@ -70,11 +73,18 @@
           framework and runs on Windows, macOS, and Linux.
           Anyone can participate in development or create their own version and distribute it.
         </div>
+        <div class="images">
+          <a href="./screenshots/screenshot001.png"><img class="shadow wide" src="./screenshots/screenshot001.png?202301211733" alt="スクリーンショット001" /></a>
+        </div>
         <div class="long-text">
           Most of the shogi AI are using
           <a href="http://shogidokoro.starfree.jp/usi.html" target="_blank">USI protocol<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
           for integrating with GUI app.
           Electron Shogi is a frontend app which can play shogi with USI protocol compatible AI.
+        </div>
+        <div class="images">
+          <a href="./screenshots/screenshot002.png"><img class="shadow" src="./screenshots/screenshot002.png?202301211733" alt="スクリーンショット002" /></a>
+          <a href="./screenshots/screenshot003.png"><img class="shadow" src="./screenshots/screenshot003.png?202301211733" alt="スクリーンショット003" /></a>
         </div>
         <div class="long-text">
           These days, 2-in-1 tablet and convertible PC are becoming popular.
@@ -83,16 +93,6 @@
           And also, Electron framework get this app minimize OS dependency.
         </div>
       </section>
-      <hr>
-      <section id="screenshot">
-        <h2>Screenshots</h2>
-        <div class="images">
-          <a href="./screenshots/screenshot001.png"><img class="shadow wide" src="./screenshots/screenshot001.png?202301211733" alt="Screenshot001" /></a>
-          <a href="./screenshots/screenshot002.png"><img class="shadow" src="./screenshots/screenshot002.png?202301211733" alt="Screenshot002" /></a>
-          <a href="./screenshots/screenshot003.png"><img class="shadow" src="./screenshots/screenshot003.png?202301211733" alt="Screenshot003" /></a>
-        </div>
-      </section>
-      <hr>
       <section id="license">
         <h2>License</h2>
         <div class="long-text">
@@ -116,59 +116,44 @@
           Those licenses are included in the desktop app.
         </div>
       </section>
-      <hr>
       <section id="pcapp">
         <h2>Desktop App</h2>
-        <ul>
-          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.9.1">Latest (Version 1.9.1)</a></li>
-          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.8.3">Stable (Version 1.8.3)</a></li>
-          <li><a href="https://github.com/sunfish-shogi/electron-shogi/releases">All</a></li>
+        <ul class="row">
+          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.9.1">Latest (Version 1.9.1)</a></li>
+          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.8.3">Stable (Version 1.8.3)</a></li>
+        </ul>
+        <ul class="row">
+          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/releases">All Versions</a></li>
         </ul>
         <div class="long-text">
-          You can change language to English on version 1.6.0-alpha.1 or later.
-        </div>
-        <div class="long-text">
           Please download the file with the suffix <b>-win.zip</b> for Windows, <b>-mac.zip</b> for macOS, and <b>-linux.zip</b> for Linux.
-        </div>
-        <div class="long-text">
           See <a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E7%95%AA%E5%8F%B7%E3%81%AE%E8%AA%AD%E3%81%BF%E6%96%B9">"How to read version numbers"</a> for the version number format.
         </div>
-        <div class="long-text">
-          See <a href="#milestones">Milestones</a> for the development plan.
-        </div>
       </section>
-      <hr>
       <section id="webapp">
         <h2>Web App</h2>
+        <ul class="row">
+          <li class="link-box"><a href="webapp/index.html?202301211733" target="_blank">Open Web App</a></li>
+        </ul>
         <div>
-          <a href="webapp/index.html?202301211733" target="_blank">Open Web App<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
-        </div>
-        <div class="long-text">
           You can not use AI and file I/O etc. on the web app.<br />
-          And it not support vertical screen like smartphone and tablet. (We are considering to support it.)<br />
+          And it not support vertical screen like smartphone and tablet.<br />
           We recommend to use on Chrome, however, welcome to report bugs on other browsers.
         </div>
       </section>
-      <hr>
       <section id="howtouse">
         <h2>How to Use</h2>
-        <div>
-          <a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9">See "How to Use"</a>
-        </div>
+        <ul class="row">
+          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9">See "How to Use"</a></li>
+        </ul>
       </section>
-      <hr>
       <section id="milestones">
         <h2>Milestones</h2>
-        <div class="long-text">
-          See
-          <a href="https://github.com/sunfish-shogi/electron-shogi/milestones">Milestones</a>
-          for checking the development plan. The schedule and contents are still tentative.
-        </div>
-        <div class="long-text">
-          You can see the progress of the development on <a href="https://github.com/users/sunfish-shogi/projects/1/views/1">Project Board</a>.
-        </div>
+        <ul class="row">
+          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/milestones">Milestones</a></li>
+          <li class="link-box"><a href="https://github.com/users/sunfish-shogi/projects/1/views/1">Project Board</a></li>
+        </ul>
       </section>
-      <hr>
       <section id="faq">
         <h2>FAQ</h2>
         <ul class="faq">
@@ -230,29 +215,29 @@
           </li>
         </ul>
       </section>
-      <hr>
       <section id="contact">
         <h2>Contact</h2>
-        <h3>If you have a GitHub account</h3>
-        <div class="long-text">
-          Please create
-          <a href="https://github.com/sunfish-shogi/electron-shogi/issues">GitHub Issues</a>.
-          If you have light-weight changes, you can create
-          <a href="https://github.com/sunfish-shogi/electron-shogi/pulls">Pull Request</a>.
-        </div>
-        <h3>If you have no GitHub account</h3>
-        <div class="long-text">
-          Please contact us by
-          <a href="https://form.run/@sunfish-shogi-1650819491">the form</a>.
+        <div class="row">
+          <div>
+            <h3>If you have a GitHub account</h3>
+            <div class="link-box">
+              <a href="https://github.com/sunfish-shogi/electron-shogi/issues">GitHub Issues</a>
+            </div>
+          </div>
+          <div>
+            <h3>If you have no GitHub account</h3>
+            <div class="link-box">
+              <a href="https://form.run/@sunfish-shogi-1650819491">the form</a>
+            </div>
+          <div>
         </div>
       </section>
-      <hr>
       <section id="images">
         <h2>Image Assets</h2>
         <div>
           The images of the pieces and the board used in Electron Shogi are released under a license with fewer restrictions.
         </div>
-        <div>
+        <div class="link-box">
           <a href="https://sunfish-shogi.github.io/shogi-images/" target="_blank">Shogi Images<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
         </div>
       </section>

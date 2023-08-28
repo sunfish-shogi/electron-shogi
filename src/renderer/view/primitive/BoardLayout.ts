@@ -340,6 +340,7 @@ type HandPointerLayout = {
 type HandLayout = {
   textureImagePath: string | null;
   style: { [key: string]: string };
+  backgroundStyle: { [key: string]: string };
   pieces: HandPieceLayout[];
   pointers: HandPointerLayout[];
 };
@@ -654,12 +655,15 @@ export default class LayoutBuilder {
       const standY = layoutTemplate.hand[displayColor].y * ratio;
       const standWidth = layoutTemplate.hand.width * ratio;
       const standHeight = layoutTemplate.hand.height * ratio;
-      const standStyle = {
-        "background-color": bgColor,
+      const style = {
         left: standX + "px",
         top: standY + "px",
         width: standWidth + "px",
         height: standHeight + "px",
+      };
+      const backgroundStyle = {
+        ...style,
+        "background-color": bgColor,
         opacity: config.pieceStandImageOpacity.toString(),
       };
       const pieces: HandPieceLayout[] = [];
@@ -719,7 +723,8 @@ export default class LayoutBuilder {
       });
       return {
         textureImagePath: this.pieceStandImage,
-        style: standStyle,
+        style,
+        backgroundStyle,
         pieces,
         pointers,
       };

@@ -41,8 +41,12 @@
         @click="clickSquare($event, square.file, square.rank)"
         @contextmenu="clickSquareR($event, square.file, square.rank)"
       ></div>
-      <div v-if="layout.blackHand.textureImagePath" :style="layout.blackHand.style">
-        <img class="full" :src="layout.blackHand.textureImagePath" />
+      <div :style="layout.blackHand.backgroundStyle">
+        <img
+          v-if="layout.blackHand.textureImagePath"
+          class="full"
+          :src="layout.blackHand.textureImagePath"
+        />
       </div>
       <div class="hand" :style="layout.blackHand.style">
         <div
@@ -60,8 +64,12 @@
           @click="clickHand($event, Color.BLACK, pointer.type)"
         ></div>
       </div>
-      <div v-if="layout.whiteHand.textureImagePath" :style="layout.whiteHand.style">
-        <img class="full" :src="layout.whiteHand.textureImagePath" />
+      <div :style="layout.whiteHand.backgroundStyle">
+        <img
+          v-if="layout.whiteHand.textureImagePath"
+          class="full"
+          :src="layout.whiteHand.textureImagePath"
+        />
       </div>
       <div class="hand" :style="layout.whiteHand.style">
         <div

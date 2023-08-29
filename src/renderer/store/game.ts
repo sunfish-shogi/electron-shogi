@@ -193,7 +193,7 @@ export class GameManager {
     this.repeat++;
     // 初期局面を設定する。
     if (this.setting.startPosition) {
-      this.recordManager.reset(this.setting.startPosition);
+      this.recordManager.resetByInitialPositionType(this.setting.startPosition);
     } else if (this.recordManager.record.current.ply !== this.startPly) {
       this.recordManager.changePly(this.startPly);
       this.recordManager.removeNextMove();

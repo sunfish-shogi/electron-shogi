@@ -25,6 +25,12 @@
             <Icon :icon="IconType.SAVE_AS" />
             <div class="label">{{ t.saveAs }}</div>
           </button>
+          <button :disabled="!states.history" @click="onHistory">
+            <Icon :icon="IconType.HISTORY" />
+            <div class="label">{{ t.history }}</div>
+          </button>
+        </div>
+        <div class="group">
           <button :disabled="!states.batchConversion" @click="onBatchConversion">
             <Icon :icon="IconType.BATCH" />
             <div class="label">{{ t.batchConversion }}</div>
@@ -111,6 +117,10 @@ const onSaveAs = () => {
   store.saveRecord();
   emit("close");
 };
+const onHistory = () => {
+  store.showRecordFileHistoryDialog();
+  emit("close");
+};
 const onBatchConversion = () => {
   store.showBatchConversionDialog();
   emit("close");
@@ -157,6 +167,7 @@ const states = computed(() => {
     open: store.appState === AppState.NORMAL,
     save: store.appState === AppState.NORMAL,
     saveAs: store.appState === AppState.NORMAL,
+    history: store.appState === AppState.NORMAL,
     batchConversion: store.appState === AppState.NORMAL,
     exportImage: store.appState === AppState.NORMAL,
     paste: store.appState === AppState.NORMAL,

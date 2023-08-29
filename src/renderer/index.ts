@@ -3,7 +3,7 @@ import "./css/color.css";
 import "./css/basic.css";
 import "./css/control.css";
 import "./css/dialog.css";
-import { createApp } from "vue";
+import { createApp, watch } from "vue";
 import App from "@/renderer/App.vue";
 import api, { appInfo } from "@/renderer/ipc/api";
 import { setup as setupIPC } from "@/renderer/ipc/setup";
@@ -12,27 +12,36 @@ import { Chart, registerables } from "chart.js";
 import { LogLevel } from "@/common/log";
 import { useAppSetting } from "./store/setting";
 import { setLanguage, t } from "@/common/i18n";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
 api.log(LogLevel.INFO, `start renderer process: APP_VERSION=${appInfo.appVersion}`);
 
+// setup libraries
+dayjs.extend(relativeTime);
 Chart.register(...registerables);
 
 setupIPC();
 
-function updateTitle(path?: string) {
+function updateTitle(path: string | undefined, unsaved: boolean) {
   if (!document) {
     return;
   }
   const appName = t.electronShogi;
   const appVersion = appInfo.appVersion;
-  if (path) {
-    document.title = `${appName} Version ${appVersion} - ${path}`;
+  if (path || unsaved) {
+    const unsavedMaker = unsaved ? `${t.unsaved}: ` : "";
+    const name = path ? path : t.newRecord;
+    document.title = `${appName} Version ${appVersion} - ${unsavedMaker}${name}`;
   } else {
     document.title = `${appName} Version ${appVersion}`;
   }
 }
 
-const store = useStore().addListener("changeFilePath", updateTitle);
+const store = useStore();
+watch([() => store.recordFilePath, () => store.isRecordFileUnsaved], ([path, unsaved]) => {
+  updateTitle(path, unsaved);
+});
 
 Promise.allSettled([
   useAppSetting()
@@ -54,7 +63,7 @@ Promise.allSettled([
   const language = useAppSetting().language;
   api.log(LogLevel.INFO, `set language: ${language}`);
   setLanguage(language);
-  updateTitle(store.recordFilePath);
+  updateTitle(store.recordFilePath, store.isRecordFileUnsaved);
   api.log(LogLevel.INFO, "mount app");
   createApp(App).mount("#app");
 });

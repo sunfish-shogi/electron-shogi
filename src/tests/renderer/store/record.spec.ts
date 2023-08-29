@@ -1,13 +1,83 @@
 import { CommentBehavior } from "@/common/settings/analysis";
-import { Color, Move, PieceType, Square } from "@/common/shogi";
+import {
+  Color,
+  InitialPositionSFEN,
+  InitialPositionType,
+  Move,
+  PieceType,
+  RecordFormatType,
+  SpecialMoveType,
+  Square,
+  specialMove,
+} from "@/common/shogi";
 import { SCORE_MATE_INFINITE } from "@/common/usi";
 import { RecordManager, SearchInfoSenderType } from "@/renderer/store/record";
 
 describe("store/record", () => {
+  it("unsaved", () => {
+    const recordManager = new RecordManager();
+    expect(recordManager.unsaved).toBeFalsy();
+  });
+
+  it("reset", () => {
+    const recordManager = new RecordManager();
+    recordManager.appendMove({ move: specialMove(SpecialMoveType.RESIGN) });
+    expect(recordManager.record.moves).toHaveLength(2);
+    expect(recordManager.unsaved).toBeTruthy();
+
+    // 指定した局面 (SFEN) で初期化する。
+    recordManager.resetBySFEN(InitialPositionSFEN.HANDICAP_4PIECES);
+    expect(recordManager.record.position.sfen).toBe(InitialPositionSFEN.HANDICAP_4PIECES);
+    expect(recordManager.record.moves).toHaveLength(1);
+    expect(recordManager.unsaved).toBeFalsy();
+
+    // 1 手追加する。
+    recordManager.appendMove({ move: specialMove(SpecialMoveType.RESIGN) });
+    expect(recordManager.record.moves).toHaveLength(2);
+    expect(recordManager.unsaved).toBeTruthy();
+
+    // 指定した局面で初期化する。
+    recordManager.resetByInitialPositionType(InitialPositionType.HANDICAP_ROOK);
+    expect(recordManager.record.position.sfen).toBe(InitialPositionSFEN.HANDICAP_ROOK);
+    expect(recordManager.record.moves).toHaveLength(1);
+    expect(recordManager.unsaved).toBeFalsy();
+
+    // 1 手追加する。
+    recordManager.appendMove({
+      move: new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
+    });
+    expect(recordManager.record.moves).toHaveLength(2);
+    expect(recordManager.record.current.ply).toBe(1);
+    expect(recordManager.unsaved).toBeTruthy();
+
+    // 指し手をすべて削除する。
+    recordManager.reset();
+    expect(recordManager.record.position.sfen).toBe(InitialPositionSFEN.HANDICAP_ROOK);
+    expect(recordManager.record.moves).toHaveLength(1);
+    expect(recordManager.unsaved).toBeFalsy();
+
+    // 1 手追加する。
+    recordManager.appendMove({
+      move: new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
+    });
+    expect(recordManager.record.moves).toHaveLength(2);
+    expect(recordManager.record.current.ply).toBe(1);
+    expect(recordManager.unsaved).toBeTruthy();
+
+    // 現在の局面で初期化する。
+    recordManager.resetByCurrentPosition();
+    expect(recordManager.record.position.sfen).toBe(
+      "lnsgkgsnl/7b1/pppppp1pp/6p2/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
+    );
+    expect(recordManager.record.moves).toHaveLength(1);
+    expect(recordManager.unsaved).toBeFalsy();
+  });
+
   it("appendComment", () => {
     const recordManager = new RecordManager();
     recordManager.appendComment("aaa", CommentBehavior.INSERT);
     expect(recordManager.record.current.comment).toBe("aaa");
+    expect(recordManager.unsaved).toBeTruthy();
     recordManager.appendComment("aaa", CommentBehavior.NONE);
     expect(recordManager.record.current.comment).toBe("aaa");
     recordManager.appendComment("bbb", CommentBehavior.INSERT);
@@ -52,6 +122,7 @@ describe("store/record", () => {
     expect(recordManager.record.current.comment).toBe(
       "先手有望\n*評価値=210\n*読み筋=▲２六歩△３四歩\n*深さ=10\n\n互角\n#評価値=158\n#読み筋=▲７六歩△３四歩\n#深さ=8\n#エンジン=Engine01\n",
     );
+    expect(recordManager.unsaved).toBeTruthy();
   });
 
   it("appendSearchComment/mate", () => {
@@ -71,6 +142,7 @@ describe("store/record", () => {
     expect(recordManager.record.current.comment).toBe(
       "*詰み=先手勝ち:15手\n*エンジン=Engine01\n\n#詰み=後手勝ち\n#エンジン=Engine02\n",
     );
+    expect(recordManager.unsaved).toBeTruthy();
   });
 
   it("appendMovesSilently", () => {
@@ -81,11 +153,13 @@ describe("store/record", () => {
     ]);
     expect(recordManager.record.current.ply).toBe(0);
     expect(recordManager.record.moves).toHaveLength(3);
+    expect(recordManager.unsaved).toBeTruthy();
   });
 
   it("importRecord", () => {
     const recordManager = new RecordManager();
-    const error = recordManager.importRecord(`手合割：平手
+    expect(
+      recordManager.importRecord(`手合割：平手
 手数----指手---------消費時間--
    1 ２六歩(27)   ( 0:00/00:00:00)
    2 ８四歩(83)   ( 0:00/00:00:00)
@@ -100,8 +174,8 @@ describe("store/record", () => {
 **詰み=先手勝ち:15手
 *
 *#詰み=後手勝ち:8手
-`);
-    expect(error).toBeUndefined();
+`),
+    ).toBeUndefined();
     recordManager.changePly(2);
     expect(recordManager.record.current.customData).toStrictEqual({
       playerSearchInfo: { score: 80 },
@@ -117,5 +191,39 @@ describe("store/record", () => {
       playerSearchInfo: { mate: 15 },
       researchInfo: { mate: -8 },
     });
+    expect(recordManager.unsaved).toBeTruthy();
+
+    expect(recordManager.importRecord(InitialPositionSFEN.TSUME_SHOGI)).toBeUndefined();
+    expect(recordManager.record.position.sfen).toBe(InitialPositionSFEN.TSUME_SHOGI);
+    expect(recordManager.record.moves).toHaveLength(1);
+    expect(recordManager.unsaved).toBeTruthy();
+
+    expect(
+      recordManager.importRecord(
+        `手合割：平手
+1 ２六歩(27)
+2 ８四歩(83)
+3 ２五歩(26)`,
+        { markAsSaved: false },
+      ),
+    ).toBeUndefined();
+    expect(recordManager.record.position.sfen).toBe(InitialPositionSFEN.STANDARD);
+    expect(recordManager.record.moves).toHaveLength(4);
+    expect(recordManager.unsaved).toBeTruthy();
+
+    expect(
+      recordManager.importRecord(
+        `手合割：平手
+▲５八飛    △８四歩    ▲７六歩    △８五歩    ▲７七角`,
+        { markAsSaved: true },
+      ),
+    ).toBeUndefined();
+    expect(recordManager.record.position.sfen).toBe(InitialPositionSFEN.STANDARD);
+    expect(recordManager.record.moves).toHaveLength(6);
+    expect(recordManager.unsaved).toBeFalsy();
+
+    expect(
+      recordManager.importRecord(`手合割：平手`, { type: RecordFormatType.SFEN }),
+    ).toBeInstanceOf(Error);
   });
 });

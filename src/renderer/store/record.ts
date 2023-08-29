@@ -4,6 +4,7 @@ import { TimeLimitSetting } from "@/common/settings/game";
 import {
   detectRecordFormat,
   DoMoveOption,
+  exportKIF,
   formatPV,
   ImmutablePosition,
   ImmutableRecord,
@@ -36,6 +37,9 @@ import {
 } from "@/common/file";
 import { SCORE_MATE_INFINITE } from "@/common/usi";
 import { importJKFString } from "@/common/shogi/jkf";
+import api from "../ipc/api";
+import { useAppSetting } from "./setting";
+import { LogLevel } from "@/common/log";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -60,6 +64,11 @@ export type RecordCustomData = {
   researchInfo2?: SearchInfo;
   researchInfo3?: SearchInfo;
   researchInfo4?: SearchInfo;
+};
+
+export type ImportRecordOption = {
+  type?: RecordFormatType;
+  markAsSaved?: boolean;
 };
 
 function parsePlayerMateScoreComment(line: string): number | undefined {
@@ -189,15 +198,12 @@ type AppendMoveParams = {
   elapsedMs?: number;
 };
 
-type ChangeFilePathHandler = (path?: string) => void;
 type ChangePositionHandler = () => void;
 
 export class RecordManager {
   private _record = new Record();
   private _recordFilePath?: string;
-  private onChangeFilePath: ChangeFilePathHandler = () => {
-    /* noop */
-  };
+  private _unsaved = false;
   private onChangePosition: ChangePositionHandler = () => {
     /* noop */
   };
@@ -210,41 +216,67 @@ export class RecordManager {
     return this._recordFilePath;
   }
 
+  get unsaved(): boolean {
+    return this._unsaved;
+  }
+
   private updateRecordFilePath(recordFilePath: string): void {
-    this._recordFilePath = recordFilePath;
-    this.onChangeFilePath(recordFilePath);
-  }
-
-  private clearRecordFilePath(): void {
-    this._recordFilePath = undefined;
-    this.onChangeFilePath();
-  }
-
-  reset(startPosition?: InitialPositionType): void {
-    this.resetBySFEN(startPosition ? initialPositionTypeToSFEN(startPosition) : undefined);
-  }
-
-  resetBySFEN(sfen?: string): void {
-    if (sfen) {
-      const position = new Position();
-      position.resetBySFEN(sfen);
-      this._record.clear(position);
-    } else {
-      this._record.clear();
+    if (recordFilePath === this._recordFilePath) {
+      return;
     }
-    this.clearRecordFilePath();
+    this._recordFilePath = recordFilePath;
+    api.addRecordFileHistory(recordFilePath);
+  }
+
+  async saveBackup(): Promise<void> {
+    if (!this.unsaved) {
+      return;
+    }
+    const kif = exportKIF(this.record, {
+      returnCode: useAppSetting().returnCode,
+    });
+    await api.saveRecordFileBackup(kif);
+  }
+
+  private saveBackupOnBackground(): void {
+    this.saveBackup().catch((e) => {
+      api.log(LogLevel.ERROR, `failed to save backup: ${e}`);
+    });
+  }
+
+  reset(): void {
+    this.saveBackupOnBackground();
+    this._record.clear();
+    this._unsaved = false;
+    this._recordFilePath = undefined;
+  }
+
+  resetByInitialPositionType(startPosition: InitialPositionType): void {
+    this.resetBySFEN(initialPositionTypeToSFEN(startPosition));
+  }
+
+  resetBySFEN(sfen: string): boolean {
+    const position = new Position();
+    if (!position.resetBySFEN(sfen)) {
+      return false;
+    }
+    this.saveBackupOnBackground();
+    this._record.clear(position);
+    this._unsaved = false;
+    this._recordFilePath = undefined;
+    return true;
   }
 
   resetByCurrentPosition(): void {
+    this.saveBackupOnBackground();
     this._record.clear(this._record.position);
-    this.clearRecordFilePath();
+    this._unsaved = false;
+    this._recordFilePath = undefined;
   }
 
-  importRecord(data: string, type?: RecordFormatType): Error | undefined {
+  importRecord(data: string, option?: ImportRecordOption): Error | undefined {
     let recordOrError: Record | Error;
-    if (!type) {
-      type = detectRecordFormat(data);
-    }
+    const type = option?.type || detectRecordFormat(data);
     switch (type) {
       case RecordFormatType.SFEN: {
         const position = Position.newBySFEN(data);
@@ -273,9 +305,11 @@ export class RecordManager {
     if (recordOrError instanceof Error) {
       return localizeError(recordOrError);
     }
+    this.saveBackupOnBackground();
     this._record = recordOrError;
     this.bindRecordHandlers();
-    this.clearRecordFilePath();
+    this._unsaved = !option?.markAsSaved;
+    this._recordFilePath = undefined;
     restoreCustomData(this._record);
     return;
   }
@@ -293,8 +327,10 @@ export class RecordManager {
     if (recordOrError instanceof Error) {
       return localizeError(recordOrError);
     }
+    this.saveBackupOnBackground();
     this._record = recordOrError;
     this.bindRecordHandlers();
+    this._unsaved = false;
     this.updateRecordFilePath(path);
     restoreCustomData(this._record);
     return;
@@ -306,6 +342,7 @@ export class RecordManager {
       return new Error(`${t.unknownFileExtension}: ${path}`);
     }
     const result = exportRecordAsBuffer(this._record, format, opt);
+    this._unsaved = false;
     this.updateRecordFilePath(path);
     return result;
   }
@@ -314,14 +351,16 @@ export class RecordManager {
     const position = this.record.position.clone();
     position.setColor(reverseColor(position.color));
     this._record.clear(position);
-    this.clearRecordFilePath();
+    this._unsaved = true;
+    this._recordFilePath = undefined;
   }
 
   changePosition(change: PositionChange): void {
     const position = this.record.position.clone();
     position.edit(change);
     this._record.clear(position);
-    this.clearRecordFilePath();
+    this._unsaved = true;
+    this._recordFilePath = undefined;
   }
 
   changePly(ply: number): void {
@@ -333,19 +372,35 @@ export class RecordManager {
   }
 
   swapWithNextBranch(): boolean {
-    return this._record.swapWithNextBranch();
+    if (this._record.swapWithNextBranch()) {
+      this._unsaved = true;
+      return true;
+    }
+    return false;
   }
 
   swapWithPreviousBranch(): boolean {
-    return this._record.swapWithPreviousBranch();
+    if (this._record.swapWithPreviousBranch()) {
+      this._unsaved = true;
+      return true;
+    }
+    return false;
   }
 
-  removeCurrentMove(): void {
-    this._record.removeCurrentMove();
+  removeCurrentMove(): boolean {
+    if (this._record.removeCurrentMove()) {
+      this._unsaved = true;
+      return true;
+    }
+    return false;
   }
 
-  removeNextMove(): void {
-    this._record.removeNextMove();
+  removeNextMove(): boolean {
+    if (this._record.removeNextMove()) {
+      this._unsaved = true;
+      return true;
+    }
+    return false;
   }
 
   jumpToBookmark(bookmark: string): boolean {
@@ -354,10 +409,12 @@ export class RecordManager {
 
   updateComment(comment: string): void {
     this._record.current.comment = comment;
+    this._unsaved = true;
   }
 
   updateBookmark(bookmark: string): void {
     this._record.current.bookmark = bookmark;
+    this._unsaved = true;
   }
 
   appendComment(add: string, behavior: CommentBehavior): void {
@@ -379,6 +436,7 @@ export class RecordManager {
         this._record.current.comment = add;
         break;
     }
+    this._unsaved = true;
   }
 
   appendSearchComment(
@@ -395,6 +453,7 @@ export class RecordManager {
       comment = options.header + "\n" + comment;
     }
     this.appendComment(comment, behavior);
+    this._unsaved = true;
   }
 
   get inCommentPVs(): Move[][] {
@@ -422,10 +481,12 @@ export class RecordManager {
         formatTimeLimitCSA(metadata.timeLimit),
       );
     }
+    this._unsaved = true;
   }
 
   setGameEndMetadata(): void {
     this._record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, getDateTimeString());
+    this._unsaved = true;
   }
 
   updateSearchInfo(type: SearchInfoSenderType, searchInfo: SearchInfo): void {
@@ -459,6 +520,7 @@ export class RecordManager {
         break;
     }
     this._record.current.customData = data;
+    this._unsaved = true;
   }
 
   appendMove(params: AppendMoveParams): boolean {
@@ -469,6 +531,7 @@ export class RecordManager {
     if (params.elapsedMs !== undefined) {
       this._record.current.setElapsedMs(params.elapsedMs);
     }
+    this._unsaved = true;
     return true;
   }
 
@@ -484,6 +547,7 @@ export class RecordManager {
         n++;
       }
       this._record.goto(ply);
+      this._unsaved = true;
       return n;
     } finally {
       this.bindRecordHandlers();
@@ -492,15 +556,12 @@ export class RecordManager {
 
   updateStandardMetadata(update: { key: RecordMetadataKey; value: string }): void {
     this._record.metadata.setStandardMetadata(update.key, update.value);
+    this._unsaved = true;
   }
 
-  on(event: "changeFilePath", handler: ChangeFilePathHandler): void;
   on(event: "changePosition", handler: ChangePositionHandler): void;
   on(event: string, handler: unknown): void {
     switch (event) {
-      case "changeFilePath":
-        this.onChangeFilePath = handler as (path?: string) => void;
-        break;
       case "changePosition":
         this.onChangePosition = handler as () => void;
         this.bindRecordHandlers();

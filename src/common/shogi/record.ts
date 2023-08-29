@@ -548,11 +548,14 @@ export class Record {
     return false;
   }
 
-  removeCurrentMove(): void {
+  removeCurrentMove(): boolean {
     const target = this._current;
     if (!this.goBack()) {
+      if (!this._current.next) {
+        return false;
+      }
       this._current.next = null;
-      return;
+      return true;
     }
     if (this._current.next === target) {
       this._current.next = target.branch;
@@ -573,10 +576,15 @@ export class Record {
       this._current.next.activeBranch = true;
     }
     this.onChangePosition();
+    return true;
   }
 
-  removeNextMove(): void {
-    this._current.next = null;
+  removeNextMove(): boolean {
+    if (this._current.next) {
+      this._current.next = null;
+      return true;
+    }
+    return false;
   }
 
   jumpToBookmark(bookmark: string): boolean {

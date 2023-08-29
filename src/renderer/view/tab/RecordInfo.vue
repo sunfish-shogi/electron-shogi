@@ -5,7 +5,8 @@
         <div class="row element">
           <div class="key">{{ t.file }}</div>
           <div class="value">
-            {{ store.recordFilePath || t.newRecordWithBrackets }}
+            <span v-if="store.isRecordFileUnsaved" class="unsaved-marker">{{ t.unsaved }}</span>
+            {{ store.recordFilePath || t.newRecord }}
           </div>
         </div>
         <div
@@ -113,5 +114,17 @@ input.value {
   text-align: left;
   color: var(--main-color);
   background-color: var(--main-bg-color);
+}
+.unsaved-marker {
+  display: inline-block;
+  font-size: 0.8em;
+  vertical-align: 0.2em;
+  color: var(--main-color);
+  background-color: var(--main-bg-color);
+  padding-left: 5px;
+  padding-right: 5px;
+  box-sizing: border-box;
+  border: 1px solid var(--text-separator-color);
+  border-radius: 7px;
 }
 </style>

@@ -2,7 +2,15 @@
 
 import path from "path";
 import { app, protocol, BrowserWindow, session } from "electron";
-import { getAppState, openRecord, sendError, setInitialFilePath, setup } from "@/background/ipc";
+import {
+  getAppState,
+  isClosable,
+  onClose,
+  openRecord,
+  sendError,
+  setInitialFilePath,
+  setup,
+} from "@/background/ipc";
 import { loadAppSetting, loadWindowSetting, saveWindowSetting } from "@/background/settings";
 import { buildWindowSetting } from "@/common/settings/window";
 import { getAppLogger, shutdownLoggers } from "@/background/log";
@@ -61,6 +69,11 @@ function createWindow() {
     if (getAppState() === AppState.CSA_GAME) {
       event.preventDefault();
       sendError(new Error(t.youCanNotCloseAppWhileCSAOnlineGame));
+      return;
+    }
+    if (!isClosable()) {
+      event.preventDefault();
+      onClose();
       return;
     }
     setting = buildWindowSetting(setting, win);

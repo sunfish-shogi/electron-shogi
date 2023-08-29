@@ -6,7 +6,6 @@ export const zh_tw: Texts = {
   open: "開啟",
   saveOverwrite: "覆蓋檔案",
   newRecord: "新棋譜",
-  newRecordWithBrackets: "（新棋譜）",
   openRecord: "打開棋譜",
   saveRecord: "保存棋譜",
   saveRecordAs: "另存棋譜",
@@ -185,6 +184,7 @@ export const zh_tw: Texts = {
   recordFile: "棋譜檔案",
   executableFile: "可執行檔案",
   imageFile: "圖片檔案",
+  unsaved: "未保存", // TODO: translate
   remove: "刪除",
   deleteMove: "刪除該手",
   recordProperties: "棋譜情報",
@@ -277,6 +277,11 @@ export const zh_tw: Texts = {
   saveAndClose: "保存並關閉",
   save: "保存",
   saveAs: "另存為",
+  history: "履歴", // TODO: translate
+  clearHistory: "履歴をクリア", // TODO: translate
+  userFile: "ユーザーファイル", // TODO: translate
+  automaticBackup: "自動バックアップ", // TODO: translate
+  restore: "復元", // TODO: translate
   cancel: "取消",
   back: "返回",
   name: "名稱",
@@ -365,6 +370,7 @@ export const zh_tw: Texts = {
   areYouSureWantToDiscardPosition: "將不會保存現在的局面。請問您要繼續嗎？",
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "會將現在的棋譜關閉並開啟別的檔案，請問您要繼續嗎？",
+  areYouSureWantToClearHistory: "履歴をクリアします。よろしいですか？", // TODO: translate
   youCanNotCloseAppWhileCSAOnlineGame: "由於CSA協定正在使用中，本程式無法被關閉。",
   fileExtensionNotSupported: "無法支援的副檔名。",
   errorOccuredWhileDisconnectingFromCSAServer: "在與CSA伺服器中斷連線時發生錯誤。",

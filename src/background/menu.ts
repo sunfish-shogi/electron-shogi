@@ -8,6 +8,7 @@ import { AppState } from "@/common/control/state";
 import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
 import { t } from "@/common/i18n";
 import { InitialPositionSFEN } from "@/common/shogi";
+import { getAppPath } from "./environment";
 
 const isMac = process.platform === "darwin";
 
@@ -55,6 +56,7 @@ function createMenuTemplate() {
         menuItem(t.openRecord, MenuEvent.OPEN_RECORD, [AppState.NORMAL], "CmdOrCtrl+O"),
         menuItem(t.saveRecord, MenuEvent.SAVE_RECORD, [AppState.NORMAL], "CmdOrCtrl+S"),
         menuItem(t.saveRecordAs, MenuEvent.SAVE_RECORD_AS, [AppState.NORMAL], "CmdOrCtrl+Shift+S"),
+        menuItem(t.history, MenuEvent.HISTORY, [AppState.NORMAL], "CmdOrCtrl+H"),
         { type: "separator" },
         menuItem(t.batchConversion, MenuEvent.BATCH_CONVERSION, [AppState.NORMAL]),
         menuItem(
@@ -314,7 +316,7 @@ function createMenuTemplate() {
         {
           label: t.openAppDirectory,
           click: () => {
-            shell.openPath(path.dirname(app.getPath("exe")));
+            shell.openPath(path.dirname(getAppPath("exe")));
           },
         },
         {

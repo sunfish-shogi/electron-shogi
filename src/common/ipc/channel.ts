@@ -29,6 +29,11 @@ export enum Background {
   SAVE_CSA_GAME_SETTING_HISTORY = "saveCSAGameSettingHistory",
   LOAD_MATE_SEARCH_SETTING = "loadMateSearchSetting",
   SAVE_MATE_SEARCH_SETTING = "saveMateSearchSetting",
+  LOAD_RECORD_FILE_HISTORY = "loadRecordFileHistory",
+  ADD_RECORD_FILE_HISTORY = "addRecordFileHistory",
+  CLEAR_RECORD_FILE_HISTORY = "clearRecordFileHistory",
+  SAVE_RECORD_FILE_BACKUP = "saveRecordFileBackup",
+  LOAD_RECORD_FILE_BACKUP = "loadRecordFileBackup",
   LOAD_USI_ENGINE_SETTING = "loadUSIEngineSetting",
   SAVE_USI_ENGINE_SETTING = "saveUSIEngineSetting",
   SHOW_SELECT_USI_ENGINE_DIALOG = "showSelectUSIEngineDialog",
@@ -54,9 +59,11 @@ export enum Background {
   IS_ENCRYPTION_AVAILABLE = "isEncryptionAvailable",
   OPEN_LOG_FILE = "openLogFile",
   LOG = "log",
+  ON_CLOSABLE = "onClosable",
 }
 
 export enum Renderer {
+  CLOSE = "close",
   SEND_ERROR = "sendError",
   MENU_EVENT = "menuEvent",
   UPDATE_APP_SETTING = "updateAppSetting",

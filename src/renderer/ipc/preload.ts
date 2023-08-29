@@ -104,6 +104,21 @@ const api: Bridge = {
   async saveMateSearchSetting(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_MATE_SEARCH_SETTING, json);
   },
+  async loadRecordFileHistory(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_RECORD_FILE_HISTORY);
+  },
+  addRecordFileHistory(path: string): void {
+    ipcRenderer.send(Background.ADD_RECORD_FILE_HISTORY, path);
+  },
+  async clearRecordFileHistory(): Promise<void> {
+    ipcRenderer.invoke(Background.CLEAR_RECORD_FILE_HISTORY);
+  },
+  async saveRecordFileBackup(kif: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_RECORD_FILE_BACKUP, kif);
+  },
+  async loadRecordFileBackup(name: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_RECORD_FILE_BACKUP, name);
+  },
   async loadUSIEngineSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_USI_ENGINE_SETTING);
   },
@@ -196,7 +211,13 @@ const api: Bridge = {
     ipcRenderer.invoke(Background.OPEN_LOG_FILE, logType);
   },
   log(level: LogLevel, message: string): void {
-    ipcRenderer.invoke(Background.LOG, level, message);
+    ipcRenderer.send(Background.LOG, level, message);
+  },
+  onClosable(): void {
+    ipcRenderer.send(Background.ON_CLOSABLE);
+  },
+  onClose(callback: () => void): void {
+    ipcRenderer.on(Renderer.CLOSE, callback);
   },
   onSendError(callback: (e: Error) => void): void {
     ipcRenderer.on(Renderer.SEND_ERROR, (_, e) => {

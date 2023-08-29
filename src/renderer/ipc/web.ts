@@ -9,6 +9,7 @@ import { t } from "@/common/i18n";
 import { defaultCSAGameSettingHistory } from "@/common/settings/csa";
 import { defaultMateSearchSetting } from "@/common/settings/mate";
 import { defaultBatchConversionSetting } from "@/common/settings/conversion";
+import { getEmptyHistory } from "@/common/history";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
@@ -161,6 +162,21 @@ export const webAPI: Bridge = {
   async saveMateSearchSetting(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.MATE_SEARCH_SETTING, json);
   },
+  async loadRecordFileHistory(): Promise<string> {
+    return JSON.stringify(getEmptyHistory());
+  },
+  addRecordFileHistory(): void {
+    // Do Nothing
+  },
+  async clearRecordFileHistory(): Promise<void> {
+    // Do Nothing
+  },
+  async saveRecordFileBackup(): Promise<void> {
+    // Do Nothing
+  },
+  async loadRecordFileBackup(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   async loadUSIEngineSetting(): Promise<string> {
     return new USIEngineSettings().json;
   },
@@ -248,6 +264,12 @@ export const webAPI: Bridge = {
         console.error(message);
         break;
     }
+  },
+  onClosable(): void {
+    // Do Nothing
+  },
+  onClose(): void {
+    // Do Nothing
   },
   onSendError(): void {
     // Do Nothing

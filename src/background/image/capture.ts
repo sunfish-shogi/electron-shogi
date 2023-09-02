@@ -29,15 +29,16 @@ async function exportCaptureImage(rect: Rect, ext: string): Promise<void> {
   if (!win) {
     throw new Error("Failed to open dialog by unexpected error.");
   }
-  const appSetting = loadAppSetting();
-  const filePath = dialog.showSaveDialogSync(win, {
+  const appSetting = await loadAppSetting();
+  const ret = await dialog.showSaveDialog(win, {
     defaultPath: path.dirname(appSetting.lastImageExportFilePath),
     properties: ["createDirectory", "showOverwriteConfirmation"],
     filters: [{ name: ext.toUpperCase(), extensions: [ext] }],
   });
-  if (!filePath) {
+  if (ret.canceled || !ret.filePath) {
     return;
   }
+  const filePath = ret.filePath;
   onUpdateAppSetting({
     lastImageExportFilePath: filePath,
   });

@@ -15,7 +15,7 @@ import { saveAppSetting } from "@/background/settings";
 const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "es-test-conversion-"));
 
 describe("conversion", () => {
-  it("separately", () => {
+  it("separately", async () => {
     const testCases = [
       {
         sourceFormats: [
@@ -210,14 +210,14 @@ describe("conversion", () => {
         expectedFiles: ["ki2u-utf8.kifu"],
       },
     ];
-    saveAppSetting({
+    await saveAppSetting({
       ...defaultAppSetting(),
       returnCode: "\n",
     });
     for (const testCase of testCases) {
       const destinationFullPath = path.join(tmpdir, testCase.destination);
       for (let i = 0; i < 1 + (testCase.repeat || 0); i++) {
-        const result = convertRecordFiles({
+        const result = await convertRecordFiles({
           ...defaultBatchConversionSetting(),
           source: "src/tests/testdata/conversion/input",
           sourceFormats: testCase.sourceFormats,
@@ -235,7 +235,7 @@ describe("conversion", () => {
         );
       }
       const expectedFullPath = testCase.expectedFiles.map((f) => path.join(destinationFullPath, f));
-      const actualFilePaths = listFiles(destinationFullPath, Infinity).sort();
+      const actualFilePaths = (await listFiles(destinationFullPath, Infinity)).sort();
       expect(actualFilePaths).toStrictEqual(expectedFullPath);
       for (const filePath of actualFilePaths) {
         const relPath = path.relative(tmpdir, filePath);
@@ -247,7 +247,7 @@ describe("conversion", () => {
     }
   });
 
-  it("sfen", () => {
+  it("sfen", async () => {
     const testCases = [
       {
         appSetting: defaultAppSetting(),
@@ -302,9 +302,9 @@ describe("conversion", () => {
       },
     ];
     for (const testCase of testCases) {
-      saveAppSetting(testCase.appSetting);
+      await saveAppSetting(testCase.appSetting);
       const destinationFullPath = path.join(tmpdir, testCase.destination);
-      const result = convertRecordFiles({
+      const result = await convertRecordFiles({
         ...defaultBatchConversionSetting(),
         source: "src/tests/testdata/conversion/input",
         sourceFormats: [

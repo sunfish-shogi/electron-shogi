@@ -1,7 +1,7 @@
 import { BrowserWindow, dialog, FileFilter, ipcMain, shell, WebContents } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import path from "path";
-import fs from "fs";
+import { promises as fs } from "fs";
 import url from "url";
 import {
   loadAnalysisSetting,
@@ -116,17 +116,17 @@ ipcMain.on(Background.UPDATE_APP_STATE, (_, state: AppState, bussy: boolean) => 
   updateAppState(state, bussy);
 });
 
-ipcMain.on(Background.OPEN_EXPLORER, (_, targetPath: string) => {
-  const fullPath = resolvePath(targetPath);
-  const stats = fs.statSync(fullPath, { throwIfNoEntry: false });
-  if (!stats) {
+ipcMain.on(Background.OPEN_EXPLORER, async (_, targetPath: string) => {
+  try {
+    const fullPath = resolvePath(targetPath);
+    const stats = await fs.stat(fullPath);
+    if (stats.isDirectory()) {
+      shell.openPath(fullPath);
+    } else {
+      shell.openPath(path.dirname(fullPath));
+    }
+  } catch {
     sendError(new Error(t.failedToOpenDirectory(targetPath)));
-    return;
-  }
-  if (stats.isDirectory()) {
-    shell.openPath(fullPath);
-  } else {
-    shell.openPath(path.dirname(fullPath));
   }
 });
 
@@ -144,30 +144,18 @@ function isValidRecordFilePath(path: string) {
 
 ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
-  const win = BrowserWindow.getFocusedWindow();
-  if (!win) {
-    throw new Error("Failed to open dialog by unexpected error.");
-  }
-  const appSetting = loadAppSetting();
+  const appSetting = await loadAppSetting();
   getAppLogger().debug(`show open-record dialog`);
-  const results = dialog.showOpenDialogSync(win, {
-    defaultPath: appSetting.lastRecordFilePath,
-    properties: ["openFile"],
-    filters: [
-      {
-        name: t.recordFile,
-        extensions: ["kif", "kifu", "ki2", "ki2u", "csa", "jkf"],
-      },
-    ],
-  });
-  getAppLogger().debug(`open-record dialog result: ${results}`);
-  if (!results || results.length !== 1) {
-    return "";
+  const ret = await showOpenDialog(["openFile"], appSetting.lastRecordFilePath, [
+    {
+      name: t.recordFile,
+      extensions: ["kif", "kifu", "ki2", "ki2u", "csa", "jkf"],
+    },
+  ]);
+  if (ret) {
+    onUpdateAppSetting({ lastRecordFilePath: ret });
   }
-  onUpdateAppSetting({
-    lastRecordFilePath: results[0],
-  });
-  return results[0];
+  return ret;
 });
 
 ipcMain.handle(Background.OPEN_RECORD, async (event, path: string): Promise<Uint8Array> => {
@@ -176,11 +164,38 @@ ipcMain.handle(Background.OPEN_RECORD, async (event, path: string): Promise<Uint
     throw new Error(t.fileExtensionNotSupported);
   }
   getAppLogger().debug(`open record: ${path}`);
-  return fs.promises.readFile(path);
+  return fs.readFile(path);
 });
 
+async function showOpenDialog(
+  properties: ("openFile" | "createDirectory" | "openDirectory" | "noResolveAliases")[],
+  defaultPath?: string,
+  filters?: FileFilter[],
+  buttonLabel?: string,
+): Promise<string> {
+  const win = BrowserWindow.getFocusedWindow();
+  if (!win) {
+    throw new Error("Failed to open dialog by unexpected error.");
+  }
+  const ret = await dialog.showOpenDialog(win, {
+    defaultPath,
+    properties,
+    filters,
+    buttonLabel,
+  });
+  getAppLogger().debug(`open-record dialog result: ${JSON.stringify(ret)}`);
+  if (ret.canceled || ret.filePaths.length !== 1) {
+    return "";
+  }
+  return ret.filePaths[0];
+}
+
 // NOTE: This function mutates filters.
-function showSaveDialog(defaultPath: string, filters: FileFilter[], buttonLabel?: string): string {
+async function showSaveDialog(
+  defaultPath: string,
+  filters: FileFilter[],
+  buttonLabel?: string,
+): Promise<string> {
   const win = BrowserWindow.getFocusedWindow();
   if (!win) {
     throw new Error("failed to open dialog by unexpected error.");
@@ -193,14 +208,14 @@ function showSaveDialog(defaultPath: string, filters: FileFilter[], buttonLabel?
       : 0;
   });
   getAppLogger().debug("show save-record dialog");
-  const result = dialog.showSaveDialogSync(win, {
+  const ret = await dialog.showSaveDialog(win, {
     defaultPath: defaultPath,
     properties: ["createDirectory", "showOverwriteConfirmation"],
     filters,
     buttonLabel,
   });
-  getAppLogger().debug(`save-record dialog result: ${result}`);
-  return result || "";
+  getAppLogger().debug(`save-record dialog result: ${JSON.stringify(ret)}`);
+  return (!ret.canceled && ret.filePath) || "";
 }
 
 ipcMain.handle(
@@ -211,7 +226,7 @@ ipcMain.handle(
     if (!win) {
       throw new Error("failed to open dialog by unexpected error.");
     }
-    const appSetting = loadAppSetting();
+    const appSetting = await loadAppSetting();
     const filters = [
       { name: "KIF (Shift_JIS)", extensions: ["kif"] },
       { name: "KIF (UTF-8)", extensions: ["kifu"] },
@@ -220,7 +235,7 @@ ipcMain.handle(
       { name: "CSA", extensions: ["csa"] },
       { name: "JSON Kifu Format", extensions: ["jkf"] },
     ];
-    const result = showSaveDialog(
+    const result = await showSaveDialog(
       path.resolve(path.dirname(appSetting.lastRecordFilePath), defaultPath),
       filters,
     );
@@ -240,8 +255,8 @@ ipcMain.handle(
     }
     getAppLogger().debug(`save record: ${filePath} (${data.length} bytes)`);
     const dir = path.dirname(filePath);
-    fs.mkdirSync(dir, { recursive: true });
-    fs.promises.writeFile(filePath, data);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, data);
   },
 );
 
@@ -251,37 +266,22 @@ ipcMain.handle(Background.SHOW_SELECT_FILE_DIALOG, async (event): Promise<string
   if (!win) {
     throw new Error("failed to open dialog by unexpected error.");
   }
-  const appSetting = loadAppSetting();
+  const appSetting = await loadAppSetting();
   getAppLogger().debug("show select-file dialog");
-  const results = dialog.showOpenDialogSync(win, {
-    defaultPath: appSetting.lastOtherFilePath,
-    properties: ["openFile"],
-  });
-  getAppLogger().debug(`select-file dialog result: ${results}`);
-  if (!results || results.length !== 1) {
-    return "";
+  const ret = await showOpenDialog(["openFile"], appSetting.lastOtherFilePath);
+  if (ret) {
+    onUpdateAppSetting({ lastOtherFilePath: ret });
   }
-  onUpdateAppSetting({
-    lastOtherFilePath: results[0],
-  });
-  return results[0];
+  return ret;
 });
 
 ipcMain.handle(
   Background.SHOW_SELECT_DIRECTORY_DIALOG,
   async (event, defaultPath?: string): Promise<string> => {
     validateIPCSender(event.senderFrame);
-    const win = BrowserWindow.getFocusedWindow();
-    if (!win) {
-      throw new Error("failed to open dialog by unexpected error.");
-    }
     getAppLogger().debug("show select-directory dialog");
-    const results = dialog.showOpenDialogSync(win, {
-      defaultPath,
-      properties: ["createDirectory", "openDirectory"],
-    });
-    getAppLogger().debug(`select-directory dialog result: ${results}`);
-    return results && results.length === 1 ? results[0] : "";
+    const ret = await showOpenDialog(["createDirectory", "openDirectory"], defaultPath);
+    return ret;
   },
 );
 
@@ -294,13 +294,12 @@ ipcMain.handle(
       throw new Error("failed to open dialog by unexpected error.");
     }
     getAppLogger().debug("show select-image dialog");
-    const results = dialog.showOpenDialogSync(win, {
-      defaultPath: defaultURL && fileURLToPath(defaultURL, getAppPath("pictures")),
-      properties: ["openFile"],
-      filters: [{ name: t.imageFile, extensions: ["png", "jpg", "jpeg"] }],
-    });
-    getAppLogger().debug(`select-image dialog result: ${results}`);
-    return results && results.length === 1 ? url.pathToFileURL(results[0]).toString() : "";
+    const ret = await showOpenDialog(
+      ["openFile"],
+      defaultURL && fileURLToPath(defaultURL, getAppPath("pictures")),
+      [{ name: t.imageFile, extensions: ["png", "jpg", "jpeg"] }],
+    );
+    return ret !== "" ? url.pathToFileURL(ret).toString() : "";
   },
 );
 
@@ -313,7 +312,7 @@ ipcMain.handle(
       throw new Error("failed to open dialog by unexpected error.");
     }
     const filters = [{ name: "SFEN", extensions: ["sfen"] }];
-    return showSaveDialog(path.resolve(defaultPath), filters, "OK");
+    return await showSaveDialog(path.resolve(defaultPath), filters, "OK");
   },
 );
 
@@ -340,94 +339,100 @@ ipcMain.handle(Background.EXPORT_CAPTURE_AS_JPEG, async (event, json: string): P
   await exportCaptureJPEG(new Rect(json));
 });
 
-ipcMain.handle(Background.CONVERT_RECORD_FILES, (event, json: string): string => {
+ipcMain.handle(Background.CONVERT_RECORD_FILES, async (event, json: string): Promise<string> => {
   validateIPCSender(event.senderFrame);
   const setting = JSON.parse(json) as BatchConversionSetting;
-  return JSON.stringify(convertRecordFiles(setting));
+  return JSON.stringify(await convertRecordFiles(setting));
 });
 
-ipcMain.handle(Background.LOAD_APP_SETTING, (event): string => {
+ipcMain.handle(Background.LOAD_APP_SETTING, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load app setting");
-  return JSON.stringify(loadAppSetting());
+  return JSON.stringify(await loadAppSetting());
 });
 
-ipcMain.handle(Background.SAVE_APP_SETTING, (event, json: string): void => {
+ipcMain.handle(Background.SAVE_APP_SETTING, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("save app setting");
-  saveAppSetting(JSON.parse(json));
+  await saveAppSetting(JSON.parse(json));
 });
 
-ipcMain.handle(Background.LOAD_BATCH_CONVERSION_SETTING, (event): string => {
+ipcMain.handle(Background.LOAD_BATCH_CONVERSION_SETTING, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load batch conversion setting");
-  return JSON.stringify(loadBatchConversionSetting());
+  return JSON.stringify(await loadBatchConversionSetting());
 });
 
-ipcMain.handle(Background.SAVE_BATCH_CONVERSION_SETTING, (event, json: string): void => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save batch conversion setting");
-  saveBatchConversionSetting(JSON.parse(json));
-});
+ipcMain.handle(
+  Background.SAVE_BATCH_CONVERSION_SETTING,
+  async (event, json: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save batch conversion setting");
+    await saveBatchConversionSetting(JSON.parse(json));
+  },
+);
 
-ipcMain.handle(Background.LOAD_RESEARCH_SETTING, (event): string => {
+ipcMain.handle(Background.LOAD_RESEARCH_SETTING, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load research setting");
-  return JSON.stringify(loadResearchSetting());
+  return JSON.stringify(await loadResearchSetting());
 });
 
-ipcMain.handle(Background.SAVE_RESEARCH_SETTING, (event, json: string): void => {
+ipcMain.handle(Background.SAVE_RESEARCH_SETTING, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("save research setting");
-  saveResearchSetting(JSON.parse(json));
+  await saveResearchSetting(JSON.parse(json));
 });
 
-ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, (event): string => {
+ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load analysis setting");
-  return JSON.stringify(loadAnalysisSetting());
+  return JSON.stringify(await loadAnalysisSetting());
 });
 
-ipcMain.handle(Background.SAVE_ANALYSIS_SETTING, (event, json: string): void => {
+ipcMain.handle(Background.SAVE_ANALYSIS_SETTING, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("save analysis setting");
-  saveAnalysisSetting(JSON.parse(json));
+  await saveAnalysisSetting(JSON.parse(json));
 });
 
-ipcMain.handle(Background.LOAD_GAME_SETTING, (event): string => {
+ipcMain.handle(Background.LOAD_GAME_SETTING, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load game setting");
-  return JSON.stringify(loadGameSetting());
+  return JSON.stringify(await loadGameSetting());
 });
 
-ipcMain.handle(Background.SAVE_GAME_SETTING, (event, json: string): void => {
+ipcMain.handle(Background.SAVE_GAME_SETTING, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("save game setting");
-  saveGameSetting(JSON.parse(json));
+  await saveGameSetting(JSON.parse(json));
 });
 
-ipcMain.handle(Background.LOAD_CSA_GAME_SETTING_HISTORY, (event): string => {
+ipcMain.handle(Background.LOAD_CSA_GAME_SETTING_HISTORY, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load CSA game setting history");
-  return JSON.stringify(loadCSAGameSettingHistory());
+  return JSON.stringify(await loadCSAGameSettingHistory());
 });
 
-ipcMain.handle(Background.SAVE_CSA_GAME_SETTING_HISTORY, (event, json: string): void => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save CSA game setting history");
-  saveCSAGameSettingHistory(JSON.parse(json));
-});
+ipcMain.handle(
+  Background.SAVE_CSA_GAME_SETTING_HISTORY,
+  async (event, json: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save CSA game setting history");
+    await saveCSAGameSettingHistory(JSON.parse(json));
+  },
+);
 
-ipcMain.handle(Background.LOAD_MATE_SEARCH_SETTING, (event): string => {
+ipcMain.handle(Background.LOAD_MATE_SEARCH_SETTING, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load mate search setting");
-  return JSON.stringify(loadMateSearchSetting());
+  return JSON.stringify(await loadMateSearchSetting());
 });
 
-ipcMain.handle(Background.SAVE_MATE_SEARCH_SETTING, (event, json: string): void => {
+ipcMain.handle(Background.SAVE_MATE_SEARCH_SETTING, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("save mate search setting");
-  saveMateSearchSetting(JSON.parse(json));
+  await saveMateSearchSetting(JSON.parse(json));
 });
 
 ipcMain.handle(Background.LOAD_RECORD_FILE_HISTORY, async (event): Promise<string> => {
@@ -459,37 +464,35 @@ ipcMain.handle(Background.LOAD_RECORD_FILE_BACKUP, async (event, name: string): 
   return await loadBackup(name);
 });
 
-ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (event): string => {
+ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load USI engine setting");
-  return loadUSIEngineSetting().json;
+  return (await loadUSIEngineSetting()).json;
 });
 
-ipcMain.handle(Background.SAVE_USI_ENGINE_SETTING, (event, json: string): void => {
+ipcMain.handle(Background.SAVE_USI_ENGINE_SETTING, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("save USI engine setting");
-  saveUSIEngineSetting(new USIEngineSettings(json));
+  await saveUSIEngineSetting(new USIEngineSettings(json));
 });
 
-ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, (event): string => {
+ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   const win = BrowserWindow.getFocusedWindow();
   if (!win) {
     throw new Error("failed to open dialog by unexpected error.");
   }
-  const appSetting = loadAppSetting();
+  const appSetting = await loadAppSetting();
   getAppLogger().debug("show select-USI-engine dialog");
-  const results = dialog.showOpenDialogSync(win, {
-    defaultPath: appSetting.lastUSIEngineFilePath,
-    properties: ["openFile", "noResolveAliases"],
-    filters: isWindows
-      ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }]
-      : undefined,
-  });
-  if (!results || results.length !== 1) {
+  const ret = await showOpenDialog(
+    ["openFile", "noResolveAliases"],
+    appSetting.lastUSIEngineFilePath,
+    isWindows ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }] : undefined,
+  );
+  if (ret === "") {
     return "";
   }
-  const enginePath = getRelativePath(results[0]);
+  const enginePath = getRelativePath(ret);
   onUpdateAppSetting({
     lastUSIEngineFilePath: enginePath,
   });

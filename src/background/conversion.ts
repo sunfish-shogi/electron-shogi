@@ -10,11 +10,11 @@ import {
   DestinationType,
   FileNameConflictAction,
 } from "@/common/settings/conversion";
-import fs from "fs";
+import { promises as fs } from "fs";
 import path from "path";
 import { getAppLogger } from "@/background/log";
 import { AppSetting, TextDecodingRule } from "@/common/settings/app";
-import { listFiles } from "./helpers/file";
+import { exists, listFiles } from "./helpers/file";
 import { loadAppSetting } from "./settings";
 import {
   ImmutableNode,
@@ -24,15 +24,15 @@ import {
   SpecialMoveType,
 } from "@/common/shogi";
 
-function getAlternativeFilePathWithNumberSuffix(
+async function getAlternativeFilePathWithNumberSuffix(
   filePath: string,
   maxNumber: number,
-): string | Error {
+): Promise<string> {
   const parsed = path.parse(filePath);
   let suffix = 2;
-  while (fs.existsSync(filePath)) {
+  while (await exists(filePath)) {
     if (suffix > maxNumber) {
-      return new Error("Too many files with the same name");
+      throw new Error("Too many files with the same name");
     }
     filePath = path.join(parsed.dir, parsed.name + "-" + suffix + parsed.ext);
     suffix++;
@@ -40,8 +40,10 @@ function getAlternativeFilePathWithNumberSuffix(
   return filePath;
 }
 
-export function convertRecordFiles(setting: BatchConversionSetting): BatchConversionResult {
-  const appSetting = loadAppSetting();
+export async function convertRecordFiles(
+  setting: BatchConversionSetting,
+): Promise<BatchConversionResult> {
+  const appSetting = await loadAppSetting();
   const result: BatchConversionResult = {
     succeeded: {},
     succeededTotal: 0,
@@ -52,29 +54,29 @@ export function convertRecordFiles(setting: BatchConversionSetting): BatchConver
   };
 
   getAppLogger().debug(`batch conversion: start ${JSON.stringify(setting)}`);
-  const sourceFiles = listFiles(setting.source, setting.subdirectories ? Infinity : 0).filter(
-    (file) => {
-      const ext = path.extname(file).toLowerCase();
-      return setting.sourceFormats.includes(ext as RecordFileFormat);
-    },
-  );
+  const sourceFiles = (
+    await listFiles(setting.source, setting.subdirectories ? Infinity : 0)
+  ).filter((file) => {
+    const ext = path.extname(file).toLowerCase();
+    return setting.sourceFormats.includes(ext as RecordFileFormat);
+  });
 
   const writer =
     setting.destinationType === DestinationType.DIRECTORY
       ? new DirectoryWriter(setting, appSetting)
       : new SingleFileWriter(setting, appSetting);
-  writer.open();
-  sourceFiles.forEach((source) => {
+  await writer.open();
+  for (const source of sourceFiles) {
     const sourceFormat = detectRecordFileFormatByPath(source) as RecordFileFormat;
     try {
-      const sourceData = fs.readFileSync(source);
+      const sourceData = await fs.readFile(source);
       const record = importRecordFromBuffer(sourceData, sourceFormat, {
         autoDetect: appSetting.textDecodingRule === TextDecodingRule.AUTO_DETECT,
       });
       if (record instanceof Error) {
         throw record;
       }
-      if (writer.write(record, source)) {
+      if (await writer.write(record, source)) {
         result.succeededTotal++;
         result.succeeded[sourceFormat] = (result.succeeded[sourceFormat] || 0) + 1;
       } else {
@@ -86,8 +88,8 @@ export function convertRecordFiles(setting: BatchConversionSetting): BatchConver
       result.failed[sourceFormat] = (result.failed[sourceFormat] || 0) + 1;
       getAppLogger().debug(`batch conversion: failed: ${source}: ${e}`);
     }
-  });
-  writer.close();
+  }
+  await writer.close();
   getAppLogger().debug(`batch conversion: completed`);
 
   return result;
@@ -99,11 +101,11 @@ class DirectoryWriter {
     private appSetting: AppSetting,
   ) {}
 
-  open(): void {
+  async open(): Promise<void> {
     // noop
   }
 
-  write(record: ImmutableRecord, source: string): boolean {
+  async write(record: ImmutableRecord, source: string): Promise<boolean> {
     // Generate destination path
     const parsed = path.parse(path.relative(this.setting.source, source));
     const name = parsed.name + this.setting.destinationFormat;
@@ -111,18 +113,12 @@ class DirectoryWriter {
       this.setting.destination,
       this.setting.createSubdirectories ? path.join(parsed.dir, name) : name,
     );
-    if (fs.existsSync(destination)) {
+    if (await exists(destination)) {
       switch (this.setting.fileNameConflictAction) {
         case FileNameConflictAction.OVERWRITE:
           break;
         case FileNameConflictAction.NUMBER_SUFFIX:
-          {
-            const alt = getAlternativeFilePathWithNumberSuffix(destination, 1000);
-            if (alt instanceof Error) {
-              throw alt;
-            }
-            destination = alt;
-          }
+          destination = await getAlternativeFilePathWithNumberSuffix(destination, 1000);
           break;
         case FileNameConflictAction.SKIP:
           getAppLogger().debug(`batch conversion: skipped: ${source}`);
@@ -132,44 +128,44 @@ class DirectoryWriter {
 
     // Create directory if not exists
     const destinationDir = path.dirname(destination);
-    fs.mkdirSync(destinationDir, { recursive: true });
+    await fs.mkdir(destinationDir, { recursive: true });
 
     // Export record
     const exportResult = exportRecordAsBuffer(record, this.setting.destinationFormat, {
       returnCode: this.appSetting.returnCode,
     });
-    fs.writeFileSync(destination, exportResult.data);
+    await fs.writeFile(destination, exportResult.data);
     getAppLogger().debug(`batch conversion: succeeded: ${source} -> ${destination}`);
     return true;
   }
 
-  close(): void {
+  async close(): Promise<void> {
     // noop
   }
 }
 
 class SingleFileWriter {
-  private fd = 0;
+  private fd?: fs.FileHandle;
   constructor(
     private setting: BatchConversionSetting,
     private appSetting: AppSetting,
   ) {}
 
-  open(): void {
-    this.fd = fs.openSync(this.setting.singleFileDestination, "w");
+  async open(): Promise<void> {
+    this.fd = await fs.open(this.setting.singleFileDestination, "w");
   }
 
-  write(record: ImmutableRecord, source: string): boolean {
-    this.writeUSI(record);
+  async write(record: ImmutableRecord, source: string): Promise<boolean> {
+    await this.writeUSI(record);
     getAppLogger().debug(`batch conversion: succeeded: ${source}`);
     return true;
   }
 
-  close(): void {
-    fs.closeSync(this.fd);
+  async close(): Promise<void> {
+    await this.fd?.close();
   }
 
-  writeUSI(record: ImmutableRecord) {
+  async writeUSI(record: ImmutableRecord): Promise<void> {
     let position: string;
     const sfen = record.initialPosition.sfen;
     if (this.appSetting.enableUSIFileStartpos && sfen === InitialPositionSFEN.STANDARD) {
@@ -180,9 +176,9 @@ class SingleFileWriter {
     const branches = this.getUSIBranches(record);
     for (const moves of branches) {
       if (moves) {
-        fs.writeSync(this.fd, position + " moves" + moves + this.appSetting.returnCode);
+        await this.fd?.write(position + " moves" + moves + this.appSetting.returnCode);
       } else {
-        fs.writeSync(this.fd, position + this.appSetting.returnCode);
+        await this.fd?.write(position + this.appSetting.returnCode);
       }
     }
   }

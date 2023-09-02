@@ -39,6 +39,7 @@ import {
   defaultBatchConversionSetting,
   normalizeBatchConversionSetting,
 } from "@/common/settings/conversion";
+import { exists } from "./helpers/file";
 
 const userDir = getAppPath("userData");
 const rootDir = getPortableExeDir() || userDir;
@@ -48,8 +49,8 @@ export function openSettingsDirectory(): void {
   shell.openPath(rootDir);
 }
 
-export function openAutoSaveDirectory(): void {
-  const appSetting = loadAppSetting();
+export async function openAutoSaveDirectory(): Promise<void> {
+  const appSetting = await loadAppSetting();
   shell.openPath(appSetting.autoSaveDirectory || docDir);
 }
 
@@ -74,80 +75,104 @@ export function loadWindowSetting(): WindowSetting {
 
 const usiEngineSettingPath = path.join(rootDir, "usi_engine.json");
 
-export function saveUSIEngineSetting(setting: USIEngineSettings): void {
-  fs.writeFileSync(usiEngineSettingPath, setting.jsonWithIndent, "utf8");
+export async function saveUSIEngineSetting(setting: USIEngineSettings): Promise<void> {
+  await fs.promises.writeFile(usiEngineSettingPath, setting.jsonWithIndent, "utf8");
 }
 
-export function loadUSIEngineSetting(): USIEngineSettings {
-  if (!fs.existsSync(usiEngineSettingPath)) {
+export async function loadUSIEngineSetting(): Promise<USIEngineSettings> {
+  if (!(await exists(usiEngineSettingPath))) {
     return new USIEngineSettings();
   }
-  return new USIEngineSettings(fs.readFileSync(usiEngineSettingPath, "utf8"));
+  return new USIEngineSettings(await fs.promises.readFile(usiEngineSettingPath, "utf8"));
 }
 
 const appSettingPath = path.join(userDir, "app_setting.json");
 
-export function saveAppSetting(setting: AppSetting): void {
-  fs.writeFileSync(appSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
+export async function saveAppSetting(setting: AppSetting): Promise<void> {
+  await fs.promises.writeFile(appSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
 }
 
-export function loadAppSetting(): AppSetting {
-  const defautlReturnCode = process.platform === "win32" ? "\r\n" : "\n";
-  if (!fs.existsSync(appSettingPath)) {
-    return defaultAppSetting({
-      returnCode: defautlReturnCode,
-      autoSaveDirectory: docDir,
-    });
-  }
-  return normalizeAppSetting(JSON.parse(fs.readFileSync(appSettingPath, "utf8")), {
-    returnCode: defautlReturnCode,
+const defaultReturnCode = process.platform === "win32" ? "\r\n" : "\n";
+
+function getDefaultAppSetting(): AppSetting {
+  return defaultAppSetting({
+    returnCode: defaultReturnCode,
     autoSaveDirectory: docDir,
   });
 }
 
-const batchConversionSettingPath = path.join(rootDir, "batch_conversion_setting.json");
-
-export function saveBatchConversionSetting(setting: BatchConversionSetting): void {
-  fs.writeFileSync(batchConversionSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
+function loadAppSettingFromMemory(json: string): AppSetting {
+  return normalizeAppSetting(JSON.parse(json), {
+    returnCode: defaultReturnCode,
+    autoSaveDirectory: docDir,
+  });
 }
 
-export function loadBatchConversionSetting(): BatchConversionSetting {
-  if (!fs.existsSync(batchConversionSettingPath)) {
+export function loadAppSettingSync(): AppSetting {
+  if (!fs.existsSync(appSettingPath)) {
+    return getDefaultAppSetting();
+  }
+  return loadAppSettingFromMemory(fs.readFileSync(appSettingPath, "utf8"));
+}
+
+export async function loadAppSetting(): Promise<AppSetting> {
+  if (!(await exists(appSettingPath))) {
+    return getDefaultAppSetting();
+  }
+  return loadAppSettingFromMemory(await fs.promises.readFile(appSettingPath, "utf8"));
+}
+
+const batchConversionSettingPath = path.join(rootDir, "batch_conversion_setting.json");
+
+export async function saveBatchConversionSetting(setting: BatchConversionSetting): Promise<void> {
+  await fs.promises.writeFile(
+    batchConversionSettingPath,
+    JSON.stringify(setting, undefined, 2),
+    "utf8",
+  );
+}
+
+export async function loadBatchConversionSetting(): Promise<BatchConversionSetting> {
+  if (!(await exists(batchConversionSettingPath))) {
     return defaultBatchConversionSetting();
   }
   return normalizeBatchConversionSetting(
-    JSON.parse(fs.readFileSync(batchConversionSettingPath, "utf8")),
+    JSON.parse(await fs.promises.readFile(batchConversionSettingPath, "utf8")),
   );
 }
 
 const gameSettingPath = path.join(rootDir, "game_setting.json");
 
-export function saveGameSetting(setting: GameSetting): void {
-  fs.writeFileSync(gameSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
+export async function saveGameSetting(setting: GameSetting): Promise<void> {
+  await fs.promises.writeFile(gameSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
 }
 
-export function loadGameSetting(): GameSetting {
-  if (!fs.existsSync(gameSettingPath)) {
+export async function loadGameSetting(): Promise<GameSetting> {
+  if (!(await exists(gameSettingPath))) {
     return defaultGameSetting();
   }
-  return normalizeGameSetting(JSON.parse(fs.readFileSync(gameSettingPath, "utf8")));
+  return normalizeGameSetting(JSON.parse(await fs.promises.readFile(gameSettingPath, "utf8")));
 }
 
 const csaGameSettingHistoryPath = path.join(rootDir, "csa_game_setting_history.json");
 
-export function saveCSAGameSettingHistory(setting: CSAGameSettingHistory): void {
+export async function saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void> {
   const encrypted = encryptCSAGameSettingHistory(
     setting,
     isEncryptionAvailable() ? EncryptString : undefined,
   );
-  fs.writeFileSync(csaGameSettingHistoryPath, JSON.stringify(encrypted, undefined, 2), "utf8");
+  await fs.promises.writeFile(
+    csaGameSettingHistoryPath,
+    JSON.stringify(encrypted, undefined, 2),
+    "utf8",
+  );
 }
 
-export function loadCSAGameSettingHistory(): CSAGameSettingHistory {
-  if (!fs.existsSync(csaGameSettingHistoryPath)) {
+export async function loadCSAGameSettingHistory(): Promise<CSAGameSettingHistory> {
+  if (!(await exists(csaGameSettingHistoryPath))) {
     return defaultCSAGameSettingHistory();
   }
-  const encrypted = JSON.parse(fs.readFileSync(csaGameSettingHistoryPath, "utf8"));
+  const encrypted = JSON.parse(await fs.promises.readFile(csaGameSettingHistoryPath, "utf8"));
   return decryptCSAGameSettingHistory(
     normalizeSecureCSAGameSettingHistory(encrypted),
     isEncryptionAvailable() ? DecryptString : undefined,
@@ -156,39 +181,45 @@ export function loadCSAGameSettingHistory(): CSAGameSettingHistory {
 
 const researchSettingPath = path.join(rootDir, "research_setting.json");
 
-export function saveResearchSetting(setting: ResearchSetting): void {
-  fs.writeFileSync(researchSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
+export async function saveResearchSetting(setting: ResearchSetting): Promise<void> {
+  await fs.promises.writeFile(researchSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
 }
 
-export function loadResearchSetting(): ResearchSetting {
-  if (!fs.existsSync(researchSettingPath)) {
+export async function loadResearchSetting(): Promise<ResearchSetting> {
+  if (!(await exists(researchSettingPath))) {
     return defaultResearchSetting();
   }
-  return normalizeResearchSetting(JSON.parse(fs.readFileSync(researchSettingPath, "utf8")));
+  return normalizeResearchSetting(
+    JSON.parse(await fs.promises.readFile(researchSettingPath, "utf8")),
+  );
 }
 
 const analysisSettingPath = path.join(rootDir, "analysis_setting.json");
 
-export function saveAnalysisSetting(setting: AnalysisSetting): void {
-  fs.writeFileSync(analysisSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
+export async function saveAnalysisSetting(setting: AnalysisSetting): Promise<void> {
+  await fs.promises.writeFile(analysisSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
 }
 
-export function loadAnalysisSetting(): AnalysisSetting {
-  if (!fs.existsSync(analysisSettingPath)) {
+export async function loadAnalysisSetting(): Promise<AnalysisSetting> {
+  if (!(await exists(analysisSettingPath))) {
     return defaultAnalysisSetting();
   }
-  return normalizeAnalysisSetting(JSON.parse(fs.readFileSync(analysisSettingPath, "utf8")));
+  return normalizeAnalysisSetting(
+    JSON.parse(await fs.promises.readFile(analysisSettingPath, "utf8")),
+  );
 }
 
 const mateSearchSettingPath = path.join(rootDir, "mate_search_setting.json");
 
-export function saveMateSearchSetting(setting: MateSearchSetting): void {
-  fs.writeFileSync(mateSearchSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
+export async function saveMateSearchSetting(setting: MateSearchSetting): Promise<void> {
+  await fs.promises.writeFile(mateSearchSettingPath, JSON.stringify(setting, undefined, 2), "utf8");
 }
 
-export function loadMateSearchSetting(): MateSearchSetting {
-  if (!fs.existsSync(mateSearchSettingPath)) {
+export async function loadMateSearchSetting(): Promise<MateSearchSetting> {
+  if (!(await exists(mateSearchSettingPath))) {
     return defaultMateSearchSetting();
   }
-  return normalizeMateSearchSetting(JSON.parse(fs.readFileSync(mateSearchSettingPath, "utf8")));
+  return normalizeMateSearchSetting(
+    JSON.parse(await fs.promises.readFile(mateSearchSettingPath, "utf8")),
+  );
 }

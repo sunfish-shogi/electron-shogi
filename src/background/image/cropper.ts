@@ -1,11 +1,12 @@
 import path from "path";
 import url from "url";
-import fs from "fs";
+import { promises as fs } from "fs";
 import { fileURLToPath } from "node:url";
 import { getAppLogger } from "../log";
 import Jimp from "jimp";
 import { Md5 } from "ts-md5";
 import { imageCacheDir } from "./cache";
+import { exists } from "../helpers/file";
 
 function getCroppedPieceImageDir(srcURL: string): string {
   return path.join(imageCacheDir, "pieces", Md5.hashStr(srcURL));
@@ -34,8 +35,8 @@ export async function cropPieceImage(srcURL: string): Promise<void> {
   getAppLogger().debug(`generate cropped piece images: src=${srcPath} dst=${destDir}`);
 
   // create folder if there is no folder
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, { recursive: true });
+  if (!(await exists(destDir))) {
+    await fs.mkdir(destDir, { recursive: true });
   }
   const pic = await Jimp.read(srcPath);
   let width: number = pic.getWidth();
@@ -77,7 +78,7 @@ export async function cropPieceImage(srcURL: string): Promise<void> {
           break;
       }
       const destName = `${side}_${piecesSet[j]}.png`;
-      if (!fs.existsSync(path.join(destDir, destName))) {
+      if (!(await exists(path.join(destDir, destName)))) {
         await Jimp.read(srcPath).then((image) => {
           image.crop(j * width, i * height, width, height).writeAsync(path.join(destDir, destName));
         });

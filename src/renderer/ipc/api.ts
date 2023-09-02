@@ -14,6 +14,7 @@ import { Rect } from "@/common/graphics";
 import { MateSearchSetting } from "@/common/settings/mate";
 import { BatchConversionSetting } from "@/common/settings/conversion";
 import { BatchConversionResult } from "@/common/conversion";
+import { RecordFileHistory } from "@/common/history";
 
 type AppInfo = {
   appVersion?: string;
@@ -50,6 +51,11 @@ export interface Bridge {
   saveCSAGameSettingHistory(setting: string): Promise<void>;
   loadMateSearchSetting(): Promise<string>;
   saveMateSearchSetting(setting: string): Promise<void>;
+  loadRecordFileHistory(): Promise<string>;
+  addRecordFileHistory(path: string): void;
+  clearRecordFileHistory(): Promise<void>;
+  saveRecordFileBackup(kif: string): Promise<void>;
+  loadRecordFileBackup(name: string): Promise<string>;
   loadUSIEngineSetting(): Promise<string>;
   saveUSIEngineSetting(setting: string): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
@@ -87,6 +93,8 @@ export interface Bridge {
   isEncryptionAvailable(): Promise<boolean>;
   openLogFile(logType: LogType): void;
   log(level: LogLevel, message: string): void;
+  onClosable(): void;
+  onClose(callback: () => void): void;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
   onUpdateAppSetting(callback: (json: string) => void): void;
@@ -141,6 +149,11 @@ export interface API {
   saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void>;
   loadMateSearchSetting(): Promise<MateSearchSetting>;
   saveMateSearchSetting(setting: MateSearchSetting): Promise<void>;
+  loadRecordFileHistory(): Promise<RecordFileHistory>;
+  addRecordFileHistory(path: string): void;
+  clearRecordFileHistory(): Promise<void>;
+  saveRecordFileBackup(kif: string): Promise<void>;
+  loadRecordFileBackup(name: string): Promise<string>;
   loadUSIEngineSetting(): Promise<USIEngineSettings>;
   saveUSIEngineSetting(setting: USIEngineSettings): Promise<void>;
   showSelectUSIEngineDialog(): Promise<string>;
@@ -251,6 +264,9 @@ const api: API = {
   },
   saveMateSearchSetting(setting: MateSearchSetting): Promise<void> {
     return bridge.saveMateSearchSetting(JSON.stringify(setting));
+  },
+  async loadRecordFileHistory(): Promise<RecordFileHistory> {
+    return JSON.parse(await bridge.loadRecordFileHistory());
   },
   async loadUSIEngineSetting(): Promise<USIEngineSettings> {
     return new USIEngineSettings(await bridge.loadUSIEngineSetting());

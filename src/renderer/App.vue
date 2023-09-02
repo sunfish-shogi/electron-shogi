@@ -7,6 +7,7 @@
     <AnalysisDialog v-if="store.appState === AppState.ANALYSIS_DIALOG" />
     <MateSearchDialog v-if="store.appState === AppState.MATE_SEARCH_DIALOG" />
     <USIEngineManagementDialog v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG" />
+    <RecordFileHistoryDialog v-if="store.appState === AppState.RECORD_FILE_HISTORY_DIALOG" />
     <BatchConversionDialog v-if="store.appState === AppState.BATCH_CONVERSION_DIALOG" />
     <ExportPositionImageDialog v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG" />
     <AppSettingDialog v-if="store.isAppSettingDialogVisible" />
@@ -61,6 +62,7 @@ import { useAppSetting } from "./store/setting";
 import { BackgroundImageType } from "@/common/settings/app";
 import MateSearchDialog from "./view/dialog/MateSearchDialog.vue";
 import PVPreviewDialog from "./view/dialog/PVPreviewDialog.vue";
+import RecordFileHistoryDialog from "./view/dialog/RecordFileHistoryDialog.vue";
 import BatchConversionDialog from "./view/dialog/BatchConversionDialog.vue";
 
 const appSetting = useAppSetting();

@@ -25,10 +25,21 @@ import {
 } from "@/renderer/store/csa";
 import { useAppSetting } from "@/renderer/store/setting";
 import { t } from "@/common/i18n";
+import { LogLevel } from "@/common/log";
 
 export function setup(): void {
   const store = useStore();
   const appSetting = useAppSetting();
+  bridge.onClose(() => {
+    store
+      .onMainWindowClose()
+      .catch((e) => {
+        bridge.log(LogLevel.ERROR, e.message);
+      })
+      .finally(() => {
+        bridge.onClosable();
+      });
+  });
   bridge.onSendError((e: Error) => {
     store.pushError(e);
   });
@@ -49,6 +60,9 @@ export function setup(): void {
         break;
       case MenuEvent.SAVE_RECORD_AS:
         store.saveRecord();
+        break;
+      case MenuEvent.HISTORY:
+        store.showRecordFileHistoryDialog();
         break;
       case MenuEvent.BATCH_CONVERSION:
         store.showBatchConversionDialog();

@@ -1,13 +1,13 @@
 import path from "path";
-import { app, shell } from "electron";
+import { shell } from "electron";
 import log4js from "log4js";
 import { loadAppSetting } from "@/background/settings";
 import { getDateTimeString } from "@/common/helpers/datetime";
-import { isTest } from "./environment";
+import { getAppPath, isTest } from "./environment";
 import { AppSetting } from "@/common/settings/app";
 import { LogType } from "@/common/log";
 
-const rootDir = !isTest() ? app.getPath("logs") : "";
+const rootDir = getAppPath("logs");
 
 export function openLogsDirectory(): void {
   shell.openPath(rootDir);

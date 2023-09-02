@@ -13,6 +13,7 @@ import {
   DoMoveOption,
   SpecialMoveType,
   exportKI2,
+  RecordFormatType,
 } from "@/common/shogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
@@ -88,10 +89,7 @@ function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] 
   ];
 }
 
-type OnChangeFilePath = (path?: string) => void;
-
 class Store {
-  private onChangeFilePath: OnChangeFilePath[] = [];
   private _bussy = new BussyStore();
   private _message = new MessageStore();
   private _error = new ErrorStore();
@@ -112,11 +110,6 @@ class Store {
   private garbledNotified = false;
 
   constructor() {
-    this.recordManager.on("changeFilePath", (path?: string) => {
-      for (const listener of this.onChangeFilePath) {
-        listener(path);
-      }
-    });
     this.recordManager.on("changePosition", () => {
       this.onUpdatePosition();
     });
@@ -154,16 +147,6 @@ class Store {
       .on("noMate", this.onNoMate.bind(refs))
       .on("error", this.onCheckmateError.bind(refs));
     this._reactive = refs;
-  }
-
-  addListener(event: "changeFilePath", listener: OnChangeFilePath): this;
-  addListener(event: string, listener: unknown): this {
-    switch (event) {
-      case "changeFilePath":
-        this.onChangeFilePath.push(listener as OnChangeFilePath);
-        break;
-    }
-    return this;
   }
 
   get reactive(): UnwrapNestedRefs<Store> {
@@ -221,6 +204,10 @@ class Store {
 
   get recordFilePath(): string | undefined {
     return this.recordManager.recordFilePath;
+  }
+
+  get isRecordFileUnsaved(): boolean {
+    return this.recordManager.unsaved;
   }
 
   get inCommentPVs(): Move[][] {
@@ -348,6 +335,12 @@ class Store {
     }
   }
 
+  showRecordFileHistoryDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.RECORD_FILE_HISTORY_DIALOG;
+    }
+  }
+
   showBatchConversionDialog(): void {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.BATCH_CONVERSION_DIALOG;
@@ -370,6 +363,7 @@ class Store {
       this.appState === AppState.MATE_SEARCH_DIALOG ||
       this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
       this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG ||
+      this.appState === AppState.RECORD_FILE_HISTORY_DIALOG ||
       this.appState === AppState.BATCH_CONVERSION_DIALOG
     ) {
       this._appState = AppState.NORMAL;
@@ -1073,6 +1067,31 @@ class Store {
     }
   }
 
+  restoreFromBackup(name: string): void {
+    if (this.appState !== AppState.RECORD_FILE_HISTORY_DIALOG || this.isBussy) {
+      return;
+    }
+    this.retainBussyState();
+    api
+      .loadRecordFileBackup(name)
+      .then((data) => {
+        const err = this.recordManager.importRecord(data, {
+          type: RecordFormatType.KIF,
+          markAsSaved: true,
+        });
+        if (err) {
+          return Promise.reject(err);
+        }
+        this._appState = AppState.NORMAL;
+      })
+      .catch((e) => {
+        this.pushError(e);
+      })
+      .finally(() => {
+        this.releaseBussyState();
+      });
+  }
+
   get isMovableByUser() {
     switch (this.appState) {
       case AppState.NORMAL:
@@ -1090,6 +1109,15 @@ class Store {
         );
     }
     return false;
+  }
+
+  async onMainWindowClose(): Promise<void> {
+    this.retainBussyState();
+    try {
+      await this.recordManager.saveBackup();
+    } finally {
+      this.releaseBussyState();
+    }
   }
 }
 

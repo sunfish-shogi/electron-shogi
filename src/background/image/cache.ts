@@ -1,6 +1,5 @@
 import path from "path";
-import { app } from "electron";
-import { getPortableExeDir, isTest } from "@/background/environment";
+import { getAppPath, getPortableExeDir } from "@/background/environment";
 
-const userDataRoot = getPortableExeDir() || !isTest() ? app.getPath("userData") : "";
+const userDataRoot = getPortableExeDir() || getAppPath("userData");
 export const imageCacheDir = path.join(userDataRoot, "image_cache");

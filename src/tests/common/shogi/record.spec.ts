@@ -339,6 +339,66 @@ describe("shogi/record", () => {
     );
   });
 
+  it("removeCurrentMove", () => {
+    const data = `
+1 ７六歩(77)
+2 ３四歩(33)
+3 ７五歩(76)
+4 ８四歩(83)
+5 ７八飛(28)
+`;
+    const record = importKIF(data) as Record;
+
+    record.goto(4);
+    expect(record.current.ply).toBe(4);
+    expect(record.removeCurrentMove()).toBeTruthy();
+    expect(record.moves.length).toBe(4);
+    expect(record.current.ply).toBe(3);
+
+    record.goto(0);
+    expect(record.current.ply).toBe(0);
+    expect(record.removeCurrentMove()).toBeTruthy();
+    expect(record.moves.length).toBe(1);
+    expect(record.current.ply).toBe(0);
+
+    expect(record.removeCurrentMove()).toBeFalsy();
+    expect(record.moves.length).toBe(1);
+    expect(record.current.ply).toBe(0);
+  });
+
+  it("removeNextMove", () => {
+    const data = `
+1 ７六歩(77)
+2 ３四歩(33)
+3 ７五歩(76)
+4 ８四歩(83)
+5 ７八飛(28)
+`;
+    const record = importKIF(data) as Record;
+
+    record.goto(5);
+    expect(record.current.ply).toBe(5);
+    expect(record.removeNextMove()).toBeFalsy();
+    expect(record.moves.length).toBe(6);
+    expect(record.current.ply).toBe(5);
+
+    record.goto(4);
+    expect(record.current.ply).toBe(4);
+    expect(record.removeNextMove()).toBeTruthy();
+    expect(record.moves.length).toBe(5);
+    expect(record.current.ply).toBe(4);
+
+    record.goto(0);
+    expect(record.current.ply).toBe(0);
+    expect(record.removeCurrentMove()).toBeTruthy();
+    expect(record.moves.length).toBe(1);
+    expect(record.current.ply).toBe(0);
+
+    expect(record.removeCurrentMove()).toBeFalsy();
+    expect(record.moves.length).toBe(1);
+    expect(record.current.ply).toBe(0);
+  });
+
   it("bookmark", () => {
     const data = `
 手合割：平手

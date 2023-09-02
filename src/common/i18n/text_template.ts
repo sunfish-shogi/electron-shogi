@@ -4,7 +4,6 @@ export type Texts = {
   open: string;
   saveOverwrite: string;
   newRecord: string;
-  newRecordWithBrackets: string;
   openRecord: string;
   saveRecord: string;
   saveRecordAs: string;
@@ -183,6 +182,7 @@ export type Texts = {
   recordFile: string;
   executableFile: string;
   imageFile: string;
+  unsaved: string;
   remove: string;
   deleteMove: string;
   recordProperties: string;
@@ -275,6 +275,11 @@ export type Texts = {
   saveAndClose: string;
   save: string;
   saveAs: string;
+  history: string;
+  clearHistory: string;
+  userFile: string;
+  automaticBackup: string;
+  restore: string;
   cancel: string;
   back: string;
   name: string;
@@ -360,6 +365,7 @@ export type Texts = {
   areYouSureWantToClearRecord: string;
   areYouSureWantToDiscardPosition: string;
   areYouSureWantToOpenFileInsteadOfCurrentRecord: string;
+  areYouSureWantToClearHistory: string;
   youCanNotCloseAppWhileCSAOnlineGame: string;
   fileExtensionNotSupported: string;
   errorOccuredWhileDisconnectingFromCSAServer: string;

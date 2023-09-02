@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, FileFilter, ipcMain, shell, WebContents } from "electron";
+import { BrowserWindow, dialog, FileFilter, ipcMain, shell, WebContents } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import path from "path";
 import fs from "fs";
@@ -66,12 +66,15 @@ import { AppSettingUpdate } from "@/common/settings/app";
 import { getCroppedPieceImageBaseURL } from "@/background/image/cropper";
 import { convertRecordFiles } from "./conversion";
 import { BatchConversionSetting } from "@/common/settings/conversion";
+import { addHistory, clearHistory, getHistory, loadBackup, saveBackup } from "./history";
+import { getAppPath } from "./environment";
 
 const isWindows = process.platform === "win32";
 
 let initialFilePath = "";
 let mainWindow: BrowserWindow; // TODO: refactoring
 let appState = AppState.NORMAL;
+let closable = false;
 
 export function setInitialFilePath(path: string): void {
   initialFilePath = path;
@@ -84,6 +87,10 @@ export function setup(win: BrowserWindow): void {
 
 export function getAppState(): AppState {
   return appState;
+}
+
+export function isClosable(): boolean {
+  return closable;
 }
 
 export function getWebContents(): WebContents {
@@ -288,7 +295,7 @@ ipcMain.handle(
     }
     getAppLogger().debug("show select-image dialog");
     const results = dialog.showOpenDialogSync(win, {
-      defaultPath: defaultURL && fileURLToPath(defaultURL, app.getPath("pictures")),
+      defaultPath: defaultURL && fileURLToPath(defaultURL, getAppPath("pictures")),
       properties: ["openFile"],
       filters: [{ name: t.imageFile, extensions: ["png", "jpg", "jpeg"] }],
     });
@@ -421,6 +428,35 @@ ipcMain.handle(Background.SAVE_MATE_SEARCH_SETTING, (event, json: string): void 
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("save mate search setting");
   saveMateSearchSetting(JSON.parse(json));
+});
+
+ipcMain.handle(Background.LOAD_RECORD_FILE_HISTORY, async (event): Promise<string> => {
+  validateIPCSender(event.senderFrame);
+  return JSON.stringify(await getHistory());
+});
+
+ipcMain.on(Background.ADD_RECORD_FILE_HISTORY, (event, path: string): void => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("add record file history: %s", path);
+  addHistory(path);
+});
+
+ipcMain.handle(Background.CLEAR_RECORD_FILE_HISTORY, async (event): Promise<void> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("clear record file history");
+  clearHistory();
+});
+
+ipcMain.handle(Background.SAVE_RECORD_FILE_BACKUP, async (event, kif: string): Promise<void> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("save record file backup");
+  await saveBackup(kif);
+});
+
+ipcMain.handle(Background.LOAD_RECORD_FILE_BACKUP, async (event, name: string): Promise<string> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load record file backup: %s", name);
+  return await loadBackup(name);
 });
 
 ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, (event): string => {
@@ -598,7 +634,7 @@ ipcMain.handle(Background.OPEN_LOG_FILE, (event, logType: LogType) => {
   openLogFile(logType);
 });
 
-ipcMain.handle(Background.LOG, (event, level: LogLevel, message: string) => {
+ipcMain.on(Background.LOG, (event, level: LogLevel, message: string) => {
   validateIPCSender(event.senderFrame);
   switch (level) {
     case LogLevel.DEBUG:
@@ -615,6 +651,16 @@ ipcMain.handle(Background.LOG, (event, level: LogLevel, message: string) => {
       break;
   }
 });
+
+ipcMain.on(Background.ON_CLOSABLE, (event) => {
+  validateIPCSender(event.senderFrame);
+  closable = true;
+  mainWindow.close();
+});
+
+export function onClose(): void {
+  mainWindow.webContents.send(Renderer.CLOSE);
+}
 
 export function sendError(e: Error): void {
   mainWindow.webContents.send(Renderer.SEND_ERROR, e);

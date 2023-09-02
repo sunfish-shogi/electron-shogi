@@ -1,6 +1,5 @@
 import fs from "fs";
-import os from "os";
-import { app, shell } from "electron";
+import { shell } from "electron";
 import path from "path";
 import { USIEngineSettings } from "@/common/settings/usi";
 import { AppSetting, defaultAppSetting, normalizeAppSetting } from "@/common/settings/app";
@@ -29,7 +28,7 @@ import {
   normalizeSecureCSAGameSettingHistory,
 } from "@/common/settings/csa";
 import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
-import { getPortableExeDir, isTest } from "./environment";
+import { getAppPath, getPortableExeDir } from "./environment";
 import {
   MateSearchSetting,
   defaultMateSearchSetting,
@@ -41,9 +40,9 @@ import {
   normalizeBatchConversionSetting,
 } from "@/common/settings/conversion";
 
-const userDir = !isTest() ? app.getPath("userData") : os.tmpdir();
+const userDir = getAppPath("userData");
 const rootDir = getPortableExeDir() || userDir;
-const docDir = !isTest() ? path.join(app.getPath("documents"), "ElectronShogi") : os.tmpdir();
+const docDir = path.join(getAppPath("documents"), "ElectronShogi");
 
 export function openSettingsDirectory(): void {
   shell.openPath(rootDir);

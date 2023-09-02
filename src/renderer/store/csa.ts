@@ -284,7 +284,9 @@ export class CSAGameManager {
     this.gameSummary = gameSummary;
 
     // 開始局面（途中再開の場合は再開局面までの指し手）を読み込む。
-    const error = this.recordManager.importRecord(this.gameSummary.position, RecordFormatType.CSA);
+    const error = this.recordManager.importRecord(this.gameSummary.position, {
+      type: RecordFormatType.CSA,
+    });
     if (error) {
       this.onError(`CSAGameManager#onGameSummary: ${error}`);
       this.close(ReloginBehavior.DO_NOT_RELOGIN);

@@ -27,6 +27,20 @@ export function getPortableExeDir(): string | undefined {
   return process.env.PORTABLE_EXECUTABLE_DIR;
 }
 
+let tempPathForTesting: string;
+
+export function getTempPathForTesting(): string {
+  if (!tempPathForTesting) {
+    tempPathForTesting = fs.mkdtempSync(path.join(os.tmpdir(), "electron-shogi-test-"));
+  }
+  return tempPathForTesting;
+}
+
 export function getAppPath(name: "userData" | "logs" | "exe" | "documents" | "pictures"): string {
-  return !isTest() ? app.getPath(name) : fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
+  if (isTest()) {
+    const tempPath = path.join(getTempPathForTesting(), name);
+    fs.mkdirSync(tempPath, { recursive: true });
+    return tempPath;
+  }
+  return app.getPath(name);
 }

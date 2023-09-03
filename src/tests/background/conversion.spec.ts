@@ -7,12 +7,12 @@ import {
 } from "@/common/settings/conversion";
 import fs from "fs";
 import path from "path";
-import os from "os";
 import { listFiles } from "@/background/helpers/file";
 import { defaultAppSetting } from "@/common/settings/app";
 import { saveAppSetting } from "@/background/settings";
+import { getTempPathForTesting } from "@/background/environment";
 
-const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "es-test-conversion-"));
+const tmpdir = path.join(getTempPathForTesting(), "conversion");
 
 describe("conversion", () => {
   it("separately", async () => {

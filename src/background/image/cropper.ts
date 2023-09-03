@@ -1,15 +1,15 @@
 import path from "path";
 import url from "url";
+import crypto from "crypto";
 import { promises as fs } from "fs";
-import { fileURLToPath } from "node:url";
 import { getAppLogger } from "../log";
 import Jimp from "jimp";
-import { Md5 } from "ts-md5";
 import { imageCacheDir } from "./cache";
 import { exists } from "../helpers/file";
 
 function getCroppedPieceImageDir(srcURL: string): string {
-  return path.join(imageCacheDir, "pieces", Md5.hashStr(srcURL));
+  const md5 = crypto.createHash("md5").update(srcURL).digest("hex");
+  return path.join(imageCacheDir, "pieces", md5);
 }
 
 export function getCroppedPieceImageBaseURL(srcURL: string): string {
@@ -30,7 +30,7 @@ const promPieces = [
 ];
 
 export async function cropPieceImage(srcURL: string): Promise<void> {
-  const srcPath = fileURLToPath(srcURL);
+  const srcPath = url.fileURLToPath(srcURL);
   const destDir = getCroppedPieceImageDir(srcURL);
   getAppLogger().debug(`generate cropped piece images: src=${srcPath} dst=${destDir}`);
 
@@ -79,9 +79,10 @@ export async function cropPieceImage(srcURL: string): Promise<void> {
       }
       const destName = `${side}_${piecesSet[j]}.png`;
       if (!(await exists(path.join(destDir, destName)))) {
-        await Jimp.read(srcPath).then((image) => {
-          image.crop(j * width, i * height, width, height).writeAsync(path.join(destDir, destName));
-        });
+        const image = await Jimp.read(srcPath);
+        await image
+          .crop(j * width, i * height, width, height)
+          .writeAsync(path.join(destDir, destName));
         getAppLogger().debug(`${destName} extracted`);
       } else {
         getAppLogger().debug(`${destName} exists`);

@@ -1,4 +1,4 @@
-import * as net from "node:net";
+import net from "net";
 import { createInterface as readline, Interface as Readline } from "readline";
 
 type SocketHandlers = {

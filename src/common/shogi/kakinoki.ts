@@ -149,13 +149,13 @@ const linePatterns = [
     isPosition: true,
   },
   {
-    prefix: /^先手の持駒[：:]/,
+    prefix: /^(先|下)手の持駒[：:]/,
     type: LineType.BLACK_HAND,
     removePrefix: true,
     isPosition: true,
   },
   {
-    prefix: /^後手の持駒[：:]/,
+    prefix: /^(後|上)手の持駒[：:]/,
     type: LineType.WHITE_HAND,
     removePrefix: true,
     isPosition: true,
@@ -167,13 +167,13 @@ const linePatterns = [
     isPosition: true,
   },
   {
-    prefix: /^先手番/,
+    prefix: /^(先|下)手番/,
     type: LineType.BLACK_TURN,
     removePrefix: false,
     isPosition: true,
   },
   {
-    prefix: /^後手番/,
+    prefix: /^(後|上)手番/,
     type: LineType.WHITE_TURN,
     removePrefix: false,
     isPosition: true,

@@ -108,11 +108,20 @@ function loadAppSettingFromMemory(json: string): AppSetting {
   });
 }
 
-export function loadAppSettingSync(): AppSetting {
+function loadAppSettingSync(): AppSetting {
   if (!fs.existsSync(appSettingPath)) {
     return getDefaultAppSetting();
   }
   return loadAppSettingFromMemory(fs.readFileSync(appSettingPath, "utf8"));
+}
+
+let appSettingCache: AppSetting;
+
+export function loadAppSettingOnce(): AppSetting {
+  if (!appSettingCache) {
+    appSettingCache = loadAppSettingSync();
+  }
+  return appSettingCache;
 }
 
 export async function loadAppSetting(): Promise<AppSetting> {

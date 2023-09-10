@@ -1,7 +1,7 @@
 import path from "path";
 import { shell } from "electron";
 import log4js from "log4js";
-import { loadAppSettingSync } from "@/background/settings";
+import { loadAppSettingOnce } from "@/background/settings";
 import { getDateTimeString } from "@/common/helpers/datetime";
 import { getAppPath, isTest } from "./environment";
 import { AppSetting } from "@/common/settings/app";
@@ -58,7 +58,7 @@ function getLogger(type: LogType): log4js.Logger {
     return loggers[type];
   }
   if (!config.appenders[type]) {
-    const appSetting = loadAppSettingSync();
+    const appSetting = loadAppSettingOnce();
     config.appenders[type] = { type: "file", filename: getFilePath(type) };
     config.categories[type] = {
       appenders: isLogEnabled(type, appSetting) ? [type] : !isTest() ? ["stdout"] : ["recording"],

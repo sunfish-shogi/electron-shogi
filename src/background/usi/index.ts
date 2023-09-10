@@ -20,10 +20,7 @@ function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
 }
 
-export async function getUSIEngineInfo(
-  path: string,
-  timeoutSeconds: number,
-): Promise<USIEngineSetting> {
+export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngineSetting> {
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
     const process = new EngineProcess(resolvePath(path), sessionID, getUSILogger(), {

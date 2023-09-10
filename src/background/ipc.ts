@@ -183,7 +183,7 @@ async function showOpenDialog(
     filters,
     buttonLabel,
   });
-  getAppLogger().debug(`open-record dialog result: ${JSON.stringify(ret)}`);
+  getAppLogger().debug(`open dialog result: ${JSON.stringify(ret)}`);
   if (ret.canceled || ret.filePaths.length !== 1) {
     return "";
   }
@@ -207,14 +207,14 @@ async function showSaveDialog(
       ? 1
       : 0;
   });
-  getAppLogger().debug("show save-record dialog");
+  getAppLogger().debug("show save dialog");
   const ret = await dialog.showSaveDialog(win, {
     defaultPath: defaultPath,
     properties: ["createDirectory", "showOverwriteConfirmation"],
     filters,
     buttonLabel,
   });
-  getAppLogger().debug(`save-record dialog result: ${JSON.stringify(ret)}`);
+  getAppLogger().debug(`save dialog result: ${JSON.stringify(ret)}`);
   return (!ret.canceled && ret.filePath) || "";
 }
 

@@ -11,7 +11,7 @@ import {
   setInitialFilePath,
   setup,
 } from "@/background/ipc";
-import { loadAppSettingSync, loadWindowSetting, saveWindowSetting } from "@/background/settings";
+import { loadAppSettingOnce, loadWindowSetting, saveWindowSetting } from "@/background/settings";
 import { buildWindowSetting } from "@/common/settings/window";
 import { getAppLogger, shutdownLoggers } from "@/background/log";
 import { quitAll as usiQuitAll } from "@/background/usi";
@@ -38,7 +38,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
-setLanguage(loadAppSettingSync().language);
+setLanguage(loadAppSettingOnce().language);
 
 function createWindow() {
   let setting = loadWindowSetting();

@@ -60,9 +60,9 @@
           </div>
           <div class="list-column score">
             {{
-              iterate.scoreMate
+              iterate.scoreMate !== undefined
                 ? getDisplayScore(iterate.scoreMate, iterate.color, evaluationViewFrom)
-                : iterate.score
+                : iterate.score !== undefined
                 ? getDisplayScore(iterate.score, iterate.color, evaluationViewFrom)
                 : ""
             }}

@@ -167,10 +167,10 @@ export class GameManager {
     // プレイヤーを初期化する。
     try {
       this.blackPlayer = await this.playerBuilder.build(this.setting.black, (info) =>
-        this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
+        this.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
       this.whitePlayer = await this.playerBuilder.build(this.setting.white, (info) =>
-        this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
+        this.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
       await this.nextGame();
     } catch (e) {
@@ -345,7 +345,7 @@ export class GameManager {
     });
     // 評価値を記録する。
     if (info) {
-      this.recordManager.updateSearchInfo(SearchInfoSenderType.PLAYER, info);
+      this.updateSearchInfo(SearchInfoSenderType.PLAYER, info);
     }
     // コメントを追加する。
     if (info && this.setting.enableComment) {
@@ -471,6 +471,13 @@ export class GameManager {
         this.onError(new Error(`GameManager#endGame: ${t.errorOccuredWhileEndingGame}: ${e}`));
         this.state = GameState.PENDING;
       });
+  }
+
+  private updateSearchInfo(senderType: SearchInfoSenderType, info: SearchInfo): void {
+    if (this.state !== GameState.ACTIVE) {
+      return;
+    }
+    this.recordManager.updateSearchInfo(senderType, info);
   }
 
   private addGameResults(color: Color, specialMoveType: SpecialMoveType): void {

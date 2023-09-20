@@ -438,7 +438,7 @@ class Store {
       .then(() => {
         const appSetting = useAppSetting();
         const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
-        return this.gameManager.startGame(setting, builder);
+        return this.gameManager.start(setting, builder);
       })
       .then(() => (this._appState = AppState.GAME))
       .catch((e) => {
@@ -507,10 +507,10 @@ class Store {
         if (this.gameManager.setting.repeat >= 2) {
           this.showConfirmation({
             message: t.areYouSureWantToQuitGames,
-            onOk: () => this.gameManager.endGame(SpecialMoveType.INTERRUPT),
+            onOk: () => this.gameManager.stop(),
           });
         } else {
-          this.gameManager.endGame(SpecialMoveType.INTERRUPT);
+          this.gameManager.stop();
         }
         break;
       case AppState.CSA_GAME:

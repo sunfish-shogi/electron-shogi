@@ -53,7 +53,7 @@ function invoke(
       .on("beepUnlimited", handlers.onBeepUnlimited)
       .on("stopBeep", handlers.onStopBeep);
     manager
-      .startGame(gameSetting, playerBuilder)
+      .start(gameSetting, playerBuilder)
       .then(() => {
         if (interrupt) {
           interrupt(manager);
@@ -247,7 +247,7 @@ describe("store/game", () => {
         expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f");
       },
       (manager) => {
-        setTimeout(() => manager.endGame(SpecialMoveType.INTERRUPT), 100);
+        setTimeout(() => manager.stop(), 100);
       },
     );
   });

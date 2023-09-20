@@ -157,10 +157,10 @@ export class CSAGameManager {
    */
   async login(setting: CSAGameSetting, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.sessionID) {
-      throw new Error("CSAGameManager#start: session already exists");
+      throw new Error("CSAGameManager#login: session already exists");
     }
     if (this._state !== CSAGameState.OFFLINE) {
-      throw new Error("CSAGameManager#start: unexpected state");
+      throw new Error("CSAGameManager#login: unexpected state");
     }
     this._state = CSAGameState.PLAYER_SETUP;
     this._setting = setting;

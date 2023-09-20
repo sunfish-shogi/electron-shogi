@@ -98,7 +98,7 @@ npm run build
 ### Unit Tests
 
 ```
-npm run test
+npm test
 ```
 
 Appending `-- --coverage` option, you can see coverage report at `coverage` directory.

@@ -105,7 +105,7 @@ npm run build
 ### Unit Tests
 
 ```
-npm run test
+npm test
 ```
 
 カバレッジレポートを出力する場合は `-- --coverage` を付与すると `coverage` ディレクトリに結果が出力されます。

@@ -520,7 +520,6 @@ export class RecordManager {
         break;
     }
     this._record.current.customData = data;
-    this._unsaved = true;
   }
 
   appendMove(params: AppendMoveParams): boolean {

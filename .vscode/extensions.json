@@ -1,6 +1,9 @@
 {
   "recommendations": [
-    "vue.volar",
-    "ms-vscode.vscode-typescript-next"
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin",
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
   ]
 }

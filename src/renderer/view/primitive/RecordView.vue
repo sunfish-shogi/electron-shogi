@@ -124,18 +124,18 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "goBegin",
-  "goBack",
-  "goForward",
-  "goEnd",
-  "selectMove",
-  "selectBranch",
-  "swapWithPreviousBranch",
-  "swapWithNextBranch",
-  "toggleShowElapsedTime",
-  "toggleShowComment",
-]);
+const emit = defineEmits<{
+  goBegin: [];
+  goBack: [];
+  goForward: [];
+  goEnd: [];
+  selectMove: [ply: number];
+  selectBranch: [index: number];
+  swapWithPreviousBranch: [];
+  swapWithNextBranch: [];
+  toggleShowElapsedTime: [enabled: boolean];
+  toggleShowComment: [enabled: boolean];
+}>();
 
 const moveList = ref(null as HTMLDivElement | null);
 const branchList = ref();

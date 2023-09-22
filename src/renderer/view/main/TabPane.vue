@@ -88,7 +88,10 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["onChangeTab", "onMinimize"]);
+const emit = defineEmits<{
+  onChangeTab: [tab: Tab];
+  onMinimize: [];
+}>();
 
 const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
 const minimize = () => emit("onMinimize");

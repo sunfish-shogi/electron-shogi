@@ -90,7 +90,9 @@ import { AppState } from "@/common/control/state.js";
 import api from "@/renderer/ipc/api";
 import { useAppSetting } from "@/renderer/store/setting";
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{
+  close: [];
+}>();
 
 const store = useStore();
 const appSetting = useAppSetting();

@@ -56,6 +56,7 @@ import {
   Threads,
   NumberOfThreads,
   MultiPV,
+  USIEngineSettings,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import api from "@/renderer/ipc/api";
@@ -87,7 +88,10 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["select-player", "update-engine-setting"]);
+const emit = defineEmits<{
+  selectPlayer: [uri: string];
+  updateEngineSetting: [setting: USIEngineSettings];
+}>();
 
 const store = useStore();
 const playerSelect = ref();
@@ -153,7 +157,7 @@ const savePlayerSetting = async (setting: USIEngineSetting) => {
   store.retainBussyState();
   try {
     await api.saveUSIEngineSetting(clone);
-    emit("update-engine-setting", clone);
+    emit("updateEngineSetting", clone);
   } catch (e) {
     store.pushError(e);
   } finally {
@@ -166,7 +170,7 @@ const closePlayerSetting = () => {
 };
 
 const onPlayerChange = () => {
-  emit("select-player", playerSelect.value.value);
+  emit("selectPlayer", playerSelect.value.value);
 };
 </script>
 

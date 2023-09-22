@@ -219,7 +219,10 @@ const props = defineProps({
     default: "OK",
   },
 });
-const emit = defineEmits(["ok", "cancel"]);
+const emit = defineEmits<{
+  ok: [setting: USIEngineSetting];
+  cancel: [];
+}>();
 
 const store = useStore();
 const appSetting = useAppSetting();

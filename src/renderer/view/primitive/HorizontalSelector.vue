@@ -40,7 +40,9 @@ const props = defineProps({
     default: 28,
   },
 });
-const emit = defineEmits(["change"]);
+const emit = defineEmits<{
+  change: [value: string];
+}>();
 
 const container = ref() as Ref<HTMLDivElement>;
 const name = issueDOMID();

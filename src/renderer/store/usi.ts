@@ -41,7 +41,7 @@ export class USIPlayerMonitor {
   public sfen = "";
   public nodes?: number;
   public nps?: number;
-  public iterates: USIIteration[] = [];
+  public iterations: USIIteration[] = [];
   public hashfull?: number;
   public currentMove?: string;
   public currentMoveText?: string;
@@ -56,11 +56,11 @@ export class USIPlayerMonitor {
     const result: USIIteration[] = [];
     const multiPVSet = new Set();
     const moveSet = new Set();
-    for (const iterate of this.iterates) {
-      const move = iterate.pv ? iterate.pv[0] : undefined;
-      if (!multiPVSet.has(iterate.multiPV) && !moveSet.has(move)) {
-        result.push(iterate);
-        multiPVSet.add(iterate.multiPV);
+    for (const iteration of this.iterations) {
+      const move = iteration.pv ? iteration.pv[0] : undefined;
+      if (!multiPVSet.has(iteration.multiPV) && !moveSet.has(move)) {
+        result.push(iteration);
+        multiPVSet.add(iteration.multiPV);
         moveSet.add(move);
       }
     }
@@ -74,7 +74,7 @@ export class USIPlayerMonitor {
       this.sfen = sfen;
       this.nodes = undefined;
       this.nps = undefined;
-      this.iterates = [];
+      this.iterations = [];
       this.hashfull = undefined;
       this.currentMove = undefined;
       this.currentMoveText = undefined;
@@ -84,41 +84,41 @@ export class USIPlayerMonitor {
     if (!position) {
       return;
     }
-    const iterate: USIIteration = {
+    const iteration: USIIteration = {
       id: nextIterationID++,
       position: sfen,
       color: position.color,
     };
     if (update.depth !== undefined) {
-      iterate.depth = update.depth;
+      iteration.depth = update.depth;
     }
     if (update.seldepth !== undefined) {
-      iterate.selectiveDepth = update.seldepth;
+      iteration.selectiveDepth = update.seldepth;
     }
     if (update.timeMs !== undefined) {
-      iterate.timeMs = update.timeMs;
+      iteration.timeMs = update.timeMs;
     }
     if (update.nodes !== undefined) {
       this.nodes = update.nodes;
     }
     if (update.pv) {
-      iterate.pv = update.pv;
-      iterate.text = formatPV(position, update.pv);
+      iteration.pv = update.pv;
+      iteration.text = formatPV(position, update.pv);
     }
     if (update.multipv !== undefined) {
-      iterate.multiPV = update.multipv;
+      iteration.multiPV = update.multipv;
     }
     if (update.scoreCP !== undefined) {
-      iterate.score = update.scoreCP;
+      iteration.score = update.scoreCP;
     }
     if (update.scoreMate !== undefined) {
-      iterate.scoreMate = update.scoreMate;
+      iteration.scoreMate = update.scoreMate;
     }
     if (update.lowerbound !== undefined) {
-      iterate.lowerBound = update.lowerbound;
+      iteration.lowerBound = update.lowerbound;
     }
     if (update.upperbound !== undefined) {
-      iterate.upperBound = update.upperbound;
+      iteration.upperBound = update.upperbound;
     }
     if (update.currmove !== undefined) {
       this.currentMove = update.currmove;
@@ -134,15 +134,15 @@ export class USIPlayerMonitor {
       this.nps = update.nps;
     }
     if (update.string) {
-      iterate.text = update.string;
+      iteration.text = update.string;
     }
-    if (Object.keys(iterate).length !== 0) {
+    if (Object.keys(iteration).length !== 0) {
       // USI プロトコルにおいて nodes は読み筋と関係なく定期的に送る事ができるとされている。
       // ただ、多くのエンジンが読み筋と一緒に送ってくるため読み筋等がある場合にはそちらにも記録する。
       if (update.nodes !== undefined) {
-        iterate.nodes = update.nodes;
+        iteration.nodes = update.nodes;
       }
-      this.iterates.unshift(iterate);
+      this.iterations.unshift(iteration);
     }
     this.ponderMove = ponderMove && formatMove(position, ponderMove);
   }

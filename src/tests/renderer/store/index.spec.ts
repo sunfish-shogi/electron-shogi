@@ -204,9 +204,9 @@ describe("store/index", () => {
     expect(store.usiMonitors[0].sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 1",
     );
-    expect(store.usiMonitors[0].iterates.length).toBe(1);
-    expect(store.usiMonitors[0].iterates[0].depth).toBe(8);
-    expect(store.usiMonitors[0].iterates[0].score).toBe(138);
+    expect(store.usiMonitors[0].iterations.length).toBe(1);
+    expect(store.usiMonitors[0].iterations[0].depth).toBe(8);
+    expect(store.usiMonitors[0].iterations[0].score).toBe(138);
     store.updateUSIInfo(101, usi, "Engine A", {
       depth: 10,
       scoreCP: 213,
@@ -217,12 +217,12 @@ describe("store/index", () => {
     });
     jest.runOnlyPendingTimers();
     expect(store.usiMonitors).toHaveLength(2);
-    expect(store.usiMonitors[0].iterates.length).toBe(2);
-    expect(store.usiMonitors[0].iterates[0].depth).toBe(10);
-    expect(store.usiMonitors[0].iterates[0].score).toBe(213);
-    expect(store.usiMonitors[1].iterates.length).toBe(1);
-    expect(store.usiMonitors[1].iterates[0].depth).toBe(9);
-    expect(store.usiMonitors[1].iterates[0].score).toBe(-89);
+    expect(store.usiMonitors[0].iterations.length).toBe(2);
+    expect(store.usiMonitors[0].iterations[0].depth).toBe(10);
+    expect(store.usiMonitors[0].iterations[0].score).toBe(213);
+    expect(store.usiMonitors[1].iterations.length).toBe(1);
+    expect(store.usiMonitors[1].iterations[0].depth).toBe(9);
+    expect(store.usiMonitors[1].iterations[0].score).toBe(-89);
   });
 
   it("updateUSIPonderInfo", () => {
@@ -240,9 +240,9 @@ describe("store/index", () => {
       "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
     expect(store.usiMonitors[0].ponderMove).toBe("☖３四歩");
-    expect(store.usiMonitors[0].iterates.length).toBe(1);
-    expect(store.usiMonitors[0].iterates[0].depth).toBe(8);
-    expect(store.usiMonitors[0].iterates[0].score).toBe(138);
+    expect(store.usiMonitors[0].iterations.length).toBe(1);
+    expect(store.usiMonitors[0].iterations[0].depth).toBe(8);
+    expect(store.usiMonitors[0].iterations[0].score).toBe(138);
   });
 
   it("startGame/success", async () => {

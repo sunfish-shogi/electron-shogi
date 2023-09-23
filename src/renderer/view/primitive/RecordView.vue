@@ -19,18 +19,17 @@
       <div class="move-list-background" :style="{ opacity }"></div>
       <div ref="moveList" class="move-list">
         <div
-          v-for="move in moves"
-          :key="move.number"
+          v-for="move in record.moves"
+          :key="move.ply"
           class="row move-element"
-          :class="{ 'has-branch': move.hasBranch, selected: move.selected }"
-          :value="move.number"
-          @click="changeNumber(move.number)"
+          :class="{ 'has-branch': move.hasBranch, selected: move.ply === record.current.ply }"
+          @click="changePly(move.ply)"
         >
           <div class="move-number">
-            {{ move.number !== 0 ? move.number : "" }}
+            {{ move.ply !== 0 ? move.ply : "" }}
           </div>
-          <div class="move-text">{{ move.text }}</div>
-          <div v-if="showElapsedTime" class="move-time">{{ move.time }}</div>
+          <div class="move-text">{{ move.displayText }}</div>
+          <div v-if="showElapsedTime" class="move-time">{{ move.ply ? move.timeText : "" }}</div>
           <div v-if="showComment" class="move-comment">
             <span v-if="move.bookmark" class="bookmark">{{ move.bookmark }}</span>
             {{ move.comment }}
@@ -43,14 +42,13 @@
       <div class="move-list-background" :style="{ opacity }"></div>
       <div ref="branchList" class="auto branch-list">
         <div
-          v-for="branch in branches"
-          :key="branch.index"
+          v-for="(branch, index) in branches"
+          :key="index"
           class="row move-element"
-          :class="{ selected: branch.selected }"
-          :value="branch.index"
-          @click="changeBranch(branch.index)"
+          :class="{ selected: branch.activeBranch }"
+          @click="changeBranch(index)"
         >
-          <div class="move-text">{{ branch.text }}</div>
+          <div class="move-text">{{ branch.displayText }}</div>
           <div v-if="showComment" class="move-comment">
             <span v-if="branch.bookmark" class="bookmark">{{ branch.bookmark }}</span>
             {{ branch.comment }}
@@ -164,7 +162,7 @@ const goEnd = () => {
   }
 };
 
-const changeNumber = (number: number) => {
+const changePly = (number: number) => {
   if (props.operational) {
     emit("selectMove", Number(number));
   }
@@ -188,50 +186,14 @@ const swapWithNextBranch = () => {
   }
 };
 
-const moves = computed(() => {
-  const ret: {
-    number: number;
-    text: string;
-    time: string;
-    hasBranch: boolean;
-    bookmark: string;
-    comment: string;
-    selected: boolean;
-  }[] = [];
-  props.record.moves.forEach((elem) => {
-    ret.push({
-      number: elem.ply,
-      text: elem.displayText,
-      time: elem.ply != 0 ? elem.timeText : "",
-      hasBranch: elem.hasBranch,
-      bookmark: elem.bookmark,
-      comment: elem.comment,
-      selected: elem === props.record.current,
-    });
-  });
-  return ret;
-});
-
 const branches = computed(() => {
   if (!props.record.branchBegin.branch) {
     return null;
   }
-  const ret: {
-    index: number;
-    text: string;
-    bookmark: string;
-    comment: string;
-    selected: boolean;
-  }[] = [];
+  const ret: ImmutableNode[] = [];
   let p: ImmutableNode | null;
-  for (p = props.record.branchBegin; p && p.move; p = p.branch) {
-    ret.push({
-      index: ret.length,
-      text: p.displayText,
-      bookmark: p.bookmark,
-      comment: p.comment,
-      selected: p.activeBranch,
-    });
+  for (p = props.record.branchBegin; p; p = p.branch) {
+    ret.push(p);
   }
   return ret;
 });

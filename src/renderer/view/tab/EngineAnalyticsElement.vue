@@ -40,47 +40,48 @@
       </div>
       <div class="list" :style="{ height: `${height - 37}px` }">
         <div
-          v-for="(iterate, index) in historyMode ? info.iterates : info.latestIteration"
-          :key="index"
+          v-for="iteration in historyMode ? info.iterations : info.latestIteration"
+          :key="iteration.id"
+          v-memo="[]"
           class="row list-item"
-          :class="{ highlight: enableHighlight && iterate.multiPV === 1 }"
+          :class="{ highlight: enableHighlight && iteration.multiPV === 1 }"
         >
           <div class="list-column time">
-            {{ iterate.timeMs ? (iterate.timeMs / 1e3).toFixed(1) + "s" : "" }}
+            {{ iteration.timeMs ? (iteration.timeMs / 1e3).toFixed(1) + "s" : "" }}
           </div>
           <div class="list-column multipv-index">
-            {{ iterate.multiPV || "" }}
+            {{ iteration.multiPV || "" }}
           </div>
           <div class="list-column depth">
-            {{ iterate.depth }}{{ iterate.selectiveDepth && iterate.depth ? "/" : ""
-            }}{{ iterate.selectiveDepth }}
+            {{ iteration.depth }}{{ iteration.selectiveDepth && iteration.depth ? "/" : ""
+            }}{{ iteration.selectiveDepth }}
           </div>
           <div class="list-column nodes">
-            {{ iterate.nodes }}
+            {{ iteration.nodes }}
           </div>
           <div class="list-column score">
             {{
-              iterate.scoreMate !== undefined
-                ? getDisplayScore(iterate.scoreMate, iterate.color, evaluationViewFrom)
-                : iterate.score !== undefined
-                ? getDisplayScore(iterate.score, iterate.color, evaluationViewFrom)
+              iteration.scoreMate !== undefined
+                ? getDisplayScore(iteration.scoreMate, iteration.color, evaluationViewFrom)
+                : iteration.score !== undefined
+                ? getDisplayScore(iteration.score, iteration.color, evaluationViewFrom)
                 : ""
             }}
           </div>
           <div class="list-column score-flag">
-            {{ iterate.lowerBound ? "++" : "" }}
-            {{ iterate.upperBound ? "--" : "" }}
-            {{ iterate.scoreMate ? t.mateShort : "" }}
+            {{ iteration.lowerBound ? "++" : "" }}
+            {{ iteration.upperBound ? "--" : "" }}
+            {{ iteration.scoreMate ? t.mateShort : "" }}
           </div>
           <div class="grow list-column text">
             <button
-              v-if="iterate.pv && iterate.pv.length !== 0 && iterate.text"
-              @click="showPreview(iterate)"
+              v-if="iteration.pv && iteration.pv.length !== 0 && iteration.text"
+              @click="showPreview(iteration)"
             >
               <Icon :icon="IconType.PLAY" />
               <span>{{ t.displayPVShort }}</span>
             </button>
-            {{ iterate.text }}
+            {{ iteration.text }}
           </div>
         </div>
       </div>
@@ -122,8 +123,8 @@ const enableHighlight = computed(() => {
   if (!props.historyMode) {
     return false;
   }
-  for (const iterate of props.info.iterates) {
-    if (iterate.multiPV && iterate.multiPV !== 1) {
+  for (const iteration of props.info.iterations) {
+    if (iteration.multiPV && iteration.multiPV !== 1) {
       return true;
     }
   }

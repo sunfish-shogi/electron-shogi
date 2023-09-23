@@ -20,7 +20,9 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits<{
+  select: [url: string];
+}>();
 
 const store = useStore();
 const url = ref(toRef(() => props.defaultUrl).value);

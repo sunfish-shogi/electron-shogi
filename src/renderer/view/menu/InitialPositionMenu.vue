@@ -76,7 +76,9 @@ import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { InitialPositionSFEN } from "@/common/shogi";
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{
+  close: [];
+}>();
 
 const store = useStore();
 const dialog = ref();

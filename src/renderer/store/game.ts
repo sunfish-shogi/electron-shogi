@@ -149,10 +149,10 @@ export class GameManager {
     return this._results;
   }
 
-  async startGame(setting: GameSetting, playerBuilder: PlayerBuilder): Promise<void> {
+  async start(setting: GameSetting, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
-        "GameManager#startGame: 前回の対局が正常に終了できていません。アプリを再起動してください。",
+        "GameManager#start: 前回の対局が正常に終了できていません。アプリを再起動してください。",
       );
     }
     this.state = GameState.STARTING;
@@ -172,7 +172,7 @@ export class GameManager {
       this.whitePlayer = await this.playerBuilder.build(this.setting.white, (info) =>
         this.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
-      await this.nextGame();
+      await this.goNextGame();
     } catch (e) {
       try {
         await this.closePlayers();
@@ -181,13 +181,13 @@ export class GameManager {
       } finally {
         this.state = GameState.IDLE;
       }
-      throw new Error(`GameManager#startGame: ${t.failedToStartNewGame}: ${e}`);
+      throw new Error(`GameManager#start: ${t.failedToStartNewGame}: ${e}`);
     }
   }
 
-  private async nextGame(): Promise<void> {
+  private async goNextGame(): Promise<void> {
     if (this.blackPlayer === undefined || this.whitePlayer === undefined) {
-      throw new Error("GameManager#nextGame: プレイヤーが初期化されていません。");
+      throw new Error("GameManager#goNextGame: プレイヤーが初期化されていません。");
     }
     // 連続対局の回数をカウントアップする。
     this.repeat++;
@@ -275,7 +275,7 @@ export class GameManager {
     }
     // 最大手数に到達したら終了する。
     if (this._setting.maxMoves && this.recordManager.record.current.ply >= this._setting.maxMoves) {
-      this.endGame(SpecialMoveType.IMPASS);
+      this.end(SpecialMoveType.IMPASS);
       return;
     }
     // 手番側の時計をスタートする。
@@ -332,7 +332,7 @@ export class GameManager {
     // 合法手かどうかをチェックする。
     if (!this.recordManager.record.position.isValidMove(move)) {
       this.onError("反則手: " + formatMove(this.recordManager.record.position, move));
-      this.endGame(SpecialMoveType.FOUL_LOSE);
+      this.end(SpecialMoveType.FOUL_LOSE);
       return;
     }
     // 手番側の時計をストップする。
@@ -362,15 +362,15 @@ export class GameManager {
     if (faulColor) {
       // 連続王手の場合は王手した側を反則負けとする。
       if (faulColor === this.recordManager.record.position.color) {
-        this.endGame(SpecialMoveType.FOUL_LOSE);
+        this.end(SpecialMoveType.FOUL_LOSE);
         return;
       } else {
-        this.endGame(SpecialMoveType.FOUL_WIN);
+        this.end(SpecialMoveType.FOUL_WIN);
         return;
       }
     } else if (this.recordManager.record.repetition) {
       // シンプルな千日手の場合は引き分けとする。
-      this.endGame(SpecialMoveType.REPETITION_DRAW);
+      this.end(SpecialMoveType.REPETITION_DRAW);
       return;
     }
     // 次の手番へ移る。
@@ -386,7 +386,7 @@ export class GameManager {
       api.log(LogLevel.ERROR, "GameManager#onResign: invalid state: " + this.state);
       return;
     }
-    this.endGame(SpecialMoveType.RESIGN);
+    this.end(SpecialMoveType.RESIGN);
   }
 
   private onWin(eventID: number): void {
@@ -398,7 +398,7 @@ export class GameManager {
       api.log(LogLevel.ERROR, "GameManager#onWin: invalid state: " + this.state);
       return;
     }
-    this.endGame(SpecialMoveType.ENTERING_OF_KING);
+    this.end(SpecialMoveType.ENTERING_OF_KING);
   }
 
   private timeout(color: Color): void {
@@ -413,10 +413,14 @@ export class GameManager {
       return;
     }
     // 時間切れ負けで対局を終了する。
-    this.endGame(SpecialMoveType.TIMEOUT);
+    this.end(SpecialMoveType.TIMEOUT);
   }
 
-  endGame(specialMoveType: SpecialMoveType): void {
+  stop(): void {
+    this.end(SpecialMoveType.INTERRUPT);
+  }
+
+  private end(specialMoveType: SpecialMoveType): void {
     if (this.state !== GameState.ACTIVE && this.state !== GameState.PENDING) {
       return;
     }
@@ -425,7 +429,7 @@ export class GameManager {
     Promise.resolve()
       .then(() => {
         // プレイヤーに対局結果を通知する。
-        return this.sendGameResults(color, specialMoveType);
+        return this.sendGameResult(color, specialMoveType);
       })
       .then(() => {
         // インクリメントせずに時計を停止する。
@@ -463,12 +467,12 @@ export class GameManager {
         }
         // 次の対局を開始する。
         this.state = GameState.STARTING;
-        this.nextGame().catch((e) => {
-          this.onError(new Error(`GameManager#endGame: ${t.failedToStartNewGame}: ${e}`));
+        this.goNextGame().catch((e) => {
+          this.onError(new Error(`GameManager#end: ${t.failedToStartNewGame}: ${e}`));
         });
       })
       .catch((e) => {
-        this.onError(new Error(`GameManager#endGame: ${t.errorOccuredWhileEndingGame}: ${e}`));
+        this.onError(new Error(`GameManager#end: ${t.errorOccuredWhileEndingGame}: ${e}`));
         this.state = GameState.PENDING;
       });
   }
@@ -520,7 +524,7 @@ export class GameManager {
     };
   }
 
-  private async sendGameResults(color: Color, specialMoveType: SpecialMoveType): Promise<void> {
+  private async sendGameResult(color: Color, specialMoveType: SpecialMoveType): Promise<void> {
     if (this.blackPlayer) {
       const gameResult = specialMoveToPlayerGameResult(color, Color.BLACK, specialMoveType);
       if (gameResult) {

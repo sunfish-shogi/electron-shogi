@@ -28,7 +28,9 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 const store = useStore();
 const dialog = ref();
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{
+  close: [];
+}>();
 const bookmarks = store.record.bookmarks;
 const isJumpDisabled = computed(
   () => store.appState !== AppState.NORMAL && store.appState !== AppState.RESEARCH,

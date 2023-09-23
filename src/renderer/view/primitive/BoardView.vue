@@ -107,7 +107,15 @@
 </template>
 
 <script setup lang="ts">
-import { PieceType, Square, Piece, Color, Move, ImmutablePosition } from "@/common/shogi";
+import {
+  PieceType,
+  Square,
+  Piece,
+  Color,
+  Move,
+  ImmutablePosition,
+  PositionChange,
+} from "@/common/shogi";
 import { computed, reactive, watch, PropType } from "vue";
 import {
   BoardImageType,
@@ -227,7 +235,11 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["resize", "move", "edit"]);
+const emit = defineEmits<{
+  resize: [size: RectSize];
+  move: [move: Move];
+  edit: [change: PositionChange];
+}>();
 
 const state = reactive({
   pointer: null,

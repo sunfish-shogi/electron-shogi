@@ -247,7 +247,7 @@ describe("store/index", () => {
 
   it("startGame/success", async () => {
     mockAPI.saveGameSetting.mockResolvedValue();
-    mockGameManager.prototype.startGame.mockResolvedValue();
+    mockGameManager.prototype.start.mockResolvedValue();
     const store = createStore();
     store.showGameDialog();
     store.startGame(gameSetting10m30s);
@@ -257,8 +257,8 @@ describe("store/index", () => {
     expect(store.appState).toBe(AppState.GAME);
     expect(mockAPI.saveGameSetting).toBeCalledTimes(1);
     expect(mockAPI.saveGameSetting.mock.calls[0][0]).toBe(gameSetting10m30s);
-    expect(mockGameManager.prototype.startGame).toBeCalledTimes(1);
-    expect(mockGameManager.prototype.startGame.mock.calls[0][0]).toBe(gameSetting10m30s);
+    expect(mockGameManager.prototype.start).toBeCalledTimes(1);
+    expect(mockGameManager.prototype.start.mock.calls[0][0]).toBe(gameSetting10m30s);
   });
 
   it("startGame/invalidState", () => {

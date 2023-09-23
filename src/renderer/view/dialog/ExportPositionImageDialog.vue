@@ -185,8 +185,8 @@ const changeWhetherToUseBookmark = (value: boolean) => {
   });
 };
 
-const changeType = (value: PositionImageStyle) => {
-  appSetting.updateAppSetting({ positionImageStyle: value });
+const changeType = (value: string) => {
+  appSetting.updateAppSetting({ positionImageStyle: value as PositionImageStyle });
 };
 
 const getRect = () => {

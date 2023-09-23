@@ -100,8 +100,8 @@
             ]"
             :value="destinationType"
             @change="
-              (val: DestinationType) => {
-                destinationType = val;
+              (val: string) => {
+                destinationType = val as DestinationType;
               }
             "
           />
@@ -135,8 +135,8 @@
               ]"
               :value="destinationFormat"
               @change="
-                (val: RecordFileFormat) => {
-                  destinationFormat = val;
+                (val: string) => {
+                  destinationFormat = val as RecordFileFormat;
                 }
               "
             />
@@ -173,8 +173,8 @@
             ]"
             :value="fileNameConflictAction"
             @change="
-              (val: FileNameConflictAction) => {
-                fileNameConflictAction = val;
+              (val: string) => {
+                fileNameConflictAction = val as FileNameConflictAction;
               }
             "
           />

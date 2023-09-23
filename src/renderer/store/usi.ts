@@ -3,6 +3,7 @@ import { ImmutablePosition, Move, Position, formatMove } from "@/common/shogi";
 import { Color } from "@/common/shogi";
 
 export type USIIteration = {
+  id: number;
   position: string;
   color: Color;
   depth?: number;
@@ -33,6 +34,8 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
   }
   return result;
 }
+
+let nextIterationID = 0;
 
 export class USIPlayerMonitor {
   public sfen = "";
@@ -82,6 +85,7 @@ export class USIPlayerMonitor {
       return;
     }
     const iterate: USIIteration = {
+      id: nextIterationID++,
       position: sfen,
       color: position.color,
     };

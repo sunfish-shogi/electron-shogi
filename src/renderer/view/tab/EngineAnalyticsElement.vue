@@ -40,8 +40,8 @@
       </div>
       <div class="list" :style="{ height: `${height - 37}px` }">
         <div
-          v-for="(iterate, index) in historyMode ? info.iterates : info.latestIteration"
-          :key="index"
+          v-for="iterate in historyMode ? info.iterates : info.latestIteration"
+          :key="iterate.id"
           class="row list-item"
           :class="{ highlight: enableHighlight && iterate.multiPV === 1 }"
         >

@@ -18,8 +18,8 @@
                 { label: '繁體中文', value: Language.ZH_TW },
               ]"
               @change="
-                (value: Language) => {
-                  language = value;
+                (value: string) => {
+                  language = value as Language;
                 }
               "
             />
@@ -45,8 +45,8 @@
                 { label: t.dark, value: Thema.DARK },
               ]"
               @change="
-                (value: Thema) => {
-                  thema = value;
+                (value: string) => {
+                  thema = value as Thema;
                 }
               "
             />
@@ -64,8 +64,8 @@
                 { label: t.bgTile, value: BackgroundImageType.TILE },
               ]"
               @change="
-                (value: BackgroundImageType) => {
-                  backgroundImageType = value;
+                (value: string) => {
+                  backgroundImageType = value as BackgroundImageType;
                 }
               "
             />
@@ -107,8 +107,8 @@
                 { label: t.customImage, value: PieceImage.CUSTOM_IMAGE },
               ]"
               @change="
-                (value: PieceImage) => {
-                  pieceImage = value;
+                (value: string) => {
+                  pieceImage = value as PieceImage;
                 }
               "
             />
@@ -151,8 +151,8 @@
                 { label: t.customImage, value: BoardImageType.CUSTOM_IMAGE },
               ]"
               @change="
-                (value: BoardImageType) => {
-                  boardImage = value;
+                (value: string) => {
+                  boardImage = value as BoardImageType;
                 }
               "
             />
@@ -194,8 +194,8 @@
                 },
               ]"
               @change="
-                (value: PieceStandImageType) => {
-                  pieceStandImage = value;
+                (value: string) => {
+                  pieceStandImage = value as PieceStandImageType;
                 }
               "
             />
@@ -302,8 +302,8 @@
                 { label: t.twoColumns, value: TabPaneType.DOUBLE },
               ]"
               @change="
-                (value: TabPaneType) => {
-                  tabPaneType = value;
+                (value: string) => {
+                  tabPaneType = value as TabPaneType;
                 }
               "
             />
@@ -362,8 +362,8 @@
                 { label: t.onlyHumanTurn, value: ClockSoundTarget.ONLY_USER },
               ]"
               @change="
-                (value: ClockSoundTarget) => {
-                  clockSoundTarget = value;
+                (value: string) => {
+                  clockSoundTarget = value as ClockSoundTarget;
                 }
               "
             />
@@ -390,8 +390,8 @@
                 { label: '.jkf', value: RecordFileFormat.JKF },
               ]"
               @change="
-                (value: RecordFileFormat) => {
-                  defaultRecordFileFormat = value;
+                (value: string) => {
+                  defaultRecordFileFormat = value as RecordFileFormat;
                 }
               "
             />
@@ -409,8 +409,8 @@
                 { label: t.autoDetect, value: TextDecodingRule.AUTO_DETECT },
               ]"
               @change="
-                (value: TextDecodingRule) => {
-                  textDecodingRule = value;
+                (value: string) => {
+                  textDecodingRule = value as TextDecodingRule;
                 }
               "
             />
@@ -538,8 +538,8 @@
                 },
               ]"
               @change="
-                (value: EvaluationViewFrom) => {
-                  evaluationViewFrom = value;
+                (value: string) => {
+                  evaluationViewFrom = value as EvaluationViewFrom;
                 }
               "
             />
@@ -662,8 +662,8 @@
                 { label: 'ERROR', value: LogLevel.ERROR },
               ]"
               @change="
-                (value: LogLevel) => {
-                  logLevel = value;
+                (value: string) => {
+                  logLevel = value as LogLevel;
                 }
               "
             />

@@ -78,8 +78,8 @@
             ]"
             :value="commentBehavior"
             @change="
-              (value: CommentBehavior) => {
-                commentBehavior = value;
+              (value: string) => {
+                commentBehavior = value as CommentBehavior;
               }
             "
           />

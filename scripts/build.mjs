@@ -70,9 +70,9 @@ const config = {
   linux: {
     target: "AppImage",
     fileAssociations: [
-      { name: "KIF", ext: "kif", },
+      { name: "KIF", ext: "kif" },
       { name: "KIFU", ext: "kifu" },
-      { name: "KI2", ext: "ki2", },
+      { name: "KI2", ext: "ki2" },
       { name: "KI2U", ext: "ki2u" },
       { name: "CSA", ext: "csa" },
       { name: "JKF", ext: "jkf" },

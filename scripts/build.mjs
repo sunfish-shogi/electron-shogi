@@ -4,13 +4,13 @@ import fs from "fs";
 const target = process.argv[2];
 
 /**
-* @type {import('electron-builder').Configuration}
-* @see https://www.electron.build/configuration/configuration
-*/
+ * @type {import('electron-builder').Configuration}
+ * @see https://www.electron.build/configuration/configuration
+ */
 const config = {
   productName: "ElectronShogi",
   extraMetadata: {
-    main: "dist/packed/background.js"
+    main: "dist/packed/background.js",
   },
   extends: null,
   files: [
@@ -24,11 +24,11 @@ const config = {
     "dist/packed",
     "!node_modules/**/*",
   ],
-  afterPack: function(context) {
-    if (context.electronPlatformName === 'darwin') {
+  afterPack: function (context) {
+    if (context.electronPlatformName === "darwin") {
       return;
     }
-    let localeDir = context.appOutDir+'/locales/';
+    const localeDir = context.appOutDir + "/locales/";
     for (const file of fs.readdirSync(localeDir)) {
       switch (file) {
         case "en-US.pak":
@@ -87,10 +87,11 @@ switch (target) {
     break;
 }
 
-builder.build({ config })
-.then((result) => {
-  console.log(JSON.stringify(result))
-})
-.catch((error) => {
-  throw error;
-})
+builder
+  .build({ config })
+  .then((result) => {
+    console.log(JSON.stringify(result));
+  })
+  .catch((error) => {
+    throw error;
+  });

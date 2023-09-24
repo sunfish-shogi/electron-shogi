@@ -24,6 +24,7 @@ import { scoreToPercentage } from "@/renderer/store/score";
 import { AppSetting, Thema } from "@/common/settings/app";
 import { useAppSetting } from "@/renderer/store/setting";
 import { t } from "@/common/i18n";
+import { Lazy } from "@/renderer/helpers/lazy";
 
 const MATE_SCORE = 1000000;
 const MAX_SCORE = 2000;
@@ -286,6 +287,8 @@ const onClick = (event: ChartEvent, _: ActiveElement[], chart: Chart) => {
   store.changePly(ply);
 };
 
+const lazy = new Lazy();
+
 onMounted(() => {
   const appSetting = useAppSetting();
   const element = canvas.value as HTMLCanvasElement;
@@ -310,13 +313,18 @@ onMounted(() => {
 
   watch(
     () => [store.record, appSetting],
-    ([record, appSetting]) => updateChart(record as ImmutableRecord, appSetting as AppSetting),
+    ([record, appSetting]) => {
+      lazy.after(() => {
+        updateChart(record as ImmutableRecord, appSetting as AppSetting);
+      }, 100);
+    },
     { deep: true },
   );
 });
 
 onUnmounted(() => {
   chart.destroy();
+  lazy.clear();
 });
 
 const style = computed(() => {

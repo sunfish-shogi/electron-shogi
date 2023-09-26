@@ -56,10 +56,7 @@ export const webAPI: Bridge = {
   async showSaveMergedRecordDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
-  async getPieceImageBaseURL(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async cropPieceImage(): Promise<void> {
+  async cropPieceImage(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   async exportCaptureAsPNG(): Promise<void> {

@@ -133,6 +133,7 @@ export type Texts = {
   singleKanjiGothicPiece: string;
   singleKanjiDarkPiece: string;
   singleKanjiGothicDarkPiece: string;
+  imageHasMarginsRemoveToDisplayLarger: string;
   backgroundImage: string;
   board: string;
   pieceStand: string;

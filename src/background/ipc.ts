@@ -63,7 +63,6 @@ import { cropPieceImage } from "./image/cropper";
 import { getRelativePath, resolvePath } from "./path";
 import { fileURLToPath } from "./helpers/url";
 import { AppSettingUpdate } from "@/common/settings/app";
-import { getCroppedPieceImageBaseURL } from "@/background/image/cropper";
 import { convertRecordFiles } from "./conversion";
 import { BatchConversionSetting } from "@/common/settings/conversion";
 import { addHistory, clearHistory, getHistory, loadBackup, saveBackup } from "./history";
@@ -317,17 +316,12 @@ ipcMain.handle(
 );
 
 ipcMain.handle(
-  Background.GET_PIECE_IMAGE_BASE_URL,
-  async (event, fileURL: string): Promise<string> => {
+  Background.CROP_PIECE_IMAGE,
+  async (event, srcURL: string, deleteMargin: boolean): Promise<string> => {
     validateIPCSender(event.senderFrame);
-    return getCroppedPieceImageBaseURL(fileURL);
+    return await cropPieceImage(srcURL, { deleteMargin });
   },
 );
-
-ipcMain.handle(Background.CROP_PIECE_IMAGE, async (event, srcURL: string): Promise<void> => {
-  validateIPCSender(event.senderFrame);
-  await cropPieceImage(srcURL);
-});
 
 ipcMain.handle(Background.EXPORT_CAPTURE_AS_PNG, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);

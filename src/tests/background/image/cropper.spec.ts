@@ -1,7 +1,7 @@
 import path from "path";
 import process from "process";
 import url from "url";
-import { cropPieceImage, getCroppedPieceImageBaseURL } from "@/background/image/cropper";
+import { cropPieceImage } from "@/background/image/cropper";
 import { listFiles } from "@/background/helpers/file";
 
 describe("cropper", () => {
@@ -9,8 +9,7 @@ describe("cropper", () => {
     const inputURL = url.pathToFileURL(
       path.join(process.cwd(), "src/tests/testdata/image/piece.png"),
     );
-    await cropPieceImage(inputURL.toString());
-    const outputURL = getCroppedPieceImageBaseURL(inputURL.toString());
+    const outputURL = await cropPieceImage(inputURL.toString());
     const outputPath = url.fileURLToPath(outputURL.toString());
     const files = (await listFiles(outputPath, 0)).sort();
     expect(files).toHaveLength(30);

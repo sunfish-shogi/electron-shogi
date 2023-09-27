@@ -116,6 +116,7 @@ export type AppSetting = {
   kingPieceType: KingPieceType;
   pieceImageFileURL?: string;
   croppedPieceImageBaseURL?: string;
+  deletePieceImageMargin: boolean;
   boardImage: BoardImageType;
   boardImageFileURL?: string;
   pieceStandImage: PieceStandImageType;
@@ -178,6 +179,7 @@ export type AppSettingUpdate = {
   kingPieceType?: KingPieceType;
   pieceImageFileURL?: string;
   croppedPieceImageBaseURL?: string;
+  deletePieceImageMargin?: boolean;
   boardImage?: BoardImageType;
   boardImageFileURL?: string;
   pieceStandImage?: PieceStandImageType;
@@ -274,6 +276,7 @@ export function defaultAppSetting(opt?: {
     backgroundImageType: BackgroundImageType.NONE,
     pieceImage: PieceImageType.HITOMOJI,
     kingPieceType: KingPieceType.GYOKU_AND_OSHO,
+    deletePieceImageMargin: false,
     boardImage: BoardImageType.RESIN2,
     pieceStandImage: PieceStandImageType.STANDARD,
     enableTransparent: false,

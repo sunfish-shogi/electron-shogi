@@ -10,7 +10,6 @@ export enum Background {
   SHOW_SELECT_DIRECTORY_DIALOG = "showSelectDirectoryDialog",
   SHOW_SELECT_IMAGE_DIALOG = "showSelectImageDialog",
   SHOW_SAVE_MERGED_RECORD_DIALOG = "showSaveMergedRecordDialog",
-  GET_PIECE_IMAGE_BASE_URL = "getPieceImageBaseURL",
   CROP_PIECE_IMAGE = "cropPieceImage",
   EXPORT_CAPTURE_AS_PNG = "exportCaptureAsPNG",
   EXPORT_CAPTURE_AS_JPEG = "exportCaptureAsJPEG",

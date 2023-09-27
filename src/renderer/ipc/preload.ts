@@ -47,11 +47,8 @@ const api: Bridge = {
   async showSaveMergedRecordDialog(defaultPath: string): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_SAVE_MERGED_RECORD_DIALOG, defaultPath);
   },
-  async getPieceImageBaseURL(fileURL: string) {
-    return await ipcRenderer.invoke(Background.GET_PIECE_IMAGE_BASE_URL, fileURL);
-  },
-  async cropPieceImage(srcURL: string): Promise<void> {
-    await ipcRenderer.invoke(Background.CROP_PIECE_IMAGE, srcURL);
+  async cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string> {
+    return await ipcRenderer.invoke(Background.CROP_PIECE_IMAGE, srcURL, deleteMargin);
   },
   async exportCaptureAsPNG(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);

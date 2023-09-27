@@ -126,6 +126,19 @@
                 @select="(url: string) => (pieceImageFileURL = url)"
               />
             </div>
+            <div
+              class="form-item"
+              :class="{
+                hidden: pieceImage !== PieceImage.CUSTOM_IMAGE,
+              }"
+            >
+              <div class="form-item-label-wide"></div>
+              <ToggleButton
+                :label="t.imageHasMarginsRemoveToDisplayLarger"
+                :value="deletePieceImageMargin"
+                @change="(checked: boolean) => (deletePieceImageMargin = checked)"
+              />
+            </div>
           </div>
           <!-- 盤画像 -->
           <div class="form-item">
@@ -789,6 +802,7 @@ const thema = ref(appSetting.thema);
 const backgroundImageType = ref(appSetting.backgroundImageType);
 const backgroundImageSelector = ref();
 const pieceImage = ref(toPieceImage(appSetting));
+const deletePieceImageMargin = ref(appSetting.deletePieceImageMargin);
 const boardImage = ref(appSetting.boardImage);
 const boardImageSelector = ref();
 const pieceStandImage = ref(appSetting.pieceStandImage);
@@ -849,6 +863,7 @@ const saveAndClose = async () => {
       boardImage: boardImage.value,
       pieceImageFileURL: pieceImageFileURL.value,
       croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,
+      deletePieceImageMargin: deletePieceImageMargin.value,
       pieceStandImage: pieceStandImage.value,
       enableTransparent: enableTransparent.value,
       boardOpacity: readInputAsNumber(boardOpacity.value) / 100,
@@ -890,9 +905,12 @@ const saveAndClose = async () => {
     }
     if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
       if (pieceImageFileURL.value) {
-        await api.cropPieceImage(pieceImageFileURL.value);
+        update.croppedPieceImageBaseURL = await api.cropPieceImage(
+          pieceImageFileURL.value,
+          deletePieceImageMargin.value,
+        );
         update.pieceImageFileURL = pieceImageFileURL.value;
-        update.croppedPieceImageBaseURL = await api.getPieceImageBaseURL(pieceImageFileURL.value);
+        update.deletePieceImageMargin = deletePieceImageMargin.value;
       }
     }
     if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {

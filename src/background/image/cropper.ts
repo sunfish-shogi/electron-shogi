@@ -7,13 +7,18 @@ import Jimp from "jimp";
 import { imageCacheDir } from "./cache";
 import { exists } from "../helpers/file";
 
-function getCroppedPieceImageDir(srcURL: string): string {
-  const md5 = crypto.createHash("md5").update(srcURL).digest("hex");
-  return path.join(imageCacheDir, "pieces", md5);
-}
+const marginRatio = 0.05;
 
-export function getCroppedPieceImageBaseURL(srcURL: string): string {
-  return url.pathToFileURL(getCroppedPieceImageDir(srcURL)).toString();
+type PieceImageOptions = {
+  deleteMargin?: boolean;
+};
+
+function getCroppedPieceImageDir(srcURL: string, opt?: PieceImageOptions): string {
+  let md5 = crypto.createHash("md5").update(srcURL).digest("hex");
+  if (opt?.deleteMargin) {
+    md5 += "_nmgn";
+  }
+  return path.join(imageCacheDir, "pieces", md5);
 }
 
 const pieces = ["king", "rook", "bishop", "gold", "silver", "knight", "lance", "pawn"];
@@ -29,9 +34,9 @@ const promPieces = [
   "prom_pawn",
 ];
 
-export async function cropPieceImage(srcURL: string): Promise<void> {
+export async function cropPieceImage(srcURL: string, opt?: PieceImageOptions): Promise<string> {
   const srcPath = url.fileURLToPath(srcURL);
-  const destDir = getCroppedPieceImageDir(srcURL);
+  const destDir = getCroppedPieceImageDir(srcURL, opt);
   getAppLogger().debug(`generate cropped piece images: src=${srcPath} dst=${destDir}`);
 
   // create folder if there is no folder
@@ -80,13 +85,23 @@ export async function cropPieceImage(srcURL: string): Promise<void> {
       const destName = `${side}_${piecesSet[j]}.png`;
       if (!(await exists(path.join(destDir, destName)))) {
         const image = await Jimp.read(srcPath);
-        await image
-          .crop(j * width, i * height, width, height)
-          .writeAsync(path.join(destDir, destName));
+        let x = j * width;
+        let y = i * height;
+        let w = width;
+        let h = height;
+        if (opt?.deleteMargin) {
+          x += width * marginRatio;
+          y += height * marginRatio;
+          w *= 1 - marginRatio * 2;
+          h *= 1 - marginRatio * 2;
+        }
+        await image.crop(x, y, w, h).writeAsync(path.join(destDir, destName));
         getAppLogger().debug(`${destName} extracted`);
       } else {
         getAppLogger().debug(`${destName} exists`);
       }
     }
   }
+
+  return url.pathToFileURL(destDir).toString();
 }

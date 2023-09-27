@@ -54,6 +54,9 @@ class AppSettingStore {
   get pieceImageFileURL(): string | undefined {
     return this.setting.pieceImageFileURL;
   }
+  get deletePieceImageMargin(): boolean {
+    return this.setting.deletePieceImageMargin;
+  }
   get boardImageFileURL(): string | undefined {
     return this.setting.boardImageFileURL;
   }

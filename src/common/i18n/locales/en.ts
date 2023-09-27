@@ -136,6 +136,7 @@ export const en: Texts = {
   singleKanjiGothicPiece: "Single Kanji (Gothic)",
   singleKanjiDarkPiece: "Single Kanji (Dark)",
   singleKanjiGothicDarkPiece: "Single Kanji (Gothic, Dark)",
+  imageHasMarginsRemoveToDisplayLarger: "The image has margins (remove it to display larger)",
   backgroundImage: "Background Image",
   board: "Board Image",
   pieceStand: "Piece Stand",

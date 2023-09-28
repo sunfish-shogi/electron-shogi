@@ -340,6 +340,8 @@ export const zh_tw: Texts = {
   dubiousThreshold: "疑問手閾値",
   mistakeThreshold: "惡手閾値",
   blunderThreshold: "大惡手閾値",
+  gothic: "ゴシック体", // TODO: translate
+  mincho: "明朝体", // TODO: translate
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",

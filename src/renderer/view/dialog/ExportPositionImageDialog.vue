@@ -9,6 +9,7 @@
           :header="header"
           :footer="record.current.comment"
           :last-move="lastMove"
+          :typeface="appSetting.positionImageTypeface"
         />
         <BoardView
           v-else
@@ -53,6 +54,14 @@
             hidden: appSetting.positionImageStyle === PositionImageStyle.GAME,
           }"
         >
+          <HorizontalSelector
+            :value="appSetting.positionImageTypeface"
+            :items="[
+              { value: PositionImageTypeface.GOTHIC, label: t.gothic },
+              { value: PositionImageTypeface.MINCHO, label: t.mincho },
+            ]"
+            @change="changeTypeface"
+          />
           <input
             ref="headerText"
             class="header"
@@ -99,7 +108,11 @@ import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
 import { Lazy } from "@/renderer/helpers/lazy";
-import { PositionImageStyle, getPieceImageBaseURL } from "@/common/settings/app";
+import {
+  PositionImageStyle,
+  PositionImageTypeface,
+  getPieceImageBaseURL,
+} from "@/common/settings/app";
 import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 import HorizontalSelector from "../primitive/HorizontalSelector.vue";
 import ToggleButton from "../primitive/ToggleButton.vue";
@@ -170,6 +183,10 @@ const changeSize = (e: Event) => {
   appSetting.updateAppSetting({
     positionImageSize: parseInt(elem.value) || 400,
   });
+};
+
+const changeTypeface = (value: string) => {
+  appSetting.updateAppSetting({ positionImageTypeface: value as PositionImageTypeface });
 };
 
 const changeHeaderText = (e: Event) => {

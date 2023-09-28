@@ -340,6 +340,8 @@ export const ja: Texts = {
   dubiousThreshold: "疑問手の閾値",
   mistakeThreshold: "悪手の閾値",
   blunderThreshold: "大悪手の閾値",
+  gothic: "ゴシック体",
+  mincho: "明朝体",
   typeCustomTitleHere: "ここに見出しを入力",
   displayEmptyElements: "未入力の項目を表示",
   waitingForNewGame: "対局開始を待っています。",

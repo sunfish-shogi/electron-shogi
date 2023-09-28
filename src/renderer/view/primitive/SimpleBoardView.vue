@@ -1,62 +1,51 @@
 <template>
   <div>
     <div class="frame" :style="layout.frameStyle">
-      <div v-if="header" class="header" :style="layout.headerStyle">
+      <div v-if="header" class="header" :class="layout.typefaceClass" :style="layout.headerStyle">
         {{ header }}
       </div>
-      <div v-if="footer" class="footer" :style="layout.footerStyle">
+      <div v-if="footer" class="footer" :class="layout.typefaceClass" :style="layout.footerStyle">
         {{ footer }}
       </div>
       <div v-if="layout.lastMoveStyle" :style="layout.lastMoveStyle"></div>
       <div class="board-grid" :style="layout.boardStyle">
         <img src="/board/grid_square.svg" :style="layout.boardImageStyle" />
       </div>
-      <div v-for="file of layout.files" :key="file.image" :style="file.style">
-        <img :src="file.image" :style="layout.fileImageStyle" />
+      <div v-for="(file, index) of layout.files" :key="index" :style="file.style">
+        <span class="file-label" :class="layout.typefaceClass" :style="layout.fileCharacterStyle">{{
+          file.character
+        }}</span>
       </div>
-      <div v-for="rank of layout.ranks" :key="rank.image" :style="rank.style">
-        <img :src="rank.image" :style="layout.rankImageStyle" />
+      <div v-for="(rank, index) of layout.ranks" :key="index" :style="rank.style">
+        <span class="rank-label" :class="layout.typefaceClass" :style="layout.rankCharacterStyle">{{
+          rank.character
+        }}</span>
       </div>
       <div v-for="piece of layout.boardPieces" :key="piece.id" :style="piece.style">
-        <img :src="piece.image" :style="piece.imageStyle" />
+        <span class="cell" :class="layout.typefaceClass" :style="piece.characterStyle">{{
+          piece.character
+        }}</span>
       </div>
-      <div :style="layout.blackHandSymbol.style">
-        <img :src="layout.blackHandSymbol.image" :style="layout.blackHandImageStyle" />
+      <div :style="layout.blackHand.style">
+        <span class="hand" :class="layout.typefaceClass">☗{{ layout.blackHand.pieces }}</span>
       </div>
-      <div v-for="hand of layout.blackHandPieces" :key="hand.id" :style="hand.style">
-        <img :src="hand.image" :style="layout.blackHandImageStyle" />
-      </div>
-      <div :style="layout.whiteHandSymbol.style">
-        <img :src="layout.whiteHandSymbol.image" :style="layout.whiteHandImageStyle" />
-      </div>
-      <div v-for="hand of layout.whiteHandPieces" :key="hand.id" :style="hand.style">
-        <img :src="hand.image" :style="layout.whiteHandImageStyle" />
+      <div :style="layout.whiteHand.style">
+        <span class="hand" :class="layout.typefaceClass">☖{{ layout.whiteHand.pieces }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Move, ImmutablePosition, Piece } from "@/common/shogi";
+import {
+  Move,
+  ImmutablePosition,
+  Piece,
+  pieceTypeToStringForBoard,
+  numberToKanji,
+} from "@/common/shogi";
 import { computed, PropType } from "vue";
 import { RectSize } from "@/common/graphics";
-
-const pieceImageMap = {
-  pawn: "./piece/gothic/pawn.png",
-  lance: "./piece/gothic/lance.png",
-  knight: "./piece/gothic/knight.png",
-  silver: "./piece/gothic/silver.png",
-  gold: "./piece/gothic/gold.png",
-  bishop: "./piece/gothic/bishop.png",
-  rook: "./piece/gothic/rook.png",
-  king: "./piece/gothic/king2.png",
-  promPawn: "./piece/gothic/prom_pawn.png",
-  promLance: "./piece/gothic/prom_lance.png",
-  promKnight: "./piece/gothic/prom_knight.png",
-  promSilver: "./piece/gothic/prom_silver.png",
-  horse: "./piece/gothic/horse.png",
-  dragon: "./piece/gothic/dragon.png",
-};
 
 function buildParams(size: number) {
   return {
@@ -69,18 +58,15 @@ function buildParams(size: number) {
     boardTop: size * 0.12,
     boardSize: size * 0.7,
     boardBorderSize: size * 0.004,
-    fileLeft: size * 0.168,
-    fileTop: size * 0.078,
-    rankLeft: size * 0.85,
-    rankTop: size * 0.138,
-    labelSize: size * 0.04,
+    labelSize: size * 0.05,
+    labelFontSize: size * 0.04,
     pieceSize: (size * 0.7) / 9,
     fontSize: size * 0.038,
-    handSize: size * 0.053,
+    handFontSize: size * 0.042,
     blackHandLeft: size * 0.9,
     blackHandTop: size * 0.12,
-    whiteHandLeft: size * (0.1 - 0.053),
-    whiteHandTop: size * 0.82,
+    whiteHandLeft: size * (0.1 - 0.042),
+    whiteHandTop: size * 0.12,
   };
 }
 
@@ -108,11 +94,17 @@ const props = defineProps({
     required: false,
     default: null,
   },
+  typeface: {
+    type: String as PropType<"gothic" | "mincho">,
+    required: false,
+    default: "mincho",
+  },
 });
 
 const layout = computed(() => {
   const param = buildParams(Math.min(props.maxSize.width, props.maxSize.height));
   return {
+    typefaceClass: [props.typeface],
     frameStyle: {
       width: `${param.size}px`,
       height: `${param.size}px`,
@@ -121,12 +113,12 @@ const layout = computed(() => {
       transform: "translate(-50%, 0%)",
       left: `${param.headerX}px`,
       top: `${param.headerY}px`,
-      "font-size": `${param.fontSize}px`,
+      fontSize: `${param.fontSize}px`,
     },
     footerStyle: {
       left: `${param.footerX}px`,
       top: `${param.footerY}px`,
-      "font-size": `${param.fontSize}px`,
+      fontSize: `${param.fontSize}px`,
     },
     boardStyle: {
       left: `${param.boardLeft - param.boardBorderSize}px`,
@@ -136,31 +128,35 @@ const layout = computed(() => {
       width: `${param.boardSize + param.boardBorderSize * 2}px`,
       height: `${param.boardSize + param.boardBorderSize * 2}px`,
     },
-    files: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((file) => {
+    files: ["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((character, index) => {
       return {
         style: {
-          left: `${param.fileLeft + param.pieceSize * (9 - file)}px`,
-          top: `${param.fileTop}px`,
+          left: `${param.boardLeft + param.pieceSize * (8 - index)}px`,
+          top: `${param.boardTop - param.labelSize}px`,
+          width: `${param.pieceSize}px`,
+          height: `${param.labelSize}px`,
+          fontSize: `${param.labelFontSize}px`,
         },
-        image: `./character/arabic_numerals/${file}.png`,
+        character,
       };
     }),
-    fileImageStyle: {
-      width: `${param.labelSize}px`,
-      height: `${param.labelSize}px`,
+    fileCharacterStyle: {
+      lineHeight: `${param.labelSize}px`,
     },
-    ranks: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((rank) => {
+    ranks: ["一", "二", "三", "四", "五", "六", "七", "八", "九"].map((character, index) => {
       return {
         style: {
-          left: `${param.rankLeft}px`,
-          top: `${param.rankTop + param.pieceSize * (rank - 1)}px`,
+          left: `${param.boardLeft + param.boardSize}px`,
+          top: `${param.boardTop + param.pieceSize * index}px`,
+          width: `${param.labelSize}px`,
+          height: `${param.pieceSize}px`,
+          fontSize: `${param.labelFontSize}px`,
         },
-        image: `./character/numerals/${rank}.png`,
+        character,
       };
     }),
-    rankImageStyle: {
-      width: `${param.labelSize}px`,
-      height: `${param.labelSize}px`,
+    rankCharacterStyle: {
+      lineHeight: `${param.pieceSize}px`,
     },
     lastMoveStyle: (function () {
       if (!props.lastMove) {
@@ -168,7 +164,7 @@ const layout = computed(() => {
       }
       const square = props.lastMove.to;
       return {
-        "background-color": "gold",
+        backgroundColor: "gold",
         left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
         top: `${param.boardTop + (param.boardSize * square.y) / 9}px`,
         width: `${param.pieceSize}px`,
@@ -182,127 +178,69 @@ const layout = computed(() => {
         style: {
           left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
           top: `${param.boardTop + (param.boardSize * square.y) / 9}px`,
-        },
-        imageStyle: {
-          width: `${param.pieceSize}px`,
-          height: `${param.pieceSize}px`,
+          width: `${param.boardSize / 9}px`,
+          height: `${param.boardSize / 9}px`,
           transform: piece.color === "white" ? "rotate(180deg)" : undefined,
+          fontSize: `${param.boardSize / 11}px`,
         },
-        image: pieceImageMap[piece.type],
+        character: pieceTypeToStringForBoard(piece.type),
+        characterStyle: {
+          lineHeight: `${param.boardSize * 0.125}px`,
+        },
       };
     }),
-    blackHandImageStyle: {
-      width: `${param.handSize}px`,
-      height: "auto",
-    },
-    blackHandSymbol: {
+    blackHand: {
       style: {
         left: `${param.blackHandLeft}px`,
         top: `${param.blackHandTop}px`,
+        height: `${param.boardSize}px`,
+        fontSize: `${param.handFontSize}px`,
       },
-      image: "./character/turns/black.png",
+      pieces:
+        props.position.blackHand.counts
+          .map((entry) => {
+            if (entry.count === 0) {
+              return "";
+            } else if (entry.count === 1) {
+              return pieceTypeToStringForBoard(entry.type);
+            }
+            return pieceTypeToStringForBoard(entry.type) + numberToKanji(entry.count);
+          })
+          .join("") || "なし",
     },
-    blackHandPieces: (function () {
-      const list = [];
-      for (const { type, count } of props.position.blackHand.counts) {
-        if (count === 0) {
-          continue;
-        }
-        list.push({
-          id: type,
-          style: {
-            left: `${param.blackHandLeft}px`,
-            top: `${param.blackHandTop + param.handSize * (list.length + 1)}px`,
-          },
-          image: `./piece/gothic/${type}.png`,
-        });
-        if (count === 1) {
-          continue;
-        }
-        list.push({
-          id: `${type}-number`,
-          style: {
-            left: `${param.blackHandLeft}px`,
-            top: `${param.blackHandTop + param.handSize * (list.length + 1)}px`,
-          },
-          image: `./character/numerals/${count}.png`,
-        });
-      }
-      if (list.length === 0) {
-        return [
-          {
-            id: "empty",
-            style: {
-              left: `${param.blackHandLeft}px`,
-              top: `${param.blackHandTop + param.handSize}px`,
-            },
-            image: "./character/hand/nashi.png",
-          },
-        ];
-      }
-      return list;
-    })(),
-    whiteHandImageStyle: {
-      width: `${param.handSize}px`,
-      height: "auto",
-      transform: "rotate(180deg)",
-    },
-    whiteHandSymbol: {
+    whiteHand: {
       style: {
         left: `${param.whiteHandLeft}px`,
         top: `${param.whiteHandTop}px`,
-        transform: "translate(0%, -100%)",
+        height: `${param.boardSize}px`,
+        fontSize: `${param.handFontSize}px`,
+        transform: "rotate(180deg)",
       },
-      image: "./character/turns/white.png",
+      pieces:
+        props.position.whiteHand.counts
+          .map((entry) => {
+            if (entry.count === 0) {
+              return "";
+            } else if (entry.count === 1) {
+              return pieceTypeToStringForBoard(entry.type);
+            }
+            return pieceTypeToStringForBoard(entry.type) + numberToKanji(entry.count);
+          })
+          .join("") || "なし",
     },
-    whiteHandPieces: (function () {
-      const list = [];
-      for (const { type, count } of props.position.whiteHand.counts) {
-        if (count === 0) {
-          continue;
-        }
-        list.push({
-          id: type,
-          style: {
-            left: `${param.whiteHandLeft}px`,
-            top: `${param.whiteHandTop - param.handSize * (list.length + 1)}px`,
-            transform: "translate(0%, -100%)",
-          },
-          image: `./piece/gothic/${type}.png`,
-        });
-        if (count === 1) {
-          continue;
-        }
-        list.push({
-          id: `${type}-number`,
-          style: {
-            left: `${param.whiteHandLeft}px`,
-            top: `${param.whiteHandTop - param.handSize * (list.length + 1)}px`,
-            transform: "translate(0%, -100%)",
-          },
-          image: `./character/numerals/${count}.png`,
-        });
-      }
-      if (list.length === 0) {
-        return [
-          {
-            id: "empty",
-            style: {
-              left: `${param.whiteHandLeft}px`,
-              top: `${param.whiteHandTop - param.handSize}px`,
-              transform: "translate(0%, -100%)",
-            },
-            image: "./character/hand/nashi.png",
-          },
-        ];
-      }
-      return list;
-    })(),
   };
 });
 </script>
 
 <style scoped>
+.gothic {
+  font-weight: 500;
+  text-shadow: 0px 0px 0.5px black;
+}
+.mincho {
+  font-weight: 900;
+  text-shadow: 0px 0px 0.5px black;
+}
 .frame {
   color: black;
   background-color: white;
@@ -319,5 +257,32 @@ const layout = computed(() => {
 .footer {
   white-space: pre-wrap;
   text-align: left;
+}
+.file-label {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+.rank-label {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  vertical-align: baseline;
+}
+.cell {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  vertical-align: text-bottom;
+}
+.hand {
+  display: inline-block;
+  text-align: top;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
 }
 </style>

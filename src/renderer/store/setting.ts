@@ -10,6 +10,7 @@ import {
   PieceImageType,
   PieceStandImageType,
   PositionImageStyle,
+  PositionImageTypeface,
   RightSideControlType,
   Tab,
   TabPaneType,
@@ -185,6 +186,9 @@ class AppSettingStore {
   }
   get positionImageSize(): number {
     return this.setting.positionImageSize;
+  }
+  get positionImageTypeface(): PositionImageTypeface {
+    return this.setting.positionImageTypeface;
   }
   get useBookmarkAsPositionImageHeader(): boolean {
     return this.setting.useBookmarkAsPositionImageHeader;

@@ -365,7 +365,8 @@ const cancel = () => {
 <style scoped>
 .option-list {
   width: 740px;
-  height: calc(100vh - 220px);
+  height: calc(100vh - 250px);
+  max-height: 800px;
   overflow: auto;
 }
 .option {

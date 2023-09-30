@@ -3,8 +3,7 @@
     <div class="container">
       <div class="toggle" :style="toggleStyle">
         <input :id="id" type="checkbox" :checked="value" @change="onChange" />
-        <div class="slider" :style="sliderStyle"></div>
-        <div class="knob" :style="knobStyle"></div>
+        <div class="box" :style="boxStyle"><span v-if="value">✔</span></div>
       </div>
       <div>
         <label :for="id" :style="labelStyle">{{ label }}</label>
@@ -39,14 +38,10 @@ const emit = defineEmits<{
 const id = issueDOMID();
 const toggleStyle = computed(() => ({
   height: `${props.height}px`,
-  width: `${props.height * 2}px`,
-}));
-const sliderStyle = computed(() => ({
-  borderRadius: `${props.height * 0.5}px`,
-}));
-const knobStyle = computed(() => ({
-  height: `${props.height}px`,
   width: `${props.height}px`,
+}));
+const boxStyle = computed(() => ({
+  fontSize: `${props.height * 0.7}px`,
 }));
 const labelStyle = computed(() => ({
   fontSize: `${props.height * 0.7}px`,
@@ -77,7 +72,7 @@ input {
   cursor: pointer;
   opacity: 0;
 }
-input ~ .slider {
+input ~ .box {
   pointer-events: none;
   position: absolute;
   left: 0;
@@ -85,27 +80,10 @@ input ~ .slider {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  background-color: var(--toggle-inactive-color);
-  box-shadow: 1px 1px 3px 0 var(--control-shadow-color);
-}
-input ~ .knob {
-  pointer-events: none;
-  position: absolute;
-  border-radius: 100%;
-  left: 0;
-  top: 0;
-  background: var(--toggle-knob-color);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
-  transition: 0.2s;
-}
-input:checked ~ .slider {
-  background-color: var(--toggle-active-color);
-}
-input:checked ~ .knob {
-  left: 50%;
-}
-input:focus ~ .slider {
-  border: 1px solid white;
+  border: 1px solid var(--input-border-color);
+  border-radius: 20%;
+  color: var(--text-color);
+  background-color: var(--text-bg-color);
 }
 label {
   margin-left: 5px;

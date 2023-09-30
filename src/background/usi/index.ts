@@ -1,4 +1,4 @@
-import { USIEngineSetting } from "@/common/settings/usi";
+import { USIEngineSetting, emptyUSIEngineSetting } from "@/common/settings/usi";
 import { EngineProcess, GameResult as USIGameResult, TimeState } from "./engine";
 import * as uri from "@/common/uri";
 import {
@@ -30,6 +30,7 @@ export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
       .on("usiok", () => {
         resolve({
+          ...emptyUSIEngineSetting(),
           uri: uri.issueEngineURI(),
           name: process.name,
           defaultName: process.name,

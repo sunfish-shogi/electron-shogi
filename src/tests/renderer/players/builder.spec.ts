@@ -29,6 +29,7 @@ describe("builder", () => {
         author: "author-test",
         path: "path-test",
         options: {},
+        labels: {},
       },
     };
     const player = await defaultPlayerBuilder().build(setting);

@@ -80,7 +80,7 @@ import {
   ResearchSetting,
   validateResearchSetting,
 } from "@/common/settings/research";
-import { USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineLabel, USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
@@ -106,7 +106,9 @@ onMounted(async () => {
   installHotKeyForDialog(dialog.value);
   try {
     researchSetting.value = await api.loadResearchSetting();
-    engineSettings.value = await api.loadUSIEngineSetting();
+    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(
+      USIEngineLabel.RESEARCH,
+    );
     engineURI.value = researchSetting.value.usi?.uri || "";
     secondaryEngineURIs.value =
       researchSetting.value.secondaries?.map((setting) => setting.usi?.uri || "") || [];

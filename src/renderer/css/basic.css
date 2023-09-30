@@ -63,6 +63,10 @@ body::-webkit-scrollbar {
   justify-content: space-between;
 }
 
+.space-evenly {
+  justify-content: space-evenly;
+}
+
 .hidden {
   display: none !important;
 }

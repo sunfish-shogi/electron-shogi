@@ -17,6 +17,7 @@ describe("settings/research", () => {
         options: {
           USI_Hash: { name: "USI_Hash", type: "spin", order: 1, vars: [] },
         },
+        labels: {},
       },
       secondaries: [],
       enableMaxSeconds: false,
@@ -37,6 +38,7 @@ describe("settings/research", () => {
         options: {
           USI_Hash: { name: "USI_Hash", type: "spin", order: 1, vars: [] },
         },
+        labels: {},
       },
       secondaries: [],
       enableMaxSeconds: false,
@@ -65,6 +67,7 @@ describe("settings/research", () => {
         options: {
           USI_Hash: { name: "USI_Hash", type: "spin", order: 1, vars: [] },
         },
+        labels: {},
       },
       secondaries: [{}],
       enableMaxSeconds: false,

@@ -98,6 +98,7 @@ describe("settings/usi", () => {
           value: 8,
         },
       },
+      labels: {},
     };
     const out = duplicateEngineSetting(src);
     expect(out.uri).toMatch(/^es:\/\/usi-engine\/.*$/);
@@ -139,6 +140,7 @@ describe("settings/usi", () => {
           value: 8,
         },
       },
+      labels: {},
     };
     const rhs: USIEngineSetting = {
       uri: "uri-b",
@@ -158,6 +160,7 @@ describe("settings/usi", () => {
           value: 15,
         },
       },
+      labels: {},
     };
     mergeUSIEngineSetting(lhs, rhs);
     expect(lhs).toStrictEqual({
@@ -178,6 +181,7 @@ describe("settings/usi", () => {
           value: 15,
         },
       },
+      labels: {},
     });
   });
 
@@ -192,6 +196,7 @@ describe("settings/usi", () => {
             author: "author-a",
             path: "path-a",
             options: {},
+            labels: {},
           },
         },
       }),
@@ -203,6 +208,7 @@ describe("settings/usi", () => {
       author: "author-b",
       path: "path-b",
       options: {},
+      labels: {},
     });
     expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();
     expect(settings.hasEngine("es://usi-engine/b")).toBeTruthy();
@@ -223,6 +229,7 @@ describe("settings/usi", () => {
       author: "author-a",
       path: "path-a",
       options: {},
+      labels: {},
     });
     expect((settings.getEngine("es://usi-engine/a") as USIEngineSetting).name).toBe(
       "Engine A Updated",
@@ -231,5 +238,45 @@ describe("settings/usi", () => {
     settings.removeEngine("es://usi-engine/b");
     expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();
     expect(settings.hasEngine("es://usi-engine/b")).toBeFalsy();
+  });
+
+  it("USIEngineSetting/labels", () => {
+    const settings = new USIEngineSettings(
+      JSON.stringify({
+        engines: {
+          "es://usi-engine/a": {
+            labels: {
+              game: true,
+              research: false,
+              mate: true,
+            },
+          },
+          "es://usi-engine/b": {
+            labels: {
+              game: false,
+            },
+          },
+          "es://usi-engine/c": {},
+        },
+      }),
+    );
+    const engineA = settings.getEngine("es://usi-engine/a") as USIEngineSetting;
+    expect(engineA.labels).toStrictEqual({
+      game: true,
+      research: false,
+      mate: true,
+    });
+    const engineB = settings.getEngine("es://usi-engine/b") as USIEngineSetting;
+    expect(engineB.labels).toStrictEqual({
+      game: false,
+      research: true,
+      mate: true,
+    });
+    const engineC = settings.getEngine("es://usi-engine/c") as USIEngineSetting;
+    expect(engineC.labels).toStrictEqual({
+      game: true,
+      research: true,
+      mate: true,
+    });
   });
 });

@@ -17,6 +17,7 @@ describe("settings/analysis", () => {
         options: {
           USI_Hash: { name: "USI_Hash", type: "spin", order: 1, vars: [] },
         },
+        labels: {},
       },
       startCriteria: {
         enableNumber: true,

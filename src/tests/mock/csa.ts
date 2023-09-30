@@ -19,6 +19,7 @@ const playerSetting = {
     author: "author01",
     path: "/engines/engine",
     options: {},
+    labels: {},
   },
 };
 

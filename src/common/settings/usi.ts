@@ -45,6 +45,18 @@ export function getUSIEngineOptionCurrentValue(
 
 export type USIEngineOptions = { [name: string]: USIEngineOption };
 
+export enum USIEngineLabel {
+  GAME = "game",
+  RESEARCH = "research",
+  MATE = "mate",
+}
+
+export type USIEngineLabels = {
+  [USIEngineLabel.GAME]?: boolean;
+  [USIEngineLabel.RESEARCH]?: boolean;
+  [USIEngineLabel.MATE]?: boolean;
+};
+
 export type USIEngineSetting = {
   uri: string;
   name: string;
@@ -52,6 +64,7 @@ export type USIEngineSetting = {
   author: string;
   path: string;
   options: { [name: string]: USIEngineOption };
+  labels?: USIEngineLabels;
 };
 
 export function emptyUSIEngineSetting(): USIEngineSetting {
@@ -62,6 +75,11 @@ export function emptyUSIEngineSetting(): USIEngineSetting {
     author: "",
     path: "",
     options: {},
+    labels: {
+      game: true,
+      research: true,
+      mate: true,
+    },
   };
 }
 
@@ -100,10 +118,16 @@ export class USIEngineSettings {
       const src = JSON.parse(json);
       for (const engineURI in src.engines) {
         if (uri.isUSIEngine(engineURI)) {
+          const emptyEngine = emptyUSIEngineSetting();
+          const engine = src.engines[engineURI];
           this.engines[engineURI] = {
-            ...emptyUSIEngineSetting(),
-            ...src.engines[engineURI],
+            ...emptyEngine,
+            ...engine,
             uri: engineURI,
+            labels: {
+              ...emptyEngine.labels,
+              ...engine.labels,
+            },
           };
         }
       }
@@ -160,5 +184,15 @@ export class USIEngineSettings {
 
   getClone(): USIEngineSettings {
     return new USIEngineSettings(this.json);
+  }
+
+  filterByLabel(label: USIEngineLabel): USIEngineSettings {
+    const engines = new USIEngineSettings();
+    for (const engine of this.engineList) {
+      if (engine.labels && engine.labels[label]) {
+        engines.addEngine(engine);
+      }
+    }
+    return engines;
   }
 }

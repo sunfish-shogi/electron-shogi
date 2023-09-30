@@ -338,6 +338,8 @@ export type Texts = {
   dubiousThreshold: string;
   mistakeThreshold: string;
   blunderThreshold: string;
+  gothic: string;
+  mincho: string;
   typeCustomTitleHere: string;
   displayEmptyElements: string;
   waitingForNewGame: string;

@@ -341,6 +341,8 @@ export const en: Texts = {
   dubiousThreshold: "Dubious Threshold",
   mistakeThreshold: "Mistake Threshold",
   blunderThreshold: "Blunder Threshold",
+  gothic: "Gothic",
+  mincho: "Mincho",
   typeCustomTitleHere: "Type custom title here",
   displayEmptyElements: "Display Empty Elements",
   waitingForNewGame: "Waiting for new game.",

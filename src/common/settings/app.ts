@@ -107,6 +107,11 @@ export enum PositionImageStyle {
   GAME = "game",
 }
 
+export enum PositionImageTypeface {
+  GOTHIC = "gothic",
+  MINCHO = "mincho",
+}
+
 export type AppSetting = {
   language: Language;
   thema: Thema;
@@ -161,6 +166,7 @@ export type AppSetting = {
   logLevel: LogLevel;
   positionImageStyle: PositionImageStyle;
   positionImageSize: number;
+  positionImageTypeface: PositionImageTypeface;
   useBookmarkAsPositionImageHeader: boolean;
   positionImageHeader: string;
   lastRecordFilePath: string;
@@ -224,6 +230,7 @@ export type AppSettingUpdate = {
   logLevel?: LogLevel;
   positionImageStyle?: PositionImageStyle;
   positionImageSize?: number;
+  positionImageTypeface?: PositionImageTypeface;
   useBookmarkAsPositionImageHeader?: boolean;
   positionImageHeader?: string;
   lastRecordFilePath?: string;
@@ -319,6 +326,7 @@ export function defaultAppSetting(opt?: {
     logLevel: LogLevel.INFO,
     positionImageStyle: PositionImageStyle.BOOK,
     positionImageSize: 500,
+    positionImageTypeface: PositionImageTypeface.GOTHIC,
     useBookmarkAsPositionImageHeader: false,
     positionImageHeader: "",
     lastRecordFilePath: "",

@@ -7,6 +7,7 @@ export const usiEngineSetting: USIEngineSetting = {
   author: "author",
   path: "/engines/engines",
   options: {},
+  labels: {},
 };
 
 export const usiEngineSettingWithPonder: USIEngineSetting = {
@@ -24,4 +25,5 @@ export const usiEngineSettingWithPonder: USIEngineSetting = {
       value: "true",
     },
   },
+  labels: {},
 };

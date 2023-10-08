@@ -14,6 +14,7 @@ const blackPlayerSetting = {
     author: "author01",
     path: "/engines/engines01",
     options: {},
+    labels: {},
   },
 };
 
@@ -27,6 +28,7 @@ const whitePlayerSetting = {
     author: "author02",
     path: "/engines/engines02",
     options: {},
+    labels: {},
   },
 };
 

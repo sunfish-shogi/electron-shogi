@@ -9,6 +9,7 @@ const engine: USIEngineSetting = {
   author: "author",
   path: "/engines/engines",
   options: {},
+  labels: {},
 };
 
 export const analysisSetting: AnalysisSetting = {

@@ -99,7 +99,7 @@ import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
 import { AnalysisSetting } from "@/common/settings/analysis";
-import { USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineLabel, USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { onBeforeUnmount, onMounted, ref } from "vue";
@@ -126,7 +126,9 @@ onMounted(async () => {
   installHotKeyForDialog(dialog.value);
   try {
     const analysisSetting = await api.loadAnalysisSetting();
-    engineSettings.value = await api.loadUSIEngineSetting();
+    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(
+      USIEngineLabel.RESEARCH,
+    );
     engineURI.value = analysisSetting.usi?.uri || "";
     enableStartNumber.value = analysisSetting.startCriteria.enableNumber;
     startNumber.value.value = analysisSetting.startCriteria.number;

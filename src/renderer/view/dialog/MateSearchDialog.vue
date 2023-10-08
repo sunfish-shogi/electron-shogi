@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { t } from "@/common/i18n";
 import { MateSearchSetting } from "@/common/settings/mate";
-import { USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineLabel, USIEngineSettings } from "@/common/settings/usi";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import api from "@/renderer/ipc/api";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
@@ -53,7 +53,7 @@ onMounted(async () => {
   installHotKeyForDialog(dialog.value);
   try {
     const mateSearchSetting = await api.loadMateSearchSetting();
-    engineSettings.value = await api.loadUSIEngineSetting();
+    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(USIEngineLabel.MATE);
     engineURI.value = mateSearchSetting.usi?.uri || "";
   } catch (e) {
     store.pushError(e);

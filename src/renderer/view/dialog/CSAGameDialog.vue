@@ -187,7 +187,7 @@
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
-import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineLabel, USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { ref, onMounted, computed, onUpdated, onBeforeUnmount } from "vue";
 import api from "@/renderer/ipc/api";
 import { useStore } from "@/renderer/store";
@@ -234,7 +234,7 @@ onMounted(async () => {
   try {
     isEncryptionAvailable.value = await api.isEncryptionAvailable();
     history.value = await api.loadCSAGameSettingHistory();
-    engineSettings.value = await api.loadUSIEngineSetting();
+    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(USIEngineLabel.GAME);
     showModalDialog(dialog.value);
     installHotKeyForDialog(dialog.value);
     defaultValueLoaded = true;

@@ -141,7 +141,7 @@ export const ja: Texts = {
   pieceStand: "駒台",
   lightWoodyTexture: "木目（明るい）",
   warmWoodTexture: "木目（暖かい）",
-  regin: "レジン",
+  regin: "樹脂",
   transparent: "透過表示",
   boardOpacity: "盤の不透明度",
   pieceStandOpacity: "駒台の不透明度",

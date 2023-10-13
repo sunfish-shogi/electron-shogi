@@ -75,4 +75,38 @@ describe("store/research", () => {
     jest.runOnlyPendingTimers(); // 遅延実行
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(6);
   });
+
+  it("pause", async () => {
+    jest.useFakeTimers();
+    mockAPI.usiLaunch.mockResolvedValueOnce(101);
+    mockAPI.usiLaunch.mockResolvedValueOnce(102);
+    mockAPI.usiLaunch.mockResolvedValueOnce(103);
+    mockAPI.usiGo.mockResolvedValue();
+    const manager = new ResearchManager();
+    await manager.launch(researchSettingSecondaryEngines);
+    const record = new Record();
+    manager.updatePosition(record);
+    jest.runOnlyPendingTimers();
+    expect(mockAPI.usiGoInfinite).toBeCalledTimes(3);
+    // all sessions are unpaused
+    expect(manager.isPaused(101)).toBeFalsy();
+    expect(manager.isPaused(102)).toBeFalsy();
+    expect(manager.isPaused(103)).toBeFalsy();
+    // pause 102
+    manager.pause(102);
+    expect(manager.isPaused(101)).toBeFalsy();
+    expect(manager.isPaused(102)).toBeTruthy();
+    expect(manager.isPaused(103)).toBeFalsy();
+    // update position
+    record.append(record.position.createMoveByUSI("7g7f") as Move);
+    manager.updatePosition(record);
+    jest.runOnlyPendingTimers();
+    expect(mockAPI.usiGoInfinite).toBeCalledTimes(5);
+    // unpause 102
+    manager.unpause(102);
+    expect(manager.isPaused(101)).toBeFalsy();
+    expect(manager.isPaused(102)).toBeFalsy();
+    expect(manager.isPaused(103)).toBeFalsy();
+    expect(mockAPI.usiGoInfinite).toBeCalledTimes(6);
+  });
 });

@@ -8,7 +8,7 @@ import { GameResult } from "@/common/player";
 import { useStore } from "@/renderer/store";
 
 export class USIPlayer implements Player {
-  private sessionID = 0;
+  private _sessionID = 0;
   private usi?: string;
   private position?: Position;
   private searchHandler?: SearchHandler;
@@ -28,8 +28,12 @@ export class USIPlayer implements Player {
     return this.setting.name;
   }
 
+  get sessionID(): number {
+    return this._sessionID;
+  }
+
   async launch(): Promise<void> {
-    this.sessionID = await api.usiLaunch(this.setting, this.timeoutSeconds);
+    this._sessionID = await api.usiLaunch(this.setting, this.timeoutSeconds);
     usiPlayers[this.sessionID] = this;
   }
 

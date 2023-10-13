@@ -5,7 +5,6 @@
         v-for="monitor in store.usiMonitors"
         :key="monitor.sessionID"
         :history-mode="historyMode"
-        :name="monitor.name"
         :info="monitor"
         :height="elementHeight"
       />

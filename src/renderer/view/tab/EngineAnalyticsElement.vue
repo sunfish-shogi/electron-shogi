@@ -1,34 +1,42 @@
 <template>
   <div>
-    <div class="full column root">
+    <div class="full column root" :class="{ paused }">
+      <div v-if="store.appState === AppState.RESEARCH" class="overlay-control row reverse">
+        <button v-if="paused" @click="onUnpause">
+          <Icon :icon="IconType.RESUME" />
+          <span>{{ t.resume }}</span>
+        </button>
+        <button v-else @click="onPause">
+          <Icon :icon="IconType.PAUSE" />
+          <span>{{ t.pause }}</span>
+        </button>
+      </div>
       <div class="row headers">
         <div class="header">
-          <span class="label">{{ t.name }}: </span>
-          <span class="value">{{ name }}</span>
+          <span>{{ t.name }}: </span>
+          <span>{{ info.name }}</span>
         </div>
         <div class="header">
-          <span class="label">{{ t.prediction }}: </span>
-          <span class="value">
+          <span>{{ t.prediction }}: </span>
+          <span>
             {{ info.ponderMove ? info.ponderMove : "---" }}
           </span>
         </div>
         <div class="header">
-          <span class="label">{{ t.best }}: </span>
-          <span class="value">{{ info.currentMoveText || "---" }}</span>
+          <span>{{ t.best }}: </span>
+          <span>{{ info.currentMoveText || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">NPS: </span>
-          <span class="value">{{ info.nps || "---" }}</span>
+          <span>NPS: </span>
+          <span>{{ info.nps || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">{{ t.nodes }}: </span>
-          <span class="value">{{ info.nodes || "---" }}</span>
+          <span>{{ t.nodes }}: </span>
+          <span>{{ info.nodes || "---" }}</span>
         </div>
         <div class="header">
-          <span class="label">{{ t.hashUsage }}: </span>
-          <span class="value">
-            {{ info.hashfull ? (info.hashfull * 100).toFixed(1) : "---" }} %
-          </span>
+          <span>{{ t.hashUsage }}: </span>
+          <span>{{ info.hashfull ? (info.hashfull * 100).toFixed(1) : "---" }} %</span>
         </div>
       </div>
       <div class="row list-header">
@@ -99,14 +107,11 @@ import { EvaluationViewFrom } from "@/common/settings/app";
 import { Color, Move, Position } from "@/common/shogi";
 import { useAppSetting } from "@/renderer/store/setting";
 import { useStore } from "@/renderer/store";
+import { AppState } from "@/common/control/state";
 
 const props = defineProps({
   historyMode: {
     type: Boolean,
-    required: true,
-  },
-  name: {
-    type: String,
     required: true,
   },
   info: {
@@ -117,6 +122,12 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+});
+
+const store = useStore();
+
+const paused = computed(() => {
+  return store.isPausedResearchEngine(props.info.sessionID);
 });
 
 const enableHighlight = computed(() => {
@@ -164,29 +175,42 @@ const showPreview = (ite: USIIteration) => {
     pv,
   });
 };
+
+const onPause = () => {
+  store.pauseResearchEngine(props.info.sessionID);
+};
+
+const onUnpause = () => {
+  store.unpauseResearchEngine(props.info.sessionID);
+};
 </script>
 
 <style scoped>
 .root {
+  position: relative;
   padding-bottom: 2px;
   background-color: var(--active-tab-bg-color);
 }
+.overlay-control {
+  position: absolute;
+  width: 100%;
+  margin: 0px 0px 0px 0px;
+}
 .headers {
   width: 100%;
-  height: 18px;
+  height: 22px;
   text-align: left;
 }
 .header {
-  margin: 0px 4px 0px 0px;
+  margin: 0px 5px 0px 0px;
   padding: 0px 5px 0px 5px;
   background-color: var(--text-bg-color);
 }
-.label {
-  font-size: 13px;
-  white-space: nowrap;
+.paused .header {
+  background-color: var(--text-bg-color-disabled);
 }
-.value {
-  font-size: 13px;
+.header span {
+  font-size: 12px;
   white-space: nowrap;
 }
 .list-header {
@@ -195,10 +219,16 @@ const showPreview = (ite: USIIteration) => {
   font-size: 12px;
   background-color: var(--text-bg-color);
 }
+.paused .list-header {
+  background-color: var(--text-bg-color-disabled);
+}
 .list {
   width: 100%;
   overflow-y: scroll;
   background-color: var(--text-bg-color);
+}
+.paused .list {
+  background-color: var(--text-bg-color-disabled);
 }
 .list-item {
   height: 24px;
@@ -242,16 +272,16 @@ const showPreview = (ite: USIIteration) => {
   text-align: left;
   text-overflow: ellipsis;
 }
-.list-column button {
+button {
   margin: 0px 0px 1px 0px;
   padding: 1px 5px 1px 2px;
   height: 22px;
   vertical-align: middle;
 }
-.list-column .icon {
+.icon {
   height: 18px;
 }
-.list-column button span {
+button span {
   line-height: 19px;
 }
 </style>

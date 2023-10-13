@@ -51,6 +51,8 @@ export enum IconType {
   BATCH = "batch",
   OPEN_FOLDER = "openFolder",
   HISTORY = "history",
+  PAUSE = "pause",
+  RESUME = "resume",
 }
 
 export const iconSourceMap = {
@@ -104,6 +106,8 @@ export const iconSourceMap = {
   [IconType.BATCH]: "icon/home_storage_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.OPEN_FOLDER]: "icon/folder_open_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.HISTORY]: "icon/history_FILL0_wght400_GRAD0_opsz48.svg",
+  [IconType.PAUSE]: "icon/pause_circle_FILL0_wght400_GRAD0_opsz24.svg",
+  [IconType.RESUME]: "icon/play_circle_FILL0_wght400_GRAD0_opsz24.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

@@ -9,6 +9,7 @@ import {
   LeftSideControlType,
   PieceImageType,
   PieceStandImageType,
+  PositionImageHandLabelType,
   PositionImageStyle,
   PositionImageTypeface,
   RightSideControlType,
@@ -189,6 +190,9 @@ class AppSettingStore {
   }
   get positionImageTypeface(): PositionImageTypeface {
     return this.setting.positionImageTypeface;
+  }
+  get positionImageHandLabelType(): PositionImageHandLabelType {
+    return this.setting.positionImageHandLabelType;
   }
   get useBookmarkAsPositionImageHeader(): boolean {
     return this.setting.useBookmarkAsPositionImageHeader;

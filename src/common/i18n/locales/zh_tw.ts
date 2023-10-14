@@ -330,6 +330,10 @@ export const zh_tw: Texts = {
   filterByEngineName: "搜尋引擎名稱",
   bookStyle: "書籍風",
   gameStyle: "對局畫面風",
+  playerName: "対局者名", // TODO: translate
+  typeface: "書体", // TODO: translate
+  handLabel: "持ち駒ラベル", // TODO: translate
+  header: "見出し", // TODO: translate
   none: "無",
   bgCover: "圖片置中",
   bgContain: "擴大表示",

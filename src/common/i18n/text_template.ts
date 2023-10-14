@@ -328,6 +328,10 @@ export type Texts = {
   filterByEngineName: string;
   bookStyle: string;
   gameStyle: string;
+  playerName: string;
+  typeface: string;
+  handLabel: string;
+  header: string;
   none: string;
   bgCover: string;
   bgContain: string;

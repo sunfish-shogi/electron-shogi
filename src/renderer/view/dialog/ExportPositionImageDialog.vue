@@ -2,31 +2,79 @@
   <div>
     <dialog ref="dialog">
       <div ref="board" class="board" :class="appSetting.positionImageStyle">
-        <SimpleBoardView
-          v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK"
-          :max-size="maxSize"
-          :position="record.position"
-          :header="header"
-          :footer="record.current.comment"
-          :last-move="lastMove"
-          :typeface="appSetting.positionImageTypeface"
-        />
-        <BoardView
-          v-else
-          :board-image-type="appSetting.boardImage"
-          :piece-stand-image-type="appSetting.pieceStandImage"
-          :board-label-type="appSetting.boardLabelType"
-          :piece-image-base-url="getPieceImageBaseURL(appSetting)"
-          :king-piece-type="appSetting.kingPieceType"
-          :custom-board-image-url="appSetting.boardImageFileURL"
-          :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
-          :max-size="maxSize"
-          :position="record.position"
-          :last-move="lastMove"
-          :flip="appSetting.boardFlipping"
-          :black-player-name="blackPlayerName"
-          :white-player-name="whitePlayerName"
-        />
+        <div v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK" class="book row">
+          <SimpleBoardView
+            :max-size="maxSize"
+            :position="record.position"
+            :black-name="blackName"
+            :white-name="whiteName"
+            :hide-white-hand="
+              appSetting.positionImageHandLabelType === PositionImageHandLabelType.TSUME_SHOGI
+            "
+            :header="header"
+            :footer="record.current.comment"
+            :last-move="lastMove"
+            :typeface="appSetting.positionImageTypeface"
+          />
+          <div class="side-controls column">
+            <div class="form-item">
+              {{ t.typeface }}
+              <HorizontalSelector
+                :value="appSetting.positionImageTypeface"
+                :items="[
+                  { value: PositionImageTypeface.GOTHIC, label: t.gothic },
+                  { value: PositionImageTypeface.MINCHO, label: t.mincho },
+                ]"
+                @change="changeTypeface"
+              />
+            </div>
+            <div class="form-item">
+              {{ t.handLabel }}
+              <HorizontalSelector
+                :value="appSetting.positionImageHandLabelType"
+                :items="[
+                  { value: PositionImageHandLabelType.PLAYER_NAME, label: t.playerName },
+                  { value: PositionImageHandLabelType.SENTE_GOTE, label: '「先手｜後手」' },
+                  { value: PositionImageHandLabelType.MOCHIGOMA, label: '「持駒」' },
+                  { value: PositionImageHandLabelType.TSUME_SHOGI, label: t.tsumeShogi },
+                  { value: PositionImageHandLabelType.NONE, label: t.none },
+                ]"
+                @change="changeHandLabel"
+              />
+            </div>
+            <div class="form-item">
+              {{ t.header }}
+              <input
+                ref="headerText"
+                class="header"
+                :placeholder="t.typeCustomTitleHere"
+                @input="changeHeaderText"
+              />
+              <ToggleButton
+                :value="appSetting.useBookmarkAsPositionImageHeader"
+                :label="t.useBookmarkAsHeader"
+                @change="changeWhetherToUseBookmark"
+              />
+            </div>
+          </div>
+        </div>
+        <div v-else class="game">
+          <BoardView
+            :board-image-type="appSetting.boardImage"
+            :piece-stand-image-type="appSetting.pieceStandImage"
+            :board-label-type="appSetting.boardLabelType"
+            :piece-image-base-url="getPieceImageBaseURL(appSetting)"
+            :king-piece-type="appSetting.kingPieceType"
+            :custom-board-image-url="appSetting.boardImageFileURL"
+            :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
+            :max-size="maxSize"
+            :position="record.position"
+            :last-move="lastMove"
+            :flip="appSetting.boardFlipping"
+            :black-player-name="blackPlayerName"
+            :white-player-name="whitePlayerName"
+          />
+        </div>
       </div>
       <div>
         <div class="form-item center">
@@ -47,32 +95,6 @@
             @input="changeSize"
           />
           <span class="form-item-unit">px</span>
-        </div>
-        <div
-          class="form-item center"
-          :class="{
-            hidden: appSetting.positionImageStyle === PositionImageStyle.GAME,
-          }"
-        >
-          <HorizontalSelector
-            :value="appSetting.positionImageTypeface"
-            :items="[
-              { value: PositionImageTypeface.GOTHIC, label: t.gothic },
-              { value: PositionImageTypeface.MINCHO, label: t.mincho },
-            ]"
-            @change="changeTypeface"
-          />
-          <input
-            ref="headerText"
-            class="header"
-            :placeholder="t.typeCustomTitleHere"
-            @input="changeHeaderText"
-          />
-          <ToggleButton
-            :value="appSetting.useBookmarkAsPositionImageHeader"
-            :label="t.useBookmarkAsHeader"
-            @change="changeWhetherToUseBookmark"
-          />
         </div>
       </div>
       <div class="main-buttons">
@@ -109,17 +131,24 @@ import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
 import { Lazy } from "@/renderer/helpers/lazy";
 import {
+  PositionImageHandLabelType,
   PositionImageStyle,
   PositionImageTypeface,
   getPieceImageBaseURL,
 } from "@/common/settings/app";
-import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
+import {
+  getBlackPlayerName,
+  getBlackPlayerNamePreferShort,
+  getWhitePlayerName,
+  getWhitePlayerNamePreferShort,
+} from "@/common/helpers/metadata";
 import HorizontalSelector from "../primitive/HorizontalSelector.vue";
 import ToggleButton from "../primitive/ToggleButton.vue";
 
 const lazyUpdateDelay = 100;
 const marginHor = 150;
 const marginVer = 200;
+const marginVerB = 300;
 const aspectRatio = 16 / 9;
 
 const store = useStore();
@@ -160,10 +189,11 @@ onBeforeUnmount(() => {
 const maxSize = computed(() => {
   const height = appSetting.positionImageSize / zoom.value;
   const width = height * aspectRatio;
-  return new RectSize(
-    Math.min(width, windowSize.width - marginHor),
-    Math.min(height, windowSize.height - marginVer),
-  );
+  const maxWidth = windowSize.width - marginHor;
+  const maxHeight =
+    windowSize.height -
+    (appSetting.positionImageStyle === PositionImageStyle.BOOK ? marginVerB : marginVer);
+  return new RectSize(Math.min(width, maxWidth), Math.min(height, maxHeight));
 });
 
 const header = computed(() => {
@@ -178,6 +208,33 @@ const header = computed(() => {
   );
 });
 
+const blackName = computed(() => {
+  switch (appSetting.positionImageHandLabelType) {
+    case PositionImageHandLabelType.PLAYER_NAME:
+      return getBlackPlayerNamePreferShort(record.metadata) || "先手";
+    case PositionImageHandLabelType.SENTE_GOTE:
+      return "先手";
+    case PositionImageHandLabelType.MOCHIGOMA:
+    case PositionImageHandLabelType.TSUME_SHOGI:
+      return "持駒";
+    default:
+      return undefined;
+  }
+});
+
+const whiteName = computed(() => {
+  switch (appSetting.positionImageHandLabelType) {
+    case PositionImageHandLabelType.PLAYER_NAME:
+      return getWhitePlayerNamePreferShort(record.metadata) || "後手";
+    case PositionImageHandLabelType.SENTE_GOTE:
+      return "後手";
+    case PositionImageHandLabelType.MOCHIGOMA:
+      return "持駒";
+    default:
+      return undefined;
+  }
+});
+
 const changeSize = (e: Event) => {
   const elem = e.target as HTMLInputElement;
   appSetting.updateAppSetting({
@@ -187,6 +244,10 @@ const changeSize = (e: Event) => {
 
 const changeTypeface = (value: string) => {
   appSetting.updateAppSetting({ positionImageTypeface: value as PositionImageTypeface });
+};
+
+const changeHandLabel = (value: string) => {
+  appSetting.updateAppSetting({ positionImageHandLabelType: value as PositionImageHandLabelType });
 };
 
 const changeHeaderText = (e: Event) => {
@@ -234,11 +295,22 @@ const close = () => {
   padding: 5px;
   margin: auto;
 }
-.board.game {
+.board > .game > :first-child {
   background-color: var(--main-bg-color);
 }
-.board.book {
+.board > .book > :first-child {
   background-color: white;
+}
+.side-controls {
+  margin-left: 10px;
+  width: 300px;
+}
+.side-controls > .form-item {
+  display: flex;
+  flex-direction: column;
+}
+.side-controls > .form-item > :not(:first-child) {
+  margin-top: 5px;
 }
 .form-item > * {
   vertical-align: middle;
@@ -248,6 +320,6 @@ input.size {
   text-align: right;
 }
 input.header {
-  width: 200px;
+  width: 100%;
 }
 </style>

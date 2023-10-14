@@ -33,6 +33,8 @@ export class ResearchManager {
   private onError: ErrorCallback = () => {
     /* noop */
   };
+  private pausedEngineMap: { [sessionID: number]: boolean } = {};
+  private record?: ImmutableRecord;
   private lazyPositionUpdate = new Lazy();
   private maxSecondsTimer?: NodeJS.Timeout;
 
@@ -93,16 +95,55 @@ export class ResearchManager {
   }
 
   updatePosition(record: ImmutableRecord) {
-    // 200ms 以内に複数回の更新が行われたら最後だけを採用する。
+    // 200ms 以内に複数回更新されたら最後の 1 回だけを処理する。
     this.lazyPositionUpdate.after(() => {
+      // 一時停止中のエンジンを除いて探索を開始する。
+      this.engines.forEach((engine) => {
+        if (this.pausedEngineMap[engine.sessionID]) {
+          return;
+        }
+        engine.startResearch(record).catch((e) => {
+          this.onError(e);
+        });
+      });
+      // 一時停止からの再開のために棋譜を覚えておく。
+      this.record = record;
+      // タイマーを初期化する。
       clearTimeout(this.maxSecondsTimer);
-      this.engines.forEach((engine) => engine.startResearch(record));
       if (this.setting.enableMaxSeconds && this.setting.maxSeconds > 0) {
         this.maxSecondsTimer = setTimeout(() => {
           this.stopAll();
         }, this.setting.maxSeconds * 1e3);
       }
     }, 200);
+  }
+
+  isPaused(sessionID: number): boolean {
+    return this.pausedEngineMap[sessionID] || false;
+  }
+
+  pause(sessionID: number) {
+    const engine = this.engines.find((engine) => engine.sessionID === sessionID);
+    if (!engine) {
+      return;
+    }
+    this.pausedEngineMap[sessionID] = true;
+    engine.stop().catch((e) => {
+      this.onError(e);
+    });
+  }
+
+  unpause(sessionID: number) {
+    const engine = this.engines.find((engine) => engine.sessionID === sessionID);
+    if (!engine) {
+      return;
+    }
+    this.pausedEngineMap[sessionID] = false;
+    if (this.record) {
+      engine.startResearch(this.record).catch((e) => {
+        this.onError(e);
+      });
+    }
   }
 
   private stopAll() {
@@ -118,6 +159,7 @@ export class ResearchManager {
     Promise.allSettled(this.engines.map((engine) => engine.close()))
       .then(() => {
         this.engines = [];
+        this.pausedEngineMap = {};
       })
       .catch((e) => {
         this.onError(e);

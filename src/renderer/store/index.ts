@@ -392,6 +392,18 @@ class Store {
     return this.usiMonitor.sessions;
   }
 
+  isPausedResearchEngine(sessionID: number): boolean {
+    return this.researchManager.isPaused(sessionID);
+  }
+
+  pauseResearchEngine(sessionID: number): void {
+    this.researchManager.pause(sessionID);
+  }
+
+  unpauseResearchEngine(sessionID: number): void {
+    this.researchManager.unpause(sessionID);
+  }
+
   updateUSIInfo(sessionID: number, usi: string, name: string, info: USIInfoCommand): void {
     if (this.recordManager.record.usi !== usi) {
       return;

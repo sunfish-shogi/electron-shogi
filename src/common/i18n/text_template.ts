@@ -288,6 +288,8 @@ export type Texts = {
   best: string;
   nodes: string;
   hashUsage: string;
+  pause: string;
+  resume: string;
   nonHandicap: string;
   lanceHandicap: string;
   rightLanceHandicap: string;

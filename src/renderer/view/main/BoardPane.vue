@@ -129,6 +129,7 @@
           <button
             v-if="controlStates.endEditPosition"
             class="control-item"
+            data-hotkey="Escape"
             @click="onEndEditPosition"
           >
             <Icon :icon="IconType.CHECK" />

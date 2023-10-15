@@ -9,7 +9,7 @@
     <USIEngineManagementDialog v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG" />
     <RecordFileHistoryDialog v-if="store.appState === AppState.RECORD_FILE_HISTORY_DIALOG" />
     <BatchConversionDialog v-if="store.appState === AppState.BATCH_CONVERSION_DIALOG" />
-    <ExportPositionImageDialog v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG" />
+    <PositionImageExportDialog v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG" />
     <AppSettingDialog v-if="store.isAppSettingDialogVisible" />
     <PasteDialog v-if="store.appState === AppState.PASTE_DIALOG" />
     <BussyMessage v-if="store.isBussy" />
@@ -46,7 +46,7 @@ import GameDialog from "@/renderer/view/dialog/GameDialog.vue";
 import CSAGameDialog from "@/renderer/view/dialog/CSAGameDialog.vue";
 import ResearchDialog from "@/renderer/view/dialog/ResearchDialog.vue";
 import USIEngineManagementDialog from "@/renderer/view/dialog/USIEngineManagementDialog.vue";
-import ExportPositionImageDialog from "@/renderer/view/dialog/ExportPositionImageDialog.vue";
+import PositionImageExportDialog from "@/renderer/view/dialog/PositionImageExportDialog.vue";
 import AppSettingDialog from "@/renderer/view/dialog/AppSettingDialog.vue";
 import PasteDialog from "@/renderer/view/dialog/PasteDialog.vue";
 import BussyMessage from "@/renderer/view/dialog/BussyMessage.vue";

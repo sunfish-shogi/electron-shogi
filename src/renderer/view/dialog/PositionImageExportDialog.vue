@@ -1,79 +1,84 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div ref="board" class="board" :class="appSetting.positionImageStyle">
-        <div v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK" class="book row">
-          <SimpleBoardView
-            :max-size="maxSize"
-            :position="record.position"
-            :black-name="blackName"
-            :white-name="whiteName"
-            :hide-white-hand="
-              appSetting.positionImageHandLabelType === PositionImageHandLabelType.TSUME_SHOGI
-            "
-            :header="header"
-            :footer="record.current.comment"
-            :last-move="lastMove"
-            :typeface="appSetting.positionImageTypeface"
-          />
-          <div class="side-controls column">
-            <div class="form-item">
-              {{ t.typeface }}
-              <HorizontalSelector
-                :value="appSetting.positionImageTypeface"
-                :items="[
-                  { value: PositionImageTypeface.GOTHIC, label: t.gothic },
-                  { value: PositionImageTypeface.MINCHO, label: t.mincho },
-                ]"
-                @change="changeTypeface"
-              />
-            </div>
-            <div class="form-item">
-              {{ t.handLabel }}
-              <HorizontalSelector
-                :value="appSetting.positionImageHandLabelType"
-                :items="[
-                  { value: PositionImageHandLabelType.PLAYER_NAME, label: t.playerName },
-                  { value: PositionImageHandLabelType.SENTE_GOTE, label: '「先手｜後手」' },
-                  { value: PositionImageHandLabelType.MOCHIGOMA, label: '「持駒」' },
-                  { value: PositionImageHandLabelType.TSUME_SHOGI, label: t.tsumeShogi },
-                  { value: PositionImageHandLabelType.NONE, label: t.none },
-                ]"
-                @change="changeHandLabel"
-              />
-            </div>
-            <div class="form-item">
-              {{ t.header }}
-              <input
-                ref="headerText"
-                class="header"
-                :placeholder="t.typeCustomTitleHere"
-                @input="changeHeaderText"
-              />
-              <ToggleButton
-                :value="appSetting.useBookmarkAsPositionImageHeader"
-                :label="t.useBookmarkAsHeader"
-                @change="changeWhetherToUseBookmark"
-              />
-            </div>
+      <div class="row">
+        <div ref="board" class="board" :class="appSetting.positionImageStyle">
+          <div v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK" class="book">
+            <SimpleBoardView
+              :max-size="maxSize"
+              :position="record.position"
+              :black-name="blackName"
+              :white-name="whiteName"
+              :hide-white-hand="
+                appSetting.positionImageHandLabelType === PositionImageHandLabelType.TSUME_SHOGI
+              "
+              :header="header"
+              :footer="record.current.comment"
+              :last-move="lastMove"
+              :typeface="appSetting.positionImageTypeface"
+            />
+          </div>
+          <div v-else class="game">
+            <BoardView
+              :board-image-type="appSetting.boardImage"
+              :piece-stand-image-type="appSetting.pieceStandImage"
+              :board-label-type="appSetting.boardLabelType"
+              :piece-image-base-url="getPieceImageBaseURL(appSetting)"
+              :king-piece-type="appSetting.kingPieceType"
+              :custom-board-image-url="appSetting.boardImageFileURL"
+              :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
+              :max-size="maxSize"
+              :position="record.position"
+              :last-move="lastMove"
+              :flip="appSetting.boardFlipping"
+              :black-player-name="blackPlayerName"
+              :white-player-name="whitePlayerName"
+            />
           </div>
         </div>
-        <div v-else class="game">
-          <BoardView
-            :board-image-type="appSetting.boardImage"
-            :piece-stand-image-type="appSetting.pieceStandImage"
-            :board-label-type="appSetting.boardLabelType"
-            :piece-image-base-url="getPieceImageBaseURL(appSetting)"
-            :king-piece-type="appSetting.kingPieceType"
-            :custom-board-image-url="appSetting.boardImageFileURL"
-            :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
-            :max-size="maxSize"
-            :position="record.position"
-            :last-move="lastMove"
-            :flip="appSetting.boardFlipping"
-            :black-player-name="blackPlayerName"
-            :white-player-name="whitePlayerName"
-          />
+        <div
+          v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK"
+          class="side-controls column"
+        >
+          <div class="form-item">
+            {{ t.typeface }}
+            <HorizontalSelector
+              :value="appSetting.positionImageTypeface"
+              :items="[
+                { value: PositionImageTypeface.GOTHIC, label: t.gothic },
+                { value: PositionImageTypeface.MINCHO, label: t.mincho },
+              ]"
+              @change="changeTypeface"
+            />
+          </div>
+          <div class="form-item">
+            {{ t.handLabel }}
+            <HorizontalSelector
+              :value="appSetting.positionImageHandLabelType"
+              :items="[
+                { value: PositionImageHandLabelType.PLAYER_NAME, label: t.playerName },
+                { value: PositionImageHandLabelType.SENTE_GOTE, label: '「先手｜後手」' },
+                { value: PositionImageHandLabelType.MOCHIGOMA, label: '「持駒」' },
+                { value: PositionImageHandLabelType.TSUME_SHOGI, label: t.tsumeShogi },
+                { value: PositionImageHandLabelType.NONE, label: t.none },
+              ]"
+              @change="changeHandLabel"
+            />
+          </div>
+          <div class="form-item">
+            {{ t.header }}
+            <input
+              class="header"
+              :value="appSetting.positionImageHeader"
+              :placeholder="t.typeCustomTitleHere"
+              @input="changeHeaderText"
+            />
+            <ToggleButton
+              :value="appSetting.useBookmarkAsPositionImageHeader"
+              :label="t.useBookmarkAsHeader"
+              @change="changeWhetherToUseBookmark"
+            />
+          </div>
         </div>
       </div>
       <div>
@@ -87,11 +92,11 @@
             @change="changeType"
           />
           <input
-            ref="imageSize"
             class="size"
             type="number"
             min="400"
             max="2000"
+            :value="appSetting.positionImageSize"
             @input="changeSize"
           />
           <span class="form-item-unit">px</span>
@@ -148,7 +153,6 @@ import ToggleButton from "../primitive/ToggleButton.vue";
 const lazyUpdateDelay = 100;
 const marginHor = 150;
 const marginVer = 200;
-const marginVerB = 300;
 const aspectRatio = 16 / 9;
 
 const store = useStore();
@@ -159,8 +163,6 @@ const record = store.record;
 const lastMove = record.current.move instanceof Move ? record.current.move : null;
 const dialog = ref();
 const board = ref();
-const imageSize = ref();
-const headerText = ref();
 const windowSize = reactive(new RectSize(window.innerWidth, window.innerHeight));
 const zoom = ref(window.devicePixelRatio);
 
@@ -177,8 +179,6 @@ onMounted(() => {
   showModalDialog(dialog.value);
   installHotKeyForDialog(dialog.value);
   window.addEventListener("resize", updateSize);
-  imageSize.value.value = appSetting.positionImageSize;
-  headerText.value.value = appSetting.positionImageHeader;
 });
 
 onBeforeUnmount(() => {
@@ -190,9 +190,7 @@ const maxSize = computed(() => {
   const height = appSetting.positionImageSize / zoom.value;
   const width = height * aspectRatio;
   const maxWidth = windowSize.width - marginHor;
-  const maxHeight =
-    windowSize.height -
-    (appSetting.positionImageStyle === PositionImageStyle.BOOK ? marginVerB : marginVer);
+  const maxHeight = windowSize.height - marginVer;
   return new RectSize(Math.min(width, maxWidth), Math.min(height, maxHeight));
 });
 
@@ -295,10 +293,10 @@ const close = () => {
   padding: 5px;
   margin: auto;
 }
-.board > .game > :first-child {
+.board.game {
   background-color: var(--main-bg-color);
 }
-.board > .book > :first-child {
+.board.book {
   background-color: white;
 }
 .side-controls {

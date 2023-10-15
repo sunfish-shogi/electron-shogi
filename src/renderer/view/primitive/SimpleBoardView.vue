@@ -26,27 +26,48 @@
           piece.character
         }}</span>
       </div>
-      <div :style="layout.blackHand.style">
-        <span class="hand" :class="layout.typefaceClass">☗{{ layout.blackHand.pieces }}</span>
+      <div class="column reverse" :style="layout.blackHand.style">
+        <span class="hand" :class="layout.typefaceClass">☗{{ layout.blackHand.text }}</span>
       </div>
-      <div :style="layout.whiteHand.style">
-        <span class="hand" :class="layout.typefaceClass">☖{{ layout.whiteHand.pieces }}</span>
+      <div v-if="!hideWhiteHand" class="column reverse" :style="layout.whiteHand.style">
+        <span class="hand" :class="layout.typefaceClass">☖{{ layout.whiteHand.text }}</span>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import {
   Move,
   ImmutablePosition,
   Piece,
   pieceTypeToStringForBoard,
   numberToKanji,
+  ImmutableHand,
 } from "@/common/shogi";
 import { computed, PropType } from "vue";
 import { RectSize } from "@/common/graphics";
 
+const fileNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const rankNumbers = ["一", "二", "三", "四", "五", "六", "七", "八", "九"];
+
+function buildHandText(name: string, hand: ImmutableHand) {
+  const pieces =
+    hand.counts
+      .map((entry) => {
+        if (entry.count === 0) {
+          return "";
+        } else if (entry.count === 1) {
+          return pieceTypeToStringForBoard(entry.type);
+        }
+        return pieceTypeToStringForBoard(entry.type) + numberToKanji(entry.count);
+      })
+      .join("") || "なし";
+  return (name ? name + " " : "") + pieces;
+}
+</script>
+
+<script setup lang="ts">
 function buildParams(size: number) {
   return {
     size: size,
@@ -57,12 +78,13 @@ function buildParams(size: number) {
     boardLeft: size * 0.15,
     boardTop: size * 0.12,
     boardSize: size * 0.7,
+    boardLineHeight: size * 0.088,
     boardBorderSize: size * 0.004,
     labelSize: size * 0.05,
     labelFontSize: size * 0.04,
     pieceSize: (size * 0.7) / 9,
     fontSize: size * 0.038,
-    handFontSize: size * 0.042,
+    maxHandFontSize: size * 0.048,
     blackHandLeft: size * 0.9,
     blackHandTop: size * 0.12,
     whiteHandLeft: size * (0.1 - 0.042),
@@ -78,6 +100,21 @@ const props = defineProps({
   position: {
     type: Object as PropType<ImmutablePosition>,
     required: true,
+  },
+  blackName: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  whiteName: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  hideWhiteHand: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
   header: {
     type: String,
@@ -128,7 +165,7 @@ const layout = computed(() => {
       width: `${param.boardSize + param.boardBorderSize * 2}px`,
       height: `${param.boardSize + param.boardBorderSize * 2}px`,
     },
-    files: ["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((character, index) => {
+    files: fileNumbers.map((character, index) => {
       return {
         style: {
           left: `${param.boardLeft + param.pieceSize * (8 - index)}px`,
@@ -143,7 +180,7 @@ const layout = computed(() => {
     fileCharacterStyle: {
       lineHeight: `${param.labelSize}px`,
     },
-    ranks: ["一", "二", "三", "四", "五", "六", "七", "八", "九"].map((character, index) => {
+    ranks: rankNumbers.map((character, index) => {
       return {
         style: {
           left: `${param.boardLeft + param.boardSize}px`,
@@ -185,49 +222,37 @@ const layout = computed(() => {
         },
         character: pieceTypeToStringForBoard(piece.type),
         characterStyle: {
-          lineHeight: `${param.boardSize * 0.125}px`,
+          lineHeight: `${param.boardLineHeight}px`,
         },
       };
     }),
-    blackHand: {
-      style: {
-        left: `${param.blackHandLeft}px`,
-        top: `${param.blackHandTop}px`,
-        height: `${param.boardSize}px`,
-        fontSize: `${param.handFontSize}px`,
-      },
-      pieces:
-        props.position.blackHand.counts
-          .map((entry) => {
-            if (entry.count === 0) {
-              return "";
-            } else if (entry.count === 1) {
-              return pieceTypeToStringForBoard(entry.type);
-            }
-            return pieceTypeToStringForBoard(entry.type) + numberToKanji(entry.count);
-          })
-          .join("") || "なし",
-    },
-    whiteHand: {
-      style: {
-        left: `${param.whiteHandLeft}px`,
-        top: `${param.whiteHandTop}px`,
-        height: `${param.boardSize}px`,
-        fontSize: `${param.handFontSize}px`,
-        transform: "rotate(180deg)",
-      },
-      pieces:
-        props.position.whiteHand.counts
-          .map((entry) => {
-            if (entry.count === 0) {
-              return "";
-            } else if (entry.count === 1) {
-              return pieceTypeToStringForBoard(entry.type);
-            }
-            return pieceTypeToStringForBoard(entry.type) + numberToKanji(entry.count);
-          })
-          .join("") || "なし",
-    },
+    blackHand: (function () {
+      const text = buildHandText(props.blackName, props.position.blackHand);
+      const fontSize = Math.min((param.boardSize / text.length) * 0.9, param.maxHandFontSize);
+      return {
+        text,
+        style: {
+          left: `${param.blackHandLeft}px`,
+          top: `${param.blackHandTop}px`,
+          height: `${param.boardSize}px`,
+          fontSize: `${fontSize}px`,
+        },
+      };
+    })(),
+    whiteHand: (function () {
+      const text = buildHandText(props.whiteName, props.position.whiteHand);
+      const fontSize = Math.min((param.boardSize / text.length) * 0.9, param.maxHandFontSize);
+      return {
+        text,
+        style: {
+          left: `${param.whiteHandLeft}px`,
+          top: `${param.whiteHandTop}px`,
+          height: `${param.boardSize}px`,
+          fontSize: `${fontSize}px`,
+          transform: "rotate(180deg)",
+        },
+      };
+    })(),
   };
 });
 </script>
@@ -284,5 +309,6 @@ const layout = computed(() => {
   text-align: top;
   writing-mode: vertical-rl;
   text-orientation: upright;
+  letter-spacing: 0px;
 }
 </style>

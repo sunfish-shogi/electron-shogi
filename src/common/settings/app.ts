@@ -112,6 +112,14 @@ export enum PositionImageTypeface {
   MINCHO = "mincho",
 }
 
+export enum PositionImageHandLabelType {
+  PLAYER_NAME = "playerName",
+  SENTE_GOTE = "senteGote",
+  MOCHIGOMA = "mochigoma",
+  TSUME_SHOGI = "tsumeShogi",
+  NONE = "none",
+}
+
 export type AppSetting = {
   language: Language;
   thema: Thema;
@@ -167,6 +175,7 @@ export type AppSetting = {
   positionImageStyle: PositionImageStyle;
   positionImageSize: number;
   positionImageTypeface: PositionImageTypeface;
+  positionImageHandLabelType: PositionImageHandLabelType;
   useBookmarkAsPositionImageHeader: boolean;
   positionImageHeader: string;
   lastRecordFilePath: string;
@@ -231,6 +240,7 @@ export type AppSettingUpdate = {
   positionImageStyle?: PositionImageStyle;
   positionImageSize?: number;
   positionImageTypeface?: PositionImageTypeface;
+  positionImageHandLabelType?: PositionImageHandLabelType;
   useBookmarkAsPositionImageHeader?: boolean;
   positionImageHeader?: string;
   lastRecordFilePath?: string;
@@ -327,6 +337,7 @@ export function defaultAppSetting(opt?: {
     positionImageStyle: PositionImageStyle.BOOK,
     positionImageSize: 500,
     positionImageTypeface: PositionImageTypeface.GOTHIC,
+    positionImageHandLabelType: PositionImageHandLabelType.PLAYER_NAME,
     useBookmarkAsPositionImageHeader: false,
     positionImageHeader: "",
     lastRecordFilePath: "",

@@ -14,7 +14,12 @@
       >
         <span class="player-name-text">☗{{ blackPlayerName }}</span>
       </div>
-      <div class="clock" :class="blackPlayerTimeSeverity" :style="layout.blackClock.style">
+      <div
+        v-if="layout.blackClock"
+        class="clock"
+        :class="blackPlayerTimeSeverity"
+        :style="layout.blackClock.style"
+      >
         <span class="clock-text">{{ blackPlayerTimeText }}</span>
       </div>
       <div
@@ -24,7 +29,12 @@
       >
         <span class="player-name-text">☖{{ whitePlayerName }}</span>
       </div>
-      <div class="clock" :class="whitePlayerTimeSeverity" :style="layout.whiteClock.style">
+      <div
+        v-if="layout.whiteClock"
+        class="clock"
+        :class="whitePlayerTimeSeverity"
+        :style="layout.whiteClock.style"
+      >
         <span class="clock-text">{{ whitePlayerTimeText }}</span>
       </div>
       <div v-for="square in layout.square" :key="square.id" :style="square.backgroundStyle"></div>
@@ -189,6 +199,11 @@ const props = defineProps({
   flip: {
     type: Boolean,
     required: false,
+  },
+  hideClock: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
   allowEdit: {
     type: Boolean,
@@ -387,6 +402,7 @@ const layout = computed(() => {
       boardLabelType: props.boardLabelType,
       upperSizeLimit: props.maxSize,
       flip: props.flip,
+      hideClock: props.hideClock,
     },
     props.position,
     props.lastMove,

@@ -31,6 +31,7 @@
               :position="record.position"
               :last-move="lastMove"
               :flip="appSetting.boardFlipping"
+              :hide-clock="true"
               :black-player-name="blackPlayerName"
               :white-player-name="whitePlayerName"
             />

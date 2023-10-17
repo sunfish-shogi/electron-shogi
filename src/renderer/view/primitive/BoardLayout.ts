@@ -104,10 +104,12 @@ const layoutTemplate = {
     black: {
       x: 1184,
       y: 425,
+      y2: 490,
     },
     white: {
       x: 0,
-      y: 492,
+      y: 495,
+      y2: 430,
     },
     width: 288,
     height: 45,
@@ -117,10 +119,12 @@ const layoutTemplate = {
     black: {
       x: 1184,
       y: 480,
+      y2: 545,
     },
     white: {
       x: 0,
       y: 370,
+      y2: 370,
     },
     width: 288,
     height: 45,
@@ -384,8 +388,8 @@ export type FullLayout = {
   turn: TurnLayout;
   blackPlayerName: PlayerNameLayout;
   whitePlayerName: PlayerNameLayout;
-  blackClock: ClockLayout;
-  whiteClock: ClockLayout;
+  blackClock?: ClockLayout;
+  whiteClock?: ClockLayout;
   control: ControlLayout;
 };
 
@@ -416,6 +420,7 @@ export type LayoutConfig = {
   boardLabelType: BoardLabelType;
   upperSizeLimit: RectSize;
   flip?: boolean;
+  hideClock?: boolean;
 };
 
 export default class LayoutBuilder {
@@ -774,10 +779,13 @@ export default class LayoutBuilder {
       const color = position.color;
       const displayColor = config.flip ? reverseColor(color) : color;
       const borderWidth = 2;
+      const template = layoutTemplate.turn[displayColor];
+      const x = template.x;
+      const y = config.hideClock ? template.y2 : template.y;
       return {
         style: {
-          left: layoutTemplate.turn[displayColor].x * ratio - borderWidth + "px",
-          top: layoutTemplate.turn[displayColor].y * ratio - borderWidth + "px",
+          left: x * ratio - borderWidth + "px",
+          top: y * ratio - borderWidth + "px",
           width: layoutTemplate.turn.width * ratio - borderWidth + "px",
           height: layoutTemplate.turn.height * ratio - borderWidth + "px",
           "font-size": layoutTemplate.turn.fontSize * ratio + "px",
@@ -790,10 +798,13 @@ export default class LayoutBuilder {
 
     const buildPlayerNameLayout = (color: Color): PlayerNameLayout => {
       const displayColor = config.flip ? reverseColor(color) : color;
+      const template = layoutTemplate.playerName[displayColor];
+      const x = template.x;
+      const y = config.hideClock ? template.y2 : template.y;
       return {
         style: {
-          left: layoutTemplate.playerName[displayColor].x * ratio + "px",
-          top: layoutTemplate.playerName[displayColor].y * ratio + "px",
+          left: x * ratio + "px",
+          top: y * ratio + "px",
           width: layoutTemplate.playerName.width * ratio + "px",
           height: layoutTemplate.playerName.height * ratio + "px",
           "font-size": layoutTemplate.playerName.fontSize * ratio + "px",
@@ -848,8 +859,8 @@ export default class LayoutBuilder {
     const turnLayout = buildTurnLayout();
     const blackPlayerNameLayout = buildPlayerNameLayout(Color.BLACK);
     const whitePlayerNameLayout = buildPlayerNameLayout(Color.WHITE);
-    const blackClockLayout = buildClockLayout(Color.BLACK);
-    const whiteClockLayout = buildClockLayout(Color.WHITE);
+    const blackClockLayout = config.hideClock ? undefined : buildClockLayout(Color.BLACK);
+    const whiteClockLayout = config.hideClock ? undefined : buildClockLayout(Color.WHITE);
     const controlLayout = buildControlLayout();
     return {
       frame: frameLayout,

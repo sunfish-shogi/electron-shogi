@@ -14,6 +14,7 @@
       :position="store.record.position"
       :last-move="lastMove"
       :flip="appSetting.boardFlipping"
+      :hide-clock="store.appState !== AppState.GAME && store.appState !== AppState.CSA_GAME"
       :allow-move="store.isMovableByUser"
       :allow-edit="store.appState === AppState.POSITION_EDITING"
       :black-player-name="blackPlayerName"

@@ -44,6 +44,7 @@ import {
   pieceTypeToStringForBoard,
   numberToKanji,
   ImmutableHand,
+  Color,
 } from "@/common/shogi";
 import { computed, PropType } from "vue";
 import { RectSize } from "@/common/graphics";
@@ -226,10 +227,14 @@ const layout = computed(() => {
         id: `${square.x},${square.y}`,
         style: {
           left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
-          top: `${param.boardTop + (param.boardSize * square.y) / 9 - charY}px`,
+          top: `${
+            param.boardTop +
+            (param.boardSize * square.y) / 9 -
+            (piece.color === Color.BLACK ? charY : -charY)
+          }px`,
           width: `${param.boardSize / 9}px`,
           height: `${param.boardSize / 9}px`,
-          transform: piece.color === "white" ? "rotate(180deg)" : undefined,
+          transform: piece.color === Color.WHITE ? "rotate(180deg)" : undefined,
           fontSize: `${(param.boardSize * props.fontScale) / 11}px`,
         },
         character: pieceTypeToStringForBoard(piece.type),
@@ -258,7 +263,7 @@ const layout = computed(() => {
         text,
         style: {
           left: `${param.whiteHandLeft}px`,
-          top: `${param.whiteHandTop - charY}px`,
+          top: `${param.whiteHandTop + charY}px`,
           height: `${param.boardSize}px`,
           fontSize: `${fontSize * props.fontScale}px`,
           transform: "rotate(180deg)",

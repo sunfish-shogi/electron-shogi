@@ -332,6 +332,9 @@ export type Texts = {
   typeface: string;
   handLabel: string;
   header: string;
+  characterAdjustment: string;
+  vertical: string;
+  size: string;
   none: string;
   bgCover: string;
   bgContain: string;

@@ -200,6 +200,12 @@ class AppSettingStore {
   get positionImageHeader(): string {
     return this.setting.positionImageHeader;
   }
+  get positionImageCharacterY(): number {
+    return this.setting.positionImageCharacterY;
+  }
+  get positionImageFontScale(): number {
+    return this.setting.positionImageFontScale;
+  }
   get lastRecordFilePath(): string {
     return this.setting.lastRecordFilePath;
   }

@@ -178,6 +178,8 @@ export type AppSetting = {
   positionImageHandLabelType: PositionImageHandLabelType;
   useBookmarkAsPositionImageHeader: boolean;
   positionImageHeader: string;
+  positionImageCharacterY: number;
+  positionImageFontScale: number;
   lastRecordFilePath: string;
   lastUSIEngineFilePath: string;
   lastImageExportFilePath: string;
@@ -243,6 +245,8 @@ export type AppSettingUpdate = {
   positionImageHandLabelType?: PositionImageHandLabelType;
   useBookmarkAsPositionImageHeader?: boolean;
   positionImageHeader?: string;
+  positionImageCharacterY?: number;
+  positionImageFontScale?: number;
   lastRecordFilePath?: string;
   lastUSIEngineFilePath?: string;
   lastImageExportFilePath?: string;
@@ -340,6 +344,8 @@ export function defaultAppSetting(opt?: {
     positionImageHandLabelType: PositionImageHandLabelType.PLAYER_NAME,
     useBookmarkAsPositionImageHeader: false,
     positionImageHeader: "",
+    positionImageCharacterY: 0,
+    positionImageFontScale: 1,
     lastRecordFilePath: "",
     lastUSIEngineFilePath: "",
     lastImageExportFilePath: "",

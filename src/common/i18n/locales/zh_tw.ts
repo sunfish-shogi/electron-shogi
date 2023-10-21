@@ -334,6 +334,9 @@ export const zh_tw: Texts = {
   typeface: "書体", // TODO: translate
   handLabel: "持ち駒ラベル", // TODO: translate
   header: "見出し", // TODO: translate
+  characterAdjustment: "文字調整", // TODO: translate
+  vertical: "垂直方向", // TODO: translate
+  size: "サイズ", // TODO: translate
   none: "無",
   bgCover: "圖片置中",
   bgContain: "擴大表示",

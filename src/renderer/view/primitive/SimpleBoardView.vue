@@ -136,10 +136,22 @@ const props = defineProps({
     required: false,
     default: "mincho",
   },
+  characterY: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  fontScale: {
+    type: Number,
+    required: false,
+    default: 1.0,
+  },
 });
 
 const layout = computed(() => {
-  const param = buildParams(Math.min(props.maxSize.width, props.maxSize.height));
+  const size = Math.min(props.maxSize.width, props.maxSize.height);
+  const param = buildParams(size);
+  const charY = size * 0.002 * props.characterY;
   return {
     typefaceClass: [props.typeface],
     frameStyle: {
@@ -150,12 +162,12 @@ const layout = computed(() => {
       transform: "translate(-50%, 0%)",
       left: `${param.headerX}px`,
       top: `${param.headerY}px`,
-      fontSize: `${param.fontSize}px`,
+      fontSize: `${param.fontSize * props.fontScale}px`,
     },
     footerStyle: {
       left: `${param.footerX}px`,
       top: `${param.footerY}px`,
-      fontSize: `${param.fontSize}px`,
+      fontSize: `${param.fontSize * props.fontScale}px`,
     },
     boardStyle: {
       left: `${param.boardLeft - param.boardBorderSize}px`,
@@ -169,10 +181,10 @@ const layout = computed(() => {
       return {
         style: {
           left: `${param.boardLeft + param.pieceSize * (8 - index)}px`,
-          top: `${param.boardTop - param.labelSize}px`,
+          top: `${param.boardTop - param.labelSize - charY}px`,
           width: `${param.pieceSize}px`,
           height: `${param.labelSize}px`,
-          fontSize: `${param.labelFontSize}px`,
+          fontSize: `${param.labelFontSize * props.fontScale}px`,
         },
         character,
       };
@@ -184,10 +196,10 @@ const layout = computed(() => {
       return {
         style: {
           left: `${param.boardLeft + param.boardSize}px`,
-          top: `${param.boardTop + param.pieceSize * index}px`,
+          top: `${param.boardTop + param.pieceSize * index - charY}px`,
           width: `${param.labelSize}px`,
           height: `${param.pieceSize}px`,
-          fontSize: `${param.labelFontSize}px`,
+          fontSize: `${param.labelFontSize * props.fontScale}px`,
         },
         character,
       };
@@ -214,11 +226,11 @@ const layout = computed(() => {
         id: `${square.x},${square.y}`,
         style: {
           left: `${param.boardLeft + (param.boardSize * square.x) / 9}px`,
-          top: `${param.boardTop + (param.boardSize * square.y) / 9}px`,
+          top: `${param.boardTop + (param.boardSize * square.y) / 9 - charY}px`,
           width: `${param.boardSize / 9}px`,
           height: `${param.boardSize / 9}px`,
           transform: piece.color === "white" ? "rotate(180deg)" : undefined,
-          fontSize: `${param.boardSize / 11}px`,
+          fontSize: `${(param.boardSize * props.fontScale) / 11}px`,
         },
         character: pieceTypeToStringForBoard(piece.type),
         characterStyle: {
@@ -233,9 +245,9 @@ const layout = computed(() => {
         text,
         style: {
           left: `${param.blackHandLeft}px`,
-          top: `${param.blackHandTop}px`,
+          top: `${param.blackHandTop - charY}px`,
           height: `${param.boardSize}px`,
-          fontSize: `${fontSize}px`,
+          fontSize: `${fontSize * props.fontScale}px`,
         },
       };
     })(),
@@ -246,9 +258,9 @@ const layout = computed(() => {
         text,
         style: {
           left: `${param.whiteHandLeft}px`,
-          top: `${param.whiteHandTop}px`,
+          top: `${param.whiteHandTop - charY}px`,
           height: `${param.boardSize}px`,
-          fontSize: `${fontSize}px`,
+          fontSize: `${fontSize * props.fontScale}px`,
           transform: "rotate(180deg)",
         },
       };

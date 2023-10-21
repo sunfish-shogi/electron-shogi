@@ -16,6 +16,8 @@
               :footer="record.current.comment"
               :last-move="lastMove"
               :typeface="appSetting.positionImageTypeface"
+              :character-y="appSetting.positionImageCharacterY"
+              :font-scale="appSetting.positionImageFontScale"
             />
           </div>
           <div v-else class="game">
@@ -80,6 +82,32 @@
               @change="changeWhetherToUseBookmark"
             />
           </div>
+          <div class="form-item">
+            {{ t.characterAdjustment }}
+            <div>
+              {{ t.vertical }}
+              <input
+                class="number"
+                type="number"
+                min="-100"
+                max="100"
+                :value="appSetting.positionImageCharacterY"
+                @change="changeCharacterY"
+              />
+            </div>
+            <div>
+              {{ t.size }}
+              <input
+                class="number"
+                type="number"
+                min="0"
+                max="200"
+                :value="Math.round(appSetting.positionImageFontScale * 100)"
+                @change="changeFontScale"
+              />
+              <span class="form-item-unit">%</span>
+            </div>
+          </div>
         </div>
       </div>
       <div>
@@ -93,7 +121,7 @@
             @change="changeType"
           />
           <input
-            class="size"
+            class="number"
             type="number"
             min="400"
             max="2000"
@@ -150,6 +178,7 @@ import {
 } from "@/common/helpers/metadata";
 import HorizontalSelector from "../primitive/HorizontalSelector.vue";
 import ToggleButton from "../primitive/ToggleButton.vue";
+import { readInputAsNumber } from "@/renderer/helpers/form";
 
 const lazyUpdateDelay = 100;
 const marginHor = 150;
@@ -262,6 +291,18 @@ const changeWhetherToUseBookmark = (value: boolean) => {
   });
 };
 
+const changeCharacterY = (e: Event) => {
+  appSetting.updateAppSetting({
+    positionImageCharacterY: readInputAsNumber(e.target as HTMLInputElement),
+  });
+};
+
+const changeFontScale = (e: Event) => {
+  appSetting.updateAppSetting({
+    positionImageFontScale: readInputAsNumber(e.target as HTMLInputElement) / 100,
+  });
+};
+
 const changeType = (value: string) => {
   appSetting.updateAppSetting({ positionImageStyle: value as PositionImageStyle });
 };
@@ -314,7 +355,7 @@ const close = () => {
 .form-item > * {
   vertical-align: middle;
 }
-input.size {
+input.number {
   width: 50px;
   text-align: right;
 }

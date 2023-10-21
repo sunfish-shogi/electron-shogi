@@ -290,7 +290,7 @@ export const zh_tw: Texts = {
   best: "最善",
   nodes: "Node數",
   hashUsage: "Hash使用率",
-  pause: "一時停止", // TODO: translate
+  stop: "停止", // TODO: translate
   resume: "再開", // TODO: translate
   nonHandicap: "平手",
   lanceHandicap: "香落",

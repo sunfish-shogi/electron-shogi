@@ -291,7 +291,7 @@ export const en: Texts = {
   best: "Best",
   nodes: "Nodes",
   hashUsage: "Hash Usage",
-  pause: "Pause",
+  stop: "Stop",
   resume: "Resume",
   nonHandicap: "Non-Handicap",
   lanceHandicap: "Lance Handicap",

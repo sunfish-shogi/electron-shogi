@@ -8,7 +8,7 @@
         </button>
         <button v-else @click="onPause">
           <Icon :icon="IconType.PAUSE" />
-          <span>{{ t.pause }}</span>
+          <span>{{ t.stop }}</span>
         </button>
       </div>
       <div class="row headers">

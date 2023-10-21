@@ -290,7 +290,7 @@ export const ja: Texts = {
   best: "最善",
   nodes: "Node数",
   hashUsage: "Hash使用率",
-  pause: "一時停止",
+  stop: "停止",
   resume: "再開",
   nonHandicap: "平手",
   lanceHandicap: "香落ち",

@@ -2,7 +2,7 @@ name: Release
 
 on:
   release:
-    types: [ published ]
+    types: [published]
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
-          cache: 'npm'
+          cache: "npm"
       - run: npm version
       - run: npm ci
       - run: npm run electron:build

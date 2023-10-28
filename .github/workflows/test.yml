@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
-          cache: 'npm'
+          cache: "npm"
       - run: npm version
       - run: npm ci
       - run: npm run lint

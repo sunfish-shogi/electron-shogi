@@ -66,7 +66,7 @@ dialog .form-item.center {
   text-align: center;
 }
 
-dialog .form-item.center > *:nth-child(n+2) {
+dialog .form-item.center > *:nth-child(n + 2) {
   display: inline-block;
   margin-left: 5px;
 }
@@ -107,7 +107,7 @@ dialog .note {
   font-size: 0.8em;
 }
 
-dialog .note:nth-child(n+2) {
+dialog .note:nth-child(n + 2) {
   margin-top: 5px;
 }
 

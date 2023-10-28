@@ -23,7 +23,9 @@ function onReadLine(line) {
     console.log("option name CheckB type check");
     console.log("option name SpinA type spin default 10 min 0 max 100");
     console.log("option name SpinB type spin");
-    console.log("option name ComboA type combo default Foo var Foo var Bar var Baz var Qux var Quux");
+    console.log(
+      "option name ComboA type combo default Foo var Foo var Bar var Baz var Qux var Quux",
+    );
     console.log("option name ComboB type combo var Foo var Bar var Baz var Qux var Quux");
     console.log("option name Button type button");
     console.log("usiok");

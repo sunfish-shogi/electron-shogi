@@ -24,13 +24,8 @@ function writeRow(index, stream, fullName, props) {
   stream.write(`<td>${name}</td>`);
   if (props.licenseFile) {
     const fileName = index + ".txt";
-    fs.copyFileSync(
-      props.licenseFile,
-      path.join(path.join(rootDir, licenseFileDir), fileName)
-    );
-    stream.write(
-      `<td><a href="${licenseFileDir}/${fileName}">${props.licenses}</a></td>`
-    );
+    fs.copyFileSync(props.licenseFile, path.join(path.join(rootDir, licenseFileDir), fileName));
+    stream.write(`<td><a href="${licenseFileDir}/${fileName}">${props.licenses}</a></td>`);
   } else {
     stream.write(`<td>${props.licenses}</td>`);
   }
@@ -66,9 +61,7 @@ checker.init(
       fs.rmSync(path.join(rootDir, licenseFileDir), { recursive: true });
     }
     fs.mkdirSync(path.join(rootDir, licenseFileDir));
-    const stream = fs.createWriteStream(
-      path.join(rootDir, "/third-party-licenses.html")
-    );
+    const stream = fs.createWriteStream(path.join(rootDir, "/third-party-licenses.html"));
     writeHeader(stream);
     let index = 0;
     Object.entries(packages).forEach(([name, props]) => {
@@ -76,5 +69,5 @@ checker.init(
       index += 1;
     });
     writeFooter(stream);
-  }
+  },
 );

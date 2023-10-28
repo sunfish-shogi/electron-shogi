@@ -1,5 +1,4 @@
 module.exports = {
-  root: true,
   env: {
     node: true,
   },
@@ -13,33 +12,10 @@ module.exports = {
     "@vue/eslint-config-typescript",
     "prettier",
   ],
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-  },
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-irregular-whitespace": "off",
     "vue/multi-word-component-names": "off",
   },
-  overrides: [
-    {
-      files: [
-        "**/*.js",
-        "**/*.jsx",
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.vue",
-      ],
-      env: {
-        jest: true,
-      },
-    },
-  ],
-  settings: {
-    "import/resolver": {
-      typescript: []
-    }
-  }
 };

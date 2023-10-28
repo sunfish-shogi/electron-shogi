@@ -1,27 +1,57 @@
 <html>
   <head>
     <title>Electron將棋</title>
-    <link href="css/style.css?202204272252" rel="stylesheet">
-    <link rel="icon" href="webapp/favicon.ico">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="twitter:card" content="summary_large_image">
+    <link href="css/style.css?202204272252" rel="stylesheet" />
+    <link rel="icon" href="webapp/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:url" content="https://sunfish-shogi.github.io/electron-shogi/" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Electron將棋" />
     <meta property="og:description" content="支援USI協定的電腦將棋軟體" />
-    <meta property="og:image" content="https://sunfish-shogi.github.io/electron-shogi/screenshots/screenshot001.png" />
+    <meta
+      property="og:image"
+      content="https://sunfish-shogi.github.io/electron-shogi/screenshots/screenshot001.png"
+    />
   </head>
   <body>
     <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v13.0" nonce="sNEMN02W"></script>
+    <script
+      async
+      defer
+      crossorigin="anonymous"
+      src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v13.0"
+      nonce="sNEMN02W"
+    ></script>
     <header>
       <div class="link-buttons">
         <div>
-          <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-url="https://sunfish-shogi.github.io/electron-shogi/" data-hashtags="ElectronShogi" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+          <a
+            href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+            class="twitter-share-button"
+            data-size="large"
+            data-url="https://sunfish-shogi.github.io/electron-shogi/"
+            data-hashtags="ElectronShogi"
+            data-show-count="false"
+            >Tweet</a
+          >
+          <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
         <div>
-          <div class="fb-share-button" data-href="https://sunfish-shogi.github.io/electron-shogi/" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsunfish-shogi.github.io%2Felectron-shogi%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">シェア</a></div>
+          <div
+            class="fb-share-button"
+            data-href="https://sunfish-shogi.github.io/electron-shogi/"
+            data-layout="button"
+            data-size="large"
+          >
+            <a
+              target="_blank"
+              href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsunfish-shogi.github.io%2Felectron-shogi%2F&amp;src=sdkpreparse"
+              class="fb-xfbml-parse-ignore"
+              >シェア</a
+            >
+          </div>
         </div>
         <div>
           <a href="https://github.com/sunfish-shogi/electron-shogi">
@@ -69,28 +99,47 @@
         <h2>Electron將棋是什麼？</h2>
         <div class="long-text">
           Electron將棋 (ElectronShogi) 是一款使用
-          <a href="https://www.electronjs.org/" target="_blank">Electron<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
-          框架開發的開源將棋應用程式，
-          並可以在 Windows、macOS、Linux 作業系統上運行。
+          <a href="https://www.electronjs.org/" target="_blank"
+            >Electron<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
+          /></a>
+          框架開發的開源將棋應用程式， 並可以在 Windows、macOS、Linux 作業系統上運行。
           任何人都可以參與開發或創建自己的版本並發布。
         </div>
         <div class="images">
-          <a href="./screenshots/screenshot001.png"><img class="shadow wide" src="./screenshots/screenshot001.png?202309070055" alt="スクリーンショット001" /></a>
+          <a href="./screenshots/screenshot001.png"
+            ><img
+              class="shadow wide"
+              src="./screenshots/screenshot001.png?202309070055"
+              alt="スクリーンショット001"
+          /></a>
         </div>
         <div class="long-text">
           為了與其他高實力的對局程式與引擎連接，本軟體使用
-          <a href="http://shogidokoro.starfree.jp/usi.html" target="_blank">USI協定<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
-          進行引擎與軟體之間的溝通。
-          Electron將棋是一個支援 USI 協定，可以載入 AI 並進行將棋對局、檢討的前端軟體。
+          <a href="http://shogidokoro.starfree.jp/usi.html" target="_blank"
+            >USI協定<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
+          /></a>
+          進行引擎與軟體之間的溝通。 Electron將棋是一個支援 USI 協定，可以載入 AI
+          並進行將棋對局、檢討的前端軟體。
         </div>
         <div class="images">
-          <a href="./screenshots/screenshot002.png"><img class="shadow" src="./screenshots/screenshot002.png?202309070055" alt="スクリーンショット002" /></a>
-          <a href="./screenshots/screenshot003.png"><img class="shadow" src="./screenshots/screenshot003.png?202309070055" alt="スクリーンショット003" /></a>
+          <a href="./screenshots/screenshot002.png"
+            ><img
+              class="shadow"
+              src="./screenshots/screenshot002.png?202309070055"
+              alt="スクリーンショット002"
+          /></a>
+          <a href="./screenshots/screenshot003.png"
+            ><img
+              class="shadow"
+              src="./screenshots/screenshot003.png?202309070055"
+              alt="スクリーンショット003"
+          /></a>
         </div>
         <div class="long-text">
           近日由於二合一的平板電腦的普及，即使是在 PC 上也可以使用觸控螢幕進行將棋對局了。
           Electron將棋的大部分功能都使用大型按鈕來操作，構成了在各種環境下都能輕鬆使用的介面。
-          此外，由於使用 Electron 來開發，本軟體最小化了對作業系統的依賴，實現了在任何作業系統下都能使用相同的介面與操作性。
+          此外，由於使用 Electron
+          來開發，本軟體最小化了對作業系統的依賴，實現了在任何作業系統下都能使用相同的介面與操作性。
         </div>
       </section>
       <section id="license">
@@ -102,10 +151,16 @@
         </div>
         <div class="long-text">
           ElectronShogi 的本體和原始碼採用
-          <a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE">MIT License</a>
-          進行授權。
-          不過，程式內使用的<a href="https://developers.google.com/fonts/docs/material_icons">Material Icons</a>是使用
-          <a href="https://www.apache.org/licenses/LICENSE-2.0.txt" target="_blank">Apache License 2.0<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+          <a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE"
+            >MIT License</a
+          >
+          進行授權。 不過，程式內使用的<a
+            href="https://developers.google.com/fonts/docs/material_icons"
+            >Material Icons</a
+          >是使用
+          <a href="https://www.apache.org/licenses/LICENSE-2.0.txt" target="_blank"
+            >Apache License 2.0<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
+          /></a>
           授權的。
         </div>
         <div class="long-text">
@@ -118,21 +173,37 @@
       <section id="pcapp">
         <h2>電腦應用程式</h2>
         <ul class="row">
-          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.11.0">最新版 (Version 1.11.0)</a></li>
-          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.10.3">穩定版 (Version 1.10.3)</a></li>
+          <li class="link-box">
+            <a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.11.0"
+              >最新版 (Version 1.11.0)</a
+            >
+          </li>
+          <li class="link-box">
+            <a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.10.3"
+              >穩定版 (Version 1.10.3)</a
+            >
+          </li>
         </ul>
         <ul class="row">
-          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/releases">全部版本</a></li>
+          <li class="link-box">
+            <a href="https://github.com/sunfish-shogi/electron-shogi/releases">全部版本</a>
+          </li>
         </ul>
         <div class="long-text">
-          Windows 作業系統請使用<b>-win.zip</b>、MacOS請使用<b>-mac.zip</b>、Linux請使用<b>-linux.zip</b>結尾的檔案進行下載。
-          選擇版本時請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E7%95%AA%E5%8F%B7%E3%81%AE%E8%AA%AD%E3%81%BF%E6%96%B9">「バージョン番号の読み方」</a>使用。
+          Windows
+          作業系統請使用<b>-win.zip</b>、MacOS請使用<b>-mac.zip</b>、Linux請使用<b>-linux.zip</b>結尾的檔案進行下載。
+          選擇版本時請參考<a
+            href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E7%95%AA%E5%8F%B7%E3%81%AE%E8%AA%AD%E3%81%BF%E6%96%B9"
+            >「バージョン番号の読み方」</a
+          >使用。
         </div>
       </section>
       <section id="webapp">
         <h2>網頁應用程式</h2>
         <ul class="row">
-          <li class="link-box"><a href="webapp/index.html?202309070055" target="_blank">打開網頁應用程式</a></li>
+          <li class="link-box">
+            <a href="webapp/index.html?202309070055" target="_blank">打開網頁應用程式</a>
+          </li>
         </ul>
         <div>
           無法使用部分功能（如使用引擎對局與檔案讀寫等）。 <br />
@@ -143,14 +214,23 @@
       <section id="howtouse">
         <h2>使用方法</h2>
         <ul class="row">
-          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9">查看使用方法</a></li>
+          <li class="link-box">
+            <a
+              href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9"
+              >查看使用方法</a
+            >
+          </li>
         </ul>
       </section>
       <section id="milestones">
         <h2>開發期程</h2>
         <ul class="row">
-          <li class="link-box"><a href="https://github.com/sunfish-shogi/electron-shogi/milestones">Milestones</a></li>
-          <li class="link-box"><a href="https://github.com/users/sunfish-shogi/projects/1/views/1">專案進度表</a></li>
+          <li class="link-box">
+            <a href="https://github.com/sunfish-shogi/electron-shogi/milestones">Milestones</a>
+          </li>
+          <li class="link-box">
+            <a href="https://github.com/users/sunfish-shogi/projects/1/views/1">專案進度表</a>
+          </li>
         </ul>
       </section>
       <section id="faq">
@@ -160,7 +240,9 @@
             Q. 對應 USI 協定的將棋 AI 可以在哪邊下載到呢？
             <ul>
               <li>
-                A. 請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/Links">其他連結</a>。
+                A. 請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/Links"
+                  >其他連結</a
+                >。
               </li>
             </ul>
           </li>
@@ -168,7 +250,9 @@
             Q. 如果要自己調整程式的外觀，在哪裏可以取得圖片呢？
             <ul>
               <li>
-                A. 請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/Links">其他連結</a>。
+                A. 請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/Links"
+                  >其他連結</a
+                >。
               </li>
             </ul>
           </li>
@@ -176,7 +260,9 @@
             Q. CSA 協定是什麼呢？
             <ul>
               <li>
-                A. CSA協定是電腦將棋協會(CSA)所制定，用於將棋 AI 的通訊規格，主要在將棋引擎的開發者間使用。若要使用 CSA 協定對局，在Electron將棋外還需要其他的 CSA 伺服器。
+                A. CSA協定是電腦將棋協會(CSA)所制定，用於將棋 AI
+                的通訊規格，主要在將棋引擎的開發者間使用。若要使用 CSA
+                協定對局，在Electron將棋外還需要其他的 CSA 伺服器。
               </li>
             </ul>
           </li>
@@ -184,7 +270,10 @@
             Q. CSA 與 USI 的通訊紀錄 (log) 在哪邊儲存呢？
             <ul>
               <li>
-                A. 預設設定為不輸出紀錄 (log) 。請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%AD%E3%82%B0%E5%87%BA%E5%8A%9B">此處</a>來設定並確認儲存檔案的位置。
+                A. 預設設定為不輸出紀錄 (log) 。請參考<a
+                  href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%AD%E3%82%B0%E5%87%BA%E5%8A%9B"
+                  >此處</a
+                >來設定並確認儲存檔案的位置。
               </li>
             </ul>
           </li>
@@ -192,7 +281,10 @@
             Q. 無法使用 shell script 或引擎無法被執行。
             <ul>
               <li>
-                A. 請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E3%82%B7%E3%82%A7%E3%83%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%82%84%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%97%E3%83%AA%E3%82%BF%E5%9E%8B%E8%A8%80%E8%AA%9E%E3%81%A7%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%9F%E3%81%84%E6%96%B9%E3%81%B8">此處</a>的連結。
+                A. 請參考<a
+                  href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E3%82%B7%E3%82%A7%E3%83%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%82%84%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%97%E3%83%AA%E3%82%BF%E5%9E%8B%E8%A8%80%E8%AA%9E%E3%81%A7%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%9F%E3%81%84%E6%96%B9%E3%81%B8"
+                  >此處</a
+                >的連結。
               </li>
             </ul>
           </li>
@@ -212,16 +304,16 @@
             <div class="link-box">
               <a href="https://form.run/@sunfish-shogi-1650819491">聯絡表單</a>
             </div>
-          <div>
+          </div>
         </div>
       </section>
       <section id="images">
         <h2>棋盤棋駒圖片</h2>
-        <div>
-          Electron將棋使用的棋駒、盤面的圖像以限制更少的授權條款公開使用。
-        </div>
+        <div>Electron將棋使用的棋駒、盤面的圖像以限制更少的授權條款公開使用。</div>
         <div class="link-box">
-          <a href="https://sunfish-shogi.github.io/shogi-images/" target="_blank">Shogi Images<img class="small-icon" src="./icons/open_in_new_black_24dp.svg" /></a>
+          <a href="https://sunfish-shogi.github.io/shogi-images/" target="_blank"
+            >Shogi Images<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
+          /></a>
         </div>
       </section>
     </article>

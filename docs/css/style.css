@@ -5,7 +5,8 @@ html {
 body {
   -webkit-text-size-adjust: 100%;
   font-size: 16px;
-  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", "Meiryo", "verdana", sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", "Meiryo", "verdana",
+    sans-serif;
   background-color: white;
   margin: 0px;
   padding: 0px;
@@ -13,7 +14,7 @@ body {
 }
 
 header {
-  font-size: 1.0em;
+  font-size: 1em;
   margin: 0px;
   padding: 10px 5% 5px 5%;
   color: white;
@@ -48,7 +49,7 @@ nav.sticky {
 }
 
 nav ul {
-  display:flex;
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -65,7 +66,7 @@ nav li {
 article {
   color: darkslategray;
   margin: 0px;
-  padding: 1.0em 5% 1.0em 5%;
+  padding: 1em 5% 1em 5%;
 }
 
 article a {
@@ -74,7 +75,7 @@ article a {
 }
 
 section {
-  margin: 1.0em 0 7.0em 0;
+  margin: 1em 0 7em 0;
   scroll-margin-top: 120px;
 }
 
@@ -101,12 +102,12 @@ section div {
 
 h2 {
   font-size: 2.2em;
-  margin: 2.0em 0 0.0em 0;
+  margin: 2em 0 0em 0;
 }
 
 h3 {
   font-size: 1.2em;
-  margin: 1.0em 0 1.0em 0;
+  margin: 1em 0 1em 0;
 }
 
 a {
@@ -120,8 +121,8 @@ a:hover {
 
 .link-box > a {
   display: inline-block;
-  font-size: 1.0em;
-  line-height: 2.0em;
+  font-size: 1em;
+  line-height: 2em;
   color: lemonchiffon;
   background-color: darkslategray;
   padding: 0.5em 1.5em 0.5em 1.5em;
@@ -160,7 +161,7 @@ ul.faq li li {
 }
 
 .images {
-  margin: 2.0em auto 2.0em auto;
+  margin: 2em auto 2em auto;
   width: min(90vw, 110vh);
   display: flex;
   flex-wrap: wrap;
@@ -169,7 +170,7 @@ ul.faq li li {
 
 img {
   width: max(min(40vw, 50vh), min(80vw, 50vh));
-  margin: min(1.0vw, 1.0vh);
+  margin: min(1vw, 1vh);
 }
 
 img.wide {
@@ -183,7 +184,7 @@ img.border {
 img.shadow {
   margin-right: 10px;
   margin-bottom: 10px;
-  box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.5);;
+  box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.5);
 }
 
 img.large-icon {
@@ -202,7 +203,7 @@ img.icon {
 
 img.small-icon {
   width: auto;
-  height: 1.0em;
+  height: 1em;
   vertical-align: -0.2em;
   margin: 0px;
 }
@@ -215,6 +216,6 @@ img.small-icon {
 }
 
 .row > * {
-  margin-left: 1.0em;
-  margin-right: 1.0em;
+  margin-left: 1em;
+  margin-right: 1em;
 }

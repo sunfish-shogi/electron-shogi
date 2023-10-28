@@ -12,7 +12,7 @@
     "build:dev": "npm run compile -- --outDir docs/webapp-dev",
     "preview": "vite preview",
     "test": "jest",
-    "lint": "eslint --fix --max-warnings 0 -c .eslintrc.js ./src && prettier --write ./src/**/*.{ts,tsx}",
+    "lint": "eslint --fix --max-warnings 0 . && prettier --write .",
     "electron:compile": "tsc && tsc-alias && webpack",
     "electron:compile-all": "npm run compile && npm run electron:compile",
     "electron:serve": "npm run electron:compile && concurrently --kill-others vite \"electron .\" \"tsc --sourceMap -w\" \"tsc-alias -w\"",

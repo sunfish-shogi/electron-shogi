@@ -1,14 +1,17 @@
 html {
-  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Avenir", "Helvetica Neue", "Helvetica", "Arial", "メイリオ", "Meiryo", "verdana", sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Avenir",
+    "Helvetica Neue", "Helvetica", "Arial", "メイリオ", "Meiryo", "verdana", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
 }
 
 .gothic {
-  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Avenir", "Helvetica Neue", "Helvetica", "Arial", "メイリオ", "Meiryo", "verdana", sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Avenir",
+    "Helvetica Neue", "Helvetica", "Arial", "メイリオ", "Meiryo", "verdana", sans-serif;
 }
 
 .mincho {
-  font-family: "游明朝", "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "HGS明朝E", "MS PMincho", "Georgia", "Times New Roman", "serif";
+  font-family: "游明朝", "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro",
+    "HGS明朝E", "MS PMincho", "Georgia", "Times New Roman", "serif";
 }

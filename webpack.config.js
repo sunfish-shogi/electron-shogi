@@ -14,25 +14,28 @@ const optimization = {
   ],
 };
 
-module.exports = [{
-  mode: 'production',
-  entry:'./dist/src/background/index.js',
-  target: 'node',
-  output: {
-    filename: 'background.js',
-    path: __dirname + '/dist/packed',
-    libraryTarget: 'commonjs2',
+module.exports = [
+  {
+    mode: "production",
+    entry: "./dist/src/background/index.js",
+    target: "node",
+    output: {
+      filename: "background.js",
+      path: __dirname + "/dist/packed",
+      libraryTarget: "commonjs2",
+    },
+    externals: ["electron"],
+    optimization,
   },
-  externals: ['electron'],
-  optimization,
-}, {
-  mode: 'production',
-  entry: './dist/src/renderer/ipc/preload.js',
-  output: {
-    filename: 'preload.js',
-    path: __dirname + '/dist/packed',
-    libraryTarget: 'commonjs',
+  {
+    mode: "production",
+    entry: "./dist/src/renderer/ipc/preload.js",
+    output: {
+      filename: "preload.js",
+      path: __dirname + "/dist/packed",
+      libraryTarget: "commonjs",
+    },
+    externals: ["electron"],
+    optimization,
   },
-  externals: ['electron'],
-  optimization,
-}];
+];

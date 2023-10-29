@@ -18,8 +18,8 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
     isEngine(): boolean {
       return false;
     },
-    readyNewGame: jest.fn(() => Promise.resolve()),
-    startSearch: jest.fn(
+    readyNewGame: vi.fn(() => Promise.resolve()),
+    startSearch: vi.fn(
       (r: ImmutableRecord, t: TimeLimitSetting, bt: number, wt: number, h: SearchHandler) => {
         const m = moves[r.usi];
         if (m.usi === "no-reply") {
@@ -43,11 +43,11 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
         return Promise.resolve();
       },
     ),
-    startPonder: jest.fn(() => Promise.resolve()),
-    startMateSearch: jest.fn(() => Promise.resolve()),
-    stop: jest.fn(() => Promise.resolve()),
-    gameover: jest.fn(() => Promise.resolve()),
-    close: jest.fn(() => Promise.resolve()),
+    startPonder: vi.fn(() => Promise.resolve()),
+    startMateSearch: vi.fn(() => Promise.resolve()),
+    stop: vi.fn(() => Promise.resolve()),
+    gameover: vi.fn(() => Promise.resolve()),
+    close: vi.fn(() => Promise.resolve()),
   };
 }
 

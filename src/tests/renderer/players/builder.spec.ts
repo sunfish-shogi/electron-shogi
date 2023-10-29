@@ -3,10 +3,11 @@ import { HumanPlayer } from "@/renderer/players/human";
 import { USIPlayer } from "@/renderer/players/usi";
 import api, { API } from "@/renderer/ipc/api";
 import * as uri from "@/common/uri";
+import { Mocked } from "vitest";
 
-jest.mock("@/renderer/ipc/api");
+vi.mock("@/renderer/ipc/api");
 
-const mockAPI = api as jest.Mocked<API>;
+const mockAPI = api as Mocked<API>;
 
 describe("builder", () => {
   it("human", async () => {
@@ -18,7 +19,7 @@ describe("builder", () => {
   });
 
   it("usi", async () => {
-    mockAPI.usiLaunch.mockResolvedValue(Promise.resolve(123));
+    mockAPI.usiLaunch.mockResolvedValue(123);
     const setting = {
       name: "USI Engine",
       uri: "es://usi-engine/test",

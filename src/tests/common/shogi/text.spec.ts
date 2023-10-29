@@ -250,7 +250,7 @@ describe("shogi/text", () => {
     });
   });
 
-  describe("parseMoves/black", () => {
+  it("parseMoves/black", () => {
     const record = importKIF(`
 後手の持駒：
   ９ ８ ７ ６ ５ ４ ３ ２ １
@@ -300,7 +300,7 @@ describe("shogi/text", () => {
     expect(parseMoves(position, "☗８七龍左")[0][0].usi).toBe("9h8g");
   });
 
-  describe("parseMoves/white", () => {
+  it("parseMoves/white", () => {
     const record = importKIF(`
 後手の持駒：
   ９ ８ ７ ６ ５ ４ ３ ２ １

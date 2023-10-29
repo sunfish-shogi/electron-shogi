@@ -18,20 +18,21 @@ import {
 } from "@/tests/mock/csa";
 import { CSAGameManager } from "@/renderer/store/csa";
 import { convert } from "encoding-japanese";
+import { Mocked, MockedClass } from "vitest";
 
-jest.mock("@/renderer/audio");
-jest.mock("@/renderer/ipc/api");
-jest.mock("@/renderer/store/game");
-jest.mock("@/renderer/store/csa");
-jest.mock("@/renderer/players/usi");
-jest.mock("@/renderer/store/analysis");
+vi.mock("@/renderer/audio");
+vi.mock("@/renderer/ipc/api");
+vi.mock("@/renderer/store/game");
+vi.mock("@/renderer/store/csa");
+vi.mock("@/renderer/players/usi");
+vi.mock("@/renderer/store/analysis");
 
-const mockAudio = audio as jest.Mocked<typeof audio>;
-const mockAPI = api as jest.Mocked<API>;
-const mockGameManager = GameManager as jest.MockedClass<typeof GameManager>;
-const mockCSAGameManager = CSAGameManager as jest.MockedClass<typeof CSAGameManager>;
-const mockUSIPlayer = USIPlayer as jest.MockedClass<typeof USIPlayer>;
-const mockAnalysisManager = AnalysisManager as jest.MockedClass<typeof AnalysisManager>;
+const mockAudio = audio as Mocked<typeof audio>;
+const mockAPI = api as Mocked<API>;
+const mockGameManager = GameManager as MockedClass<typeof GameManager>;
+const mockCSAGameManager = CSAGameManager as MockedClass<typeof CSAGameManager>;
+const mockUSIPlayer = USIPlayer as MockedClass<typeof USIPlayer>;
+const mockAnalysisManager = AnalysisManager as MockedClass<typeof AnalysisManager>;
 
 const sampleKIF = `
 手合割：平手
@@ -115,8 +116,8 @@ describe("store/index", () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.clearAllMocks();
+    vi.useRealTimers();
+    vi.clearAllMocks();
   });
 
   it("message", () => {
@@ -172,7 +173,7 @@ describe("store/index", () => {
     const store = createStore();
     const confirmation1 = {
       message: "Are you ready?",
-      onOk: jest.fn(),
+      onOk: vi.fn(),
     };
     store.showConfirmation(confirmation1);
     expect(store.confirmation).toBe("Are you ready?");
@@ -181,7 +182,7 @@ describe("store/index", () => {
     expect(confirmation1.onOk).toBeCalledTimes(1);
     const confirmation2 = {
       message: "Do you really want to delete?",
-      onOk: jest.fn(),
+      onOk: vi.fn(),
     };
     store.showConfirmation(confirmation2);
     expect(store.confirmation).toBe("Do you really want to delete?");
@@ -191,7 +192,7 @@ describe("store/index", () => {
   });
 
   it("updateUSIInfo", () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     const usi = "position startpos moves 7g7f";
     const store = createStore();
     store.pasteRecord(usi);
@@ -199,7 +200,7 @@ describe("store/index", () => {
       depth: 8,
       scoreCP: 138,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(store.usiMonitors).toHaveLength(1);
     expect(store.usiMonitors[0].sfen).toBe(
       "lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w - 1",
@@ -215,7 +216,7 @@ describe("store/index", () => {
       depth: 9,
       scoreCP: -89,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(store.usiMonitors).toHaveLength(2);
     expect(store.usiMonitors[0].iterations.length).toBe(2);
     expect(store.usiMonitors[0].iterations[0].depth).toBe(10);
@@ -226,7 +227,7 @@ describe("store/index", () => {
   });
 
   it("updateUSIPonderInfo", () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     const usi = "position startpos moves 7g7f";
     const usi2 = "position startpos moves 7g7f 3c3d";
     const store = createStore();
@@ -235,7 +236,7 @@ describe("store/index", () => {
       depth: 8,
       scoreCP: 138,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(store.usiMonitors[0].sfen).toBe(
       "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL b - 1",
     );
@@ -269,9 +270,7 @@ describe("store/index", () => {
   });
 
   it("loginCSAGame/success", async () => {
-    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
-      Promise.resolve(emptyCSAGameSettingHistory),
-    );
+    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(emptyCSAGameSettingHistory);
     mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
     const store = createStore();
@@ -291,9 +290,7 @@ describe("store/index", () => {
   });
 
   it("loginCSAGame/doNotSaveHistory", async () => {
-    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(
-      Promise.resolve(emptyCSAGameSettingHistory),
-    );
+    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(emptyCSAGameSettingHistory);
     mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
     const store = createStore();
@@ -423,8 +420,8 @@ describe("store/index", () => {
   });
 
   it("copyRecordKIF", () => {
-    const writeText = jest.fn();
-    jest.spyOn(global, "navigator", "get").mockReturnValueOnce(
+    const writeText = vi.fn();
+    vi.spyOn(global, "navigator", "get").mockReturnValueOnce(
       Object.assign(navigator, {
         clipboard: {
           writeText,
@@ -586,9 +583,7 @@ describe("store/index", () => {
   });
 
   it("saveRecord/success", async () => {
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
-      new Promise((resolve) => resolve("/test/sample.csa")),
-    );
+    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("/test/sample.csa");
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();
     store.saveRecord();
@@ -613,7 +608,7 @@ describe("store/index", () => {
   });
 
   it("saveRecord/cancel", async () => {
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce(new Promise((resolve) => resolve("")));
+    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("");
     const store = createStore();
     store.saveRecord();
     await new Promise((resolve) => setTimeout(resolve));
@@ -628,9 +623,7 @@ describe("store/index", () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
-      new Promise((resolve) => resolve("/test/sample2.csa")),
-    );
+    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("/test/sample2.csa");
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();
     store.openRecord("/test/sample1.csa");
@@ -649,9 +642,7 @@ describe("store/index", () => {
     mockAPI.openRecord.mockResolvedValueOnce(
       new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce(
-      new Promise((resolve) => resolve("/test/sample2.csa")),
-    );
+    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("/test/sample2.csa");
     mockAPI.saveRecord.mockResolvedValueOnce();
     const store = createStore();
     store.openRecord("/test/sample1.csa");

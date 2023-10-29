@@ -18,12 +18,12 @@ export interface MockGameHandlers {
 
 function createMockHandlers() {
   return {
-    onSaveRecord: jest.fn().mockReturnValue(Promise.resolve()),
-    onGameNext: jest.fn(),
-    onPieceBeat: jest.fn(),
-    onBeepShort: jest.fn(),
-    onBeepUnlimited: jest.fn(),
-    onStopBeep: jest.fn(),
+    onSaveRecord: vi.fn().mockReturnValue(Promise.resolve()),
+    onGameNext: vi.fn(),
+    onPieceBeat: vi.fn(),
+    onBeepShort: vi.fn(),
+    onBeepUnlimited: vi.fn(),
+    onStopBeep: vi.fn(),
   };
 }
 
@@ -65,7 +65,7 @@ function invoke(
 
 describe("store/game", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("GameManager/resign", () => {

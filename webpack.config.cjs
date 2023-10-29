@@ -16,6 +16,7 @@ const optimization = {
 
 module.exports = [
   {
+    name: "background",
     mode: "production",
     entry: "./dist/src/background/index.js",
     target: "node",
@@ -28,6 +29,7 @@ module.exports = [
     optimization,
   },
   {
+    name: "preload",
     mode: "production",
     entry: "./dist/src/renderer/ipc/preload.js",
     output: {

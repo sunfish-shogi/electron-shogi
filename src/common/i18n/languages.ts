@@ -1,4 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import _ from "dayjs";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as _en from "dayjs/locale/en";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as _ja from "dayjs/locale/ja";

@@ -13,11 +13,20 @@ import { LogLevel } from "@/common/log";
 import { useAppSetting } from "./store/setting";
 import { setLanguage, t } from "@/common/i18n";
 import dayjs from "dayjs";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as _en from "dayjs/locale/en";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as _ja from "dayjs/locale/ja";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as _zh_tw from "dayjs/locale/zh-tw";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 api.log(LogLevel.INFO, `start renderer process: APP_VERSION=${appInfo.appVersion}`);
 
 // setup libraries
+import("dayjs/locale/en");
+import("dayjs/locale/ja");
+import("dayjs/locale/zh-tw");
 dayjs.extend(relativeTime);
 Chart.register(...registerables);
 

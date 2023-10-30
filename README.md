@@ -105,10 +105,12 @@ npm run build
 ### Unit Tests
 
 ```
+# test only
 npm test
-```
 
-カバレッジレポートを出力する場合は `-- --coverage` を付与すると `coverage` ディレクトリに結果が出力されます。
+# coverange report
+npm run coverage
+```
 
 ### Lint
 

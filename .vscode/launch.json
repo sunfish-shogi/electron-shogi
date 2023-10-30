@@ -20,6 +20,15 @@
       "presentation": {
         "hidden": true
       }
+    },
+    {
+      "name": "Debug Test",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["test"],
+      "outputCapture": "std"
     }
   ],
   "compounds": [

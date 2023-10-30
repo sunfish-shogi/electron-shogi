@@ -20,7 +20,7 @@ jobs:
       - run: npm run lint
       - run: git diff --exit-code
       - run: npm run report:license
-      - run: npm test -- --coverage
+      - run: npm run coverage
       - uses: codecov/codecov-action@v3
         with:
           files: ./coverage/clover.xml

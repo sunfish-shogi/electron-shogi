@@ -51,7 +51,7 @@ it("history", async () => {
   expect(history.entries[0].backupFileName).toMatch(backupFileName2);
   try {
     await loadBackup(backupFileName1);
-    fail("should not reach here");
+    throw "should not reach here";
   } catch {
     // shoud reach here
   }
@@ -63,7 +63,7 @@ it("history", async () => {
   expect(history.entries).toHaveLength(0);
   try {
     await loadBackup(backupFileName2);
-    fail("should not reach here");
+    throw "should not reach here";
   } catch {
     // shoud reach here
   }

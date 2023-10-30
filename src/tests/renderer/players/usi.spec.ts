@@ -3,14 +3,15 @@ import { onUSIBestMove, onUSIInfo, USIPlayer } from "@/renderer/players/usi";
 import { Record } from "@/common/shogi";
 import { timeLimitSetting } from "@/tests/mock/game";
 import { usiEngineSettingWithPonder } from "@/tests/mock/usi";
+import { Mocked } from "vitest";
 
-jest.mock("@/renderer/ipc/api");
+vi.mock("@/renderer/ipc/api");
 
-const mockAPI = api as jest.Mocked<API>;
+const mockAPI = api as Mocked<API>;
 
 describe("usi", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("ponderHit", async () => {
@@ -28,10 +29,10 @@ describe("usi", () => {
     try {
       await player.launch();
       const searchHandler = {
-        onMove: jest.fn(),
-        onResign: jest.fn(),
-        onWin: jest.fn(),
-        onError: jest.fn(),
+        onMove: vi.fn(),
+        onResign: vi.fn(),
+        onWin: vi.fn(),
+        onError: vi.fn(),
       };
       await player.startSearch(record1, timeLimitSetting, 0, 0, searchHandler);
       expect(mockAPI.usiGo).toBeCalledWith(100, usi1, timeLimitSetting, 0, 0);

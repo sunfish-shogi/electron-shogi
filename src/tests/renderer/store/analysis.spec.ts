@@ -2,19 +2,20 @@ import { AnalysisManager } from "@/renderer/store/analysis";
 import { RecordManager } from "@/renderer/store/record";
 import { analysisSetting as baseAnalysisSetting } from "@/tests/mock/analysis";
 import { USIPlayer } from "@/renderer/players/usi";
+import { MockedClass } from "vitest";
 
-jest.mock("@/renderer/players/usi");
+vi.mock("@/renderer/players/usi");
 
-const mockUSIPlayer = USIPlayer as jest.MockedClass<typeof USIPlayer>;
+const mockUSIPlayer = USIPlayer as MockedClass<typeof USIPlayer>;
 
 describe("store/analysis", () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.clearAllMocks();
+    vi.useRealTimers();
+    vi.clearAllMocks();
   });
 
   it("open-end", async () => {
@@ -29,38 +30,38 @@ describe("store/analysis", () => {
     const analysisSetting = baseAnalysisSetting;
     analysisSetting.startCriteria.enableNumber = false;
     analysisSetting.endCriteria.enableNumber = false;
-    const onFinish = jest.fn();
-    const onError = jest.fn();
+    const onFinish = vi.fn();
+    const onError = vi.fn();
     const manager = new AnalysisManager(recordManager).on("finish", onFinish).on("error", onError);
     await manager.start(analysisSetting);
     expect(mockUSIPlayer).toBeCalledTimes(1);
     expect(mockUSIPlayer.prototype.launch).toBeCalled();
     expect(mockUSIPlayer.prototype.startResearch).not.toBeCalled();
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
     manager.updateSearchInfo({
       usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves",
       score: 10,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(2);
     manager.updateSearchInfo({
       usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f",
       score: 20,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(3);
     manager.updateSearchInfo({
       usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d",
       score: 30,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(4);
     manager.updateSearchInfo({
       usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f",
       score: 40,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(5);
     expect(mockUSIPlayer.prototype.close).not.toBeCalled();
     expect(onFinish).not.toBeCalled();
@@ -68,7 +69,7 @@ describe("store/analysis", () => {
       usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d",
       score: 50,
     });
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
     expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(5);
     expect(mockUSIPlayer.prototype.stop).not.toBeCalled();
     expect(mockUSIPlayer.prototype.close).toBeCalledTimes(1);

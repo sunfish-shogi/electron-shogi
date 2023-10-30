@@ -4,10 +4,11 @@ import { CSAGameResult, CSASpecialMove } from "@/common/csa";
 import { Color } from "@/common/shogi";
 import * as log4js from "log4js";
 import { csaServerSetting } from "@/tests/mock/csa";
+import { MockedClass } from "vitest";
 
-jest.mock("@/background/csa/socket");
+vi.mock("@/background/csa/socket");
 
-const mockSocket = Socket as jest.MockedClass<typeof Socket>;
+const mockSocket = Socket as MockedClass<typeof Socket>;
 
 const mockGameSummary = [
   "BEGIN Game_Summary",
@@ -194,13 +195,13 @@ const mockGameSummaryInvalidPosition = [
 
 function bindHandlers(client: Client) {
   const handlers = {
-    mockOnGameSummary: jest.fn(),
-    mockOnReject: jest.fn(),
-    mockOnStart: jest.fn(),
-    mockOnMove: jest.fn(),
-    mockOnGameResult: jest.fn(),
-    mockOnClose: jest.fn(),
-    mockOnError: jest.fn(),
+    mockOnGameSummary: vi.fn(),
+    mockOnReject: vi.fn(),
+    mockOnStart: vi.fn(),
+    mockOnMove: vi.fn(),
+    mockOnGameResult: vi.fn(),
+    mockOnClose: vi.fn(),
+    mockOnError: vi.fn(),
   };
   client.on("gameSummary", handlers.mockOnGameSummary);
   client.on("reject", handlers.mockOnReject);
@@ -214,7 +215,7 @@ function bindHandlers(client: Client) {
 
 describe("ipc/background/csa/client", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("singleGame/winByResign", async () => {

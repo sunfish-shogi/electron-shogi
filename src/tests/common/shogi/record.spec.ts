@@ -87,7 +87,7 @@ describe("shogi/record", () => {
 
   it("append/goBack/goForward/goto", () => {
     const record = new Record();
-    const onChangePosition = jest.fn();
+    const onChangePosition = vi.fn();
     record.on("changePosition", onChangePosition);
     const move = (ff: number, fr: number, tf: number, tr: number): Move => {
       return record.position.createMove(new Square(ff, fr), new Square(tf, tr)) as Move;

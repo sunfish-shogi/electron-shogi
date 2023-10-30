@@ -98,10 +98,12 @@ npm run build
 ### Unit Tests
 
 ```
+# test only
 npm test
-```
 
-Appending `-- --coverage` option, you can see coverage report at `coverage` directory.
+# coverange report
+npm run coverage
+```
 
 ### Lint
 

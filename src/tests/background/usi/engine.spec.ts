@@ -3,12 +3,13 @@
 import * as log4js from "log4js";
 import { EngineProcess, GameResult } from "@/background/usi/engine";
 import { ChildProcess } from "@/background/usi/process";
+import { MockedClass } from "vitest";
 
-jest.mock("@/background/usi/process");
+vi.mock("@/background/usi/process");
 
-const mockChildProcess = ChildProcess as jest.MockedClass<typeof ChildProcess>;
+const mockChildProcess = ChildProcess as MockedClass<typeof ChildProcess>;
 
-function getChildProcessHandler(mock: jest.MockedClass<typeof ChildProcess>, name: string): any {
+function getChildProcessHandler(mock: MockedClass<typeof ChildProcess>, name: string): any {
   for (const call of mock.prototype.on.mock.calls) {
     if (call[0] === name) {
       return call[1];
@@ -18,17 +19,17 @@ function getChildProcessHandler(mock: jest.MockedClass<typeof ChildProcess>, nam
 
 function bindHandlers(engine: EngineProcess) {
   const handlers = {
-    timeout: jest.fn(),
-    error: jest.fn(),
-    usiok: jest.fn(),
-    ready: jest.fn(),
-    bestmove: jest.fn(),
-    checkmate: jest.fn(),
-    checkmateNotImplemented: jest.fn(),
-    checkmateTimeout: jest.fn(),
-    noMate: jest.fn(),
-    info: jest.fn(),
-    ponderInfo: jest.fn(),
+    timeout: vi.fn(),
+    error: vi.fn(),
+    usiok: vi.fn(),
+    ready: vi.fn(),
+    bestmove: vi.fn(),
+    checkmate: vi.fn(),
+    checkmateNotImplemented: vi.fn(),
+    checkmateTimeout: vi.fn(),
+    noMate: vi.fn(),
+    info: vi.fn(),
+    ponderInfo: vi.fn(),
   };
   engine.on("timeout", handlers.timeout);
   engine.on("error", handlers.error);
@@ -46,7 +47,7 @@ function bindHandlers(engine: EngineProcess) {
 
 describe("ipc/background/usi/engine", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("get-options", async () => {

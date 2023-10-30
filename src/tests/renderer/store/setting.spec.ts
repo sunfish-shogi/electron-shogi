@@ -1,14 +1,15 @@
 import api, { API } from "@/renderer/ipc/api";
 import { Tab, TabPaneType, Thema } from "@/common/settings/app";
 import { createAppSetting } from "@/renderer/store/setting";
+import { Mocked } from "vitest";
 
-jest.mock("@/renderer/ipc/api");
+vi.mock("@/renderer/ipc/api");
 
-const mockAPI = api as jest.Mocked<API>;
+const mockAPI = api as Mocked<API>;
 
 describe("store/index", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("updateAppSetting/success", async () => {

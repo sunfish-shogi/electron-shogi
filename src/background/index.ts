@@ -179,9 +179,9 @@ app.on("web-contents-created", (_, contents) => {
   });
 });
 
-async function installElectronDevtools() {
+async function installElectronDevTools() {
   const installer = await import("electron-devtools-installer");
-  await installer.default(installer.VUEJS3_DEVTOOLS);
+  await installer.default(installer.VUEJS_DEVTOOLS);
 }
 
 // This method will be called when Electron has finished
@@ -190,9 +190,9 @@ async function installElectronDevtools() {
 app.on("ready", () => {
   if (isDevelopment()) {
     getAppLogger().info("install Vue3 Dev Tools");
-    // Install Vue Devtools
-    installElectronDevtools().catch((e) => {
-      getAppLogger().error(`Vue Devtools failed to install: ${e}`);
+    // Install Vue DevTools
+    installElectronDevTools().catch((e) => {
+      getAppLogger().error(`failed to install Vue.js devtools: ${e}`);
       throw e;
     });
   }

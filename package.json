@@ -8,8 +8,8 @@
   "scripts": {
     "compile": "vite build",
     "serve": "vite",
-    "build": "npm run compile -- --outDir docs/webapp && npm run report:license",
-    "build:dev": "npm run compile -- --outDir docs/webapp-dev",
+    "build": "vite build --outDir docs/webapp && npm run report:license",
+    "build:dev": "vite build --outDir docs/webapp-dev",
     "preview": "vite preview",
     "test": "vitest run",
     "coverage": "vitest run --coverage",

@@ -106,9 +106,6 @@ export function saveBackup(kif: string): Promise<void> {
       class: HistoryClass.BACKUP,
       backupFileName: fileName,
     });
-    while (history.entries.length > historyMaxLength) {
-      history.entries.shift();
-    }
     trancate(history);
     await saveHistories(history);
   });

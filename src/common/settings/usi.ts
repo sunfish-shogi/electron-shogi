@@ -99,6 +99,7 @@ export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngine
     }
     engine.options[name].value = local.options[name].value;
   });
+  engine.labels = local.labels;
 }
 
 export interface ImmutableUSIEngineSettings {

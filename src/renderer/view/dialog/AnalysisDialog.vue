@@ -7,6 +7,7 @@
         <PlayerSelector
           :player-uri="engineURI"
           :engine-settings="engineSettings"
+          :filter-label="USIEngineLabel.RESEARCH"
           :display-thread-state="true"
           :display-multi-pv-state="true"
           @update-engine-setting="onUpdatePlayerSetting"
@@ -126,9 +127,7 @@ onMounted(async () => {
   installHotKeyForDialog(dialog.value);
   try {
     const analysisSetting = await api.loadAnalysisSetting();
-    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(
-      USIEngineLabel.RESEARCH,
-    );
+    engineSettings.value = await api.loadUSIEngineSetting();
     engineURI.value = analysisSetting.usi?.uri || "";
     enableStartNumber.value = analysisSetting.startCriteria.enableNumber;
     startNumber.value.value = analysisSetting.startCriteria.number;

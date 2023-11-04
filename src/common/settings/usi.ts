@@ -99,6 +99,7 @@ export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngine
     }
     engine.options[name].value = local.options[name].value;
   });
+  engine.labels = local.labels;
 }
 
 export interface ImmutableUSIEngineSettings {
@@ -108,6 +109,7 @@ export interface ImmutableUSIEngineSettings {
   get json(): string;
   get jsonWithIndent(): string;
   getClone(): USIEngineSettings;
+  filterByLabel(label: USIEngineLabel): USIEngineSettings;
 }
 
 export class USIEngineSettings {

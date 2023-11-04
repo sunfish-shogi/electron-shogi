@@ -10,6 +10,7 @@
               :player-uri="blackPlayerURI"
               :contains-human="true"
               :engine-settings="engineSettings"
+              :filter-label="USIEngineLabel.GAME"
               :display-ponder-state="true"
               :display-thread-state="true"
               :display-multi-pv-state="true"
@@ -24,6 +25,7 @@
               :player-uri="whitePlayerURI"
               :contains-human="true"
               :engine-settings="engineSettings"
+              :filter-label="USIEngineLabel.GAME"
               :display-ponder-state="true"
               :display-thread-state="true"
               :display-multi-pv-state="true"
@@ -267,7 +269,7 @@ store.retainBussyState();
 onMounted(async () => {
   try {
     gameSetting.value = await api.loadGameSetting();
-    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(USIEngineLabel.GAME);
+    engineSettings.value = await api.loadUSIEngineSetting();
     blackPlayerURI.value = gameSetting.value.black.uri;
     whitePlayerURI.value = gameSetting.value.white.uri;
     showModalDialog(dialog.value);

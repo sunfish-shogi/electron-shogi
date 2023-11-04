@@ -6,6 +6,7 @@
         <PlayerSelector
           :player-uri="engineURI"
           :engine-settings="engineSettings"
+          :filter-label="USIEngineLabel.MATE"
           :display-thread-state="true"
           :display-multi-pv-state="false"
           @update-engine-setting="
@@ -53,7 +54,7 @@ onMounted(async () => {
   installHotKeyForDialog(dialog.value);
   try {
     const mateSearchSetting = await api.loadMateSearchSetting();
-    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(USIEngineLabel.MATE);
+    engineSettings.value = await api.loadUSIEngineSetting();
     engineURI.value = mateSearchSetting.usi?.uri || "";
   } catch (e) {
     store.pushError(e);

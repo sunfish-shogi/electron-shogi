@@ -9,7 +9,11 @@
         @change="onPlayerChange"
       >
         <option v-if="containsHuman" :value="uri.ES_HUMAN">人</option>
-        <option v-for="engine in engineSettings.engineList" :key="engine.uri" :value="engine.uri">
+        <option
+          v-for="engine in filteredEngineSettings.engineList"
+          :key="engine.uri"
+          :value="engine.uri"
+        >
           {{ engine.name }}
         </option>
       </select>
@@ -57,6 +61,7 @@ import {
   NumberOfThreads,
   MultiPV,
   USIEngineSettings,
+  USIEngineLabel,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import api from "@/renderer/ipc/api";
@@ -72,6 +77,10 @@ const props = defineProps({
   },
   engineSettings: {
     type: Object as PropType<ImmutableUSIEngineSettings>,
+    required: true,
+  },
+  filterLabel: {
+    type: String as PropType<USIEngineLabel>,
     required: true,
   },
   displayPonderState: {
@@ -97,11 +106,15 @@ const store = useStore();
 const playerSelect = ref();
 const engineSettingDialog = ref(null as USIEngineSetting | null);
 
+const filteredEngineSettings = computed(() => {
+  return props.engineSettings.filterByLabel(props.filterLabel);
+});
+
 const ponderState = computed(() => {
   if (!uri.isUSIEngine(props.playerUri)) {
     return null;
   }
-  const engine = props.engineSettings.getEngine(props.playerUri);
+  const engine = filteredEngineSettings.value.getEngine(props.playerUri);
   return engine && getUSIEngineOptionCurrentValue(engine.options[USIPonder]) === "true"
     ? "ON"
     : "OFF";
@@ -111,7 +124,7 @@ const threadState = computed(() => {
   if (!uri.isUSIEngine(props.playerUri)) {
     return null;
   }
-  const engine = props.engineSettings.getEngine(props.playerUri);
+  const engine = filteredEngineSettings.value.getEngine(props.playerUri);
   if (!engine) {
     return null;
   }
@@ -125,7 +138,7 @@ const multiPVState = computed(() => {
   if (!uri.isUSIEngine(props.playerUri)) {
     return null;
   }
-  const engine = props.engineSettings.getEngine(props.playerUri);
+  const engine = filteredEngineSettings.value.getEngine(props.playerUri);
   if (!engine) {
     return null;
   }
@@ -141,7 +154,7 @@ const isPlayerSettingEnabled = computed(() => {
 
 const openPlayerSetting = () => {
   if (uri.isUSIEngine(props.playerUri)) {
-    const engine = props.engineSettings.getEngine(props.playerUri);
+    const engine = filteredEngineSettings.value.getEngine(props.playerUri);
     if (!engine) {
       store.pushError("利用可能なエンジンが選択されていません。");
       return;

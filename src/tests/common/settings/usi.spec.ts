@@ -160,7 +160,10 @@ describe("settings/usi", () => {
           value: 15,
         },
       },
-      labels: {},
+      labels: {
+        game: true,
+        mate: false,
+      },
     };
     mergeUSIEngineSetting(lhs, rhs);
     expect(lhs).toStrictEqual({
@@ -181,7 +184,10 @@ describe("settings/usi", () => {
           value: 15,
         },
       },
-      labels: {},
+      labels: {
+        game: true,
+        mate: false,
+      },
     });
   });
 

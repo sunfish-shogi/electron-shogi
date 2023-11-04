@@ -16,6 +16,7 @@
             :player-uri="playerURI"
             :contains-human="true"
             :engine-settings="engineSettings"
+            :filter-label="USIEngineLabel.GAME"
             :display-ponder-state="true"
             :display-thread-state="true"
             :display-multi-pv-state="true"
@@ -234,7 +235,7 @@ onMounted(async () => {
   try {
     isEncryptionAvailable.value = await api.isEncryptionAvailable();
     history.value = await api.loadCSAGameSettingHistory();
-    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(USIEngineLabel.GAME);
+    engineSettings.value = await api.loadUSIEngineSetting();
     showModalDialog(dialog.value);
     installHotKeyForDialog(dialog.value);
     defaultValueLoaded = true;

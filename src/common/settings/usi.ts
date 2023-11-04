@@ -108,6 +108,7 @@ export interface ImmutableUSIEngineSettings {
   get json(): string;
   get jsonWithIndent(): string;
   getClone(): USIEngineSettings;
+  filterByLabel(label: USIEngineLabel): USIEngineSettings;
 }
 
 export class USIEngineSettings {

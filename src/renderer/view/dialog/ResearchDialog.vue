@@ -6,6 +6,7 @@
         <PlayerSelector
           :player-uri="engineURI"
           :engine-settings="engineSettings"
+          :filter-label="USIEngineLabel.RESEARCH"
           :display-thread-state="true"
           :display-multi-pv-state="true"
           @update-engine-setting="onUpdatePlayerSetting"
@@ -20,6 +21,7 @@
         <PlayerSelector
           :player-uri="uri"
           :engine-settings="engineSettings"
+          :filter-label="USIEngineLabel.RESEARCH"
           :display-thread-state="true"
           :display-multi-pv-state="true"
           @update-engine-setting="onUpdatePlayerSetting"
@@ -106,9 +108,7 @@ onMounted(async () => {
   installHotKeyForDialog(dialog.value);
   try {
     researchSetting.value = await api.loadResearchSetting();
-    engineSettings.value = (await api.loadUSIEngineSetting()).filterByLabel(
-      USIEngineLabel.RESEARCH,
-    );
+    engineSettings.value = await api.loadUSIEngineSetting();
     engineURI.value = researchSetting.value.usi?.uri || "";
     secondaryEngineURIs.value =
       researchSetting.value.secondaries?.map((setting) => setting.usi?.uri || "") || [];

@@ -26,8 +26,15 @@ import {
   isTest,
 } from "@/background/environment";
 import { setLanguage, t } from "@/common/i18n";
+import { checkUpdates } from "./version/check";
 
-getAppLogger().info("start main process");
+getAppLogger().info(
+  "start main process: %s %s %d",
+  process.platform,
+  process.execPath,
+  process.pid,
+);
+getAppLogger().info("app: %s %s", app.getName(), app.getVersion(), app.getLocale());
 getAppLogger().info("process argv: %s", process.argv.join(" "));
 if (isPortable()) {
   getAppLogger().info("portable mode: %s", getPortableExeDir());
@@ -115,13 +122,15 @@ function createWindow() {
   }
 
   win.once("ready-to-show", () => {
-    // レンダラー側の準備ができたら uncaughtException は常にレンダラーへ送る。
+    // レンダラー側の準備ができたら uncaughtException はレンダラーへ送る。
     process.on("uncaughtException", (e, origin) => {
-      try {
-        sendError(new Error(`${origin}: ${e}`));
-      } catch (ipcError) {
-        getAppLogger().error(`failed to send error to renderer: ${ipcError}: ${e}`);
+      // ホストの解決ができない場合に uncaughtException が発生する。
+      // github.io へのアクセスは更新確認以外に無いので、ここでエラー文言を付け加える。
+      if (e instanceof Error && e.message === "getaddrinfo ENOTFOUND sunfish-shogi.github.io") {
+        sendError(new Error(`${t.failedToCheckUpdates}: ${e}`));
+        return;
       }
+      sendError(new Error(`${origin} ${e}`));
     });
     win.show();
 
@@ -134,6 +143,10 @@ function createWindow() {
       }
       win.focus();
       openRecord(path);
+    });
+
+    checkUpdates().catch((e) => {
+      sendError(new Error(`${t.failedToCheckUpdates}: ${e}`));
     });
   });
 }

@@ -42,11 +42,13 @@ export type Texts = {
   config: string;
   debug: string;
   toggleDevTools: string;
-  openAppDirectory: string;
-  openSettingDirectory: string;
-  openLogDirectory: string;
-  openBackupDirectory: string;
-  openCacheDirectory: string;
+  openFolder: string;
+  notificationTest: string;
+  thisIsTestNotification: string;
+  app: string;
+  log: string;
+  backup: string;
+  cache: string;
   help: string;
   openWebSite: string;
   howToUse: string;
@@ -394,6 +396,7 @@ export type Texts = {
   failedToSendPonderCommand: string;
   failedToSendStopCommand: string;
   failedToShutdownEngines: string;
+  failedToCheckUpdates: string;
   failedToSaveRecord: string;
   failedToParseSFEN: string;
   failedToDetectRecordFormat: string;
@@ -460,4 +463,6 @@ export type Texts = {
   unexpectedHTTPMethodPleaseReport: (method: string) => string;
   unexpectedRequestURLPleaseReport: (url: string) => string;
   noResponseFromEnginePleaseExtendTimeout: (seconds: number) => string;
+  stableVersionReleased: (version: string) => string;
+  latestVersionReleased: (version: string) => string;
 };

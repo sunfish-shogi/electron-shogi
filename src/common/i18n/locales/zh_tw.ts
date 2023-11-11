@@ -44,11 +44,13 @@ export const zh_tw: Texts = {
   config: "設定",
   debug: "偵錯",
   toggleDevTools: "打開/關閉開發者工具顯示",
-  openAppDirectory: "顯示本程式所在資料夾",
-  openSettingDirectory: "開啟設定檔案所在資料夾",
-  openLogDirectory: "開啟紀錄檔(log)所在資料夾",
-  openBackupDirectory: "バックアップのフォルダを開く", // TODO: translate
-  openCacheDirectory: "キャッシュのフォルダを開く", // TODO: translate
+  openFolder: "フォルダを開く", // TODO: translate
+  notificationTest: "通知テスト", // TODO: translate
+  thisIsTestNotification: "これは通知のテストです。", // TODO: translate
+  app: "App", // TODO: translate
+  log: "Log", // TODO: translate
+  backup: "Backup", // TODO: translate
+  cache: "Cache", // TODO: translate
   help: "協助",
   openWebSite: "官方網站",
   howToUse: "使用教學",
@@ -399,6 +401,7 @@ export const zh_tw: Texts = {
   failedToSendPonderCommand: "無法送出ponder指令。",
   failedToSendStopCommand: "無法送出stop指令。",
   failedToShutdownEngines: "引擎無法正常結束。",
+  failedToCheckUpdates: "アップデートの確認ができませんでした。", // TODO: translate
   failedToSaveRecord: "棋譜保存失敗。",
   failedToParseSFEN: "SFEN讀取失敗。",
   failedToDetectRecordFormat: "無法判別棋譜形式。",
@@ -474,5 +477,11 @@ export const zh_tw: Texts = {
   },
   noResponseFromEnginePleaseExtendTimeout(seconds) {
     return `引擎在${seconds}秒内沒有回應。若引擎的啟動時間稍長，請在設定中調整引擎最長等待時間。`;
+  },
+  stableVersionReleased(version: string) {
+    return `安定版 ${version} がリリースされました！`; // TODO: translate
+  },
+  latestVersionReleased(version: string) {
+    return `最新版 ${version} がリリースされました！`; // TODO: translate
   },
 };

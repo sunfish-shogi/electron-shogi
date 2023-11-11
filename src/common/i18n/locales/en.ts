@@ -48,6 +48,8 @@ export const en: Texts = {
   openAppDirectory: "Open App Directory",
   openSettingDirectory: "Open Setting Directory",
   openLogDirectory: "Open Log Directory",
+  openBackupDirectory: "Open Backup Directory",
+  openCacheDirectory: "Open Cache Directory",
   help: "Help",
   openWebSite: "Open Web Site",
   howToUse: "How to Use",

@@ -47,6 +47,8 @@ export const ja: Texts = {
   openAppDirectory: "アプリのフォルダを開く",
   openSettingDirectory: "設定ファイルのフォルダを開く",
   openLogDirectory: "ログファイルのフォルダを開く",
+  openBackupDirectory: "バックアップのフォルダを開く",
+  openCacheDirectory: "キャッシュのフォルダを開く",
   help: "ヘルプ",
   openWebSite: "Webサイトを開く",
   howToUse: "使い方を開く",

@@ -9,6 +9,8 @@ import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
 import { t } from "@/common/i18n";
 import { InitialPositionSFEN } from "@/common/shogi";
 import { getAppPath } from "./environment";
+import { openBackupDirectory } from "./history";
+import { openCacheDirectory } from "./image/cache";
 
 const isMac = process.platform === "darwin";
 
@@ -326,6 +328,14 @@ function createMenuTemplate() {
         {
           label: t.openLogDirectory,
           click: openLogsDirectory,
+        },
+        {
+          label: t.openBackupDirectory,
+          click: openBackupDirectory,
+        },
+        {
+          label: t.openCacheDirectory,
+          click: openCacheDirectory,
         },
       ],
     },

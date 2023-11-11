@@ -47,6 +47,8 @@ export const zh_tw: Texts = {
   openAppDirectory: "顯示本程式所在資料夾",
   openSettingDirectory: "開啟設定檔案所在資料夾",
   openLogDirectory: "開啟紀錄檔(log)所在資料夾",
+  openBackupDirectory: "バックアップのフォルダを開く", // TODO: translate
+  openCacheDirectory: "キャッシュのフォルダを開く", // TODO: translate
   help: "協助",
   openWebSite: "官方網站",
   howToUse: "使用教學",

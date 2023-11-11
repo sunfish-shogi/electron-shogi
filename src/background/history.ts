@@ -9,12 +9,17 @@ import {
 } from "@/common/history";
 import { getAppLogger } from "./log";
 import AsyncLock from "async-lock";
+import { shell } from "electron";
 
 const historyMaxLength = 20;
 
 const userDir = getAppPath("userData");
 const historyPath = path.join(userDir, "record_file_history.json");
 const backupDir = path.join(userDir, "backup/kifu");
+
+export function openBackupDirectory(): void {
+  shell.openPath(backupDir);
+}
 
 const lock = new AsyncLock();
 

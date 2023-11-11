@@ -45,6 +45,8 @@ export type Texts = {
   openAppDirectory: string;
   openSettingDirectory: string;
   openLogDirectory: string;
+  openBackupDirectory: string;
+  openCacheDirectory: string;
   help: string;
   openWebSite: string;
   howToUse: string;

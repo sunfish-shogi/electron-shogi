@@ -56,6 +56,8 @@ function createWindow() {
       preload: path.join(__dirname, preloadPath),
       // on development, disable webSecurity to allow mix of "file://" and "http://localhost:5173"
       webSecurity: !isDevelopment(),
+      // 対局や棋譜解析の用途では処理の遅延が致命的なのでスロットリングを無効にする。
+      backgroundThrottling: false,
     },
   });
   win.setBackgroundColor("#888");

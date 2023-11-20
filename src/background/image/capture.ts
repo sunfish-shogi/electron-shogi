@@ -1,10 +1,10 @@
 import { BrowserWindow, dialog } from "electron";
-import { getWebContents, onUpdateAppSetting } from "../ipc";
-import fs from "fs";
-import path from "path";
+import { getWebContents, onUpdateAppSetting } from "@/background/ipc";
+import fs from "node:fs";
+import path from "node:path";
 import { Rect } from "@/common/graphics";
-import { getAppLogger } from "../log";
-import { loadAppSetting } from "../settings";
+import { getAppLogger } from "@/background/log";
+import { loadAppSetting } from "@/background/settings";
 
 const jpegQuality = 85;
 

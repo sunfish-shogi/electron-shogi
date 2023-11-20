@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { shell } from "electron";
 import log4js from "log4js";
 import { loadAppSettingOnce } from "@/background/settings";

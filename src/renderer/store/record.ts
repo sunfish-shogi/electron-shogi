@@ -37,7 +37,7 @@ import {
 } from "@/common/file";
 import { SCORE_MATE_INFINITE } from "@/common/usi";
 import { importJKFString } from "@/common/shogi/jkf";
-import api from "../ipc/api";
+import api from "@/renderer/ipc/api";
 import { useAppSetting } from "./setting";
 import { LogLevel } from "@/common/log";
 

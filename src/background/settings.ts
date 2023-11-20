@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "node:fs";
 import { shell } from "electron";
-import path from "path";
+import path from "node:path";
 import { USIEngineSettings } from "@/common/settings/usi";
 import { AppSetting, defaultAppSetting, normalizeAppSetting } from "@/common/settings/app";
 import {

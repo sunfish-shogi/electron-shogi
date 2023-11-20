@@ -1,5 +1,5 @@
-import fs from "fs";
-import { promises as readline } from "readline";
+import fs from "node:fs";
+import { promises as readline } from "node:readline";
 import { Releases } from "../src/background/version/types";
 import semver from "semver";
 

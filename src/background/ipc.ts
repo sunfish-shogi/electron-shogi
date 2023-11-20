@@ -1,8 +1,8 @@
 import { BrowserWindow, dialog, FileFilter, ipcMain, shell, WebContents } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
-import path from "path";
-import { promises as fs } from "fs";
-import url from "url";
+import path from "node:path";
+import { promises as fs } from "node:fs";
+import url from "node:url";
 import {
   loadAnalysisSetting,
   loadAppSetting,

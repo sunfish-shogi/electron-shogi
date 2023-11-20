@@ -5,8 +5,8 @@ import {
   FileNameConflictAction,
   defaultBatchConversionSetting,
 } from "@/common/settings/conversion";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { listFiles } from "@/background/helpers/file";
 import { defaultAppSetting } from "@/common/settings/app";
 import { saveAppSetting } from "@/background/settings";

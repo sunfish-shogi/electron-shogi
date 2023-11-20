@@ -1,6 +1,6 @@
 import { Record, exportKIF, importKIF } from "@/common/shogi";
 import { exportJKF, importJKFString } from "@/common/shogi/jkf";
-import fs from "fs";
+import fs from "node:fs";
 
 describe("shogi/jkf", () => {
   it("importJKF", () => {

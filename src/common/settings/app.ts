@@ -1,6 +1,6 @@
 import { Language, t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
-import { RecordFileFormat } from "../file";
+import { RecordFileFormat } from "@/common/file";
 
 export enum Thema {
   STANDARD = "standard",

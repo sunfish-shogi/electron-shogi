@@ -1,11 +1,11 @@
-import path from "path";
-import url from "url";
-import crypto from "crypto";
-import { promises as fs } from "fs";
-import { getAppLogger } from "../log";
+import path from "node:path";
+import url from "node:url";
+import crypto from "node:crypto";
+import { promises as fs } from "node:fs";
+import { getAppLogger } from "@/background/log";
 import Jimp from "jimp";
 import { imageCacheDir } from "./cache";
-import { exists } from "../helpers/file";
+import { exists } from "@/background/helpers/file";
 
 const marginRatio = 0.05;
 

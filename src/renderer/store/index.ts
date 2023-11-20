@@ -46,7 +46,7 @@ import { useAppSetting } from "./setting";
 import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
 import { exportJKFString } from "@/common/shogi/jkf";
-import { detectUnsupportedRecordProperties } from "../helpers/record";
+import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
 import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file";
 
 export type PVPreview = {

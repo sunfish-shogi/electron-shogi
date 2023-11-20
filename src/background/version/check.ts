@@ -1,6 +1,6 @@
-import fs from "fs";
-import url from "url";
-import path from "path";
+import fs from "node:fs";
+import url from "node:url";
+import path from "node:path";
 import { Releases, VersionStatus } from "./types";
 import { getAppPath, isDevelopment, isTest } from "@/background/environment";
 import { exists } from "@/background/helpers/file";

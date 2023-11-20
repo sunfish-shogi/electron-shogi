@@ -1,6 +1,6 @@
-import path from "path";
-import process from "process";
-import url from "url";
+import path from "node:path";
+import process from "node:process";
+import url from "node:url";
 import { cropPieceImage } from "@/background/image/cropper";
 import { listFiles } from "@/background/helpers/file";
 

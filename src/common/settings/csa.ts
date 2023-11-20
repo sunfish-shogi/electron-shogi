@@ -1,6 +1,6 @@
 import * as uri from "@/common/uri";
 import { PlayerSetting, defaultPlayerSetting } from "./player";
-import { t } from "../i18n";
+import { t } from "@/common/i18n";
 
 export enum CSAProtocolVersion {
   V121 = "v121",

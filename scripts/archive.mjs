@@ -1,5 +1,5 @@
 import archiver from "archiver";
-import fs from "fs";
+import fs from "node:fs";
 
 const platform = process.argv[2];
 const version = process.argv[3];

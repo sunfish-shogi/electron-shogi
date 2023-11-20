@@ -1,5 +1,5 @@
-import { RecordFileFormat } from "../file";
-import { t } from "../i18n";
+import { RecordFileFormat } from "@/common/file";
+import { t } from "@/common/i18n";
 
 export enum DestinationType {
   DIRECTORY = "directory",

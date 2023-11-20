@@ -1,5 +1,5 @@
-import http from "http";
-import fs from "fs";
+import http from "node:http";
+import fs from "node:fs";
 
 const server = http.createServer((req, res) => {
   const data = fs.readFileSync("docs/release.json", "utf8");

@@ -88,8 +88,8 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
 import { readInputAsNumber } from "@/renderer/helpers/form";
-import ToggleButton from "../primitive/ToggleButton.vue";
-import Icon from "../primitive/Icon.vue";
+import ToggleButton from "@/renderer/primitive/ToggleButton.vue";
+import Icon from "@/renderer/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 
 const store = useStore();

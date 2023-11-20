@@ -44,7 +44,7 @@ import { computed, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { Move } from "@/common/shogi";
-import BookmarkListDialog from "../dialog/BookmarkListDialog.vue";
+import BookmarkListDialog from "@/renderer/dialog/BookmarkListDialog.vue";
 
 const store = useStore();
 const readonly = computed(

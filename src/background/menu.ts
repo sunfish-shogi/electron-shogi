@@ -246,13 +246,6 @@ function createMenuTemplate() {
       ],
     },
     {
-      label: t.mateSearch,
-      submenu: [
-        menuItem(t.mateSearch, MenuEvent.START_MATE_SEARCH, [AppState.NORMAL], "CmdOrCtrl+M"),
-        menuItem(t.stopMateSearch, MenuEvent.STOP_MATE_SEARCH, [AppState.MATE_SEARCH]),
-      ],
-    },
-    {
       label: t.research,
       submenu: [
         menuItem(t.startResearch, MenuEvent.START_RESEARCH, [AppState.NORMAL], "CmdOrCtrl+R"),
@@ -260,6 +253,13 @@ function createMenuTemplate() {
         { type: "separator" },
         menuItem(t.analyze, MenuEvent.START_ANALYSIS, [AppState.NORMAL], "CmdOrCtrl+A"),
         menuItem(t.stopAnalysis, MenuEvent.STOP_ANALYSIS, [AppState.ANALYSIS]),
+      ],
+    },
+    {
+      label: t.mateSearch,
+      submenu: [
+        menuItem(t.mateSearch, MenuEvent.START_MATE_SEARCH, [AppState.NORMAL], "CmdOrCtrl+M"),
+        menuItem(t.stopMateSearch, MenuEvent.STOP_MATE_SEARCH, [AppState.MATE_SEARCH]),
       ],
     },
     {
@@ -308,38 +308,42 @@ function createMenuTemplate() {
       ],
     },
     {
+      label: t.folders,
+      submenu: [
+        {
+          label: t.app,
+          click: () => {
+            shell.openPath(path.dirname(getAppPath("exe")));
+          },
+        },
+        {
+          label: t.settings,
+          click: openSettingsDirectory,
+        },
+        {
+          label: t.log,
+          click: openLogsDirectory,
+        },
+        {
+          label: t.cache,
+          click: openCacheDirectory,
+        },
+        {
+          label: t.backup,
+          click: openBackupDirectory,
+        },
+        {
+          label: t.autoSaving,
+          click: openAutoSaveDirectory,
+        },
+      ],
+    },
+    {
       label: t.debug,
       submenu: [
         {
           label: t.toggleDevTools,
           role: "toggleDevTools",
-        },
-        {
-          label: t.openFolder,
-          submenu: [
-            {
-              label: t.app,
-              click: () => {
-                shell.openPath(path.dirname(getAppPath("exe")));
-              },
-            },
-            {
-              label: t.settings,
-              click: openSettingsDirectory,
-            },
-            {
-              label: t.log,
-              click: openLogsDirectory,
-            },
-            {
-              label: t.backup,
-              click: openBackupDirectory,
-            },
-            {
-              label: t.cache,
-              click: openCacheDirectory,
-            },
-          ],
         },
         {
           label: t.notificationTest,

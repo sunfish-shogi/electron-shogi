@@ -42,7 +42,7 @@ export type Texts = {
   config: string;
   debug: string;
   toggleDevTools: string;
-  openFolder: string;
+  folders: string;
   notificationTest: string;
   thisIsTestNotification: string;
   app: string;
@@ -167,6 +167,7 @@ export type Texts = {
   autoDetect: string;
   newlineCharacter: string;
   old90sMac: string;
+  autoSaving: string;
   autoSavingDirectory: string;
   select: string;
   positionOfUSIOutput: string;

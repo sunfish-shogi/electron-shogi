@@ -27,7 +27,7 @@ import {
   RecordMetadataKey,
 } from "./record";
 import { Square } from "./square";
-import { getBlackPlayerName, getWhitePlayerName } from "../helpers/metadata";
+import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 
 enum LineType {
   VERSION,

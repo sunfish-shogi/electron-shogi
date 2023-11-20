@@ -1,5 +1,5 @@
 import { ordinal } from "@/common/helpers/string";
-import { Texts } from "../text_template";
+import { Texts } from "@/common/i18n/text_template";
 
 export const en: Texts = {
   electronShogi: "Electron Shogi",

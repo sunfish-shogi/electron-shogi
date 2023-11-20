@@ -5,7 +5,7 @@ import { ImmutableRecord } from "@/common/shogi";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { SearchInfoSenderType } from "./record";
 import { useAppSetting } from "./setting";
-import { Lazy } from "../helpers/lazy";
+import { Lazy } from "@/renderer/helpers/lazy";
 
 function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
   switch (index) {

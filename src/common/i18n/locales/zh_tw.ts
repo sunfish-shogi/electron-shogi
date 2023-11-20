@@ -1,4 +1,4 @@
-import { Texts } from "../text_template";
+import { Texts } from "@/common/i18n/text_template";
 
 export const zh_tw: Texts = {
   electronShogi: "Electron將棋",

@@ -1,7 +1,7 @@
 import https from "https";
 import http from "http";
 import { isProduction } from "@/background/environment";
-import { getAppLogger } from "../log";
+import { getAppLogger } from "@/background/log";
 
 export function fetch(url: string): Promise<string> {
   return new Promise((resolve, reject) => {

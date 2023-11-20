@@ -1,6 +1,6 @@
 import { InitialPositionType } from "@/common/shogi";
 import { PlayerSetting, defaultPlayerSetting } from "./player";
-import { t } from "../i18n";
+import { t } from "@/common/i18n";
 
 export type TimeLimitSetting = {
   timeSeconds: number;

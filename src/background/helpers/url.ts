@@ -1,5 +1,5 @@
 import url from "url";
-import { getAppLogger } from "../log";
+import { getAppLogger } from "@/background/log";
 
 export function fileURLToPath(fileURL: string, defaultPath: string): string {
   if (fileURL) {

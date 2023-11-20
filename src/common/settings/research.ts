@@ -1,4 +1,4 @@
-import { t } from "../i18n";
+import { t } from "@/common/i18n";
 import { USIEngineSetting } from "./usi";
 
 export type SecondaryResearchSetting = {

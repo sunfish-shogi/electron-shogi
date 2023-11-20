@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { app, Menu, MenuItem, MenuItemConstructorOptions, Notification, shell } from "electron";
 import { openAutoSaveDirectory, openSettingsDirectory } from "@/background/settings";
 import { openLogsDirectory } from "@/background/log";

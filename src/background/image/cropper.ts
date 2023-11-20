@@ -1,7 +1,7 @@
-import path from "path";
-import url from "url";
-import crypto from "crypto";
-import { promises as fs } from "fs";
+import path from "node:path";
+import url from "node:url";
+import crypto from "node:crypto";
+import { promises as fs } from "node:fs";
 import { getAppLogger } from "@/background/log";
 import Jimp from "jimp";
 import { imageCacheDir } from "./cache";

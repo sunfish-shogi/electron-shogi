@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { getAppPath, getPortableExeDir } from "@/background/environment";
 import { shell } from "electron";
 

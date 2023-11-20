@@ -1,6 +1,6 @@
 "use strict";
 
-import path from "path";
+import path from "node:path";
 import { app, protocol, BrowserWindow, session } from "electron";
 import {
   getAppState,

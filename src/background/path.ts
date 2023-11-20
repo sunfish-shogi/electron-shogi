@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { getPortableExeDir } from "./environment";
 
 export function resolvePath(filepath: string): string {

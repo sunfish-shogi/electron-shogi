@@ -1,5 +1,5 @@
 import builder from "electron-builder";
-import fs from "fs";
+import fs from "node:fs";
 
 const target = process.argv[2];
 

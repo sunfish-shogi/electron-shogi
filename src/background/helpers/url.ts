@@ -1,4 +1,4 @@
-import url from "url";
+import url from "node:url";
 import { getAppLogger } from "@/background/log";
 
 export function fileURLToPath(fileURL: string, defaultPath: string): string {

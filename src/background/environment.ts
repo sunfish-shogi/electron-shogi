@@ -1,7 +1,7 @@
 import { app } from "electron";
-import fs from "fs";
-import os from "os";
-import path from "path";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
 export function isDevelopment(): boolean {
   return process.env.npm_lifecycle_event === "electron:serve" && !isTest();

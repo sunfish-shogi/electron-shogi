@@ -8,7 +8,7 @@
   "scripts": {
     "compile": "vite build",
     "serve": "vite",
-    "build": "vite build --outDir docs/webapp && npm run report:license",
+    "build": "vite build --outDir docs/webapp && npm run license",
     "build:dev": "vite build --outDir docs/webapp-dev",
     "preview": "vite preview",
     "test": "vitest run",
@@ -17,11 +17,12 @@
     "electron:compile": "tsc --project ./tsconfig.bg.json && tsc-alias && webpack --config-name preload",
     "electron:compile-all": "npm run compile && npm run electron:compile",
     "electron:pack": "npm run electron:compile-all && webpack --config-name background",
-    "electron:serve": "npm run electron:compile && concurrently --kill-others vite \"electron --remote-debugging-port=9223 .\" \"tsc --project ./tsconfig.bg.json --sourceMap -w\" \"tsc-alias -w\"",
+    "electron:serve": "npm run electron:compile && concurrently --kill-others vite \"electron --remote-debugging-port=9223 .\" \"tsc --project ./tsconfig.bg.json --sourceMap -w\" \"tsc-alias -w\" \"node ./scripts/fake-release-api.mjs\"",
     "electron:build": "npm run electron:pack && node scripts/build.mjs",
     "electron:portable": "npm run electron:pack && node scripts/build.mjs portable",
     "electron:preview": "npm run electron:compile-all && electron .",
-    "report:license": "node scripts/report-license.mjs"
+    "license": "node scripts/report-license.mjs",
+    "release": "ts-node scripts/publish-release.ts"
   },
   "main": "dist/src/background/index.js",
   "dependencies": {
@@ -32,6 +33,7 @@
     "encoding-japanese": "^2.0.0",
     "jimp": "^0.22.7",
     "log4js": "^6.7.0",
+    "semver": "^7.5.4",
     "splitpanes": "^3.1.5",
     "vue": "^3.2.25"
   },
@@ -59,6 +61,7 @@
     "license-checker": "^25.0.1",
     "prettier": "^3.0.1",
     "terser-webpack-plugin": "^5.3.6",
+    "ts-node": "^10.9.1",
     "tsc-alias": "^1.7.0",
     "typescript": "^5.0.2",
     "vite": "^4.0.2",

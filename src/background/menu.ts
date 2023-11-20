@@ -1,5 +1,5 @@
 import path from "path";
-import { app, Menu, MenuItem, MenuItemConstructorOptions, shell } from "electron";
+import { app, Menu, MenuItem, MenuItemConstructorOptions, Notification, shell } from "electron";
 import { openAutoSaveDirectory, openSettingsDirectory } from "@/background/settings";
 import { openLogsDirectory } from "@/background/log";
 import { getWebContents, onMenuEvent } from "@/background/ipc";
@@ -314,28 +314,41 @@ function createMenuTemplate() {
           label: t.toggleDevTools,
           role: "toggleDevTools",
         },
-        { type: "separator" },
         {
-          label: t.openAppDirectory,
+          label: t.openFolder,
+          submenu: [
+            {
+              label: t.app,
+              click: () => {
+                shell.openPath(path.dirname(getAppPath("exe")));
+              },
+            },
+            {
+              label: t.settings,
+              click: openSettingsDirectory,
+            },
+            {
+              label: t.log,
+              click: openLogsDirectory,
+            },
+            {
+              label: t.backup,
+              click: openBackupDirectory,
+            },
+            {
+              label: t.cache,
+              click: openCacheDirectory,
+            },
+          ],
+        },
+        {
+          label: t.notificationTest,
           click: () => {
-            shell.openPath(path.dirname(getAppPath("exe")));
+            new Notification({
+              title: t.electronShogi,
+              body: t.thisIsTestNotification,
+            }).show();
           },
-        },
-        {
-          label: t.openSettingDirectory,
-          click: openSettingsDirectory,
-        },
-        {
-          label: t.openLogDirectory,
-          click: openLogsDirectory,
-        },
-        {
-          label: t.openBackupDirectory,
-          click: openBackupDirectory,
-        },
-        {
-          label: t.openCacheDirectory,
-          click: openCacheDirectory,
         },
       ],
     },

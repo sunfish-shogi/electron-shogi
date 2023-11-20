@@ -44,11 +44,13 @@ export const ja: Texts = {
   config: "設定",
   debug: "デバッグ",
   toggleDevTools: "開発者ツール表示切り替え",
-  openAppDirectory: "アプリのフォルダを開く",
-  openSettingDirectory: "設定ファイルのフォルダを開く",
-  openLogDirectory: "ログファイルのフォルダを開く",
-  openBackupDirectory: "バックアップのフォルダを開く",
-  openCacheDirectory: "キャッシュのフォルダを開く",
+  openFolder: "フォルダを開く",
+  notificationTest: "通知テスト",
+  thisIsTestNotification: "これは通知のテストです。",
+  app: "アプリ",
+  log: "ログファイル",
+  backup: "バックアップ",
+  cache: "キャッシュ",
   help: "ヘルプ",
   openWebSite: "Webサイトを開く",
   howToUse: "使い方を開く",
@@ -402,6 +404,7 @@ export const ja: Texts = {
   failedToSendPonderCommand: "ponderコマンドを送信できませんでした。",
   failedToSendStopCommand: "stopコマンドを送信できませんでした。",
   failedToShutdownEngines: "エンジンを正常に終了できませんでした。",
+  failedToCheckUpdates: "アップデートの確認ができませんでした。",
   failedToSaveRecord: "棋譜の保存に失敗しました。",
   failedToParseSFEN: "SFENの読み込みに失敗しました。",
   failedToDetectRecordFormat: "棋譜形式を判別できませんでした。",
@@ -480,5 +483,11 @@ export const ja: Texts = {
   },
   noResponseFromEnginePleaseExtendTimeout(seconds) {
     return `${seconds}秒以内にエンジンから応答がありませんでした。エンジンの起動が重い場合はアプリ設定で待ち時間を延長してください。`;
+  },
+  stableVersionReleased(version: string) {
+    return `安定版 ${version} がリリースされました！`;
+  },
+  latestVersionReleased(version: string) {
+    return `最新版 ${version} がリリースされました！`;
   },
 };

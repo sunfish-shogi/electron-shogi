@@ -45,11 +45,13 @@ export const en: Texts = {
   config: "Config",
   debug: "Debug",
   toggleDevTools: "Toggle Developer Tools",
-  openAppDirectory: "Open App Directory",
-  openSettingDirectory: "Open Setting Directory",
-  openLogDirectory: "Open Log Directory",
-  openBackupDirectory: "Open Backup Directory",
-  openCacheDirectory: "Open Cache Directory",
+  openFolder: "Open Folder",
+  notificationTest: "Notification Test",
+  thisIsTestNotification: "This is test notification.",
+  app: "App",
+  log: "Log",
+  backup: "Backup",
+  cache: "Cache",
   help: "Help",
   openWebSite: "Open Web Site",
   howToUse: "How to Use",
@@ -405,6 +407,7 @@ export const en: Texts = {
   failedToSendPonderCommand: "Failed to send ponder-command.",
   failedToSendStopCommand: "Failed to send stop-command.",
   failedToShutdownEngines: "Failed to shutdown engines.",
+  failedToCheckUpdates: "Failed to check updates.",
   failedToSaveRecord: "Failed to save record.",
   failedToParseSFEN: "Failed to parse SFEN.",
   failedToDetectRecordFormat: "Failed to detect record format.",
@@ -485,5 +488,11 @@ export const en: Texts = {
   },
   noResponseFromEnginePleaseExtendTimeout(seconds) {
     return `No response from engine while ${seconds} seconds. Please extend timeout at app settings, if your engine is slow.`;
+  },
+  stableVersionReleased(version: string) {
+    return `Stable version ${version} released!`;
+  },
+  latestVersionReleased(version: string) {
+    return `Latest version ${version} released!`;
   },
 };

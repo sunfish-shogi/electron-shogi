@@ -8,6 +8,7 @@ import {
   RecordFormatType,
   SpecialMoveType,
   Square,
+  formatPV,
   specialMove,
 } from "@/common/shogi";
 import { SCORE_MATE_INFINITE } from "@/common/usi";
@@ -143,6 +144,41 @@ describe("store/record", () => {
       "*詰み=先手勝ち:15手\n*エンジン=Engine01\n\n#詰み=後手勝ち\n#エンジン=Engine02\n",
     );
     expect(recordManager.unsaved).toBeTruthy();
+  });
+
+  describe("inCommentPVs", () => {
+    it("standard", () => {
+      const recordManager = new RecordManager();
+      recordManager.importRecord(
+        "l2g2gnl/1r2k2p1/2ns1pPs1/p1pp1R3/1p6p/P1PPS2B1/1PS1P3P/2GK1G3/LN6L b 4Pbn 71",
+      );
+      recordManager.updateComment(`
+#読み筋=▲４七飛△４二金▲４四歩△同　歩▲同　角△４三歩▲５五角△３三桂▲６五歩△６二金▲６四歩△５四銀▲４四歩△５一桂▲４三歩成△同　金▲同　飛成△同　玉
+*読み筋=▲４七飛△４二金▲６五歩△同　桂▲同　銀△同　歩▲４四歩`);
+      const pvs = recordManager.inCommentPVs;
+      expect(pvs).toHaveLength(2);
+      expect(formatPV(recordManager.record.position, pvs[0])).toBe(
+        "▲４七飛△４二金▲４四歩△同　歩▲同　角△４三歩▲５五角△３三桂▲６五歩△６二金▲６四歩△５四銀▲４四歩△５一桂▲４三歩成△同　金▲同　飛成△同　玉",
+      );
+      expect(formatPV(recordManager.record.position, pvs[1])).toBe(
+        "▲４七飛△４二金▲６五歩△同　桂▲同　銀△同　歩▲４四歩",
+      );
+    });
+
+    it("floodgate", () => {
+      const recordManager = new RecordManager();
+      recordManager.importRecord(
+        "l2g2gnl/1r2k2p1/2ns1pPs1/p1pp1R3/1p6p/P1PPS2B1/1PS1P3P/2GK1G3/LN6L b 4Pbn 71",
+      );
+      recordManager.updateComment(
+        "* -800 +4447HI -3142KI +0044FU -4344FU +2644KA -0043FU +4455KA -2133KE +6665FU -6162KI +6564FU -6354GI +0044FU -0051KE +4443TO -4243KI +4743RY -5243OU",
+      );
+      const pvs = recordManager.inCommentPVs;
+      expect(pvs).toHaveLength(1);
+      expect(formatPV(recordManager.record.position, pvs[0])).toBe(
+        "▲４七飛△４二金▲４四歩△同　歩▲同　角△４三歩▲５五角△３三桂▲６五歩△６二金▲６四歩△５四銀▲４四歩△５一桂▲４三歩成△同　金▲同　飛成△同　玉",
+      );
+    });
   });
 
   it("appendMovesSilently", () => {

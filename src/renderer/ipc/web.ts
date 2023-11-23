@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { defaultAnalysisSetting } from "@/common/settings/analysis";
 import { defaultAppSetting } from "@/common/settings/app";
 import { defaultGameSetting } from "@/common/settings/game";

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import fs from "node:fs";
 import { promises as readline } from "node:readline";
 import { Releases } from "../src/background/version/types";

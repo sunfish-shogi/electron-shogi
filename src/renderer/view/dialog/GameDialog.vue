@@ -235,7 +235,7 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
-import ToggleButton from "@/renderer/primitive/ToggleButton.vue";
+import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { InitialPositionType } from "@/common/shogi";
 
 const store = useStore();

@@ -176,8 +176,8 @@ import {
   getWhitePlayerName,
   getWhitePlayerNamePreferShort,
 } from "@/common/helpers/metadata";
-import HorizontalSelector from "@/renderer/primitive/HorizontalSelector.vue";
-import ToggleButton from "@/renderer/primitive/ToggleButton.vue";
+import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
+import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { readInputAsNumber } from "@/renderer/helpers/form";
 
 const lazyUpdateDelay = 100;

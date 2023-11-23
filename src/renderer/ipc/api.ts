@@ -15,13 +15,14 @@ import { MateSearchSetting } from "@/common/settings/mate";
 import { BatchConversionSetting } from "@/common/settings/conversion";
 import { BatchConversionResult } from "@/common/conversion";
 import { RecordFileHistory } from "@/common/history";
+import { InitialRecordFileRequest } from "@/common/file";
 
 type AppInfo = {
   appVersion?: string;
 };
 
 export interface Bridge {
-  getRecordPathFromProcArg(): Promise<string>;
+  fetchInitialRecordFileRequest(): Promise<string>;
   updateAppState(appState: AppState, bussy: boolean): void;
   openExplorer(path: string): void;
   showOpenRecordDialog(): Promise<string>;
@@ -118,7 +119,7 @@ export interface Bridge {
 }
 
 export interface API {
-  getRecordPathFromProcArg(): Promise<string>;
+  fetchInitialRecordFileRequest(): Promise<InitialRecordFileRequest>;
   updateAppState(appState: AppState, bussy: boolean): void;
   openExplorer(path: string): void;
   showOpenRecordDialog(): Promise<string>;
@@ -206,6 +207,9 @@ export const bridge: Bridge = getWindowObject().electronShogiAPI || webAPI;
 
 const api: API = {
   ...bridge,
+  async fetchInitialRecordFileRequest(): Promise<InitialRecordFileRequest> {
+    return JSON.parse(await bridge.fetchInitialRecordFileRequest());
+  },
   exportCaptureAsPNG(rect: Rect): Promise<void> {
     return bridge.exportCaptureAsPNG(rect.json);
   },

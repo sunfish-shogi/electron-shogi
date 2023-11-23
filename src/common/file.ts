@@ -108,3 +108,8 @@ export function exportRecordAsBuffer(
   }
   return { data, garbled };
 }
+
+export type InitialRecordFileRequest = {
+  path: string;
+  ply?: number;
+} | null;

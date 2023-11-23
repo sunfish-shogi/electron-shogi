@@ -14,8 +14,8 @@ const api: Bridge = {
   //   ライブラリやセキュアなオブジェクトを直接公開しないでください。
   //   必ず関数でラップして、必要最小限の参照だけをレンダラーに公開してください。
   //   See https://www.electronjs.org/docs/latest/tutorial/context-isolation#security-considerations
-  async getRecordPathFromProcArg(): Promise<string> {
-    return await ipcRenderer.invoke(Background.GET_RECORD_PATH_FROM_PROC_ARG);
+  async fetchInitialRecordFileRequest(): Promise<string> {
+    return await ipcRenderer.invoke(Background.FETCH_INITIAL_RECORD_FILE_REQUEST);
   },
   updateAppState(appState: AppState, bussy: boolean): void {
     ipcRenderer.send(Background.UPDATE_APP_STATE, appState, bussy);

@@ -67,17 +67,14 @@ import { convertRecordFiles } from "./conversion";
 import { BatchConversionSetting } from "@/common/settings/conversion";
 import { addHistory, clearHistory, getHistory, loadBackup, saveBackup } from "./history";
 import { getAppPath } from "./environment";
+import { fetchInitialRecordFileRequest } from "./args";
+import { isSupportedRecordFilePath } from "./extensions";
 
 const isWindows = process.platform === "win32";
 
-let initialFilePath = "";
 let mainWindow: BrowserWindow; // TODO: refactoring
 let appState = AppState.NORMAL;
 let closable = false;
-
-export function setInitialFilePath(path: string): void {
-  initialFilePath = path;
-}
 
 export function setup(win: BrowserWindow): void {
   mainWindow = win;
@@ -96,17 +93,9 @@ export function getWebContents(): WebContents {
   return mainWindow.webContents;
 }
 
-ipcMain.handle(Background.GET_RECORD_PATH_FROM_PROC_ARG, (event) => {
+ipcMain.handle(Background.FETCH_INITIAL_RECORD_FILE_REQUEST, (event) => {
   validateIPCSender(event.senderFrame);
-  if (isValidRecordFilePath(initialFilePath)) {
-    getAppLogger().debug(`record path from open-file event: ${initialFilePath}`);
-    return initialFilePath;
-  }
-  const path = process.argv[process.argv.length - 1];
-  if (isValidRecordFilePath(path)) {
-    getAppLogger().debug(`record path from proc arg: ${path}`);
-    return path;
-  }
+  return JSON.stringify(fetchInitialRecordFileRequest());
 });
 
 ipcMain.on(Background.UPDATE_APP_STATE, (_, state: AppState, bussy: boolean) => {
@@ -129,18 +118,6 @@ ipcMain.on(Background.OPEN_EXPLORER, async (_, targetPath: string) => {
   }
 });
 
-function isValidRecordFilePath(path: string) {
-  const lowerCasePath = path.toLowerCase();
-  return (
-    lowerCasePath.endsWith(".kif") ||
-    lowerCasePath.endsWith(".kifu") ||
-    lowerCasePath.endsWith(".ki2") ||
-    lowerCasePath.endsWith(".ki2u") ||
-    lowerCasePath.endsWith(".csa") ||
-    lowerCasePath.endsWith(".jkf")
-  );
-}
-
 ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   const appSetting = await loadAppSetting();
@@ -159,7 +136,7 @@ ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string
 
 ipcMain.handle(Background.OPEN_RECORD, async (event, path: string): Promise<Uint8Array> => {
   validateIPCSender(event.senderFrame);
-  if (!isValidRecordFilePath(path)) {
+  if (!isSupportedRecordFilePath(path)) {
     throw new Error(t.fileExtensionNotSupported);
   }
   getAppLogger().debug(`open record: ${path}`);
@@ -249,7 +226,7 @@ ipcMain.handle(
   Background.SAVE_RECORD,
   async (event, filePath: string, data: Uint8Array): Promise<void> => {
     validateIPCSender(event.senderFrame);
-    if (!isValidRecordFilePath(filePath)) {
+    if (!isSupportedRecordFilePath(filePath)) {
       throw new Error(t.fileExtensionNotSupported);
     }
     getAppLogger().debug(`save record: ${filePath} (${data.length} bytes)`);
@@ -673,7 +650,7 @@ export function onUpdateAppSetting(setting: AppSettingUpdate): void {
 }
 
 export function openRecord(path: string): void {
-  if (isValidRecordFilePath(path)) {
+  if (isSupportedRecordFilePath(path)) {
     mainWindow.webContents.send(Renderer.OPEN_RECORD, path);
   }
 }

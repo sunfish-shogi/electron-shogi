@@ -59,10 +59,12 @@ Promise.allSettled([
       store.pushError(new Error("アプリ設定の読み込み中にエラーが発生しました: " + e));
     }),
   api
-    .getRecordPathFromProcArg()
-    .then((path) => {
-      if (path) {
-        store.openRecord(path);
+    .fetchInitialRecordFileRequest()
+    .then((request) => {
+      if (request) {
+        store.openRecord(request.path, {
+          ply: request.ply,
+        });
       }
     })
     .catch((e) => {

@@ -968,7 +968,7 @@ class Store {
     }
   }
 
-  openRecord(path?: string): void {
+  openRecord(path?: string, opt?: { ply?: number }): void {
     if (this.appState !== AppState.NORMAL || this.isBussy) {
       this.pushError(t.pleaseEndActiveFeaturesBeforeOpenRecord);
       return;
@@ -990,6 +990,11 @@ class Store {
           });
           return e && Promise.reject(e);
         });
+      })
+      .then(() => {
+        if (opt?.ply) {
+          this.recordManager.changePly(opt.ply);
+        }
       })
       .catch((e) => {
         this.pushError("棋譜の読み込み中にエラーが出ました: " + e);

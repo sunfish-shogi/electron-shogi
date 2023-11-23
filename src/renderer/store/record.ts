@@ -14,6 +14,7 @@ import {
   InitialPositionType,
   initialPositionTypeToSFEN,
   Move,
+  parseCSAMove,
   parsePV,
   Position,
   PositionChange,
@@ -172,13 +173,33 @@ function buildSearchComment(
   return comment;
 }
 
+function parseFloodgatePVComment(position: ImmutablePosition, line: string): Move[] {
+  const begin = line.indexOf(" ", line.indexOf(" ") + 1) + 1;
+  const pv: Move[] = [];
+  const pos = position.clone();
+  for (let i = begin; i < line.length; i += 8) {
+    const csa = line.substring(i, i + 7);
+    const move = parseCSAMove(pos, csa);
+    if (move instanceof Error || !pos.doMove(move, { ignoreValidation: false })) {
+      break;
+    }
+    pv.push(move);
+  }
+  return pv;
+}
+
 function getPVsFromSearchComment(position: ImmutablePosition, comment: string): Move[][] {
   return comment
     .split("\n")
-    .filter((line) => line.match(/^[#*]読み筋=/))
+    .filter((line) => line.match(/^[#*]読み筋=/) || line.match(/^\* -?[0-9]+ /))
     .map((line) => {
-      return parsePV(position, line.split("=", 2)[1]);
-    });
+      if (line.startsWith("* ")) {
+        return parseFloodgatePVComment(position, line);
+      } else {
+        return parsePV(position, line.substring(5));
+      }
+    })
+    .filter((pv) => pv.length !== 0);
 }
 
 function formatTimeLimitCSA(setting: TimeLimitSetting): string {

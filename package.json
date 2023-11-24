@@ -22,7 +22,8 @@
     "electron:portable": "npm run electron:pack && node scripts/build.mjs portable",
     "electron:preview": "npm run electron:compile-all && electron .",
     "license": "node scripts/report-license.mjs",
-    "release": "ts-node scripts/publish-release.ts"
+    "docs": "ts-node scripts/build-docs-templates.ts",
+    "release": "ts-node scripts/publish-release.ts && npm run docs"
   },
   "main": "dist/src/background/index.js",
   "dependencies": {

@@ -18,6 +18,7 @@ jobs:
       - run: npm version
       - run: npm ci
       - run: npm run lint
+      - run: npm run docs
       - run: git diff --exit-code
       - run: npm run license
       - run: npm run coverage

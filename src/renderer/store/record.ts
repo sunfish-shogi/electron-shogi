@@ -35,8 +35,8 @@ import {
   detectRecordFileFormatByPath,
   exportRecordAsBuffer,
   importRecordFromBuffer,
-} from "@/common/file";
-import { SCORE_MATE_INFINITE } from "@/common/usi";
+} from "@/common/file/record";
+import { SCORE_MATE_INFINITE } from "@/common/game/usi";
 import { importJKFString } from "@/common/shogi/jkf";
 import api from "@/renderer/ipc/api";
 import { useAppSetting } from "./setting";

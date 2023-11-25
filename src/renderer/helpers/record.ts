@@ -1,4 +1,4 @@
-import { RecordFileFormat } from "@/common/file";
+import { RecordFileFormat } from "@/common/file/record";
 import { ImmutableRecord } from "@/common/shogi";
 
 export type RecordProperties = {

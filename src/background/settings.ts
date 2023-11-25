@@ -27,8 +27,8 @@ import {
   encryptCSAGameSettingHistory,
   normalizeSecureCSAGameSettingHistory,
 } from "@/common/settings/csa";
-import { DecryptString, EncryptString, isEncryptionAvailable } from "./encrypt";
-import { getAppPath, getPortableExeDir } from "./environment";
+import { DecryptString, EncryptString, isEncryptionAvailable } from "./helpers/encrypt";
+import { getAppPath, getPortableExeDir } from "./proc/env";
 import {
   MateSearchSetting,
   defaultMateSearchSetting,

@@ -18,7 +18,7 @@ import {
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
 import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";
-import { beepShort, beepUnlimited, playPieceBeat, stopBeep } from "@/renderer/audio";
+import { beepShort, beepUnlimited, playPieceBeat, stopBeep } from "@/renderer/devices/audio";
 import { RecordManager, SearchInfoSenderType, SearchInfo as SearchInfoParam } from "./record";
 import { GameManager, GameResults } from "./game";
 import { defaultRecordFileName, join } from "@/renderer/helpers/path";
@@ -39,7 +39,7 @@ import { CSAGameManager, CSAGameState } from "./csa";
 import { Clock } from "./clock";
 import { CSAGameSetting, appendCSAGameSettingHistory } from "@/common/settings/csa";
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
-import { USIInfoCommand } from "@/common/usi";
+import { USIInfoCommand } from "@/common/game/usi";
 import { ResearchManager } from "./research";
 import { SearchInfo } from "@/renderer/players/player";
 import { useAppSetting } from "./setting";
@@ -47,7 +47,7 @@ import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
 import { exportJKFString } from "@/common/shogi/jkf";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
-import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file";
+import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file/record";
 
 export type PVPreview = {
   position: ImmutablePosition;

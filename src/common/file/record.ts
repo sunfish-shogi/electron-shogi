@@ -1,4 +1,4 @@
-import { decodeText, encodeText } from "./helpers/encode";
+import { decodeText, encodeText } from "@/common/helpers/encode";
 import {
   ImmutableRecord,
   Record,
@@ -8,8 +8,8 @@ import {
   importCSA,
   importKI2,
   importKIF,
-} from "./shogi";
-import { exportJKFString, importJKFString } from "./shogi/jkf";
+} from "@/common/shogi";
+import { exportJKFString, importJKFString } from "@/common/shogi/jkf";
 
 export enum RecordFileFormat {
   KIF = ".kif",

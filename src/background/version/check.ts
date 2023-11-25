@@ -2,7 +2,7 @@ import fs from "node:fs";
 import url from "node:url";
 import path from "node:path";
 import { Releases, VersionStatus } from "./types";
-import { getAppPath, isDevelopment, isTest } from "@/background/environment";
+import { getAppPath, isDevelopment, isTest } from "@/background/proc/env";
 import { exists } from "@/background/helpers/file";
 import { fetch } from "@/background/helpers/http";
 import semver from "semver";

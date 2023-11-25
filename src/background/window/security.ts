@@ -1,6 +1,6 @@
 import { WebFrameMain } from "electron";
-import { getAppLogger } from "./log";
-import { isDevelopment } from "./environment";
+import { getAppLogger } from "@/background/log";
+import { isDevelopment } from "@/background/proc/env";
 import { t } from "@/common/i18n";
 
 const allowedIPCSenders = [

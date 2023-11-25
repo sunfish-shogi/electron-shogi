@@ -1,4 +1,4 @@
-import { parseUSIPV } from "@/common/usi";
+import { parseUSIPV } from "@/common/game/usi";
 import { Player, SearchHandler } from "@/renderer/players/player";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { PlayerSetting } from "@/common/settings/player";

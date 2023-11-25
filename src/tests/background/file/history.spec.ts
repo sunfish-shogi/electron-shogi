@@ -1,4 +1,10 @@
-import { addHistory, clearHistory, getHistory, loadBackup, saveBackup } from "@/background/history";
+import {
+  addHistory,
+  clearHistory,
+  getHistory,
+  loadBackup,
+  saveBackup,
+} from "@/background/file/history";
 
 it("history", async () => {
   let history = await getHistory();

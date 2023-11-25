@@ -156,7 +156,7 @@ import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import SimpleBoardView from "@/renderer/view/primitive/SimpleBoardView.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { Rect, RectSize } from "@/common/graphics";
 import { Color, Move, formatMove } from "@/common/shogi";

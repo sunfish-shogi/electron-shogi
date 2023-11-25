@@ -91,7 +91,7 @@ import { ref, onMounted, onBeforeUnmount, computed, onUpdated } from "vue";
 import USIEngineOptionDialog from "@/renderer/view/dialog/USIEngineOptionDialog.vue";
 import CheckBox from "@/renderer/view/primitive/CheckBox.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 
 const store = useStore();

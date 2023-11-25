@@ -15,6 +15,7 @@ module.exports = {
   rules: {
     "no-console": "error",
     "no-debugger": "error",
+    "no-restricted-imports": ["error", { patterns: ["../"] }],
     "no-irregular-whitespace": "off",
     "vue/multi-word-component-names": "off",
   },

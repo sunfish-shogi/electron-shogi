@@ -204,7 +204,7 @@ import * as uri from "@/common/uri.js";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 

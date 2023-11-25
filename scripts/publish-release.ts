@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console,no-restricted-imports */
 import fs from "node:fs";
 import { promises as readline } from "node:readline";
 import { Releases } from "../src/background/version/types";

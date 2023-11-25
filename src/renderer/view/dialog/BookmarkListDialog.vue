@@ -22,7 +22,7 @@
 import { AppState } from "@/common/control/state";
 import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useStore } from "@/renderer/store";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 

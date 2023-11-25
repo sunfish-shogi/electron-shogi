@@ -10,7 +10,7 @@ import { t } from "@/common/i18n";
 import { defaultCSAGameSettingHistory } from "@/common/settings/csa";
 import { defaultMateSearchSetting } from "@/common/settings/mate";
 import { defaultBatchConversionSetting } from "@/common/settings/conversion";
-import { getEmptyHistory } from "@/common/history";
+import { getEmptyHistory } from "@/common/file/history";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",

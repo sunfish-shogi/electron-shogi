@@ -3,7 +3,7 @@ import http from "node:http";
 import path from "node:path";
 import fs from "node:fs";
 import { Releases, VersionStatus } from "@/background/version/types";
-import { getAppPath } from "@/background/environment";
+import { getAppPath } from "@/background/proc/env";
 import * as electron from "@/background/helpers/electron";
 
 const statusFilePath = path.join(getAppPath("userData"), "version.json");

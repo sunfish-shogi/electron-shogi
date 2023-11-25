@@ -9,11 +9,11 @@ import {
   onUSIInfo,
   onUSINoMate,
   onUSIPonderInfo,
-} from "@/background/ipc";
+} from "@/background/window/ipc";
 import { TimeLimitSetting } from "@/common/settings/game";
-import { GameResult } from "@/common/player";
+import { GameResult } from "@/common/game/result";
 import { t } from "@/common/i18n";
-import { resolvePath } from "@/background/path";
+import { resolveEnginePath } from "@/background/usi/path";
 import { getUSILogger } from "@/background/log";
 
 function newTimeoutError(timeoutSeconds: number): Error {
@@ -23,7 +23,7 @@ function newTimeoutError(timeoutSeconds: number): Error {
 export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngineSetting> {
   const sessionID = issueSessionID();
   return new Promise<USIEngineSetting>((resolve, reject) => {
-    const process = new EngineProcess(resolvePath(path), sessionID, getUSILogger(), {
+    const process = new EngineProcess(resolveEnginePath(path), sessionID, getUSILogger(), {
       timeout: timeoutSeconds * 1e3,
     })
       .on("error", reject)
@@ -51,7 +51,7 @@ export function sendSetOptionCommand(
 ): Promise<void> {
   const sessionID = issueSessionID();
   return new Promise((resolve, reject) => {
-    const process = new EngineProcess(resolvePath(path), sessionID, getUSILogger(), {
+    const process = new EngineProcess(resolveEnginePath(path), sessionID, getUSILogger(), {
       timeout: timeoutSeconds * 1e3,
     })
       .on("error", reject)
@@ -102,7 +102,7 @@ function getSession(sessionID: number): Session {
 
 export function setupPlayer(setting: USIEngineSetting, timeoutSeconds: number): Promise<number> {
   const sessionID = issueSessionID();
-  const process = new EngineProcess(resolvePath(setting.path), sessionID, getUSILogger(), {
+  const process = new EngineProcess(resolveEnginePath(setting.path), sessionID, getUSILogger(), {
     timeout: timeoutSeconds * 1e3,
     engineOptions: Object.values(setting.options),
   });

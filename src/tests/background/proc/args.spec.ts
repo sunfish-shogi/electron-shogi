@@ -1,4 +1,4 @@
-import { fetchInitialRecordFileRequest, setInitialFilePath } from "@/background/args";
+import { fetchInitialRecordFileRequest, setInitialFilePath } from "@/background/proc/args";
 
 describe("args", () => {
   afterEach(() => {

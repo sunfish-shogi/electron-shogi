@@ -37,7 +37,7 @@ import { AppState } from "@/common/control/state.js";
 import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
-} from "@/renderer/keyboard/hotkey";
+} from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 
 const store = useStore();

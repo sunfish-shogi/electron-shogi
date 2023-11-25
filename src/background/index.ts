@@ -2,13 +2,20 @@
 
 import path from "node:path";
 import { app, protocol, BrowserWindow, session } from "electron";
-import { getAppState, isClosable, onClose, openRecord, sendError, setup } from "@/background/ipc";
+import {
+  getAppState,
+  isClosable,
+  onClose,
+  openRecord,
+  sendError,
+  setup,
+} from "@/background/window/ipc";
 import { loadAppSettingOnce, loadWindowSetting, saveWindowSetting } from "@/background/settings";
 import { buildWindowSetting } from "@/common/settings/window";
 import { getAppLogger, shutdownLoggers } from "@/background/log";
 import { quitAll as usiQuitAll } from "@/background/usi";
 import { AppState } from "@/common/control/state";
-import { validateHTTPRequest } from "./security";
+import { validateHTTPRequest } from "./window/security";
 import {
   getPortableExeDir,
   isDevelopment,
@@ -16,10 +23,10 @@ import {
   isPreview,
   isProduction,
   isTest,
-} from "@/background/environment";
+} from "@/background/proc/env";
 import { setLanguage, t } from "@/common/i18n";
 import { checkUpdates } from "./version/check";
-import { setInitialFilePath } from "./args";
+import { setInitialFilePath } from "./proc/args";
 
 getAppLogger().info(
   "start main process: %s %s %d",

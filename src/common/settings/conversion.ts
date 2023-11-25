@@ -1,4 +1,4 @@
-import { RecordFileFormat } from "@/common/file";
+import { RecordFileFormat } from "@/common/file/record";
 import { t } from "@/common/i18n";
 
 export enum DestinationType {

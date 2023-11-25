@@ -7,7 +7,7 @@ import {
   onCSAReject,
   onCSAStart,
   sendError,
-} from "@/background/ipc";
+} from "@/background/window/ipc";
 import { getCSALogger } from "@/background/log";
 import { Client } from "@/background/csa/client";
 

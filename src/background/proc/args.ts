@@ -1,6 +1,6 @@
-import { InitialRecordFileRequest } from "@/common/file";
-import { getAppLogger } from "./log";
-import { isSupportedRecordFilePath } from "./extensions";
+import { InitialRecordFileRequest } from "@/common/file/record";
+import { getAppLogger } from "@/background/log";
+import { isSupportedRecordFilePath } from "@/background/file/extensions";
 
 let initialFilePath = "";
 

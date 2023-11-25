@@ -215,7 +215,7 @@
 </template>
 
 <script setup lang="ts">
-import { RecordFileFormat } from "@/common/file";
+import { RecordFileFormat } from "@/common/file/record";
 import {
   BatchConversionSetting,
   validateBatchConversionSetting,
@@ -224,7 +224,7 @@ import {
 } from "@/common/settings/conversion";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import api from "@/renderer/ipc/api";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";

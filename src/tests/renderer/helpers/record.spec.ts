@@ -1,4 +1,4 @@
-import { RecordFileFormat } from "@/common/file";
+import { RecordFileFormat } from "@/common/file/record";
 import { Record, SpecialMoveType } from "@/common/shogi";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
 

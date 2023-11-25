@@ -1,6 +1,6 @@
 import { Client } from "@/background/csa/client";
 import { Socket } from "@/background/csa/socket";
-import { CSAGameResult, CSASpecialMove } from "@/common/csa";
+import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 import { Color } from "@/common/shogi";
 import * as log4js from "log4js";
 import { csaServerSetting } from "@/tests/mock/csa";

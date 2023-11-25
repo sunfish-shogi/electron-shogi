@@ -44,11 +44,11 @@
 import dayjs from "dayjs";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { HistoryClass, RecordFileHistoryEntry } from "@/common/history";
+import { HistoryClass, RecordFileHistoryEntry } from "@/common/file/history";
 import api from "@/renderer/ipc/api";
 import { getDateTimeString } from "@/common/helpers/datetime";
 import { showModalDialog } from "@/renderer/helpers/dialog";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { t } from "@/common/i18n";
 import { useAppSetting } from "@/renderer/store/setting";
 

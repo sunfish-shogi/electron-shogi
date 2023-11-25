@@ -1,10 +1,10 @@
-import { BatchConversionResult } from "@/common/conversion";
+import { BatchConversionResult } from "@/common/file/conversion";
 import {
   RecordFileFormat,
   detectRecordFileFormatByPath,
   exportRecordAsBuffer,
   importRecordFromBuffer,
-} from "@/common/file";
+} from "@/common/file/record";
 import {
   BatchConversionSetting,
   DestinationType,
@@ -14,8 +14,8 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { getAppLogger } from "@/background/log";
 import { AppSetting, TextDecodingRule } from "@/common/settings/app";
-import { exists, listFiles } from "./helpers/file";
-import { loadAppSetting } from "./settings";
+import { exists, listFiles } from "@/background/helpers/file";
+import { loadAppSetting } from "@/background/settings";
 import {
   ImmutableNode,
   ImmutableRecord,

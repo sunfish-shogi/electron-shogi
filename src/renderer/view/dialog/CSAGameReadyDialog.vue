@@ -36,7 +36,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { CSAGameState, loginRetryIntervalSeconds } from "@/renderer/store/csa";
 import { t } from "@/common/i18n";
 

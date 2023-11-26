@@ -53,6 +53,9 @@ class AppSettingStore {
   get croppedPieceImageBaseURL(): string | undefined {
     return this.setting.croppedPieceImageBaseURL;
   }
+  get croppedPieceImageQuery(): string | undefined {
+    return this.setting.croppedPieceImageQuery;
+  }
   get pieceImageFileURL(): string | undefined {
     return this.setting.pieceImageFileURL;
   }

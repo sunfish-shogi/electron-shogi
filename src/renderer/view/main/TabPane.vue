@@ -63,7 +63,7 @@ import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import EngineAnalytics from "@/renderer/view/tab/EngineAnalytics.vue";
 import EvaluationChart, { EvaluationChartType } from "@/renderer/view/tab/EvaluationChart.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
-import { RectSize } from "@/common/graphics.js";
+import { RectSize } from "@/common/assets/geometry.js";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { Tab } from "@/common/settings/app";
 import { IconType } from "@/renderer/assets/icons";
@@ -159,3 +159,4 @@ const tabs = {
   background-color: var(--tab-content-bg-color);
 }
 </style>
+@/common/geometry.js

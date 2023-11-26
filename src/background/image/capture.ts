@@ -1,8 +1,8 @@
 import { BrowserWindow, dialog } from "electron";
-import { getWebContents, onUpdateAppSetting } from "@/background/window/ipc";
+import { getWebContents, updateAppSetting } from "@/background/window/ipc";
 import fs from "node:fs";
 import path from "node:path";
-import { Rect } from "@/common/graphics";
+import { Rect } from "@/common/assets/geometry";
 import { getAppLogger } from "@/background/log";
 import { loadAppSetting } from "@/background/settings";
 
@@ -39,7 +39,7 @@ async function exportCaptureImage(rect: Rect, ext: string): Promise<void> {
     return;
   }
   const filePath = ret.filePath;
-  onUpdateAppSetting({
+  updateAppSetting({
     lastImageExportFilePath: filePath,
   });
   switch (ext) {

@@ -37,7 +37,7 @@ import { getRecordMetadataName, t } from "@/common/i18n";
 import { RecordMetadataKey } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { computed, onMounted, ref } from "vue";
-import { RectSize } from "@/common/graphics.js";
+import { RectSize } from "@/common/assets/geometry.js";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useAppSetting } from "@/renderer/store/setting";
 
@@ -128,3 +128,4 @@ input.value {
   border-radius: 7px;
 }
 </style>
+@/common/geometry.js

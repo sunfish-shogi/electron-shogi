@@ -5,7 +5,7 @@
         class="board"
         :board-image-type="appSetting.boardImage"
         :piece-stand-image-type="appSetting.pieceStandImage"
-        :piece-image-base-url="getPieceImageBaseURL(appSetting)"
+        :piece-image-url-template="getPieceImageURLTemplate(appSetting)"
         :king-piece-type="appSetting.kingPieceType"
         :board-label-type="appSetting.boardLabelType"
         :custom-board-image-url="appSetting.boardImageFileURL"
@@ -79,13 +79,13 @@ import { Color, ImmutablePosition, Move, Record } from "@/common/shogi";
 import { onMounted, PropType, ref, reactive, watch, onBeforeUnmount } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
-import { RectSize } from "@/common/graphics.js";
+import { RectSize } from "@/common/assets/geometry.js";
 import { computed } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { IconType } from "@/renderer/assets/icons";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
-import { EvaluationViewFrom, getPieceImageBaseURL } from "@/common/settings/app";
+import { EvaluationViewFrom, getPieceImageURLTemplate } from "@/common/settings/app";
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
 import { SearchInfoSenderType } from "@/renderer/store/record";
@@ -349,3 +349,4 @@ const insertToComment = () => {
   background-color: var(--text-bg-color-selected);
 }
 </style>
+@/common/geometry.js

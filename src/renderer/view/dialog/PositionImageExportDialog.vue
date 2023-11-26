@@ -25,7 +25,7 @@
               :board-image-type="appSetting.boardImage"
               :piece-stand-image-type="appSetting.pieceStandImage"
               :board-label-type="appSetting.boardLabelType"
-              :piece-image-base-url="getPieceImageBaseURL(appSetting)"
+              :piece-image-url-template="getPieceImageURLTemplate(appSetting)"
               :king-piece-type="appSetting.kingPieceType"
               :custom-board-image-url="appSetting.boardImageFileURL"
               :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
@@ -158,7 +158,7 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
-import { Rect, RectSize } from "@/common/graphics";
+import { Rect, RectSize } from "@/common/assets/geometry";
 import { Color, Move, formatMove } from "@/common/shogi";
 import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
@@ -168,7 +168,7 @@ import {
   PositionImageHandLabelType,
   PositionImageStyle,
   PositionImageTypeface,
-  getPieceImageBaseURL,
+  getPieceImageURLTemplate,
 } from "@/common/settings/app";
 import {
   getBlackPlayerName,
@@ -363,3 +363,4 @@ input.header {
   width: 100%;
 }
 </style>
+@/common/geometry

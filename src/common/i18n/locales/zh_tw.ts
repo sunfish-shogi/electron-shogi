@@ -44,6 +44,7 @@ export const zh_tw: Texts = {
   config: "設定",
   debug: "偵錯",
   toggleDevTools: "打開/關閉開發者工具顯示",
+  reloadCustomPieceImage: "カスタム駒画像をリロード", // TODO: translate
   folders: "各種フォルダ", // TODO: translate
   notificationTest: "通知テスト", // TODO: translate
   thisIsTestNotification: "これは通知のテストです。", // TODO: translate

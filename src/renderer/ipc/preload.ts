@@ -225,7 +225,7 @@ const api: Bridge = {
   onMenuEvent(callback: (event: MenuEvent, ...args: any[]) => void): void {
     ipcRenderer.on(Renderer.MENU_EVENT, (_, event, ...args) => callback(event, ...args));
   },
-  onUpdateAppSetting(callback: (json: string) => void): void {
+  updateAppSetting(callback: (json: string) => void): void {
     ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));
   },
   onOpenRecord(callback: (path: string) => void): void {

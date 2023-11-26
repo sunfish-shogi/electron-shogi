@@ -1,5 +1,5 @@
 import path from "node:path";
-import { app, Menu, MenuItem, MenuItemConstructorOptions, Notification, shell } from "electron";
+import { app, Menu, MenuItem, MenuItemConstructorOptions, shell } from "electron";
 import { openAutoSaveDirectory, openSettingsDirectory } from "@/background/settings";
 import { openLogsDirectory } from "@/background/log";
 import { getWebContents, onMenuEvent } from "@/background/window/ipc";
@@ -11,6 +11,7 @@ import { InitialPositionSFEN } from "@/common/shogi";
 import { getAppPath } from "@/background/proc/env";
 import { openBackupDirectory } from "@/background/file/history";
 import { openCacheDirectory } from "@/background/image/cache";
+import { refreshCustomPieceImages, sendTestNotification } from "./debug";
 
 const isMac = process.platform === "darwin";
 
@@ -346,13 +347,12 @@ function createMenuTemplate() {
           role: "toggleDevTools",
         },
         {
+          label: t.reloadCustomPieceImage,
+          click: refreshCustomPieceImages,
+        },
+        {
           label: t.notificationTest,
-          click: () => {
-            new Notification({
-              title: t.electronShogi,
-              body: t.thisIsTestNotification,
-            }).show();
-          },
+          click: sendTestNotification,
         },
       ],
     },

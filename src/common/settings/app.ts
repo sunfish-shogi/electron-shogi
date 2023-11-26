@@ -129,6 +129,7 @@ export type AppSetting = {
   kingPieceType: KingPieceType;
   pieceImageFileURL?: string;
   croppedPieceImageBaseURL?: string;
+  croppedPieceImageQuery?: string; // キャッシュ回避用のクエリ
   deletePieceImageMargin: boolean;
   boardImage: BoardImageType;
   boardImageFileURL?: string;
@@ -196,6 +197,7 @@ export type AppSettingUpdate = {
   kingPieceType?: KingPieceType;
   pieceImageFileURL?: string;
   croppedPieceImageBaseURL?: string;
+  croppedPieceImageQuery?: string; // キャッシュ回避用のクエリ
   deletePieceImageMargin?: boolean;
   boardImage?: BoardImageType;
   boardImageFileURL?: string;
@@ -449,18 +451,19 @@ export function validateAppSetting(setting: AppSetting): Error | undefined {
   }
 }
 
-export function getPieceImageBaseURL(setting: AppSetting): string {
+export function getPieceImageURLTemplate(setting: AppSetting): string {
   switch (setting.pieceImage) {
     case PieceImageType.HITOMOJI_DARK:
-      return "./piece/hitomoji_dark";
+      return "./piece/hitomoji_dark/${piece}.png";
     case PieceImageType.HITOMOJI_GOTHIC:
-      return "./piece/hitomoji_gothic";
+      return "./piece/hitomoji_gothic/${piece}.png";
     case PieceImageType.HITOMOJI_GOTHIC_DARK:
-      return "./piece/hitomoji_gothic_dark";
+      return "./piece/hitomoji_gothic_dark/${piece}.png";
     case PieceImageType.CUSTOM_IMAGE:
       if (setting.croppedPieceImageBaseURL) {
-        return setting.croppedPieceImageBaseURL;
+        const query = setting.croppedPieceImageQuery ? `?${setting.croppedPieceImageQuery}` : "";
+        return setting.croppedPieceImageBaseURL + "/${piece}.png" + query;
       }
   }
-  return "./piece/hitomoji";
+  return "./piece/hitomoji/${piece}.png";
 }

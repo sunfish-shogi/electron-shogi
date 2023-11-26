@@ -45,6 +45,7 @@ export const en: Texts = {
   config: "Config",
   debug: "Debug",
   toggleDevTools: "Toggle Developer Tools",
+  reloadCustomPieceImage: "Reload Custom Piece Image",
   folders: "Folders",
   notificationTest: "Notification Test",
   thisIsTestNotification: "This is test notification.",

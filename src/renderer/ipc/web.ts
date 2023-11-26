@@ -275,7 +275,7 @@ export const webAPI: Bridge = {
   onMenuEvent(): void {
     // Do Nothing
   },
-  onUpdateAppSetting(): void {
+  updateAppSetting(): void {
     // Do Nothing
   },
   onOpenRecord(): void {

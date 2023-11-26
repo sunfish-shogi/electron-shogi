@@ -47,7 +47,7 @@ import {
   Color,
 } from "@/common/shogi";
 import { computed, PropType } from "vue";
-import { RectSize } from "@/common/graphics";
+import { RectSize } from "@/common/assets/geometry";
 
 const fileNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const rankNumbers = ["一", "二", "三", "四", "五", "六", "七", "八", "九"];
@@ -329,3 +329,4 @@ const layout = computed(() => {
   letter-spacing: 0px;
 }
 </style>
+@/common/geometry

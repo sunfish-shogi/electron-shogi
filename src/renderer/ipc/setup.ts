@@ -195,7 +195,7 @@ export function setup(): void {
         break;
     }
   });
-  bridge.onUpdateAppSetting((json: string) => {
+  bridge.updateAppSetting((json: string) => {
     appSetting.updateAppSetting(JSON.parse(json));
   });
   bridge.onOpenRecord((path: string) => {

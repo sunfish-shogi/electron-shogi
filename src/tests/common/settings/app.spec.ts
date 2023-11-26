@@ -1,6 +1,6 @@
 import {
   normalizeAppSetting,
-  getPieceImageBaseURL,
+  getPieceImageURLTemplate,
   defaultAppSetting,
   PieceImageType,
 } from "@/common/settings/app";
@@ -16,40 +16,50 @@ describe("settings/csa", () => {
 
   it("pieceImageBaseURL", () => {
     expect(
-      getPieceImageBaseURL({
+      getPieceImageURLTemplate({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI,
       }),
-    ).toBe("./piece/hitomoji");
+    ).toBe("./piece/hitomoji/${piece}.png");
 
     expect(
-      getPieceImageBaseURL({
+      getPieceImageURLTemplate({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       }),
-    ).toBe("./piece/hitomoji_gothic");
+    ).toBe("./piece/hitomoji_gothic/${piece}.png");
 
     expect(
-      getPieceImageBaseURL({
+      getPieceImageURLTemplate({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI_DARK,
       }),
-    ).toBe("./piece/hitomoji_dark");
+    ).toBe("./piece/hitomoji_dark/${piece}.png");
 
     expect(
-      getPieceImageBaseURL({
+      getPieceImageURLTemplate({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.HITOMOJI_GOTHIC_DARK,
       }),
-    ).toBe("./piece/hitomoji_gothic_dark");
+    ).toBe("./piece/hitomoji_gothic_dark/${piece}.png");
 
     expect(
-      getPieceImageBaseURL({
+      getPieceImageURLTemplate({
         ...defaultAppSetting(),
         pieceImage: PieceImageType.CUSTOM_IMAGE,
         pieceImageFileURL: "/home/user/pictures/piece.png",
         croppedPieceImageBaseURL: "file:///home/user/.cache/piece",
       }),
-    ).toBe("file:///home/user/.cache/piece");
+    ).toBe("file:///home/user/.cache/piece/${piece}.png");
+
+    expect(
+      getPieceImageURLTemplate({
+        ...defaultAppSetting(),
+        pieceImage: PieceImageType.CUSTOM_IMAGE,
+        pieceImageFileURL: "/home/user/pictures/piece.png",
+        croppedPieceImageBaseURL: "file:///home/user/.cache/piece",
+        croppedPieceImageQuery: "updated=12345",
+      }),
+    ).toBe("file:///home/user/.cache/piece/${piece}.png?updated=12345");
   });
 });

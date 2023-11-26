@@ -16,43 +16,12 @@ import {
   Square,
 } from "@/common/shogi";
 import preloadImage from "@/renderer/assets/preload";
-import { RectSize } from "@/common/graphics";
-import { join } from "@/renderer/helpers/path";
+import { RectSize } from "@/common/assets/geometry";
+import { getPieceImageAssetName, pieceAssetTypes } from "@/common/assets/pieces";
 
 type PieceImages = {
-  black: {
-    pawn: string;
-    lance: string;
-    knight: string;
-    silver: string;
-    gold: string;
-    bishop: string;
-    rook: string;
-    king: string;
-    king2: string;
-    promPawn: string;
-    promLance: string;
-    promKnight: string;
-    promSilver: string;
-    horse: string;
-    dragon: string;
-  };
-  white: {
-    pawn: string;
-    lance: string;
-    knight: string;
-    silver: string;
-    gold: string;
-    bishop: string;
-    rook: string;
-    king: string;
-    king2: string;
-    promPawn: string;
-    promLance: string;
-    promKnight: string;
-    promSilver: string;
-    horse: string;
-    dragon: string;
+  [color in Color]: {
+    [pieceType in PieceType | "king2"]: string;
   };
 };
 
@@ -161,43 +130,17 @@ const layoutTemplate = {
   },
 };
 
-function getPieceTextureMap(baseURL: string, kingPieceType: KingPieceType): PieceImages {
+function getPieceTextureMap(template: string, kingPieceType: KingPieceType): PieceImages {
+  const black: { [key: string]: string } = {};
+  const white: { [key: string]: string } = {};
+  for (const type of pieceAssetTypes) {
+    black[type] = template.replaceAll("${piece}", getPieceImageAssetName(Color.BLACK, type));
+    white[type] = template.replaceAll("${piece}", getPieceImageAssetName(Color.WHITE, type));
+  }
   const m = {
-    black: {
-      pawn: join(baseURL, "black_pawn.png"),
-      lance: join(baseURL, "black_lance.png"),
-      knight: join(baseURL, "black_knight.png"),
-      silver: join(baseURL, "black_silver.png"),
-      gold: join(baseURL, "black_gold.png"),
-      bishop: join(baseURL, "black_bishop.png"),
-      rook: join(baseURL, "black_rook.png"),
-      king: join(baseURL, "black_king.png"),
-      king2: join(baseURL, "black_king2.png"),
-      promPawn: join(baseURL, "black_prom_pawn.png"),
-      promLance: join(baseURL, "black_prom_lance.png"),
-      promKnight: join(baseURL, "black_prom_knight.png"),
-      promSilver: join(baseURL, "black_prom_silver.png"),
-      horse: join(baseURL, "black_horse.png"),
-      dragon: join(baseURL, "black_dragon.png"),
-    },
-    white: {
-      pawn: join(baseURL, "white_pawn.png"),
-      lance: join(baseURL, "white_lance.png"),
-      knight: join(baseURL, "white_knight.png"),
-      silver: join(baseURL, "white_silver.png"),
-      gold: join(baseURL, "white_gold.png"),
-      bishop: join(baseURL, "white_bishop.png"),
-      rook: join(baseURL, "white_rook.png"),
-      king: join(baseURL, "white_king.png"),
-      king2: join(baseURL, "white_king2.png"),
-      promPawn: join(baseURL, "white_prom_pawn.png"),
-      promLance: join(baseURL, "white_prom_lance.png"),
-      promKnight: join(baseURL, "white_prom_knight.png"),
-      promSilver: join(baseURL, "white_prom_silver.png"),
-      horse: join(baseURL, "white_horse.png"),
-      dragon: join(baseURL, "white_dragon.png"),
-    },
-  };
+    black,
+    white,
+  } as PieceImages;
   if (kingPieceType === KingPieceType.GYOKU_AND_GYOKU) {
     m.black.king = m.black.king2;
     m.white.king = m.white.king2;
@@ -410,7 +353,7 @@ export type AssetConfig = {
   customBoardImageURL?: string;
   pieceStandImageType: PieceStandImageType;
   customPieceStandImageURL?: string;
-  pieceImageBaseURL: string;
+  pieceImageURLTemplate: string;
   kingPieceType: KingPieceType;
 };
 
@@ -431,7 +374,7 @@ export default class LayoutBuilder {
 
   constructor(private assetConfig: AssetConfig) {
     this.pieceImages = getPieceTextureMap(
-      this.assetConfig.pieceImageBaseURL,
+      this.assetConfig.pieceImageURLTemplate,
       this.assetConfig.kingPieceType,
     );
     this.boardGridImage = getBoardGridURL(this.assetConfig.boardImageType);

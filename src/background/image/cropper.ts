@@ -6,11 +6,13 @@ import { getAppLogger } from "@/background/log";
 import Jimp from "jimp";
 import { imageCacheDir } from "./cache";
 import { exists } from "@/background/helpers/file";
+import { getPieceImageAssetNameByIndex } from "@/common/assets/pieces";
 
 const marginRatio = 0.05;
 
 type PieceImageOptions = {
   deleteMargin?: boolean;
+  overwrite?: boolean;
 };
 
 function getCroppedPieceImageDir(srcURL: string, opt?: PieceImageOptions): string {
@@ -20,19 +22,6 @@ function getCroppedPieceImageDir(srcURL: string, opt?: PieceImageOptions): strin
   }
   return path.join(imageCacheDir, "pieces", md5);
 }
-
-const pieces = ["king", "rook", "bishop", "gold", "silver", "knight", "lance", "pawn"];
-
-const promPieces = [
-  "king2",
-  "dragon",
-  "horse",
-  "",
-  "prom_silver",
-  "prom_knight",
-  "prom_lance",
-  "prom_pawn",
-];
 
 export async function cropPieceImage(srcURL: string, opt?: PieceImageOptions): Promise<string> {
   const srcPath = url.fileURLToPath(srcURL);
@@ -54,39 +43,16 @@ export async function cropPieceImage(srcURL: string, opt?: PieceImageOptions): P
     height = height / 4;
   }
 
-  for (let i = 0; i < 4; i++) {
-    let side = "";
-    switch (i) {
-      case 0:
-      case 1:
-        side = "black";
-        break;
-      case 2:
-      case 3:
-        side = "white";
-        break;
-    }
-    for (let j = 0; j < 8; j++) {
-      if ((i == 1 && j == 3) || (i == 3 && j == 3)) {
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 8; col++) {
+      if ((row == 1 && col == 3) || (row == 3 && col == 3)) {
         continue; // "promoted gold" escape
       }
-
-      let piecesSet: string[] = [];
-      switch (i) {
-        case 0:
-        case 2:
-          piecesSet = pieces;
-          break;
-        case 1:
-        case 3:
-          piecesSet = promPieces;
-          break;
-      }
-      const destName = `${side}_${piecesSet[j]}.png`;
-      if (!(await exists(path.join(destDir, destName)))) {
+      const destName = `${getPieceImageAssetNameByIndex(row, col)}.png`;
+      if (opt?.overwrite || !(await exists(path.join(destDir, destName)))) {
         const image = await Jimp.read(srcPath);
-        let x = j * width;
-        let y = i * height;
+        let x = col * width;
+        let y = row * height;
         let w = width;
         let h = height;
         if (opt?.deleteMargin) {

@@ -57,7 +57,7 @@ import { CSAServerSetting } from "@/common/settings/csa";
 import { isEncryptionAvailable } from "@/background/helpers/encrypt";
 import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
-import { Rect } from "@/common/graphics";
+import { Rect } from "@/common/assets/geometry";
 import { exportCaptureJPEG, exportCapturePNG } from "@/background/image/capture";
 import { cropPieceImage } from "@/background/image/cropper";
 import { getRelativeEnginePath, resolveEnginePath } from "@/background/usi/path";
@@ -135,7 +135,7 @@ ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string
     },
   ]);
   if (ret) {
-    onUpdateAppSetting({ lastRecordFilePath: ret });
+    updateAppSetting({ lastRecordFilePath: ret });
   }
   return ret;
 });
@@ -222,7 +222,7 @@ ipcMain.handle(
       filters,
     );
     if (result) {
-      onUpdateAppSetting({ lastRecordFilePath: result });
+      updateAppSetting({ lastRecordFilePath: result });
     }
     return result;
   },
@@ -252,7 +252,7 @@ ipcMain.handle(Background.SHOW_SELECT_FILE_DIALOG, async (event): Promise<string
   getAppLogger().debug("show select-file dialog");
   const ret = await showOpenDialog(["openFile"], appSetting.lastOtherFilePath);
   if (ret) {
-    onUpdateAppSetting({ lastOtherFilePath: ret });
+    updateAppSetting({ lastOtherFilePath: ret });
   }
   return ret;
 });
@@ -470,7 +470,7 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, async (event): Promise<
     return "";
   }
   const enginePath = getRelativeEnginePath(ret);
-  onUpdateAppSetting({
+  updateAppSetting({
     lastUSIEngineFilePath: enginePath,
   });
   return enginePath;
@@ -651,7 +651,7 @@ export function onMenuEvent(event: MenuEvent, ...args: any[]): void {
   mainWindow.webContents.send(Renderer.MENU_EVENT, event, ...args);
 }
 
-export function onUpdateAppSetting(setting: AppSettingUpdate): void {
+export function updateAppSetting(setting: AppSettingUpdate): void {
   mainWindow.webContents.send(Renderer.UPDATE_APP_SETTING, JSON.stringify(setting));
 }
 

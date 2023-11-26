@@ -16,7 +16,7 @@
 import { useStore } from "@/renderer/store";
 import { computed } from "vue";
 import EngineAnalyticsElement from "@/renderer/view/tab/EngineAnalyticsElement.vue";
-import { RectSize } from "@/common/graphics.js";
+import { RectSize } from "@/common/assets/geometry.js";
 
 const props = defineProps({
   size: {
@@ -35,3 +35,4 @@ const elementHeight = computed(() => {
   return rows !== 0 ? props.size.height / rows : 0;
 });
 </script>
+@/common/geometry.js

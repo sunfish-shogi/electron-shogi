@@ -4,7 +4,7 @@
       :board-image-type="appSetting.boardImage"
       :piece-stand-image-type="appSetting.pieceStandImage"
       :board-label-type="appSetting.boardLabelType"
-      :piece-image-base-url="getPieceImageBaseURL(appSetting)"
+      :piece-image-url-template="getPieceImageURLTemplate(appSetting)"
       :king-piece-type="appSetting.kingPieceType"
       :custom-board-image-url="appSetting.boardImageFileURL"
       :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
@@ -200,7 +200,7 @@ import { t } from "@/common/i18n";
 import { computed, onUpdated, onBeforeUpdate, ref, onMounted, onBeforeUnmount } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import { Move, PositionChange } from "@/common/shogi";
-import { RectSize } from "@/common/graphics.js";
+import { RectSize } from "@/common/assets/geometry.js";
 import { useStore } from "@/renderer/store";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { AppState } from "@/common/control/state.js";
@@ -218,7 +218,7 @@ import { useAppSetting } from "@/renderer/store/setting";
 import {
   RightSideControlType,
   LeftSideControlType,
-  getPieceImageBaseURL,
+  getPieceImageURLTemplate,
 } from "@/common/settings/app";
 import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 
@@ -427,3 +427,4 @@ const controlStates = computed(() => {
   height: 68%;
 }
 </style>
+@/common/geometry.js

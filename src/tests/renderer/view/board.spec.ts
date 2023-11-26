@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import { Position } from "@/common/shogi";
-import { RectSize } from "@/common/graphics";
+import { RectSize } from "@/common/assets/geometry";
 import {
   BoardImageType,
   BoardLabelType,
@@ -16,7 +16,7 @@ describe("BoardView", () => {
       props: {
         boardImageType: BoardImageType.LIGHT,
         pieceStandImageType: PieceStandImageType.STANDARD,
-        pieceImageBaseUrl: "./piece/hitomoji",
+        pieceImageUrlTemplate: "./piece/hitomoji/${piece}.png",
         kingPieceType: KingPieceType.GYOKU_AND_OSHO,
         boardLabelType: BoardLabelType.STANDARD,
         maxSize: new RectSize(800, 600),

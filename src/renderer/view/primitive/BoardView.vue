@@ -133,7 +133,7 @@ import {
   KingPieceType,
   PieceStandImageType,
 } from "@/common/settings/app";
-import { RectSize } from "@/common/graphics";
+import { RectSize } from "@/common/assets/geometry";
 import { secondsToHHMMSS } from "@/common/helpers/time";
 import LayoutBuilder from "./BoardLayout";
 
@@ -147,7 +147,7 @@ const props = defineProps({
     type: String as PropType<BoardImageType>,
     required: true,
   },
-  pieceImageBaseUrl: {
+  pieceImageUrlTemplate: {
     type: String,
     required: true,
   },
@@ -387,7 +387,7 @@ const layoutBuilder = computed(() => {
     customBoardImageURL: props.customBoardImageUrl,
     pieceStandImageType: props.pieceStandImageType,
     customPieceStandImageURL: props.customPieceStandImageUrl,
-    pieceImageBaseURL: props.pieceImageBaseUrl,
+    pieceImageURLTemplate: props.pieceImageUrlTemplate,
     kingPieceType: props.kingPieceType,
   });
   builder.preload();
@@ -524,3 +524,4 @@ const whitePlayerTimeSeverity = computed(() => {
   max-height: 100%;
 }
 </style>
+@/common/geometry

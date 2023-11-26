@@ -14,7 +14,7 @@ export enum EvaluationChartType {
 </script>
 
 <script setup lang="ts">
-import { RectSize } from "@/common/graphics.js";
+import { RectSize } from "@/common/assets/geometry.js";
 import { useStore } from "@/renderer/store";
 import { RecordCustomData, SearchInfo } from "@/renderer/store/record";
 import { computed, onMounted, onUnmounted, PropType, ref, watch } from "vue";
@@ -340,3 +340,4 @@ const style = computed(() => {
   background-color: var(--chart-bg-color);
 }
 </style>
+@/common/geometry.js

@@ -85,7 +85,7 @@ import { reactive, onMounted, onUnmounted, computed, ref } from "vue";
 import BoardPane from "./BoardPane.vue";
 import RecordPane, { minWidth as minRecordWidth } from "./RecordPane.vue";
 import TabPane, { headerHeight as tabHeaderHeight } from "./TabPane.vue";
-import { RectSize } from "@/common/graphics";
+import { RectSize } from "@/common/assets/geometry";
 import { AppSettingUpdate, Tab, TabPaneType } from "@/common/settings/app";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
@@ -266,3 +266,4 @@ const tabPaneSize2 = computed(() => {
   padding: 0 5% 0 5%;
 }
 </style>
+@/common/geometry

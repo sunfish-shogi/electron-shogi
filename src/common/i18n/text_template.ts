@@ -42,6 +42,7 @@ export type Texts = {
   config: string;
   debug: string;
   toggleDevTools: string;
+  reloadCustomPieceImage: string;
   folders: string;
   notificationTest: string;
   thisIsTestNotification: string;

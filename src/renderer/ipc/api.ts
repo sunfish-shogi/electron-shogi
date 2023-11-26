@@ -10,7 +10,7 @@ import { AnalysisSetting } from "@/common/settings/analysis";
 import { LogLevel, LogType } from "@/common/log";
 import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 import { CSAGameSettingHistory, CSAServerSetting } from "@/common/settings/csa";
-import { Rect } from "@/common/graphics";
+import { Rect } from "@/common/assets/geometry";
 import { MateSearchSetting } from "@/common/settings/mate";
 import { BatchConversionSetting } from "@/common/settings/conversion";
 import { BatchConversionResult } from "@/common/file/conversion";
@@ -97,7 +97,7 @@ export interface Bridge {
   onClose(callback: () => void): void;
   onSendError(callback: (e: Error) => void): void;
   onMenuEvent(callback: (event: MenuEvent) => void): void;
-  onUpdateAppSetting(callback: (json: string) => void): void;
+  updateAppSetting(callback: (json: string) => void): void;
   onOpenRecord(callback: (path: string) => void): void;
   onUSIBestMove(
     callback: (sessionID: number, usi: string, usiMove: string, ponder?: string) => void,

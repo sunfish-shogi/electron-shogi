@@ -44,6 +44,7 @@ export const ja: Texts = {
   config: "設定",
   debug: "デバッグ",
   toggleDevTools: "開発者ツール表示切り替え",
+  reloadCustomPieceImage: "カスタム駒画像をリロード",
   folders: "各種フォルダ",
   notificationTest: "通知テスト",
   thisIsTestNotification: "これは通知のテストです。",

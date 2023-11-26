@@ -7,7 +7,7 @@ import {
   USIPonder,
 } from "@/common/settings/usi";
 import { Logger } from "log4js";
-import { SCORE_MATE_INFINITE, USIInfoCommand } from "@/common/usi";
+import { SCORE_MATE_INFINITE, USIInfoCommand } from "@/common/game/usi";
 import { ChildProcess } from "./process";
 
 export type EngineProcessOption = {

@@ -3,7 +3,7 @@ import { shell } from "electron";
 import log4js from "log4js";
 import { loadAppSettingOnce } from "@/background/settings";
 import { getDateTimeString } from "@/common/helpers/datetime";
-import { getAppPath, isTest } from "./environment";
+import { getAppPath, isTest } from "./proc/env";
 import { AppSetting } from "@/common/settings/app";
 import { LogType } from "@/common/log";
 

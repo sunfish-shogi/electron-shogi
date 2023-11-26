@@ -83,7 +83,7 @@ import { RectSize } from "@/common/graphics.js";
 import { computed } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { IconType } from "@/renderer/assets/icons";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { EvaluationViewFrom, getPieceImageBaseURL } from "@/common/settings/app";
 import { t } from "@/common/i18n";

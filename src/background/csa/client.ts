@@ -12,7 +12,7 @@ import {
   emptyCSAPlayerStates,
   CSAGameResult,
   CSASpecialMove,
-} from "@/common/csa";
+} from "@/common/game/csa";
 import { CSAProtocolVersion, CSAServerSetting } from "@/common/settings/csa";
 import { Socket } from "./socket";
 import { Logger } from "log4js";

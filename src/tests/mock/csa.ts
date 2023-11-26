@@ -1,4 +1,4 @@
-import { CSAGameSummary } from "@/common/csa";
+import { CSAGameSummary } from "@/common/game/csa";
 import {
   CSAGameSetting,
   CSAGameSettingHistory,

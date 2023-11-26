@@ -3,7 +3,7 @@ import api, { API } from "@/renderer/ipc/api";
 import { Move } from "@/common/shogi";
 import { createStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
-import * as audio from "@/renderer/audio";
+import * as audio from "@/renderer/devices/audio";
 import { gameSetting10m30s } from "@/tests/mock/game";
 import { GameManager } from "@/renderer/store/game";
 import { AppState } from "@/common/control/state";
@@ -20,7 +20,7 @@ import { CSAGameManager } from "@/renderer/store/csa";
 import { convert } from "encoding-japanese";
 import { Mocked, MockedClass } from "vitest";
 
-vi.mock("@/renderer/audio");
+vi.mock("@/renderer/devices/audio");
 vi.mock("@/renderer/ipc/api");
 vi.mock("@/renderer/store/game");
 vi.mock("@/renderer/store/csa");

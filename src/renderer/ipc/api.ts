@@ -5,17 +5,17 @@ import { MenuEvent } from "@/common/control/menu";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/common/settings/research";
 import { AppState } from "@/common/control/state";
-import { GameResult } from "@/common/player";
+import { GameResult } from "@/common/game/result";
 import { AnalysisSetting } from "@/common/settings/analysis";
 import { LogLevel, LogType } from "@/common/log";
-import { CSAGameResult, CSASpecialMove } from "@/common/csa";
+import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 import { CSAGameSettingHistory, CSAServerSetting } from "@/common/settings/csa";
 import { Rect } from "@/common/graphics";
 import { MateSearchSetting } from "@/common/settings/mate";
 import { BatchConversionSetting } from "@/common/settings/conversion";
-import { BatchConversionResult } from "@/common/conversion";
-import { RecordFileHistory } from "@/common/history";
-import { InitialRecordFileRequest } from "@/common/file";
+import { BatchConversionResult } from "@/common/file/conversion";
+import { RecordFileHistory } from "@/common/file/history";
+import { InitialRecordFileRequest } from "@/common/file/record";
 
 type AppInfo = {
   appVersion?: string;

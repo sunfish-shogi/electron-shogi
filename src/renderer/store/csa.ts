@@ -5,7 +5,7 @@ import {
   CSAPlayerStates,
   CSASpecialMove,
   emptyCSAGameSummary,
-} from "@/common/csa";
+} from "@/common/game/csa";
 import { defaultPlayerBuilder, PlayerBuilder } from "@/renderer/players/builder";
 import { Player, SearchInfo } from "@/renderer/players/player";
 import { CSAGameSetting, CSAProtocolVersion, defaultCSAGameSetting } from "@/common/settings/csa";
@@ -22,7 +22,7 @@ import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { t } from "@/common/i18n";
-import { GameResult } from "@/common/player";
+import { GameResult } from "@/common/game/result";
 
 export const loginRetryIntervalSeconds = 10;
 

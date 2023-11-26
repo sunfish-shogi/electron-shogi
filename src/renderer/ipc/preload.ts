@@ -1,11 +1,11 @@
 import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
-import { GameResult } from "@/common/player";
+import { GameResult } from "@/common/game/result";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import { Bridge } from "./api";
 import { LogType, LogLevel } from "@/common/log";
-import { CSAGameResult, CSASpecialMove } from "@/common/csa";
+import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 
 const api: Bridge = {
   // NOTICE:

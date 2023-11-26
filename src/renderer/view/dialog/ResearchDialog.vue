@@ -86,7 +86,7 @@ import { USIEngineLabel, USIEngineSettings } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { readInputAsNumber } from "@/renderer/helpers/form";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";

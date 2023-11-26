@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console,no-restricted-imports */
 import fs from "node:fs";
 import { Releases } from "../src/background/version/types";
 

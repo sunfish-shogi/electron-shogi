@@ -1,5 +1,5 @@
 import { safeStorage } from "electron";
-import { getAppLogger } from "./log";
+import { getAppLogger } from "@/background/log";
 
 export function isEncryptionAvailable(): boolean {
   return safeStorage.isEncryptionAvailable();

@@ -1,5 +1,5 @@
 import { BrowserWindow, dialog } from "electron";
-import { getWebContents, onUpdateAppSetting } from "@/background/ipc";
+import { getWebContents, onUpdateAppSetting } from "@/background/window/ipc";
 import fs from "node:fs";
 import path from "node:path";
 import { Rect } from "@/common/graphics";

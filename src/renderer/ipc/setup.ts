@@ -13,7 +13,7 @@ import {
 import { humanPlayer } from "@/renderer/players/human";
 import { bridge } from "./api";
 import { MenuEvent } from "@/common/control/menu";
-import { USIInfoCommand } from "@/common/usi";
+import { USIInfoCommand } from "@/common/game/usi";
 import { AppState } from "@/common/control/state";
 import {
   onCSAClose,

@@ -190,7 +190,7 @@ import { filter as filterString } from "@/common/helpers/string";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import {
   emptyUSIEngineSetting,
   getUSIEngineOptionCurrentValue,

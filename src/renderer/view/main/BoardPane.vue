@@ -213,7 +213,7 @@ import { CSAGameState } from "@/renderer/store/csa";
 import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
-} from "@/renderer/keyboard/hotkey";
+} from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import {
   RightSideControlType,

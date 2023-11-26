@@ -1,4 +1,4 @@
-import { GameResult } from "@/common/player";
+import { GameResult } from "@/common/game/result";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { ImmutableRecord, Move } from "@/common/shogi";
 

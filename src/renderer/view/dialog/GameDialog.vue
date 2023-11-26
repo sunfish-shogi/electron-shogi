@@ -234,7 +234,7 @@ import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { PlayerSetting } from "@/common/settings/player";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { InitialPositionType } from "@/common/shogi";
 

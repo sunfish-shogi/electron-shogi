@@ -7,7 +7,7 @@ import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { Clock } from "./clock";
 import { defaultPlayerBuilder, PlayerBuilder } from "@/renderer/players/builder";
-import { GameResult } from "@/common/player";
+import { GameResult } from "@/common/game/result";
 import { t } from "@/common/i18n";
 
 enum GameState {

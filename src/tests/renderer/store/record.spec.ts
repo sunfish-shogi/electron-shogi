@@ -11,7 +11,7 @@ import {
   formatPV,
   specialMove,
 } from "@/common/shogi";
-import { SCORE_MATE_INFINITE } from "@/common/usi";
+import { SCORE_MATE_INFINITE } from "@/common/game/usi";
 import { RecordManager, SearchInfoSenderType } from "@/renderer/store/record";
 
 describe("store/record", () => {

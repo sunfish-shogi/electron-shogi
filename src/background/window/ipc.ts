@@ -22,9 +22,9 @@ import {
   saveUSIEngineSetting,
 } from "@/background/settings";
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
-import { setupMenu, updateAppState } from "@/background/menu";
+import { setupMenu, updateAppState } from "@/background/window/menu";
 import { MenuEvent } from "@/common/control/menu";
-import { USIInfoCommand } from "@/common/usi";
+import { USIInfoCommand } from "@/common/game/usi";
 import { AppState } from "@/common/control/state";
 import {
   gameover as usiGameover,
@@ -40,9 +40,9 @@ import {
   ready as usiReady,
   stop as usiStop,
 } from "@/background/usi";
-import { GameResult } from "@/common/player";
+import { GameResult } from "@/common/game/result";
 import { LogLevel, LogType } from "@/common/log";
-import { getAppLogger, openLogFile } from "./log";
+import { getAppLogger, openLogFile } from "@/background/log";
 import {
   login as csaLogin,
   logout as csaLogout,
@@ -51,24 +51,30 @@ import {
   resign as csaResign,
   win as csaWin,
   stop as csaStop,
-} from "./csa";
-import { CSAGameResult, CSAGameSummary, CSAPlayerStates, CSASpecialMove } from "@/common/csa";
+} from "@/background/csa";
+import { CSAGameResult, CSAGameSummary, CSAPlayerStates, CSASpecialMove } from "@/common/game/csa";
 import { CSAServerSetting } from "@/common/settings/csa";
-import { isEncryptionAvailable } from "./encrypt";
+import { isEncryptionAvailable } from "@/background/helpers/encrypt";
 import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
 import { Rect } from "@/common/graphics";
-import { exportCaptureJPEG, exportCapturePNG } from "./image/capture";
-import { cropPieceImage } from "./image/cropper";
-import { getRelativePath, resolvePath } from "./path";
-import { fileURLToPath } from "./helpers/url";
+import { exportCaptureJPEG, exportCapturePNG } from "@/background/image/capture";
+import { cropPieceImage } from "@/background/image/cropper";
+import { getRelativeEnginePath, resolveEnginePath } from "@/background/usi/path";
+import { fileURLToPath } from "@/background/helpers/url";
 import { AppSettingUpdate } from "@/common/settings/app";
-import { convertRecordFiles } from "./conversion";
+import { convertRecordFiles } from "@/background/file/conversion";
 import { BatchConversionSetting } from "@/common/settings/conversion";
-import { addHistory, clearHistory, getHistory, loadBackup, saveBackup } from "./history";
-import { getAppPath } from "./environment";
-import { fetchInitialRecordFileRequest } from "./args";
-import { isSupportedRecordFilePath } from "./extensions";
+import {
+  addHistory,
+  clearHistory,
+  getHistory,
+  loadBackup,
+  saveBackup,
+} from "@/background/file/history";
+import { getAppPath } from "@/background/proc/env";
+import { fetchInitialRecordFileRequest } from "@/background/proc/args";
+import { isSupportedRecordFilePath } from "@/background/file/extensions";
 
 const isWindows = process.platform === "win32";
 
@@ -106,7 +112,7 @@ ipcMain.on(Background.UPDATE_APP_STATE, (_, state: AppState, bussy: boolean) => 
 
 ipcMain.on(Background.OPEN_EXPLORER, async (_, targetPath: string) => {
   try {
-    const fullPath = resolvePath(targetPath);
+    const fullPath = resolveEnginePath(targetPath);
     const stats = await fs.stat(fullPath);
     if (stats.isDirectory()) {
       shell.openPath(fullPath);
@@ -463,7 +469,7 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, async (event): Promise<
   if (ret === "") {
     return "";
   }
-  const enginePath = getRelativePath(ret);
+  const enginePath = getRelativeEnginePath(ret);
   onUpdateAppSetting({
     lastUSIEngineFilePath: enginePath,
   });

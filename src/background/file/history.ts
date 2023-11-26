@@ -1,13 +1,13 @@
 import path from "node:path";
 import { promises as fs } from "node:fs";
-import { getAppPath } from "./environment";
+import { getAppPath } from "@/background/proc/env";
 import {
   HistoryClass,
   RecordFileHistory,
   RecordFileHistoryEntry,
   getEmptyHistory,
-} from "@/common/history";
-import { getAppLogger } from "./log";
+} from "@/common/file/history";
+import { getAppLogger } from "@/background/log";
 import AsyncLock from "async-lock";
 import { shell } from "electron";
 

@@ -1,5 +1,5 @@
-import { convertRecordFiles } from "@/background/conversion";
-import { RecordFileFormat } from "@/common/file";
+import { convertRecordFiles } from "@/background/file/conversion";
+import { RecordFileFormat } from "@/common/file/record";
 import {
   DestinationType,
   FileNameConflictAction,
@@ -10,7 +10,7 @@ import path from "node:path";
 import { listFiles } from "@/background/helpers/file";
 import { defaultAppSetting } from "@/common/settings/app";
 import { saveAppSetting } from "@/background/settings";
-import { getTempPathForTesting } from "@/background/environment";
+import { getTempPathForTesting } from "@/background/proc/env";
 
 const tmpdir = path.join(getTempPathForTesting(), "conversion");
 

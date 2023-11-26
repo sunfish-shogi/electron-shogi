@@ -721,11 +721,11 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api, { isNative } from "@/renderer/ipc/api";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/keyboard/hotkey";
+import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
-import { RecordFileFormat } from "@/common/file";
+import { RecordFileFormat } from "@/common/file/record";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 

@@ -2,15 +2,15 @@ import path from "node:path";
 import { app, Menu, MenuItem, MenuItemConstructorOptions, Notification, shell } from "electron";
 import { openAutoSaveDirectory, openSettingsDirectory } from "@/background/settings";
 import { openLogsDirectory } from "@/background/log";
-import { getWebContents, onMenuEvent } from "@/background/ipc";
+import { getWebContents, onMenuEvent } from "@/background/window/ipc";
 import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
 import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
 import { t } from "@/common/i18n";
 import { InitialPositionSFEN } from "@/common/shogi";
-import { getAppPath } from "./environment";
-import { openBackupDirectory } from "./history";
-import { openCacheDirectory } from "./image/cache";
+import { getAppPath } from "@/background/proc/env";
+import { openBackupDirectory } from "@/background/file/history";
+import { openCacheDirectory } from "@/background/image/cache";
 
 const isMac = process.platform === "darwin";
 

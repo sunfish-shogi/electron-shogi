@@ -92,10 +92,10 @@ function getScore(
     searchInfo.score !== undefined
       ? searchInfo.score
       : searchInfo.mate !== undefined
-      ? searchInfo.mate > 0
-        ? MATE_SCORE
-        : -MATE_SCORE
-      : undefined;
+        ? searchInfo.mate > 0
+          ? MATE_SCORE
+          : -MATE_SCORE
+        : undefined;
   if (score === undefined) {
     return;
   }

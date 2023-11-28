@@ -231,8 +231,8 @@ const header = computed(() => {
     (lastMove
       ? `${record.current.ply}手目 ${formatMove(record.position, lastMove)}まで`
       : record.current.nextColor === Color.BLACK
-      ? "先手番"
-      : "後手番")
+        ? "先手番"
+        : "後手番")
   );
 });
 

@@ -39,8 +39,8 @@ function menuItem(
     item.enabled = bussy
       ? false
       : !appStates || appStates.length === 0
-      ? true
-      : !!appStates.find((value) => value === appState);
+        ? true
+        : !!appStates.find((value) => value === appState);
   });
   return {
     id,

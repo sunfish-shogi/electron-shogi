@@ -72,8 +72,8 @@
               iteration.scoreMate !== undefined
                 ? getDisplayScore(iteration.scoreMate, iteration.color, evaluationViewFrom)
                 : iteration.score !== undefined
-                ? getDisplayScore(iteration.score, iteration.color, evaluationViewFrom)
-                : ""
+                  ? getDisplayScore(iteration.score, iteration.color, evaluationViewFrom)
+                  : ""
             }}
           </div>
           <div class="list-column score-flag">

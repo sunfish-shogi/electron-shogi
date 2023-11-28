@@ -186,8 +186,8 @@ async function showSaveDialog(
     return defaultPath.endsWith("." + lhs.extensions[0])
       ? -1
       : defaultPath.endsWith("." + rhs.extensions[0])
-      ? 1
-      : 0;
+        ? 1
+        : 0;
   });
   getAppLogger().debug("show save dialog");
   const ret = await dialog.showSaveDialog(win, {

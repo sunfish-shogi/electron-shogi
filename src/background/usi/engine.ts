@@ -495,8 +495,8 @@ export class EngineProcess {
     this.state = this.reservedGoCommand.ponder
       ? State.Ponder
       : this.reservedGoCommand.mate
-      ? State.WaitingForCheckmate
-      : State.WaitingForBestMove;
+        ? State.WaitingForCheckmate
+        : State.WaitingForBestMove;
     this.reservedGoCommand = undefined;
   }
 

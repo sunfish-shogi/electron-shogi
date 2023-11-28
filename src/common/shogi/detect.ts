@@ -44,6 +44,6 @@ export function detectRecordFormat(data: string): RecordFormatType {
   return evalKIF >= evalCSA && evalKIF >= evalKI2
     ? RecordFormatType.KIF
     : evalKI2 >= evalCSA
-    ? RecordFormatType.KI2
-    : RecordFormatType.CSA;
+      ? RecordFormatType.KI2
+      : RecordFormatType.CSA;
 }

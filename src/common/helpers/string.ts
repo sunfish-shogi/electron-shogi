@@ -10,8 +10,8 @@ export function toString(data: unknown): string {
   return data instanceof Error
     ? data.message
     : data instanceof Object
-    ? JSON.stringify(data)
-    : String(data);
+      ? JSON.stringify(data)
+      : String(data);
 }
 
 export function formatPercentage(

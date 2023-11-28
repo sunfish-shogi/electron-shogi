@@ -351,8 +351,8 @@ const ok = () => {
       engine.value.options[option.name].value = !elem.value
         ? undefined
         : option.type === "spin"
-        ? readInputAsNumber(elem as HTMLInputElement)
-        : elem.value;
+          ? readInputAsNumber(elem as HTMLInputElement)
+          : elem.value;
     }
   }
   emit("ok", engine.value);

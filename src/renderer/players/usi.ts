@@ -233,8 +233,8 @@ export class USIPlayer implements Player {
       infoCommand.pv && infoCommand.pv.length >= 1
         ? infoCommand.pv
         : infoCommand.currmove
-        ? [infoCommand.currmove]
-        : undefined;
+          ? [infoCommand.currmove]
+          : undefined;
     const info = {
       usi: usi,
       depth: infoCommand.depth,

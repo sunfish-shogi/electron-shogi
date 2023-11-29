@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import archiver from "archiver";
 import fs from "node:fs";
 

@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { getRecordMetadataName, t } from "@/common/i18n";
-import { RecordMetadataKey } from "@/common/shogi";
+import { RecordMetadataKey } from "electron-shogi-core";
 import { useStore } from "@/renderer/store";
 import { computed, onMounted, ref } from "vue";
 import { RectSize } from "@/common/assets/geometry.js";

@@ -125,7 +125,8 @@ import {
   Move,
   ImmutablePosition,
   PositionChange,
-} from "@/common/shogi";
+  secondsToHHMMSS,
+} from "electron-shogi-core";
 import { computed, reactive, watch, PropType } from "vue";
 import {
   BoardImageType,
@@ -134,7 +135,6 @@ import {
   PieceStandImageType,
 } from "@/common/settings/app";
 import { RectSize } from "@/common/assets/geometry";
-import { secondsToHHMMSS } from "@/common/helpers/time";
 import LayoutBuilder from "./BoardLayout";
 
 type State = {

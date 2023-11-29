@@ -1,4 +1,4 @@
-import { ImmutablePosition, Move } from "@/common/shogi";
+import { ImmutablePosition, Move } from "electron-shogi-core";
 
 // SCORE_MATE_INFINITE は詰みを発見したが手数までは確定していない場合に使用する値です。
 export const SCORE_MATE_INFINITE = 10000;

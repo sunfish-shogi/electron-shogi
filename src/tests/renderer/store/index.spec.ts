@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import api, { API } from "@/renderer/ipc/api";
-import { Move } from "@/common/shogi";
+import { Move } from "electron-shogi-core";
 import { createStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
 import * as audio from "@/renderer/devices/audio";

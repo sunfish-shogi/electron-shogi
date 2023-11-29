@@ -1,6 +1,6 @@
 import { GameResult } from "@/common/game/result";
 import { TimeLimitSetting } from "@/common/settings/game";
-import { ImmutableRecord, Move } from "@/common/shogi";
+import { ImmutableRecord, Move } from "electron-shogi-core";
 
 export type SearchInfo = {
   usi: string; // 局面

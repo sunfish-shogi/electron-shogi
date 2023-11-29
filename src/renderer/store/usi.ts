@@ -1,6 +1,5 @@
 import { USIInfoCommand } from "@/common/game/usi";
-import { ImmutablePosition, Move, Position, formatMove } from "@/common/shogi";
-import { Color } from "@/common/shogi";
+import { Color, ImmutablePosition, Move, Position, formatMove } from "electron-shogi-core";
 
 export type USIIteration = {
   id: number;

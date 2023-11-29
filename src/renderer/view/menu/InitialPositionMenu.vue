@@ -74,7 +74,7 @@ import { onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
-import { InitialPositionSFEN } from "@/common/shogi";
+import { InitialPositionSFEN } from "electron-shogi-core";
 
 const emit = defineEmits<{
   close: [];

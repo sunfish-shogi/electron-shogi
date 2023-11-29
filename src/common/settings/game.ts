@@ -1,4 +1,4 @@
-import { InitialPositionType } from "@/common/shogi";
+import { InitialPositionType } from "electron-shogi-core";
 import { PlayerSetting, defaultPlayerSetting } from "./player";
 import { t } from "@/common/i18n";
 

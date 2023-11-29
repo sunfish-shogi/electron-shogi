@@ -2,7 +2,7 @@ import { LogLevel } from "@/common/log";
 import api from "@/renderer/ipc/api";
 import { Player, SearchInfo } from "@/renderer/players/player";
 import { defaultGameSetting, GameSetting } from "@/common/settings/game";
-import { Color, formatMove, Move, reverseColor, SpecialMoveType } from "@/common/shogi";
+import { Color, formatMove, Move, reverseColor, SpecialMoveType } from "electron-shogi-core";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { Clock } from "./clock";

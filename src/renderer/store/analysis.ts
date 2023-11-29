@@ -3,7 +3,7 @@ import { USIPlayer } from "@/renderer/players/usi";
 import { AnalysisSetting, defaultAnalysisSetting } from "@/common/settings/analysis";
 import { AppSetting } from "@/common/settings/app";
 import { USIEngineSetting } from "@/common/settings/usi";
-import { Color, Move, reverseColor } from "@/common/shogi";
+import { Color, Move, reverseColor } from "electron-shogi-core";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { scoreToPercentage } from "./score";
 import { useAppSetting } from "./setting";

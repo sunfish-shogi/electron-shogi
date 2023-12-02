@@ -1,7 +1,7 @@
 import { Client } from "@/background/csa/client";
 import { Socket } from "@/background/csa/socket";
 import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
-import { Color } from "@/common/shogi";
+import { Color } from "electron-shogi-core";
 import * as log4js from "log4js";
 import { csaServerSetting } from "@/tests/mock/csa";
 import { MockedClass } from "vitest";

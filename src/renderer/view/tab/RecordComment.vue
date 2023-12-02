@@ -43,7 +43,7 @@ import { AppState } from "@/common/control/state.js";
 import { computed, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
-import { Move } from "@/common/shogi";
+import { Move } from "electron-shogi-core";
 import BookmarkListDialog from "@/renderer/view/dialog/BookmarkListDialog.vue";
 
 const store = useStore();

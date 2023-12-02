@@ -1,7 +1,7 @@
 import { getDateString, getDateTimeString } from "@/common/helpers/datetime";
-import { secondsToMSS } from "@/common/helpers/time";
 import { TimeLimitSetting } from "@/common/settings/game";
 import {
+  secondsToMSS,
   detectRecordFormat,
   DoMoveOption,
   exportKIF,
@@ -24,7 +24,8 @@ import {
   reverseColor,
   SpecialMove,
   SpecialMoveType,
-} from "@/common/shogi";
+  importJKFString,
+} from "electron-shogi-core";
 import { getSituationText } from "./score";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { t } from "@/common/i18n";
@@ -37,7 +38,6 @@ import {
   importRecordFromBuffer,
 } from "@/common/file/record";
 import { SCORE_MATE_INFINITE } from "@/common/game/usi";
-import { importJKFString } from "@/common/shogi/jkf";
 import api from "@/renderer/ipc/api";
 import { useAppSetting } from "./setting";
 import { LogLevel } from "@/common/log";

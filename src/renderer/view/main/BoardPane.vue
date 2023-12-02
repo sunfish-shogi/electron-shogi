@@ -199,7 +199,7 @@
 import { t } from "@/common/i18n";
 import { computed, onUpdated, onBeforeUpdate, ref, onMounted, onBeforeUnmount } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
-import { Move, PositionChange } from "@/common/shogi";
+import { Move, PositionChange, getBlackPlayerName, getWhitePlayerName } from "electron-shogi-core";
 import { RectSize } from "@/common/assets/geometry.js";
 import { useStore } from "@/renderer/store";
 import Icon from "@/renderer/view/primitive/Icon.vue";
@@ -220,7 +220,6 @@ import {
   LeftSideControlType,
   getPieceImageURLTemplate,
 } from "@/common/settings/app";
-import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 
 defineProps({
   maxSize: {

@@ -31,6 +31,7 @@
     "async-lock": "^1.4.0",
     "chart.js": "^4.0.1",
     "dayjs": "^1.11.9",
+    "electron-shogi-core": "^0.1.1",
     "encoding-japanese": "^2.0.0",
     "jimp": "^0.22.7",
     "log4js": "^6.7.0",

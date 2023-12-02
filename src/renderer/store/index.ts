@@ -14,7 +14,8 @@ import {
   SpecialMoveType,
   exportKI2,
   RecordFormatType,
-} from "@/common/shogi";
+  exportJKFString,
+} from "electron-shogi-core";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
 import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";
@@ -45,7 +46,6 @@ import { SearchInfo } from "@/renderer/players/player";
 import { useAppSetting } from "./setting";
 import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
-import { exportJKFString } from "@/common/shogi/jkf";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
 import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file/record";
 

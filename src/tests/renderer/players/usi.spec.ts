@@ -1,6 +1,6 @@
 import api, { API } from "@/renderer/ipc/api";
 import { onUSIBestMove, onUSIInfo, USIPlayer } from "@/renderer/players/usi";
-import { Record } from "@/common/shogi";
+import { Record } from "electron-shogi-core";
 import { timeLimitSetting } from "@/tests/mock/game";
 import { usiEngineSettingWithPonder } from "@/tests/mock/usi";
 import { Mocked } from "vitest";

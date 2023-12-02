@@ -1,4 +1,4 @@
-import { Color } from "@/common/shogi";
+import { Color } from "electron-shogi-core";
 
 export type CSAGameSummary = {
   id: string;

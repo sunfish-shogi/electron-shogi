@@ -5,7 +5,7 @@ import {
   CSAProtocolVersion,
   CSAServerSetting,
 } from "@/common/settings/csa";
-import { Color } from "@/common/shogi";
+import { Color } from "electron-shogi-core";
 
 export const playerURI = "es://usi/test-engine";
 

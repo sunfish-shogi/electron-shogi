@@ -2,7 +2,7 @@ import api from "@/renderer/ipc/api";
 import { parseUSIPV, USIInfoCommand } from "@/common/game/usi";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { getUSIEngineOptionCurrentValue, USIEngineSetting, USIPonder } from "@/common/settings/usi";
-import { Color, ImmutableRecord, Move, Position } from "@/common/shogi";
+import { Color, ImmutableRecord, Move, Position } from "electron-shogi-core";
 import { Player, SearchInfo, SearchHandler, MateHandler } from "./player";
 import { GameResult } from "@/common/game/result";
 import { useStore } from "@/renderer/store";

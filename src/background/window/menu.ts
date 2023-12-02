@@ -7,7 +7,7 @@ import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
 import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
 import { t } from "@/common/i18n";
-import { InitialPositionSFEN } from "@/common/shogi";
+import { InitialPositionSFEN } from "electron-shogi-core";
 import { getAppPath } from "@/background/proc/env";
 import { openBackupDirectory } from "@/background/file/history";
 import { openCacheDirectory } from "@/background/image/cache";

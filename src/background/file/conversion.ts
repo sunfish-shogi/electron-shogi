@@ -22,7 +22,7 @@ import {
   InitialPositionSFEN,
   Move,
   SpecialMoveType,
-} from "@/common/shogi";
+} from "electron-shogi-core";
 
 async function getAlternativeFilePathWithNumberSuffix(
   filePath: string,

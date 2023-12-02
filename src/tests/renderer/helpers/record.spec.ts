@@ -1,5 +1,5 @@
 import { RecordFileFormat } from "@/common/file/record";
-import { Record, SpecialMoveType } from "@/common/shogi";
+import { Record, SpecialMoveType } from "electron-shogi-core";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
 
 describe("helpers/record", () => {

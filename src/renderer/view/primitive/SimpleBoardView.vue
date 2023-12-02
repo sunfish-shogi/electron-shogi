@@ -45,7 +45,7 @@ import {
   numberToKanji,
   ImmutableHand,
   Color,
-} from "@/common/shogi";
+} from "electron-shogi-core";
 import { computed, PropType } from "vue";
 import { RectSize } from "@/common/assets/geometry";
 

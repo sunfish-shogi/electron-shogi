@@ -1,7 +1,10 @@
-import { RecordMetadataKey } from "@/common/shogi";
-import { ImmutableRecordMetadata } from "@/common/shogi/record";
+import {
+  RecordMetadataKey,
+  getBlackPlayerName,
+  getWhitePlayerName,
+  ImmutableRecordMetadata,
+} from "electron-shogi-core";
 import { getDateString } from "@/common/helpers/datetime";
-import { getBlackPlayerName, getWhitePlayerName } from "@/common/helpers/metadata";
 
 export function dirname(path: string): string {
   return path.substring(0, Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")));

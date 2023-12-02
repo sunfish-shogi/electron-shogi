@@ -2,7 +2,7 @@ import { parseUSIPV } from "@/common/game/usi";
 import { Player, SearchHandler } from "@/renderer/players/player";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { PlayerSetting } from "@/common/settings/player";
-import { ImmutableRecord, Move } from "@/common/shogi";
+import { ImmutableRecord, Move } from "electron-shogi-core";
 
 export type MoveWithOption = {
   usi: string;

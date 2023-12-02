@@ -4,7 +4,7 @@ import {
   importCSA,
   isKnownSpecialMove,
   reverseColor,
-} from "@/common/shogi";
+} from "electron-shogi-core";
 import {
   emptyCSAGameSummary,
   CSAGameSummary,

@@ -1,5 +1,5 @@
 import { GameSetting } from "@/common/settings/game";
-import { InitialPositionType } from "@/common/shogi";
+import { InitialPositionType } from "electron-shogi-core";
 
 export const playerURI01 = "es://usi/test-engine-01";
 export const playerURI02 = "es://usi/test-engine-02";

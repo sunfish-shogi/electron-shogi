@@ -8,8 +8,9 @@ import {
   importCSA,
   importKI2,
   importKIF,
-} from "@/common/shogi";
-import { exportJKFString, importJKFString } from "@/common/shogi/jkf";
+  exportJKFString,
+  importJKFString,
+} from "electron-shogi-core";
 
 export enum RecordFileFormat {
   KIF = ".kif",

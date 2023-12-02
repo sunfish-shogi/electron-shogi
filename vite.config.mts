@@ -17,6 +17,10 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 5000000,
   },
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
   test: {
     dir: "./src/tests",
     globals: true,

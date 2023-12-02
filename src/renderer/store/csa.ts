@@ -16,7 +16,7 @@ import {
   formatCSAMove,
   Move,
   SpecialMoveType,
-} from "@/common/shogi";
+} from "electron-shogi-core";
 import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";

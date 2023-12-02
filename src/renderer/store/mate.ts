@@ -1,7 +1,7 @@
 import { MateSearchSetting } from "@/common/settings/mate";
 import { USIPlayer } from "@/renderer/players/usi";
 import { useAppSetting } from "./setting";
-import { ImmutableRecord, Move } from "@/common/shogi";
+import { ImmutableRecord, Move } from "electron-shogi-core";
 
 type CheckmateCallback = (moves: Move[]) => void;
 type NotImplementedCallback = () => void;

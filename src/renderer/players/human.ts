@@ -1,5 +1,5 @@
 import { TimeLimitSetting } from "@/common/settings/game";
-import { ImmutableRecord, Move } from "@/common/shogi";
+import { ImmutableRecord, Move } from "electron-shogi-core";
 import { Player, SearchHandler } from "./player";
 
 export class HumanPlayer implements Player {

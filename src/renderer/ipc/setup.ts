@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import { SpecialMoveType } from "@/common/shogi";
+import { SpecialMoveType } from "electron-shogi-core";
 import { useStore } from "@/renderer/store";
 import {
   onUSIBestMove,

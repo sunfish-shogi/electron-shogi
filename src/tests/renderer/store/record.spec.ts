@@ -10,7 +10,7 @@ import {
   Square,
   formatPV,
   specialMove,
-} from "@/common/shogi";
+} from "electron-shogi-core";
 import { SCORE_MATE_INFINITE } from "@/common/game/usi";
 import { RecordManager, SearchInfoSenderType } from "@/renderer/store/record";
 

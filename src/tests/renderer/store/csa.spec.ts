@@ -1,7 +1,7 @@
 import api, { API } from "@/renderer/ipc/api";
 import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 import { CSAProtocolVersion } from "@/common/settings/csa";
-import { Color, Move, PieceType, SpecialMoveType, Square, specialMove } from "@/common/shogi";
+import { Color, Move, PieceType, SpecialMoveType, Square, specialMove } from "electron-shogi-core";
 import { Clock } from "@/renderer/store/clock";
 import {
   CSAGameManager,

@@ -72,21 +72,26 @@ export class USIPlayer implements Player {
     blackTimeMs: number,
     whiteTimeMs: number,
   ): Promise<void> {
-    const baseUSI = record.usi;
-    if (!this.ponder || !this.ponder.startsWith(baseUSI)) {
-      return;
-    }
+    // エンジンの USI_Ponder オプションが無効なら何もしない。
     const ponderSetting = getUSIEngineOptionCurrentValue(this.setting.options[USIPonder]);
     if (ponderSetting !== "true") {
       return;
     }
+    // 現在局面までの USI が前方一致しているか確認する。
+    const baseUSI = record.usi;
+    if (!this.ponder || !this.ponder.startsWith(baseUSI)) {
+      return;
+    }
+    // 予想した 1 手を取り出す。
+    const ponderMove = record.position.createMoveByUSI(this.ponder.slice(baseUSI.length + 1));
+    // 合法手かどうかをチェックする。
+    if (!ponderMove || !record.position.isValidMove(ponderMove)) {
+      return;
+    }
+
     this.clearHandlers();
     this.usi = this.ponder;
     this.position = record.position.clone();
-    const ponderMove = this.position.createMoveByUSI(this.ponder.slice(baseUSI.length + 1));
-    if (!ponderMove) {
-      return;
-    }
     this.position.doMove(ponderMove);
     this.info = undefined;
     this.inPonder = true;

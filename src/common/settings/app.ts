@@ -1,6 +1,7 @@
 import { Language, t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
 import { RecordFileFormat } from "@/common/file/record";
+import { defaultRecordFileNameTemplate } from "@/renderer/helpers/path";
 
 export enum Thema {
   STANDARD = "standard",
@@ -157,6 +158,7 @@ export type AppSetting = {
   textDecodingRule: TextDecodingRule;
   returnCode: string;
   autoSaveDirectory: string;
+  recordFileNameTemplate: string;
   enableUSIFileStartpos: boolean;
   enableUSIFileResign: boolean;
   translateEngineOptionName: boolean;
@@ -225,6 +227,7 @@ export type AppSettingUpdate = {
   textDecodingRule?: TextDecodingRule;
   returnCode?: string;
   autoSaveDirectory?: string;
+  recordFileNameTemplate?: string;
   enableUSIFileStartpos?: boolean;
   enableUSIFileResign?: boolean;
   translateEngineOptionName?: boolean;
@@ -324,6 +327,7 @@ export function defaultAppSetting(opt?: {
     textDecodingRule: TextDecodingRule.AUTO_DETECT,
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
+    recordFileNameTemplate: defaultRecordFileNameTemplate,
     enableUSIFileStartpos: true,
     enableUSIFileResign: false,
     translateEngineOptionName: true,

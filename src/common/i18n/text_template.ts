@@ -170,6 +170,8 @@ export type Texts = {
   old90sMac: string;
   autoSaving: string;
   autoSavingDirectory: string;
+  recordFileName: string;
+
   select: string;
   positionOfUSIOutput: string;
   movesOfUSIOutput: string;

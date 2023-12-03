@@ -33,6 +33,9 @@ export const webAPI: Bridge = {
   openExplorer() {
     // DO NOTHING
   },
+  openWebBrowser(url: string) {
+    window.open(url, "_blank");
+  },
   async showOpenRecordDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },

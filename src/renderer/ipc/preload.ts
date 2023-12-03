@@ -23,6 +23,9 @@ const api: Bridge = {
   openExplorer(path: string) {
     ipcRenderer.send(Background.OPEN_EXPLORER, path);
   },
+  openWebBrowser(url: string) {
+    ipcRenderer.send(Background.OPEN_WEB_BROWSER, url);
+  },
   async showOpenRecordDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);
   },

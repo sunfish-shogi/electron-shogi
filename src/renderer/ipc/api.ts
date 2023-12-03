@@ -25,6 +25,7 @@ export interface Bridge {
   fetchInitialRecordFileRequest(): Promise<string>;
   updateAppState(appState: AppState, bussy: boolean): void;
   openExplorer(path: string): void;
+  openWebBrowser(url: string): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
   cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string>;
@@ -122,6 +123,7 @@ export interface API {
   fetchInitialRecordFileRequest(): Promise<InitialRecordFileRequest>;
   updateAppState(appState: AppState, bussy: boolean): void;
   openExplorer(path: string): void;
+  openWebBrowser(url: string): void;
   showOpenRecordDialog(): Promise<string>;
   openRecord(path: string): Promise<Uint8Array>;
   cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string>;

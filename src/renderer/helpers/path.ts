@@ -33,20 +33,24 @@ function escapePath(path: string): string {
 }
 
 function getDateStringByMeta(metadata: ImmutableRecordMetadata): string {
-  const date =
+  const datetime =
     metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME) ||
     metadata.getStandardMetadata(RecordMetadataKey.DATE);
-  if (date) {
-    return date.trim().replaceAll(" ", "_").replaceAll("/", "").replaceAll(":", "");
+  if (datetime) {
+    return datetime.trim().replaceAll(" ", "_").replaceAll("/", "").replaceAll(":", "");
   }
   return getDateString().replaceAll("/", "");
 }
 
-export function defaultRecordFileName(
+export const defaultRecordFileNameTemplate = "{datetime}{_title}{_sente}{_gote}";
+
+export function generateRecordFileName(
   metadata: ImmutableRecordMetadata,
+  template?: string,
   extension?: string,
 ): string {
-  let ret = getDateStringByMeta(metadata);
+  // get metadata
+  const datetime = getDateStringByMeta(metadata);
   const title =
     metadata.getStandardMetadata(RecordMetadataKey.TITLE) ||
     metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT) ||
@@ -55,19 +59,39 @@ export function defaultRecordFileName(
     metadata.getStandardMetadata(RecordMetadataKey.PLACE) ||
     metadata.getStandardMetadata(RecordMetadataKey.POSTED_ON) ||
     metadata.getStandardMetadata(RecordMetadataKey.AUTHOR);
-  if (title) {
-    ret += "_" + title;
+  const sente = getBlackPlayerName(metadata);
+  const gote = getWhitePlayerName(metadata);
+  const hex5 = Math.floor(Math.random() * 0x100000)
+    .toString(16)
+    .toUpperCase()
+    .padStart(5, "0");
+
+  // build parameter map
+  const params: { [key: string]: string } = {
+    datetime,
+    title: title || "",
+    sente: sente || "",
+    gote: gote || "",
+    hex5,
+  };
+  for (const key in params) {
+    const value = params[key];
+    params["_" + key] = value ? "_" + value : "";
+    params[key + "_"] = value ? value + "_" : "";
   }
-  const black = getBlackPlayerName(metadata);
-  if (black) {
-    ret += "_" + black;
+
+  // generate file name
+  let ret = template || defaultRecordFileNameTemplate;
+  ret = escapePath(ret);
+  for (const key in params) {
+    const value = params[key];
+    ret = escapePath(ret.replaceAll("{" + key + "}", value));
   }
-  const white = getWhitePlayerName(metadata);
-  if (white) {
-    ret += "_" + white;
+  ret = ret.trim();
+  if (extension) {
+    ret = ret + (extension.startsWith(".") ? extension : "." + extension);
+  } else {
+    ret = ret + ".kif";
   }
-  return (
-    escapePath(ret.trim()) +
-    (extension ? (extension.startsWith(".") ? extension : "." + extension) : ".kif")
-  );
+  return ret;
 }

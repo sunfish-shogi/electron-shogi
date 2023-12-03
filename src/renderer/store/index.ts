@@ -22,7 +22,7 @@ import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";
 import { beepShort, beepUnlimited, playPieceBeat, stopBeep } from "@/renderer/devices/audio";
 import { RecordManager, SearchInfoSenderType, SearchInfo as SearchInfoParam } from "./record";
 import { GameManager, GameResults } from "./game";
-import { defaultRecordFileName, join } from "@/renderer/helpers/path";
+import { generateRecordFileName, join } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
@@ -583,8 +583,9 @@ class Store {
 
   onSaveRecord(): void {
     const appSetting = useAppSetting();
-    const fname = defaultRecordFileName(
+    const fname = generateRecordFileName(
       this.recordManager.record.metadata,
+      appSetting.recordFileNameTemplate,
       appSetting.defaultRecordFileFormat,
     );
     const path = join(appSetting.autoSaveDirectory, fname);
@@ -1018,8 +1019,9 @@ class Store {
         const appSetting = useAppSetting();
         const defaultPath =
           path ||
-          defaultRecordFileName(
+          generateRecordFileName(
             this.recordManager.record.metadata,
+            appSetting.recordFileNameTemplate,
             appSetting.defaultRecordFileFormat,
           );
         return api.showSaveRecordDialog(defaultPath);

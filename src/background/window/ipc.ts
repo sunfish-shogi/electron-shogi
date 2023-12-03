@@ -124,6 +124,11 @@ ipcMain.on(Background.OPEN_EXPLORER, async (_, targetPath: string) => {
   }
 });
 
+ipcMain.on(Background.OPEN_WEB_BROWSER, (event, url: string) => {
+  validateIPCSender(event.senderFrame);
+  shell.openExternal(url);
+});
+
 ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
   const appSetting = await loadAppSetting();

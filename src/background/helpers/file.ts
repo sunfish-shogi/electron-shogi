@@ -14,7 +14,6 @@ export async function exists(path: string): Promise<boolean> {
  * 指定したディレクトリ以下のファイル名を再帰的に列挙する。
  * @param dir 検索を開始するディレクトリのパス。
  * @param maxDepth 再帰する深さ。0の場合は直下のファイルのみを返す。
- * @returns
  */
 export async function listFiles(dir: string, maxDepth: number): Promise<string[]> {
   const files: string[] = [];

@@ -172,6 +172,7 @@ export const zh_tw: Texts = {
   old90sMac: "90年代Mac",
   autoSaving: "自動保存",
   autoSavingDirectory: "棋譜自動保存地點",
+  recordFileName: "棋譜ファイル名", // TODO: translate
   select: "選擇",
   positionOfUSIOutput: "USI の局面表記", // TODO: translate
   movesOfUSIOutput: "USI の指し手表記", // TODO: translate

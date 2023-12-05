@@ -53,6 +53,7 @@ export enum IconType {
   HISTORY = "history",
   PAUSE = "pause",
   RESUME = "resume",
+  HELP = "help",
 }
 
 export const iconSourceMap = {
@@ -108,6 +109,7 @@ export const iconSourceMap = {
   [IconType.HISTORY]: "icon/history_FILL0_wght400_GRAD0_opsz48.svg",
   [IconType.PAUSE]: "icon/pause_circle_FILL0_wght400_GRAD0_opsz24.svg",
   [IconType.RESUME]: "icon/play_circle_FILL0_wght400_GRAD0_opsz24.svg",
+  [IconType.HELP]: "icon/help_FILL0_wght400_GRAD0_opsz24.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

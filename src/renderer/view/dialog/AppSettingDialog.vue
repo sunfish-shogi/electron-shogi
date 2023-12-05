@@ -462,8 +462,23 @@
             <button class="thin" @click="selectAutoSaveDirectory">
               {{ t.select }}
             </button>
-            <button class="thin open-dir" @click="onOpenAutoSaveDirectory">
+            <button class="thin auxiliary" @click="onOpenAutoSaveDirectory">
               <Icon :icon="IconType.OPEN_FOLDER" />
+            </button>
+          </div>
+          <!-- 棋譜ファイル名-->
+          <div class="form-item row">
+            <div class="form-item-label-wide">
+              {{ t.recordFileName }}
+            </div>
+            <input
+              ref="recordFileNameTemplate"
+              class="file-path"
+              :value="appSetting.recordFileNameTemplate"
+              type="text"
+            />
+            <button class="thin auxiliary" @click="howToWriteFileNameTemplate">
+              <Icon :icon="IconType.HELP" />
             </button>
           </div>
           <!-- USI の局面表記 -->
@@ -823,6 +838,7 @@ const defaultRecordFileFormat = ref(appSetting.defaultRecordFileFormat);
 const textDecodingRule = ref(appSetting.textDecodingRule);
 const returnCode = ref(returnCodeToName[appSetting.returnCode]);
 const autoSaveDirectory = ref();
+const recordFileNameTemplate = ref();
 const enableUSIFileStartpos = ref(appSetting.enableUSIFileStartpos);
 const enableUSIFileResign = ref(appSetting.enableUSIFileResign);
 const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
@@ -885,6 +901,7 @@ const saveAndClose = async () => {
       textDecodingRule: textDecodingRule.value,
       returnCode: nameToReturnCode[returnCode.value],
       autoSaveDirectory: autoSaveDirectory.value.value,
+      recordFileNameTemplate: recordFileNameTemplate.value.value,
       enableUSIFileStartpos: enableUSIFileStartpos.value,
       enableUSIFileResign: enableUSIFileResign.value,
       translateEngineOptionName: translateEngineOptionName.value,
@@ -947,6 +964,12 @@ const onOpenAutoSaveDirectory = () => {
   api.openExplorer(autoSaveDirectory.value.value);
 };
 
+const howToWriteFileNameTemplate = () => {
+  api.openWebBrowser(
+    "https://github.com/sunfish-shogi/electron-shogi/wiki/%E6%A3%8B%E8%AD%9C%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88",
+  );
+};
+
 const cancel = () => {
   store.closeAppSettingDialog();
 };
@@ -978,7 +1001,7 @@ input.file-path {
 .selector {
   max-width: 400px;
 }
-button.open-dir {
+button.auxiliary {
   margin-left: 5px;
   padding-left: 8px;
   padding-right: 8px;

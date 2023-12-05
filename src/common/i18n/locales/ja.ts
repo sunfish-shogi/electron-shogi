@@ -172,6 +172,7 @@ export const ja: Texts = {
   old90sMac: "90年代Mac",
   autoSaving: "自動保存",
   autoSavingDirectory: "棋譜の自動保存先",
+  recordFileName: "棋譜ファイル名",
   select: "選択",
   positionOfUSIOutput: "USI の局面表記",
   movesOfUSIOutput: "USI の指し手表記",

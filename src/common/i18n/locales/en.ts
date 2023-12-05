@@ -173,6 +173,7 @@ export const en: Texts = {
   old90sMac: "90's Mac",
   autoSaving: "Auto-Saving",
   autoSavingDirectory: "Auto-Saving Directory",
+  recordFileName: "Record File Name",
   select: "Select",
   positionOfUSIOutput: "Position of USI Output",
   movesOfUSIOutput: "Moves of USI Output",

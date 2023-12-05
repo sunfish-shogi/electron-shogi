@@ -137,6 +137,9 @@ class AppSettingStore {
   get autoSaveDirectory(): string {
     return this.setting.autoSaveDirectory;
   }
+  get recordFileNameTemplate(): string {
+    return this.setting.recordFileNameTemplate;
+  }
   get enableUSIFileStartpos(): boolean {
     return this.setting.enableUSIFileStartpos;
   }

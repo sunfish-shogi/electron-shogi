@@ -1,4 +1,4 @@
-import { defaultRecordFileName, dirname, join } from "@/renderer/helpers/path";
+import { generateRecordFileName, dirname, join } from "@/renderer/helpers/path";
 import { RecordMetadata, RecordMetadataKey } from "electron-shogi-core";
 
 describe("helpers/path", () => {
@@ -15,62 +15,76 @@ describe("helpers/path", () => {
     expect(join("C:\\\\Users\\foo\\", "\\bar\\baz.qux")).toBe("C:\\\\Users\\foo\\bar\\baz.qux");
   });
 
-  it("defaultRecordFileName/emptyMetadata", async () => {
+  it("generateRecordFileName/emptyMetadata", async () => {
     const meta = new RecordMetadata();
-    expect(defaultRecordFileName(meta)).toMatch(/^[0-9]{8}\.kif$/);
+    expect(generateRecordFileName(meta)).toMatch(/^[0-9]{8}\.kif$/);
   });
 
-  it("defaultRecordFileName/withDate", async () => {
+  it("generateRecordFileName/withDate", async () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/09/30");
-    expect(defaultRecordFileName(meta)).toBe("20220930.kif");
+    expect(generateRecordFileName(meta)).toBe("20220930.kif");
   });
 
-  it("defaultRecordFileName/withStartDateTime", async () => {
+  it("generateRecordFileName/withStartDateTime", async () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.START_DATETIME, "2022/01/02 11:30");
-    expect(defaultRecordFileName(meta)).toBe("20220102_1130.kif");
+    expect(generateRecordFileName(meta)).toBe("20220102_1130.kif");
   });
 
-  it("defaultRecordFileName/withTitle", async () => {
+  it("generateRecordFileName/withTitle", async () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.START_DATETIME, "2022/01/02 11:30");
     meta.setStandardMetadata(RecordMetadataKey.TITLE, "My New Game");
-    expect(defaultRecordFileName(meta)).toBe("20220102_1130_My New Game.kif");
+    expect(generateRecordFileName(meta)).toBe("20220102_1130_My New Game.kif");
   });
 
-  it("defaultRecordFileName/withTournament", async () => {
+  it("generateRecordFileName/withTournament", async () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.START_DATETIME, "2022/01/02 11:30");
     meta.setStandardMetadata(RecordMetadataKey.TOURNAMENT, "My Tournament");
-    expect(defaultRecordFileName(meta)).toBe("20220102_1130_My Tournament.kif");
+    expect(generateRecordFileName(meta)).toBe("20220102_1130_My Tournament.kif");
   });
 
-  it("defaultRecordFileName/withPlayerName", async () => {
+  it("generateRecordFileName/withPlayerName", async () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "先手の人");
     meta.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "後手の人");
-    expect(defaultRecordFileName(meta)).toBe("20220101_先手の人_後手の人.kif");
+    expect(generateRecordFileName(meta)).toBe("20220101_先手の人_後手の人.kif");
   });
 
-  it("defaultRecordFileName/withTitleAndPlayerName", async () => {
+  it("generateRecordFileName/withTitleAndPlayerName", async () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.TITLE, "My New Game");
     meta.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "先手の人");
     meta.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "後手の人");
-    expect(defaultRecordFileName(meta)).toBe("20220101_My New Game_先手の人_後手の人.kif");
+    expect(generateRecordFileName(meta)).toBe("20220101_My New Game_先手の人_後手の人.kif");
   });
 
-  it("defaultRecordFileName/escape", async () => {
+  it("generateRecordFileName/escape", async () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "Foo:Bar<Baz");
     meta.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "Qux|Quux>Corge");
-    expect(defaultRecordFileName(meta)).toBe("20220101_Foo_Bar_Baz_Qux_Quux_Corge.kif");
+    expect(generateRecordFileName(meta)).toBe("20220101_Foo_Bar_Baz_Qux_Quux_Corge.kif");
+  });
+
+  it("generateRecordFileName/customTemplate", async () => {
+    const meta = new RecordMetadata();
+    meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
+    meta.setStandardMetadata(RecordMetadataKey.TITLE, "My New Game");
+    meta.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "先手の人");
+    meta.setStandardMetadata(RecordMetadataKey.WHITE_NAME, "後手の人");
+    expect(
+      generateRecordFileName(meta, "棋譜-{datetime}{_title}{_sente}{_gote}-{hex5}", ".csa"),
+    ).toMatch(/^棋譜-20220101_My New Game_先手の人_後手の人-[0-9A-F]{5}\.csa$/);
+    expect(generateRecordFileName(meta, "{title_}{sente_}{gote_}{hex5}", "jkf")).toMatch(
+      /^My New Game_先手の人_後手の人_[0-9A-F]{5}\.jkf$/,
+    );
   });
 });

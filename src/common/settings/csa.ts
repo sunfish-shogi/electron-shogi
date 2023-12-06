@@ -23,6 +23,7 @@ export type CSAGameSetting = {
   enableAutoSave: boolean;
   repeat: number;
   autoRelogin: boolean;
+  restartPlayerEveryGame: boolean;
 };
 
 export function defaultCSAServerSetting(): CSAServerSetting {
@@ -47,6 +48,7 @@ export function defaultCSAGameSetting(): CSAGameSetting {
     enableAutoSave: true,
     repeat: 1,
     autoRelogin: true,
+    restartPlayerEveryGame: false,
   };
 }
 
@@ -77,6 +79,7 @@ export type CSAGameSettingHistory = {
   enableAutoSave: boolean;
   repeat: number;
   autoRelogin: boolean;
+  restartPlayerEveryGame: boolean;
 };
 
 export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
@@ -91,6 +94,7 @@ export function defaultCSAGameSettingHistory(): CSAGameSettingHistory {
     enableAutoSave: true,
     repeat: 1,
     autoRelogin: true,
+    restartPlayerEveryGame: false,
   };
 }
 
@@ -109,6 +113,7 @@ export function buildCSAGameSettingByHistory(
     enableAutoSave: history.enableAutoSave,
     repeat: history.repeat,
     autoRelogin: history.autoRelogin,
+    restartPlayerEveryGame: history.restartPlayerEveryGame,
   };
 }
 
@@ -141,6 +146,7 @@ export function appendCSAGameSettingHistory(
     enableAutoSave: setting.enableAutoSave,
     repeat: setting.repeat,
     autoRelogin: setting.autoRelogin,
+    restartPlayerEveryGame: setting.restartPlayerEveryGame,
   };
 }
 
@@ -170,6 +176,7 @@ export type SecureCSAGameSettingHistory = {
   enableAutoSave: boolean;
   repeat: number;
   autoRelogin: boolean;
+  restartPlayerEveryGame: boolean;
 };
 
 export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistory {
@@ -184,6 +191,7 @@ export function defaultSecureCSAGameSettingHistory(): SecureCSAGameSettingHistor
     enableAutoSave: true,
     repeat: 1,
     autoRelogin: true,
+    restartPlayerEveryGame: false,
   };
 }
 
@@ -235,6 +243,7 @@ export function encryptCSAGameSettingHistory(
     enableAutoSave: history.enableAutoSave,
     repeat: history.repeat,
     autoRelogin: history.autoRelogin,
+    restartPlayerEveryGame: history.restartPlayerEveryGame,
   };
 }
 
@@ -263,5 +272,6 @@ export function decryptCSAGameSettingHistory(
     enableAutoSave: history.enableAutoSave,
     repeat: history.repeat,
     autoRelogin: history.autoRelogin,
+    restartPlayerEveryGame: history.restartPlayerEveryGame,
   };
 }

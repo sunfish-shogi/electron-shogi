@@ -7,6 +7,9 @@
           <span v-if="store.csaGameState === CSAGameState.READY">
             {{ t.waitingForNewGame }}
           </span>
+          <span v-if="store.csaGameState === CSAGameState.PLAYER_SETUP">
+            {{ t.waitingForPlayerSetup }}
+          </span>
           <span v-if="store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL">
             {{ t.tryToReloginToCSAServerNSecondsLater(remainingSeconds) }}
           </span>

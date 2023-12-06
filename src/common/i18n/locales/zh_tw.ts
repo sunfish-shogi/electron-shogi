@@ -240,6 +240,7 @@ export const zh_tw: Texts = {
   maxMoves: "最大手數",
   gameRepetition: "連續對局",
   autoRelogin: "自動重新登入",
+  restartItEveryGame: "1局ごとに再起動する", // TODO: translate
   swapTurnWhenGameRepetition: "每局交換手番",
   outputComments: "輸出備註",
   saveRecordAutomatically: "自動保存棋譜",
@@ -361,6 +362,7 @@ export const zh_tw: Texts = {
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",
+  waitingForPlayerSetup: "対局者の準備を待っています。", // TODO: translate
   insertedComment: "已加入備註。",
   conversionCompleted: "轉換完成。",
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",

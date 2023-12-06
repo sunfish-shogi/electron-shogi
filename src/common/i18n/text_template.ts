@@ -239,6 +239,7 @@ export type Texts = {
   maxMoves: string;
   gameRepetition: string;
   autoRelogin: string;
+  restartItEveryGame: string;
   swapTurnWhenGameRepetition: string;
   outputComments: string;
   saveRecordAutomatically: string;
@@ -360,6 +361,7 @@ export type Texts = {
   typeCustomTitleHere: string;
   displayEmptyElements: string;
   waitingForNewGame: string;
+  waitingForPlayerSetup: string;
   insertedComment: string;
   conversionCompleted: string;
   tryingToConnectAndLoginToCSAServer: string;

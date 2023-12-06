@@ -16,6 +16,7 @@
     <ConfirmDialog v-if="store.confirmation" />
     <CSAGameReadyDialog
       v-if="
+        store.csaGameState === CSAGameState.PLAYER_SETUP ||
         store.csaGameState === CSAGameState.WAITING_LOGIN ||
         store.csaGameState === CSAGameState.READY ||
         store.csaGameState === CSAGameState.LOGIN_RETRY_INTERVAL

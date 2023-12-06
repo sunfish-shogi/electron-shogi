@@ -28,6 +28,7 @@ describe("settings/csa", () => {
       enableAutoSave: true,
       repeat: 1,
       autoRelogin: true,
+      restartPlayerEveryGame: false,
     });
     expect(result).toBeUndefined();
   });
@@ -50,6 +51,7 @@ describe("settings/csa", () => {
       enableAutoSave: true,
       repeat: 1,
       autoRelogin: true,
+      restartPlayerEveryGame: false,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -72,6 +74,7 @@ describe("settings/csa", () => {
       enableAutoSave: true,
       repeat: 1,
       autoRelogin: true,
+      restartPlayerEveryGame: false,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -94,6 +97,7 @@ describe("settings/csa", () => {
       enableAutoSave: true,
       repeat: 1,
       autoRelogin: true,
+      restartPlayerEveryGame: false,
     });
     expect(result).toBeInstanceOf(Error);
   });
@@ -117,6 +121,7 @@ describe("settings/csa", () => {
       enableAutoSave: false,
       repeat: 3,
       autoRelogin: false,
+      restartPlayerEveryGame: false,
     };
     const result = normalizeSecureCSAGameSettingHistory(setting);
     expect(result).toStrictEqual(setting);
@@ -138,6 +143,7 @@ describe("settings/csa", () => {
         enableAutoSave: true,
         repeat: 1,
         autoRelogin: true,
+        restartPlayerEveryGame: false,
       };
     };
     let history = emptyCSAGameSettingHistory;
@@ -200,6 +206,7 @@ describe("settings/csa", () => {
       enableAutoSave: true,
       repeat: 1,
       autoRelogin: true,
+      restartPlayerEveryGame: false,
     };
     const secure = encryptCSAGameSettingHistory(raw, (src) => {
       return (
@@ -277,6 +284,7 @@ describe("settings/csa", () => {
       enableAutoSave: true,
       repeat: 1,
       autoRelogin: true,
+      restartPlayerEveryGame: false,
     };
     const insecure = {
       ...secure,

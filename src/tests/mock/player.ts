@@ -53,12 +53,12 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
 
 export function createMockPlayerBuilder(playerMap: { [uri: string]: Player }) {
   return {
-    build: (playerSetting: PlayerSetting) => {
+    build: vi.fn().mockImplementation((playerSetting: PlayerSetting) => {
       const player = playerMap[playerSetting.uri];
       if (!player) {
         throw new Error("unexpected player URI");
       }
       return new Promise<Player>((resolve) => resolve(player));
-    },
+    }),
   };
 }

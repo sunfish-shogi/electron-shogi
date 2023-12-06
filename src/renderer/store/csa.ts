@@ -172,18 +172,34 @@ export class CSAGameManager {
     );
     // サーバーへのログインと対局開始を試みる。
     // NOTICE: エラーの場合は自動的にリトライするのでこの関数の呼び元にはエラーを伝搬しない。
-    this.relogin().catch(this.onError);
+    this._login().catch(this.onError);
   }
 
   private async relogin(): Promise<void> {
+    // 1局ごとにエンジンを再起動するオプションが選択されている場合は一度エンジンを停止してからスタートしなおす。
+    if (this.setting.restartPlayerEveryGame) {
+      this._state = CSAGameState.PLAYER_SETUP;
+      if (this.player) {
+        await this.player.close();
+        this.player = undefined;
+      }
+      this.player = await this.playerBuilder.build(this._setting.player, (info) =>
+        this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
+      );
+    }
+    await this._login();
+  }
+
+  private async _login(): Promise<void> {
     if (!this.player) {
       throw new Error("CSAGameManager#relogin: player is not initialized");
     }
-    this._state = CSAGameState.WAITING_LOGIN;
     try {
       // プレイヤーに対局開始を通知する。
+      this._state = CSAGameState.PLAYER_SETUP;
       await this.player.readyNewGame();
       // CSA サーバーにログインする。
+      this._state = CSAGameState.WAITING_LOGIN;
       const sessionID = await api.csaLogin(this._setting.server);
       // セッション ID を記憶する。
       this.sessionID = sessionID;

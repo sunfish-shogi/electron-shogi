@@ -23,6 +23,7 @@
             @update-engine-setting="onUpdatePlayerSetting"
             @select-player="onSelectPlayer"
           />
+          <hr v-if="uri.isUSIEngine(playerURI)" />
           <div v-if="uri.isUSIEngine(playerURI)" class="form-item">
             <div class="form-item-label-wide">{{ t.restartItEveryGame }}</div>
             <ToggleButton
@@ -36,6 +37,7 @@
           </div>
         </div>
         <div class="form-group">
+          <div>{{ t.server }}</div>
           <div class="form-item">
             <div class="form-item-label-wide">
               {{ t.selectFromHistory }}
@@ -127,8 +129,7 @@
               "
             />
           </div>
-        </div>
-        <div class="form-group">
+          <hr />
           <div class="form-item">
             <div class="form-item-label-wide number">
               {{ t.gameRepetition }}
@@ -146,6 +147,8 @@
               "
             />
           </div>
+        </div>
+        <div class="form-group">
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.outputComments }}</div>
             <ToggleButton

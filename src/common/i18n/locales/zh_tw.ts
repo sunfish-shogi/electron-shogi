@@ -74,6 +74,7 @@ export const zh_tw: Texts = {
   skipped: "跳過",
   game: "對局",
   player: "玩家",
+  server: "サーバー", // TODO: translate
   selectFromHistory: "從紀錄選取",
   noHistory: "目前沒有紀錄",
   saveHistory: "保存紀錄",

@@ -75,6 +75,7 @@ export const en: Texts = {
   skipped: "Skipped",
   game: "Game",
   player: "Player",
+  server: "Server",
   selectFromHistory: "Select from History",
   noHistory: "Empty",
   saveHistory: "Save History",

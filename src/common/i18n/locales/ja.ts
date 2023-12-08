@@ -74,6 +74,7 @@ export const ja: Texts = {
   skipped: "スキップ",
   game: "対局",
   player: "プレイヤー",
+  server: "サーバー",
   selectFromHistory: "履歴から選ぶ",
   noHistory: "履歴がありません",
   saveHistory: "履歴に保存する",

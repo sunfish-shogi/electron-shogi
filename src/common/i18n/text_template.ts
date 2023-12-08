@@ -72,6 +72,7 @@ export type Texts = {
   skipped: string;
   game: string;
   player: string;
+  server: string;
   selectFromHistory: string;
   noHistory: string;
   saveHistory: string;

@@ -23,6 +23,17 @@
             @update-engine-setting="onUpdatePlayerSetting"
             @select-player="onSelectPlayer"
           />
+          <div v-if="uri.isUSIEngine(playerURI)" class="form-item">
+            <div class="form-item-label-wide">{{ t.restartItEveryGame }}</div>
+            <ToggleButton
+              :value="restartPlayerEveryGame"
+              @change="
+                (value: boolean) => {
+                  restartPlayerEveryGame = value;
+                }
+              "
+            />
+          </div>
         </div>
         <div class="form-group">
           <div class="form-item">
@@ -219,6 +230,7 @@ const password = ref();
 const saveHistory = ref(true);
 const repeat = ref();
 const autoRelogin = ref(false);
+const restartPlayerEveryGame = ref(false);
 const enableComment = ref(false);
 const enableAutoSave = ref(false);
 const autoFlip = ref(false);
@@ -264,6 +276,7 @@ onUpdated(() => {
   password.value.value = defaultSetting.server.password;
   repeat.value.value = defaultSetting.repeat;
   autoRelogin.value = defaultSetting.autoRelogin;
+  restartPlayerEveryGame.value = defaultSetting.restartPlayerEveryGame;
   enableComment.value = defaultSetting.enableComment;
   enableAutoSave.value = defaultSetting.enableAutoSave;
   autoFlip.value = defaultSetting.autoFlip;
@@ -298,6 +311,7 @@ const onStart = () => {
     },
     repeat: readInputAsNumber(repeat.value),
     autoRelogin: autoRelogin.value,
+    restartPlayerEveryGame: restartPlayerEveryGame.value,
     enableComment: enableComment.value,
     enableAutoSave: enableAutoSave.value,
     autoFlip: autoFlip.value,

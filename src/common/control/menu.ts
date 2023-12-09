@@ -44,6 +44,7 @@ export enum MenuEvent {
   RESIGN = "resign",
   WIN = "win",
   LOGOUT = "logout",
+  CALCULATE_POINTS = "calculateJishogiPoints",
   FLIP_BOARD = "flipBoard",
   APP_SETTING_DIALOG = "appSetting",
   USI_ENGINE_SETTING_DIALOG = "usiEngineSetting",

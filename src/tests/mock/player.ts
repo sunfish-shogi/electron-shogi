@@ -30,6 +30,10 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
           h.onResign();
           return Promise.resolve();
         }
+        if (m.usi === "win") {
+          h.onWin();
+          return Promise.resolve();
+        }
         const move = r.position.createMoveByUSI(m.usi) as Move;
         h.onMove(
           move,

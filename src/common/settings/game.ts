@@ -16,6 +16,15 @@ export function defaultTimeLimitSetting(): TimeLimitSetting {
   };
 }
 
+export enum JishogiRule {
+  NONE = "none",
+  GENERAL24 = "general24",
+  GENERAL27 = "general27",
+  TRY = "try",
+}
+
+export const DeclarableJishogiRules = [JishogiRule.GENERAL24, JishogiRule.GENERAL27];
+
 export type GameSetting = {
   black: PlayerSetting;
   white: PlayerSetting;
@@ -29,6 +38,7 @@ export type GameSetting = {
   repeat: number;
   swapPlayers: boolean;
   maxMoves: number;
+  jishogiRule: JishogiRule;
 };
 
 export function defaultGameSetting(): GameSetting {
@@ -43,6 +53,7 @@ export function defaultGameSetting(): GameSetting {
     repeat: 1,
     swapPlayers: false,
     maxMoves: 1000,
+    jishogiRule: JishogiRule.GENERAL27,
   };
 }
 

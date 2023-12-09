@@ -90,6 +90,8 @@ export type Texts = {
   password: string;
   showPassword: string;
   logout: string;
+  calculateJishogiPoints: string;
+  jishogiPoints: string;
   displayGameResults: string;
   interrupt: string;
   stopGame: string;
@@ -239,6 +241,10 @@ export type Texts = {
   startPosition: string;
   maxMoves: string;
   gameRepetition: string;
+  jishogi: string;
+  rule24: string;
+  rule27: string;
+  tryRule: string;
   autoRelogin: string;
   restartItEveryGame: string;
   swapTurnWhenGameRepetition: string;
@@ -383,6 +389,8 @@ export type Texts = {
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable: string;
   pleaseUncheckSaveHistoryIfNotWantSave: string;
   csaProtocolSendPlaintextPasswordRegardlessOfHistory: string;
+  areYouSureWantToResign: string;
+  areYouSureWantToDoDeclaration: string;
   areYouSureWantToQuitGames: string;
   areYouSureWantToRequestQuit: string;
   areYouSureWantToClearRecord: string;

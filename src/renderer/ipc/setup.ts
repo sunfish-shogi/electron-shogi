@@ -164,13 +164,32 @@ export function setup(): void {
         store.stopGame();
         break;
       case MenuEvent.RESIGN:
-        humanPlayer.resign();
+        if (!store.isMovableByUser) {
+          break;
+        }
+        store.showConfirmation({
+          message: t.areYouSureWantToResign,
+          onOk: () => {
+            humanPlayer.resign();
+          },
+        });
         break;
       case MenuEvent.WIN:
-        humanPlayer.win();
+        if (!store.isMovableByUser) {
+          break;
+        }
+        store.showConfirmation({
+          message: t.areYouSureWantToDoDeclaration,
+          onOk: () => {
+            humanPlayer.win();
+          },
+        });
         break;
       case MenuEvent.LOGOUT:
         store.cancelCSAGame();
+        break;
+      case MenuEvent.CALCULATE_POINTS:
+        store.showJishogiPoints();
         break;
       case MenuEvent.START_RESEARCH:
         store.showResearchDialog();

@@ -92,6 +92,8 @@ export const zh_tw: Texts = {
   password: "密碼",
   showPassword: "顯示密碼",
   logout: "登出",
+  calculateJishogiPoints: "持将棋の点数を計算", // TODO: translate
+  jishogiPoints: "持将棋の点数", // TODO: translate
   displayGameResults: "確認戰績",
   interrupt: "中斷",
   stopGame: "對局中斷",
@@ -240,6 +242,10 @@ export const zh_tw: Texts = {
   startPosition: "開始局面",
   maxMoves: "最大手數",
   gameRepetition: "連續對局",
+  jishogi: "持将棋", // TODO: translate
+  rule24: "24点法", // TODO: translate
+  rule27: "27点法", // TODO: translate
+  tryRule: "トライルール", // TODO: translate
   autoRelogin: "自動重新登入",
   restartItEveryGame: "1局ごとに再起動する", // TODO: translate
   swapTurnWhenGameRepetition: "每局交換手番",
@@ -386,6 +392,8 @@ export const zh_tw: Texts = {
     "由於無法使用系統的加密機能，輸入的密碼將會以明文保存。",
   pleaseUncheckSaveHistoryIfNotWantSave: "若不想保存密碼，請不要將「保存紀錄」勾選。",
   csaProtocolSendPlaintextPasswordRegardlessOfHistory: "不過，CSA協定仍會以明文傳輸您的密碼。",
+  areYouSureWantToResign: "投了しますか？", // TODO: translate
+  areYouSureWantToDoDeclaration: "宣言しますか？", // TODO: translate
   areYouSureWantToQuitGames: "要中斷連續對局嗎？",
   areYouSureWantToRequestQuit: "若提出中斷要求，可能會被判負。請問您要繼續嗎？",
   areYouSureWantToClearRecord: "將會刪除現在的棋譜。請問您要繼續嗎？",

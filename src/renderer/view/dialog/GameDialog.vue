@@ -154,6 +154,15 @@
               <div class="form-item-label">{{ t.gameRepetition }}</div>
               <input ref="repeat" class="number" type="number" min="1" />
             </div>
+            <div class="form-item">
+              <div class="form-item-label">{{ t.jishogi }}</div>
+              <select ref="jishogiRule">
+                <option :value="JishogiRule.NONE">{{ t.none }}</option>
+                <option :value="JishogiRule.GENERAL24">{{ t.rule24 }}</option>
+                <option :value="JishogiRule.GENERAL27">{{ t.rule27 }}</option>
+                <option :value="JishogiRule.TRY">{{ t.tryRule }}</option>
+              </select>
+            </div>
           </div>
           <div class="half-column">
             <div class="form-item">
@@ -224,6 +233,7 @@ import { useStore } from "@/renderer/store";
 import {
   defaultGameSetting,
   GameSetting,
+  JishogiRule,
   validateGameSetting,
   validateGameSettingForWeb,
 } from "@/common/settings/game";
@@ -253,6 +263,7 @@ const setDifferentTime = ref(false);
 const startPosition = ref();
 const maxMoves = ref();
 const repeat = ref();
+const jishogiRule = ref();
 const swapPlayers = ref(false);
 const enableComment = ref(false);
 const enableAutoSave = ref(false);
@@ -313,6 +324,7 @@ onUpdated(() => {
     gameSetting.value.startPosition !== undefined ? gameSetting.value.startPosition : "current";
   maxMoves.value.value = gameSetting.value.maxMoves;
   repeat.value.value = gameSetting.value.repeat;
+  jishogiRule.value.value = gameSetting.value.jishogiRule;
   swapPlayers.value = gameSetting.value.swapPlayers;
   enableComment.value = gameSetting.value.enableComment;
   enableAutoSave.value = gameSetting.value.enableAutoSave;
@@ -349,6 +361,7 @@ const onStart = () => {
     startPosition: startPosition.value.value !== "current" ? startPosition.value.value : undefined,
     maxMoves: readInputAsNumber(maxMoves.value),
     repeat: readInputAsNumber(repeat.value),
+    jishogiRule: jishogiRule.value.value,
     swapPlayers: swapPlayers.value,
     enableComment: enableComment.value,
     enableAutoSave: enableAutoSave.value,

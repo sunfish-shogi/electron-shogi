@@ -1,8 +1,19 @@
 import { LogLevel } from "@/common/log";
 import api from "@/renderer/ipc/api";
 import { Player, SearchInfo } from "@/renderer/players/player";
-import { defaultGameSetting, GameSetting } from "@/common/settings/game";
-import { Color, formatMove, Move, reverseColor, SpecialMoveType } from "electron-shogi-core";
+import { defaultGameSetting, GameSetting, JishogiRule } from "@/common/settings/game";
+import {
+  Color,
+  formatMove,
+  JishogiDeclarationResult,
+  JishogiDeclarationRule,
+  judgeJishogiDeclaration,
+  Move,
+  PieceType,
+  reverseColor,
+  SpecialMoveType,
+  Square,
+} from "electron-shogi-core";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { Clock } from "./clock";
@@ -373,6 +384,16 @@ export class GameManager {
       this.end(SpecialMoveType.REPETITION_DRAW);
       return;
     }
+    // トライルールのチェックを行う。
+    if (
+      this.setting.jishogiRule == JishogiRule.TRY &&
+      move.pieceType === PieceType.KING &&
+      ((move.color === Color.BLACK && move.to.equals(new Square(5, 1))) ||
+        (move.color === Color.WHITE && move.to.equals(new Square(5, 9))))
+    ) {
+      this.end(SpecialMoveType.TRY);
+      return;
+    }
     // 次の手番へ移る。
     this.nextMove();
   }
@@ -398,7 +419,29 @@ export class GameManager {
       api.log(LogLevel.ERROR, "GameManager#onWin: invalid state: " + this.state);
       return;
     }
-    this.end(SpecialMoveType.ENTERING_OF_KING);
+    const position = this.recordManager.record.position;
+    if (
+      this.setting.jishogiRule == JishogiRule.NONE ||
+      this.setting.jishogiRule == JishogiRule.TRY
+    ) {
+      this.end(SpecialMoveType.FOUL_LOSE);
+      return;
+    }
+    const rule =
+      this.setting.jishogiRule == JishogiRule.GENERAL24
+        ? JishogiDeclarationRule.GENERAL24
+        : JishogiDeclarationRule.GENERAL27;
+    switch (judgeJishogiDeclaration(rule, position, position.color)) {
+      case JishogiDeclarationResult.WIN:
+        this.end(SpecialMoveType.ENTERING_OF_KING);
+        break;
+      case JishogiDeclarationResult.DRAW:
+        this.end(SpecialMoveType.DRAW);
+        break;
+      case JishogiDeclarationResult.LOSE:
+        this.end(SpecialMoveType.FOUL_LOSE);
+        break;
+    }
   }
 
   private timeout(color: Color): void {
@@ -594,6 +637,7 @@ function specialMoveToPlayerGameResult(
     case SpecialMoveType.MATE:
     case SpecialMoveType.TIMEOUT:
     case SpecialMoveType.FOUL_LOSE:
+    case SpecialMoveType.TRY:
       return currentColor == playerColor ? GameResult.LOSE : GameResult.WIN;
     case SpecialMoveType.IMPASS:
     case SpecialMoveType.REPETITION_DRAW:

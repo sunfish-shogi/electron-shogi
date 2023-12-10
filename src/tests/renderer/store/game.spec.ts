@@ -4,10 +4,11 @@ import { GameManager, GameResults } from "@/renderer/store/game";
 import { RecordManager } from "@/renderer/store/record";
 import { playerURI01, playerURI02, gameSetting10m30s } from "@/tests/mock/game";
 import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
-import { GameSetting } from "@/common/settings/game";
+import { GameSetting, JishogiRule } from "@/common/settings/game";
 import { PlayerBuilder } from "@/renderer/players/builder";
 
 export interface MockGameHandlers {
+  onError(): void;
   onSaveRecord(): void;
   onGameNext(): void;
   onPieceBeat(): void;
@@ -18,6 +19,7 @@ export interface MockGameHandlers {
 
 function createMockHandlers() {
   return {
+    onError: vi.fn(),
     onSaveRecord: vi.fn().mockReturnValue(Promise.resolve()),
     onGameNext: vi.fn(),
     onPieceBeat: vi.fn(),
@@ -45,7 +47,7 @@ function invoke(
           reject(e);
         }
       })
-      .on("error", reject)
+      .on("error", handlers.onError)
       .on("saveRecord", handlers.onSaveRecord)
       .on("gameNext", handlers.onGameNext)
       .on("pieceBeat", handlers.onPieceBeat)
@@ -134,6 +136,7 @@ describe("store/game", () => {
         expect(recordManager.record.moves[3].comment).toBe(
           "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n",
         );
+        expect(mockHandlers.onError).not.toBeCalled();
       },
     );
   });
@@ -189,6 +192,7 @@ describe("store/game", () => {
         expect(recordManager.record.usi).toBe(
           "position sfen lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 8b2b 7g7f 2c2d",
         );
+        expect(mockHandlers.onError).not.toBeCalled();
       },
     );
   });
@@ -245,6 +249,7 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
         expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f");
+        expect(mockHandlers.onError).not.toBeCalled();
       },
       (manager) => {
         setTimeout(() => manager.stop(), 100);
@@ -323,6 +328,7 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(14);
         expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d");
+        expect(mockHandlers.onError).not.toBeCalled();
       },
     );
   });
@@ -385,6 +391,7 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(12);
         expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f");
+        expect(mockHandlers.onError).not.toBeCalled();
       },
     );
   });
@@ -442,6 +449,253 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(9);
         expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f 8c8d");
+        expect(mockHandlers.onError).not.toBeCalled();
+      },
+    );
+  });
+
+  it("GameManager/declaration/black/accepted", () => {
+    // https://denryu-sen.jp/denryusen/dr4_production/dist/#/dr4prd+buoy_blackbid300_dr4b-9-top_4_burningbridges_honeywaffle-600-2F+burningbridges+honeywaffle+20231203185029/358
+    const sfen = "1Rn1S+S2+B/2S1GGppK/4pG2L/5G2+B/9/5n3/1+p+l6/+lk7/9 b RS2NL11P3p 1";
+    const mockBlackPlayer = createMockPlayer({
+      [`position sfen ${sfen} moves`]: { usi: "4d5c" },
+      [`position sfen ${sfen} moves 4d5c 2b2c`]: { usi: "win" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      [`position sfen ${sfen} moves 4d5c`]: { usi: "2b2c" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.resetBySFEN(sfen);
+
+    return invoke(
+      recordManager,
+      mockHandlers,
+      {
+        ...gameSetting10m30s,
+        startPosition: undefined,
+        jishogiRule: JishogiRule.GENERAL24,
+      },
+      mockPlayerBuilder,
+      (gameResults, specialMoveType) => {
+        expect(gameResults).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 1 },
+          player2: { name: "USI Engine 02", win: 0 },
+          draw: 0,
+          invalid: 0,
+          total: 1,
+        });
+        expect(specialMoveType).toBe(SpecialMoveType.ENTERING_OF_KING);
+        expect(recordManager.record.usi).toBe(`position sfen ${sfen} moves 4d5c 2b2c`);
+        expect(mockHandlers.onError).not.toBeCalled();
+      },
+    );
+  });
+
+  it("GameManager/declaration/black/rejected", () => {
+    // https://denryu-sen.jp/denryusen/dr4_production/dist/#/dr4prd+buoy_blackbid300_dr4b-9-top_4_burningbridges_honeywaffle-600-2F+burningbridges+honeywaffle+20231203185029/356
+    const sfen = "1Rn1S+S1p+B/4GGp1K/4pG2L/5G2+B/9/5n3/1+p+l6/+lk7/9 b R2S2NL11P3p 1";
+    const mockBlackPlayer = createMockPlayer({
+      [`position sfen ${sfen} moves`]: { usi: "S*7b" },
+      [`position sfen ${sfen} moves S*7b 2a2b`]: { usi: "win" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      [`position sfen ${sfen} moves S*7b`]: { usi: "2a2b" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.resetBySFEN(sfen);
+
+    return invoke(
+      recordManager,
+      mockHandlers,
+      {
+        ...gameSetting10m30s,
+        startPosition: undefined,
+        jishogiRule: JishogiRule.GENERAL24,
+      },
+      mockPlayerBuilder,
+      (gameResults, specialMoveType) => {
+        expect(gameResults).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 0 },
+          player2: { name: "USI Engine 02", win: 1 },
+          draw: 0,
+          invalid: 0,
+          total: 1,
+        });
+        expect(specialMoveType).toBe(SpecialMoveType.FOUL_LOSE);
+        expect(recordManager.record.usi).toBe(`position sfen ${sfen} moves S*7b 2a2b`);
+        expect(mockHandlers.onError).not.toBeCalled();
+      },
+    );
+  });
+
+  it("GameManager/declaration/white/accepted", () => {
+    // https://denryu-sen.jp/denryusen/dr4_production/dist/#/dr4prd+buoy_blackbid300_dr4a-7-bottom_4_tanuki_dlshogi-600-2F+tanuki+dlshogi+20231203170524/265
+    const sfen = "1+N+L1+S4/9/+PK+P6/1G7/9/2+r6/+p1+p2g+p+p+p/1sk2+p3/8+r w 2b2g2s3n3l10p 1";
+    const mockBlackPlayer = createMockPlayer({
+      [`position sfen ${sfen} moves G*6g`]: { usi: "9c8b" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      [`position sfen ${sfen} moves`]: { usi: "G*6g" },
+      [`position sfen ${sfen} moves G*6g 9c8b`]: { usi: "win" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.resetBySFEN(sfen);
+
+    return invoke(
+      recordManager,
+      mockHandlers,
+      {
+        ...gameSetting10m30s,
+        startPosition: undefined,
+        jishogiRule: JishogiRule.GENERAL24,
+      },
+      mockPlayerBuilder,
+      (gameResults, specialMoveType) => {
+        expect(gameResults).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 0 },
+          player2: { name: "USI Engine 02", win: 1 },
+          draw: 0,
+          invalid: 0,
+          total: 1,
+        });
+        expect(specialMoveType).toBe(SpecialMoveType.ENTERING_OF_KING);
+        expect(recordManager.record.usi).toBe(`position sfen ${sfen} moves G*6g 9c8b`);
+        expect(mockHandlers.onError).not.toBeCalled();
+      },
+    );
+  });
+
+  it("GameManager/try/black", () => {
+    const sfen = "1R2+SK2+B/2S+SGGp2/4GG1pL/8+B/9/9/1+p+l6/+lk+n3+n2/9 b RS2NL12P3p 1";
+    const mockBlackPlayer = createMockPlayer({
+      [`position sfen ${sfen} moves`]: { usi: "5a6a" },
+      [`position sfen ${sfen} moves 5a6a P*6g`]: { usi: "4a5a" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      [`position sfen ${sfen} moves 5a6a`]: { usi: "P*6g" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.resetBySFEN(sfen);
+
+    return invoke(
+      recordManager,
+      mockHandlers,
+      {
+        ...gameSetting10m30s,
+        startPosition: undefined,
+        jishogiRule: JishogiRule.TRY,
+      },
+      mockPlayerBuilder,
+      (gameResults, specialMoveType) => {
+        expect(gameResults).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 1 },
+          player2: { name: "USI Engine 02", win: 0 },
+          draw: 0,
+          invalid: 0,
+          total: 1,
+        });
+        expect(specialMoveType).toBe(SpecialMoveType.TRY);
+        expect(recordManager.record.usi).toBe(`position sfen ${sfen} moves 5a6a P*6g 4a5a`);
+        expect(mockHandlers.onError).not.toBeCalled();
+      },
+    );
+  });
+
+  it("GameManager/try/white", () => {
+    const sfen = "1Rn1S+SK2/2S1GGp2/2R1GG1pL/9/7+B1/2P6/1+p+B+l5/+l3pp+n2/3k5 w S2NL11Pp 1";
+    const mockBlackPlayer = createMockPlayer({
+      [`position sfen ${sfen} moves 8g7g`]: { usi: "2e3e" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      [`position sfen ${sfen} moves`]: { usi: "8g7g" },
+      [`position sfen ${sfen} moves 8g7g 2e3e`]: { usi: "6i5i" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.resetBySFEN(sfen);
+
+    return invoke(
+      recordManager,
+      mockHandlers,
+      {
+        ...gameSetting10m30s,
+        startPosition: undefined,
+        jishogiRule: JishogiRule.TRY,
+      },
+      mockPlayerBuilder,
+      (gameResults, specialMoveType) => {
+        expect(gameResults).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 0 },
+          player2: { name: "USI Engine 02", win: 1 },
+          draw: 0,
+          invalid: 0,
+          total: 1,
+        });
+        expect(specialMoveType).toBe(SpecialMoveType.TRY);
+        expect(recordManager.record.usi).toBe(`position sfen ${sfen} moves 8g7g 2e3e 6i5i`);
+        expect(mockHandlers.onError).not.toBeCalled();
+      },
+    );
+  });
+
+  it("GameManager/illegal-try/white", () => {
+    const sfen = "1Rn1S+SK2/2S1GGp2/2R1GG1pL/9/7+B1/2P6/1+p+B+l5/+l3pp+n2/3k5 w S2NL11Pp 1";
+    const mockBlackPlayer = createMockPlayer({});
+    const mockWhitePlayer = createMockPlayer({
+      [`position sfen ${sfen} moves`]: { usi: "6i5i" }, // 王手放置
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+    recordManager.resetBySFEN(sfen);
+
+    return invoke(
+      recordManager,
+      mockHandlers,
+      {
+        ...gameSetting10m30s,
+        startPosition: undefined,
+        jishogiRule: JishogiRule.TRY,
+      },
+      mockPlayerBuilder,
+      (gameResults, specialMoveType) => {
+        expect(gameResults).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 1 },
+          player2: { name: "USI Engine 02", win: 0 },
+          draw: 0,
+          invalid: 0,
+          total: 1,
+        });
+        expect(specialMoveType).toBe(SpecialMoveType.FOUL_LOSE);
+        expect(recordManager.record.usi).toBe(`position sfen ${sfen} moves`);
+        expect(mockHandlers.onError).toBeCalledTimes(1);
       },
     );
   });

@@ -93,6 +93,8 @@ export const en: Texts = {
   password: "Password",
   showPassword: "Show Password",
   logout: "Logout",
+  calculateJishogiPoints: "Calculate Jishogi Points",
+  jishogiPoints: "Jishogi Points",
   displayGameResults: "Display Results",
   interrupt: "Stop",
   stopGame: "Stop",
@@ -241,6 +243,10 @@ export const en: Texts = {
   startPosition: "Position",
   maxMoves: "Max Moves",
   gameRepetition: "Repeat",
+  jishogi: "Jishogi",
+  rule24: "24-point rule",
+  rule27: "27-point rule",
+  tryRule: "TRY rule",
   autoRelogin: "Auto Re-Login",
   restartItEveryGame: "Restart it Every Game",
   swapTurnWhenGameRepetition: "Swap Turns When Repeat",
@@ -390,6 +396,8 @@ export const en: Texts = {
   pleaseUncheckSaveHistoryIfNotWantSave: "Please uncheck Save History, if you don't want to save.",
   csaProtocolSendPlaintextPasswordRegardlessOfHistory:
     "On CSA protocol, client send plaintext password regardless of history.",
+  areYouSureWantToResign: "Are you sure you want to resign?",
+  areYouSureWantToDoDeclaration: "Are you sure you want to do declaration?",
   areYouSureWantToQuitGames: "Are you sure you want to quit games?",
   areYouSureWantToRequestQuit:
     "You have possibility to be loser. Are you sure you want to request quit?",

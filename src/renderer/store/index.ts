@@ -15,6 +15,9 @@ import {
   exportKI2,
   RecordFormatType,
   exportJKFString,
+  countJishogiDeclarationPoint,
+  judgeJishogiDeclaration,
+  JishogiDeclarationRule,
 } from "electron-shogi-core";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
@@ -1109,6 +1112,58 @@ class Store {
       .finally(() => {
         this.releaseBussyState();
       });
+  }
+
+  showJishogiPoints(): void {
+    const position = this.recordManager.record.position;
+    const blackPoint = countJishogiDeclarationPoint(position, Color.BLACK);
+    const black24 = judgeJishogiDeclaration(
+      JishogiDeclarationRule.GENERAL24,
+      position,
+      Color.BLACK,
+    );
+    const black27 = judgeJishogiDeclaration(
+      JishogiDeclarationRule.GENERAL27,
+      position,
+      Color.BLACK,
+    );
+    const whitePoint = countJishogiDeclarationPoint(position, Color.WHITE);
+    const white24 = judgeJishogiDeclaration(
+      JishogiDeclarationRule.GENERAL24,
+      position,
+      Color.WHITE,
+    );
+    const white27 = judgeJishogiDeclaration(
+      JishogiDeclarationRule.GENERAL27,
+      position,
+      Color.WHITE,
+    );
+    this.enqueueMessage({
+      text: t.jishogiPoints,
+      attachments: [
+        {
+          type: "list",
+          items: [
+            {
+              text: t.sente,
+              children: [
+                `Points: ${blackPoint}`,
+                `Rule-24: ${black24.toUpperCase()}`,
+                `Rule-27: ${black27.toUpperCase()}`,
+              ],
+            },
+            {
+              text: t.gote,
+              children: [
+                `Points: ${whitePoint}`,
+                `Rule-24: ${white24.toUpperCase()}`,
+                `Rule-27: ${white27.toUpperCase()}`,
+              ],
+            },
+          ],
+        },
+      ],
+    });
   }
 
   get isMovableByUser() {

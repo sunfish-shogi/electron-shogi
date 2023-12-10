@@ -40,6 +40,10 @@
             <Icon :icon="IconType.GAME" />
             <span>{{ t.game }}</span>
           </button>
+          <button v-if="controlStates.jishogiPoints" class="control-item" @click="onJishogiPoints">
+            <Icon :icon="IconType.QUESTION" />
+            <span>{{ t.jishogiPoints }}</span>
+          </button>
           <button
             v-if="controlStates.showGameResults"
             class="control-item"
@@ -220,6 +224,7 @@ import {
   LeftSideControlType,
   getPieceImageURLTemplate,
 } from "@/common/settings/app";
+import { DeclarableJishogiRules } from "@/common/settings/game";
 
 defineProps({
   maxSize: {
@@ -289,11 +294,25 @@ const onStop = () => {
 };
 
 const onWin = () => {
-  humanPlayer.win();
+  store.showConfirmation({
+    message: t.areYouSureWantToDoDeclaration,
+    onOk: () => {
+      humanPlayer.win();
+    },
+  });
 };
 
 const onResign = () => {
-  humanPlayer.resign();
+  store.showConfirmation({
+    message: t.areYouSureWantToResign,
+    onOk: () => {
+      humanPlayer.resign();
+    },
+  });
+};
+
+const onJishogiPoints = () => {
+  store.showJishogiPoints();
 };
 
 const onResearch = () => {
@@ -385,10 +404,15 @@ const controlStates = computed(() => {
     game: store.appState === AppState.NORMAL,
     showGameResults: store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
     stop: store.appState === AppState.GAME || store.appState === AppState.CSA_GAME,
-    win: store.appState === AppState.CSA_GAME && store.isMovableByUser,
+    win:
+      store.isMovableByUser &&
+      (store.appState === AppState.CSA_GAME ||
+        (store.appState === AppState.GAME &&
+          DeclarableJishogiRules.includes(store.gameSetting.jishogiRule))),
     resign:
       (store.appState === AppState.GAME || store.appState === AppState.CSA_GAME) &&
       store.isMovableByUser,
+    jishogiPoints: store.appState === AppState.GAME || store.appState === AppState.CSA_GAME,
     research: store.appState === AppState.NORMAL,
     endResearch: store.appState === AppState.RESEARCH,
     analysis: store.appState === AppState.NORMAL,

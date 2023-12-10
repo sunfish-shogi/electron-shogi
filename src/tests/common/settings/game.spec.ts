@@ -1,4 +1,4 @@
-import { GameSetting, normalizeGameSetting } from "@/common/settings/game";
+import { GameSetting, JishogiRule, normalizeGameSetting } from "@/common/settings/game";
 import { InitialPositionType } from "electron-shogi-core";
 import * as uri from "@/common/uri";
 
@@ -37,6 +37,7 @@ describe("settings/game", () => {
       repeat: 3,
       swapPlayers: false,
       maxMoves: 80,
+      jishogiRule: JishogiRule.NONE,
     };
     const result = normalizeGameSetting(setting);
     expect(result).toStrictEqual(setting);

@@ -656,4 +656,25 @@ describe("store/index", () => {
     expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(0);
     expect(mockAPI.saveRecord).toBeCalledTimes(1);
   });
+
+  it("showJishogiPoints", () => {
+    const store = createStore();
+    // https://denryu-sen.jp/denryusen/dr3_production/dist/#/dr3prd+t_test1_test2-600-2F+aobazero+aobazerotest+20221201210630
+    store.pasteRecord(
+      "2GK1+L3/2+P+S+R1G+N1/3+B1GG2/9/+r8/1+bs6/+p+p3+n3/2+n2k3/6+p2 b 2SN7P3l7p 375",
+    );
+    store.showJishogiPoints();
+    expect(store.message).toStrictEqual({
+      text: "持将棋の点数",
+      attachments: [
+        {
+          type: "list",
+          items: [
+            { text: "先手", children: ["Points: 28", "Rule-24: DRAW", "Rule-27: WIN"] },
+            { text: "後手", children: ["Points: 15", "Rule-24: LOSE", "Rule-27: LOSE"] },
+          ],
+        },
+      ],
+    });
+  });
 });

@@ -89,7 +89,10 @@ switch (target) {
 }
 
 builder
-  .build({ config })
+  .build({
+    universal: process.platform === "darwin",
+    config,
+  })
   .then((result) => {
     console.log(JSON.stringify(result));
   })

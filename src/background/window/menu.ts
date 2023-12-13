@@ -83,7 +83,7 @@ function createMenuTemplate() {
         {
           label: t.copyRecord,
           submenu: [
-            menuItem(t.asKIF, MenuEvent.COPY_RECORD, null, "CmdOrCtrl+C"),
+            menuItem(t.asKIF, MenuEvent.COPY_RECORD, null, isMac ? undefined : "CmdOrCtrl+C"),
             menuItem(t.asKI2, MenuEvent.COPY_RECORD_KI2, null),
             menuItem(t.asCSA, MenuEvent.COPY_RECORD_CSA, null),
             menuItem(t.asUSIUntilCurrentMove, MenuEvent.COPY_RECORD_USI_BEFORE, null),
@@ -92,7 +92,12 @@ function createMenuTemplate() {
           ],
         },
         menuItem(t.copyPositionAsSFEN, MenuEvent.COPY_BOARD_SFEN, null),
-        menuItem(t.pasteRecordOrPosition, MenuEvent.PASTE_RECORD, [AppState.NORMAL], "CmdOrCtrl+V"),
+        menuItem(
+          t.pasteRecordOrPosition,
+          MenuEvent.PASTE_RECORD,
+          [AppState.NORMAL],
+          isMac ? undefined : "CmdOrCtrl+V",
+        ),
         { type: "separator" },
         {
           label: t.appendSpecialMove,
@@ -232,6 +237,16 @@ function createMenuTemplate() {
             ),
           ],
         },
+        // NOTE:
+        //   Mac ではこれらのショートカットがメニューに無いとテキスト編集時のショートカット操作ができない。
+        //   https://github.com/sunfish-shogi/electron-shogi/issues/694
+        { type: "separator", visible: isMac },
+        { role: "copy", accelerator: "CmdOrCtrl+C", visible: isMac },
+        { role: "paste", accelerator: "CmdOrCtrl+V", visible: isMac },
+        { role: "cut", accelerator: "CmdOrCtrl+X", visible: isMac },
+        { role: "undo", accelerator: "CmdOrCtrl+Z", visible: isMac },
+        { role: "redo", accelerator: "CmdOrCtrl+Shift+Z", visible: isMac },
+        { role: "selectAll", accelerator: "CmdOrCtrl+A", visible: isMac },
       ],
     },
     {
@@ -255,7 +270,12 @@ function createMenuTemplate() {
         menuItem(t.startResearch, MenuEvent.START_RESEARCH, [AppState.NORMAL], "CmdOrCtrl+R"),
         menuItem(t.endResearch, MenuEvent.STOP_RESEARCH, [AppState.RESEARCH]),
         { type: "separator" },
-        menuItem(t.analyze, MenuEvent.START_ANALYSIS, [AppState.NORMAL], "CmdOrCtrl+A"),
+        menuItem(
+          t.analyze,
+          MenuEvent.START_ANALYSIS,
+          [AppState.NORMAL],
+          isMac ? undefined : "CmdOrCtrl+A",
+        ),
         menuItem(t.stopAnalysis, MenuEvent.STOP_ANALYSIS, [AppState.ANALYSIS]),
       ],
     },

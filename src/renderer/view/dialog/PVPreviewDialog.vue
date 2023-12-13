@@ -20,7 +20,7 @@
         <template #right-control>
           <div class="full column">
             <div class="row control-row">
-              <button class="control-item" data-hotkey="Control+t" @click="doFlip">
+              <button class="control-item" data-hotkey="Mod+t" @click="doFlip">
                 <Icon :icon="IconType.FLIP" />
               </button>
               <button class="control-item" autofocus data-hotkey="Escape" @click="close">

@@ -72,7 +72,7 @@
           <button
             v-if="controlStates.research"
             class="control-item"
-            data-hotkey="Control+r"
+            data-hotkey="Mod+r"
             @click="onResearch"
           >
             <Icon :icon="IconType.RESEARCH" />
@@ -90,7 +90,7 @@
           <button
             v-if="controlStates.analysis"
             class="control-item"
-            data-hotkey="Control+a"
+            data-hotkey="Mod+a"
             @click="onAnalysis"
           >
             <Icon :icon="IconType.ANALYSIS" />
@@ -108,7 +108,7 @@
           <button
             v-if="controlStates.mateSearch"
             class="control-item"
-            data-hotkey="Control+m"
+            data-hotkey="Mod+m"
             @click="onMateSearch"
           >
             <Icon :icon="IconType.MATE_SEARCH" />
@@ -157,20 +157,20 @@
             hidden: appSetting.leftSideControlType === LeftSideControlType.NONE,
           }"
         >
-          <button class="control-item" data-hotkey="Control+," @click="onOpenAppSettings">
+          <button class="control-item" data-hotkey="Mod+," @click="onOpenAppSettings">
             <Icon :icon="IconType.SETTINGS" />
             <span>{{ t.appSettings }}</span>
           </button>
           <button
             class="control-item"
-            data-hotkey="Control+."
+            data-hotkey="Mod+."
             :disabled="!controlStates.engineSettings"
             @click="onOpenEngineSettings"
           >
             <Icon :icon="IconType.ENGINE_SETTINGS" />
             <span>{{ t.engineSettings }}</span>
           </button>
-          <button class="control-item" data-hotkey="Control+t" @click="onFlip">
+          <button class="control-item" data-hotkey="Mod+t" @click="onFlip">
             <Icon :icon="IconType.FLIP" />
             <span>{{ t.flipBoard }}</span>
           </button>
@@ -180,7 +180,7 @@
           </button>
           <button
             class="control-item"
-            data-hotkey="Control+d"
+            data-hotkey="Mod+d"
             :disabled="!controlStates.removeCurrentMove"
             @click="onRemoveCurrentMove"
           >

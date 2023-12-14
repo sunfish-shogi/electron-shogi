@@ -23,7 +23,7 @@ const baseURL =
     : "https://sunfish-shogi.github.io/electron-shogi/";
 const releaseURL = url.resolve(baseURL, "release.json");
 
-async function readStatus(): Promise<VersionStatus> {
+export async function readStatus(): Promise<VersionStatus> {
   if (await exists(statusFilePath)) {
     getAppLogger().debug("version.json exists");
     const data = await fs.promises.readFile(statusFilePath, "utf8");

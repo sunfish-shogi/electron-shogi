@@ -57,6 +57,8 @@ export enum Background {
   CSA_WIN = "csaWin",
   CSA_STOP = "csaStop",
   IS_ENCRYPTION_AVAILABLE = "isEncryptionAvailable",
+  GET_VERSION_STATUS = "getVersionStatus",
+  SEND_TEST_NOTIFICATION = "sendTestNotification",
   OPEN_LOG_FILE = "openLogFile",
   LOG = "log",
   ON_CLOSABLE = "onClosable",

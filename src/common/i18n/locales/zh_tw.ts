@@ -46,6 +46,7 @@ export const zh_tw: Texts = {
   toggleDevTools: "打開/關閉開發者工具顯示",
   reloadCustomPieceImage: "カスタム駒画像をリロード", // TODO: translate
   folders: "各種フォルダ", // TODO: translate
+  notification: "通知", // TODO: translate
   notificationTest: "通知テスト", // TODO: translate
   thisIsTestNotification: "これは通知のテストです。", // TODO: translate
   app: "App", // TODO: translate
@@ -366,6 +367,10 @@ export const zh_tw: Texts = {
   blunderThreshold: "大惡手閾値",
   gothic: "ゴシック体", // TODO: translate
   mincho: "明朝体", // TODO: translate
+  appVersion: "アプリバージョン", // TODO: translate
+  installed: "インストール済み", // TODO: translate
+  stable: "安定版", // TODO: translate
+  latest: "最新版", // TODO: translate
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",
@@ -392,6 +397,11 @@ export const zh_tw: Texts = {
     "由於無法使用系統的加密機能，輸入的密碼將會以明文保存。",
   pleaseUncheckSaveHistoryIfNotWantSave: "若不想保存密碼，請不要將「保存紀錄」勾選。",
   csaProtocolSendPlaintextPasswordRegardlessOfHistory: "不過，CSA協定仍會以明文傳輸您的密碼。",
+  whenNewVersionIsAvailableItWillBeNotified: "新しいバージョンが利用可能になると通知されます。", // TODO: translate
+  pleaseCheckMessageThisIsTestNotificationByAboveButton:
+    "上記のボタンで「これは通知のテストです。」というメッセージを確認してください。", // TODO: translate
+  ifNotWorkYouShouldAllowNotificationOnOSSetting:
+    "表示されない場合はOSの設定で通知を許可してください。", // TODO: translate
   areYouSureWantToResign: "投了しますか？", // TODO: translate
   areYouSureWantToDoDeclaration: "宣言しますか？", // TODO: translate
   areYouSureWantToQuitGames: "要中斷連續對局嗎？",
@@ -419,6 +429,7 @@ export const zh_tw: Texts = {
   failedToSaveRecord: "棋譜保存失敗。",
   failedToParseSFEN: "SFEN讀取失敗。",
   failedToDetectRecordFormat: "無法判別棋譜形式。",
+  unknown: "不明", // TODO: translate
   unknownFileExtension: "未知的檔案形式。",
   emptyRecordInput: "您尚未輸入棋譜。",
   invalidPieceName: "不合法的棋駒",

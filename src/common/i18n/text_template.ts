@@ -44,6 +44,7 @@ export type Texts = {
   toggleDevTools: string;
   reloadCustomPieceImage: string;
   folders: string;
+  notification: string;
   notificationTest: string;
   thisIsTestNotification: string;
   app: string;
@@ -174,7 +175,6 @@ export type Texts = {
   autoSaving: string;
   autoSavingDirectory: string;
   recordFileName: string;
-
   select: string;
   positionOfUSIOutput: string;
   movesOfUSIOutput: string;
@@ -365,6 +365,10 @@ export type Texts = {
   blunderThreshold: string;
   gothic: string;
   mincho: string;
+  appVersion: string;
+  installed: string;
+  stable: string;
+  latest: string;
   typeCustomTitleHere: string;
   displayEmptyElements: string;
   waitingForNewGame: string;
@@ -389,6 +393,9 @@ export type Texts = {
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable: string;
   pleaseUncheckSaveHistoryIfNotWantSave: string;
   csaProtocolSendPlaintextPasswordRegardlessOfHistory: string;
+  whenNewVersionIsAvailableItWillBeNotified: string;
+  pleaseCheckMessageThisIsTestNotificationByAboveButton: string;
+  ifNotWorkYouShouldAllowNotificationOnOSSetting: string;
   areYouSureWantToResign: string;
   areYouSureWantToDoDeclaration: string;
   areYouSureWantToQuitGames: string;
@@ -415,6 +422,7 @@ export type Texts = {
   failedToSaveRecord: string;
   failedToParseSFEN: string;
   failedToDetectRecordFormat: string;
+  unknown: string;
   unknownFileExtension: string;
   emptyRecordInput: string;
   invalidPieceName: string;

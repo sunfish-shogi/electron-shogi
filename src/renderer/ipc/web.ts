@@ -11,6 +11,7 @@ import { defaultCSAGameSettingHistory } from "@/common/settings/csa";
 import { defaultMateSearchSetting } from "@/common/settings/mate";
 import { defaultBatchConversionSetting } from "@/common/settings/conversion";
 import { getEmptyHistory } from "@/common/file/history";
+import { VersionStatus } from "@/background/version/types";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
@@ -246,6 +247,12 @@ export const webAPI: Bridge = {
   },
   async isEncryptionAvailable(): Promise<boolean> {
     return false;
+  },
+  async getVersionStatus(): Promise<string> {
+    return JSON.stringify({} as VersionStatus);
+  },
+  sendTestNotification(): void {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
   openLogFile(): void {
     // Do Nothing

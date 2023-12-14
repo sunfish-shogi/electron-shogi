@@ -207,6 +207,12 @@ const api: Bridge = {
   async isEncryptionAvailable(): Promise<boolean> {
     return await ipcRenderer.invoke(Background.IS_ENCRYPTION_AVAILABLE);
   },
+  async getVersionStatus(): Promise<string> {
+    return await ipcRenderer.invoke(Background.GET_VERSION_STATUS);
+  },
+  sendTestNotification(): void {
+    ipcRenderer.send(Background.SEND_TEST_NOTIFICATION);
+  },
   openLogFile(logType: LogType): void {
     ipcRenderer.invoke(Background.OPEN_LOG_FILE, logType);
   },

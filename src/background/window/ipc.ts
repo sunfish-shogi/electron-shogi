@@ -75,6 +75,8 @@ import {
 import { getAppPath } from "@/background/proc/env";
 import { fetchInitialRecordFileRequest } from "@/background/proc/args";
 import { isSupportedRecordFilePath } from "@/background/file/extensions";
+import { readStatus as readVersionStatus } from "@/background/version/check";
+import { sendTestNotification } from "./debug";
 
 const isWindows = process.platform === "win32";
 
@@ -612,6 +614,16 @@ ipcMain.handle(Background.CSA_STOP, (event, sessionID: number): void => {
 ipcMain.handle(Background.IS_ENCRYPTION_AVAILABLE, (event): boolean => {
   validateIPCSender(event.senderFrame);
   return isEncryptionAvailable();
+});
+
+ipcMain.handle(Background.GET_VERSION_STATUS, async (event) => {
+  validateIPCSender(event.senderFrame);
+  return JSON.stringify(await readVersionStatus());
+});
+
+ipcMain.on(Background.SEND_TEST_NOTIFICATION, (event) => {
+  validateIPCSender(event.senderFrame);
+  sendTestNotification();
 });
 
 ipcMain.handle(Background.OPEN_LOG_FILE, (event, logType: LogType) => {

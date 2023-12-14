@@ -16,6 +16,7 @@ import { BatchConversionSetting } from "@/common/settings/conversion";
 import { BatchConversionResult } from "@/common/file/conversion";
 import { RecordFileHistory } from "@/common/file/history";
 import { InitialRecordFileRequest } from "@/common/file/record";
+import { VersionStatus } from "@/background/version/types";
 
 type AppInfo = {
   appVersion?: string;
@@ -92,6 +93,8 @@ export interface Bridge {
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
   isEncryptionAvailable(): Promise<boolean>;
+  getVersionStatus(): Promise<string>;
+  sendTestNotification(): void;
   openLogFile(logType: LogType): void;
   log(level: LogLevel, message: string): void;
   onClosable(): void;
@@ -190,6 +193,8 @@ export interface API {
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
   isEncryptionAvailable(): Promise<boolean>;
+  getVersionStatus(): Promise<VersionStatus>;
+  sendTestNotification(): void;
   openLogFile(logType: LogType): void;
   log(level: LogLevel, message: string): void;
 }
@@ -301,6 +306,9 @@ const api: API = {
   },
   csaLogin(setting: CSAServerSetting): Promise<number> {
     return bridge.csaLogin(JSON.stringify(setting));
+  },
+  async getVersionStatus(): Promise<VersionStatus> {
+    return JSON.parse(await bridge.getVersionStatus());
   },
 };
 

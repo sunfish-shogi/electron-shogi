@@ -47,6 +47,7 @@ export const en: Texts = {
   toggleDevTools: "Toggle Developer Tools",
   reloadCustomPieceImage: "Reload Custom Piece Image",
   folders: "Folders",
+  notification: "Notification",
   notificationTest: "Notification Test",
   thisIsTestNotification: "This is test notification.",
   app: "App",
@@ -367,6 +368,10 @@ export const en: Texts = {
   blunderThreshold: "Blunder Threshold",
   gothic: "Gothic",
   mincho: "Mincho",
+  appVersion: "App Version",
+  installed: "Installed",
+  stable: "Stable",
+  latest: "Latest",
   typeCustomTitleHere: "Type custom title here",
   displayEmptyElements: "Display Empty Elements",
   waitingForNewGame: "Waiting for new game.",
@@ -396,6 +401,11 @@ export const en: Texts = {
   pleaseUncheckSaveHistoryIfNotWantSave: "Please uncheck Save History, if you don't want to save.",
   csaProtocolSendPlaintextPasswordRegardlessOfHistory:
     "On CSA protocol, client send plaintext password regardless of history.",
+  whenNewVersionIsAvailableItWillBeNotified: "When new version is available, it will be notified.",
+  pleaseCheckMessageThisIsTestNotificationByAboveButton:
+    'Please check the message "This is test notification." by above button.',
+  ifNotWorkYouShouldAllowNotificationOnOSSetting:
+    "If it does not work, you should allow notification on OS setting.",
   areYouSureWantToResign: "Are you sure you want to resign?",
   areYouSureWantToDoDeclaration: "Are you sure you want to do declaration?",
   areYouSureWantToQuitGames: "Are you sure you want to quit games?",
@@ -425,6 +435,7 @@ export const en: Texts = {
   failedToSaveRecord: "Failed to save record.",
   failedToParseSFEN: "Failed to parse SFEN.",
   failedToDetectRecordFormat: "Failed to detect record format.",
+  unknown: "Unknown",
   unknownFileExtension: "Unknown file extension.",
   emptyRecordInput: "Empty record input.",
   invalidPieceName: "Invalid piece name",

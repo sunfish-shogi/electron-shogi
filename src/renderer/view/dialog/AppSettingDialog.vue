@@ -636,6 +636,34 @@
           </div>
         </div>
         <hr />
+        <!-- アプリバージョン -->
+        <div class="section">
+          <div class="section-title">{{ t.appVersion }}</div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.installed }}</div>
+            {{ appInfo.appVersion }}
+          </div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.latest }}</div>
+            {{ versionStatus.knownReleases?.latest.version ?? t.unknown }}
+          </div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.stable }}</div>
+            {{ versionStatus.knownReleases?.stable.version ?? t.unknown }}
+          </div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.notification }}</div>
+            <button class="thin" @click="sendTestNotification">{{ t.notificationTest }}</button>
+          </div>
+          <div class="form-group warning">
+            <div class="note">
+              {{ t.whenNewVersionIsAvailableItWillBeNotified }}
+              {{ t.pleaseCheckMessageThisIsTestNotificationByAboveButton }}
+              {{ t.ifNotWorkYouShouldAllowNotificationOnOSSetting }}
+            </div>
+          </div>
+        </div>
+        <hr />
         <!-- 開発者向け -->
         <div class="section">
           <div class="section-title">{{ t.forDevelopers }}</div>
@@ -735,7 +763,7 @@ import { useStore } from "@/renderer/store";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
-import api, { isNative } from "@/renderer/ipc/api";
+import api, { appInfo, isNative } from "@/renderer/ipc/api";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogLevel } from "@/common/log";
@@ -743,6 +771,7 @@ import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue
 import { RecordFileFormat } from "@/common/file/record";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
+import { VersionStatus } from "@/background/version/types";
 
 enum PieceImage {
   HITOMOJI = "hitomoji",
@@ -858,10 +887,14 @@ const croppedPieceImageBaseURL = ref(appSetting.croppedPieceImageBaseURL);
 const pieceImageFileURL = ref(appSetting.pieceImageFileURL);
 const boardImageFileURL = ref(appSetting.boardImageFileURL);
 const pieceStandImageFileURL = ref(appSetting.pieceStandImageFileURL);
+const versionStatus = ref({} as VersionStatus);
 
 onMounted(() => {
   showModalDialog(dialog.value);
   installHotKeyForDialog(dialog.value);
+  api.getVersionStatus().then((status) => {
+    versionStatus.value = status;
+  });
 });
 
 onBeforeUnmount(() => {
@@ -968,6 +1001,14 @@ const howToWriteFileNameTemplate = () => {
   api.openWebBrowser(
     "https://github.com/sunfish-shogi/electron-shogi/wiki/%E6%A3%8B%E8%AD%9C%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88",
   );
+};
+
+const sendTestNotification = () => {
+  try {
+    api.sendTestNotification();
+  } catch (e) {
+    store.pushError(e);
+  }
 };
 
 const cancel = () => {

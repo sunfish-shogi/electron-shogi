@@ -46,6 +46,7 @@ export const ja: Texts = {
   toggleDevTools: "開発者ツール表示切り替え",
   reloadCustomPieceImage: "カスタム駒画像をリロード",
   folders: "各種フォルダ",
+  notification: "通知",
   notificationTest: "通知テスト",
   thisIsTestNotification: "これは通知のテストです。",
   app: "アプリ",
@@ -366,6 +367,10 @@ export const ja: Texts = {
   blunderThreshold: "大悪手の閾値",
   gothic: "ゴシック体",
   mincho: "明朝体",
+  appVersion: "アプリバージョン",
+  installed: "インストール済み",
+  stable: "安定版",
+  latest: "最新版",
   typeCustomTitleHere: "ここに見出しを入力",
   displayEmptyElements: "未入力の項目を表示",
   waitingForNewGame: "対局開始を待っています。",
@@ -395,6 +400,11 @@ export const ja: Texts = {
     "保存したくない場合は「履歴に保存する」のチェックを外してください。",
   csaProtocolSendPlaintextPasswordRegardlessOfHistory:
     "なお、履歴の保存に関係なくCSAプロトコルの規格上パスワードは平文で送信されます。",
+  whenNewVersionIsAvailableItWillBeNotified: "新しいバージョンが利用可能になると通知されます。",
+  pleaseCheckMessageThisIsTestNotificationByAboveButton:
+    "上のボタンで「これは通知のテストです。」というメッセージを確認してください。",
+  ifNotWorkYouShouldAllowNotificationOnOSSetting:
+    "表示されない場合はOSの設定で通知を許可してください。",
   areYouSureWantToResign: "投了しますか？",
   areYouSureWantToDoDeclaration: "宣言しますか？",
   areYouSureWantToQuitGames: "連続対局を中断しますか？",
@@ -422,6 +432,7 @@ export const ja: Texts = {
   failedToSaveRecord: "棋譜の保存に失敗しました。",
   failedToParseSFEN: "SFENの読み込みに失敗しました。",
   failedToDetectRecordFormat: "棋譜形式を判別できませんでした。",
+  unknown: "不明",
   unknownFileExtension: "不明なファイル形式です。",
   emptyRecordInput: "棋譜が入力されていません。",
   invalidPieceName: "不正な駒",

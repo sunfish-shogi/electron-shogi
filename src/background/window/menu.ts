@@ -274,7 +274,13 @@ function createMenuTemplate() {
           t.analyze,
           MenuEvent.START_ANALYSIS,
           [AppState.NORMAL],
-          isMac ? undefined : "CmdOrCtrl+A",
+          // NOTE:
+          //   Mac では Cmd+A を SelectAll に割り当てる必要があるため、ここで CmdOrCtrl+A を使用することはできない。
+          //   テキスト入力欄にフォーカスしていない場合は、レンダラー側で Cmd+A をハンドリングして解析ダイアログを出すので
+          //   ここで Accelerator を割り当てなくても Cmd+A で解析ダイアログは表示される。
+          //   しかし、メニューバーに何らかの表示がないとユーザーがショートカットキーの割り当てに気づかないので、
+          //   Mac では Cmd+Y でも解析ダイアログを表示できるようにする。
+          isMac ? "CmdOrCtrl+Y" : "CmdOrCtrl+A",
         ),
         menuItem(t.stopAnalysis, MenuEvent.STOP_ANALYSIS, [AppState.ANALYSIS]),
       ],

@@ -21,6 +21,8 @@ export type Texts = {
   copyAsUSI: string;
   copyAsSFEN: string;
   copyAsJKF: string;
+  copy: string;
+  cut: string;
   paste: string;
   copyRecord: string;
   asKIF: string;

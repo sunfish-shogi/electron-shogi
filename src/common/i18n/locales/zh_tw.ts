@@ -23,6 +23,8 @@ export const zh_tw: Texts = {
   copyAsUSI: "複製USI棋譜",
   copyAsSFEN: "複製SFEN局面",
   copyAsJKF: "複製JKF棋譜",
+  copy: "Copy", // TODO: translate
+  cut: "Cut", // TODO: translate
   paste: "貼上",
   copyRecord: "複製棋譜",
   asKIF: "KIF形式",

@@ -23,6 +23,8 @@ export const ja: Texts = {
   copyAsUSI: "コピー・USI",
   copyAsSFEN: "コピー・SFEN",
   copyAsJKF: "コピー・JKF",
+  copy: "コピー",
+  cut: "切り取り",
   paste: "貼り付け",
   copyRecord: "棋譜コピー",
   asKIF: "KIF形式",

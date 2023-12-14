@@ -24,6 +24,8 @@ export const en: Texts = {
   copyAsUSI: "Copy (USI)",
   copyAsSFEN: "Copy (SFEN)",
   copyAsJKF: "Copy (JKF)",
+  copy: "Copy",
+  cut: "Cut",
   paste: "Paste",
   copyRecord: "Copy Record",
   asKIF: "as KIF",

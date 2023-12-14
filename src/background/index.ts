@@ -27,6 +27,7 @@ import {
 import { setLanguage, t } from "@/common/i18n";
 import { checkUpdates } from "./version/check";
 import { setInitialFilePath } from "./proc/args";
+import contextMenu from "electron-context-menu";
 
 getAppLogger().info(
   "start main process: %s %s %d",
@@ -41,6 +42,18 @@ if (isPortable()) {
 }
 
 setLanguage(loadAppSettingOnce().language);
+
+contextMenu({
+  showCopyImage: false,
+  showCopyLink: false,
+  showSelectAll: false,
+  showInspectElement: isDevelopment(),
+  labels: {
+    copy: t.copy,
+    cut: t.cut,
+    paste: t.paste,
+  },
+});
 
 function createWindow() {
   let setting = loadWindowSetting();

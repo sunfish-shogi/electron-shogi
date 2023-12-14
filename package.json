@@ -31,6 +31,7 @@
     "async-lock": "^1.4.0",
     "chart.js": "^4.0.1",
     "dayjs": "^1.11.9",
+    "electron-context-menu": "^3.6.1",
     "electron-shogi-core": "^0.3.0",
     "encoding-japanese": "^2.0.0",
     "jimp": "^0.22.7",

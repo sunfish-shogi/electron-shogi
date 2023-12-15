@@ -30,7 +30,7 @@
   },
   "main": "dist/src/background/index.js",
   "dependencies": {
-    "@github/hotkey": "^2.0.1",
+    "@github/hotkey": "^3.1.0",
     "async-lock": "^1.4.0",
     "chart.js": "^4.0.1",
     "dayjs": "^1.11.9",

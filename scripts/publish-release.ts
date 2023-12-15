@@ -1,31 +1,25 @@
 /* eslint-disable no-console,no-restricted-imports */
 import fs from "node:fs";
-import { promises as readline } from "node:readline";
 import { Releases } from "../src/background/version/types";
 import semver from "semver";
 
 async function updateReleaseJSON() {
   const releases = JSON.parse(fs.readFileSync("docs/release.json", "utf-8")) as Releases;
 
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
   console.log(`Current latest version: ${releases.latest.version}`);
-  const latest = semver.clean(
-    (await rl.question("Please input new latest version: ")) || releases.latest.version,
-  );
-  if (!latest) {
-    throw new Error("Invalid version");
-  }
   console.log(`Current stable version: ${releases.stable.version}`);
-  const stable = semver.clean(
-    (await rl.question("Please input new stable version: ")) || releases.stable.version,
-  );
-  if (!stable) {
-    throw new Error("Invalid version");
-  }
-  rl.close();
+
+  const latest = semver.clean(
+    JSON.parse(fs.readFileSync("package.json", "utf-8")).version,
+  ) as string;
+
+  const isMinorUpdate =
+    semver.major(latest) !== semver.major(releases.latest.version) ||
+    semver.minor(latest) !== semver.minor(releases.latest.version);
+  const stable = isMinorUpdate ? releases.latest.version : releases.stable.version;
+
+  console.log(`New latest version: ${latest}`);
+  console.log(`New stable version: ${stable}`);
 
   releases.stable = {
     version: stable,

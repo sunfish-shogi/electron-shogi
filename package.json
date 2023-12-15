@@ -8,7 +8,7 @@
   "scripts": {
     "compile": "vite build",
     "serve": "vite",
-    "build": "vite build --outDir docs/webapp && npm run license",
+    "build": "vite build --outDir docs/webapp",
     "build:dev": "vite build --outDir docs/webapp-dev",
     "preview": "vite preview",
     "test": "vitest run",
@@ -23,7 +23,10 @@
     "electron:preview": "npm run electron:compile-all && electron .",
     "license": "node scripts/report-license.mjs",
     "docs": "ts-node scripts/build-docs-templates.ts",
-    "release": "ts-node scripts/publish-release.ts && npm run docs"
+    "release:commit": "git add . && git commit -m \"release\"",
+    "release": "ts-node scripts/publish-release.ts && npm run docs && npm run build && npm run build:dev && npm run license && npm run release:commit",
+    "release:patch": "npm version patch --no-commit-hooks --no-git-tag-version && npm run release",
+    "release:minor": "npm version minor --no-commit-hooks --no-git-tag-version && npm run release"
   },
   "main": "dist/src/background/index.js",
   "dependencies": {

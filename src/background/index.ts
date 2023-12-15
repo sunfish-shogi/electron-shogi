@@ -1,7 +1,7 @@
 "use strict";
 
 import path from "node:path";
-import { app, protocol, BrowserWindow, session } from "electron";
+import { app, BrowserWindow, session } from "electron";
 import {
   getAppState,
   isClosable,
@@ -39,11 +39,6 @@ getAppLogger().info("process argv: %s", process.argv.join(" "));
 if (isPortable()) {
   getAppLogger().info("portable mode: %s", getPortableExeDir());
 }
-
-// Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([
-  { scheme: "app", privileges: { secure: true, standard: true } },
-]);
 
 setLanguage(loadAppSettingOnce().language);
 

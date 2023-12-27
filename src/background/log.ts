@@ -1,4 +1,5 @@
 import path from "node:path";
+import child_process from "node:child_process";
 import { shell } from "electron";
 import log4js from "log4js";
 import { loadAppSettingOnce } from "@/background/settings";
@@ -91,4 +92,34 @@ export function shutdownLoggers(): void {
 
 export function openLogFile(logType: LogType): void {
   shell.openPath(getFilePath(logType));
+}
+
+export function getTailCommand(logType: LogType): string {
+  const filePath = getFilePath(logType);
+  switch (process.platform) {
+    case "win32":
+      return `Get-Content -Path "${filePath}" -Wait -Tail 10`;
+    default:
+      return `tail -f "${filePath}"`;
+  }
+}
+
+export function tailLogFile(logType: LogType): void {
+  const escapedCommand = getTailCommand(logType).replaceAll('"', '\\"');
+  switch (process.platform) {
+    case "win32":
+      child_process.spawn("powershell.exe", [
+        "-Command",
+        `start-process powershell '-NoExit','-Command "${escapedCommand}"'`,
+      ]);
+      break;
+    case "darwin":
+      child_process.spawn("osascript", [
+        "-e",
+        `tell app "Terminal" to do script "${escapedCommand}"`,
+        "-e",
+        `tell app "Terminal" to activate`,
+      ]);
+      break;
+  }
 }

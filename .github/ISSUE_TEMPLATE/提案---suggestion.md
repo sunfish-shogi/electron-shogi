@@ -1,6 +1,6 @@
 ---
 name: 提案 / Suggestion
-about: 開発に関する提案
+about: 開発に関する提案、または翻訳
 title: ''
 labels: enhancement
 assignees: sunfish-shogi
@@ -10,6 +10,7 @@ assignees: sunfish-shogi
 ## 説明 /  Description
 
 提案内容を明確かつ簡潔に説明してください。
+翻訳のみの提案であれば他の項目の記入は結構です。
 
 ## 背景 / Why
 

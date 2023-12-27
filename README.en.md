@@ -49,7 +49,7 @@ https://github.com/sunfish-shogi/electron-shogi/wiki
 
 You can download any versions from [Releases](https://github.com/sunfish-shogi/electron-shogi/releases).
 
-## Feature Requests/Suggestions/Bug Reports
+## Bug Reports / Suggestions
 
 If you have a GitHub account, please create Issue or Pull Request.
 If you want to send large changes, please create Issue before development.

@@ -1,5 +1,5 @@
-import { spawn, ChildProcessWithoutNullStreams } from "child_process";
-import { createInterface as readline, Interface as Readline } from "readline";
+import { spawn, ChildProcessWithoutNullStreams } from "node:child_process";
+import { createInterface as readline, Interface as Readline } from "node:readline";
 import path from "node:path";
 
 export class ChildProcess {

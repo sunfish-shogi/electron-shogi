@@ -1,5 +1,5 @@
 import net from "node:net";
-import { createInterface as readline, Interface as Readline } from "readline";
+import { createInterface as readline, Interface as Readline } from "node:readline";
 
 type SocketHandlers = {
   onConnect: () => void;

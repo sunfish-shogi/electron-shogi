@@ -266,4 +266,3 @@ const tabPaneSize2 = computed(() => {
   padding: 0 5% 0 5%;
 }
 </style>
-@/common/geometry

@@ -524,4 +524,3 @@ const whitePlayerTimeSeverity = computed(() => {
   max-height: 100%;
 }
 </style>
-@/common/geometry

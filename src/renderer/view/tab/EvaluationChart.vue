@@ -340,4 +340,3 @@ const style = computed(() => {
   background-color: var(--chart-bg-color);
 }
 </style>
-@/common/geometry.js

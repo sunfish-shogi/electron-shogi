@@ -363,4 +363,3 @@ input.header {
   width: 100%;
 }
 </style>
-@/common/geometry

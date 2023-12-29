@@ -159,4 +159,3 @@ const tabs = {
   background-color: var(--tab-content-bg-color);
 }
 </style>
-@/common/geometry.js

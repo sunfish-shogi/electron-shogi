@@ -329,4 +329,3 @@ const layout = computed(() => {
   letter-spacing: 0px;
 }
 </style>
-@/common/geometry

@@ -35,4 +35,3 @@ const elementHeight = computed(() => {
   return rows !== 0 ? props.size.height / rows : 0;
 });
 </script>
-@/common/geometry.js

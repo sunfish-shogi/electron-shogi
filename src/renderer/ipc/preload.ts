@@ -6,6 +6,8 @@ import { Background, Renderer } from "@/common/ipc/channel";
 import { Bridge } from "./api";
 import { LogType, LogLevel } from "@/common/log";
 import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
+import { PromptTarget } from "@/common/advanced/prompt";
+import { CommandType } from "@/common/advanced/command";
 
 const api: Bridge = {
   // NOTICE:
@@ -204,6 +206,23 @@ const api: Bridge = {
   async csaStop(sessionID: number): Promise<void> {
     return await ipcRenderer.invoke(Background.CSA_STOP, sessionID);
   },
+  async collectSessionStates(): Promise<string> {
+    return await ipcRenderer.invoke(Background.COLLECT_SESSION_STATES);
+  },
+  async setupPrompt(target: PromptTarget, sessionID: number): Promise<string> {
+    return await ipcRenderer.invoke(Background.SETUP_PROMPT, target, sessionID);
+  },
+  openPrompt(target: PromptTarget, sessionID: number, name: string): void {
+    ipcRenderer.send(Background.OPEN_PROMPT, target, sessionID, name);
+  },
+  invokePromptCommand(
+    target: PromptTarget,
+    sessionID: number,
+    type: CommandType,
+    command: string,
+  ): void {
+    ipcRenderer.send(Background.INVOKE_PROMPT_COMMAND, target, sessionID, type, command);
+  },
   async isEncryptionAvailable(): Promise<boolean> {
     return await ipcRenderer.invoke(Background.IS_ENCRYPTION_AVAILABLE);
   },
@@ -307,6 +326,11 @@ const api: Bridge = {
   onCSAClose(callback: (sessionID: number) => void): void {
     ipcRenderer.on(Renderer.CSA_CLOSE, (_, sessionID) => {
       callback(sessionID);
+    });
+  },
+  onPromptCommand(callback: (command: string) => void): void {
+    ipcRenderer.on(Renderer.PROMPT_COMMAND, (_, command) => {
+      callback(command);
     });
   },
 };

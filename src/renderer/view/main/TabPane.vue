@@ -48,6 +48,11 @@
           :size="contentSize"
           :type="EvaluationChartType.WIN_RATE"
         />
+        <MonitorView
+          v-if="activeTab === Tab.MONITOR"
+          class="full tab-content"
+          :size="contentSize"
+        />
       </div>
     </div>
   </div>
@@ -63,6 +68,7 @@ import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import EngineAnalytics from "@/renderer/view/tab/EngineAnalytics.vue";
 import EvaluationChart, { EvaluationChartType } from "@/renderer/view/tab/EvaluationChart.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
+import MonitorView from "@/renderer/view/tab/MonitorView.vue";
 import { RectSize } from "@/common/assets/geometry.js";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { Tab } from "@/common/settings/app";
@@ -121,6 +127,10 @@ const tabs = {
   [Tab.PERCENTAGE_CHART]: {
     title: t.estimatedWinRate,
     icon: IconType.PERCENT,
+  },
+  [Tab.MONITOR]: {
+    title: t.monitor,
+    icon: IconType.MONITOR,
   },
   [Tab.INVISIBLE]: {
     title: t.hideTabView,

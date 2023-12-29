@@ -231,6 +231,7 @@ export const zh_tw: Texts = {
   alwaysSenteIsPositive: "先手有利時為正值",
   signOfEvaluation: "評價值符號",
   winRateCoefficient: "勝率換算係數",
+  monitor: "監視", // TODO: translate
   hideTabView: "最小化",
   expandTabView: "展開分頁",
   sente: "先手",
@@ -383,6 +384,28 @@ export const zh_tw: Texts = {
   installed: "インストール済み", // TODO: translate
   stable: "安定版", // TODO: translate
   latest: "最新版", // TODO: translate
+  updatedAt: "更新日時", // TODO: translate
+  createdAt: "作成日時", // TODO: translate
+  lastSent: "最終送信", // TODO: translate
+  lastReceived: "最終受信", // TODO: translate
+  protocolVersion: "プロトコルバージョン", // TODO: translate
+  prompt: "プロンプト", // TODO: translate
+  openPrompt: "プロンプトを開く", // TODO: translate
+  forceQuit: "強制Quit", // TODO: translate
+  forceClose: "強制Close", // TODO: translate
+  blankLine: "空行", // TODO: translate
+  autoScroll: "自動スクロール", // TODO: translate
+  showTimestamp: "タイムスタンプを表示", // TODO: translate
+  highlightByPartialMatch: "部分一致でハイライト", // TODO: translate
+  csaServer: "CSAサーバー", // TODO: translate
+  usiEngine: "USIエンジン", // TODO: translate
+  noRunningUSIEngine: "稼働中のUSIエンジンはありません。", // TODO: translate
+  noConnectedCSAServer: "接続中のCSAサーバーはありません。", // TODO: translate
+  willBeRemovedFromTheListSoon: "セッションが終了したため、まもなく一覧から削除されます。", // TODO: translate
+  typeCommandHereAndPressEnter: "コマンドを入力してEnter", // TODO: translate
+  allowBlankLine: "空行を許可", // TODO: translate
+  removeSpaceFromBothEnds: "両端の空白を削除", // TODO: translate
+  collapseSequentialSpaces: "連続する空白をまとめる", // TODO: translate
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",

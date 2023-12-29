@@ -1,4 +1,5 @@
 /// <reference types="vitest" />
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { htmlTemplate } from "./plugins/html_template";
@@ -15,6 +16,13 @@ export default defineConfig({
   ],
   base: "./",
   build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        prompt: resolve(__dirname, "prompt.html"),
+      },
+    },
+    outDir: resolve(__dirname, "dist"),
     chunkSizeWarningLimit: 5000000,
   },
   server: {

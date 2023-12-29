@@ -39,6 +39,9 @@ import {
   setupPlayer as usiSetupPlayer,
   ready as usiReady,
   stop as usiStop,
+  collectSessionStates as collectUSISessionStates,
+  getCommandHistory as getUSICommandHistory,
+  invokeCommand as invokeUSICommand,
 } from "@/background/usi";
 import { GameResult } from "@/common/game/result";
 import { LogLevel, LogType } from "@/common/log";
@@ -51,6 +54,9 @@ import {
   resign as csaResign,
   win as csaWin,
   stop as csaStop,
+  collectSessionStates as collectCSASessionStates,
+  getCommandHistory as getCSACommandHistory,
+  invokeCommand as invokeCSACommand,
 } from "@/background/csa";
 import { CSAGameResult, CSAGameSummary, CSAPlayerStates, CSASpecialMove } from "@/common/game/csa";
 import { CSAServerSetting } from "@/common/settings/csa";
@@ -77,6 +83,10 @@ import { fetchInitialRecordFileRequest } from "@/background/proc/args";
 import { isSupportedRecordFilePath } from "@/background/file/extensions";
 import { readStatus as readVersionStatus } from "@/background/version/check";
 import { sendTestNotification } from "./debug";
+import { SessionStates } from "@/common/advanced/monitor";
+import { createCommandWindow } from "./prompt";
+import { PromptTarget } from "@/common/advanced/prompt";
+import { Command, CommandType } from "@/common/advanced/command";
 
 const isWindows = process.platform === "win32";
 
@@ -612,6 +622,98 @@ ipcMain.handle(Background.CSA_STOP, (event, sessionID: number): void => {
   validateIPCSender(event.senderFrame);
   csaStop(sessionID);
 });
+
+ipcMain.handle(Background.COLLECT_SESSION_STATES, (event): string => {
+  validateIPCSender(event.senderFrame);
+  const sessionStates: SessionStates = {
+    usiSessions: collectUSISessionStates(),
+    csaSessions: collectCSASessionStates(),
+  };
+  return JSON.stringify(sessionStates);
+});
+
+const promptMap: { [key: string]: WebContents[] } = {};
+
+function getPromptSessionKey(target: PromptTarget, sessionID: number): string {
+  return `${target}:${sessionID}`;
+}
+
+function getPrompts(target: PromptTarget, sessionID: number): WebContents[] {
+  const key = getPromptSessionKey(target, sessionID);
+  return promptMap[key] || [];
+}
+
+function addPrompt(target: PromptTarget, sessionID: number, contents: WebContents): void {
+  const key = getPromptSessionKey(target, sessionID);
+  let entries = promptMap[key];
+  if (!entries) {
+    entries = [];
+  }
+  entries.push(contents);
+  promptMap[key] = entries;
+}
+
+export function removePrompt(target: PromptTarget, sessionID: number, webContentsID: number): void {
+  const key = getPromptSessionKey(target, sessionID);
+  const entries = promptMap[key];
+  if (!entries) {
+    return;
+  }
+  const index = entries.findIndex((entry) => entry.id === webContentsID);
+  if (index === -1) {
+    return;
+  }
+  if (entries.length === 1) {
+    delete promptMap[key];
+  } else {
+    entries.splice(index, 1);
+    promptMap[key] = entries;
+  }
+}
+
+ipcMain.handle(
+  Background.SETUP_PROMPT,
+  (event, target: PromptTarget, sessionID: number): string => {
+    validateIPCSender(event.senderFrame);
+    addPrompt(target, sessionID, event.sender);
+    switch (target) {
+      case PromptTarget.USI:
+        return JSON.stringify(getUSICommandHistory(sessionID));
+      case PromptTarget.CSA:
+        return JSON.stringify(getCSACommandHistory(sessionID));
+    }
+  },
+);
+
+export function sendPromptCommand(target: PromptTarget, sessionID: number, command: Command): void {
+  const prompts = getPrompts(target, sessionID);
+  prompts.forEach((prompt) => {
+    prompt.send(Renderer.PROMPT_COMMAND, JSON.stringify(command));
+  });
+}
+
+ipcMain.on(
+  Background.INVOKE_PROMPT_COMMAND,
+  (event, target: PromptTarget, sessionID: number, type: CommandType, command: string) => {
+    validateIPCSender(event.senderFrame);
+    switch (target) {
+      case PromptTarget.USI:
+        invokeUSICommand(sessionID, type, command);
+        break;
+      case PromptTarget.CSA:
+        invokeCSACommand(sessionID, type, command);
+        break;
+    }
+  },
+);
+
+ipcMain.on(
+  Background.OPEN_PROMPT,
+  (event, target: PromptTarget, sessionID: number, name: string) => {
+    validateIPCSender(event.senderFrame);
+    createCommandWindow(mainWindow, target, sessionID, name);
+  },
+);
 
 ipcMain.handle(Background.IS_ENCRYPTION_AVAILABLE, (event): boolean => {
   validateIPCSender(event.senderFrame);

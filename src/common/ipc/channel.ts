@@ -56,6 +56,10 @@ export enum Background {
   CSA_RESIGN = "csaResign",
   CSA_WIN = "csaWin",
   CSA_STOP = "csaStop",
+  COLLECT_SESSION_STATES = "collectSessionStates",
+  SETUP_PROMPT = "setupPrompt",
+  OPEN_PROMPT = "openPrompt",
+  INVOKE_PROMPT_COMMAND = "invokePromptCommand",
   IS_ENCRYPTION_AVAILABLE = "isEncryptionAvailable",
   GET_VERSION_STATUS = "getVersionStatus",
   SEND_TEST_NOTIFICATION = "sendTestNotification",
@@ -83,4 +87,5 @@ export enum Renderer {
   CSA_MOVE = "csaMove",
   CSA_GAME_RESULT = "csaGameResult",
   CSA_CLOSE = "csaClose",
+  PROMPT_COMMAND = "promptCommand",
 }

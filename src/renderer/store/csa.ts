@@ -23,6 +23,7 @@ import { RecordManager, SearchInfoSenderType } from "./record";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { t } from "@/common/i18n";
 import { GameResult } from "@/common/game/result";
+import { USIPlayer } from "@/renderer/players/usi";
 
 export const loginRetryIntervalSeconds = 10;
 
@@ -55,7 +56,7 @@ enum ReloginBehavior {
 export class CSAGameManager {
   private _state = CSAGameState.OFFLINE;
   private _setting = defaultCSAGameSetting();
-  private sessionID = 0;
+  private _sessionID = 0;
   private stopRequested = false;
   private repeat = 0;
   private player?: Player;
@@ -147,6 +148,14 @@ export class CSAGameManager {
     return this._setting;
   }
 
+  get sessionID(): number {
+    return this._sessionID;
+  }
+
+  get usiSessionID(): number {
+    return this.player instanceof USIPlayer ? this.player.sessionID : 0;
+  }
+
   get isMyTurn(): boolean {
     const color = this.recordManager.record.position.color;
     return color === this.gameSummary.myColor;
@@ -202,7 +211,7 @@ export class CSAGameManager {
       this._state = CSAGameState.WAITING_LOGIN;
       const sessionID = await api.csaLogin(this._setting.server);
       // セッション ID を記憶する。
-      this.sessionID = sessionID;
+      this._sessionID = sessionID;
       // ステータスを更新する。
       this._state = CSAGameState.READY;
       entrySession(this.sessionID, this);
@@ -256,7 +265,7 @@ export class CSAGameManager {
           new Error(`CSAGameManager#close: ${t.errorOccuredWhileLogoutFromCSAServer}: ${e}`),
         );
       });
-      this.sessionID = 0;
+      this._sessionID = 0;
     }
 
     // 時計を停止する。

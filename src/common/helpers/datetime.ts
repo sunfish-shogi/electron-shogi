@@ -1,13 +1,13 @@
-export function getDateString(date?: Date): string {
-  return (date || new Date()).toLocaleDateString("ja-JP", {
+export function getDateString(date = new Date()): string {
+  return date.toLocaleDateString("ja-JP", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
 }
 
-export function getDateTimeString(date?: Date): string {
-  return (date || new Date()).toLocaleTimeString("ja-JP", {
+export function getDateTimeString(date = new Date()): string {
+  return date.toLocaleTimeString("ja-JP", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -16,4 +16,8 @@ export function getDateTimeString(date?: Date): string {
     second: "2-digit",
     hour12: false,
   });
+}
+
+export function getDateTimeStringMs(date = new Date()): string {
+  return getDateTimeString(date) + "." + (date.getTime() % 1000);
 }

@@ -85,6 +85,7 @@ export enum Tab {
   PV = "pv",
   CHART = "chart",
   PERCENTAGE_CHART = "percentageChart",
+  MONITOR = "monitor",
   INVISIBLE = "invisible", // Deprecated
 }
 

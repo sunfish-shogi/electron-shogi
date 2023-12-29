@@ -12,6 +12,7 @@ import { defaultMateSearchSetting } from "@/common/settings/mate";
 import { defaultBatchConversionSetting } from "@/common/settings/conversion";
 import { getEmptyHistory } from "@/common/file/history";
 import { VersionStatus } from "@/background/version/types";
+import { SessionStates } from "@/common/advanced/monitor";
 
 enum STORAGE_KEY {
   APP_SETTING = "appSetting",
@@ -245,6 +246,21 @@ export const webAPI: Bridge = {
   async csaStop(): Promise<void> {
     // Do Nothing
   },
+  async collectSessionStates(): Promise<string> {
+    return JSON.stringify({
+      usiSessions: [],
+      csaSessions: [],
+    } as SessionStates);
+  },
+  async setupPrompt(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async openPrompt() {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  invokePromptCommand(): void {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   async isEncryptionAvailable(): Promise<boolean> {
     return false;
   },
@@ -328,6 +344,9 @@ export const webAPI: Bridge = {
     // Do Nothing
   },
   onCSAClose(): void {
+    // Do Nothing
+  },
+  onPromptCommand(): void {
     // Do Nothing
   },
 };

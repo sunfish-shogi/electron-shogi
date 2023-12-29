@@ -94,7 +94,7 @@ dialog .center .form-item-label {
   width: auto;
 }
 
-dialog .form-item-unit {
+dialog .form-item-small-label {
   display: inline-block;
   text-align: left;
   font-size: 0.8em;

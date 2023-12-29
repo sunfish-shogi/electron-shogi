@@ -49,7 +49,7 @@
               }
             "
           />
-          <div class="form-item-unit">{{ t.toPrefix }}</div>
+          <div class="form-item-small-label">{{ t.toPrefix }}</div>
           <input
             ref="maxSeconds"
             :value="researchSetting.maxSeconds"
@@ -58,7 +58,7 @@
             min="1"
             :disabled="!enableMaxSeconds"
           />
-          <div class="form-item-unit">{{ t.secondsSuffix }}{{ t.toSuffix }}</div>
+          <div class="form-item-small-label">{{ t.secondsSuffix }}{{ t.toSuffix }}</div>
         </div>
       </div>
       <div class="main-buttons">

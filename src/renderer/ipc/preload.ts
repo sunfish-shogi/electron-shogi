@@ -214,7 +214,7 @@ const api: Bridge = {
     ipcRenderer.send(Background.SEND_TEST_NOTIFICATION);
   },
   openLogFile(logType: LogType): void {
-    ipcRenderer.invoke(Background.OPEN_LOG_FILE, logType);
+    ipcRenderer.send(Background.OPEN_LOG_FILE, logType);
   },
   log(level: LogLevel, message: string): void {
     ipcRenderer.send(Background.LOG, level, message);

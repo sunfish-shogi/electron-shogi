@@ -628,7 +628,7 @@ ipcMain.on(Background.SEND_TEST_NOTIFICATION, (event) => {
   sendTestNotification();
 });
 
-ipcMain.handle(Background.OPEN_LOG_FILE, (event, logType: LogType) => {
+ipcMain.on(Background.OPEN_LOG_FILE, (event, logType: LogType) => {
   validateIPCSender(event.senderFrame);
   openLogFile(logType);
 });

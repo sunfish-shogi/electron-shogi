@@ -39,19 +39,19 @@
             <div class="form-item">
               <div class="form-item-label">{{ t.allottedTime }}</div>
               <input ref="hours" class="time" type="number" min="0" max="99" step="1" />
-              <div class="form-item-unit">{{ t.hoursSuffix }}</div>
+              <div class="form-item-small-label">{{ t.hoursSuffix }}</div>
               <input ref="minutes" class="time" type="number" min="0" max="59" step="1" />
-              <div class="form-item-unit">{{ t.minutesSuffix }}</div>
+              <div class="form-item-small-label">{{ t.minutesSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.byoyomi }}</div>
               <input ref="byoyomi" class="time" type="number" min="0" max="60" step="1" />
-              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+              <div class="form-item-small-label">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.increments }}</div>
               <input ref="increment" class="time" type="number" min="0" max="99" step="1" />
-              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+              <div class="form-item-small-label">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
               <ToggleButton
@@ -69,19 +69,19 @@
             <div class="form-item">
               <div class="form-item-label">{{ t.allottedTime }}</div>
               <input ref="whiteHours" class="time" type="number" min="0" max="99" step="1" />
-              <div class="form-item-unit">{{ t.hoursSuffix }}</div>
+              <div class="form-item-small-label">{{ t.hoursSuffix }}</div>
               <input ref="whiteMinutes" class="time" type="number" min="0" max="59" step="1" />
-              <div class="form-item-unit">{{ t.minutesSuffix }}</div>
+              <div class="form-item-small-label">{{ t.minutesSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.byoyomi }}</div>
               <input ref="whiteByoyomi" class="time" type="number" min="0" max="60" step="1" />
-              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+              <div class="form-item-small-label">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
               <div class="form-item-label">{{ t.increments }}</div>
               <input ref="whiteIncrement" class="time" type="number" min="0" max="99" step="1" />
-              <div class="form-item-unit">{{ t.secondsSuffix }}</div>
+              <div class="form-item-small-label">{{ t.secondsSuffix }}</div>
             </div>
             <div class="form-item">
               <ToggleButton

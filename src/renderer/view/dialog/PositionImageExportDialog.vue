@@ -105,7 +105,7 @@
                 :value="Math.round(appSetting.positionImageFontScale * 100)"
                 @change="changeFontScale"
               />
-              <span class="form-item-unit">%</span>
+              <span class="form-item-small-label">%</span>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@
             :value="appSetting.positionImageSize"
             @input="changeSize"
           />
-          <span class="form-item-unit">px</span>
+          <span class="form-item-small-label">px</span>
         </div>
       </div>
       <div class="main-buttons">

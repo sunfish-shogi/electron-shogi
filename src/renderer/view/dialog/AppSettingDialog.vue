@@ -246,7 +246,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 駒台の不透明度 -->
           <div class="form-item">
@@ -259,7 +259,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 棋譜の不透明度 -->
           <div class="form-item">
@@ -272,7 +272,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 段・筋の表示 -->
           <div class="form-item">
@@ -336,7 +336,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 時計音の大きさ -->
           <div class="form-item">
@@ -348,7 +348,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 時計音の高さ -->
           <div class="form-item">
@@ -360,7 +360,7 @@
               max="880"
               min="220"
             />
-            <div class="form-item-unit">Hz ({{ t.between(220, 880) }})</div>
+            <div class="form-item-small-label">Hz ({{ t.between(220, 880) }})</div>
           </div>
           <!-- 時計音の対象 -->
           <div class="form-item">
@@ -529,7 +529,7 @@
               :value="translateEngineOptionName"
               @change="(checked: boolean) => (translateEngineOptionName = checked)"
             />
-            <div class="form-item-unit">({{ t.functionalOnJapaneseOnly }})</div>
+            <div class="form-item-small-label">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
           <!-- 最大起動待ち時間 -->
           <div class="form-item">
@@ -543,7 +543,7 @@
               max="300"
               min="1"
             />
-            <div class="form-item-unit">{{ t.secondsSuffix }} ({{ t.between(1, 300) }})</div>
+            <div class="form-item-small-label">{{ t.secondsSuffix }} ({{ t.between(1, 300) }})</div>
           </div>
         </div>
         <hr />
@@ -584,7 +584,9 @@
               max="10000"
               min="1"
             />
-            <div class="form-item-unit">({{ t.recommended }}: {{ t.between(600, 1500) }})</div>
+            <div class="form-item-small-label">
+              ({{ t.recommended }}: {{ t.between(600, 1500) }})
+            </div>
           </div>
           <!-- 緩手の閾値 -->
           <div class="form-item">
@@ -596,7 +598,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 疑問手の閾値 -->
           <div class="form-item">
@@ -608,7 +610,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 悪手の閾値 -->
           <div class="form-item">
@@ -620,7 +622,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
           <!-- 大悪手の閾値 -->
           <div class="form-item">
@@ -632,7 +634,7 @@
               max="100"
               min="0"
             />
-            <div class="form-item-unit">%</div>
+            <div class="form-item-small-label">%</div>
           </div>
         </div>
         <hr />

@@ -25,7 +25,7 @@
               }
             "
           />
-          <div class="form-item-unit">{{ t.fromPrefix }}{{ t.plyPrefix }}</div>
+          <div class="form-item-small-label">{{ t.fromPrefix }}{{ t.plyPrefix }}</div>
           <input
             ref="startNumber"
             class="small"
@@ -34,7 +34,7 @@
             step="1"
             :disabled="!enableStartNumber"
           />
-          <div class="form-item-unit">{{ t.plySuffix }}{{ t.fromSuffix }}</div>
+          <div class="form-item-small-label">{{ t.plySuffix }}{{ t.fromSuffix }}</div>
         </div>
         <div class="form-item">
           <ToggleButton
@@ -45,7 +45,7 @@
               }
             "
           />
-          <div class="form-item-unit">{{ t.toPrefix }}{{ t.plyPrefix }}</div>
+          <div class="form-item-small-label">{{ t.toPrefix }}{{ t.plyPrefix }}</div>
           <input
             ref="endNumber"
             class="small"
@@ -54,15 +54,15 @@
             step="1"
             :disabled="!enableEndNumber"
           />
-          <div class="form-item-unit">{{ t.plySuffix }}{{ t.toSuffix }}</div>
+          <div class="form-item-small-label">{{ t.plySuffix }}{{ t.toSuffix }}</div>
         </div>
       </div>
       <div class="form-group">
         <div>{{ t.endCriteria1Move }}</div>
         <div class="form-item">
-          <div class="form-item-unit">{{ t.toPrefix }}</div>
+          <div class="form-item-small-label">{{ t.toPrefix }}</div>
           <input ref="maxSecondsPerMove" class="small" type="number" min="0" step="1" />
-          <div class="form-item-unit">{{ t.secondsSuffix }}{{ t.toSuffix }}</div>
+          <div class="form-item-small-label">{{ t.secondsSuffix }}{{ t.toSuffix }}</div>
         </div>
       </div>
       <div class="form-group">

@@ -106,13 +106,15 @@ ipcMain.handle(Background.FETCH_INITIAL_RECORD_FILE_REQUEST, (event) => {
   return JSON.stringify(fetchInitialRecordFileRequest());
 });
 
-ipcMain.on(Background.UPDATE_APP_STATE, (_, state: AppState, bussy: boolean) => {
+ipcMain.on(Background.UPDATE_APP_STATE, (event, state: AppState, bussy: boolean) => {
+  validateIPCSender(event.senderFrame);
   getAppLogger().debug(`change app state: AppState=${state} BussyState=${bussy}`);
   appState = state;
   updateAppState(state, bussy);
 });
 
-ipcMain.on(Background.OPEN_EXPLORER, async (_, targetPath: string) => {
+ipcMain.on(Background.OPEN_EXPLORER, async (event, targetPath: string) => {
+  validateIPCSender(event.senderFrame);
   try {
     const fullPath = resolveEnginePath(targetPath);
     const stats = await fs.stat(fullPath);

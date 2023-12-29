@@ -44,6 +44,16 @@ export type Texts = {
   config: string;
   debug: string;
   toggleDevTools: string;
+  logFile: string;
+  openAppLog: string;
+  openUSILog: string;
+  openCSALog: string;
+  tailAppLog: string;
+  tailUSILog: string;
+  tailCSALog: string;
+  copyAppLogTailCommand: string;
+  copyUSILogTailCommand: string;
+  copyCSALogTailCommand: string;
   reloadCustomPieceImage: string;
   folders: string;
   notification: string;

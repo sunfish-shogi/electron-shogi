@@ -46,6 +46,16 @@ export const zh_tw: Texts = {
   config: "設定",
   debug: "偵錯",
   toggleDevTools: "打開/關閉開發者工具顯示",
+  logFile: "ログファイル", // TODO: translate
+  openAppLog: "アプリログを開く", // TODO: translate
+  openUSILog: "USI通信ログを開く", // TODO: translate
+  openCSALog: "CSA通信ログを開く", // TODO: translate
+  tailAppLog: "アプリログをTailする", // TODO: translate
+  tailUSILog: "USI通信ログをTailする", // TODO: translate
+  tailCSALog: "CSA通信ログをTailする", // TODO: translate
+  copyAppLogTailCommand: "アプリログのTailコマンドをコピー", // TODO: translate
+  copyUSILogTailCommand: "USI通信ログのTailコマンドをコピー", // TODO: translate
+  copyCSALogTailCommand: "CSA通信ログのTailコマンドをコピー", // TODO: translate
   reloadCustomPieceImage: "カスタム駒画像をリロード", // TODO: translate
   folders: "各種フォルダ", // TODO: translate
   notification: "通知", // TODO: translate

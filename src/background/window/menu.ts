@@ -1,7 +1,7 @@
 import path from "node:path";
-import { app, Menu, MenuItem, MenuItemConstructorOptions, shell } from "electron";
+import { app, clipboard, Menu, MenuItem, MenuItemConstructorOptions, shell } from "electron";
 import { openAutoSaveDirectory, openSettingsDirectory } from "@/background/settings";
-import { openLogsDirectory } from "@/background/log";
+import { getTailCommand, openLogFile, openLogsDirectory, tailLogFile } from "@/background/log";
 import { getWebContents, onMenuEvent } from "@/background/window/ipc";
 import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
@@ -12,7 +12,9 @@ import { getAppPath } from "@/background/proc/env";
 import { openBackupDirectory } from "@/background/file/history";
 import { openCacheDirectory } from "@/background/image/cache";
 import { refreshCustomPieceImages, sendTestNotification } from "./debug";
+import { LogType } from "@/common/log";
 
+const isWin = process.platform === "win32";
 const isMac = process.platform === "darwin";
 
 const stateChangeCallbacks: ((appState: AppState, bussy: boolean) => void)[] = [];
@@ -374,6 +376,74 @@ function createMenuTemplate() {
         {
           label: t.toggleDevTools,
           role: "toggleDevTools",
+        },
+        {
+          label: t.logFile,
+          submenu: [
+            {
+              label: t.openAppLog,
+              click: () => {
+                openLogFile(LogType.APP);
+              },
+            },
+            {
+              label: t.openUSILog,
+              click: () => {
+                openLogFile(LogType.USI);
+              },
+            },
+            {
+              label: t.openCSALog,
+              click: () => {
+                openLogFile(LogType.CSA);
+              },
+            },
+            {
+              type: "separator",
+            },
+            {
+              label: t.tailAppLog + (isWin ? " (PowerShell)" : ""),
+              click: () => {
+                tailLogFile(LogType.APP);
+              },
+              enabled: isWin || isMac,
+            },
+            {
+              label: t.tailUSILog + (isWin ? " (PowerShell)" : ""),
+              click: () => {
+                tailLogFile(LogType.USI);
+              },
+              enabled: isWin || isMac,
+            },
+            {
+              label: t.tailCSALog + (isWin ? " (PowerShell)" : ""),
+              click: () => {
+                tailLogFile(LogType.CSA);
+              },
+              enabled: isWin || isMac,
+            },
+            {
+              type: "separator",
+            },
+            {
+              label: t.copyAppLogTailCommand + (isWin ? " (PowerShell)" : ""),
+              click: () => {
+                clipboard.writeText(getTailCommand(LogType.APP));
+              },
+            },
+            {
+              label: t.copyUSILogTailCommand + (isWin ? " (PowerShell)" : ""),
+              click: () => {
+                clipboard.writeText(getTailCommand(LogType.USI));
+              },
+            },
+            {
+              label: t.copyCSALogTailCommand + (isWin ? " (PowerShell)" : ""),
+              click: () => {
+                clipboard.writeText(getTailCommand(LogType.CSA));
+              },
+            },
+          ],
         },
         {
           label: t.reloadCustomPieceImage,

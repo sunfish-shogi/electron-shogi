@@ -1,14 +1,7 @@
 <template>
   <div>
-    <div class="full column root">
-      <textarea
-        ref="textarea"
-        class="auto text"
-        :value="comment"
-        :readonly="readonly"
-        @input="change"
-      >
-      </textarea>
+    <div ref="root" class="full column root">
+      <textarea class="auto text" :value="comment" :readonly="readonly" @input="change"> </textarea>
       <div v-if="pvs.length !== 0" class="row play-buttons">
         <button v-for="(pv, index) of pvs" :key="index" class="play" @click="play(pv)">
           <Icon :icon="IconType.PLAY" />
@@ -50,7 +43,7 @@ const store = useStore();
 const readonly = computed(
   () => store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH,
 );
-const textarea = ref();
+const root = ref();
 const comment = computed(() => store.record.current.comment);
 const pvs = computed(() => store.inCommentPVs);
 const bookmark = computed(() => store.record.current.bookmark);
@@ -78,10 +71,10 @@ const play = (pv: Move[]) => {
 };
 
 onMounted(() => {
-  textarea.value.addEventListener("copy", (event: ClipboardEvent) => {
+  root.value.addEventListener("copy", (event: ClipboardEvent) => {
     event.stopPropagation();
   });
-  textarea.value.addEventListener("paste", (event: ClipboardEvent) => {
+  root.value.addEventListener("paste", (event: ClipboardEvent) => {
     event.stopPropagation();
   });
 });

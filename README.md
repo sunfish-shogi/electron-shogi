@@ -14,7 +14,7 @@
 
 私達は既に将棋所や[ShogiGUI](http://shogigui.siganus.com/)などの洗練されたソフトウェアで将棋の対局や研究が可能です。
 しかし、その多くは個人がクローズドに開発しているものです。
-コンピューター将棋界の権威ある開発者も[オープンソースのGUIの必要性に言及](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/)しています。
+コンピューター将棋界の権威ある開発者も[ソースコード公開の必要性に言及](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/)しています。
 Electron 将棋はソースコードを公開しており、そして低い制限のもとで自由に利用・改変が可能です。
 
 Electron 将棋は Web ベースの GUI フレームワークである [Electron](https://www.electronjs.org/) を使っています。

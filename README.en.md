@@ -13,8 +13,8 @@ You can use this app with any Shogi engine(AI) based on [USI Protocol](http://sh
 ## Concept
 
 We can already use excellent softwares such as 将棋所 and [ShogiGUI](http://shogigui.siganus.com/) etc.
-However, most of them are not open-source projects.
-The authority of Shogi AI advocates [importance of open-source Shogi GUI](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/).
+However, most of those source code are not public.
+The authority of Shogi AI advocates [importance of source code sharing](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/).
 Electron Shogi publishes fully source code. And you can use/modify under only few limits.
 
 Electron Shogi is developed by [Electron](https://www.electronjs.org/) which is web based GUI framework.

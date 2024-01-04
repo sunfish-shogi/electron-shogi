@@ -25,5 +25,17 @@ export default defineConfig({
     dir: "./src/tests",
     globals: true,
     environment: "jsdom",
+    coverage: {
+      exclude: [
+        "docs",
+        "plugins",
+        "scripts",
+        "src/tests",
+        "vite.config.ts",
+        ".*.*",
+        "**/*.d.ts",
+        "**/*.vue",
+      ],
+    },
   },
 });

@@ -121,7 +121,7 @@
             }})
           </div>
           <div class="row">
-            <button @click="openCSAPrompt(session)">{{ t.openPrompt }}く</button>
+            <button @click="openCSAPrompt(session)">{{ t.openPrompt }}</button>
             <button @click="closeCSA(session)">{{ t.forceClose }}</button>
           </div>
         </div>

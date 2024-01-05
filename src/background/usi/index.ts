@@ -1,5 +1,5 @@
 import { USIEngineSetting, emptyUSIEngineSetting } from "@/common/settings/usi";
-import { EngineProcess, GameResult as USIGameResult, TimeState } from "./engine";
+import { EngineProcess, GameResult as USIGameResult, TimeState, State } from "./engine";
 import * as uri from "@/common/uri";
 import {
   onUSIBestMove,
@@ -9,12 +9,16 @@ import {
   onUSIInfo,
   onUSINoMate,
   onUSIPonderInfo,
+  sendPromptCommand,
 } from "@/background/window/ipc";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/game/result";
 import { t } from "@/common/i18n";
 import { resolveEnginePath } from "@/background/usi/path";
 import { getUSILogger } from "@/background/log";
+import { USISessionState } from "@/common/advanced/monitor";
+import { PromptHistory, PromptTarget } from "@/common/advanced/prompt";
+import { CommandType } from "@/common/advanced/command";
 
 function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
@@ -39,6 +43,9 @@ export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<
           options: process.engineOptions,
         });
         process.quit();
+      })
+      .on("command", (command) => {
+        sendPromptCommand(PromptTarget.USI, sessionID, command);
       });
     process.launch();
   });
@@ -62,21 +69,18 @@ export function sendSetOptionCommand(
         process.setOption(name);
         resolve();
         process.quit();
+      })
+      .on("command", (command) => {
+        sendPromptCommand(PromptTarget.USI, sessionID, command);
       });
     process.launch();
   });
 }
 
-enum SessionType {
-  GAME,
-  RESEARCH,
-}
-
 type Session = {
-  name: string;
   process: EngineProcess;
   setting: USIEngineSetting;
-  sessionType: SessionType;
+  createdMs: number;
 };
 
 let lastSessionID = 0;
@@ -107,10 +111,9 @@ export function setupPlayer(setting: USIEngineSetting, timeoutSeconds: number): 
     engineOptions: Object.values(setting.options),
   });
   sessions.set(sessionID, {
-    name: setting.name,
     process,
     setting,
-    sessionType: SessionType.GAME,
+    createdMs: Date.now(),
   });
   return new Promise<number>((resolve, reject) => {
     process
@@ -129,7 +132,10 @@ export function setupPlayer(setting: USIEngineSetting, timeoutSeconds: number): 
       .on("noMate", (position) => {
         onUSINoMate(sessionID, position);
       })
-      .on("usiok", () => resolve(sessionID));
+      .on("usiok", () => resolve(sessionID))
+      .on("command", (command) => {
+        sendPromptCommand(PromptTarget.USI, sessionID, command);
+      });
     process.launch();
   });
 }
@@ -230,7 +236,9 @@ export function quit(sessionID: number): void {
   }
   const session = getSession(sessionID);
   session.process.quit();
-  sessions.delete(sessionID);
+  setTimeout(() => {
+    sessions.delete(sessionID);
+  }, 10e3); // remove 10 seconds later
 }
 
 export function quitAll(): void {
@@ -238,4 +246,32 @@ export function quitAll(): void {
     session.process.quit();
   });
   sessions.clear();
+}
+
+export function collectSessionStates(): USISessionState[] {
+  return Array.from(sessions.entries())
+    .map(([id, session]) => ({
+      sessionID: id,
+      uri: session.setting.uri,
+      name: session.setting.name,
+      path: session.setting.path,
+      pid: session.process.pid,
+      stateCode: session.process.state,
+      createdMs: session.createdMs,
+      lastReceived: session.process.lastReceived,
+      lastSent: session.process.lastSent,
+      updatedMs: Date.now(),
+      closed: session.process.state === State.WillQuit,
+    }))
+    .sort((a, b) => b.sessionID - a.sessionID);
+}
+
+export function getCommandHistory(sessionID: number): PromptHistory {
+  const session = getSession(sessionID);
+  return session.process.commandHistory;
+}
+
+export function invokeCommand(sessionID: number, type: CommandType, command: string): void {
+  const session = getSession(sessionID);
+  session.process.invoke(type, command);
 }

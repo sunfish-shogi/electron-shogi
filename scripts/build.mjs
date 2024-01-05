@@ -22,6 +22,7 @@ const config = {
     "dist/piece",
     "dist/sound",
     "dist/index.html",
+    "dist/prompt.html",
     "dist/packed",
     "!node_modules/**/*",
   ],

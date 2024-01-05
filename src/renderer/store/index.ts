@@ -476,6 +476,28 @@ class Store {
     return this.csaGameManager.state;
   }
 
+  get csaServerSessionID(): number {
+    return this.csaGameManager.sessionID;
+  }
+
+  get csaGameSetting(): CSAGameSetting {
+    return this.csaGameManager.setting;
+  }
+
+  get usiSessionIDs(): number[] {
+    switch (this.appState) {
+      case AppState.GAME:
+        throw new Error("not implemented");
+      case AppState.CSA_GAME:
+        return [this.csaGameManager.usiSessionID].filter((id) => id);
+      case AppState.RESEARCH:
+        throw new Error("not implemented");
+      case AppState.ANALYSIS:
+        throw new Error("not implemented");
+    }
+    return [];
+  }
+
   loginCSAGame(setting: CSAGameSetting, opt: { saveHistory: boolean }): void {
     if (this.appState !== AppState.CSA_GAME_DIALOG || this.isBussy) {
       return;
@@ -658,7 +680,8 @@ class Store {
           appSetting.tab !== Tab.SEARCH &&
           appSetting.tab !== Tab.PV &&
           appSetting.tab !== Tab.CHART &&
-          appSetting.tab !== Tab.PERCENTAGE_CHART
+          appSetting.tab !== Tab.PERCENTAGE_CHART &&
+          appSetting.tab !== Tab.MONITOR
         ) {
           useAppSetting().updateAppSetting({ tab: Tab.PV });
         }

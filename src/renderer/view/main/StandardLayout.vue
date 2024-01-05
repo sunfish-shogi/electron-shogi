@@ -39,6 +39,7 @@
             Tab.PV,
             Tab.CHART,
             Tab.PERCENTAGE_CHART,
+            Tab.MONITOR,
           ]"
           :active-tab="appSetting.tab"
           :display-minimize-toggle="true"
@@ -57,7 +58,7 @@
             <TabPane
               class="full"
               :size="tabPaneSize"
-              :visible-tabs="[Tab.RECORD_INFO, Tab.SEARCH, Tab.PV]"
+              :visible-tabs="[Tab.RECORD_INFO, Tab.SEARCH, Tab.PV, Tab.MONITOR]"
               :active-tab="appSetting.tab"
               @on-change-tab="onChangeTab"
             />

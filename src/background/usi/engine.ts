@@ -9,6 +9,8 @@ import {
 import { Logger } from "log4js";
 import { SCORE_MATE_INFINITE, USIInfoCommand } from "@/common/game/usi";
 import { ChildProcess } from "./process";
+import { Command, CommandType } from "@/common/advanced/command";
+import { addCommand, PromptHistory } from "@/common/advanced/prompt";
 
 export type EngineProcessOption = {
   timeout?: number;
@@ -121,6 +123,7 @@ type CheckmateNotImplementedCallback = () => void;
 type CheckmateTimeoutCallback = (position: string) => void;
 type NoMateCallback = (position: string) => void;
 type InfoCallback = (position: string, info: USIInfoCommand) => void;
+type CommandCallback = (command: Command) => void;
 
 type ReservedGoCommand = {
   position: string;
@@ -141,7 +144,7 @@ function buildTimeOptions(timeState?: TimeState): string {
   );
 }
 
-enum State {
+export enum State {
   WaitingForUSIOK = "waitingForUSIOK",
   NotReady = "notReady",
   WaitingForReadyOK = "waitingForReadyOK",
@@ -160,17 +163,25 @@ const USIHashOptionOrder = 1;
 const USIPonderOptionOrder = 2;
 const UserDefinedOptionOrderStart = 100;
 
+const maxCommandHistoryLength = 100;
+
 export class EngineProcess {
   private process: ChildProcess | null = null;
   private _name = "NO NAME";
   private _author = "";
   private _engineOptions = {} as USIEngineOptions;
-  private state = State.WaitingForUSIOK;
+  private _state = State.WaitingForUSIOK;
   private currentPosition = "";
   private invalidBestMoveCount = 0;
   private reservedGoCommand?: ReservedGoCommand;
   private launchTimeout?: NodeJS.Timeout;
   private quitTimeout?: NodeJS.Timeout;
+  private _lastReceived?: Command;
+  private _lastSent?: Command;
+  private _commandHistory: PromptHistory = {
+    discarded: 0,
+    commands: [],
+  };
   timeoutCallback?: TimeoutCallback;
   errorCallback?: ErrorCallback;
   usiOkCallback?: USIOKCallback;
@@ -182,6 +193,7 @@ export class EngineProcess {
   noMateCallback?: NoMateCallback;
   infoCallback?: InfoCallback;
   ponderInfoCallback?: InfoCallback;
+  commandCallback?: CommandCallback;
 
   constructor(
     private _path: string,
@@ -206,6 +218,26 @@ export class EngineProcess {
     return this._engineOptions;
   }
 
+  get state(): State {
+    return this._state;
+  }
+
+  get lastReceived(): Command | undefined {
+    return this._lastReceived;
+  }
+
+  get lastSent(): Command | undefined {
+    return this._lastSent;
+  }
+
+  get commandHistory(): PromptHistory {
+    return this._commandHistory;
+  }
+
+  get pid(): number | undefined {
+    return this.process?.pid;
+  }
+
   on(event: "timeout", callback: TimeoutCallback): this;
   on(event: "error", callback: ErrorCallback): this;
   on(event: "usiok", callback: USIOKCallback): this;
@@ -217,6 +249,7 @@ export class EngineProcess {
   on(event: "noMate", callback: NoMateCallback): this;
   on(event: "info", callback: InfoCallback): this;
   on(event: "ponderInfo", callback: InfoCallback): this;
+  on(event: "command", callback: (command: Command) => void): this;
   on(event: string, callback: unknown): this {
     switch (event) {
       case "timeout":
@@ -252,6 +285,9 @@ export class EngineProcess {
       case "ponderInfo":
         this.ponderInfoCallback = callback as InfoCallback;
         break;
+      case "command":
+        this.commandCallback = callback as CommandCallback;
+        break;
     }
     return this;
   }
@@ -270,7 +306,7 @@ export class EngineProcess {
     if (this.state === State.WillQuit) {
       return;
     }
-    this.state = State.WillQuit;
+    this._state = State.WillQuit;
     this.clearLaunchTimeout();
     this.logger.info("sid=%d: quit USI engine", this.sessionID);
     if (!this.process) {
@@ -310,7 +346,7 @@ export class EngineProcess {
       return new Error("unexpected state");
     }
     this.send("isready");
-    this.state = State.WaitingForReadyOK;
+    this._state = State.WaitingForReadyOK;
   }
 
   go(position: string, timeState?: TimeState): void {
@@ -371,7 +407,7 @@ export class EngineProcess {
       return;
     }
     this.send("ponderhit");
-    this.state = State.WaitingForBestMove;
+    this._state = State.WaitingForBestMove;
   }
 
   stop(): void {
@@ -383,13 +419,13 @@ export class EngineProcess {
       this.logger.warn("sid=%d: stop: unexpected state: %s", this.sessionID, this.state);
       return;
     }
-    if (this.process?.lastSended === "stop") {
+    if (this.lastSent?.command === "stop") {
       // stop コマンドは連続して送信しない。
       return;
     }
     this.send("stop");
     if (this.state === State.Ponder) {
-      this.state = State.WaitingForPonderBestMove;
+      this._state = State.WaitingForPonderBestMove;
     }
   }
 
@@ -421,7 +457,7 @@ export class EngineProcess {
         break;
     }
     this.send("gameover " + gameResult);
-    this.state = State.NotReady;
+    this._state = State.NotReady;
     this.reservedGoCommand = undefined;
   }
 
@@ -478,6 +514,15 @@ export class EngineProcess {
     this.clearLaunchTimeout();
     this.clearQuitTimeout();
     this.process = null;
+    const command = {
+      type: CommandType.SYSTEM,
+      command: `closed: close=${code} signal=${signal}`,
+      timeMs: Date.now(),
+    };
+    addCommand(this._commandHistory, command, maxCommandHistoryLength);
+    if (this.commandCallback) {
+      this.commandCallback(command);
+    }
   }
 
   private sendReservedGoCommands(): void {
@@ -492,7 +537,7 @@ export class EngineProcess {
         buildTimeOptions(this.reservedGoCommand.timeState),
     );
     this.currentPosition = this.reservedGoCommand.position;
-    this.state = this.reservedGoCommand.ponder
+    this._state = this.reservedGoCommand.ponder
       ? State.Ponder
       : this.reservedGoCommand.mate
         ? State.WaitingForCheckmate
@@ -505,10 +550,28 @@ export class EngineProcess {
       return;
     }
     this.process.send(command);
+    this._lastSent = {
+      type: CommandType.SEND,
+      command,
+      timeMs: Date.now(),
+    };
+    addCommand(this._commandHistory, this._lastSent, maxCommandHistoryLength);
+    if (this.commandCallback) {
+      this.commandCallback(this._lastSent);
+    }
     this.logger.info("sid=%d: > %s", this.sessionID, command);
   }
 
   private onReceive(command: string): void {
+    this._lastReceived = {
+      type: CommandType.RECEIVE,
+      command,
+      timeMs: Date.now(),
+    };
+    addCommand(this._commandHistory, this._lastReceived, maxCommandHistoryLength);
+    if (this.commandCallback) {
+      this.commandCallback(this._lastReceived);
+    }
     this.logger.info("sid=%d: < %s", this.sessionID, command);
     if (this.state === State.WillQuit) {
       return;
@@ -603,7 +666,7 @@ export class EngineProcess {
       });
     }
     this.clearLaunchTimeout();
-    this.state = State.NotReady;
+    this._state = State.NotReady;
     if (this.usiOkCallback) {
       this.usiOkCallback();
     }
@@ -614,7 +677,7 @@ export class EngineProcess {
       this.logger.warn("sid=%d: onReadyOk: unexpected state: %s", this.sessionID, this.state);
       return;
     }
-    this.state = State.Ready;
+    this._state = State.Ready;
     if (this.readyCallback) {
       this.readyCallback();
     }
@@ -639,7 +702,7 @@ export class EngineProcess {
       const ponder = (a.length >= 3 && a[1] === "ponder" && a[2]) || undefined;
       this.bestMoveCallback(this.currentPosition, move, ponder);
     }
-    this.state = State.Ready;
+    this._state = State.Ready;
     this.currentPosition = "";
     this.sendReservedGoCommands();
   }
@@ -649,7 +712,7 @@ export class EngineProcess {
       this.logger.warn("sid=%d: onCheckmate: unexpected state: %s", this.sessionID, this.state);
       return;
     }
-    this.state = State.Ready;
+    this._state = State.Ready;
     if (args.trim() === "notimplemented") {
       if (this.checkmateNotImplementedCallback) {
         this.checkmateNotImplementedCallback();
@@ -684,6 +747,17 @@ export class EngineProcess {
         if (this.ponderInfoCallback) {
           this.ponderInfoCallback(this.currentPosition, parseInfoCommand(args));
         }
+        break;
+    }
+  }
+
+  invoke(type: CommandType, command: string): void {
+    switch (type) {
+      case CommandType.SEND:
+        this.send(command);
+        break;
+      case CommandType.RECEIVE:
+        this.onReceive(command);
         break;
     }
   }

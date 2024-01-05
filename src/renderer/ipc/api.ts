@@ -17,6 +17,9 @@ import { BatchConversionResult } from "@/common/file/conversion";
 import { RecordFileHistory } from "@/common/file/history";
 import { InitialRecordFileRequest } from "@/common/file/record";
 import { VersionStatus } from "@/background/version/types";
+import { SessionStates } from "@/common/advanced/monitor";
+import { PromptHistory, PromptTarget } from "@/common/advanced/prompt";
+import { CommandType } from "@/common/advanced/command";
 
 type AppInfo = {
   appVersion?: string;
@@ -92,6 +95,15 @@ export interface Bridge {
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
+  collectSessionStates(): Promise<string>;
+  setupPrompt(target: PromptTarget, sessionID: number): Promise<string>;
+  openPrompt(target: PromptTarget, sessionID: number, name: string): void;
+  invokePromptCommand(
+    target: PromptTarget,
+    sessionID: number,
+    type: CommandType,
+    command: string,
+  ): void;
   isEncryptionAvailable(): Promise<boolean>;
   getVersionStatus(): Promise<string>;
   sendTestNotification(): void;
@@ -120,6 +132,7 @@ export interface Bridge {
     callback: (sessionID: number, specialMove: CSASpecialMove, gameResult: CSAGameResult) => void,
   ): void;
   onCSAClose(callback: (sessionID: number) => void): void;
+  onPromptCommand(callback: (command: string) => void): void;
 }
 
 export interface API {
@@ -192,6 +205,15 @@ export interface API {
   csaResign(sessionID: number): Promise<void>;
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
+  collectSessionStates(): Promise<SessionStates>;
+  setupPrompt(target: PromptTarget, sessionID: number): Promise<PromptHistory>;
+  openPrompt(target: PromptTarget, sessionID: number, name: string): void;
+  invokePromptCommand(
+    target: PromptTarget,
+    sessionID: number,
+    type: CommandType,
+    command: string,
+  ): void;
   isEncryptionAvailable(): Promise<boolean>;
   getVersionStatus(): Promise<VersionStatus>;
   sendTestNotification(): void;
@@ -306,6 +328,12 @@ const api: API = {
   },
   csaLogin(setting: CSAServerSetting): Promise<number> {
     return bridge.csaLogin(JSON.stringify(setting));
+  },
+  async collectSessionStates(): Promise<SessionStates> {
+    return JSON.parse(await bridge.collectSessionStates());
+  },
+  async setupPrompt(target: PromptTarget, sessionID: number): Promise<PromptHistory> {
+    return JSON.parse(await bridge.setupPrompt(target, sessionID));
   },
   async getVersionStatus(): Promise<VersionStatus> {
     return JSON.parse(await bridge.getVersionStatus());

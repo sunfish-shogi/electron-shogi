@@ -17,6 +17,9 @@ import { CSAProtocolVersion, CSAServerSetting } from "@/common/settings/csa";
 import { Socket } from "./socket";
 import { Logger } from "log4js";
 import { t } from "@/common/i18n";
+import { Command } from "@/common/advanced/command";
+import { PromptHistory, addCommand } from "@/common/advanced/prompt";
+import { CommandType } from "@/common/advanced/command";
 
 type GameSummaryCallback = (gameSummary: CSAGameSummary) => void;
 type RejectCallback = () => void;
@@ -25,26 +28,29 @@ type MoveCallback = (move: string, playerStates: CSAPlayerStates) => void;
 type GameResultCallback = (move: CSASpecialMove, result: CSAGameResult) => void;
 type CloseCallback = () => void;
 type ErrorCallback = (e: Error) => void;
+type CommandCallback = (command: Command) => void;
 
-enum State {
-  IDLE,
-  CONNECTING,
-  CONNECTED,
-  WAITING_GAME_SUMMARY,
-  GAME_SUMMARY,
-  GAME_TIME,
-  GAME_POSITION,
-  READY,
-  WAITING_START,
-  WAITING_REJECT,
-  PLAYING,
-  WAITING_LOGOUT,
-  WAITING_CLOSE,
-  CLOSED,
+export enum State {
+  IDLE = "idle",
+  CONNECTING = "connecting",
+  CONNECTED = "connected",
+  WAITING_GAME_SUMMARY = "waitingGameSummary",
+  GAME_SUMMARY = "gameSummary",
+  GAME_TIME = "gameTime",
+  GAME_POSITION = "gamePosition",
+  READY = "ready",
+  WAITING_START = "waitingStart",
+  WAITING_REJECT = "waitingReject",
+  PLAYING = "playing",
+  WAITING_LOGOUT = "waitingLogout",
+  WAITING_CLOSE = "waitingClose",
+  CLOSED = "closed",
 }
 
+const maxCommandHistoryLength = 100;
+
 export class Client {
-  private state: State = State.IDLE;
+  private _state: State = State.IDLE;
   private gameSummaryCallback?: GameSummaryCallback;
   private rejectCallback?: RejectCallback;
   private startCallback?: StartCallback;
@@ -52,16 +58,53 @@ export class Client {
   private gameResultCallback?: GameResultCallback;
   private closeCallback?: CloseCallback;
   private errorCallback?: ErrorCallback;
+  private commandCallback?: CommandCallback;
   private socket?: Socket;
   private gameSummary = emptyCSAGameSummary();
   private playerStates: CSAPlayerStates = emptyCSAPlayerStates();
   private specialMove = CSASpecialMove.UNKNOWN;
+  private _lastReceived?: Command;
+  private _lastSent?: Command;
+  private _commandHistory: PromptHistory = {
+    discarded: 0,
+    commands: [],
+  };
+  private _createdMs: number = Date.now();
+  private _loggedInMs?: number;
 
   constructor(
     private sessionID: number,
-    private setting: CSAServerSetting,
+    private _setting: CSAServerSetting,
     private logger: Logger,
   ) {}
+
+  get setting(): CSAServerSetting {
+    return this._setting;
+  }
+
+  get state(): State {
+    return this._state;
+  }
+
+  get lastReceived(): Command | undefined {
+    return this._lastReceived;
+  }
+
+  get lastSent(): Command | undefined {
+    return this._lastSent;
+  }
+
+  get commandHistory(): PromptHistory {
+    return this._commandHistory;
+  }
+
+  get createdMs(): number {
+    return this._createdMs;
+  }
+
+  get loggedInMs(): number | undefined {
+    return this._loggedInMs;
+  }
 
   on(event: "gameSummary", callback: GameSummaryCallback): this;
   on(event: "reject", callback: RejectCallback): this;
@@ -70,6 +113,7 @@ export class Client {
   on(event: "gameResult", callback: GameResultCallback): this;
   on(event: "close", callback: CloseCallback): this;
   on(event: "error", callback: ErrorCallback): this;
+  on(event: "command", callback: CommandCallback): this;
   on(event: string, callback: unknown): this {
     switch (event) {
       case "gameSummary":
@@ -93,6 +137,9 @@ export class Client {
       case "error":
         this.errorCallback = callback as ErrorCallback;
         break;
+      case "command":
+        this.commandCallback = callback as CommandCallback;
+        break;
     }
     return this;
   }
@@ -104,7 +151,7 @@ export class Client {
       this.setting.host,
       this.setting.port,
     );
-    this.state = State.CONNECTING;
+    this._state = State.CONNECTING;
     this.socket = new Socket(this.setting.host, this.setting.port, {
       onConnect: this.onConnect.bind(this),
       onError: this.onConnectionError.bind(this),
@@ -121,7 +168,7 @@ export class Client {
         if (this.socket) {
           this.logger.info("sid=%d: disconnect", this.sessionID);
           this.socket.end();
-          this.state = State.WAITING_CLOSE;
+          this._state = State.WAITING_CLOSE;
         }
         break;
       default:
@@ -133,7 +180,7 @@ export class Client {
           this.state === State.READY
         ) {
           this.send("LOGOUT");
-          this.state = State.WAITING_LOGOUT;
+          this._state = State.WAITING_LOGOUT;
         }
         break;
     }
@@ -146,7 +193,7 @@ export class Client {
     if (gameID !== this.gameSummary.id) {
       return;
     }
-    this.state = State.WAITING_START;
+    this._state = State.WAITING_START;
     this.send(`AGREE ${this.gameSummary.id}`);
   }
 
@@ -157,7 +204,7 @@ export class Client {
     if (gameID !== this.gameSummary.id) {
       return;
     }
-    this.state = State.WAITING_REJECT;
+    this._state = State.WAITING_REJECT;
     this.send(`REJECT ${this.gameSummary.id}`);
   }
 
@@ -205,8 +252,17 @@ export class Client {
       );
       return;
     }
-    this.logger.info("sid=%d: > %s", this.sessionID, this.hideSecureValues(command));
     this.socket.write(command);
+    this._lastSent = {
+      type: CommandType.SEND,
+      command: this.hideSecureValues(command),
+      timeMs: Date.now(),
+    };
+    addCommand(this._commandHistory, this._lastSent, maxCommandHistoryLength);
+    if (this.commandCallback) {
+      this.commandCallback(this._lastSent);
+    }
+    this.logger.info("sid=%d: > %s", this.sessionID, this.hideSecureValues(command));
   }
 
   private hideSecureValues(command: string): string {
@@ -215,7 +271,7 @@ export class Client {
 
   private onConnect(): void {
     this.logger.info("sid=%d: connected", this.sessionID);
-    this.state = State.CONNECTED;
+    this._state = State.CONNECTED;
     this.send(`LOGIN ${this.setting.id} ${this.setting.password}`);
   }
 
@@ -224,9 +280,18 @@ export class Client {
       return;
     }
     this.onError(e);
-    this.state = State.CLOSED;
+    this._state = State.CLOSED;
     if (this.closeCallback) {
       this.closeCallback();
+    }
+    const command = {
+      type: CommandType.SYSTEM,
+      command: "connection error",
+      timeMs: Date.now(),
+    };
+    addCommand(this._commandHistory, command, maxCommandHistoryLength);
+    if (this.commandCallback) {
+      this.commandCallback(command);
     }
   }
 
@@ -262,13 +327,31 @@ export class Client {
         this.onError(new Error(t.disconnectedFromCSAServer));
         break;
     }
-    this.state = State.CLOSED;
+    this._state = State.CLOSED;
     if (this.closeCallback) {
       this.closeCallback();
+    }
+    const command = {
+      type: CommandType.SYSTEM,
+      command: hadError ? "closed (error)" : "closed",
+      timeMs: Date.now(),
+    };
+    addCommand(this._commandHistory, command, maxCommandHistoryLength);
+    if (this.commandCallback) {
+      this.commandCallback(command);
     }
   }
 
   private onRead(command: string): void {
+    this._lastReceived = {
+      type: CommandType.RECEIVE,
+      command,
+      timeMs: Date.now(),
+    };
+    addCommand(this._commandHistory, this._lastReceived, maxCommandHistoryLength);
+    if (this.commandCallback) {
+      this.commandCallback(this._lastReceived);
+    }
     this.logger.info("sid=%d: < %s", this.sessionID, command);
     if (this.state === State.GAME_SUMMARY) {
       this.onGameSummary(command);
@@ -296,8 +379,9 @@ export class Client {
   }
 
   private onLoginOK(): void {
+    this._loggedInMs = Date.now();
     this.logger.info("sid=%d: login ok", this.sessionID);
-    this.state = State.WAITING_GAME_SUMMARY;
+    this._state = State.WAITING_GAME_SUMMARY;
   }
 
   private onLoginIncorrect(): void {
@@ -310,11 +394,11 @@ export class Client {
 
   private onLogout(): void {
     this.logger.info("sid=%d: logout", this.sessionID);
-    this.state = State.WAITING_CLOSE;
+    this._state = State.WAITING_CLOSE;
   }
 
   private onBeginGameSummary(): void {
-    this.state = State.GAME_SUMMARY;
+    this._state = State.GAME_SUMMARY;
     this.gameSummary = emptyCSAGameSummary();
   }
 
@@ -338,7 +422,7 @@ export class Client {
       this.updateTime(color, entry.elapsedMs);
     }
 
-    this.state = State.READY;
+    this._state = State.READY;
     if (this.gameSummaryCallback) {
       this.gameSummaryCallback(this.gameSummary);
     }
@@ -350,11 +434,11 @@ export class Client {
       return;
     }
     if (command === "BEGIN Time") {
-      this.state = State.GAME_TIME;
+      this._state = State.GAME_TIME;
       return;
     }
     if (command === "BEGIN Position") {
-      this.state = State.GAME_POSITION;
+      this._state = State.GAME_POSITION;
       return;
     }
     const [key, value] = command.split(":", 2);
@@ -400,7 +484,7 @@ export class Client {
 
   private onGameTime(command: string): void {
     if (command === "END Time") {
-      this.state = State.GAME_SUMMARY;
+      this._state = State.GAME_SUMMARY;
       return;
     }
     const [key, value] = command.split(":", 2);
@@ -440,21 +524,21 @@ export class Client {
 
   private onGamePosition(command: string): void {
     if (command === "END Position") {
-      this.state = State.GAME_SUMMARY;
+      this._state = State.GAME_SUMMARY;
       return;
     }
     this.gameSummary.position += command + "\n";
   }
 
   private onReject(): void {
-    this.state = State.WAITING_GAME_SUMMARY;
+    this._state = State.WAITING_GAME_SUMMARY;
     if (this.rejectCallback) {
       this.rejectCallback();
     }
   }
 
   private onStart(): void {
-    this.state = State.PLAYING;
+    this._state = State.PLAYING;
     if (this.startCallback) {
       this.startCallback(this.playerStates);
     }
@@ -541,9 +625,20 @@ export class Client {
   }
 
   private onGameResult(gameResult: CSAGameResult) {
-    this.state = State.WAITING_GAME_SUMMARY;
+    this._state = State.WAITING_GAME_SUMMARY;
     if (this.gameResultCallback) {
       this.gameResultCallback(this.specialMove, gameResult);
+    }
+  }
+
+  invoke(type: CommandType, command: string): void {
+    switch (type) {
+      case CommandType.SEND:
+        this.send(command);
+        break;
+      case CommandType.RECEIVE:
+        this.onRead(command);
+        break;
     }
   }
 }

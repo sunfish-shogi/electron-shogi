@@ -1,6 +1,7 @@
 import { watch } from "vue";
 import { SpecialMoveType } from "electron-shogi-core";
 import { useStore } from "@/renderer/store";
+import { useStore as usePromptStore } from "@/renderer/prompt/store";
 import {
   onUSIBestMove,
   onUSICheckmate,
@@ -255,4 +256,11 @@ export function setup(): void {
     ([appState, bussy]) => bridge.updateAppState(appState as AppState, bussy as boolean),
   );
   bridge.updateAppState(store.appState, store.isBussy);
+}
+
+export function setupPrompt(): void {
+  const store = usePromptStore();
+  bridge.onPromptCommand((command: string) => {
+    store.onCommand(JSON.parse(command));
+  });
 }

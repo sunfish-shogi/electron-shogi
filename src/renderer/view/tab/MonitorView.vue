@@ -1,132 +1,138 @@
 <template>
   <div>
-    <div ref="root" class="full column">
-      <div class="headers">
-        <div>
-          {{ t.updatedAt }}: {{ updatedMs ? getDateTimeStringMs(new Date(updatedMs)) : "---" }}
+    <div class="full">
+      <div ref="root" class="full column">
+        <div class="headers">
+          <div>
+            {{ t.updatedAt }}: {{ updatedMs ? getDateTimeStringMs(new Date(updatedMs)) : "---" }}
+          </div>
+          <div>{{ t.usiEngine }}: {{ states.usiSessions.length }}</div>
+          <div>{{ t.csaServer }}: {{ states.csaSessions.length }}</div>
         </div>
-        <div>{{ t.usiEngine }}: {{ states.usiSessions.length }}</div>
-        <div>{{ t.csaServer }}: {{ states.csaSessions.length }}</div>
+        <div v-if="updatedMs" class="main" :style="{ height: `${size.height - 20}px` }">
+          <div v-if="states.usiSessions.length === 0" class="entry">
+            <div class="label">{{ t.noRunningUSIEngine }}</div>
+          </div>
+          <div v-for="session of states.usiSessions" :key="session.sessionID" class="entry">
+            <div v-if="session.closed" class="label warning">
+              {{ t.willBeRemovedFromTheListSoon }}
+            </div>
+            <div class="label">{{ t.usiEngine }} - SID: {{ session.sessionID }}</div>
+            <div>
+              <span class="key">{{ t.name }}:</span>
+              {{ session.name }}
+            </div>
+            <div>
+              <span class="key">URI:</span>
+              {{ session.uri }}
+            </div>
+            <div>
+              <span class="key">{{ t.enginePath }}:</span>
+              {{ session.path }}
+            </div>
+            <div v-if="session.pid">
+              <span class="key">PID:</span>
+              {{ session.pid }}
+            </div>
+            <div>
+              <span class="key">{{ t.createdAt }}:</span>
+              {{ getDateTimeStringMs(new Date(session.createdMs)) }}
+              <span class="timestamp"
+                >({{ formatRelativeTime(session.createdMs, updatedMs) }})</span
+              >
+            </div>
+            <div>
+              <span class="key">State:</span>
+              {{ session.stateCode }}
+            </div>
+            <div v-if="session.lastSent">
+              <span class="key">{{ t.lastSent }}:</span>
+            </div>
+            <div v-if="session.lastSent">
+              <span class="command">{{ session.lastSent.command || `(${t.blankLine})` }}</span>
+            </div>
+            <div v-if="session.lastSent" class="timestamp">
+              Sent at {{ getDateTimeStringMs(new Date(session.lastSent.timeMs)) }} ({{
+                formatRelativeTime(session.lastSent.timeMs, updatedMs)
+              }})
+            </div>
+            <div v-if="session.lastReceived">
+              <span class="key">{{ t.lastReceived }}:</span>
+            </div>
+            <div v-if="session.lastReceived">
+              <span class="command">{{ session.lastReceived.command || `(${t.blankLine})` }}</span>
+            </div>
+            <div v-if="session.lastReceived" class="timestamp">
+              Received at {{ getDateTimeStringMs(new Date(session.lastReceived.timeMs)) }} ({{
+                formatRelativeTime(session.lastReceived.timeMs, updatedMs)
+              }})
+            </div>
+            <div class="row">
+              <button @click="openUSIPrompt(session)">{{ t.openPrompt }}</button>
+              <button @click="sendUSIQuit(session)">{{ t.forceQuit }}</button>
+            </div>
+          </div>
+          <div v-if="states.csaSessions.length === 0" class="entry">
+            <div class="label">{{ t.noConnectedCSAServer }}</div>
+          </div>
+          <div v-for="session of states.csaSessions" :key="session.sessionID" class="entry">
+            <div v-if="session.closed" class="label warning">
+              {{ t.willBeRemovedFromTheListSoon }}
+            </div>
+            <div class="label">{{ t.csaServer }} - SID: {{ session.sessionID }}</div>
+            <div>
+              <span class="key">{{ t.server }}:</span>
+              {{ session.host }}:{{ session.port }}
+            </div>
+            <div>
+              <span class="key">{{ t.protocolVersion }}:</span>
+              {{ session.protocolVersion }}
+            </div>
+            <div>
+              <span class="key">ID:</span>
+              {{ session.loginID }}
+            </div>
+            <div>
+              <span class="key">{{ t.createdAt }}:</span>
+              {{ getDateTimeStringMs(new Date(session.createdMs)) }}
+              <span class="timestamp"
+                >({{ formatRelativeTime(session.createdMs, updatedMs) }})</span
+              >
+            </div>
+            <div>
+              <span class="key">State:</span>
+              {{ session.stateCode }}
+            </div>
+            <div v-if="session.lastSent">
+              <span class="key">{{ t.lastSent }}:</span>
+            </div>
+            <div v-if="session.lastSent">
+              <span class="command">{{ session.lastSent.command || `(${t.blankLine})` }}</span>
+            </div>
+            <div v-if="session.lastSent" class="timestamp">
+              Sent at {{ getDateTimeStringMs(new Date(session.lastSent.timeMs)) }} ({{
+                formatRelativeTime(session.lastSent.timeMs, updatedMs)
+              }})
+            </div>
+            <div v-if="session.lastReceived">
+              <span class="key">{{ t.lastReceived }}:</span>
+            </div>
+            <div v-if="session.lastReceived">
+              <span class="command">{{ session.lastReceived.command || `(${t.blankLine})` }}</span>
+            </div>
+            <div v-if="session.lastReceived" class="timestamp">
+              Received at {{ getDateTimeStringMs(new Date(session.lastReceived.timeMs)) }} ({{
+                formatRelativeTime(session.lastReceived.timeMs, updatedMs)
+              }})
+            </div>
+            <div class="row">
+              <button @click="openCSAPrompt(session)">{{ t.openPrompt }}</button>
+              <button @click="closeCSA(session)">{{ t.forceClose }}</button>
+            </div>
+          </div>
+        </div>
+        <div v-else class="main">Collecting...</div>
       </div>
-      <div v-if="updatedMs" class="main" :style="{ height: `${size.height - 20}px` }">
-        <div v-if="states.usiSessions.length === 0" class="entry">
-          <div class="label">{{ t.noRunningUSIEngine }}</div>
-        </div>
-        <div v-for="session of states.usiSessions" :key="session.sessionID" class="entry">
-          <div v-if="session.closed" class="label warning">
-            {{ t.willBeRemovedFromTheListSoon }}
-          </div>
-          <div class="label">{{ t.usiEngine }} - SID: {{ session.sessionID }}</div>
-          <div>
-            <span class="key">{{ t.name }}:</span>
-            {{ session.name }}
-          </div>
-          <div>
-            <span class="key">URI:</span>
-            {{ session.uri }}
-          </div>
-          <div>
-            <span class="key">{{ t.enginePath }}:</span>
-            {{ session.path }}
-          </div>
-          <div v-if="session.pid">
-            <span class="key">PID:</span>
-            {{ session.pid }}
-          </div>
-          <div>
-            <span class="key">{{ t.createdAt }}:</span>
-            {{ getDateTimeStringMs(new Date(session.createdMs)) }}
-            <span class="timestamp">({{ formatRelativeTime(session.createdMs, updatedMs) }})</span>
-          </div>
-          <div>
-            <span class="key">State:</span>
-            {{ session.stateCode }}
-          </div>
-          <div v-if="session.lastSent">
-            <span class="key">{{ t.lastSent }}:</span>
-          </div>
-          <div v-if="session.lastSent">
-            <span class="command">{{ session.lastSent.command || `(${t.blankLine})` }}</span>
-          </div>
-          <div v-if="session.lastSent" class="timestamp">
-            Sent at {{ getDateTimeStringMs(new Date(session.lastSent.timeMs)) }} ({{
-              formatRelativeTime(session.lastSent.timeMs, updatedMs)
-            }})
-          </div>
-          <div v-if="session.lastReceived">
-            <span class="key">{{ t.lastReceived }}:</span>
-          </div>
-          <div v-if="session.lastReceived">
-            <span class="command">{{ session.lastReceived.command || `(${t.blankLine})` }}</span>
-          </div>
-          <div v-if="session.lastReceived" class="timestamp">
-            Received at {{ getDateTimeStringMs(new Date(session.lastReceived.timeMs)) }} ({{
-              formatRelativeTime(session.lastReceived.timeMs, updatedMs)
-            }})
-          </div>
-          <div class="row">
-            <button @click="openUSIPrompt(session)">{{ t.openPrompt }}</button>
-            <button @click="sendUSIQuit(session)">{{ t.forceQuit }}</button>
-          </div>
-        </div>
-        <div v-if="states.csaSessions.length === 0" class="entry">
-          <div class="label">{{ t.noConnectedCSAServer }}</div>
-        </div>
-        <div v-for="session of states.csaSessions" :key="session.sessionID" class="entry">
-          <div v-if="session.closed" class="label warning">
-            {{ t.willBeRemovedFromTheListSoon }}
-          </div>
-          <div class="label">{{ t.csaServer }} - SID: {{ session.sessionID }}</div>
-          <div>
-            <span class="key">{{ t.server }}:</span>
-            {{ session.host }}:{{ session.port }}
-          </div>
-          <div>
-            <span class="key">{{ t.protocolVersion }}:</span>
-            {{ session.protocolVersion }}
-          </div>
-          <div>
-            <span class="key">ID:</span>
-            {{ session.loginID }}
-          </div>
-          <div>
-            <span class="key">{{ t.createdAt }}:</span>
-            {{ getDateTimeStringMs(new Date(session.createdMs)) }}
-            <span class="timestamp">({{ formatRelativeTime(session.createdMs, updatedMs) }})</span>
-          </div>
-          <div>
-            <span class="key">State:</span>
-            {{ session.stateCode }}
-          </div>
-          <div v-if="session.lastSent">
-            <span class="key">{{ t.lastSent }}:</span>
-          </div>
-          <div v-if="session.lastSent">
-            <span class="command">{{ session.lastSent.command || `(${t.blankLine})` }}</span>
-          </div>
-          <div v-if="session.lastSent" class="timestamp">
-            Sent at {{ getDateTimeStringMs(new Date(session.lastSent.timeMs)) }} ({{
-              formatRelativeTime(session.lastSent.timeMs, updatedMs)
-            }})
-          </div>
-          <div v-if="session.lastReceived">
-            <span class="key">{{ t.lastReceived }}:</span>
-          </div>
-          <div v-if="session.lastReceived">
-            <span class="command">{{ session.lastReceived.command || `(${t.blankLine})` }}</span>
-          </div>
-          <div v-if="session.lastReceived" class="timestamp">
-            Received at {{ getDateTimeStringMs(new Date(session.lastReceived.timeMs)) }} ({{
-              formatRelativeTime(session.lastReceived.timeMs, updatedMs)
-            }})
-          </div>
-          <div class="row">
-            <button @click="openCSAPrompt(session)">{{ t.openPrompt }}</button>
-            <button @click="closeCSA(session)">{{ t.forceClose }}</button>
-          </div>
-        </div>
-      </div>
-      <div v-else class="main">Collecting...</div>
     </div>
   </div>
 </template>
@@ -177,9 +183,6 @@ function formatRelativeTime(ms: number, baseMs: number) {
 
 onMounted(() => {
   root.value.addEventListener("copy", (event: ClipboardEvent) => {
-    event.stopPropagation();
-  });
-  root.value.addEventListener("paste", (event: ClipboardEvent) => {
     event.stopPropagation();
   });
   update();

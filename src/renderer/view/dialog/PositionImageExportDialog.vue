@@ -6,16 +6,18 @@
           <div v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK" class="book">
             <SimpleBoardView
               :max-size="maxSize"
-              :position="record.position"
+              :position="store.record.position"
               :black-name="blackName"
               :white-name="whiteName"
               :hide-white-hand="
                 appSetting.positionImageHandLabelType === PositionImageHandLabelType.TSUME_SHOGI
               "
               :header="header"
-              :footer="record.current.comment"
+              :footer="store.record.current.comment"
               :last-move="lastMove"
               :typeface="appSetting.positionImageTypeface"
+              :font-weight="fontWeight"
+              :text-shadow="textShadow"
               :character-y="appSetting.positionImageCharacterY"
               :font-scale="appSetting.positionImageFontScale"
             />
@@ -30,7 +32,7 @@
               :custom-board-image-url="appSetting.boardImageFileURL"
               :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
               :max-size="maxSize"
-              :position="record.position"
+              :position="store.record.position"
               :last-move="lastMove"
               :flip="appSetting.boardFlipping"
               :hide-clock="true"
@@ -44,15 +46,52 @@
           class="side-controls column"
         >
           <div class="form-item">
-            {{ t.typeface }}
-            <HorizontalSelector
-              :value="appSetting.positionImageTypeface"
-              :items="[
-                { value: PositionImageTypeface.GOTHIC, label: t.gothic },
-                { value: PositionImageTypeface.MINCHO, label: t.mincho },
-              ]"
-              @change="changeTypeface"
-            />
+            <div>
+              {{ t.typeface }}
+              <HorizontalSelector
+                :value="appSetting.positionImageTypeface"
+                :items="[
+                  { value: PositionImageTypeface.GOTHIC, label: t.gothic },
+                  { value: PositionImageTypeface.MINCHO, label: t.mincho },
+                ]"
+                @change="changeTypeface"
+              />
+            </div>
+            <div>
+              {{ t.vertical }}
+              <input
+                class="number"
+                type="number"
+                min="-100"
+                max="100"
+                :value="appSetting.positionImageCharacterY"
+                @change="changeCharacterY"
+              />
+            </div>
+            <div>
+              {{ t.size }}
+              <input
+                class="number"
+                type="number"
+                min="0"
+                max="200"
+                :value="Math.round(appSetting.positionImageFontScale * 100)"
+                @change="changeFontScale"
+              />
+              <span class="form-item-small-label">%</span>
+            </div>
+            <div>
+              {{ t.weight }}
+              <HorizontalSelector
+                :value="String(appSetting.positionImageFontWeight)"
+                :items="[
+                  { value: PositionImageFontWeight.W400, label: '細' },
+                  { value: PositionImageFontWeight.W400X, label: '太' },
+                  { value: PositionImageFontWeight.W700X, label: '極太' },
+                ]"
+                @change="(v) => changeFontWeight(v as PositionImageFontWeight)"
+              />
+            </div>
           </div>
           <div class="form-item">
             {{ t.handLabel }}
@@ -81,32 +120,6 @@
               :label="t.useBookmarkAsHeader"
               @change="changeWhetherToUseBookmark"
             />
-          </div>
-          <div class="form-item">
-            {{ t.characterAdjustment }}
-            <div>
-              {{ t.vertical }}
-              <input
-                class="number"
-                type="number"
-                min="-100"
-                max="100"
-                :value="appSetting.positionImageCharacterY"
-                @change="changeCharacterY"
-              />
-            </div>
-            <div>
-              {{ t.size }}
-              <input
-                class="number"
-                type="number"
-                min="0"
-                max="200"
-                :value="Math.round(appSetting.positionImageFontScale * 100)"
-                @change="changeFontScale"
-              />
-              <span class="form-item-small-label">%</span>
-            </div>
           </div>
         </div>
       </div>
@@ -168,6 +181,7 @@ import {
   PositionImageHandLabelType,
   PositionImageStyle,
   PositionImageTypeface,
+  PositionImageFontWeight,
   getPieceImageURLTemplate,
 } from "@/common/settings/app";
 import {
@@ -189,8 +203,10 @@ const store = useStore();
 const appSetting = useAppSetting();
 const blackPlayerName = computed(() => getBlackPlayerName(store.record.metadata) || t.sente);
 const whitePlayerName = computed(() => getWhitePlayerName(store.record.metadata) || t.gote);
-const record = store.record;
-const lastMove = record.current.move instanceof Move ? record.current.move : null;
+const lastMove = computed(() => {
+  const record = store.record;
+  return record.current.move instanceof Move ? record.current.move : null;
+});
 const dialog = ref();
 const board = ref();
 const windowSize = reactive(new RectSize(window.innerWidth, window.innerHeight));
@@ -216,6 +232,25 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", updateSize);
 });
 
+const fontWeight = computed(() => {
+  switch (appSetting.positionImageFontWeight) {
+    default:
+      return 400;
+    case PositionImageFontWeight.W700X:
+      return 700;
+  }
+});
+
+const textShadow = computed(() => {
+  switch (appSetting.positionImageFontWeight) {
+    default:
+      return false;
+    case PositionImageFontWeight.W400X:
+    case PositionImageFontWeight.W700X:
+      return true;
+  }
+});
+
 const maxSize = computed(() => {
   const height = appSetting.positionImageSize / zoom.value;
   const width = height * aspectRatio;
@@ -225,11 +260,12 @@ const maxSize = computed(() => {
 });
 
 const header = computed(() => {
+  const record = store.record;
   return (
     (appSetting.useBookmarkAsPositionImageHeader && record.current.bookmark) ||
     appSetting.positionImageHeader ||
-    (lastMove
-      ? `${record.current.ply}手目 ${formatMove(record.position, lastMove)}まで`
+    (lastMove.value
+      ? `${record.current.ply}手目 ${formatMove(record.position, lastMove.value)}まで`
       : record.current.nextColor === Color.BLACK
         ? "先手番"
         : "後手番")
@@ -237,6 +273,7 @@ const header = computed(() => {
 });
 
 const blackName = computed(() => {
+  const record = store.record;
   switch (appSetting.positionImageHandLabelType) {
     case PositionImageHandLabelType.PLAYER_NAME:
       return getBlackPlayerNamePreferShort(record.metadata) || "先手";
@@ -251,6 +288,7 @@ const blackName = computed(() => {
 });
 
 const whiteName = computed(() => {
+  const record = store.record;
   switch (appSetting.positionImageHandLabelType) {
     case PositionImageHandLabelType.PLAYER_NAME:
       return getWhitePlayerNamePreferShort(record.metadata) || "後手";
@@ -300,6 +338,12 @@ const changeCharacterY = (e: Event) => {
 const changeFontScale = (e: Event) => {
   appSetting.updateAppSetting({
     positionImageFontScale: readInputAsNumber(e.target as HTMLInputElement) / 100,
+  });
+};
+
+const changeFontWeight = (value: PositionImageFontWeight) => {
+  appSetting.updateAppSetting({
+    positionImageFontWeight: value,
   });
 };
 

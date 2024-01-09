@@ -137,6 +137,16 @@ const props = defineProps({
     required: false,
     default: "mincho",
   },
+  fontWeight: {
+    type: Number as PropType<number>,
+    required: false,
+    default: 1,
+  },
+  textShadow: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   characterY: {
     type: Number,
     required: false,
@@ -154,7 +164,11 @@ const layout = computed(() => {
   const param = buildParams(size);
   const charY = size * 0.002 * props.characterY;
   return {
-    typefaceClass: [props.typeface],
+    typefaceClass: [
+      props.typeface,
+      `weight-${props.fontWeight}`,
+      props.textShadow ? "shadow" : "no-shadow",
+    ],
     frameStyle: {
       width: `${param.size}px`,
       height: `${param.size}px`,
@@ -275,12 +289,13 @@ const layout = computed(() => {
 </script>
 
 <style scoped>
-.gothic {
-  font-weight: 500;
-  text-shadow: 0px 0px 0.5px black;
+.weight-400 {
+  font-weight: 400;
 }
-.mincho {
-  font-weight: 900;
+.weight-700 {
+  font-weight: 700;
+}
+.shadow {
   text-shadow: 0px 0px 0.5px black;
 }
 .frame {

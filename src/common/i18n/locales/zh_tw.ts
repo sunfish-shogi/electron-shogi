@@ -361,9 +361,9 @@ export const zh_tw: Texts = {
   gameStyle: "對局畫面風",
   playerName: "対局者名", // TODO: translate
   typeface: "書体", // TODO: translate
+  weight: "太さ", // TODO: translate
   handLabel: "持ち駒ラベル", // TODO: translate
   header: "見出し", // TODO: translate
-  characterAdjustment: "文字調整", // TODO: translate
   vertical: "垂直方向", // TODO: translate
   size: "サイズ", // TODO: translate
   none: "無",

@@ -9,6 +9,7 @@ import {
   LeftSideControlType,
   PieceImageType,
   PieceStandImageType,
+  PositionImageFontWeight,
   PositionImageHandLabelType,
   PositionImageStyle,
   PositionImageTypeface,
@@ -211,6 +212,9 @@ class AppSettingStore {
   }
   get positionImageFontScale(): number {
     return this.setting.positionImageFontScale;
+  }
+  get positionImageFontWeight(): PositionImageFontWeight {
+    return this.setting.positionImageFontWeight;
   }
   get lastRecordFilePath(): string {
     return this.setting.lastRecordFilePath;

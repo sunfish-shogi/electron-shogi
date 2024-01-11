@@ -359,9 +359,9 @@ export type Texts = {
   gameStyle: string;
   playerName: string;
   typeface: string;
+  weight: string;
   handLabel: string;
   header: string;
-  characterAdjustment: string;
   vertical: string;
   size: string;
   none: string;

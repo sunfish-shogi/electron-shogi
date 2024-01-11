@@ -122,6 +122,12 @@ export enum PositionImageHandLabelType {
   NONE = "none",
 }
 
+export enum PositionImageFontWeight {
+  W400 = "400",
+  W400X = "400+",
+  W700X = "700+",
+}
+
 export type AppSetting = {
   language: Language;
   thema: Thema;
@@ -184,6 +190,7 @@ export type AppSetting = {
   positionImageHeader: string;
   positionImageCharacterY: number;
   positionImageFontScale: number;
+  positionImageFontWeight: PositionImageFontWeight;
   lastRecordFilePath: string;
   lastUSIEngineFilePath: string;
   lastImageExportFilePath: string;
@@ -253,6 +260,7 @@ export type AppSettingUpdate = {
   positionImageHeader?: string;
   positionImageCharacterY?: number;
   positionImageFontScale?: number;
+  positionImageFontWeight?: PositionImageFontWeight;
   lastRecordFilePath?: string;
   lastUSIEngineFilePath?: string;
   lastImageExportFilePath?: string;
@@ -353,6 +361,7 @@ export function defaultAppSetting(opt?: {
     positionImageHeader: "",
     positionImageCharacterY: 0,
     positionImageFontScale: 1,
+    positionImageFontWeight: PositionImageFontWeight.W400X,
     lastRecordFilePath: "",
     lastUSIEngineFilePath: "",
     lastImageExportFilePath: "",
@@ -395,6 +404,17 @@ export function normalizeAppSetting(
   // 旧バージョンではタブの最小化を Tab.INDISIBLE で表していたが廃止した。
   if (result.tab === Tab.INVISIBLE) {
     result.tab = Tab.RECORD_INFO;
+  }
+  // 旧バージョンではフォントの太さは設定項目になく、明朝体とゴシック体で違っていた。
+  if (!setting.positionImageFontWeight) {
+    switch (setting.positionImageTypeface) {
+      default:
+        result.positionImageFontWeight = PositionImageFontWeight.W400X;
+        break;
+      case PositionImageTypeface.MINCHO:
+        result.positionImageFontWeight = PositionImageFontWeight.W700X;
+        break;
+    }
   }
   return result;
 }

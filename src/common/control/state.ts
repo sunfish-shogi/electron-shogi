@@ -16,4 +16,6 @@ export enum AppState {
   USI_ENGINE_SETTING_DIALOG = "usiEngineSettingDialog",
   RECORD_FILE_HISTORY_DIALOG = "recordFileHistoryDialog",
   BATCH_CONVERSION_DIALOG = "batchConversionDialog",
+  LAUNCH_USI_ENGINE_DIALOG = "launchUsiEngineDialog",
+  CONNECT_TO_CSA_SERVER_DIALOG = "connectToCsaServerDialog",
 }

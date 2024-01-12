@@ -378,6 +378,9 @@ function createMenuTemplate() {
           role: "toggleDevTools",
         },
         {
+          type: "separator",
+        },
+        {
           label: t.logFile,
           submenu: [
             {
@@ -444,6 +447,15 @@ function createMenuTemplate() {
               },
             },
           ],
+        },
+        menuItem(`${t.launchUSIEngine}(${t.adminMode})`, MenuEvent.LAUNCH_USI_ENGINE, [
+          AppState.NORMAL,
+        ]),
+        menuItem(`${t.connectToCSAServer}(${t.adminMode})`, MenuEvent.CONNECT_TO_CSA_SERVER, [
+          AppState.NORMAL,
+        ]),
+        {
+          type: "separator",
         },
         {
           label: t.reloadCustomPieceImage,

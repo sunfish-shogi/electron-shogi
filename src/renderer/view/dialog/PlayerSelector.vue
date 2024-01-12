@@ -81,7 +81,7 @@ const props = defineProps({
   },
   filterLabel: {
     type: String as PropType<USIEngineLabel>,
-    required: true,
+    default: null,
   },
   displayPonderState: {
     type: Boolean,
@@ -107,7 +107,9 @@ const playerSelect = ref();
 const engineSettingDialog = ref(null as USIEngineSetting | null);
 
 const filteredEngineSettings = computed(() => {
-  return props.engineSettings.filterByLabel(props.filterLabel);
+  return props.filterLabel
+    ? props.engineSettings.filterByLabel(props.filterLabel)
+    : props.engineSettings;
 });
 
 const ponderState = computed(() => {

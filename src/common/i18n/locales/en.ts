@@ -58,6 +58,14 @@ export const en: Texts = {
   copyUSILogTailCommand: "Copy USI Log Tail Command",
   copyCSALogTailCommand: "Copy CSA Log Tail Command",
   reloadCustomPieceImage: "Reload Custom Piece Image",
+  launchUSIEngine: "Launch USI Engine",
+  connectToCSAServer: "Connect to CSA Server",
+  adminMode: "Admin Mode",
+  inAdminModeYouShouldInvokeCommandsManuallyAtPrompt:
+    "In admin mode, you should invoke commands manually at prompt.",
+  setoptionAndPrecedingCommandsWillBeSentAutomatically:
+    '"setoption" and preceding commands will be sent automatically.',
+  serverMustSupportShogiServerX1ModeLogIn: "The server must support shogi-server's x1-mode log-in.",
   folders: "Folders",
   notification: "Notification",
   notificationTest: "Notification Test",

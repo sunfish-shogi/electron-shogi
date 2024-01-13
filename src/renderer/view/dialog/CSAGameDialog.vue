@@ -119,6 +119,59 @@
             </div>
           </div>
           <div class="form-item">
+            <div class="form-item-label-wide">{{ t.keepaliveInitialDelay }}</div>
+            <input
+              ref="keepaliveInitialDelay"
+              class="number"
+              type="number"
+              value="10"
+              min="1"
+              max="7200"
+            />
+            <div class="form-item-small-label">
+              {{ t.secondsSuffix }} ({{ t.between(1, 7200) }})
+            </div>
+          </div>
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.blankLinePing }}</div>
+            <ToggleButton
+              :value="blankLinePing"
+              @change="
+                (value: boolean) => {
+                  blankLinePing = value;
+                }
+              "
+            />
+          </div>
+          <div class="form-item" :class="{ hidden: !blankLinePing }">
+            <div class="form-item-label-wide">{{ t.blankLinePingInitialDelay }}</div>
+            <input
+              ref="blankLineInitialDelay"
+              class="number"
+              type="number"
+              value="40"
+              min="30"
+              max="7200"
+            />
+            <div class="form-item-small-label">
+              {{ t.secondsSuffix }} ({{ t.between(30, 7200) }})
+            </div>
+          </div>
+          <div class="form-item" :class="{ hidden: !blankLinePing }">
+            <div class="form-item-label-wide">{{ t.blankLinePingInterval }}</div>
+            <input
+              ref="blankLineInterval"
+              class="number"
+              type="number"
+              value="40"
+              min="30"
+              max="7200"
+            />
+            <div class="form-item-small-label">
+              {{ t.secondsSuffix }} ({{ t.between(30, 7200) }})
+            </div>
+          </div>
+          <div class="form-item">
             <div class="form-item-label-wide">{{ t.saveHistory }}</div>
             <ToggleButton
               :value="saveHistory"
@@ -230,6 +283,10 @@ const host = ref();
 const port = ref();
 const id = ref();
 const password = ref();
+const keepaliveInitialDelay = ref();
+const blankLinePing = ref(false);
+const blankLineInitialDelay = ref();
+const blankLineInterval = ref();
 const saveHistory = ref(true);
 const repeat = ref();
 const autoRelogin = ref(false);
@@ -277,6 +334,10 @@ onUpdated(() => {
   port.value.value = defaultSetting.server.port;
   id.value.value = defaultSetting.server.id;
   password.value.value = defaultSetting.server.password;
+  keepaliveInitialDelay.value.value = defaultSetting.server.tcpKeepalive.initialDelay;
+  blankLinePing.value = !!defaultSetting.server.blankLinePing;
+  blankLineInitialDelay.value.value = defaultSetting.server.blankLinePing?.initialDelay || 40;
+  blankLineInterval.value.value = defaultSetting.server.blankLinePing?.interval || 40;
   repeat.value.value = defaultSetting.repeat;
   autoRelogin.value = defaultSetting.autoRelogin;
   restartPlayerEveryGame.value = defaultSetting.restartPlayerEveryGame;
@@ -311,6 +372,15 @@ const onStart = () => {
       port: Number(port.value.value),
       id: String(id.value.value || ""),
       password: String(password.value.value || ""),
+      tcpKeepalive: {
+        initialDelay: readInputAsNumber(keepaliveInitialDelay.value),
+      },
+      blankLinePing: blankLinePing.value
+        ? {
+            initialDelay: readInputAsNumber(blankLineInitialDelay.value),
+            interval: readInputAsNumber(blankLineInterval.value),
+          }
+        : undefined,
     },
     repeat: readInputAsNumber(repeat.value),
     autoRelogin: autoRelogin.value,
@@ -354,6 +424,12 @@ const onChangeHistory = (event: Event) => {
     port.value.value = server.port;
     id.value.value = server.id;
     password.value.value = server.password;
+    keepaliveInitialDelay.value.value = server.tcpKeepalive.initialDelay;
+    blankLinePing.value = !!server.blankLinePing;
+    if (server.blankLinePing) {
+      blankLineInitialDelay.value.value = server.blankLinePing.initialDelay;
+      blankLineInterval.value.value = server.blankLinePing.interval;
+    }
   }
 };
 

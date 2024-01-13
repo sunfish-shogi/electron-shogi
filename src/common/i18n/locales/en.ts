@@ -105,6 +105,10 @@ export const en: Texts = {
   portNumber: "Port",
   password: "Password",
   showPassword: "Show Password",
+  keepaliveInitialDelay: "Keepalive Initial Delay",
+  blankLinePing: "Blank Line Ping",
+  blankLinePingInitialDelay: "Blank Line Ping Initial Delay",
+  blankLinePingInterval: "Blank Line Ping Interval",
   logout: "Logout",
   calculateJishogiPoints: "Calculate Jishogi Points",
   jishogiPoints: "Jishogi Points",
@@ -515,6 +519,10 @@ export const en: Texts = {
   hostNameIsEmpty: "Host name is empty.",
   invalidPortNumber: "Invalid port number.",
   idIsEmpty: "ID is empty.",
+  tcpKeepaliveInitialDelayMustBePositive: "TCP keepalive initial delay must be positive.",
+  blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30:
+    "Blank line ping initial delay must be >=30.",
+  blankLinePingIntervalMustBeGreaterThanOrEqualTo30: "Blank line ping interval must be >=30.",
   engineNotSelected: "Engine is not selected.",
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
     "For exporting conversion log, please enable app logs, set log level to DEBUG and restart this app.",

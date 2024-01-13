@@ -29,6 +29,7 @@ export const csaServerSetting: CSAServerSetting = {
   port: 4081,
   id: "TestPlayer",
   password: "test-password",
+  tcpKeepalive: { initialDelay: 10 },
 };
 
 export const csaGameSetting: CSAGameSetting = {
@@ -62,6 +63,7 @@ export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
       port: 4081,
       id: "TestPlayer",
       password: "test-password",
+      tcpKeepalive: { initialDelay: 10 },
     },
   ],
   autoFlip: true,

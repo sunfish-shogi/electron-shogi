@@ -71,6 +71,7 @@ export class Client {
   };
   private _createdMs: number = Date.now();
   private _loggedInMs?: number;
+  private blankLinePingTimeout: NodeJS.Timeout | null = null;
 
   constructor(
     private sessionID: number,
@@ -152,13 +153,20 @@ export class Client {
       this.setting.port,
     );
     this._state = State.CONNECTING;
-    this.socket = new Socket(this.setting.host, this.setting.port, {
-      onConnect: this.onConnect.bind(this),
-      onError: this.onConnectionError.bind(this),
-      onFIN: this.onFIN.bind(this),
-      onClose: this.onClose.bind(this),
-      onRead: this.onRead.bind(this),
-    });
+    this.socket = new Socket(
+      this.setting.host,
+      this.setting.port,
+      {
+        onConnect: this.onConnect.bind(this),
+        onError: this.onConnectionError.bind(this),
+        onFIN: this.onFIN.bind(this),
+        onClose: this.onClose.bind(this),
+        onRead: this.onRead.bind(this),
+      },
+      {
+        keepaliveInitialDelay: this.setting.tcpKeepalive.initialDelay,
+      },
+    );
   }
 
   logout(): void {
@@ -263,6 +271,7 @@ export class Client {
       this.commandCallback(this._lastSent);
     }
     this.logger.info("sid=%d: > %s", this.sessionID, this.hideSecureValues(command));
+    this.setBlankLinePing(command);
   }
 
   private hideSecureValues(command: string): string {
@@ -304,9 +313,11 @@ export class Client {
 
   private onFIN(): void {
     this.logger.info("sid=%d: FIN packet received", this.sessionID);
+    this.clearBlankLinePing();
   }
 
   private onClose(hadError: boolean): void {
+    this.clearBlankLinePing();
     if (this.state === State.CLOSED) {
       return;
     }
@@ -343,6 +354,7 @@ export class Client {
   }
 
   private onRead(command: string): void {
+    this.setBlankLinePing();
     this._lastReceived = {
       type: CommandType.RECEIVE,
       command,
@@ -639,6 +651,28 @@ export class Client {
       case CommandType.RECEIVE:
         this.onRead(command);
         break;
+    }
+  }
+
+  private setBlankLinePing(lastSent?: string): void {
+    if (!this.setting.blankLinePing) {
+      return;
+    }
+    this.clearBlankLinePing();
+    this.blankLinePingTimeout = setTimeout(
+      () => {
+        this.send("");
+      },
+      (lastSent === ""
+        ? this.setting.blankLinePing.interval
+        : this.setting.blankLinePing.initialDelay) * 1e3,
+    );
+  }
+
+  private clearBlankLinePing(): void {
+    if (this.blankLinePingTimeout) {
+      clearTimeout(this.blankLinePingTimeout);
+      this.blankLinePingTimeout = null;
     }
   }
 }

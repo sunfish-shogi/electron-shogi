@@ -9,11 +9,20 @@ type SocketHandlers = {
   onRead(line: string): void;
 };
 
+type SocketOptions = {
+  keepaliveInitialDelay: number;
+};
+
 export class Socket {
   private socket: net.Socket;
   private readline: Readline | null;
 
-  constructor(host: string, port: number, handlers: SocketHandlers) {
+  constructor(
+    host: string,
+    port: number,
+    handlers: SocketHandlers,
+    options: SocketOptions = { keepaliveInitialDelay: 0 },
+  ) {
     this.socket = net
       .createConnection(
         {
@@ -22,7 +31,7 @@ export class Socket {
         },
         handlers.onConnect,
       )
-      .setKeepAlive(true)
+      .setKeepAlive(true, options.keepaliveInitialDelay * 1e3)
       .on("error", handlers.onError)
       .on("end", handlers.onFIN)
       .on("close", (hadError) => {

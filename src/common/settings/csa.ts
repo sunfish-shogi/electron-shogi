@@ -7,12 +7,23 @@ export enum CSAProtocolVersion {
   V121_FLOODGATE = "v121_floodgate",
 }
 
+export type TCPKeepaliveSetting = {
+  initialDelay: number;
+};
+
+export type BlankLinePingSetting = {
+  initialDelay: number;
+  interval: number;
+};
+
 export type CSAServerSetting = {
   protocolVersion: CSAProtocolVersion;
   host: string;
   port: number;
   id: string;
   password: string;
+  tcpKeepalive: TCPKeepaliveSetting;
+  blankLinePing?: BlankLinePingSetting;
 };
 
 export type CSAGameSetting = {
@@ -33,6 +44,9 @@ export function defaultCSAServerSetting(): CSAServerSetting {
     port: 4081,
     id: "",
     password: "",
+    tcpKeepalive: {
+      initialDelay: 10,
+    },
   };
 }
 
@@ -67,6 +81,17 @@ export function validateCSAGameSetting(csaGameSetting: CSAGameSetting): Error | 
   }
   if (csaGameSetting.server.id === "") {
     return new Error(t.idIsEmpty);
+  }
+  if (csaGameSetting.server.tcpKeepalive.initialDelay <= 0) {
+    return new Error(t.tcpKeepaliveInitialDelayMustBePositive);
+  }
+  if (csaGameSetting.server.blankLinePing) {
+    if (csaGameSetting.server.blankLinePing.initialDelay < 30) {
+      return new Error(t.blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30);
+    }
+    if (csaGameSetting.server.blankLinePing.interval < 30) {
+      return new Error(t.blankLinePingIntervalMustBeGreaterThanOrEqualTo30);
+    }
   }
   return;
 }
@@ -130,7 +155,11 @@ export function appendCSAGameSettingHistory(
       server.host !== setting.server.host ||
       server.port !== setting.server.port ||
       server.id !== setting.server.id ||
-      server.password !== setting.server.password
+      server.password !== setting.server.password ||
+      server.tcpKeepalive.initialDelay !== setting.server.tcpKeepalive.initialDelay ||
+      !server.blankLinePing !== !setting.server.blankLinePing ||
+      server.blankLinePing?.initialDelay !== setting.server.blankLinePing?.initialDelay ||
+      server.blankLinePing?.interval !== setting.server.blankLinePing?.interval
     ) {
       newServerHistory.push(server);
     }
@@ -157,6 +186,8 @@ export type SecureCSAServerSetting = {
   id: string;
   encryptedPassword?: string;
   password?: string;
+  tcpKeepalive: TCPKeepaliveSetting;
+  blankLinePing?: BlankLinePingSetting;
 };
 
 export function emptySecureCSAServerSetting(): SecureCSAServerSetting {
@@ -165,6 +196,9 @@ export function emptySecureCSAServerSetting(): SecureCSAServerSetting {
     host: "",
     port: 0,
     id: "",
+    tcpKeepalive: {
+      initialDelay: 10,
+    },
   };
 }
 
@@ -227,7 +261,11 @@ export function encryptCSAGameSettingHistory(
       host: setting.host,
       port: setting.port,
       id: setting.id,
+      tcpKeepalive: setting.tcpKeepalive,
     } as SecureCSAServerSetting;
+    if (setting.blankLinePing) {
+      entry.blankLinePing = setting.blankLinePing;
+    }
     if (encryptor) {
       entry.encryptedPassword = encryptor(setting.password);
     } else {
@@ -253,7 +291,7 @@ export function decryptCSAGameSettingHistory(
 ): CSAGameSettingHistory {
   const serverHistory = [] as CSAServerSetting[];
   for (const setting of history.serverHistory) {
-    serverHistory.push({
+    const entry = {
       protocolVersion: setting.protocolVersion,
       host: setting.host,
       port: setting.port,
@@ -262,7 +300,12 @@ export function decryptCSAGameSettingHistory(
         decryptor && setting.encryptedPassword
           ? decryptor(setting.encryptedPassword)
           : setting.password || "",
-    });
+      tcpKeepalive: setting.tcpKeepalive,
+    } as CSAServerSetting;
+    if (setting.blankLinePing) {
+      entry.blankLinePing = setting.blankLinePing;
+    }
+    serverHistory.push(entry);
   }
   return {
     player: history.player,

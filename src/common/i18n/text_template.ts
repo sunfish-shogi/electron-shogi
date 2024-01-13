@@ -102,6 +102,10 @@ export type Texts = {
   portNumber: string;
   password: string;
   showPassword: string;
+  keepaliveInitialDelay: string;
+  blankLinePing: string;
+  blankLinePingInitialDelay: string;
+  blankLinePingInterval: string;
   logout: string;
   calculateJishogiPoints: string;
   jishogiPoints: string;
@@ -498,6 +502,9 @@ export type Texts = {
   hostNameIsEmpty: string;
   invalidPortNumber: string;
   idIsEmpty: string;
+  tcpKeepaliveInitialDelayMustBePositive: string;
+  blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30: string;
+  blankLinePingIntervalMustBeGreaterThanOrEqualTo30: string;
   engineNotSelected: string;
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart: string;
   sourceDirectoryNotSpecified: string;

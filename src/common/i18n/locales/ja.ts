@@ -104,6 +104,10 @@ export const ja: Texts = {
   portNumber: "ポート番号",
   password: "パスワード",
   showPassword: "パスワードを表示する",
+  keepaliveInitialDelay: "Keepalive初期遅延",
+  blankLinePing: "空行Ping",
+  blankLinePingInitialDelay: "空行Ping初期遅延",
+  blankLinePingInterval: "空行Ping間隔",
   logout: "ログアウト",
   calculateJishogiPoints: "持将棋の点数を計算",
   jishogiPoints: "持将棋の点数",
@@ -511,6 +515,12 @@ export const ja: Texts = {
   hostNameIsEmpty: "ホスト名が空です。",
   invalidPortNumber: "無効なポート番号です。",
   idIsEmpty: "IDが空です。",
+  tcpKeepaliveInitialDelayMustBePositive:
+    "TCP Keepaliveの初期遅延時間には正の値を指定してください。",
+  blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30:
+    "空行送信の初期遅延時間には30秒以上を指定してください。",
+  blankLinePingIntervalMustBeGreaterThanOrEqualTo30:
+    "空行送信の間隔には30秒以上を指定してください。",
   engineNotSelected: "エンジンが選択されていません。",
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
     "変換ログを出力するにはアプリログを有効にし、ログレベルをデバッグに設定してアプリを再起動してください。",

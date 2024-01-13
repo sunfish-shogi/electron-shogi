@@ -22,6 +22,7 @@ describe("settings/csa", () => {
         port: 4081,
         id: "TestUser",
         password: "test0123",
+        tcpKeepalive: { initialDelay: 10 },
       },
       autoFlip: true,
       enableComment: true,
@@ -45,6 +46,7 @@ describe("settings/csa", () => {
         port: 4081,
         id: "TestUser",
         password: "test0123",
+        tcpKeepalive: { initialDelay: 10 },
       },
       autoFlip: true,
       enableComment: true,
@@ -68,6 +70,7 @@ describe("settings/csa", () => {
         port: 100000,
         id: "TestUser",
         password: "test0123",
+        tcpKeepalive: { initialDelay: 10 },
       },
       autoFlip: true,
       enableComment: true,
@@ -91,6 +94,7 @@ describe("settings/csa", () => {
         port: 4081,
         id: "",
         password: "test0123",
+        tcpKeepalive: { initialDelay: 10 },
       },
       autoFlip: true,
       enableComment: true,
@@ -114,6 +118,7 @@ describe("settings/csa", () => {
           host: "test-server",
           port: 1234,
           id: "test-user",
+          tcpKeepalive: { initialDelay: 10 },
         },
       ],
       autoFlip: false,
@@ -192,6 +197,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user01",
           password: "test01",
+          tcpKeepalive: { initialDelay: 10 },
         },
         {
           protocolVersion: CSAProtocolVersion.V121,
@@ -199,6 +205,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user02",
           password: "test02",
+          tcpKeepalive: { initialDelay: 10 },
         },
       ],
       autoFlip: true,
@@ -225,6 +232,9 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user01",
           encryptedPassword: "xyz01",
+          tcpKeepalive: {
+            initialDelay: 10,
+          },
         },
         {
           protocolVersion: CSAProtocolVersion.V121,
@@ -232,6 +242,9 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user02",
           encryptedPassword: "xyz02",
+          tcpKeepalive: {
+            initialDelay: 10,
+          },
         },
       ],
     });
@@ -245,6 +258,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user01",
           password: "test01",
+          tcpKeepalive: { initialDelay: 10 },
         },
         {
           protocolVersion: CSAProtocolVersion.V121,
@@ -252,6 +266,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user02",
           password: "test02",
+          tcpKeepalive: { initialDelay: 10 },
         },
       ],
     });
@@ -270,6 +285,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user01",
           encryptedPassword: "xyz01",
+          tcpKeepalive: { initialDelay: 10 },
         },
         {
           protocolVersion: CSAProtocolVersion.V121,
@@ -277,6 +293,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user02",
           encryptedPassword: "xyz02",
+          tcpKeepalive: { initialDelay: 10 },
         },
       ],
       autoFlip: true,
@@ -295,6 +312,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user03",
           password: "test03",
+          tcpKeepalive: { initialDelay: 10 },
         },
         {
           protocolVersion: CSAProtocolVersion.V121,
@@ -302,6 +320,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user04",
           password: "test04",
+          tcpKeepalive: { initialDelay: 10 },
         },
       ],
     };
@@ -322,6 +341,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user01",
           password: "test01",
+          tcpKeepalive: { initialDelay: 10 },
         },
         {
           protocolVersion: CSAProtocolVersion.V121,
@@ -329,6 +349,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user02",
           password: "test02",
+          tcpKeepalive: { initialDelay: 10 },
         },
       ],
     });
@@ -342,6 +363,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user03",
           password: "test03",
+          tcpKeepalive: { initialDelay: 10 },
         },
         {
           protocolVersion: CSAProtocolVersion.V121,
@@ -349,6 +371,7 @@ describe("settings/csa", () => {
           port: 4081,
           id: "user04",
           password: "test04",
+          tcpKeepalive: { initialDelay: 10 },
         },
       ],
     });

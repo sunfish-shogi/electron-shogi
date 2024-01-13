@@ -104,6 +104,10 @@ export const zh_tw: Texts = {
   portNumber: "連接埠號碼",
   password: "密碼",
   showPassword: "顯示密碼",
+  keepaliveInitialDelay: "Keepalive初期遅延", // TODO: translate
+  blankLinePing: "空行Ping", // TODO: translate
+  blankLinePingInitialDelay: "空行Ping初期遅延", // TODO: translate
+  blankLinePingInterval: "空行Ping間隔", // TODO: translate
   logout: "登出",
   calculateJishogiPoints: "持将棋の点数を計算", // TODO: translate
   jishogiPoints: "持将棋の点数", // TODO: translate
@@ -505,6 +509,11 @@ export const zh_tw: Texts = {
   hostNameIsEmpty: "主機名稱為空。",
   invalidPortNumber: "不可用的連接埠號碼。",
   idIsEmpty: "ID 為空。",
+  tcpKeepaliveInitialDelayMustBePositive:
+    "TCP Keepaliveの初期遅延時間には正の値を指定してください。", // TODO: translate
+  blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30:
+    "空行送信の初期遅延時間には正の値を指定してください。", // TODO: translate
+  blankLinePingIntervalMustBeGreaterThanOrEqualTo30: "空行送信の間隔には正の値を指定してください。", // TODO: translate
   engineNotSelected: "尚未選擇引擎。",
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
     "如要監看轉換紀錄，請在程式設定內設定 log level 到 Debug 並重新啟動本程式。",

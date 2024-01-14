@@ -281,7 +281,11 @@ export class Client {
   private onConnect(): void {
     this.logger.info("sid=%d: connected", this.sessionID);
     this._state = State.CONNECTED;
-    this.send(`LOGIN ${this.setting.id} ${this.setting.password}`);
+    let suffix = "";
+    if (this.setting.protocolVersion === CSAProtocolVersion.V121_X1) {
+      suffix = " x1";
+    }
+    this.send(`LOGIN ${this.setting.id} ${this.setting.password}${suffix}`);
   }
 
   private onConnectionError(e: Error): void {

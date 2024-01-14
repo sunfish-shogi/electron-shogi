@@ -213,6 +213,12 @@ export function setup(): void {
       case MenuEvent.USI_ENGINE_SETTING_DIALOG:
         store.showUsiEngineManagementDialog();
         break;
+      case MenuEvent.LAUNCH_USI_ENGINE:
+        store.showLaunchUSIEngineDialog();
+        break;
+      case MenuEvent.CONNECT_TO_CSA_SERVER:
+        store.showConnectToCSAServerDialog();
+        break;
     }
   });
   bridge.updateAppSetting((json: string) => {

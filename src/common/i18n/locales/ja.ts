@@ -57,6 +57,15 @@ export const ja: Texts = {
   copyUSILogTailCommand: "USI通信ログのTailコマンドをコピー",
   copyCSALogTailCommand: "CSA通信ログのTailコマンドをコピー",
   reloadCustomPieceImage: "カスタム駒画像をリロード",
+  launchUSIEngine: "USIエンジンを起動",
+  connectToCSAServer: "CSAサーバーに接続",
+  adminMode: "管理モード",
+  inAdminModeYouShouldInvokeCommandsManuallyAtPrompt:
+    "管理モードではプロンプトから手動でコマンドを実行する必要があります。",
+  setoptionAndPrecedingCommandsWillBeSentAutomatically:
+    "setoptionコマンドまでのコマンドは自動で送信されます。",
+  serverMustSupportShogiServerX1ModeLogIn:
+    "サーバーは shogi-server の拡張モード (x1) ログインをサポートしている必要があります。",
   folders: "各種フォルダ",
   notification: "通知",
   notificationTest: "通知テスト",

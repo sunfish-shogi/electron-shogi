@@ -55,6 +55,12 @@ export type Texts = {
   copyUSILogTailCommand: string;
   copyCSALogTailCommand: string;
   reloadCustomPieceImage: string;
+  launchUSIEngine: string;
+  connectToCSAServer: string;
+  adminMode: string;
+  inAdminModeYouShouldInvokeCommandsManuallyAtPrompt: string;
+  setoptionAndPrecedingCommandsWillBeSentAutomatically: string;
+  serverMustSupportShogiServerX1ModeLogIn: string;
   folders: string;
   notification: string;
   notificationTest: string;

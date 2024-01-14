@@ -83,6 +83,7 @@
               <option value="gserver.computer-shogi.org"></option>
               <option value="wdoor.c.u-tokyo.ac.jp"></option>
               <option value="localhost"></option>
+              <option value="127.0.0.1"></option>
             </datalist>
           </div>
           <div class="form-item">

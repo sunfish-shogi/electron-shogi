@@ -5,6 +5,7 @@ import { t } from "@/common/i18n";
 export enum CSAProtocolVersion {
   V121 = "v121",
   V121_FLOODGATE = "v121_floodgate",
+  V121_X1 = "v121_x1",
 }
 
 export type TCPKeepaliveSetting = {

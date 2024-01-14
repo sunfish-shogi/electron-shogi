@@ -356,6 +356,18 @@ class Store {
     }
   }
 
+  showLaunchUSIEngineDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.LAUNCH_USI_ENGINE_DIALOG;
+    }
+  }
+
+  showConnectToCSAServerDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.CONNECT_TO_CSA_SERVER_DIALOG;
+    }
+  }
+
   destroyModalDialog(): void {
     if (
       this.appState === AppState.PASTE_DIALOG ||
@@ -367,7 +379,9 @@ class Store {
       this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
       this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG ||
       this.appState === AppState.RECORD_FILE_HISTORY_DIALOG ||
-      this.appState === AppState.BATCH_CONVERSION_DIALOG
+      this.appState === AppState.BATCH_CONVERSION_DIALOG ||
+      this.appState === AppState.LAUNCH_USI_ENGINE_DIALOG ||
+      this.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG
     ) {
       this._appState = AppState.NORMAL;
     }

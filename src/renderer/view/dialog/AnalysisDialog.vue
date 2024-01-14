@@ -149,7 +149,7 @@ onBeforeUnmount(() => {
 
 const onStart = () => {
   if (!engineURI.value || !engineSettings.value.hasEngine(engineURI.value)) {
-    store.pushError("エンジンを選択してください。");
+    store.pushError(t.engineNotSelected);
     return;
   }
   const engine = engineSettings.value.getEngine(engineURI.value);

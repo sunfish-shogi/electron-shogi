@@ -48,4 +48,6 @@ export enum MenuEvent {
   FLIP_BOARD = "flipBoard",
   APP_SETTING_DIALOG = "appSetting",
   USI_ENGINE_SETTING_DIALOG = "usiEngineSetting",
+  LAUNCH_USI_ENGINE = "launchUsiEngine",
+  CONNECT_TO_CSA_SERVER = "connectToCsaServer",
 }

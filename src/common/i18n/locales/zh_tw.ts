@@ -57,6 +57,15 @@ export const zh_tw: Texts = {
   copyUSILogTailCommand: "USI通信ログのTailコマンドをコピー", // TODO: translate
   copyCSALogTailCommand: "CSA通信ログのTailコマンドをコピー", // TODO: translate
   reloadCustomPieceImage: "カスタム駒画像をリロード", // TODO: translate
+  launchUSIEngine: "USIエンジンを起動", // TODO: translate
+  connectToCSAServer: "CSAサーバーに接続", // TODO: translate
+  adminMode: "管理モード", // TODO: translate
+  inAdminModeYouShouldInvokeCommandsManuallyAtPrompt:
+    "管理モードではプロンプトから手動でコマンドを実行する必要があります。", // TODO: translate
+  setoptionAndPrecedingCommandsWillBeSentAutomatically:
+    "setoptionコマンドまでのコマンドは自動で送信されます。", // TODO: translate
+  serverMustSupportShogiServerX1ModeLogIn:
+    "サーバーは shogi-server の拡張モード (x1) ログインをサポートしている必要があります。", // TODO: translate
   folders: "各種フォルダ", // TODO: translate
   notification: "通知", // TODO: translate
   notificationTest: "通知テスト", // TODO: translate

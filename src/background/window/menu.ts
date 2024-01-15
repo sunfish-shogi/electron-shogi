@@ -5,7 +5,7 @@ import { getTailCommand, openLogFile, openLogsDirectory, tailLogFile } from "@/b
 import { getWebContents, onMenuEvent } from "@/background/window/ipc";
 import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
-import { checkLatestVersion, openHowToUse, openWebSite } from "./help";
+import { openHowToUse, openLatestReleasePage, openStableReleasePage, openWebSite } from "./help";
 import { t } from "@/common/i18n";
 import { InitialPositionSFEN } from "electron-shogi-core";
 import { getAppPath } from "@/background/proc/env";
@@ -479,8 +479,12 @@ function createMenuTemplate() {
           click: openHowToUse,
         },
         {
-          label: t.checkForUpdates,
-          click: checkLatestVersion,
+          label: t.openLatestReleasePage,
+          click: openLatestReleasePage,
+        },
+        {
+          label: t.openStableReleasePage,
+          click: openStableReleasePage,
         },
       ],
     },

@@ -72,7 +72,8 @@ export type Texts = {
   help: string;
   openWebSite: string;
   howToUse: string;
-  checkForUpdates: string;
+  openLatestReleasePage: string;
+  openStableReleasePage: string;
   inputs: string;
   outputs: string;
   format: string;

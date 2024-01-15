@@ -77,7 +77,8 @@ export const zh_tw: Texts = {
   help: "協助",
   openWebSite: "官方網站",
   howToUse: "使用教學",
-  checkForUpdates: "檢查最新版本",
+  openLatestReleasePage: "最新版リリースページを開く", // TODO: translate
+  openStableReleasePage: "最新版リリースページを開く", // TODO: translate
   inputs: "輸入目錄",
   outputs: "輸出目錄",
   format: "格式",

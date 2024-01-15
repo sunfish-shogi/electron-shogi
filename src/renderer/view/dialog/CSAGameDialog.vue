@@ -243,6 +243,12 @@
         </div>
       </div>
       <div class="main-buttons">
+        <button data-hotkey="Mod+c" autofocus @click="onCopy()">
+          設定をコピーする
+          <Icon :icon="IconType.COPY" />
+        </button>
+      </div>
+      <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="onStart()">
           {{ t.startGame }}
         </button>
@@ -275,6 +281,8 @@ import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 
 const store = useStore();
 const dialog = ref();
@@ -364,8 +372,8 @@ const buildPlayerSetting = (playerURI: string): PlayerSetting => {
   };
 };
 
-const onStart = () => {
-  const csaGameSetting: CSAGameSetting = {
+const buildConfig = (): CSAGameSetting => {
+  return {
     player: buildPlayerSetting(playerURI.value),
     server: {
       protocolVersion: protocolVersion.value.value,
@@ -390,6 +398,15 @@ const onStart = () => {
     enableAutoSave: enableAutoSave.value,
     autoFlip: autoFlip.value,
   };
+};
+
+const onCopy = () => {
+  const csaGameSetting: CSAGameSetting = buildConfig();
+  navigator.clipboard.writeText(JSON.stringify(csaGameSetting, null, 2));
+};
+
+const onStart = () => {
+  const csaGameSetting: CSAGameSetting = buildConfig();
   const error = validateCSAGameSetting(csaGameSetting);
   if (error) {
     store.pushError(error);

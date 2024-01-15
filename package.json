@@ -26,7 +26,10 @@
     "release:commit": "git add . && git commit -m \"release\"",
     "release": "ts-node scripts/publish-release.ts && npm run docs && npm run build && npm run build:dev && npm run license && npm run release:commit",
     "release:patch": "npm version patch --no-commit-hooks --no-git-tag-version && npm run release",
-    "release:minor": "npm version minor --no-commit-hooks --no-git-tag-version && npm run release"
+    "release:minor": "npm version minor --no-commit-hooks --no-git-tag-version && npm run release",
+    "command:compile": "tsc --project ./tsconfig.cmd.json && tsc-alias",
+    "command:build": "npm run command:compile && webpack --config-name command:usi-csa-bridge",
+    "usi-csa-bridge": "npm run command:compile && node dist/src/command/usi-csa-bridge/index.js"
   },
   "main": "dist/src/background/index.js",
   "dependencies": {

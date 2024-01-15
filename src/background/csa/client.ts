@@ -369,6 +369,9 @@ export class Client {
       this.commandCallback(this._lastReceived);
     }
     this.logger.info("sid=%d: < %s", this.sessionID, command);
+    if (command === "") {
+      return;
+    }
     if (this.state === State.GAME_SUMMARY) {
       this.onGameSummary(command);
     } else if (this.state === State.GAME_TIME) {

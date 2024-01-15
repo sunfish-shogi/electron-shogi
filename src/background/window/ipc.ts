@@ -42,6 +42,7 @@ import {
   collectSessionStates as collectUSISessionStates,
   getCommandHistory as getUSICommandHistory,
   invokeCommand as invokeUSICommand,
+  setHandlers as setUSIHandlers,
 } from "@/background/usi";
 import { GameResult } from "@/common/game/result";
 import { LogLevel, LogType } from "@/common/log";
@@ -57,6 +58,7 @@ import {
   collectSessionStates as collectCSASessionStates,
   getCommandHistory as getCSACommandHistory,
   invokeCommand as invokeCSACommand,
+  setHandlers,
 } from "@/background/csa";
 import { CSAGameResult, CSAGameSummary, CSAPlayerStates, CSASpecialMove } from "@/common/game/csa";
 import { CSAServerSetting } from "@/common/settings/csa";
@@ -685,7 +687,7 @@ ipcMain.handle(
   },
 );
 
-export function sendPromptCommand(target: PromptTarget, sessionID: number, command: Command): void {
+function sendPromptCommand(target: PromptTarget, sessionID: number, command: Command): void {
   const prompts = getPrompts(target, sessionID);
   prompts.forEach((prompt) => {
     prompt.send(Renderer.PROMPT_COMMAND, JSON.stringify(command));
@@ -782,63 +784,50 @@ export function openRecord(path: string): void {
   }
 }
 
-export function onUSIBestMove(
-  sessionID: number,
-  usi: string,
-  usiMove: string,
-  ponder?: string,
-): void {
-  mainWindow.webContents.send(Renderer.USI_BEST_MOVE, sessionID, usi, usiMove, ponder);
-}
+setUSIHandlers({
+  onUSIBestMove(sessionID: number, usi: string, usiMove: string, ponder?: string): void {
+    mainWindow.webContents.send(Renderer.USI_BEST_MOVE, sessionID, usi, usiMove, ponder);
+  },
+  onUSICheckmate(sessionID: number, usi: string, usiMoves: string[]): void {
+    mainWindow.webContents.send(Renderer.USI_CHECKMATE, sessionID, usi, usiMoves);
+  },
+  onUSICheckmateNotImplemented(sessionID: number): void {
+    mainWindow.webContents.send(Renderer.USI_CHECKMATE_NOT_IMPLEMENTED, sessionID);
+  },
+  onUSICheckmateTimeout(sessionID: number, usi: string): void {
+    mainWindow.webContents.send(Renderer.USI_CHECKMATE_TIMEOUT, sessionID, usi);
+  },
+  onUSINoMate(sessionID: number, usi: string): void {
+    mainWindow.webContents.send(Renderer.USI_NO_MATE, sessionID, usi);
+  },
+  onUSIInfo(sessionID: number, usi: string, info: USIInfoCommand): void {
+    mainWindow.webContents.send(Renderer.USI_INFO, sessionID, usi, JSON.stringify(info));
+  },
+  onUSIPonderInfo(sessionID: number, usi: string, info: USIInfoCommand): void {
+    mainWindow.webContents.send(Renderer.USI_PONDER_INFO, sessionID, usi, JSON.stringify(info));
+  },
+  sendPromptCommand: sendPromptCommand.bind(this, PromptTarget.USI),
+});
 
-export function onUSICheckmate(sessionID: number, usi: string, usiMoves: string[]): void {
-  mainWindow.webContents.send(Renderer.USI_CHECKMATE, sessionID, usi, usiMoves);
-}
-
-export function onUSICheckmateNotImplemented(sessionID: number): void {
-  mainWindow.webContents.send(Renderer.USI_CHECKMATE_NOT_IMPLEMENTED, sessionID);
-}
-
-export function onUSICheckmateTimeout(sessionID: number, usi: string): void {
-  mainWindow.webContents.send(Renderer.USI_CHECKMATE_TIMEOUT, sessionID, usi);
-}
-
-export function onUSINoMate(sessionID: number, usi: string): void {
-  mainWindow.webContents.send(Renderer.USI_NO_MATE, sessionID, usi);
-}
-
-export function onUSIInfo(sessionID: number, usi: string, info: USIInfoCommand): void {
-  mainWindow.webContents.send(Renderer.USI_INFO, sessionID, usi, JSON.stringify(info));
-}
-
-export function onUSIPonderInfo(sessionID: number, usi: string, info: USIInfoCommand): void {
-  mainWindow.webContents.send(Renderer.USI_PONDER_INFO, sessionID, usi, JSON.stringify(info));
-}
-
-export function onCSAGameSummary(sessionID: number, gameSummary: CSAGameSummary): void {
-  mainWindow.webContents.send(Renderer.CSA_GAME_SUMMARY, sessionID, JSON.stringify(gameSummary));
-}
-
-export function onCSAReject(sessionID: number): void {
-  mainWindow.webContents.send(Renderer.CSA_REJECT, sessionID);
-}
-
-export function onCSAStart(sessionID: number, playerStates: CSAPlayerStates): void {
-  mainWindow.webContents.send(Renderer.CSA_START, sessionID, JSON.stringify(playerStates));
-}
-
-export function onCSAMove(sessionID: number, move: string, playerStates: CSAPlayerStates): void {
-  mainWindow.webContents.send(Renderer.CSA_MOVE, sessionID, move, JSON.stringify(playerStates));
-}
-
-export function onCSAGameResult(
-  sessionID: number,
-  specialMove: CSASpecialMove,
-  gameResult: CSAGameResult,
-): void {
-  mainWindow.webContents.send(Renderer.CSA_GAME_RESULT, sessionID, specialMove, gameResult);
-}
-
-export function onCSAClose(sessionID: number): void {
-  mainWindow.webContents.send(Renderer.CSA_CLOSE, sessionID);
-}
+setHandlers({
+  onCSAGameSummary(sessionID: number, gameSummary: CSAGameSummary): void {
+    mainWindow.webContents.send(Renderer.CSA_GAME_SUMMARY, sessionID, JSON.stringify(gameSummary));
+  },
+  onCSAReject(sessionID: number): void {
+    mainWindow.webContents.send(Renderer.CSA_REJECT, sessionID);
+  },
+  onCSAStart(sessionID: number, playerStates: CSAPlayerStates): void {
+    mainWindow.webContents.send(Renderer.CSA_START, sessionID, JSON.stringify(playerStates));
+  },
+  onCSAMove(sessionID: number, move: string, playerStates: CSAPlayerStates): void {
+    mainWindow.webContents.send(Renderer.CSA_MOVE, sessionID, move, JSON.stringify(playerStates));
+  },
+  onCSAGameResult(sessionID: number, specialMove: CSASpecialMove, gameResult: CSAGameResult): void {
+    mainWindow.webContents.send(Renderer.CSA_GAME_RESULT, sessionID, specialMove, gameResult);
+  },
+  onCSAClose(sessionID: number): void {
+    mainWindow.webContents.send(Renderer.CSA_CLOSE, sessionID);
+  },
+  sendPromptCommand: sendPromptCommand.bind(this, PromptTarget.CSA),
+  sendError: sendError,
+});

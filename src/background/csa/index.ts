@@ -1,19 +1,30 @@
 import { CSAServerSetting } from "@/common/settings/csa";
-import {
-  onCSAClose,
-  onCSAGameResult,
-  onCSAGameSummary,
-  onCSAMove,
-  onCSAReject,
-  onCSAStart,
-  sendError,
-  sendPromptCommand,
-} from "@/background/window/ipc";
 import { getCSALogger } from "@/background/log";
 import { Client, State } from "@/background/csa/client";
 import { CSASessionState } from "@/common/advanced/monitor";
-import { PromptHistory, PromptTarget } from "@/common/advanced/prompt";
-import { CommandType } from "@/common/advanced/command";
+import { PromptHistory } from "@/common/advanced/prompt";
+import { Command, CommandType } from "@/common/advanced/command";
+import { CSAGameResult, CSAGameSummary, CSAPlayerStates, CSASpecialMove } from "@/common/game/csa";
+
+interface Handlers {
+  onCSAGameSummary(sessionID: number, gameSummary: CSAGameSummary): void;
+  onCSAReject(sessionID: number): void;
+  onCSAStart(sessionID: number, playerStates: CSAPlayerStates): void;
+  onCSAMove(sessionID: number, move: string, playerStates: CSAPlayerStates): void;
+  onCSAGameResult(sessionID: number, specialMove: CSASpecialMove, gameResult: CSAGameResult): void;
+  onCSAClose(sessionID: number): void;
+  sendPromptCommand(sessionID: number, command: Command): void;
+  sendError(error: Error): void;
+}
+
+let h: Handlers;
+
+export function setHandlers(handlers: Handlers): void {
+  if (h) {
+    throw new Error("handlers already set");
+  }
+  h = handlers;
+}
 
 let lastSessionID = 0;
 
@@ -27,22 +38,22 @@ const clients = new Map<number, Client>();
 export function login(setting: CSAServerSetting): number {
   const sessionID = issueSessionID();
   const client = new Client(sessionID, setting, getCSALogger())
-    .on("gameSummary", (gameSummary) => onCSAGameSummary(sessionID, gameSummary))
-    .on("reject", () => onCSAReject(sessionID))
-    .on("start", (playerStates) => onCSAStart(sessionID, playerStates))
-    .on("move", (move, playerStates) => onCSAMove(sessionID, move, playerStates))
+    .on("gameSummary", (gameSummary) => h.onCSAGameSummary(sessionID, gameSummary))
+    .on("reject", () => h.onCSAReject(sessionID))
+    .on("start", (playerStates) => h.onCSAStart(sessionID, playerStates))
+    .on("move", (move, playerStates) => h.onCSAMove(sessionID, move, playerStates))
     .on("gameResult", (specialMove, gameResult) =>
-      onCSAGameResult(sessionID, specialMove, gameResult),
+      h.onCSAGameResult(sessionID, specialMove, gameResult),
     )
     .on("close", () => {
       setTimeout(() => {
         clients.delete(sessionID);
       }, 10e3); // remove 10 seconds later
-      onCSAClose(sessionID);
+      h.onCSAClose(sessionID);
     })
-    .on("error", sendError)
+    .on("error", h.sendError)
     .on("command", (command) => {
-      sendPromptCommand(PromptTarget.CSA, sessionID, command);
+      h.sendPromptCommand(sessionID, command);
     });
   clients.set(sessionID, client);
   client.login();

@@ -53,14 +53,14 @@ function isLogEnabled(type: LogType, appSetting: AppSetting): boolean {
 }
 
 function getDefaultAppenders(type: LogType): string[] {
+  const appSetting = loadAppSettingOnce();
   return isLogEnabled(type, appSetting) ? [type] : !isTest() ? ["stdout"] : ["recording"];
 }
 
-const appSetting = loadAppSettingOnce();
 const appenders = {
-  [LogType.APP]: getDefaultAppenders(LogType.APP),
-  [LogType.CSA]: getDefaultAppenders(LogType.CSA),
-  [LogType.USI]: getDefaultAppenders(LogType.USI),
+  [LogType.APP]: null as string[] | null,
+  [LogType.USI]: null as string[] | null,
+  [LogType.CSA]: null as string[] | null,
 };
 
 export function overrideLogDestinations(
@@ -71,7 +71,7 @@ export function overrideLogDestinations(
 }
 
 function getAppenders(type: LogType): string[] {
-  return appenders[type];
+  return appenders[type] || getDefaultAppenders(type);
 }
 
 const loggers: { [key: string]: log4js.Logger } = {};
@@ -81,6 +81,7 @@ function getLogger(type: LogType): log4js.Logger {
     return loggers[type];
   }
   if (!config.appenders[type]) {
+    const appSetting = loadAppSettingOnce();
     config.appenders[type] = { type: "file", filename: getFilePath(type) };
     config.categories[type] = {
       appenders: getAppenders(type),

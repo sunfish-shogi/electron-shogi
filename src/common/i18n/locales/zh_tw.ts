@@ -23,8 +23,8 @@ export const zh_tw: Texts = {
   copyAsUSI: "複製USI棋譜",
   copyAsSFEN: "複製SFEN局面",
   copyAsJKF: "複製JKF棋譜",
-  copy: "Copy", // TODO: translate
-  cut: "Cut", // TODO: translate
+  copy: "拷貝",
+  cut: "剪下",
   paste: "貼上",
   copyRecord: "複製棋譜",
   asKIF: "KIF形式",
@@ -46,47 +46,44 @@ export const zh_tw: Texts = {
   config: "設定",
   debug: "偵錯",
   toggleDevTools: "打開/關閉開發者工具顯示",
-  logFile: "ログファイル", // TODO: translate
-  openAppLog: "アプリログを開く", // TODO: translate
-  openUSILog: "USI通信ログを開く", // TODO: translate
-  openCSALog: "CSA通信ログを開く", // TODO: translate
-  tailAppLog: "アプリログをTailする", // TODO: translate
-  tailUSILog: "USI通信ログをTailする", // TODO: translate
-  tailCSALog: "CSA通信ログをTailする", // TODO: translate
-  copyAppLogTailCommand: "アプリログのTailコマンドをコピー", // TODO: translate
-  copyUSILogTailCommand: "USI通信ログのTailコマンドをコピー", // TODO: translate
-  copyCSALogTailCommand: "CSA通信ログのTailコマンドをコピー", // TODO: translate
-  reloadCustomPieceImage: "カスタム駒画像をリロード", // TODO: translate
-  launchUSIEngine: "USIエンジンを起動", // TODO: translate
-  connectToCSAServer: "CSAサーバーに接続", // TODO: translate
-  adminMode: "管理モード", // TODO: translate
-  inAdminModeYouShouldInvokeCommandsManuallyAtPrompt:
-    "管理モードではプロンプトから手動でコマンドを実行する必要があります。", // TODO: translate
-  setoptionAndPrecedingCommandsWillBeSentAutomatically:
-    "setoptionコマンドまでのコマンドは自動で送信されます。", // TODO: translate
-  serverMustSupportShogiServerX1ModeLogIn:
-    "サーバーは shogi-server の拡張モード (x1) ログインをサポートしている必要があります。", // TODO: translate
-  folders: "各種フォルダ", // TODO: translate
-  notification: "通知", // TODO: translate
-  notificationTest: "通知テスト", // TODO: translate
-  thisIsTestNotification: "これは通知のテストです。", // TODO: translate
-  app: "App", // TODO: translate
-  log: "Log", // TODO: translate
-  backup: "Backup", // TODO: translate
-  cache: "Cache", // TODO: translate
+  logFile: "紀錄檔",
+  openAppLog: "開啟程式紀錄檔",
+  openUSILog: "開啟USI通訊紀錄檔",
+  openCSALog: "開啟CSA通訊紀錄檔",
+  tailAppLog: "即時顯示程式紀錄",
+  tailUSILog: "即時顯示USI通訊紀錄",
+  tailCSALog: "即時顯示CSA通訊紀錄",
+  copyAppLogTailCommand: "複製即時顯示程式紀錄指令",
+  copyUSILogTailCommand: "複製即時顯示USI通訊紀錄指令",
+  copyCSALogTailCommand: "複製即時顯示CSA通訊紀錄指令",
+  reloadCustomPieceImage: "重整自訂棋駒圖片",
+  launchUSIEngine: "啟動USI引擎",
+  connectToCSAServer: "連接CSA伺服器",
+  adminMode: "管理模式",
+  inAdminModeYouShouldInvokeCommandsManuallyAtPrompt: "在管理模式下，您需要手動輸入指令方可執行。",
+  setoptionAndPrecedingCommandsWillBeSentAutomatically: "setoption 之前的指令將會被自動發送。",
+  serverMustSupportShogiServerX1ModeLogIn: "對應的 shogi-server 必須支援擴展 (x1) 登入模式。",
+  folders: "資料夾",
+  notification: "通知",
+  notificationTest: "通知測試",
+  thisIsTestNotification: "這是測試用的通知。",
+  app: "軟體",
+  log: "紀錄檔",
+  backup: "備份",
+  cache: "快取",
   help: "協助",
   openWebSite: "官方網站",
   howToUse: "使用教學",
-  openLatestReleasePage: "最新版リリースページを開く", // TODO: translate
-  openStableReleasePage: "最新版リリースページを開く", // TODO: translate
+  openLatestReleasePage: "前往最新版發布頁面",
+  openStableReleasePage: "前往安定版發布頁面",
   inputs: "輸入目錄",
   outputs: "輸出目錄",
   format: "格式",
   formats: "格式",
   subdirectories: "子目錄",
-  separately: "個別", // TODO: translate
-  merge: "マージ", // TODO: translate
-  createSubdirectories: "サブディレクトリ作成", // TODO: translate
+  separately: "個別",
+  merge: "合併",
+  createSubdirectories: "建立子目錄",
   nameConflictAction: "名稱衝突處理方式",
   numberSuffix: "附加編號",
   skip: "跳過該檔案",
@@ -97,7 +94,7 @@ export const zh_tw: Texts = {
   skipped: "跳過",
   game: "對局",
   player: "玩家",
-  server: "サーバー", // TODO: translate
+  server: "伺服器",
   selectFromHistory: "從紀錄選取",
   noHistory: "目前沒有紀錄",
   saveHistory: "保存紀錄",
@@ -114,13 +111,13 @@ export const zh_tw: Texts = {
   portNumber: "連接埠號碼",
   password: "密碼",
   showPassword: "顯示密碼",
-  keepaliveInitialDelay: "Keepalive初期遅延", // TODO: translate
-  blankLinePing: "空行Ping", // TODO: translate
-  blankLinePingInitialDelay: "空行Ping初期遅延", // TODO: translate
-  blankLinePingInterval: "空行Ping間隔", // TODO: translate
+  keepaliveInitialDelay: "Keepalive初始延遲",
+  blankLinePing: "空行Ping",
+  blankLinePingInitialDelay: "空行Ping初始延遲",
+  blankLinePingInterval: "空行Ping間隔",
   logout: "登出",
-  calculateJishogiPoints: "持将棋の点数を計算", // TODO: translate
-  jishogiPoints: "持将棋の点数", // TODO: translate
+  calculateJishogiPoints: "計算持將棋點數",
+  jishogiPoints: "持將棋點數",
   displayGameResults: "確認戰績",
   interrupt: "中斷",
   stopGame: "對局中斷",
@@ -140,7 +137,7 @@ export const zh_tw: Texts = {
   enteringOfKing: "入玉勝利",
   winByDefault: "不戰勝",
   loseByDefault: "不戰敗",
-  winByDeclaration: "宣言勝利",
+  winByDeclaration: "勝利宣言",
   declareWinning: "勝利宣言",
   research: "檢討",
   startResearch: "檢討開始",
@@ -170,17 +167,17 @@ export const zh_tw: Texts = {
   singleKanjiGothicPiece: "一文字駒（黑體）",
   singleKanjiDarkPiece: "一文字駒（深色）",
   singleKanjiGothicDarkPiece: "一文字駒（黑體・深色）",
-  imageHasMarginsRemoveToDisplayLarger: "画像に余白が含まれている（除去して大きく表示）", // TODO: translate
+  imageHasMarginsRemoveToDisplayLarger: "圖片含有透明邊界（去除後圖片會略為放大）",
   backgroundImage: "背景圖片",
   board: "棋盤",
   pieceStand: "駒台",
   lightWoodyTexture: "木目（亮色）",
   warmWoodTexture: "木目（暖色）",
   regin: "樹脂",
-  transparent: "透過表示", // TODO: translate
-  boardOpacity: "盤の不透明度", // TODO: translate
-  pieceStandOpacity: "駒台の不透明度", // TODO: translate
-  recordOpacity: "棋譜の不透明度", // TODO: translate
+  transparent: "透明",
+  boardOpacity: "盤面不透明度",
+  pieceStandOpacity: "駒台不透明度",
+  recordOpacity: "棋譜不透明度",
   displayFileAndRank: "顯示段・筋",
   displayLeftControls: "顯示左側操作按鈕",
   displayRightControls: "顯示右側操作按鈕",
@@ -202,33 +199,33 @@ export const zh_tw: Texts = {
   old90sMac: "90年代Mac",
   autoSaving: "自動保存",
   autoSavingDirectory: "棋譜自動保存地點",
-  recordFileName: "棋譜ファイル名", // TODO: translate
+  recordFileName: "棋譜檔案名稱",
   select: "選擇",
-  positionOfUSIOutput: "USI の局面表記", // TODO: translate
-  movesOfUSIOutput: "USI の指し手表記", // TODO: translate
-  onlySFEN: "SFEN のみ", // TODO: translate
+  positionOfUSIOutput: "USI 局面紀錄格式",
+  movesOfUSIOutput: "USI 棋譜紀錄格式",
+  onlySFEN: "只有 SFEN",
   usiProtocol: "USI協定",
   translateOptionName: "選項名稱翻譯",
   functionalOnJapaneseOnly: "只有在日文選擇時有效",
   maxStartupTime: "最大起動等待時間",
   forDevelopers: "開發者用",
-  enableAppLog: "輸出程式 log",
-  enableUSILog: "輸出USI通信 log",
-  enableCSALog: "輸出CSA通信 log",
-  logLevel: "log 等級",
+  enableAppLog: "輸出程式紀錄",
+  enableUSILog: "輸出USI通訊紀錄",
+  enableCSALog: "輸出CSA通訊紀錄",
+  logLevel: "紀錄等級",
   engineSettings: "引擎設定",
   flipBoard: "盤面反轉",
   file: "檔案",
   recordFile: "棋譜檔案",
   executableFile: "可執行檔案",
   imageFile: "圖片檔案",
-  unsaved: "未保存", // TODO: translate
+  unsaved: "未保存",
   remove: "刪除",
   deleteMove: "刪除該手",
   recordProperties: "棋譜情報",
   comments: "備註",
   commentsAndBookmarks: "備註・書籤",
-  branches: "分岐", // TODO: translate
+  branches: "分支",
   bookmark: "書籤",
   bookmarkList: "書籤一覽",
   useBookmarkAsHeader: "將書籤名稱作為標題",
@@ -270,12 +267,12 @@ export const zh_tw: Texts = {
   startPosition: "開始局面",
   maxMoves: "最大手數",
   gameRepetition: "連續對局",
-  jishogi: "持将棋", // TODO: translate
-  rule24: "24点法", // TODO: translate
-  rule27: "27点法", // TODO: translate
-  tryRule: "トライルール", // TODO: translate
+  jishogi: "持將棋",
+  rule24: "24點法",
+  rule27: "27點法",
+  tryRule: "Try Rule", // TODO: translate
   autoRelogin: "自動重新登入",
-  restartItEveryGame: "1局ごとに再起動する", // TODO: translate
+  restartItEveryGame: "每局重新啟動",
   swapTurnWhenGameRepetition: "每局交換手番",
   outputComments: "輸出備註",
   saveRecordAutomatically: "自動保存棋譜",
@@ -321,11 +318,11 @@ export const zh_tw: Texts = {
   saveAndClose: "保存並關閉",
   save: "保存",
   saveAs: "另存為",
-  history: "履歴", // TODO: translate
-  clearHistory: "履歴をクリア", // TODO: translate
-  userFile: "ユーザーファイル", // TODO: translate
-  automaticBackup: "自動バックアップ", // TODO: translate
-  restore: "復元", // TODO: translate
+  history: "歷史紀錄",
+  clearHistory: "清除歷史紀錄",
+  userFile: "使用者檔案",
+  automaticBackup: "自動備份",
+  restore: "復原",
   cancel: "取消",
   back: "返回",
   name: "名稱",
@@ -333,8 +330,8 @@ export const zh_tw: Texts = {
   best: "最善",
   nodes: "Node數",
   hashUsage: "Hash使用率",
-  stop: "停止", // TODO: translate
-  resume: "再開", // TODO: translate
+  stop: "停止",
+  resume: "重新開始",
   nonHandicap: "平手",
   lanceHandicap: "香落",
   rightLanceHandicap: "右香落",
@@ -373,13 +370,13 @@ export const zh_tw: Texts = {
   filterByEngineName: "搜尋引擎名稱",
   bookStyle: "書籍風",
   gameStyle: "對局畫面風",
-  playerName: "対局者名", // TODO: translate
-  typeface: "書体", // TODO: translate
-  weight: "太さ", // TODO: translate
-  handLabel: "持ち駒ラベル", // TODO: translate
-  header: "見出し", // TODO: translate
-  vertical: "垂直方向", // TODO: translate
-  size: "サイズ", // TODO: translate
+  playerName: "對局者名稱",
+  typeface: "字體",
+  weight: "字體粗細",
+  handLabel: "持駒標題",
+  header: "標題",
+  vertical: "垂直調整",
+  size: "大小",
   none: "無",
   bgCover: "圖片置中",
   bgContain: "擴大表示",
@@ -392,74 +389,74 @@ export const zh_tw: Texts = {
   dubiousThreshold: "疑問手閾値",
   mistakeThreshold: "惡手閾値",
   blunderThreshold: "大惡手閾値",
-  gothic: "ゴシック体", // TODO: translate
-  mincho: "明朝体", // TODO: translate
-  appVersion: "アプリバージョン", // TODO: translate
-  installed: "インストール済み", // TODO: translate
-  stable: "安定版", // TODO: translate
-  latest: "最新版", // TODO: translate
-  updatedAt: "更新日時", // TODO: translate
-  createdAt: "作成日時", // TODO: translate
-  lastSent: "最終送信", // TODO: translate
-  lastReceived: "最終受信", // TODO: translate
-  protocolVersion: "プロトコルバージョン", // TODO: translate
-  prompt: "プロンプト", // TODO: translate
-  openPrompt: "プロンプトを開く", // TODO: translate
-  forceQuit: "強制Quit", // TODO: translate
-  forceClose: "強制Close", // TODO: translate
-  blankLine: "空行", // TODO: translate
-  autoScroll: "自動スクロール", // TODO: translate
-  showTimestamp: "タイムスタンプを表示", // TODO: translate
-  highlightByPartialMatch: "部分一致でハイライト", // TODO: translate
-  csaServer: "CSAサーバー", // TODO: translate
-  usiEngine: "USIエンジン", // TODO: translate
-  noRunningUSIEngine: "稼働中のUSIエンジンはありません。", // TODO: translate
-  noConnectedCSAServer: "接続中のCSAサーバーはありません。", // TODO: translate
-  willBeRemovedFromTheListSoon: "セッションが終了したため、まもなく一覧から削除されます。", // TODO: translate
-  typeCommandHereAndPressEnter: "コマンドを入力してEnter", // TODO: translate
-  allowBlankLine: "空行を許可", // TODO: translate
-  removeSpaceFromBothEnds: "両端の空白を削除", // TODO: translate
-  collapseSequentialSpaces: "連続する空白をまとめる", // TODO: translate
+  gothic: "黑體",
+  mincho: "明體",
+  appVersion: "軟體版本",
+  installed: "已安裝",
+  stable: "安定版",
+  latest: "最新版",
+  updatedAt: "更新時間",
+  createdAt: "建立時間",
+  lastSent: "最後送出",
+  lastReceived: "最後接收",
+  protocolVersion: "協定版本",
+  prompt: "指令",
+  openPrompt: "打開指令視窗",
+  forceQuit: "強制退出",
+  forceClose: "強制關閉",
+  blankLine: "空行",
+  autoScroll: "自動捲動",
+  showTimestamp: "顯示時間戳章",
+  highlightByPartialMatch: "反白部分一致部分",
+  csaServer: "CSA伺服器",
+  usiEngine: "USI引擎",
+  noRunningUSIEngine: "目前沒有啟動中的USI引擎。",
+  noConnectedCSAServer: "尚未連接CSA伺服器。",
+  willBeRemovedFromTheListSoon: "由於 Session 結束，將會自一覽清除。",
+  typeCommandHereAndPressEnter: "輸入指令後按下 Enter 以發送",
+  allowBlankLine: "允許空行",
+  removeSpaceFromBothEnds: "消除前後空白",
+  collapseSequentialSpaces: "整理連續空白",
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
   waitingForNewGame: "正在等待下一場對局開始。",
-  waitingForPlayerSetup: "対局者の準備を待っています。", // TODO: translate
+  waitingForPlayerSetup: "正在等待對局者準備。",
   insertedComment: "已加入備註。",
   conversionCompleted: "轉換完成。",
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
-    "※在瀏覽器版本中 log 會於 console 中顯示，並無視此處的設定。",
-  shouldRestartToApplyLogSettings: "※您需要重新啟動本程式以使用變更後的 log 設定。",
-  canOpenLogDirectoryFromMenu: "※log 的輸出檔案可以在「偵錯」-「開啟紀錄檔案資料夾」開啟。",
-  hasNoOldLogCleanUpFeature: "※現在並沒有舊 log 的自動刪除機制。",
+    "※在瀏覽器版本中紀錄會於 console 中顯示，並無視此處的設定。",
+  shouldRestartToApplyLogSettings: "※您需要重新啟動本程式以使用變更後的紀錄設定。",
+  canOpenLogDirectoryFromMenu: "※紀錄的輸出檔案可以在「偵錯」-「開啟紀錄檔案資料夾」開啟。",
+  hasNoOldLogCleanUpFeature: "※現在並沒有舊紀錄的自動刪除機制。",
   processingPleaseWait: "現在處理中。請稍待一會。",
   importingFollowingRecordOrPosition: "將匯入以下棋譜（局面）。",
   supportsKIF_KI2_CSA_USI_JKF: "※支援KIF/KI2/CSA/SFEN/JKF形式。",
   plesePasteRecordIntoTextArea: "※請在文字輸入區域貼上您的棋譜。",
   desktopVersionPastesAutomatically: "※安裝程式版將會自動貼上棋譜。",
   someLogsDisabled: "部份 log 已被無效化。",
-  logsRecommendedForCSAProtocol: "若使用CSA協定對局，建議輸出各項 log 。",
-  pleaseEnableLogsAndRestart: "請在程式設定中開啟 log 並重新啟動本程式。",
+  logsRecommendedForCSAProtocol: "若使用CSA協定對局，建議輸出各項紀錄。",
+  pleaseEnableLogsAndRestart: "請在程式設定中開啟紀錄並重新啟動本程式。",
   notSendPVOnStandardCSAProtocol: "在標準的CSA協定中不會送出評價值以及思考棋步。",
   csaProtocolSendPlaintextPassword: "在CSA協定中，密碼為明文傳輸。",
   passwordWillSavedPlaintextBecauseOSSideEncryptionNotAvailable:
     "由於無法使用系統的加密機能，輸入的密碼將會以明文保存。",
   pleaseUncheckSaveHistoryIfNotWantSave: "若不想保存密碼，請不要將「保存紀錄」勾選。",
   csaProtocolSendPlaintextPasswordRegardlessOfHistory: "不過，CSA協定仍會以明文傳輸您的密碼。",
-  whenNewVersionIsAvailableItWillBeNotified: "新しいバージョンが利用可能になると通知されます。", // TODO: translate
+  whenNewVersionIsAvailableItWillBeNotified: "將會在新版本發布時進行通知。",
   pleaseCheckMessageThisIsTestNotificationByAboveButton:
-    "上記のボタンで「これは通知のテストです。」というメッセージを確認してください。", // TODO: translate
+    "上方按鈕會發送「這是測試用的通知。」的通知訊息。",
   ifNotWorkYouShouldAllowNotificationOnOSSetting:
-    "表示されない場合はOSの設定で通知を許可してください。", // TODO: translate
-  areYouSureWantToResign: "投了しますか？", // TODO: translate
-  areYouSureWantToDoDeclaration: "宣言しますか？", // TODO: translate
+    "若無法顯示，請在使用的作業系統中許可本程式的通知。",
+  areYouSureWantToResign: "確定要投了嗎？",
+  areYouSureWantToDoDeclaration: "確定要進行勝利宣言嗎？",
   areYouSureWantToQuitGames: "要中斷連續對局嗎？",
   areYouSureWantToRequestQuit: "若提出中斷要求，可能會被判負。請問您要繼續嗎？",
   areYouSureWantToClearRecord: "將會刪除現在的棋譜。請問您要繼續嗎？",
   areYouSureWantToDiscardPosition: "將不會保存現在的局面。請問您要繼續嗎？",
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "會將現在的棋譜關閉並開啟別的檔案，請問您要繼續嗎？",
-  areYouSureWantToClearHistory: "履歴をクリアします。よろしいですか？", // TODO: translate
+  areYouSureWantToClearHistory: "將清除紀錄。請問您要繼續嗎？",
   youCanNotCloseAppWhileCSAOnlineGame: "由於CSA協定正在使用中，本程式無法被關閉。",
   fileExtensionNotSupported: "無法支援的副檔名。",
   errorOccuredWhileDisconnectingFromCSAServer: "在與CSA伺服器中斷連線時發生錯誤。",
@@ -474,11 +471,11 @@ export const zh_tw: Texts = {
   failedToSendPonderCommand: "無法送出ponder指令。",
   failedToSendStopCommand: "無法送出stop指令。",
   failedToShutdownEngines: "引擎無法正常結束。",
-  failedToCheckUpdates: "アップデートの確認ができませんでした。", // TODO: translate
+  failedToCheckUpdates: "無法確認更新。",
   failedToSaveRecord: "棋譜保存失敗。",
   failedToParseSFEN: "SFEN讀取失敗。",
   failedToDetectRecordFormat: "無法判別棋譜形式。",
-  unknown: "不明", // TODO: translate
+  unknown: "不明",
   unknownFileExtension: "未知的檔案形式。",
   emptyRecordInput: "您尚未輸入棋譜。",
   invalidPieceName: "不合法的棋駒",
@@ -519,18 +516,16 @@ export const zh_tw: Texts = {
   hostNameIsEmpty: "主機名稱為空。",
   invalidPortNumber: "不可用的連接埠號碼。",
   idIsEmpty: "ID 為空。",
-  tcpKeepaliveInitialDelayMustBePositive:
-    "TCP Keepaliveの初期遅延時間には正の値を指定してください。", // TODO: translate
-  blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30:
-    "空行送信の初期遅延時間には正の値を指定してください。", // TODO: translate
-  blankLinePingIntervalMustBeGreaterThanOrEqualTo30: "空行送信の間隔には正の値を指定してください。", // TODO: translate
+  tcpKeepaliveInitialDelayMustBePositive: "請輸入正確的TCP Keepalive初始延遲時間。",
+  blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出初始延遲時間。",
+  blankLinePingIntervalMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出間隔時間。",
   engineNotSelected: "尚未選擇引擎。",
   forExportingConversionLogPleaseEnableAppLogsAndSetLogLevelDebugAndRestart:
     "如要監看轉換紀錄，請在程式設定內設定 log level 到 Debug 並重新啟動本程式。",
-  sourceDirectoryNotSpecified: "入力ディレクトリが指定されていません。", // TODO: translate
-  sourceFormatsNotSpecified: "入力の対象フォーマットが指定されていません。", // TODO: translate
-  destinationDirectoryNotSpecified: "出力ディレクトリが指定されていません。", // TODO: translate
-  destinationFileNotSpecified: "出力ファイルが指定されていません。", // TODO: translate
+  sourceDirectoryNotSpecified: "輸入目錄尚未被指定。",
+  sourceFormatsNotSpecified: "輸入格式尚未被指定。",
+  destinationDirectoryNotSpecified: "輸出格式尚未被指定。",
+  destinationFileNotSpecified: "輸出檔案尚未被指定。",
   totalNumber: (n: number) => `總計 ${n} 筆`,
   number: (n: number) => `${n} 筆`,
   tryToReloginToCSAServerNSecondsLater: (n) => `請在${n}秒後再次嘗試登入 CSA 伺服器。`,
@@ -542,7 +537,7 @@ export const zh_tw: Texts = {
   copyOf: (name) => `${name} 的拷貝`,
   keepLatest: (n) => `到最新${n}件`,
   followingDataNotSavedBecauseNotSupporetedBy: (fileFormat: string) =>
-    `以下の情報は ${fileFormat} 形式では対応していないため保存されませんでした。`, // TODO: translate
+    `以下的資料由於 ${fileFormat} 格式無法支援的原因無法保存。`,
   areYouSureWantToDeleteFollowingMove: (n) => `將會刪除${n}手目以後的棋譜。請問您要繼續嗎？`,
   failedToOpenDirectory: (path) => `無法開啟檔案目錄：${path}`,
   unexpectedEventSenderPleaseReport(sender) {
@@ -558,9 +553,9 @@ export const zh_tw: Texts = {
     return `引擎在${seconds}秒内沒有回應。若引擎的啟動時間稍長，請在設定中調整引擎最長等待時間。`;
   },
   stableVersionReleased(version: string) {
-    return `安定版 ${version} がリリースされました！`; // TODO: translate
+    return `安定版 ${version} 已經發布！`;
   },
   latestVersionReleased(version: string) {
-    return `最新版 ${version} がリリースされました！`; // TODO: translate
+    return `最新版 ${version} 已經發布！`;
   },
 };

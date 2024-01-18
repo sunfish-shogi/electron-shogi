@@ -1,6 +1,3 @@
-// FIXME: electron への依存を除去できるまでのワークアラウンド
-process.env.ELECTRON_OVERRIDE_DIST_PATH = __dirname;
-
 import { ArgumentsParser } from "@/command/common/arguments";
 const argParser = new ArgumentsParser("usi-csa-bridge", "<csa_game_config.json>");
 const engineTimeout = argParser.number(

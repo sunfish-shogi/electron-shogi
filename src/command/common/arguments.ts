@@ -76,15 +76,15 @@ export class ArgumentsParser {
         // number
         const value = Number(process.argv[++i]);
         if (Number.isNaN(value)) {
-          throw new Error(`${arg} option must be a number: ${process.argv[i]}`);
+          this.onError(`${arg} option must be a number: ${process.argv[i]}`);
         }
         const restriction = this.numberRestrictions.get(arg);
         if (restriction) {
           if (restriction.min && value < restriction.min) {
-            throw new Error(`${arg} option must be greater than or equal to ${restriction.min}`);
+            this.onError(`${arg} option must be greater than or equal to ${restriction.min}`);
           }
           if (restriction.max && value > restriction.max) {
-            throw new Error(`${arg} option must be less than or equal to ${restriction.max}`);
+            this.onError(`${arg} option must be less than or equal to ${restriction.max}`);
           }
         }
         this.numbers.set(arg, value);
@@ -100,7 +100,7 @@ export class ArgumentsParser {
         process.exit(0);
       } else if (arg.startsWith("-")) {
         // unknown option
-        throw new Error(`Unknown option: ${arg}`);
+        this.onError(`Unknown option: ${arg}`);
       } else {
         // bare arg
         this.bareArgs.push(arg);
@@ -112,8 +112,14 @@ export class ArgumentsParser {
     return this.bareArgs;
   }
 
-  showHelp(): void {
+  private showHelp(): void {
     // eslint-disable-next-line no-console
     console.log(this.help);
+  }
+
+  private onError(message: string): void {
+    // eslint-disable-next-line no-console
+    console.error(message);
+    process.exit(1);
   }
 }

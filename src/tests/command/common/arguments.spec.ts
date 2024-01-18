@@ -1,8 +1,14 @@
 import { ArgumentsParser } from "@/command/common/arguments";
+import process from "node:process";
+
+vi.mock("process");
+
+const neverProise = () => new Promise<never>(() => {});
 
 describe("command/common/arguments", () => {
   afterEach(() => {
     process.argv.length = 2;
+    vi.clearAllMocks();
   });
 
   it("parse", async () => {
@@ -35,15 +41,12 @@ describe("command/common/arguments", () => {
   });
 
   it("not number", async () => {
+    const eixt = vi.spyOn(process, "exit").mockImplementation(neverProise);
     process.argv = ["node", "test-command", "--num1", "foo"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1);
-    try {
-      parser.parse();
-      throw new Error("should not reach here");
-    } catch {
-      // ok
-    }
+    parser.parse();
+    expect(eixt).toHaveBeenCalledWith(1);
   });
 
   it("restrictions: min: ok", async () => {
@@ -54,15 +57,12 @@ describe("command/common/arguments", () => {
   });
 
   it("restrictions: min: error", async () => {
+    const eixt = vi.spyOn(process, "exit").mockImplementation(neverProise);
     process.argv = ["node", "test-command", "--num1", "99"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1, { min: 100, max: 200 });
-    try {
-      parser.parse();
-      throw new Error("should not reach here");
-    } catch {
-      // ok
-    }
+    parser.parse();
+    expect(eixt).toHaveBeenCalledWith(1);
   });
 
   it("restrictions: max: ok", async () => {
@@ -73,26 +73,20 @@ describe("command/common/arguments", () => {
   });
 
   it("restrictions: max: error", async () => {
+    const eixt = vi.spyOn(process, "exit").mockImplementation(neverProise);
     process.argv = ["node", "test-command", "--num1", "201"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1, { min: 100, max: 200 });
-    try {
-      parser.parse();
-      throw new Error("should not reach here");
-    } catch {
-      // ok
-    }
+    parser.parse();
+    expect(eixt).toHaveBeenCalledWith(1);
   });
 
   it("unknown option", async () => {
+    const eixt = vi.spyOn(process, "exit").mockImplementation(neverProise);
     process.argv = ["node", "test-command", "--opt", "foo"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
-    try {
-      parser.parse();
-      throw new Error("should not reach here");
-    } catch {
-      // ok
-    }
+    parser.parse();
+    expect(eixt).toHaveBeenCalledWith(1);
   });
 
   it("bare args", async () => {

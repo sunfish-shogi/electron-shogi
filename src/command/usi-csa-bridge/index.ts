@@ -11,7 +11,10 @@ const enableAppLogFile = argParser.flag("app-log-file", "Enable application log 
 const enableUSILogFile = argParser.flag("usi-log-file", "Enable USI log file.");
 const enableCSALogFile = argParser.flag("csa-log-file", "Enable CSA log file.");
 const enableAllLogFile = argParser.flag("all-log-file", "Enable all log files.");
-const disableStdoutLog = argParser.flag("disable-stdout-log", "Disable stdout log.");
+const disableStdoutLog = argParser.flag(
+  "disable-stdout-log",
+  "Disable stdout log. Should be used with --XXX-log-file.",
+);
 argParser.parse();
 
 import { preload } from "@/command/common/preload";
@@ -27,11 +30,12 @@ import path from "node:path";
 import { CSAGameSetting } from "@/common/settings/csa";
 import { Clock } from "@/renderer/store/clock";
 import { RecordManager } from "@/renderer/store/record";
-import { CSAGameManager } from "@/renderer/store/csa";
+import { CSAGameManager, loginRetryIntervalSeconds } from "@/renderer/store/csa";
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { getAppLogger } from "@/background/log";
 import { defaultRecordFileNameTemplate, generateRecordFileName } from "@/renderer/helpers/path";
 import { RecordFileFormat } from "@/common/file/record";
+import { ordinal } from "@/common/helpers/string";
 
 const configPath = argParser.args[0];
 if (!configPath) {
@@ -47,10 +51,29 @@ const gameManager = new CSAGameManager(recordManager, blackClock, whiteClock);
 const playerBuilder = defaultPlayerBuilder(engineTimeout());
 
 gameManager
+  .on("gameNext", onGameNext)
+  .on("newGame", onNewGame)
+  .on("gameEnd", onGameEnd)
   .on("saveRecord", onSaveRecord)
+  .on("loginRetry", onLoginRetry)
   .on("error", onError)
   .login(setting, playerBuilder)
   .catch(onFatalError);
+
+function onGameNext() {
+  // eslint-disable-next-line no-console
+  console.log("waiting for new game...");
+}
+
+function onNewGame(n: number) {
+  // eslint-disable-next-line no-console
+  console.log(`${ordinal(n)} game started.`);
+}
+
+function onGameEnd() {
+  // eslint-disable-next-line no-console
+  console.log("completed. will exit after some seconds...");
+}
 
 function onSaveRecord() {
   const fileName = generateRecordFileName(
@@ -76,6 +99,11 @@ function onSaveRecord() {
     .catch((e) => {
       getAppLogger().error(e);
     });
+}
+
+function onLoginRetry() {
+  // eslint-disable-next-line no-console
+  console.log(`Retry login after ${loginRetryIntervalSeconds} seconds...`);
 }
 
 function onError(e: unknown) {

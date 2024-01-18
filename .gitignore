@@ -3,6 +3,8 @@ node_modules
 /dist
 /dist_electron
 /coverage
+/records
+/logs
 
 # local env files
 .env.local

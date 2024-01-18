@@ -3,10 +3,11 @@ process.env.ELECTRON_OVERRIDE_DIST_PATH = __dirname;
 
 import { ArgumentsParser } from "@/command/common/arguments";
 const argParser = new ArgumentsParser("usi-csa-bridge", "<csa_game_config.json>");
-const engineTimeout = argParser.value(
+const engineTimeout = argParser.number(
   "engine-timeout",
   "Maximum time[seconds] of USI engine execution.",
-  "180",
+  180,
+  { min: 1 },
 );
 const recordDir = argParser.value("record-dir", "Directory to save records.", "records");
 const enableAppLogFile = argParser.flag("app-log-file", "Enable application log file.");
@@ -46,7 +47,7 @@ const recordManager = new RecordManager();
 const blackClock = new Clock();
 const whiteClock = new Clock();
 const gameManager = new CSAGameManager(recordManager, blackClock, whiteClock);
-const playerBuilder = defaultPlayerBuilder(Number(engineTimeout()));
+const playerBuilder = defaultPlayerBuilder(engineTimeout());
 
 gameManager
   .on("saveRecord", onSaveRecord)

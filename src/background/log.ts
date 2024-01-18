@@ -63,10 +63,9 @@ const appenders = {
   [LogType.CSA]: null as string[] | null,
 };
 
-export function overrideLogDestinations(
-  type: LogType,
-  destinations: ("file" | "stdout" | "recording")[],
-): void {
+export type LogDestination = "file" | "stdout" | "recording";
+
+export function overrideLogDestinations(type: LogType, destinations: LogDestination[]): void {
   appenders[type] = destinations.map((d) => (d === "file" ? type : d));
 }
 

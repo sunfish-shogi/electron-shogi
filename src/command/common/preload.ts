@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { getAppLogger, overrideLogDestinations } from "@/background/log";
+import { LogDestination, getAppLogger, overrideLogDestinations } from "@/background/log";
 import {
   login as csaLogin,
   logout as csaLogout,
@@ -36,14 +36,10 @@ type Config = {
 };
 
 export function preload(config: Config) {
-  const appDestinations: ("file" | "stdout")[] = config.appLogFile ? ["file"] : [];
-  const usiDestinations: ("file" | "stdout")[] = config.usiLogFile ? ["file"] : [];
-  const csaDestinations: ("file" | "stdout")[] = config.csaLogFile ? ["file"] : [];
-  if (config.stdoutLog) {
-    appDestinations.push("stdout");
-    usiDestinations.push("stdout");
-    csaDestinations.push("stdout");
-  }
+  const fileAndStdout: LogDestination[] = config.stdoutLog ? ["file", "stdout"] : ["file"];
+  const appDestinations: LogDestination[] = config.appLogFile ? fileAndStdout : ["stdout"];
+  const usiDestinations: LogDestination[] = config.usiLogFile ? fileAndStdout : ["stdout"];
+  const csaDestinations: LogDestination[] = config.csaLogFile ? fileAndStdout : ["stdout"];
   overrideLogDestinations(LogType.APP, appDestinations);
   overrideLogDestinations(LogType.USI, usiDestinations);
   overrideLogDestinations(LogType.CSA, csaDestinations);

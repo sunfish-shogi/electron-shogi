@@ -11,7 +11,10 @@ const enableAppLogFile = argParser.flag("app-log-file", "Enable application log 
 const enableUSILogFile = argParser.flag("usi-log-file", "Enable USI log file.");
 const enableCSALogFile = argParser.flag("csa-log-file", "Enable CSA log file.");
 const enableAllLogFile = argParser.flag("all-log-file", "Enable all log files.");
-const disableStdoutLog = argParser.flag("disable-stdout-log", "Disable stdout log.");
+const disableStdoutLog = argParser.flag(
+  "disable-stdout-log",
+  "Disable stdout log. Should be used with --XXX-log-file.",
+);
 argParser.parse();
 
 import { preload } from "@/command/common/preload";

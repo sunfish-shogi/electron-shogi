@@ -38,11 +38,30 @@ export default defineConfig({
         "docs",
         "plugins",
         "scripts",
+
+        // テストコード
         "src/tests",
+
+        // 設定ファイル
         "vite.config.ts",
         ".*.*",
         "**/*.d.ts",
         "**/*.vue",
+
+        // 定義/設定
+        "src/common/ipc/**/*.ts",
+        "src/common/control/**/*.ts",
+        "src/common/i18n/**/*.ts",
+
+        // UI/Window
+        "src/background/index.ts",
+        "src/background/window/ipc.ts",
+        "src/background/window/menu.ts",
+        "src/background/window/prompt.ts",
+        "src/renderer/index.ts",
+        "src/renderer/assets/icons.ts",
+        "src/renderer/devices/audio.ts",
+        "src/renderer/devices/hotkey.ts",
       ],
     },
   },

@@ -8,6 +8,7 @@ export const usiEngineSetting: USIEngineSetting = {
   path: "/engines/engines",
   options: {},
   labels: {},
+  enableEarlyPonder: false,
 };
 
 export const usiEngineSettingWithPonder: USIEngineSetting = {
@@ -26,4 +27,5 @@ export const usiEngineSettingWithPonder: USIEngineSetting = {
     },
   },
   labels: {},
+  enableEarlyPonder: false,
 };

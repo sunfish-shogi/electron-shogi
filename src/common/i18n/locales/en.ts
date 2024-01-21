@@ -307,6 +307,7 @@ export const en: Texts = {
   engineManagement: "Engine Management",
   engineName: "Engine Name",
   author: "Author",
+  earlyPonder: "Early Ponder",
   enginePath: "Engine Path",
   openDirectory: "Open Directory",
   displayName: "Display Name",
@@ -439,6 +440,10 @@ export const en: Texts = {
   plesePasteRecordIntoTextArea: "*Please paste record data into the text area.",
   desktopVersionPastesAutomatically:
     "*In desktop version, it will paste automatically from clipboard.",
+  earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:
+    'Early ponder feature sends "ponderhit" command with YaneuraOu\'s non-standard options.',
+  ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior:
+    "If your engine does not support the options, it may cause unexpected behavior.",
   someLogsDisabled: "Some log settings are disabled.",
   logsRecommendedForCSAProtocol: "Log settings are recommended for CSA protocol.",
   pleaseEnableLogsAndRestart: "Please enable log settings and restart this app.",

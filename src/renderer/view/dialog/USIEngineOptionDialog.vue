@@ -44,6 +44,26 @@
               />
             </div>
           </div>
+          <!-- 早期 ponder -->
+          <div class="row option" :class="{ hidden: filterWords.length }">
+            <div class="option-name">{{ t.earlyPonder }}</div>
+            <div class="option-value">
+              <ToggleButton
+                :value="enableEarlyPonder"
+                @change="
+                  (value: boolean) => {
+                    enableEarlyPonder = value;
+                  }
+                "
+              />
+              <div class="form-group warning" :class="{ hidden: !enableEarlyPonder }">
+                <div class="note">
+                  {{ t.earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions }}
+                  {{ t.ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior }}
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- オプション -->
           <div
             v-for="option in options"
@@ -202,6 +222,7 @@ import { useStore } from "@/renderer/store";
 import { computed, onBeforeUnmount, onMounted, onUpdated, PropType, ref } from "vue";
 import { useAppSetting } from "@/renderer/store/setting";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
+import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 
 type Option = USIEngineOption & {
   displayName?: string;
@@ -228,6 +249,7 @@ const store = useStore();
 const appSetting = useAppSetting();
 const dialog = ref();
 const engineNameInput = ref();
+const enableEarlyPonder = ref(false);
 const filter = ref();
 const filterWords = ref([] as string[]);
 const inputs = ref({} as { [key: string]: HTMLInputElement | HTMLSelectElement });
@@ -244,6 +266,7 @@ onMounted(async () => {
     engine.value = await api.getUSIEngineInfo(props.latestEngineSetting.path, timeoutSeconds);
     mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
     engineNameInput.value.value = engine.value.name;
+    enableEarlyPonder.value = engine.value.enableEarlyPonder;
     defaultValueLoaded = true;
   } catch (e) {
     store.pushError(e);
@@ -328,6 +351,7 @@ const sendOption = async (name: string) => {
 };
 const reset = () => {
   engineNameInput.value.value = engine.value.defaultName;
+  enableEarlyPonder.value = engine.value.enableEarlyPonder;
   for (const option of options.value) {
     const value =
       engine.value.options[option.name].default !== undefined
@@ -342,6 +366,7 @@ const reset = () => {
 };
 const ok = () => {
   engine.value.name = engineNameInput.value.value;
+  engine.value.enableEarlyPonder = enableEarlyPonder.value;
   for (const option of options.value) {
     if (option.type === "check") {
       engine.value.options[option.name].value =

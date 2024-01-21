@@ -515,7 +515,8 @@ export class CSAGameManager {
     }
     this.player
       .startSearch(
-        this.recordManager.record,
+        this.recordManager.record.position,
+        this.recordManager.record.usi,
         this.buildTimeLimitSetting(),
         playerStates.black.time * this.gameSummary.timeUnitMs,
         playerStates.white.time * this.gameSummary.timeUnitMs,
@@ -538,13 +539,40 @@ export class CSAGameManager {
     }
     this.player
       .startPonder(
-        this.recordManager.record,
+        this.recordManager.record.position,
+        this.recordManager.record.usi,
         this.buildTimeLimitSetting(),
         this.blackClock.timeMs,
         this.whiteClock.timeMs,
       )
       .catch((e) => {
         this.onError(new Error(`CSAGameManager#startPonder: ${t.failedToSendPonderCommand}: ${e}`));
+      });
+  }
+
+  private startEarlyPonder(move: Move): void {
+    if (!this.player) {
+      this.onError("CSAGameManager#startEarlyPonder: player is not initialized");
+      return;
+    }
+    const position = this.recordManager.record.position.clone();
+    const usi = this.recordManager.record.usi + " " + move.usi;
+    if (!position.doMove(move)) {
+      this.onError("CSAGameManager#startEarlyPonder: failed to make a move");
+      return;
+    }
+    this.player
+      .startPonder(
+        position,
+        usi,
+        this.buildTimeLimitSetting(),
+        this.blackClock.timeMs,
+        this.whiteClock.timeMs,
+      )
+      .catch((e) => {
+        this.onError(
+          new Error(`CSAGameManager#startEarlyPonder: ${t.failedToSendPonderCommand}: ${e}`),
+        );
       });
   }
 
@@ -583,6 +611,11 @@ export class CSAGameManager {
 
     // 指し手をサーバーに送信する。
     api.csaMove(this.sessionID, formatCSAMove(move), score, pv);
+
+    // やねうら王拡張モードではサーバーからの応答を待たずに非同期で Ponder を開始する。
+    if (this.setting.player.usi?.enableEarlyPonder) {
+      this.startEarlyPonder(move);
+    }
   }
 
   private onPlayerResign(): void {

@@ -2,7 +2,7 @@ import { parseUSIPV } from "@/common/game/usi";
 import { Player, SearchHandler } from "@/renderer/players/player";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { PlayerSetting } from "@/common/settings/player";
-import { ImmutableRecord, Move } from "electron-shogi-core";
+import { ImmutablePosition, Move } from "electron-shogi-core";
 
 export type MoveWithOption = {
   usi: string;
@@ -20,8 +20,15 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
     },
     readyNewGame: vi.fn(() => Promise.resolve()),
     startSearch: vi.fn(
-      (r: ImmutableRecord, t: TimeLimitSetting, bt: number, wt: number, h: SearchHandler) => {
-        const m = moves[r.usi];
+      (
+        p: ImmutablePosition,
+        usi: string,
+        t: TimeLimitSetting,
+        bt: number,
+        wt: number,
+        h: SearchHandler,
+      ) => {
+        const m = moves[usi];
         if (m.usi === "no-reply") {
           // eslint-disable-next-line  @typescript-eslint/no-empty-function
           return new Promise<void>(() => {});
@@ -34,14 +41,14 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
           h.onWin();
           return Promise.resolve();
         }
-        const move = r.position.createMoveByUSI(m.usi) as Move;
+        const move = p.createMoveByUSI(m.usi) as Move;
         h.onMove(
           move,
           m.info && {
-            usi: r.usi,
+            usi,
             score: m.info?.score,
             mate: m.info?.mate,
-            pv: m.info?.pv && parseUSIPV(r.position, [m.usi].concat(...m.info.pv)).slice(1),
+            pv: m.info?.pv && parseUSIPV(p, [m.usi].concat(...m.info.pv)).slice(1),
           },
         );
         return Promise.resolve();

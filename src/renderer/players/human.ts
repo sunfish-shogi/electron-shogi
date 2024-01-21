@@ -1,5 +1,5 @@
 import { TimeLimitSetting } from "@/common/settings/game";
-import { ImmutableRecord, Move } from "electron-shogi-core";
+import { ImmutablePosition, Move } from "electron-shogi-core";
 import { Player, SearchHandler } from "./player";
 
 export class HumanPlayer implements Player {
@@ -14,7 +14,8 @@ export class HumanPlayer implements Player {
   }
 
   async startSearch(
-    record: ImmutableRecord,
+    position: ImmutablePosition,
+    usi: string,
     timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,

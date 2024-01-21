@@ -167,8 +167,19 @@ const api: Bridge = {
       whiteTimeMs,
     );
   },
-  async usiPonderHit(sessionID: number): Promise<void> {
-    await ipcRenderer.invoke(Background.USI_GO_PONDER_HIT, sessionID);
+  async usiPonderHit(
+    sessionID: number,
+    json: string,
+    blackTimeMs: number,
+    whiteTimeMs: number,
+  ): Promise<void> {
+    await ipcRenderer.invoke(
+      Background.USI_GO_PONDER_HIT,
+      sessionID,
+      json,
+      blackTimeMs,
+      whiteTimeMs,
+    );
   },
   async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
     await ipcRenderer.invoke(Background.USI_GO_INFINITE, sessionID, usi);

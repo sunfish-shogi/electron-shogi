@@ -10,6 +10,7 @@ const engine: USIEngineSetting = {
   path: "/engines/engines",
   options: {},
   labels: {},
+  enableEarlyPonder: false,
 };
 
 export const analysisSetting: AnalysisSetting = {

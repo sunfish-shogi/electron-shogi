@@ -112,7 +112,7 @@ export class ArgumentsParser {
     return this.bareArgs;
   }
 
-  private showHelp(): void {
+  showHelp(): void {
     // eslint-disable-next-line no-console
     console.log(this.help);
   }

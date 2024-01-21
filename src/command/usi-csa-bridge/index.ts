@@ -40,6 +40,7 @@ import { ordinal } from "@/common/helpers/string";
 const configPath = argParser.args[0];
 if (!configPath) {
   getAppLogger().error("config path is not specified.");
+  argParser.showHelp();
   process.exit(1);
 }
 const setting = JSON.parse(fs.readFileSync(configPath, "utf-8")) as CSAGameSetting;

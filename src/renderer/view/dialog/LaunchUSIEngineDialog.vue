@@ -18,9 +18,6 @@
           {{ t.inAdminModeYouShouldInvokeCommandsManuallyAtPrompt }}
         </div>
         <div class="note">
-          {{ t.serverMustSupportShogiServerX1ModeLogIn }}
-        </div>
-        <div class="note">
           {{ t.setoptionAndPrecedingCommandsWillBeSentAutomatically }}
         </div>
       </div>

@@ -47,6 +47,9 @@
         <div class="note">
           {{ t.inAdminModeYouShouldInvokeCommandsManuallyAtPrompt }}
         </div>
+        <div class="note">
+          {{ t.serverMustSupportShogiServerX1ModeLogIn }}
+        </div>
       </div>
       <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="onStart()">

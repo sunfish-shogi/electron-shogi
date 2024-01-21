@@ -527,7 +527,7 @@ export class CSAGameManager {
         },
       )
       .catch((e) => {
-        this.onError(new Error(`CSAGameManager#next: ${t.failedToSendGoCommand}: ${e}`));
+        this.onError(new Error(`CSAGameManager#startSearch: ${t.failedToSendGoCommand}: ${e}`));
       });
   }
 
@@ -544,7 +544,7 @@ export class CSAGameManager {
         this.whiteClock.timeMs,
       )
       .catch((e) => {
-        this.onError(new Error(`CSAGameManager#next: ${t.failedToSendPonderCommand}: ${e}`));
+        this.onError(new Error(`CSAGameManager#startPonder: ${t.failedToSendPonderCommand}: ${e}`));
       });
   }
 

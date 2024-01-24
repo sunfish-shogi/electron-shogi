@@ -56,6 +56,7 @@ export default defineConfig({
         // IPC
         "src/renderer/ipc/preload.ts",
         "src/renderer/ipc/web.ts",
+        "src/renderer/ipc/setup.ts",
 
         // UI/Window
         "src/background/index.ts",

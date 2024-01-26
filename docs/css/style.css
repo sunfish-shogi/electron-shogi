@@ -83,10 +83,6 @@ section div {
   margin: 0.5em 0px 0.5em 0px;
 }
 
-section p {
-  margin: 0.5em 0 2em 0;
-}
-
 .title {
   display: flex;
   flex-direction: row;

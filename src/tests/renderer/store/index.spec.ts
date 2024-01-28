@@ -199,6 +199,7 @@ describe("store/index", () => {
     store.updateUSIInfo(101, usi, "Engine A", {
       depth: 8,
       scoreCP: 138,
+      pv: ["8c8d", "2g2f", "foo", "bar"],
     });
     vi.runOnlyPendingTimers();
     expect(store.usiMonitors).toHaveLength(1);
@@ -208,6 +209,8 @@ describe("store/index", () => {
     expect(store.usiMonitors[0].iterations.length).toBe(1);
     expect(store.usiMonitors[0].iterations[0].depth).toBe(8);
     expect(store.usiMonitors[0].iterations[0].score).toBe(138);
+    expect(store.usiMonitors[0].iterations[0].pv).toEqual(["8c8d", "2g2f", "foo", "bar"]);
+    expect(store.usiMonitors[0].iterations[0].text).toBe("☖８四歩☗２六歩 foo bar");
     store.updateUSIInfo(101, usi, "Engine A", {
       depth: 10,
       scoreCP: 213,

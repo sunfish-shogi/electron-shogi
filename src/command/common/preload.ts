@@ -190,8 +190,13 @@ export function preload(config: Config) {
     ): Promise<void> {
       usiGoPonder(sessionID, usi, JSON.parse(json), blackTimeMs, whiteTimeMs);
     },
-    async usiPonderHit(sessionID: number): Promise<void> {
-      usiPonderHit(sessionID);
+    async usiPonderHit(
+      sessionID: number,
+      json: string,
+      blackTimeMs: number,
+      whiteTimeMs: number,
+    ): Promise<void> {
+      usiPonderHit(sessionID, JSON.parse(json), blackTimeMs, whiteTimeMs);
     },
     async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
       usiGoInfinite(sessionID, usi);

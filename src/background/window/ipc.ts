@@ -556,10 +556,13 @@ ipcMain.handle(
   },
 );
 
-ipcMain.handle(Background.USI_GO_PONDER_HIT, (event, sessionID: number) => {
-  validateIPCSender(event.senderFrame);
-  usiPonderHit(sessionID);
-});
+ipcMain.handle(
+  Background.USI_GO_PONDER_HIT,
+  (event, sessionID: number, json: string, blackTimeMs: number, whiteTimeMs: number) => {
+    validateIPCSender(event.senderFrame);
+    usiPonderHit(sessionID, JSON.parse(json), blackTimeMs, whiteTimeMs);
+  },
+);
 
 ipcMain.handle(Background.USI_GO_INFINITE, (event, sessionID: number, usi: string) => {
   validateIPCSender(event.senderFrame);

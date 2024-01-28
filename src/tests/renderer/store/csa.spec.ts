@@ -19,6 +19,7 @@ import {
 } from "@/tests/mock/csa";
 import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
 import { Mocked } from "vitest";
+import { USIEngineSetting } from "@/common/settings/usi";
 
 vi.mock("@/renderer/ipc/api");
 
@@ -134,6 +135,117 @@ describe("store/csa", () => {
     expect(mockAPI.csaResign).toBeCalledTimes(1);
     expect(mockPlayer.startSearch).toBeCalledTimes(3);
     expect(mockPlayer.startPonder).toBeCalledTimes(2);
+    expect(mockPlayer.close).toBeCalledTimes(0);
+    expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
+    onCSAGameResult(sessionID, CSASpecialMove.RESIGN, CSAGameResult.WIN);
+    vi.runOnlyPendingTimers();
+    expect(mockAPI.csaLogout).toBeCalledTimes(1);
+    expect(mockAPI.csaLogout.mock.calls[0][0]).toBe(sessionID);
+    expect(mockPlayerBuilder.build).toBeCalledTimes(1);
+    expect(mockPlayer.readyNewGame).toBeCalledTimes(1);
+    expect(mockPlayer.gameover).toBeCalledTimes(1);
+    expect(mockPlayer.close).toBeCalledTimes(1);
+    expect(mockHandlers.onGameEnd).toBeCalledTimes(1);
+    expect(mockHandlers.onError).toBeCalledTimes(0);
+    expect(recordManager.record.moves).toHaveLength(6);
+    expect(recordManager.record.moves[1].comment).toBe(
+      "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n",
+    );
+    expect(recordManager.record.moves[2].comment).toBe("");
+    expect(recordManager.record.moves[3].comment).toBe(
+      "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n",
+    );
+    expect(recordManager.record.moves[4].comment).toBe("");
+    expect(recordManager.record.moves[5].move).toStrictEqual(specialMove(SpecialMoveType.RESIGN));
+  });
+
+  it("CSAManager/earlyPonder", async () => {
+    const sessionID = Math.floor(Math.random() * 1000);
+    mockAPI.csaLogin.mockResolvedValueOnce(sessionID);
+    mockAPI.csaAgree.mockResolvedValueOnce();
+    mockAPI.csaMove.mockResolvedValue();
+    mockAPI.csaLogout.mockResolvedValueOnce();
+    const mockPlayer = createMockPlayer({
+      "position startpos moves": {
+        usi: "7g7f",
+        info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
+      },
+      "position startpos moves 7g7f 3c3d": {
+        usi: "2g2f",
+        info: { score: 78, pv: ["8c8d", "2f2e", "8d8e"] },
+      },
+      "position startpos moves 7g7f 3c3d 2g2f 8c8d": {
+        usi: "resign",
+      },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI]: mockPlayer,
+    });
+    const recordManager = new RecordManager();
+    const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
+    const mockHandlers = applyMockHandlers(manager);
+    await manager.login(
+      {
+        ...csaGameSetting,
+        player: {
+          ...csaGameSetting.player,
+          usi: {
+            ...(csaGameSetting.player.usi as USIEngineSetting),
+            enableEarlyPonder: true,
+          },
+        },
+      },
+      mockPlayerBuilder,
+    );
+    expect(mockPlayerBuilder.build).toBeCalledTimes(1);
+    expect(mockPlayer.readyNewGame).toBeCalledTimes(1);
+    await vi.runAllTimersAsync();
+    expect(mockAPI.csaLogin).toBeCalledTimes(1);
+    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+    expect(mockAPI.csaAgree).toBeCalledTimes(0);
+    onCSAGameSummary(sessionID, csaGameSummary);
+    expect(mockAPI.csaAgree).toBeCalledTimes(1);
+    expect(mockAPI.csaMove).toBeCalledTimes(0);
+    expect(mockPlayer.startSearch).toBeCalledTimes(0);
+    onCSAStart(sessionID, { black: { time: 600 }, white: { time: 600 } });
+    expect(mockAPI.csaMove).toBeCalledTimes(1);
+    expect(mockAPI.csaMove.mock.calls[0][0]).toBe(sessionID);
+    expect(mockAPI.csaMove.mock.calls[0][1]).toBe("+7776FU");
+    expect(mockPlayer.startSearch).toBeCalledTimes(1);
+    expect(mockPlayer.startPonder).toBeCalledTimes(1); // start ponder immediately
+    onCSAMove(sessionID, "+7776FU", {
+      black: { time: 590 },
+      white: { time: 600 },
+    });
+    expect(mockAPI.csaMove).toBeCalledTimes(1);
+    expect(mockPlayer.startSearch).toBeCalledTimes(1);
+    expect(mockPlayer.startPonder).toBeCalledTimes(2);
+    onCSAMove(sessionID, "-3334FU", {
+      black: { time: 590 },
+      white: { time: 580 },
+    });
+    expect(mockAPI.csaMove).toBeCalledTimes(2);
+    expect(mockAPI.csaMove.mock.calls[1][0]).toBe(sessionID);
+    expect(mockAPI.csaMove.mock.calls[1][1]).toBe("+2726FU");
+    expect(mockPlayer.startSearch).toBeCalledTimes(2);
+    expect(mockPlayer.startPonder).toBeCalledTimes(3); // start ponder immediately
+    onCSAMove(sessionID, "+2726FU", {
+      black: { time: 570 },
+      white: { time: 580 },
+    });
+    expect(mockAPI.csaMove).toBeCalledTimes(2);
+    expect(mockAPI.csaResign).toBeCalledTimes(0);
+    expect(mockPlayer.startSearch).toBeCalledTimes(2);
+    expect(mockPlayer.startPonder).toBeCalledTimes(4);
+    onCSAMove(sessionID, "-8384FU", {
+      black: { time: 570 },
+      white: { time: 560 },
+    });
+    expect(mockAPI.csaLogout).toBeCalledTimes(0);
+    expect(mockAPI.csaMove).toBeCalledTimes(2);
+    expect(mockAPI.csaResign).toBeCalledTimes(1);
+    expect(mockPlayer.startSearch).toBeCalledTimes(3);
+    expect(mockPlayer.startPonder).toBeCalledTimes(4);
     expect(mockPlayer.close).toBeCalledTimes(0);
     expect(mockHandlers.onGameEnd).toBeCalledTimes(0);
     onCSAGameResult(sessionID, CSASpecialMove.RESIGN, CSAGameResult.WIN);

@@ -65,6 +65,7 @@ export type USIEngineSetting = {
   path: string;
   options: { [name: string]: USIEngineOption };
   labels?: USIEngineLabels;
+  enableEarlyPonder: boolean;
 };
 
 export function emptyUSIEngineSetting(): USIEngineSetting {
@@ -80,6 +81,7 @@ export function emptyUSIEngineSetting(): USIEngineSetting {
       research: true,
       mate: true,
     },
+    enableEarlyPonder: false,
   };
 }
 
@@ -100,6 +102,7 @@ export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngine
     engine.options[name].value = local.options[name].value;
   });
   engine.labels = local.labels;
+  engine.enableEarlyPonder = local.enableEarlyPonder;
 }
 
 export interface ImmutableUSIEngineSettings {

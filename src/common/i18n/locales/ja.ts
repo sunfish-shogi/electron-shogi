@@ -307,6 +307,7 @@ export const ja: Texts = {
   engineManagement: "エンジン管理",
   engineName: "エンジン名",
   author: "作者",
+  earlyPonder: "早期Ponder",
   enginePath: "場所",
   openDirectory: "フォルダを開く",
   displayName: "表示名",
@@ -438,6 +439,10 @@ export const ja: Texts = {
   supportsKIF_KI2_CSA_USI_JKF: "※KIF形式/KI2形式/CSA形式/SFEN/JKFに対応しています。",
   plesePasteRecordIntoTextArea: "※テキストエリアに棋譜を貼り付けてください。",
   desktopVersionPastesAutomatically: "※インストールアプリ版では自動的に貼り付けられます。",
+  earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:
+    "早期Ponder機能は、やねうら王の独自オプションでponderhitコマンドを送信します。",
+  ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior:
+    "エンジンがこのオプションに対応していない場合、予期しない動作を引き起こす可能性があります。",
   someLogsDisabled: "一部のログが無効になっています。",
   logsRecommendedForCSAProtocol: "CSAプロトコルを使用した対局では各種ログの出力を推奨します。",
   pleaseEnableLogsAndRestart: "アプリ設定からログを有効にしてアプリを再起動してください。",

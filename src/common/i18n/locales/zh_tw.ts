@@ -304,6 +304,7 @@ export const zh_tw: Texts = {
   engineManagement: "引擎管理",
   engineName: "引擎名稱",
   author: "作者",
+  earlyPonder: "早期Ponder", // TODO: translate
   enginePath: "場所",
   openDirectory: "開啟資料夾",
   displayName: "表示名稱",
@@ -434,6 +435,10 @@ export const zh_tw: Texts = {
   supportsKIF_KI2_CSA_USI_JKF: "※支援KIF/KI2/CSA/SFEN/JKF形式。",
   plesePasteRecordIntoTextArea: "※請在文字輸入區域貼上您的棋譜。",
   desktopVersionPastesAutomatically: "※安裝程式版將會自動貼上棋譜。",
+  earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:
+    "早期Ponder機能は、やねうら王の独自オプションでponderhitコマンドを送信します。", // TODO: translate
+  ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior:
+    "エンジンがこのオプションに対応していない場合、予期しない動作を引き起こす可能性があります。", // TODO: translate
   someLogsDisabled: "部份 log 已被無效化。",
   logsRecommendedForCSAProtocol: "若使用CSA協定對局，建議輸出各項紀錄。",
   pleaseEnableLogsAndRestart: "請在程式設定中開啟紀錄並重新啟動本程式。",

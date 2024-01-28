@@ -22,14 +22,18 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
   const p = position.clone();
   let lastMove: Move | undefined;
   let result = "";
-  for (const usiMove of pv) {
-    const move = p.createMoveByUSI(usiMove);
+  let i = 0;
+  for (; i < pv.length; i++) {
+    const move = p.createMoveByUSI(pv[i]);
     if (!move) {
       break;
     }
     result += formatMove(p, move, { lastMove });
     p.doMove(move, { ignoreValidation: true });
     lastMove = move;
+  }
+  for (; i < pv.length; i++) {
+    result += " " + pv[i];
   }
   return result;
 }

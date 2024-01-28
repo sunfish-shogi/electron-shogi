@@ -99,6 +99,7 @@ describe("settings/usi", () => {
         },
       },
       labels: {},
+      enableEarlyPonder: false,
     };
     const out = duplicateEngineSetting(src);
     expect(out.uri).toMatch(/^es:\/\/usi-engine\/.*$/);
@@ -141,6 +142,7 @@ describe("settings/usi", () => {
         },
       },
       labels: {},
+      enableEarlyPonder: false,
     };
     const rhs: USIEngineSetting = {
       uri: "uri-b",
@@ -164,6 +166,7 @@ describe("settings/usi", () => {
         game: true,
         mate: false,
       },
+      enableEarlyPonder: false,
     };
     mergeUSIEngineSetting(lhs, rhs);
     expect(lhs).toStrictEqual({
@@ -188,6 +191,7 @@ describe("settings/usi", () => {
         game: true,
         mate: false,
       },
+      enableEarlyPonder: false,
     });
   });
 
@@ -215,6 +219,7 @@ describe("settings/usi", () => {
       path: "path-b",
       options: {},
       labels: {},
+      enableEarlyPonder: false,
     });
     expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();
     expect(settings.hasEngine("es://usi-engine/b")).toBeTruthy();
@@ -236,6 +241,7 @@ describe("settings/usi", () => {
       path: "path-a",
       options: {},
       labels: {},
+      enableEarlyPonder: false,
     });
     expect((settings.getEngine("es://usi-engine/a") as USIEngineSetting).name).toBe(
       "Engine A Updated",

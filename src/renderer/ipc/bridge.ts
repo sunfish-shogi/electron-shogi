@@ -63,7 +63,12 @@ export interface Bridge {
     blackTimeMs: number,
     whiteTimeMs: number,
   ): Promise<void>;
-  usiPonderHit(sessionID: number): Promise<void>;
+  usiPonderHit(
+    sessionID: number,
+    json: string,
+    blackTimeMs: number,
+    whiteTimeMs: number,
+  ): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiGoMate(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;

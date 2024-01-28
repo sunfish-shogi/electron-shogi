@@ -303,6 +303,7 @@ export type Texts = {
   engineName: string;
   author: string;
   enginePath: string;
+  earlyPonder: string;
   openDirectory: string;
   displayName: string;
   invoke: string;
@@ -431,6 +432,8 @@ export type Texts = {
   supportsKIF_KI2_CSA_USI_JKF: string;
   plesePasteRecordIntoTextArea: string;
   desktopVersionPastesAutomatically: string;
+  earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions: string;
+  ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior: string;
   someLogsDisabled: string;
   logsRecommendedForCSAProtocol: string;
   pleaseEnableLogsAndRestart: string;

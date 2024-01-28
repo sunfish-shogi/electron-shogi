@@ -54,6 +54,11 @@ export default defineConfig({
         "src/common/i18n/**/*.ts",
         "src/command/common/preload.ts",
 
+        // IPC
+        "src/renderer/ipc/preload.ts",
+        "src/renderer/ipc/web.ts",
+        "src/renderer/ipc/setup.ts",
+
         // UI/Window
         "src/background/index.ts",
         "src/background/window/ipc.ts",

@@ -15,6 +15,7 @@ const blackPlayerSetting = {
     path: "/engines/engines01",
     options: {},
     labels: {},
+    enableEarlyPonder: false,
   },
 };
 
@@ -29,6 +30,7 @@ const whitePlayerSetting = {
     path: "/engines/engines02",
     options: {},
     labels: {},
+    enableEarlyPonder: false,
   },
 };
 

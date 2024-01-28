@@ -52,7 +52,7 @@ https://github.com/sunfish-shogi/electron-shogi/wiki
 ## エンジン開発者の方へ
 
 USI や CSA プロトコルの通信ログの出力はデフォルトで無効です。
-[こちら](https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%AD%E3%82%B0%E5%87%BA%E5%8A%9B) を参考に設定してください。
+[こちら](https://github.com/sunfish-shogi/electron-shogi/wiki/%E9%96%8B%E7%99%BA%E8%80%85%E5%90%91%E3%81%91%E6%A9%9F%E8%83%BD%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%AD%E3%82%B0) を参考に設定してください。
 
 スクリプトファイルをエンジンとして登録できないという問い合わせが複数来ています。 [シェルスクリプトやインタプリタ型言語でエンジンを実行したい方へ](https://github.com/sunfish-shogi/electron-shogi/wiki/%E3%82%B7%E3%82%A7%E3%83%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%82%84%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%97%E3%83%AA%E3%82%BF%E5%9E%8B%E8%A8%80%E8%AA%9E%E3%81%A7%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%9F%E3%81%84%E6%96%B9%E3%81%B8) を参考にしてください。
 

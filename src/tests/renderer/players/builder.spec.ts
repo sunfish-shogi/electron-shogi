@@ -31,6 +31,7 @@ describe("builder", () => {
         path: "path-test",
         options: {},
         labels: {},
+        enableEarlyPonder: false,
       },
     };
     const player = await defaultPlayerBuilder().build(setting);

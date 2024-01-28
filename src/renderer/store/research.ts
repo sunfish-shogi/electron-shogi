@@ -102,7 +102,7 @@ export class ResearchManager {
         if (this.pausedEngineMap[engine.sessionID]) {
           return;
         }
-        engine.startResearch(record).catch((e) => {
+        engine.startResearch(record.position, record.usi).catch((e) => {
           this.onError(e);
         });
       });
@@ -140,7 +140,7 @@ export class ResearchManager {
     }
     this.pausedEngineMap[sessionID] = false;
     if (this.record) {
-      engine.startResearch(this.record).catch((e) => {
+      engine.startResearch(this.record.position, this.record.usi).catch((e) => {
         this.onError(e);
       });
     }

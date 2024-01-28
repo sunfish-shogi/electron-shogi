@@ -64,7 +64,7 @@ export class MateSearchManager {
     try {
       await this.engine.launch();
       await this.engine.readyNewGame();
-      await this.engine.startMateSearch(record, {
+      await this.engine.startMateSearch(record.position, record.usi, {
         onCheckmate: (moves) => {
           this.close();
           this.onCheckmate(moves);

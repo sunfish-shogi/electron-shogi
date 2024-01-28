@@ -2,7 +2,7 @@ import api from "@/renderer/ipc/api";
 import { parseUSIPV, USIInfoCommand } from "@/common/game/usi";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { getUSIEngineOptionCurrentValue, USIEngineSetting, USIPonder } from "@/common/settings/usi";
-import { Color, ImmutableRecord, Move, Position } from "electron-shogi-core";
+import { Color, ImmutablePosition, Move, Position } from "electron-shogi-core";
 import { Player, SearchInfo, SearchHandler, MateHandler } from "./player";
 import { GameResult } from "@/common/game/result";
 import { useStore } from "@/renderer/store";
@@ -46,7 +46,8 @@ export class USIPlayer implements Player {
   }
 
   async startSearch(
-    record: ImmutableRecord,
+    position: ImmutablePosition,
+    usi: string,
     timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,
@@ -54,10 +55,10 @@ export class USIPlayer implements Player {
   ): Promise<void> {
     this.clearHandlers();
     this.searchHandler = handler;
-    this.usi = record.usi;
-    this.position = record.position.clone();
+    this.usi = usi;
+    this.position = position.clone();
     if (this.inPonder && this.ponder === this.usi) {
-      api.usiPonderHit(this.sessionID);
+      api.usiPonderHit(this.sessionID, timeLimit, blackTimeMs, whiteTimeMs);
     } else {
       this.info = undefined;
       await api.usiGo(this.sessionID, this.usi, timeLimit, blackTimeMs, whiteTimeMs);
@@ -67,7 +68,8 @@ export class USIPlayer implements Player {
   }
 
   async startPonder(
-    record: ImmutableRecord,
+    position: ImmutablePosition,
+    usi: string,
     timeLimit: TimeLimitSetting,
     blackTimeMs: number,
     whiteTimeMs: number,
@@ -77,42 +79,51 @@ export class USIPlayer implements Player {
     if (ponderSetting !== "true") {
       return;
     }
+    // 連続して Ponder を開始しない。
+    // NOTE: 早期 Ponder 機能を有効にすると早期実行と通常実行の 2 回の呼び出しが来る。
+    if (this.inPonder) {
+      return;
+    }
     // 現在局面までの USI が前方一致しているか確認する。
-    const baseUSI = record.usi;
+    const baseUSI = usi;
     if (!this.ponder || !this.ponder.startsWith(baseUSI)) {
       return;
     }
     // 予想した 1 手を取り出す。
-    const ponderMove = record.position.createMoveByUSI(this.ponder.slice(baseUSI.length + 1));
+    const ponderMove = position.createMoveByUSI(this.ponder.slice(baseUSI.length + 1));
     // 合法手かどうかをチェックする。
-    if (!ponderMove || !record.position.isValidMove(ponderMove)) {
+    if (!ponderMove || !position.isValidMove(ponderMove)) {
       return;
     }
 
     this.clearHandlers();
     this.usi = this.ponder;
-    this.position = record.position.clone();
+    this.position = position.clone();
     this.position.doMove(ponderMove);
     this.info = undefined;
     this.inPonder = true;
     await api.usiGoPonder(this.sessionID, this.ponder, timeLimit, blackTimeMs, whiteTimeMs);
   }
 
-  async startMateSearch(record: ImmutableRecord, handler: MateHandler): Promise<void> {
+  async startMateSearch(
+    position: ImmutablePosition,
+    usi: string,
+    handler: MateHandler,
+  ): Promise<void> {
     this.clearHandlers();
-    this.usi = record.usi;
+    this.usi = usi;
     this.info = undefined;
-    this.position = record.position.clone();
+    this.position = position.clone();
     this.mateHandler = handler;
     await api.usiGoMate(this.sessionID, this.usi);
   }
 
-  async startResearch(record: ImmutableRecord): Promise<void> {
+  async startResearch(position: ImmutablePosition, usi: string): Promise<void> {
     this.clearHandlers();
-    this.usi = record.usi;
+    this.usi = usi;
     this.info = undefined;
-    this.position = record.position.clone();
-    await api.usiGoInfinite(this.sessionID, record.usi);
+    this.position = position.clone();
+    await api.usiGoInfinite(this.sessionID, usi);
   }
 
   async stop(): Promise<void> {

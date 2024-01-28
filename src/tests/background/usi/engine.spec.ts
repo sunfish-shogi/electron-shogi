@@ -246,7 +246,13 @@ describe("ipc/background/usi/engine", () => {
       seldepth: 10,
       currmove: "2g2f",
     });
-    engine.ponderHit();
+    engine.ponderHit({
+      btime: 53e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
     expect(mockChildProcess.prototype.send).lastCalledWith("ponderhit");
     onReceive("bestmove 1g1f");
     expect(handlers.bestmove).lastCalledWith("position test01-ponder", "1g1f", undefined);
@@ -281,6 +287,91 @@ describe("ipc/background/usi/engine", () => {
     expect(handlers.bestmove).lastCalledWith("position test02", "2g2f", undefined);
     engine.gameover(GameResult.LOSE);
     expect(mockChildProcess.prototype.send).lastCalledWith("gameover lose");
+
+    engine.quit();
+    onClose();
+    expect(handlers.timeout).not.toBeCalled();
+    expect(handlers.error).not.toBeCalled();
+  });
+
+  it("earlyPonder", async () => {
+    const engine = new EngineProcess("/path/to/engine", 123, log4js.getLogger(), {
+      enableEarlyPonder: true,
+    });
+    const handlers = bindHandlers(engine);
+    engine.launch();
+    const onClose = getChildProcessHandler(mockChildProcess, "close");
+    const onReceive = getChildProcessHandler(mockChildProcess, "receive");
+    onReceive("id name DummyEngine");
+    onReceive("usiok");
+
+    engine.ready();
+    onReceive("readyok");
+    expect(handlers.ready).toBeCalledTimes(1);
+    engine.go("position test01", {
+      btime: 60e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(5);
+    expect(mockChildProcess.prototype.send).nthCalledWith(4, "position test01");
+    expect(mockChildProcess.prototype.send).nthCalledWith(
+      5,
+      "go btime 60000 wtime 60000 binc 5000 winc 5000",
+    );
+    onReceive(
+      "info depth 5 seldepth 10 time 79 nodes 432 nps 7654321 multipv 1 score cp 123 currmove 7g7f hashfull 300 pv 7g7f 3c3d 2g2f",
+    );
+    expect(handlers.info).lastCalledWith("position test01", {
+      depth: 5,
+      seldepth: 10,
+      scoreCP: 123,
+      timeMs: 79,
+      nodes: 432,
+      nps: 7654321,
+      currmove: "7g7f",
+      pv: ["7g7f", "3c3d", "2g2f"],
+      hashfullPerMill: 300,
+      multipv: 1,
+    });
+    onReceive("info string foo bar baz");
+    expect(handlers.info).lastCalledWith("position test01", {
+      string: "foo bar baz",
+    });
+    onReceive("bestmove 7g7f ponder 3c3d");
+    expect(handlers.bestmove).lastCalledWith("position test01", "7g7f", "3c3d");
+    engine.goPonder("position test01-ponder", {
+      btime: 53e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(7);
+    expect(mockChildProcess.prototype.send).nthCalledWith(6, "position test01-ponder");
+    expect(mockChildProcess.prototype.send).nthCalledWith(7, "go ponder"); // early-ponder では go ponder で時間情報を送信しない。
+    onReceive("info depth 5 seldepth 10 currmove 2g2f");
+    expect(handlers.ponderInfo).lastCalledWith("position test01-ponder", {
+      depth: 5,
+      seldepth: 10,
+      currmove: "2g2f",
+    });
+    engine.ponderHit({
+      btime: 53e3,
+      wtime: 60e3,
+      byoyomi: 0,
+      binc: 5e3,
+      winc: 5e3,
+    });
+    expect(mockChildProcess.prototype.send).lastCalledWith(
+      "ponderhit btime 53000 wtime 60000 binc 5000 winc 5000", // early-ponder では ponderhit で時間情報を送信する。
+    );
+    onReceive("bestmove 1g1f");
+    expect(handlers.bestmove).lastCalledWith("position test01-ponder", "1g1f", undefined);
+    engine.gameover(GameResult.WIN);
+    expect(mockChildProcess.prototype.send).lastCalledWith("gameover win");
 
     engine.quit();
     onClose();

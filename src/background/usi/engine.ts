@@ -15,6 +15,7 @@ import { addCommand, PromptHistory } from "@/common/advanced/prompt";
 export type EngineProcessOption = {
   timeout?: number;
   engineOptions?: USIEngineOption[];
+  enableEarlyPonder?: boolean;
 };
 
 export type TimeState = {
@@ -142,6 +143,15 @@ function buildTimeOptions(timeState?: TimeState): string {
       ? `binc ${timeState.binc} winc ${timeState.winc}`
       : `byoyomi ${timeState.byoyomi}`)
   );
+}
+
+function buildPonderTimeOptions(timeState?: TimeState): string {
+  // ponder の場合は時間の情報が無ければ何も付与しない。
+  // これはやねうら王の拡張仕様で、標準の USI では ponder には必ず具体的な時間を付与する。
+  if (!timeState) {
+    return "";
+  }
+  return buildTimeOptions(timeState);
 }
 
 export enum State {
@@ -366,10 +376,11 @@ export class EngineProcess {
     }
   }
 
-  goPonder(position: string, timeState?: TimeState): void {
+  goPonder(position: string, timeState: TimeState): void {
     this.reservedGoCommand = {
       position,
-      timeState,
+      // 早期 Ponder が有効な場合は ponderhit で正確な残り時間を送信するので go ponder では省略する。
+      timeState: this.option.enableEarlyPonder ? undefined : timeState,
       ponder: true,
     };
     switch (this.state) {
@@ -401,12 +412,17 @@ export class EngineProcess {
     }
   }
 
-  ponderHit(): void {
+  ponderHit(timeState: TimeState): void {
     if (this.state !== State.Ponder) {
       this.logger.warn("sid=%d: ponderHit: unexpected state: %s", this.sessionID, this.state);
       return;
     }
-    this.send("ponderhit");
+    // 早期 Ponder が有効な場合は ponderhit で残り時間を送信する。
+    if (this.option.enableEarlyPonder) {
+      this.send("ponderhit " + buildTimeOptions(timeState));
+    } else {
+      this.send("ponderhit");
+    }
     this._state = State.WaitingForBestMove;
   }
 
@@ -529,13 +545,24 @@ export class EngineProcess {
     if (!this.reservedGoCommand) {
       return;
     }
+
+    // position command
     this.send(this.reservedGoCommand.position);
-    this.send(
-      "go " +
-        (this.reservedGoCommand.ponder ? "ponder " : "") +
-        (this.reservedGoCommand.mate ? "mate " : "") +
-        buildTimeOptions(this.reservedGoCommand.timeState),
-    );
+
+    // go command
+    let mainOption = "";
+    let timeOptions = "";
+    if (this.reservedGoCommand.ponder) {
+      mainOption = "ponder";
+      timeOptions = buildPonderTimeOptions(this.reservedGoCommand.timeState);
+    } else if (this.reservedGoCommand.mate) {
+      mainOption = "mate";
+      timeOptions = buildTimeOptions(this.reservedGoCommand.timeState);
+    } else {
+      timeOptions = buildTimeOptions(this.reservedGoCommand.timeState);
+    }
+    this.send("go" + (mainOption ? " " + mainOption : "") + (timeOptions ? " " + timeOptions : ""));
+
     this.currentPosition = this.reservedGoCommand.position;
     this._state = this.reservedGoCommand.ponder
       ? State.Ponder

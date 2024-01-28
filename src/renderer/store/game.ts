@@ -304,7 +304,8 @@ export class GameManager {
     // 手番側のプレイヤーの思考を開始する。
     player
       .startSearch(
-        this.recordManager.record,
+        this.recordManager.record.position,
+        this.recordManager.record.usi,
         this.setting.timeLimit,
         this.blackClock.timeMs,
         this.whiteClock.timeMs,
@@ -321,7 +322,8 @@ export class GameManager {
     // Ponder を開始する。
     ponderPlayer
       .startPonder(
-        this.recordManager.record,
+        this.recordManager.record.position,
+        this.recordManager.record.usi,
         this.setting.timeLimit,
         this.blackClock.timeMs,
         this.whiteClock.timeMs,

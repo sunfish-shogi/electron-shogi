@@ -20,6 +20,7 @@ const playerSetting = {
     path: "/engines/engine",
     options: {},
     labels: {},
+    enableEarlyPonder: false,
   },
 };
 

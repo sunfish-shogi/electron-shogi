@@ -109,6 +109,7 @@ export function setupPlayer(setting: USIEngineSetting, timeoutSeconds: number): 
   const process = new EngineProcess(resolveEnginePath(setting.path), sessionID, getUSILogger(), {
     timeout: timeoutSeconds * 1e3,
     engineOptions: Object.values(setting.options),
+    enableEarlyPonder: setting.enableEarlyPonder,
   });
   sessions.set(sessionID, {
     process,
@@ -205,9 +206,14 @@ export function goMate(sessionID: number, usi: string): void {
   session.process.on("info", (usi, info) => onUSIInfo(sessionID, usi, info));
 }
 
-export function ponderHit(sessionID: number): void {
+export function ponderHit(
+  sessionID: number,
+  timeLimit: TimeLimitSetting,
+  blackTimeMs: number,
+  whiteTimeMs: number,
+): void {
   const session = getSession(sessionID);
-  session.process.ponderHit();
+  session.process.ponderHit(buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
 }
 
 export function stop(sessionID: number): void {

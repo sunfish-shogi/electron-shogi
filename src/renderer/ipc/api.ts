@@ -82,7 +82,12 @@ export interface Bridge {
     blackTimeMs: number,
     whiteTimeMs: number,
   ): Promise<void>;
-  usiPonderHit(sessionID: number): Promise<void>;
+  usiPonderHit(
+    sessionID: number,
+    json: string,
+    blackTimeMs: number,
+    whiteTimeMs: number,
+  ): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiGoMate(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;
@@ -192,7 +197,12 @@ export interface API {
     blackTimeMs: number,
     whiteTimeMs: number,
   ): Promise<void>;
-  usiPonderHit(sessionID: number): Promise<void>;
+  usiPonderHit(
+    sessionID: number,
+    timeLimit: TimeLimitSetting,
+    blackTimeMs: number,
+    whiteTimeMs: number,
+  ): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiGoMate(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;
@@ -325,6 +335,9 @@ const api: API = {
     whiteTimeMs: number,
   ): Promise<void> {
     return bridge.usiGoPonder(sessionID, usi, JSON.stringify(timeLimit), blackTimeMs, whiteTimeMs);
+  },
+  usiPonderHit(sessionID, timeLimit, blackTimeMs, whiteTimeMs) {
+    return bridge.usiPonderHit(sessionID, JSON.stringify(timeLimit), blackTimeMs, whiteTimeMs);
   },
   csaLogin(setting: CSAServerSetting): Promise<number> {
     return bridge.csaLogin(JSON.stringify(setting));

@@ -133,9 +133,11 @@ export class AnalysisManager {
     // タイマーをセットする。
     this.setTimer();
     // 探索を開始する。
-    this.researcher.startResearch(record).catch((e) => {
-      this.onError(e);
-    });
+    this.researcher
+      .startResearch(this.recordManager.record.position, this.recordManager.record.usi)
+      .catch((e) => {
+        this.onError(e);
+      });
   }
 
   private finish(): void {

@@ -1,19 +1,28 @@
-import { PromptHistory, PromptTarget, addCommand } from "@/common/advanced/prompt";
+import { PromptTarget } from "@/common/advanced/prompt";
 import { UnwrapNestedRefs, reactive } from "vue";
 import api from "@/renderer/ipc/api";
-import { Command, CommandType } from "@/common/advanced/command";
+import {
+  Command,
+  CommandHistory,
+  CommandType,
+  addCommand,
+  newCommand,
+} from "@/common/advanced/command";
 
-const maxHistoryLength = 2000;
+type CommandWithID = Command & { id: number };
 
 export class Store {
   private _reactive: UnwrapNestedRefs<Store>;
   private _target: PromptTarget;
   private _sessionID: number;
   private _name: string;
-  private _history: PromptHistory = {
+  private _history: CommandHistory<CommandWithID> = {
     discarded: 0,
     commands: [],
   };
+  private _nextID = 0;
+  private buffer: CommandWithID[] = [];
+  private bufferTimer: number | null = null;
 
   constructor() {
     this._reactive = reactive(this);
@@ -39,29 +48,41 @@ export class Store {
     return this._name;
   }
 
-  get history(): PromptHistory {
+  get history(): CommandHistory<CommandWithID> {
     return this._history;
   }
 
   async setup(): Promise<void> {
     try {
-      this._history = await api.setupPrompt(this.target, this.sessionID);
+      const history = await api.setupPrompt(this.target, this.sessionID);
+      this._history = {
+        discarded: history.discarded,
+        commands: history.commands.map((c) => ({ ...c, id: this._nextID++ })),
+      };
     } catch (e) {
       this.onError(e);
     }
   }
 
   onCommand(command: Command): void {
-    addCommand(this._history, command, maxHistoryLength);
+    this.buffer.push({ ...command, id: this._nextID++ });
+    if (this.bufferTimer) {
+      return;
+    }
+    this.bufferTimer = window.setTimeout(() => {
+      addCommand<CommandWithID>(this._history, this.buffer, 1000, 100);
+      this.buffer = [];
+      this.bufferTimer = null;
+    }, 250);
   }
 
   onError(e: unknown) {
-    const command = {
-      type: CommandType.SYSTEM,
-      timeMs: Date.now(),
-      command: `Failed to load command history: ${this.target}: ${this.sessionID}: ${e}`,
-    };
-    addCommand(this._history, command, maxHistoryLength);
+    this.onCommand(
+      newCommand(
+        CommandType.SYSTEM,
+        `Failed to load command history: ${this.target}: ${this.sessionID}: ${e}`,
+      ),
+    );
   }
 
   invokeCommand(type: CommandType, command: string): void {

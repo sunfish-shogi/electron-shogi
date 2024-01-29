@@ -45,9 +45,7 @@
             highlight: searchText && entry.command.includes(searchText),
           }"
         >
-          <span v-if="showTimestamp" class="timestamp">{{
-            getDateTimeStringMs(new Date(entry.timeMs))
-          }}</span>
+          <span v-if="showTimestamp" class="timestamp">{{ entry.dateTime }}</span>
           <span v-if="entry.type === CommandType.SEND">&gt;</span>
           <span v-if="entry.type === CommandType.RECEIVE">&lt;</span>
           <span v-if="entry.type === CommandType.SYSTEM">#</span>
@@ -63,7 +61,6 @@ import { CommandType } from "@/common/advanced/command";
 import { useStore } from "@/renderer/prompt/store";
 import { onMounted, onUpdated, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
-import { getDateTimeStringMs } from "@/common/helpers/datetime";
 import { t } from "@/common/i18n";
 
 const store = useStore();

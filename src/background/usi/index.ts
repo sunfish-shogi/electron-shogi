@@ -17,8 +17,8 @@ import { t } from "@/common/i18n";
 import { resolveEnginePath } from "@/background/usi/path";
 import { getUSILogger } from "@/background/log";
 import { USISessionState } from "@/common/advanced/monitor";
-import { PromptHistory, PromptTarget } from "@/common/advanced/prompt";
-import { CommandType } from "@/common/advanced/command";
+import { PromptTarget } from "@/common/advanced/prompt";
+import { CommandHistory, CommandType } from "@/common/advanced/command";
 
 function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
@@ -272,7 +272,7 @@ export function collectSessionStates(): USISessionState[] {
     .sort((a, b) => b.sessionID - a.sessionID);
 }
 
-export function getCommandHistory(sessionID: number): PromptHistory {
+export function getCommandHistory(sessionID: number): CommandHistory {
   const session = getSession(sessionID);
   return session.process.commandHistory;
 }

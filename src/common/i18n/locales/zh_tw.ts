@@ -490,7 +490,6 @@ export const zh_tw: Texts = {
   invalidDestination: "不合法的移動目的地",
   pieceNotExists: "不存在的棋駒",
   invalidLine: "不存在的行",
-  invalidHandicap: "不合法的手合配置",
   invalidBoard: "不合法的盤面",
   invalidHandPiece: "不合法的持駒",
   invalidUSI: "不合法的USI",

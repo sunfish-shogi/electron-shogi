@@ -481,7 +481,6 @@ export type Texts = {
   invalidDestination: string;
   pieceNotExists: string;
   invalidLine: string;
-  invalidHandicap: string;
   invalidBoard: string;
   invalidHandPiece: string;
   invalidUSI: string;

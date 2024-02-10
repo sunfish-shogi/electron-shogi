@@ -11,7 +11,7 @@
     "build": "vite build --outDir docs/webapp",
     "build:dev": "vite build --outDir docs/webapp-dev",
     "preview": "vite preview",
-    "test": "TZ=Asia/Tokyo vitest run",
+    "test": "vitest run",
     "coverage": "npm test -- --coverage",
     "lint": "vue-tsc --noEmit && eslint --fix --max-warnings 0 . && prettier --write .",
     "electron:compile": "tsc --project ./tsconfig.bg.json && tsc-alias && webpack --config-name preload",

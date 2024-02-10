@@ -520,6 +520,8 @@ export const zh_tw: Texts = {
   hostNameIsEmpty: "主機名稱為空。",
   invalidPortNumber: "不可用的連接埠號碼。",
   idIsEmpty: "ID 為空。",
+  idContainsSpace: "ID contains space.", // TODO: translate
+  passwordContainsSpace: "Password contains space.", // TODO: translate
   tcpKeepaliveInitialDelayMustBePositive: "請輸入正確的TCP Keepalive初始延遲時間。",
   blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出初始延遲時間。",
   blankLinePingIntervalMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出間隔時間。",

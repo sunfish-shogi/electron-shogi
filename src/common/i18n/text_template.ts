@@ -511,6 +511,8 @@ export type Texts = {
   hostNameIsEmpty: string;
   invalidPortNumber: string;
   idIsEmpty: string;
+  idContainsSpace: string;
+  passwordContainsSpace: string;
   tcpKeepaliveInitialDelayMustBePositive: string;
   blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30: string;
   blankLinePingIntervalMustBeGreaterThanOrEqualTo30: string;

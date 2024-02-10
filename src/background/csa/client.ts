@@ -268,7 +268,10 @@ export class Client {
   }
 
   private hideSecureValues(command: string): string {
-    return command.replaceAll(this.setting.password, "*****");
+    if (this.setting.password) {
+      command = command.replaceAll(this.setting.password, "*****");
+    }
+    return command;
   }
 
   private onConnect(): void {

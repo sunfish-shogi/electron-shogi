@@ -496,7 +496,6 @@ export const ja: Texts = {
   invalidDestination: "不正な移動先",
   pieceNotExists: "存在しない駒",
   invalidLine: "不正な行",
-  invalidHandicap: "不正な手合",
   invalidBoard: "不正な盤面",
   invalidHandPiece: "不正な持ち駒",
   invalidUSI: "不正なUSI",

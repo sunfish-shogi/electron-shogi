@@ -498,7 +498,6 @@ export const en: Texts = {
   invalidDestination: "Invalid destination",
   pieceNotExists: "Piece not exists",
   invalidLine: "Invalid line",
-  invalidHandicap: "Invalid handicap",
   invalidBoard: "Invalid board",
   invalidHandPiece: "Invalid hand piece",
   invalidUSI: "Invalid USI",

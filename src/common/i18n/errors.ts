@@ -2,7 +2,6 @@ import {
   InvalidBoardError,
   InvalidDestinationError,
   InvalidHandPieceError,
-  InvalidHandicapError,
   InvalidLineError,
   InvalidMoveError,
   InvalidMoveNumberError,
@@ -28,8 +27,6 @@ export function localizeError(err: Error): Error {
     return new Error(`${t.pieceNotExists}: ${err.data}`);
   } else if (err instanceof InvalidLineError) {
     return new Error(`${t.invalidLine}: ${err.data}`);
-  } else if (err instanceof InvalidHandicapError) {
-    return new Error(`${t.invalidHandicap}: ${err.data}`);
   } else if (err instanceof InvalidBoardError) {
     return new Error(`${t.invalidBoard}: ${err.data}`);
   } else if (err instanceof InvalidHandPieceError) {

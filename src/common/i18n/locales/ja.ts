@@ -529,6 +529,8 @@ export const ja: Texts = {
   hostNameIsEmpty: "ホスト名が空です。",
   invalidPortNumber: "無効なポート番号です。",
   idIsEmpty: "IDが空です。",
+  idContainsSpace: "IDに空白が含まれています。",
+  passwordContainsSpace: "パスワードに空白が含まれています。",
   tcpKeepaliveInitialDelayMustBePositive:
     "TCP Keepaliveの初期遅延時間には正の値を指定してください。",
   blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30:

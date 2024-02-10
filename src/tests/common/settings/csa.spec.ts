@@ -106,6 +106,54 @@ describe("settings/csa", () => {
     expect(result).toBeInstanceOf(Error);
   });
 
+  it("validate/idContainsSpace", () => {
+    const result = validateCSAGameSetting({
+      player: {
+        name: "参加者",
+        uri: uri.ES_HUMAN,
+      },
+      server: {
+        protocolVersion: CSAProtocolVersion.V121,
+        host: "localhost",
+        port: 4081,
+        id: "Test User",
+        password: "test0123",
+        tcpKeepalive: { initialDelay: 10 },
+      },
+      autoFlip: true,
+      enableComment: true,
+      enableAutoSave: true,
+      repeat: 1,
+      autoRelogin: true,
+      restartPlayerEveryGame: false,
+    });
+    expect(result).toBeInstanceOf(Error);
+  });
+
+  it("validate/passwordContainsSpace", () => {
+    const result = validateCSAGameSetting({
+      player: {
+        name: "参加者",
+        uri: uri.ES_HUMAN,
+      },
+      server: {
+        protocolVersion: CSAProtocolVersion.V121,
+        host: "localhost",
+        port: 4081,
+        id: "TestUser",
+        password: "test 0123",
+        tcpKeepalive: { initialDelay: 10 },
+      },
+      autoFlip: true,
+      enableComment: true,
+      enableAutoSave: true,
+      repeat: 1,
+      autoRelogin: true,
+      restartPlayerEveryGame: false,
+    });
+    expect(result).toBeInstanceOf(Error);
+  });
+
   it("normalize", () => {
     const setting = {
       player: {

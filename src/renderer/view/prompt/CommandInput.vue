@@ -8,9 +8,12 @@
           :items="[
             {
               value: CommandType.SEND,
-              label: store.target === PromptTarget.CSA ? `${t.csaServer} >` : `${t.usiEngine} >`,
+              label:
+                store.target === PromptTarget.CSA
+                  ? `\u25B6 ${t.csaServer}`
+                  : `\u25B6 ${t.usiEngine}`,
             },
-            { value: CommandType.RECEIVE, label: `${t.electronShogi} <` },
+            { value: CommandType.RECEIVE, label: `\u25C0 ${t.electronShogi}` },
           ]"
           @change="
             (value) => {

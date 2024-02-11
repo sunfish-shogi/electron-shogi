@@ -302,8 +302,8 @@ export type Texts = {
   engineManagement: string;
   engineName: string;
   author: string;
-  enginePath: string;
   earlyPonder: string;
+  enginePath: string;
   openDirectory: string;
   displayName: string;
   invoke: string;

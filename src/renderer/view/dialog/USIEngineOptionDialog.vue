@@ -44,26 +44,6 @@
               />
             </div>
           </div>
-          <!-- 早期 ponder -->
-          <div class="row option" :class="{ hidden: filterWords.length }">
-            <div class="option-name">{{ t.earlyPonder }}</div>
-            <div class="option-value">
-              <ToggleButton
-                :value="enableEarlyPonder"
-                @change="
-                  (value: boolean) => {
-                    enableEarlyPonder = value;
-                  }
-                "
-              />
-              <div class="form-group warning" :class="{ hidden: !enableEarlyPonder }">
-                <div class="note">
-                  {{ t.earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions }}
-                  {{ t.ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior }}
-                </div>
-              </div>
-            </div>
-          </div>
           <!-- オプション -->
           <div
             v-for="option in options"
@@ -185,6 +165,27 @@
                     : option.default
                 }}
               </span>
+              <!-- 早期 ponder -->
+              <div
+                v-if="option.name === 'USI_Ponder' && option.type === 'check'"
+                class="additional"
+              >
+                <ToggleButton
+                  :label="t.earlyPonder"
+                  :value="enableEarlyPonder"
+                  @change="
+                    (value: boolean) => {
+                      enableEarlyPonder = value;
+                    }
+                  "
+                />
+                <div class="form-group warning" :class="{ hidden: !enableEarlyPonder }">
+                  <div class="note">
+                    {{ t.earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions }}
+                    {{ t.ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -450,5 +451,8 @@ const cancel = () => {
   white-space: nowrap;
   font-weight: 600;
   opacity: 0.7;
+}
+.option .additional {
+  margin-top: 5px;
 }
 </style>

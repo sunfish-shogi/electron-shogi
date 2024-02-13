@@ -1,6 +1,6 @@
 ---
 name: 提案 / Suggestion
-about: 開発に関する提案、または翻訳
+about: 新しいアイデア、技術的な知見、または翻訳
 title: ''
 labels: enhancement
 assignees: sunfish-shogi

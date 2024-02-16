@@ -302,8 +302,8 @@ export type Texts = {
   engineManagement: string;
   engineName: string;
   author: string;
-  enginePath: string;
   earlyPonder: string;
+  enginePath: string;
   openDirectory: string;
   displayName: string;
   invoke: string;
@@ -481,7 +481,6 @@ export type Texts = {
   invalidDestination: string;
   pieceNotExists: string;
   invalidLine: string;
-  invalidHandicap: string;
   invalidBoard: string;
   invalidHandPiece: string;
   invalidUSI: string;
@@ -512,6 +511,8 @@ export type Texts = {
   hostNameIsEmpty: string;
   invalidPortNumber: string;
   idIsEmpty: string;
+  idContainsSpace: string;
+  passwordContainsSpace: string;
   tcpKeepaliveInitialDelayMustBePositive: string;
   blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30: string;
   blankLinePingIntervalMustBeGreaterThanOrEqualTo30: string;

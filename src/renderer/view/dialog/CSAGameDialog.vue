@@ -379,8 +379,8 @@ const buildConfig = (): CSAGameSetting => {
       protocolVersion: protocolVersion.value.value,
       host: String(host.value.value || "").trim(),
       port: Number(port.value.value),
-      id: String(id.value.value || ""),
-      password: String(password.value.value || ""),
+      id: String(id.value.value || "").trim(),
+      password: String(password.value.value || "").trim(),
       tcpKeepalive: {
         initialDelay: readInputAsNumber(keepaliveInitialDelay.value),
       },

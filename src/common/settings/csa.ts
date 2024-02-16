@@ -67,34 +67,47 @@ export function defaultCSAGameSetting(): CSAGameSetting {
   };
 }
 
-export function validateCSAGameSetting(csaGameSetting: CSAGameSetting): Error | undefined {
+export function validateCSAServerSetting(setting: CSAServerSetting): Error | undefined {
   if (
-    csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121 &&
-    csaGameSetting.server.protocolVersion !== CSAProtocolVersion.V121_FLOODGATE
+    setting.protocolVersion !== CSAProtocolVersion.V121 &&
+    setting.protocolVersion !== CSAProtocolVersion.V121_FLOODGATE &&
+    setting.protocolVersion !== CSAProtocolVersion.V121_X1
   ) {
     return new Error(t.protocolVersionNotSelected);
   }
-  if (csaGameSetting.server.host === "") {
+  if (setting.host === "") {
     return new Error(t.hostNameIsEmpty);
   }
-  if (csaGameSetting.server.port < 0 || csaGameSetting.server.port > 65535) {
+  if (setting.port < 0 || setting.port > 65535) {
     return new Error(t.invalidPortNumber);
   }
-  if (csaGameSetting.server.id === "") {
+  if (setting.id === "") {
     return new Error(t.idIsEmpty);
   }
-  if (csaGameSetting.server.tcpKeepalive.initialDelay <= 0) {
+  if (setting.id.indexOf(" ") >= 0) {
+    return new Error(t.idContainsSpace);
+  }
+  if (setting.password.indexOf(" ") >= 0) {
+    return new Error(t.passwordContainsSpace);
+  }
+  if (setting.tcpKeepalive.initialDelay <= 0) {
     return new Error(t.tcpKeepaliveInitialDelayMustBePositive);
   }
-  if (csaGameSetting.server.blankLinePing) {
-    if (csaGameSetting.server.blankLinePing.initialDelay < 30) {
+  if (setting.blankLinePing) {
+    if (setting.blankLinePing.initialDelay < 30) {
       return new Error(t.blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30);
     }
-    if (csaGameSetting.server.blankLinePing.interval < 30) {
+    if (setting.blankLinePing.interval < 30) {
       return new Error(t.blankLinePingIntervalMustBeGreaterThanOrEqualTo30);
     }
   }
-  return;
+}
+
+export function validateCSAGameSetting(setting: CSAGameSetting): Error | undefined {
+  const serverError = validateCSAServerSetting(setting.server);
+  if (serverError) {
+    return serverError;
+  }
 }
 
 export type CSAGameSettingHistory = {

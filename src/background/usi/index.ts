@@ -7,8 +7,7 @@ import { t } from "@/common/i18n";
 import { resolveEnginePath } from "@/background/usi/path";
 import { getUSILogger } from "@/background/log";
 import { USISessionState } from "@/common/advanced/monitor";
-import { PromptHistory } from "@/common/advanced/prompt";
-import { Command, CommandType } from "@/common/advanced/command";
+import { CommandHistory, CommandType, Command } from "@/common/advanced/command";
 import { USIInfoCommand } from "@/common/game/usi";
 
 interface Handlers {
@@ -283,7 +282,7 @@ export function collectSessionStates(): USISessionState[] {
     .sort((a, b) => b.sessionID - a.sessionID);
 }
 
-export function getCommandHistory(sessionID: number): PromptHistory {
+export function getCommandHistory(sessionID: number): CommandHistory {
   const session = getSession(sessionID);
   return session.process.commandHistory;
 }

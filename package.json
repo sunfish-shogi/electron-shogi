@@ -1,6 +1,6 @@
 {
   "name": "electron-shogi",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Shogi Frontend Application",
   "author": "Kubo Ryosuke",
   "license": "MIT",
@@ -12,7 +12,7 @@
     "build:dev": "vite build --outDir docs/webapp-dev",
     "preview": "vite preview",
     "test": "vitest run",
-    "coverage": "vitest run --coverage",
+    "coverage": "npm test -- --coverage",
     "lint": "vue-tsc --noEmit && eslint --fix --max-warnings 0 . && prettier --write .",
     "electron:compile": "tsc --project ./tsconfig.bg.json && tsc-alias && webpack --config-name preload",
     "electron:compile-all": "npm run compile && npm run electron:compile",
@@ -27,6 +27,7 @@
     "release": "ts-node scripts/publish-release.ts && npm run docs && npm run build && npm run build:dev && npm run license && npm run release:commit",
     "release:patch": "npm version patch --no-commit-hooks --no-git-tag-version && npm run release",
     "release:minor": "npm version minor --no-commit-hooks --no-git-tag-version && npm run release",
+    "release:stable": "ts-node scripts/publish-release.ts stable && npm run docs",
     "command:compile": "tsc --project ./tsconfig.cmd.json && tsc-alias",
     "command:build": "npm run command:compile && webpack --config-name command:usi-csa-bridge",
     "usi-csa-bridge": "npm run command:compile && node dist/src/command/usi-csa-bridge/index.js"
@@ -66,7 +67,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-vue": "^9.7.0",
-    "jsdom": "^23.0.0",
+    "jsdom": "^24.0.0",
     "license-checker": "^25.0.1",
     "prettier": "^3.0.1",
     "terser-webpack-plugin": "^5.3.6",

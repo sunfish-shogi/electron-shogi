@@ -490,7 +490,6 @@ export const zh_tw: Texts = {
   invalidDestination: "不合法的移動目的地",
   pieceNotExists: "不存在的棋駒",
   invalidLine: "不存在的行",
-  invalidHandicap: "不合法的手合配置",
   invalidBoard: "不合法的盤面",
   invalidHandPiece: "不合法的持駒",
   invalidUSI: "不合法的USI",
@@ -521,6 +520,8 @@ export const zh_tw: Texts = {
   hostNameIsEmpty: "主機名稱為空。",
   invalidPortNumber: "不可用的連接埠號碼。",
   idIsEmpty: "ID 為空。",
+  idContainsSpace: "ID contains space.", // TODO: translate
+  passwordContainsSpace: "Password contains space.", // TODO: translate
   tcpKeepaliveInitialDelayMustBePositive: "請輸入正確的TCP Keepalive初始延遲時間。",
   blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出初始延遲時間。",
   blankLinePingIntervalMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出間隔時間。",

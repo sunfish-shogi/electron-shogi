@@ -14,6 +14,10 @@ describe("prompt/store", () => {
       location: {
         toString: () => "file://foo/bar/?target=csa&session=123&name=test-server%3A4081",
       },
+      setTimeout: vi.fn().mockImplementation((fn) => {
+        fn();
+        return 0; // FIXME: これだとバッファリングのテストにならない。
+      }),
     });
   });
 
@@ -33,9 +37,9 @@ describe("prompt/store", () => {
     mockAPI.setupPrompt.mockResolvedValueOnce({
       discarded: 3,
       commands: [
-        { id: 111, type: CommandType.SEND, command: "foo", timeMs: 100 },
-        { id: 222, type: CommandType.RECEIVE, command: "bar", timeMs: 200 },
-        { id: 333, type: CommandType.SEND, command: "baz", timeMs: 300 },
+        { type: CommandType.SEND, command: "foo", dateTime: "t1", timeMs: 10 },
+        { type: CommandType.RECEIVE, command: "bar", dateTime: "t2", timeMs: 20 },
+        { type: CommandType.SEND, command: "baz", dateTime: "t3", timeMs: 30 },
       ],
     });
     const store = new Store();
@@ -46,18 +50,18 @@ describe("prompt/store", () => {
       random: vi.fn().mockReturnValue(0),
       floor: vi.fn().mockReturnValueOnce(444).mockReturnValueOnce(555).mockReturnValueOnce(666),
     });
-    store.onCommand({ type: CommandType.RECEIVE, command: "qux", timeMs: 400 });
-    store.onCommand({ type: CommandType.RECEIVE, command: "quux", timeMs: 500 });
-    store.onCommand({ type: CommandType.SEND, command: "corge", timeMs: 600 });
+    store.onCommand({ type: CommandType.RECEIVE, command: "qux", dateTime: "t4", timeMs: 40 });
+    store.onCommand({ type: CommandType.RECEIVE, command: "quux", dateTime: "t5", timeMs: 50 });
+    store.onCommand({ type: CommandType.SEND, command: "corge", dateTime: "t6", timeMs: 60 });
     expect(store.history).toStrictEqual({
       discarded: 3,
       commands: [
-        { id: 111, type: CommandType.SEND, command: "foo", timeMs: 100 },
-        { id: 222, type: CommandType.RECEIVE, command: "bar", timeMs: 200 },
-        { id: 333, type: CommandType.SEND, command: "baz", timeMs: 300 },
-        { id: 444, type: CommandType.RECEIVE, command: "qux", timeMs: 400 },
-        { id: 555, type: CommandType.RECEIVE, command: "quux", timeMs: 500 },
-        { id: 666, type: CommandType.SEND, command: "corge", timeMs: 600 },
+        { id: 0, type: CommandType.SEND, command: "foo", dateTime: "t1", timeMs: 10 },
+        { id: 1, type: CommandType.RECEIVE, command: "bar", dateTime: "t2", timeMs: 20 },
+        { id: 2, type: CommandType.SEND, command: "baz", dateTime: "t3", timeMs: 30 },
+        { id: 3, type: CommandType.RECEIVE, command: "qux", dateTime: "t4", timeMs: 40 },
+        { id: 4, type: CommandType.RECEIVE, command: "quux", dateTime: "t5", timeMs: 50 },
+        { id: 5, type: CommandType.SEND, command: "corge", dateTime: "t6", timeMs: 60 },
       ],
     });
   });

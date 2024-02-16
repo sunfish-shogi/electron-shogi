@@ -498,7 +498,6 @@ export const en: Texts = {
   invalidDestination: "Invalid destination",
   pieceNotExists: "Piece not exists",
   invalidLine: "Invalid line",
-  invalidHandicap: "Invalid handicap",
   invalidBoard: "Invalid board",
   invalidHandPiece: "Invalid hand piece",
   invalidUSI: "Invalid USI",
@@ -533,6 +532,8 @@ export const en: Texts = {
   hostNameIsEmpty: "Host name is empty.",
   invalidPortNumber: "Invalid port number.",
   idIsEmpty: "ID is empty.",
+  idContainsSpace: "ID contains space.",
+  passwordContainsSpace: "Password contains space.",
   tcpKeepaliveInitialDelayMustBePositive: "TCP keepalive initial delay must be positive.",
   blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30:
     "Blank line ping initial delay must be >=30.",

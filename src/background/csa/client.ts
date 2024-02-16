@@ -17,8 +17,7 @@ import { CSAProtocolVersion, CSAServerSetting } from "@/common/settings/csa";
 import { Socket } from "./socket";
 import { Logger } from "log4js";
 import { t } from "@/common/i18n";
-import { Command } from "@/common/advanced/command";
-import { PromptHistory, addCommand } from "@/common/advanced/prompt";
+import { Command, CommandHistory, addCommand, newCommand } from "@/common/advanced/command";
 import { CommandType } from "@/common/advanced/command";
 
 type GameSummaryCallback = (gameSummary: CSAGameSummary) => void;
@@ -47,8 +46,6 @@ export enum State {
   CLOSED = "closed",
 }
 
-const maxCommandHistoryLength = 100;
-
 export class Client {
   private _state: State = State.IDLE;
   private gameSummaryCallback?: GameSummaryCallback;
@@ -65,7 +62,7 @@ export class Client {
   private specialMove = CSASpecialMove.UNKNOWN;
   private _lastReceived?: Command;
   private _lastSent?: Command;
-  private _commandHistory: PromptHistory = {
+  private _commandHistory: CommandHistory = {
     discarded: 0,
     commands: [],
   };
@@ -95,7 +92,7 @@ export class Client {
     return this._lastSent;
   }
 
-  get commandHistory(): PromptHistory {
+  get commandHistory(): CommandHistory {
     return this._commandHistory;
   }
 
@@ -261,12 +258,8 @@ export class Client {
       return;
     }
     this.socket.write(command);
-    this._lastSent = {
-      type: CommandType.SEND,
-      command: this.hideSecureValues(command),
-      timeMs: Date.now(),
-    };
-    addCommand(this._commandHistory, this._lastSent, maxCommandHistoryLength);
+    this._lastSent = newCommand(CommandType.SEND, this.hideSecureValues(command));
+    this.updateCommendHistory(this._lastSent);
     if (this.commandCallback) {
       this.commandCallback(this._lastSent);
     }
@@ -275,7 +268,10 @@ export class Client {
   }
 
   private hideSecureValues(command: string): string {
-    return command.replaceAll(this.setting.password, "*****");
+    if (this.setting.password) {
+      command = command.replaceAll(this.setting.password, "*****");
+    }
+    return command;
   }
 
   private onConnect(): void {
@@ -297,12 +293,8 @@ export class Client {
     if (this.closeCallback) {
       this.closeCallback();
     }
-    const command = {
-      type: CommandType.SYSTEM,
-      command: "connection error",
-      timeMs: Date.now(),
-    };
-    addCommand(this._commandHistory, command, maxCommandHistoryLength);
+    const command = newCommand(CommandType.SYSTEM, "connection error");
+    this.updateCommendHistory(command);
     if (this.commandCallback) {
       this.commandCallback(command);
     }
@@ -346,12 +338,8 @@ export class Client {
     if (this.closeCallback) {
       this.closeCallback();
     }
-    const command = {
-      type: CommandType.SYSTEM,
-      command: hadError ? "closed (error)" : "closed",
-      timeMs: Date.now(),
-    };
-    addCommand(this._commandHistory, command, maxCommandHistoryLength);
+    const command = newCommand(CommandType.SYSTEM, hadError ? "closed (error)" : "closed");
+    this.updateCommendHistory(command);
     if (this.commandCallback) {
       this.commandCallback(command);
     }
@@ -359,12 +347,8 @@ export class Client {
 
   private onRead(command: string): void {
     this.setBlankLinePing();
-    this._lastReceived = {
-      type: CommandType.RECEIVE,
-      command,
-      timeMs: Date.now(),
-    };
-    addCommand(this._commandHistory, this._lastReceived, maxCommandHistoryLength);
+    this._lastReceived = newCommand(CommandType.RECEIVE, command);
+    this.updateCommendHistory(this._lastReceived);
     if (this.commandCallback) {
       this.commandCallback(this._lastReceived);
     }
@@ -681,5 +665,9 @@ export class Client {
       clearTimeout(this.blankLinePingTimeout);
       this.blankLinePingTimeout = null;
     }
+  }
+
+  private updateCommendHistory(command: Command): void {
+    addCommand(this._commandHistory, command, 100, 10);
   }
 }

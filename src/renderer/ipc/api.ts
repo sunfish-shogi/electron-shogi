@@ -16,8 +16,8 @@ import { RecordFileHistory } from "@/common/file/history";
 import { InitialRecordFileRequest } from "@/common/file/record";
 import { VersionStatus } from "@/background/version/types";
 import { SessionStates } from "@/common/advanced/monitor";
-import { PromptHistory, PromptTarget } from "@/common/advanced/prompt";
-import { CommandType } from "@/common/advanced/command";
+import { PromptTarget } from "@/common/advanced/prompt";
+import { CommandHistory, CommandType } from "@/common/advanced/command";
 import { Bridge } from "./bridge";
 
 type AppInfo = {
@@ -100,7 +100,7 @@ export interface API {
   csaWin(sessionID: number): Promise<void>;
   csaStop(sessionID: number): Promise<void>;
   collectSessionStates(): Promise<SessionStates>;
-  setupPrompt(target: PromptTarget, sessionID: number): Promise<PromptHistory>;
+  setupPrompt(target: PromptTarget, sessionID: number): Promise<CommandHistory>;
   openPrompt(target: PromptTarget, sessionID: number, name: string): void;
   invokePromptCommand(
     target: PromptTarget,
@@ -229,7 +229,7 @@ const api: API = {
   async collectSessionStates(): Promise<SessionStates> {
     return JSON.parse(await bridge.collectSessionStates());
   },
-  async setupPrompt(target: PromptTarget, sessionID: number): Promise<PromptHistory> {
+  async setupPrompt(target: PromptTarget, sessionID: number): Promise<CommandHistory> {
     return JSON.parse(await bridge.setupPrompt(target, sessionID));
   },
   async getVersionStatus(): Promise<VersionStatus> {

@@ -36,21 +36,18 @@
           {{ store.history.discarded }} commands discarded
         </div>
         <div
-          v-for="(entry, idx) of store.history.commands"
+          v-for="entry of store.history.commands"
           :id="`history-${entry.id}`"
           :key="entry.id"
           class="entry"
           :class="{
-            'top-margin': idx === 0 || entry.type !== store.history.commands[idx - 1].type,
             highlight: searchText && entry.command.includes(searchText),
           }"
         >
-          <span v-if="showTimestamp" class="timestamp">{{
-            getDateTimeStringMs(new Date(entry.timeMs))
-          }}</span>
-          <span v-if="entry.type === CommandType.SEND">&gt;</span>
-          <span v-if="entry.type === CommandType.RECEIVE">&lt;</span>
-          <span v-if="entry.type === CommandType.SYSTEM">#</span>
+          <span v-if="showTimestamp" class="timestamp">{{ entry.dateTime }}</span>
+          <span v-if="entry.type === CommandType.SEND" class="send">&#x25B6;</span>
+          <span v-if="entry.type === CommandType.RECEIVE" class="receive">&#x25C0;</span>
+          <span v-if="entry.type === CommandType.SYSTEM" class="system">&#x25FC;</span>
           {{ entry.command }}
         </div>
       </div>
@@ -63,7 +60,6 @@ import { CommandType } from "@/common/advanced/command";
 import { useStore } from "@/renderer/prompt/store";
 import { onMounted, onUpdated, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
-import { getDateTimeStringMs } from "@/common/helpers/datetime";
 import { t } from "@/common/i18n";
 
 const store = useStore();
@@ -125,17 +121,23 @@ onUpdated(() => {
 }
 .entry {
   font-size: 12px;
-  margin: 0 4px;
+  padding: 0 4px;
   text-align: left;
   white-space: pre;
-}
-.entry.top-margin {
-  margin-top: 4px;
 }
 .entry.highlight {
   background-color: var(--text-bg-color-warning);
 }
-.timestamp {
+.entry > .send {
+  color: darkorange;
+}
+.entry > .receive {
+  color: cornflowerblue;
+}
+.entry > .system {
+  color: red;
+}
+.entry > .timestamp {
   margin-right: 4px;
 }
 </style>

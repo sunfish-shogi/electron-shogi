@@ -2,8 +2,7 @@ import { CSAServerSetting } from "@/common/settings/csa";
 import { getCSALogger } from "@/background/log";
 import { Client, State } from "@/background/csa/client";
 import { CSASessionState } from "@/common/advanced/monitor";
-import { PromptHistory } from "@/common/advanced/prompt";
-import { Command, CommandType } from "@/common/advanced/command";
+import { CommandHistory, CommandType, Command } from "@/common/advanced/command";
 import { CSAGameResult, CSAGameSummary, CSAPlayerStates, CSASpecialMove } from "@/common/game/csa";
 
 interface Handlers {
@@ -121,7 +120,7 @@ export function collectSessionStates(): CSASessionState[] {
     .sort((a, b) => b.sessionID - a.sessionID);
 }
 
-export function getCommandHistory(sessionID: number): PromptHistory {
+export function getCommandHistory(sessionID: number): CommandHistory {
   const client = clients.get(sessionID);
   if (client) {
     return client.commandHistory;

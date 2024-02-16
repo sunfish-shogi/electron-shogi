@@ -19,5 +19,5 @@ export function getDateTimeString(date = new Date()): string {
 }
 
 export function getDateTimeStringMs(date = new Date()): string {
-  return getDateTimeString(date) + "." + (date.getTime() % 1000);
+  return getDateTimeString(date) + "." + String(date.getTime() % 1000).padStart(3, "0");
 }

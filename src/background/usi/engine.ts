@@ -9,8 +9,13 @@ import {
 import { Logger } from "log4js";
 import { SCORE_MATE_INFINITE, USIInfoCommand } from "@/common/game/usi";
 import { ChildProcess } from "./process";
-import { Command, CommandType } from "@/common/advanced/command";
-import { addCommand, PromptHistory } from "@/common/advanced/prompt";
+import {
+  addCommand,
+  Command,
+  CommandHistory,
+  CommandType,
+  newCommand,
+} from "@/common/advanced/command";
 
 export type EngineProcessOption = {
   timeout?: number;
@@ -173,8 +178,6 @@ const USIHashOptionOrder = 1;
 const USIPonderOptionOrder = 2;
 const UserDefinedOptionOrderStart = 100;
 
-const maxCommandHistoryLength = 100;
-
 export class EngineProcess {
   private process: ChildProcess | null = null;
   private _name = "NO NAME";
@@ -188,7 +191,7 @@ export class EngineProcess {
   private quitTimeout?: NodeJS.Timeout;
   private _lastReceived?: Command;
   private _lastSent?: Command;
-  private _commandHistory: PromptHistory = {
+  private _commandHistory: CommandHistory = {
     discarded: 0,
     commands: [],
   };
@@ -240,7 +243,7 @@ export class EngineProcess {
     return this._lastSent;
   }
 
-  get commandHistory(): PromptHistory {
+  get commandHistory(): CommandHistory {
     return this._commandHistory;
   }
 
@@ -530,12 +533,8 @@ export class EngineProcess {
     this.clearLaunchTimeout();
     this.clearQuitTimeout();
     this.process = null;
-    const command = {
-      type: CommandType.SYSTEM,
-      command: `closed: close=${code} signal=${signal}`,
-      timeMs: Date.now(),
-    };
-    addCommand(this._commandHistory, command, maxCommandHistoryLength);
+    const command = newCommand(CommandType.SYSTEM, `closed: close=${code} signal=${signal}`);
+    this.updateCommendHistory(command);
     if (this.commandCallback) {
       this.commandCallback(command);
     }
@@ -577,12 +576,8 @@ export class EngineProcess {
       return;
     }
     this.process.send(command);
-    this._lastSent = {
-      type: CommandType.SEND,
-      command,
-      timeMs: Date.now(),
-    };
-    addCommand(this._commandHistory, this._lastSent, maxCommandHistoryLength);
+    this._lastSent = newCommand(CommandType.SEND, command);
+    this.updateCommendHistory(this._lastSent);
     if (this.commandCallback) {
       this.commandCallback(this._lastSent);
     }
@@ -590,12 +585,8 @@ export class EngineProcess {
   }
 
   private onReceive(command: string): void {
-    this._lastReceived = {
-      type: CommandType.RECEIVE,
-      command,
-      timeMs: Date.now(),
-    };
-    addCommand(this._commandHistory, this._lastReceived, maxCommandHistoryLength);
+    this._lastReceived = newCommand(CommandType.RECEIVE, command);
+    this.updateCommendHistory(this._lastReceived);
     if (this.commandCallback) {
       this.commandCallback(this._lastReceived);
     }
@@ -787,5 +778,9 @@ export class EngineProcess {
         this.onReceive(command);
         break;
     }
+  }
+
+  private updateCommendHistory(command: Command): void {
+    addCommand(this._commandHistory, command, 100, 10);
   }
 }

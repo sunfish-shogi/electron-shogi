@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { PromptTarget } from "@/common/advanced/prompt";
 import { t } from "@/common/i18n";
-import { CSAProtocolVersion } from "@/common/settings/csa";
+import { CSAProtocolVersion, validateCSAServerSetting } from "@/common/settings/csa";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import api from "@/renderer/ipc/api";
@@ -96,7 +96,7 @@ const onTogglePasswordVisibility = (value: boolean) => {
   password.value.type = value ? "text" : "password";
 };
 
-const onStart = async () => {
+const onStart = () => {
   const setting = {
     protocolVersion: CSAProtocolVersion.V121_X1,
     host: host.value.value,
@@ -107,10 +107,16 @@ const onStart = async () => {
       initialDelay: 60,
     },
   };
-  const sessionID = await api.csaLogin(setting);
-  api.openPrompt(PromptTarget.CSA, sessionID, `${setting.host}:${setting.port}`);
-  useAppSetting().updateAppSetting({ tab: Tab.MONITOR });
-  store.closeModalDialog();
+  const error = validateCSAServerSetting(setting);
+  if (error) {
+    store.pushError(error);
+    return;
+  }
+  api.csaLogin(setting).then((sessionID: number) => {
+    api.openPrompt(PromptTarget.CSA, sessionID, `${setting.host}:${setting.port}`);
+    useAppSetting().updateAppSetting({ tab: Tab.MONITOR });
+    store.closeModalDialog();
+  });
 };
 
 const onCancel = () => {

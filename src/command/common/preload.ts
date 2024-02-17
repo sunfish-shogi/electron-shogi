@@ -367,4 +367,8 @@ export function preload(config: Config) {
       getAppLogger().error(error);
     },
   });
+
+  process.on("uncaughtException", (e, origin) => {
+    getAppLogger().error(new Error(`${origin} ${e}`));
+  });
 }

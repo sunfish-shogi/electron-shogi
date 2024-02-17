@@ -250,7 +250,7 @@ export class Client {
 
   private send(command: string): void {
     if (!this.socket) {
-      this.logger.info(
+      this.logger.error(
         "sid=%d: failed to send command caused by invalid socket: %s",
         this.sessionID,
         command,
@@ -301,7 +301,7 @@ export class Client {
   }
 
   private onError(e: Error): void {
-    this.logger.info("sid=%d: error: %s %s", this.sessionID, e.name, e.message);
+    this.logger.error("sid=%d: error: %s %s", this.sessionID, e.name, e.message);
     if (this.errorCallback) {
       this.errorCallback(e);
     }
@@ -374,7 +374,7 @@ export class Client {
     } else if (command.startsWith("START:")) {
       this.onStart();
     } else {
-      this.logger.info("sid=%d: unknown command received", this.sessionID);
+      this.logger.warn("sid=%d: unknown command received", this.sessionID);
     }
   }
 
@@ -477,7 +477,7 @@ export class Client {
         this.gameSummary.toMove = value === "+" ? Color.BLACK : Color.WHITE;
         break;
       default:
-        this.logger.info("sid=%d: unknown command received", this.sessionID);
+        this.logger.warn("sid=%d: unknown command received", this.sessionID);
         break;
     }
   }
@@ -517,7 +517,7 @@ export class Client {
         this.gameSummary.increment = Number(value);
         break;
       default:
-        this.logger.info("sid=%d: unknown command received", this.sessionID);
+        this.logger.warn("sid=%d: unknown command received", this.sessionID);
         break;
     }
   }
@@ -554,7 +554,7 @@ export class Client {
     } else if (command.startsWith("%")) {
       // noop
     } else {
-      this.logger.info("sid=%d: unknown move command received", this.sessionID);
+      this.logger.warn("sid=%d: unknown move command received", this.sessionID);
     }
   }
 
@@ -564,7 +564,7 @@ export class Client {
       const elapsed = Number(parsed[1]);
       this.updateTime(color, elapsed * 1e3);
     } else {
-      this.logger.info("sid=%d: invalid move format", this.sessionID);
+      this.logger.error("sid=%d: invalid move format", this.sessionID);
     }
     if (this.moveCallback) {
       this.moveCallback(command, this.playerStates);

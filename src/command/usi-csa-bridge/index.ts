@@ -63,17 +63,17 @@ gameManager
 
 function onGameNext() {
   // eslint-disable-next-line no-console
-  console.log("waiting for new game...");
+  getAppLogger().info("waiting for new game...");
 }
 
 function onNewGame(n: number) {
   // eslint-disable-next-line no-console
-  console.log(`${ordinal(n)} game started.`);
+  getAppLogger().info(`${ordinal(n)} game started.`);
 }
 
 function onGameEnd() {
   // eslint-disable-next-line no-console
-  console.log("completed. will exit after some seconds...");
+  getAppLogger().info("completed. will exit after some seconds...");
 }
 
 function onSaveRecord() {
@@ -104,7 +104,7 @@ function onSaveRecord() {
 
 function onLoginRetry() {
   // eslint-disable-next-line no-console
-  console.log(`Retry login after ${loginRetryIntervalSeconds} seconds...`);
+  getAppLogger().warn(`Retry login after ${loginRetryIntervalSeconds} seconds...`);
 }
 
 function onError(e: unknown) {

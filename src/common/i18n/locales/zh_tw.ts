@@ -371,6 +371,9 @@ export const zh_tw: Texts = {
   filterByEngineName: "搜尋引擎名稱",
   bookStyle: "書籍風",
   gameStyle: "對局畫面風",
+  thin: "細", // TODO: translate
+  bold: "太", // TODO: translate
+  extraBold: "極太", // TODO: translate
   playerName: "對局者名稱",
   typeface: "字體",
   weight: "字體粗細",

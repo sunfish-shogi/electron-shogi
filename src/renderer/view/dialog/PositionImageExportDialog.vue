@@ -85,9 +85,9 @@
               <HorizontalSelector
                 :value="String(appSetting.positionImageFontWeight)"
                 :items="[
-                  { value: PositionImageFontWeight.W400, label: '細' },
-                  { value: PositionImageFontWeight.W400X, label: '太' },
-                  { value: PositionImageFontWeight.W700X, label: '極太' },
+                  { value: PositionImageFontWeight.W400, label: t.thin },
+                  { value: PositionImageFontWeight.W400X, label: t.bold },
+                  { value: PositionImageFontWeight.W700X, label: t.extraBold },
                 ]"
                 @change="(v) => changeFontWeight(v as PositionImageFontWeight)"
               />

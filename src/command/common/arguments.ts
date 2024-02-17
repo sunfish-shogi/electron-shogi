@@ -1,5 +1,7 @@
 type GetValue = () => string;
+type GetValueOrNull = () => string | null;
 type GetNumber = () => number;
+type GetNumberOrNull = () => number | null;
 type GetFlag = () => boolean;
 
 type NumberRestriction = {
@@ -29,7 +31,19 @@ export class ArgumentsParser {
     this.help += `      (default: ${defaultValue})\n`;
     this.valueKeys.push(key);
     return () => {
-      return this.values.get(key) || defaultValue;
+      const value = this.values.get(key);
+      return value !== undefined ? value : defaultValue;
+    };
+  }
+
+  valueOrNull(name: string, description: string): GetValueOrNull {
+    const key = "--" + name;
+    this.help += `  ${key} VALUE\n`;
+    this.help += `      ${description}\n`;
+    this.valueKeys.push(key);
+    return () => {
+      const value = this.values.get(key);
+      return value !== undefined ? value : null;
     };
   }
 
@@ -48,7 +62,26 @@ export class ArgumentsParser {
       this.numberRestrictions.set(key, restriction);
     }
     return () => {
-      return this.numbers.get(key) || defaultValue;
+      const value = this.numbers.get(key);
+      return value !== undefined ? value : defaultValue;
+    };
+  }
+
+  numberOrNull(
+    name: string,
+    description: string,
+    restriction?: NumberRestriction,
+  ): GetNumberOrNull {
+    const key = "--" + name;
+    this.help += `  ${key} VALUE\n`;
+    this.help += `      ${description}\n`;
+    this.numberKeys.push(key);
+    if (restriction) {
+      this.numberRestrictions.set(key, restriction);
+    }
+    return () => {
+      const value = this.numbers.get(key);
+      return value !== undefined ? value : null;
     };
   }
 

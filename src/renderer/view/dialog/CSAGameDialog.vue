@@ -243,17 +243,14 @@
         </div>
       </div>
       <div class="main-buttons">
-        <button data-hotkey="Mod+c" autofocus @click="onCopy()">
-          設定をコピーする
-          <Icon :icon="IconType.COPY" />
-        </button>
-      </div>
-      <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="onStart()">
           {{ t.startGame }}
         </button>
         <button data-hotkey="Escape" @click="onCancel()">
           {{ t.cancel }}
+        </button>
+        <button data-hotkey="Mod+c" autofocus @click="onExport()">
+          <Icon :icon="IconType.COPY" />
         </button>
       </div>
     </dialog>
@@ -261,6 +258,7 @@
 </template>
 
 <script setup lang="ts">
+import yaml from "js-yaml";
 import { t } from "@/common/i18n";
 import { USIEngineLabel, USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { ref, onMounted, computed, onUpdated, onBeforeUnmount } from "vue";
@@ -272,6 +270,7 @@ import {
   validateCSAGameSetting,
   buildCSAGameSettingByHistory,
   defaultCSAGameSettingHistory,
+  exportCSAGameSettingForCLI,
 } from "@/common/settings/csa";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
@@ -285,6 +284,7 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 
 const store = useStore();
+const appSetting = useAppSetting();
 const dialog = ref();
 const protocolVersion = ref();
 const selectedProtocolVersion = ref(CSAProtocolVersion.V121);
@@ -400,13 +400,20 @@ const buildConfig = (): CSAGameSetting => {
   };
 };
 
-const onCopy = () => {
-  const csaGameSetting: CSAGameSetting = buildConfig();
-  navigator.clipboard.writeText(JSON.stringify(csaGameSetting, null, 2));
+const onExport = () => {
+  const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
+  if (setting instanceof Error) {
+    store.pushError(setting);
+    return;
+  }
+  navigator.clipboard.writeText(yaml.dump(setting));
+  store.enqueueMessage({
+    text: "YAML形式の設定をクリップボードにコピーしました。",
+  });
 };
 
 const onStart = () => {
-  const csaGameSetting: CSAGameSetting = buildConfig();
+  const csaGameSetting = buildConfig();
   const error = validateCSAGameSetting(csaGameSetting);
   if (error) {
     store.pushError(error);

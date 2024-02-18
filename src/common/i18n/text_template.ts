@@ -369,6 +369,9 @@ export type Texts = {
   filterByEngineName: string;
   bookStyle: string;
   gameStyle: string;
+  thin: string;
+  bold: string;
+  extraBold: string;
   playerName: string;
   typeface: string;
   weight: string;

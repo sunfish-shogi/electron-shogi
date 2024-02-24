@@ -42,7 +42,6 @@
     "electron-shogi-core": "^0.3.0",
     "encoding-japanese": "^2.0.0",
     "jimp": "^0.22.7",
-    "js-yaml": "^4.1.0",
     "log4js": "^6.7.0",
     "semver": "^7.5.4",
     "splitpanes": "^3.1.5",
@@ -51,7 +50,6 @@
   "devDependencies": {
     "@types/async-lock": "^1.4.0",
     "@types/encoding-japanese": "^2.0.1",
-    "@types/js-yaml": "^4.0.9",
     "@types/splitpanes": "^2.2.1",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",

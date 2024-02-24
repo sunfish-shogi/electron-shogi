@@ -60,7 +60,7 @@ preload({
 
 import fs from "node:fs";
 import path from "node:path";
-import yaml from "js-yaml";
+import YAML from "yaml";
 import {
   CSAGameSettingForCLI,
   CSAProtocolVersion,
@@ -87,7 +87,7 @@ if (!configPath) {
   argParser.showHelp();
   process.exit(1);
 }
-const cliSetting = yaml.load(fs.readFileSync(configPath, "utf-8")) as CSAGameSettingForCLI;
+const cliSetting = YAML.parse(fs.readFileSync(configPath, "utf-8")) as CSAGameSettingForCLI;
 
 // コマンドライン引数で指定された値で設定を上書きします。
 cliSetting.server.protocolVersion = (protocolVersion() ||

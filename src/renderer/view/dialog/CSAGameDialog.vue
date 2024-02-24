@@ -258,7 +258,7 @@
 </template>
 
 <script setup lang="ts">
-import yaml from "js-yaml";
+import YAML from "yaml";
 import { t } from "@/common/i18n";
 import { USIEngineLabel, USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { ref, onMounted, computed, onUpdated, onBeforeUnmount } from "vue";
@@ -406,7 +406,7 @@ const onExport = () => {
     store.pushError(setting);
     return;
   }
-  navigator.clipboard.writeText(yaml.dump(setting));
+  navigator.clipboard.writeText(YAML.stringify(setting));
   store.enqueueMessage({
     text: "YAML形式の設定をクリップボードにコピーしました。",
   });

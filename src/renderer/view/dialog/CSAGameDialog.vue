@@ -243,14 +243,18 @@
         </div>
       </div>
       <div class="main-buttons">
+        <button data-hotkey="Mod+c" @click="onExportYAML()">
+          <Icon :icon="IconType.COPY" />YAML
+        </button>
+        <button @click="onExportJSON()"><Icon :icon="IconType.COPY" />JSON</button>
+        <button @click="onExportCommand()"><Icon :icon="IconType.COPY" />{{ t.command }}</button>
+      </div>
+      <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="onStart()">
           {{ t.startGame }}
         </button>
         <button data-hotkey="Escape" @click="onCancel()">
           {{ t.cancel }}
-        </button>
-        <button data-hotkey="Mod+c" autofocus @click="onExport()">
-          <Icon :icon="IconType.COPY" />
         </button>
       </div>
     </dialog>
@@ -271,6 +275,7 @@ import {
   buildCSAGameSettingByHistory,
   defaultCSAGameSettingHistory,
   exportCSAGameSettingForCLI,
+  compressCSAGameSettingForCLI,
 } from "@/common/settings/csa";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
@@ -400,7 +405,7 @@ const buildConfig = (): CSAGameSetting => {
   };
 };
 
-const onExport = () => {
+const onExportYAML = () => {
   const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
   if (setting instanceof Error) {
     store.pushError(setting);
@@ -408,7 +413,33 @@ const onExport = () => {
   }
   navigator.clipboard.writeText(YAML.stringify(setting));
   store.enqueueMessage({
-    text: "YAML形式の設定をクリップボードにコピーしました。",
+    text: t.yamlFormatSettingCopiedToClipboard,
+  });
+};
+
+const onExportJSON = () => {
+  const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
+  if (setting instanceof Error) {
+    store.pushError(setting);
+    return;
+  }
+  navigator.clipboard.writeText(JSON.stringify(setting, null, 2));
+  store.enqueueMessage({
+    text: t.jsonFormatSettingCopiedToClipboard,
+  });
+};
+
+const onExportCommand = () => {
+  const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
+  if (setting instanceof Error) {
+    store.pushError(setting);
+    return;
+  }
+  compressCSAGameSettingForCLI(setting).then((compressed) => {
+    navigator.clipboard.writeText(`npx usi-csa-bridge --base64 ${compressed}`);
+    store.enqueueMessage({
+      text: t.usiCsaBridgeCommandCopiedToClipboard,
+    });
   });
 };
 
@@ -477,5 +508,8 @@ input.number {
 }
 .long-text {
   width: 250px;
+}
+.main-buttons button {
+  line-height: 150%;
 }
 </style>

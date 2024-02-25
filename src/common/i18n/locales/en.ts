@@ -281,6 +281,7 @@ export const en: Texts = {
   saveRecordAutomatically: "Save Record Automatically",
   adjustBoardToHumanPlayer: "Adjust Board to Human Player",
   adjustBoardAutomatically: "Adjust Board Automatically",
+  command: "Command",
   startGame: "Start Game",
   cancelGame: "Cancel Game",
   allottedTime: "Allotted Time",
@@ -472,6 +473,9 @@ export const en: Texts = {
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "Are you sure you want to open the file instead of current record?",
   areYouSureWantToClearHistory: "Are you sure you want to clear history?",
+  yamlFormatSettingCopiedToClipboard: "YAML format setting copied to clipboard.",
+  jsonFormatSettingCopiedToClipboard: "JSON format setting copied to clipboard.",
+  usiCsaBridgeCommandCopiedToClipboard: "usi-csa-bridge command copied to clipboard.",
   youCanNotCloseAppWhileCSAOnlineGame: "You can not close app while CSA online game.",
   fileExtensionNotSupported: "File extension is not supported.",
   errorOccuredWhileDisconnectingFromCSAServer:

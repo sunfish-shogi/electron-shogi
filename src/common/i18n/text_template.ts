@@ -276,6 +276,7 @@ export type Texts = {
   saveRecordAutomatically: string;
   adjustBoardToHumanPlayer: string;
   adjustBoardAutomatically: string;
+  command: string;
   startGame: string;
   cancelGame: string;
   allottedTime: string;
@@ -456,6 +457,9 @@ export type Texts = {
   areYouSureWantToDiscardPosition: string;
   areYouSureWantToOpenFileInsteadOfCurrentRecord: string;
   areYouSureWantToClearHistory: string;
+  yamlFormatSettingCopiedToClipboard: string;
+  jsonFormatSettingCopiedToClipboard: string;
+  usiCsaBridgeCommandCopiedToClipboard: string;
   youCanNotCloseAppWhileCSAOnlineGame: string;
   fileExtensionNotSupported: string;
   errorOccuredWhileDisconnectingFromCSAServer: string;

@@ -278,6 +278,7 @@ export const zh_tw: Texts = {
   saveRecordAutomatically: "自動保存棋譜",
   adjustBoardToHumanPlayer: "調整到玩家所在方向",
   adjustBoardAutomatically: "自動調整盤面方向",
+  command: "Command", // TODO: translate
   startGame: "對局開始",
   cancelGame: "取消對局",
   allottedTime: "持時間",
@@ -465,6 +466,9 @@ export const zh_tw: Texts = {
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "會將現在的棋譜關閉並開啟別的檔案，請問您要繼續嗎？",
   areYouSureWantToClearHistory: "將清除紀錄。請問您要繼續嗎？",
+  yamlFormatSettingCopiedToClipboard: "YAML形式の設定をクリップボードにコピーしました。", // TODO: translate
+  jsonFormatSettingCopiedToClipboard: "JSON形式の設定をクリップボードにコピーしました。", // TODO: translate
+  usiCsaBridgeCommandCopiedToClipboard: "usi-csa-bridge コマンドをクリップボードにコピーしました。", // TODO: translate
   youCanNotCloseAppWhileCSAOnlineGame: "由於CSA協定正在使用中，本程式無法被關閉。",
   fileExtensionNotSupported: "無法支援的副檔名。",
   errorOccuredWhileDisconnectingFromCSAServer: "在與CSA伺服器中斷連線時發生錯誤。",

@@ -3,7 +3,12 @@
 // --------------------------------------------------------------------------------
 
 import { ArgumentsParser } from "@/command/common/arguments";
-const argParser = new ArgumentsParser("usi-csa-bridge", "<csa_game_config.yaml>");
+const argParser = new ArgumentsParser("usi-csa-bridge", [
+  "path/to/csa_game_config.yaml",
+  "path/to/csa_game_config.json",
+  "--base64 <base64>",
+]);
+const base64 = argParser.valueOrNull("base64", "Base64 of gzip compressed JSON config.");
 const engineTimeout = argParser.number(
   "engine-timeout",
   "Maximum time[seconds] of USI engine execution.",
@@ -64,6 +69,7 @@ import YAML from "yaml";
 import {
   CSAGameSettingForCLI,
   CSAProtocolVersion,
+  decompressCSAGameSettingForCLI,
   importCSAGameSettingForCLI,
   validateCSAGameSetting,
 } from "@/common/settings/csa";
@@ -80,100 +86,116 @@ import { ordinal } from "@/common/helpers/string";
 // Phase-4. コマンド固有の処理を実行します。
 // --------------------------------------------------------------------------------
 
-// 設定ファイルを読み込みます。
-const configPath = argParser.args[0];
-if (!configPath) {
-  getAppLogger().error("config path is not specified.");
-  argParser.showHelp();
-  process.exit(1);
+async function main() {
+  // 設定ファイルを読み込みます。
+  let cliSetting: CSAGameSettingForCLI;
+  const base64Value = base64();
+  if (base64Value) {
+    cliSetting = await decompressCSAGameSettingForCLI(base64Value);
+  } else {
+    const arg = argParser.args[0];
+    if (!arg) {
+      getAppLogger().error("config file is not specified.");
+      argParser.showHelp();
+      process.exit(1);
+    }
+    if (arg.endsWith(".json")) {
+      cliSetting = JSON.parse(fs.readFileSync(arg, "utf-8")) as CSAGameSettingForCLI;
+    } else {
+      cliSetting = YAML.parse(fs.readFileSync(arg, "utf-8")) as CSAGameSettingForCLI;
+    }
+  }
+
+  // コマンドライン引数で指定された値で設定を上書きします。
+  cliSetting.server.protocolVersion = (protocolVersion() ||
+    cliSetting.server.protocolVersion) as CSAProtocolVersion;
+  cliSetting.server.host = host() || cliSetting.server.host;
+  cliSetting.server.port = port() || cliSetting.server.port;
+  cliSetting.server.id = id() || cliSetting.server.id;
+  cliSetting.server.password = password() || cliSetting.server.password;
+  cliSetting.saveRecordFile = saveRecordFile() || cliSetting.saveRecordFile;
+  cliSetting.repeat = repeat() || cliSetting.repeat;
+
+  // CSAGameSetting に変換してバリデーションを実行します。
+  const setting = importCSAGameSettingForCLI(cliSetting);
+  const validationError = validateCSAGameSetting(setting);
+  if (validationError) {
+    getAppLogger().error(validationError);
+    process.exit(1);
+  }
+
+  const recordManager = new RecordManager();
+  const blackClock = new Clock();
+  const whiteClock = new Clock();
+  const gameManager = new CSAGameManager(recordManager, blackClock, whiteClock);
+  const playerBuilder = defaultPlayerBuilder(engineTimeout());
+
+  gameManager
+    .on("gameNext", onGameNext)
+    .on("newGame", onNewGame)
+    .on("gameEnd", onGameEnd)
+    .on("saveRecord", onSaveRecord)
+    .on("loginRetry", onLoginRetry)
+    .on("error", onError)
+    .login(setting, playerBuilder)
+    .catch(onFatalError);
+
+  function onGameNext() {
+    // eslint-disable-next-line no-console
+    getAppLogger().info("waiting for new game...");
+  }
+
+  function onNewGame(n: number) {
+    // eslint-disable-next-line no-console
+    getAppLogger().info(`${ordinal(n)} game started.`);
+  }
+
+  function onGameEnd() {
+    // eslint-disable-next-line no-console
+    getAppLogger().info("completed. will exit after some seconds...");
+  }
+
+  function onSaveRecord() {
+    const fileName = generateRecordFileName(
+      recordManager.record.metadata,
+      recordFileNameTemplate() ||
+        cliSetting.recordFileNameTemplate ||
+        defaultRecordFileNameTemplate,
+      recordFileFormat() || cliSetting.recordFileFormat || RecordFileFormat.KIF,
+    );
+    const dir = recordDir();
+    const filePath = path.join(dir, fileName);
+    fs.promises
+      .mkdir(dir, { recursive: true })
+      .then(() => {
+        const result = recordManager.exportRecordAsBuffer(filePath, { returnCode: "\n" });
+        if (result instanceof Error) {
+          getAppLogger().error(result);
+          return;
+        }
+        return fs.promises.writeFile(filePath, result.data);
+      })
+      .then(() => {
+        getAppLogger().info("record saved: %s", filePath);
+      })
+      .catch((e) => {
+        getAppLogger().error(e);
+      });
+  }
+
+  function onLoginRetry() {
+    // eslint-disable-next-line no-console
+    getAppLogger().warn(`Retry login after ${loginRetryIntervalSeconds} seconds...`);
+  }
+
+  function onError(e: unknown) {
+    getAppLogger().error(e);
+  }
+
+  function onFatalError(e: unknown) {
+    getAppLogger().error(e);
+    process.exit(1);
+  }
 }
-const cliSetting = YAML.parse(fs.readFileSync(configPath, "utf-8")) as CSAGameSettingForCLI;
 
-// コマンドライン引数で指定された値で設定を上書きします。
-cliSetting.server.protocolVersion = (protocolVersion() ||
-  cliSetting.server.protocolVersion) as CSAProtocolVersion;
-cliSetting.server.host = host() || cliSetting.server.host;
-cliSetting.server.port = port() || cliSetting.server.port;
-cliSetting.server.id = id() || cliSetting.server.id;
-cliSetting.server.password = password() || cliSetting.server.password;
-cliSetting.saveRecordFile = saveRecordFile() || cliSetting.saveRecordFile;
-cliSetting.repeat = repeat() || cliSetting.repeat;
-
-// CSAGameSetting に変換してバリデーションを実行します。
-const setting = importCSAGameSettingForCLI(cliSetting);
-const validationError = validateCSAGameSetting(setting);
-if (validationError) {
-  getAppLogger().error(validationError);
-  process.exit(1);
-}
-
-const recordManager = new RecordManager();
-const blackClock = new Clock();
-const whiteClock = new Clock();
-const gameManager = new CSAGameManager(recordManager, blackClock, whiteClock);
-const playerBuilder = defaultPlayerBuilder(engineTimeout());
-
-gameManager
-  .on("gameNext", onGameNext)
-  .on("newGame", onNewGame)
-  .on("gameEnd", onGameEnd)
-  .on("saveRecord", onSaveRecord)
-  .on("loginRetry", onLoginRetry)
-  .on("error", onError)
-  .login(setting, playerBuilder)
-  .catch(onFatalError);
-
-function onGameNext() {
-  // eslint-disable-next-line no-console
-  getAppLogger().info("waiting for new game...");
-}
-
-function onNewGame(n: number) {
-  // eslint-disable-next-line no-console
-  getAppLogger().info(`${ordinal(n)} game started.`);
-}
-
-function onGameEnd() {
-  // eslint-disable-next-line no-console
-  getAppLogger().info("completed. will exit after some seconds...");
-}
-
-function onSaveRecord() {
-  const fileName = generateRecordFileName(
-    recordManager.record.metadata,
-    recordFileNameTemplate() || cliSetting.recordFileNameTemplate || defaultRecordFileNameTemplate,
-    recordFileFormat() || cliSetting.recordFileFormat || RecordFileFormat.KIF,
-  );
-  const dir = recordDir();
-  const filePath = path.join(dir, fileName);
-  fs.promises
-    .mkdir(dir, { recursive: true })
-    .then(() => {
-      const result = recordManager.exportRecordAsBuffer(filePath, { returnCode: "\n" });
-      if (result instanceof Error) {
-        getAppLogger().error(result);
-        return;
-      }
-      return fs.promises.writeFile(filePath, result.data);
-    })
-    .then(() => {
-      getAppLogger().info("record saved: %s", filePath);
-    })
-    .catch((e) => {
-      getAppLogger().error(e);
-    });
-}
-
-function onLoginRetry() {
-  // eslint-disable-next-line no-console
-  getAppLogger().warn(`Retry login after ${loginRetryIntervalSeconds} seconds...`);
-}
-
-function onError(e: unknown) {
-  getAppLogger().error(e);
-}
-
-function onFatalError(e: unknown) {
-  getAppLogger().error(e);
-  process.exit(1);
-}
+main();

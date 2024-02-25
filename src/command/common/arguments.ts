@@ -20,8 +20,15 @@ export class ArgumentsParser {
   private bareArgs: string[] = [];
   public help: string;
 
-  constructor(commandName: string, bareArgFormat?: string) {
-    this.help = `Usage: ${commandName} [options] ${bareArgFormat}\n\nOPTIONS:\n`;
+  constructor(commandName: string, bareArgFormats?: string | string[]) {
+    if (typeof bareArgFormats === "string") {
+      bareArgFormats = [bareArgFormats];
+    }
+    this.help = "Usage:\n";
+    for (const format of bareArgFormats || [""]) {
+      this.help += `  ${commandName} [options] ${format}\n`;
+    }
+    this.help += `\nOPTIONS:\n`;
   }
 
   value(name: string, description: string, defaultValue: string): GetValue {

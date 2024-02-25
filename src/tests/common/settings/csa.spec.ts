@@ -11,8 +11,12 @@ import {
   validateCSAGameSetting,
 } from "@/common/settings/csa";
 import { defaultAppSetting } from "@/common/settings/app";
-import { csaGameSetting, csaGameSettingForCLI, csaServerSetting, emptyCSAGameSettingHistory, playerURI } from "@/tests/mock/csa";
-import { RecordFileFormat } from "@/common/file/record";
+import {
+  csaGameSetting,
+  csaGameSettingForCLI,
+  emptyCSAGameSettingHistory,
+  playerURI,
+} from "@/tests/mock/csa";
 
 describe("settings/csa", () => {
   it("validate/noError", () => {
@@ -441,7 +445,7 @@ describe("settings/csa", () => {
     const expected = JSON.parse(JSON.stringify(csaGameSetting)) as CSAGameSetting;
     expected.player.usi!.author = "";
     expected.player.usi!.defaultName = expected.player.name;
-    Object.entries(expected.player.usi!.options).forEach(([_, option]) => {
+    Object.values(expected.player.usi!.options).forEach((option) => {
       delete option.default;
       delete option.min;
       delete option.max;

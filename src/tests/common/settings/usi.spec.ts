@@ -2,8 +2,10 @@ import {
   duplicateEngineSetting,
   getUSIEngineOptionCurrentValue,
   mergeUSIEngineSetting,
+  USIEngineOption,
   USIEngineSetting,
   USIEngineSettings,
+  validateUSIEngineSetting,
 } from "@/common/settings/usi";
 
 describe("settings/usi", () => {
@@ -192,6 +194,183 @@ describe("settings/usi", () => {
         mate: false,
       },
       enableEarlyPonder: false,
+    });
+  });
+
+  describe("validate", () => {
+    const validUSIPonderOption: USIEngineOption = {
+      name: "USI_Ponder",
+      type: "check",
+      order: 1,
+      default: "true",
+      value: "false",
+      vars: [],
+    };
+    const validUSIHashOption: USIEngineOption = {
+      name: "USI_Hash",
+      type: "spin",
+      order: 2,
+      default: 32,
+      min: 1,
+      value: 128,
+      vars: [],
+    };
+    const validStringOption: USIEngineOption = {
+      name: "MyString",
+      type: "string",
+      order: 3,
+      default: "default",
+      value: "value",
+      vars: [],
+    };
+    const validComboOption: USIEngineOption = {
+      name: "MyCombo",
+      type: "combo",
+      order: 4,
+      default: "a",
+      value: "b",
+      vars: ["a", "b", "c"],
+    };
+    const validFilenameOption: USIEngineOption = {
+      name: "MyFilename",
+      type: "filename",
+      order: 5,
+      default: "<empty>",
+      value: "/path/to/file",
+      vars: [],
+    };
+    const validButtonOption: USIEngineOption = {
+      name: "MyButton",
+      type: "button",
+      order: 6,
+      vars: [],
+    };
+
+    it("ok", () => {
+      expect(
+        validateUSIEngineSetting({
+          uri: "es://usi-engine/test",
+          name: "my engine",
+          defaultName: "test engine",
+          author: "test author",
+          path: "path/to/engine",
+          options: {
+            USI_Ponder: validUSIPonderOption,
+            USI_Hash: validUSIHashOption,
+            MyString: validStringOption,
+            MyCombo: validComboOption,
+            MyFilename: validFilenameOption,
+            MyButton: validButtonOption,
+          },
+          enableEarlyPonder: false,
+        }),
+      ).toBeUndefined();
+    });
+
+    it("invalid-uri", () => {
+      expect(
+        validateUSIEngineSetting({
+          uri: "es://not-usi-engine/test",
+          name: "my engine",
+          defaultName: "test engine",
+          author: "test author",
+          path: "path/to/engine",
+          options: {
+            USI_Ponder: validUSIPonderOption,
+            USI_Hash: validUSIHashOption,
+            MyString: validStringOption,
+            MyCombo: validComboOption,
+            MyFilename: validFilenameOption,
+            MyButton: validButtonOption,
+          },
+          enableEarlyPonder: false,
+        }),
+      ).toBeInstanceOf(Error);
+    });
+
+    it("invalid-check-option", () => {
+      expect(
+        validateUSIEngineSetting({
+          uri: "es://usi-engine/test",
+          name: "my engine",
+          defaultName: "test engine",
+          author: "test author",
+          path: "path/to/engine",
+          options: {
+            USI_Ponder: {
+              name: "USI_Ponder",
+              type: "check",
+              order: 0,
+              default: "true",
+              value: "NOT-A-BOOLEAN",
+              vars: [],
+            },
+            USI_Hash: validUSIHashOption,
+            MyString: validStringOption,
+            MyCombo: validComboOption,
+            MyFilename: validFilenameOption,
+            MyButton: validButtonOption,
+          },
+          enableEarlyPonder: false,
+        }),
+      ).toBeInstanceOf(Error);
+    });
+
+    it("invalid-spin-option", () => {
+      expect(
+        validateUSIEngineSetting({
+          uri: "es://usi-engine/test",
+          name: "my engine",
+          defaultName: "test engine",
+          author: "test author",
+          path: "path/to/engine",
+          options: {
+            USI_Ponder: validUSIPonderOption,
+            USI_Hash: {
+              name: "USI_Hash",
+              type: "spin",
+              order: 0,
+              default: 32,
+              min: 1,
+              value: "NOT-A-NUMBER",
+              vars: [],
+            },
+            MyString: validStringOption,
+            MyCombo: validComboOption,
+            MyFilename: validFilenameOption,
+            MyButton: validButtonOption,
+          },
+          enableEarlyPonder: false,
+        }),
+      ).toBeInstanceOf(Error);
+    });
+
+    it("invalid-string-option", () => {
+      expect(
+        validateUSIEngineSetting({
+          uri: "es://usi-engine/test",
+          name: "my engine",
+          defaultName: "test engine",
+          author: "test author",
+          path: "path/to/engine",
+          options: {
+            USI_Ponder: validUSIPonderOption,
+            USI_Hash: validUSIHashOption,
+            MyString: {
+              name: "MyString",
+              type: "string",
+              order: 0,
+              default: "default",
+              value: 123,
+              vars: [],
+            },
+            MyCombo: validComboOption,
+            MyFilename: validFilenameOption,
+            MyButton: validButtonOption,
+          },
+          enableEarlyPonder: false,
+        }),
+      ).toBeInstanceOf(Error);
     });
   });
 

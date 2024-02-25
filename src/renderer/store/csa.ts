@@ -39,7 +39,9 @@ export enum CSAGameState {
 
 type SaveRecordCallback = () => void;
 type GameNextCallback = () => void;
+type NewGameCallback = (n: number) => void;
 type GameEndCallback = () => void;
+type LoginRetryCallback = () => void;
 type FlipBoardCallback = (flip: boolean) => void;
 type PieceBeatCallback = () => void;
 type BeepShortCallback = () => void;
@@ -64,33 +66,17 @@ export class CSAGameManager {
   private searchInfo?: SearchInfo;
   private playerBuilder = defaultPlayerBuilder();
   private retryTimer?: NodeJS.Timeout;
-  private onSaveRecord: SaveRecordCallback = () => {
-    /* noop */
-  };
-  private onGameNext: GameNextCallback = () => {
-    /* noop */
-  };
-  private onGameEnd: GameEndCallback = () => {
-    /* noop */
-  };
-  private onFlipBoard: FlipBoardCallback = () => {
-    /* noop */
-  };
-  private onPieceBeat: PieceBeatCallback = () => {
-    /* noop */
-  };
-  private onBeepShort: BeepShortCallback = () => {
-    /* noop */
-  };
-  private onBeepUnlimited: BeepUnlimitedCallback = () => {
-    /* noop */
-  };
-  private onStopBeep: StopBeepCallback = () => {
-    /* noop */
-  };
-  private onError: ErrorCallback = () => {
-    /* noop */
-  };
+  private onSaveRecord: SaveRecordCallback = () => {};
+  private onGameNext: GameNextCallback = () => {};
+  private onNewGame: NewGameCallback = () => {};
+  private onGameEnd: GameEndCallback = () => {};
+  private onLoginRetry: LoginRetryCallback = () => {};
+  private onFlipBoard: FlipBoardCallback = () => {};
+  private onPieceBeat: PieceBeatCallback = () => {};
+  private onBeepShort: BeepShortCallback = () => {};
+  private onBeepUnlimited: BeepUnlimitedCallback = () => {};
+  private onStopBeep: StopBeepCallback = () => {};
+  private onError: ErrorCallback = () => {};
 
   constructor(
     private recordManager: RecordManager,
@@ -100,7 +86,9 @@ export class CSAGameManager {
 
   on(event: "saveRecord", handler: SaveRecordCallback): this;
   on(event: "gameNext", handler: GameNextCallback): this;
+  on(event: "newGame", handler: NewGameCallback): this;
   on(event: "gameEnd", handler: GameEndCallback): this;
+  on(event: "loginRetry", handler: LoginRetryCallback): this;
   on(event: "flipBoard", handler: FlipBoardCallback): this;
   on(event: "pieceBeat", handler: PieceBeatCallback): this;
   on(event: "beepShort", handler: BeepShortCallback): this;
@@ -115,8 +103,14 @@ export class CSAGameManager {
       case "gameNext":
         this.onGameNext = handler as GameNextCallback;
         break;
+      case "newGame":
+        this.onNewGame = handler as NewGameCallback;
+        break;
       case "gameEnd":
         this.onGameEnd = handler as GameEndCallback;
+        break;
+      case "loginRetry":
+        this.onLoginRetry = handler as LoginRetryCallback;
         break;
       case "flipBoard":
         this.onFlipBoard = handler as FlipBoardCallback;
@@ -298,6 +292,7 @@ export class CSAGameManager {
       this.relogin().catch(this.onError);
     } else {
       this._state = CSAGameState.LOGIN_RETRY_INTERVAL;
+      this.onLoginRetry();
       this.retryTimer = setTimeout(
         () => this.relogin().catch(this.onError),
         loginRetryIntervalSeconds * 1e3,
@@ -330,6 +325,7 @@ export class CSAGameManager {
   onStart(playerStates: CSAPlayerStates): void {
     // 対局数をカウントアップする。
     this.repeat++;
+    this.onNewGame(this.repeat);
 
     // 対局情報を初期化する。
     this.recordManager.setGameStartMetadata({

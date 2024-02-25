@@ -1,24 +1,54 @@
+import { RecordFileFormat } from "@/common/file/record";
 import { CSAGameSummary } from "@/common/game/csa";
 import {
   CSAGameSetting,
+  CSAGameSettingForCLI,
   CSAGameSettingHistory,
   CSAProtocolVersion,
   CSAServerSetting,
 } from "@/common/settings/csa";
+import { PlayerSetting } from "@/common/settings/player";
+import { defaultRecordFileNameTemplate } from "@/renderer/helpers/path";
 import { Color } from "electron-shogi-core";
 
-export const playerURI = "es://usi/test-engine";
+export const playerURI = "es://usi-engine/test-engine";
 
-const playerSetting = {
-  name: "USI Engine",
+const playerSetting: PlayerSetting = {
+  name: "my usi engine",
   uri: playerURI,
   usi: {
     uri: playerURI,
     name: "my usi engine",
     defaultName: "engine",
     author: "author01",
-    path: "/engines/engine",
-    options: {},
+    path: "/path/to/engine",
+    options: {
+      USI_Ponder: {
+        name: "USI_Ponder",
+        type: "check",
+        order: 1,
+        default: "true",
+        value: "false",
+        vars: [],
+      },
+      USI_Hash: {
+        name: "USI_Hash",
+        type: "spin",
+        order: 2,
+        min: 32,
+        default: 256,
+        value: 1024,
+        vars: [],
+      },
+      BookFile: {
+        name: "BookFile",
+        type: "string",
+        order: 3,
+        default: "book.db",
+        value: "path/to/book.db",
+        vars: [],
+      },
+    },
     labels: {},
     enableEarlyPonder: false,
   },
@@ -117,4 +147,25 @@ export const csaGameSummaryInvalidPosition: CSAGameSummary = {
   byoyomi: 30,
   delay: 0,
   increment: 0,
+};
+
+export const csaGameSettingForCLI: CSAGameSettingForCLI = {
+  usi: {
+    name: "my usi engine",
+    path: "/path/to/engine",
+    options: {
+      USI_Ponder: { type: "check", value: false },
+      USI_Hash: { type: "spin", value: 1024 },
+      BookFile: { type: "string", value: "path/to/book.db" },
+    },
+    enableEarlyPonder: false,
+  },
+  server: csaServerSetting,
+  saveRecordFile: true,
+  enableComment: true,
+  recordFileNameTemplate: defaultRecordFileNameTemplate,
+  recordFileFormat: RecordFileFormat.KIF,
+  repeat: 1,
+  autoRelogin: true,
+  restartPlayerEveryGame: false,
 };

@@ -3,7 +3,7 @@ import { AppState } from "@/common/control/state";
 import { GameResult } from "@/common/game/result";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
-import { Bridge } from "./api";
+import { Bridge } from "./bridge";
 import { LogType, LogLevel } from "@/common/log";
 import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 import { PromptTarget } from "@/common/advanced/prompt";

@@ -52,8 +52,10 @@ export default defineConfig({
         "src/common/ipc/**/*.ts",
         "src/common/control/**/*.ts",
         "src/common/i18n/**/*.ts",
+        "src/command/common/preload.ts",
 
         // IPC
+        "src/renderer/ipc/bridge.ts",
         "src/renderer/ipc/preload.ts",
         "src/renderer/ipc/web.ts",
         "src/renderer/ipc/setup.ts",
@@ -67,6 +69,9 @@ export default defineConfig({
         "src/renderer/assets/icons.ts",
         "src/renderer/devices/audio.ts",
         "src/renderer/devices/hotkey.ts",
+
+        // コマンド
+        "src/command/usi-csa-bridge/index.ts",
       ],
     },
   },

@@ -105,6 +105,64 @@ export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngine
   engine.enableEarlyPonder = local.enableEarlyPonder;
 }
 
+export function validateUSIEngineSetting(setting: USIEngineSetting): Error | undefined {
+  if (!uri.isUSIEngine(setting.uri)) {
+    return new Error("invalid engine URI");
+  }
+  if (!setting.name && !setting.defaultName) {
+    return new Error("engine name is required");
+  }
+  if (!setting.path) {
+    return new Error("engine path is required");
+  }
+  for (const name in setting.options) {
+    const option = setting.options[name];
+    if (!["check", "spin", "combo", "button", "string", "filename"].includes(option.type)) {
+      return new Error(`invalid option type: name=[${name}] type=[${option.type}]`);
+    }
+    if (!isValidOptionValue(option)) {
+      return new Error(
+        `invalid option value: name=[${name}] type=[${option.type}] value=[${option.value}]`,
+      );
+    }
+  }
+}
+
+function isValidOptionValue(option: USIEngineOption): boolean {
+  const value = getUSIEngineOptionCurrentValue(option);
+  switch (option.type) {
+    case "check":
+      if (value !== "true" && value !== "false") {
+        return false;
+      }
+      break;
+    case "spin":
+      if (typeof value !== "number") {
+        return false;
+      }
+      if (option.min !== undefined && value < option.min) {
+        return false;
+      }
+      if (option.max !== undefined && value > option.max) {
+        return false;
+      }
+      break;
+    case "combo":
+    case "string":
+    case "filename":
+      if (typeof value !== "string") {
+        return false;
+      }
+      break;
+    case "button":
+      if (value !== undefined) {
+        return false;
+      }
+      break;
+  }
+  return true;
+}
+
 export interface ImmutableUSIEngineSettings {
   hasEngine(uri: string): boolean;
   getEngine(uri: string): USIEngineSetting | undefined;
@@ -200,4 +258,73 @@ export class USIEngineSettings {
     }
     return engines;
   }
+}
+
+export type USIEngineOptionForCLI = {
+  type: USIEngineOptionType;
+  value: string | number | boolean;
+};
+
+export type USIEngineSettingForCLI = {
+  name: string;
+  path: string;
+  options: { [name: string]: USIEngineOptionForCLI };
+  enableEarlyPonder: boolean;
+};
+
+export function exportUSIEngineSettingForCLI(engine: USIEngineSetting): USIEngineSettingForCLI {
+  const options: { [name: string]: USIEngineOptionForCLI } = {};
+  for (const option of Object.values(engine.options)) {
+    const value = getUSIEngineOptionCurrentValue(option);
+    if (value === undefined) {
+      continue;
+    }
+    switch (option.type) {
+      default:
+        options[option.name] = {
+          type: option.type,
+          value,
+        };
+        break;
+      case "check":
+        options[option.name] = {
+          type: option.type,
+          value: value === "true",
+        };
+        break;
+    }
+  }
+  return {
+    name: engine.name,
+    path: engine.path,
+    options: options,
+    enableEarlyPonder: engine.enableEarlyPonder,
+  };
+}
+
+export function importUSIEngineSettingForCLI(
+  engine: USIEngineSettingForCLI,
+  uri?: string,
+): USIEngineSetting {
+  const options: { [name: string]: USIEngineOption } = {};
+  for (const name in engine.options) {
+    const option = engine.options[name];
+    options[name] = {
+      name,
+      type: option.type,
+      order: 0,
+      value: option.value === true ? "true" : option.value === false ? "false" : option.value,
+      vars: [],
+    };
+  }
+  return {
+    uri: uri || issueEngineURI(),
+    name: engine.name,
+    defaultName: engine.name,
+    author: "",
+    path: engine.path,
+    options,
+    enableEarlyPonder: engine.enableEarlyPonder,
+    labels: {},
+  };
 }

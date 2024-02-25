@@ -5,7 +5,7 @@ import { defaultGameSetting } from "@/common/settings/game";
 import { defaultResearchSetting } from "@/common/settings/research";
 import { USIEngineSettings } from "@/common/settings/usi";
 import { LogLevel } from "@/common/log";
-import { Bridge } from "./api";
+import { Bridge } from "./bridge";
 import { t } from "@/common/i18n";
 import { defaultCSAGameSettingHistory } from "@/common/settings/csa";
 import { defaultMateSearchSetting } from "@/common/settings/mate";

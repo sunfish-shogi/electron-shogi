@@ -37,10 +37,25 @@ export function getTempPathForTesting(): string {
 }
 
 export function getAppPath(name: "userData" | "logs" | "exe" | "documents" | "pictures"): string {
+  // test
   if (isTest()) {
     const tempPath = path.join(getTempPathForTesting(), name);
     fs.mkdirSync(tempPath, { recursive: true });
     return tempPath;
   }
-  return app.getPath(name);
+
+  // electron app
+  if (app) {
+    return app.getPath(name);
+  }
+
+  // command line tool
+  switch (name) {
+    case "logs":
+      return path.join(process.cwd(), "logs");
+    case "exe":
+      return process.argv[1];
+    default:
+      return process.cwd();
+  }
 }

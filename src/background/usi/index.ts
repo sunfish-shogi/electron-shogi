@@ -1,24 +1,34 @@
 import { USIEngineSetting, emptyUSIEngineSetting } from "@/common/settings/usi";
 import { EngineProcess, GameResult as USIGameResult, TimeState, State } from "./engine";
 import * as uri from "@/common/uri";
-import {
-  onUSIBestMove,
-  onUSICheckmate,
-  onUSICheckmateNotImplemented,
-  onUSICheckmateTimeout,
-  onUSIInfo,
-  onUSINoMate,
-  onUSIPonderInfo,
-  sendPromptCommand,
-} from "@/background/window/ipc";
 import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/game/result";
 import { t } from "@/common/i18n";
 import { resolveEnginePath } from "@/background/usi/path";
 import { getUSILogger } from "@/background/log";
 import { USISessionState } from "@/common/advanced/monitor";
-import { PromptTarget } from "@/common/advanced/prompt";
-import { CommandHistory, CommandType } from "@/common/advanced/command";
+import { CommandHistory, CommandType, Command } from "@/common/advanced/command";
+import { USIInfoCommand } from "@/common/game/usi";
+
+interface Handlers {
+  onUSIBestMove(sessionID: number, usi: string, usiMove: string, ponder?: string): void;
+  onUSICheckmate(sessionID: number, usi: string, usiMoves: string[]): void;
+  onUSICheckmateNotImplemented(sessionID: number): void;
+  onUSICheckmateTimeout(sessionID: number, usi: string): void;
+  onUSINoMate(sessionID: number, usi: string): void;
+  onUSIInfo(sessionID: number, usi: string, info: USIInfoCommand): void;
+  onUSIPonderInfo(sessionID: number, usi: string, info: USIInfoCommand): void;
+  sendPromptCommand(sessionID: number, command: Command): void;
+}
+
+let h: Handlers;
+
+export function setHandlers(handlers: Handlers): void {
+  if (h) {
+    throw new Error("handlers already set");
+  }
+  h = handlers;
+}
 
 function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
@@ -45,7 +55,7 @@ export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<
         process.quit();
       })
       .on("command", (command) => {
-        sendPromptCommand(PromptTarget.USI, sessionID, command);
+        h.sendPromptCommand(sessionID, command);
       });
     process.launch();
   });
@@ -71,7 +81,7 @@ export function sendSetOptionCommand(
         process.quit();
       })
       .on("command", (command) => {
-        sendPromptCommand(PromptTarget.USI, sessionID, command);
+        h.sendPromptCommand(sessionID, command);
       });
     process.launch();
   });
@@ -120,22 +130,22 @@ export function setupPlayer(setting: USIEngineSetting, timeoutSeconds: number): 
     process
       .on("error", reject)
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
-      .on("bestmove", (usi, usiMove, ponder) => onUSIBestMove(sessionID, usi, usiMove, ponder))
+      .on("bestmove", (usi, usiMove, ponder) => h.onUSIBestMove(sessionID, usi, usiMove, ponder))
       .on("checkmate", (position, moves) => {
-        onUSICheckmate(sessionID, position, moves);
+        h.onUSICheckmate(sessionID, position, moves);
       })
       .on("checkmateNotImplemented", () => {
-        onUSICheckmateNotImplemented(sessionID);
+        h.onUSICheckmateNotImplemented(sessionID);
       })
       .on("checkmateTimeout", (position) => {
-        onUSICheckmateTimeout(sessionID, position);
+        h.onUSICheckmateTimeout(sessionID, position);
       })
       .on("noMate", (position) => {
-        onUSINoMate(sessionID, position);
+        h.onUSINoMate(sessionID, position);
       })
       .on("usiok", () => resolve(sessionID))
       .on("command", (command) => {
-        sendPromptCommand(PromptTarget.USI, sessionID, command);
+        h.sendPromptCommand(sessionID, command);
       });
     process.launch();
   });
@@ -177,7 +187,7 @@ export function go(
 ): void {
   const session = getSession(sessionID);
   session.process.go(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
-  session.process.on("info", (usi, info) => onUSIInfo(sessionID, usi, info));
+  session.process.on("info", (usi, info) => h.onUSIInfo(sessionID, usi, info));
 }
 
 export function goPonder(
@@ -190,20 +200,20 @@ export function goPonder(
   const session = getSession(sessionID);
   session.process.goPonder(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
   session.process.on("ponderInfo", (usi, info) => {
-    onUSIPonderInfo(sessionID, usi, info);
+    h.onUSIPonderInfo(sessionID, usi, info);
   });
 }
 
 export function goInfinite(sessionID: number, usi: string): void {
   const session = getSession(sessionID);
   session.process.go(usi);
-  session.process.on("info", (usi, info) => onUSIInfo(sessionID, usi, info));
+  session.process.on("info", (usi, info) => h.onUSIInfo(sessionID, usi, info));
 }
 
 export function goMate(sessionID: number, usi: string): void {
   const session = getSession(sessionID);
   session.process.goMate(usi);
-  session.process.on("info", (usi, info) => onUSIInfo(sessionID, usi, info));
+  session.process.on("info", (usi, info) => h.onUSIInfo(sessionID, usi, info));
 }
 
 export function ponderHit(

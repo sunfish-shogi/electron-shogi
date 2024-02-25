@@ -249,12 +249,16 @@
         <button data-hotkey="Escape" @click="onCancel()">
           {{ t.cancel }}
         </button>
+        <button data-hotkey="Mod+c" autofocus @click="onExport()">
+          <Icon :icon="IconType.COPY" />
+        </button>
       </div>
     </dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+import YAML from "yaml";
 import { t } from "@/common/i18n";
 import { USIEngineLabel, USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { ref, onMounted, computed, onUpdated, onBeforeUnmount } from "vue";
@@ -266,6 +270,7 @@ import {
   validateCSAGameSetting,
   buildCSAGameSettingByHistory,
   defaultCSAGameSettingHistory,
+  exportCSAGameSettingForCLI,
 } from "@/common/settings/csa";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
@@ -275,8 +280,11 @@ import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
+import Icon from "@/renderer/view/primitive/Icon.vue";
+import { IconType } from "@/renderer/assets/icons";
 
 const store = useStore();
+const appSetting = useAppSetting();
 const dialog = ref();
 const protocolVersion = ref();
 const selectedProtocolVersion = ref(CSAProtocolVersion.V121);
@@ -364,8 +372,8 @@ const buildPlayerSetting = (playerURI: string): PlayerSetting => {
   };
 };
 
-const onStart = () => {
-  const csaGameSetting: CSAGameSetting = {
+const buildConfig = (): CSAGameSetting => {
+  return {
     player: buildPlayerSetting(playerURI.value),
     server: {
       protocolVersion: protocolVersion.value.value,
@@ -390,6 +398,22 @@ const onStart = () => {
     enableAutoSave: enableAutoSave.value,
     autoFlip: autoFlip.value,
   };
+};
+
+const onExport = () => {
+  const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
+  if (setting instanceof Error) {
+    store.pushError(setting);
+    return;
+  }
+  navigator.clipboard.writeText(YAML.stringify(setting));
+  store.enqueueMessage({
+    text: "YAML形式の設定をクリップボードにコピーしました。",
+  });
+};
+
+const onStart = () => {
+  const csaGameSetting = buildConfig();
   const error = validateCSAGameSetting(csaGameSetting);
   if (error) {
     store.pushError(error);

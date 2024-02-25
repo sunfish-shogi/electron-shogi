@@ -1,6 +1,13 @@
 import * as uri from "@/common/uri";
-import { PlayerSetting, defaultPlayerSetting } from "./player";
+import { PlayerSetting, defaultPlayerSetting, validatePlayerSetting } from "./player";
 import { t } from "@/common/i18n";
+import {
+  USIEngineSettingForCLI,
+  exportUSIEngineSettingForCLI,
+  importUSIEngineSettingForCLI,
+} from "./usi";
+import { RecordFileFormat } from "@/common/file/record";
+import { AppSetting } from "./app";
 
 export enum CSAProtocolVersion {
   V121 = "v121",
@@ -104,9 +111,24 @@ export function validateCSAServerSetting(setting: CSAServerSetting): Error | und
 }
 
 export function validateCSAGameSetting(setting: CSAGameSetting): Error | undefined {
+  const playerError = validatePlayerSetting(setting.player);
+  if (playerError) {
+    return playerError;
+  }
+
   const serverError = validateCSAServerSetting(setting.server);
   if (serverError) {
     return serverError;
+  }
+  if (
+    setting.server.protocolVersion !== CSAProtocolVersion.V121 &&
+    setting.server.protocolVersion !== CSAProtocolVersion.V121_FLOODGATE
+  ) {
+    return new Error("protocolVersion must be v121 or v121_floodgate");
+  }
+
+  if (!Number.isInteger(setting.repeat) || setting.repeat < 1) {
+    return new Error("repeat must be a positive integer");
   }
 }
 
@@ -330,5 +352,58 @@ export function decryptCSAGameSettingHistory(
     repeat: history.repeat,
     autoRelogin: history.autoRelogin,
     restartPlayerEveryGame: history.restartPlayerEveryGame,
+  };
+}
+
+export type CSAGameSettingForCLI = {
+  usi: USIEngineSettingForCLI;
+  server: CSAServerSetting;
+  saveRecordFile: boolean;
+  enableComment: boolean;
+  recordFileNameTemplate?: string;
+  recordFileFormat?: RecordFileFormat;
+  repeat: number;
+  autoRelogin: boolean;
+  restartPlayerEveryGame: boolean;
+};
+
+export function exportCSAGameSettingForCLI(
+  setting: CSAGameSetting,
+  appSetting: AppSetting,
+): CSAGameSettingForCLI | Error {
+  if (!uri.isUSIEngine(setting.player.uri) || !setting.player.usi) {
+    return new Error("player must be USI engine.");
+  }
+  return {
+    usi: exportUSIEngineSettingForCLI(setting.player.usi),
+    server: setting.server,
+    saveRecordFile: setting.enableAutoSave,
+    enableComment: setting.enableComment,
+    recordFileNameTemplate: appSetting.recordFileNameTemplate,
+    recordFileFormat: appSetting.defaultRecordFileFormat,
+    repeat: setting.repeat,
+    autoRelogin: setting.autoRelogin,
+    restartPlayerEveryGame: setting.restartPlayerEveryGame,
+  };
+}
+
+export function importCSAGameSettingForCLI(
+  setting: CSAGameSettingForCLI,
+  playerURI?: string,
+): CSAGameSetting {
+  const usi = importUSIEngineSettingForCLI(setting.usi, playerURI);
+  return {
+    player: {
+      name: setting.usi.name,
+      uri: usi.uri,
+      usi,
+    },
+    server: setting.server,
+    autoFlip: true,
+    enableComment: setting.enableComment,
+    enableAutoSave: setting.saveRecordFile,
+    repeat: setting.repeat,
+    autoRelogin: setting.autoRelogin,
+    restartPlayerEveryGame: setting.restartPlayerEveryGame,
   };
 }

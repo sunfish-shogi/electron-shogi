@@ -40,4 +40,17 @@ module.exports = [
     externals: ["electron"],
     optimization,
   },
+  {
+    name: "command:usi-csa-bridge",
+    mode: "production",
+    entry: "./dist/src/command/usi-csa-bridge/index.js",
+    target: "node",
+    output: {
+      filename: "usi-csa-bridge.js",
+      path: __dirname + "/dist/packed",
+      libraryTarget: "commonjs2",
+    },
+    externals: ["electron"],
+    optimization,
+  },
 ];

@@ -29,6 +29,15 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["test"],
       "outputCapture": "std"
+    },
+    {
+      "name": "usi-csa-bridge (CLI Tool)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "usi-csa-bridge"],
+      "outputCapture": "std"
     }
   ],
   "compounds": [

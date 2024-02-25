@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig",
+  "include": ["src/command/usi-csa-bridge/index.ts"]
+}

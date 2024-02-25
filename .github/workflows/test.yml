@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branches: [main, usi-csa-bridge]
+    branches: [main]
   pull_request:
-    branches: [main, usi-csa-bridge]
+    branches: [main]
 
 jobs:
   build:

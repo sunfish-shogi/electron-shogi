@@ -19,8 +19,12 @@ describe("command/common/arguments", () => {
       "test-command",
       "--opt1",
       "value1",
+      "--opt3",
+      "value3",
       "--num1",
       "123",
+      "--num3",
+      "456",
       "--flag1",
       "arg1",
       "arg2",
@@ -28,15 +32,23 @@ describe("command/common/arguments", () => {
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     const opt1 = parser.value("opt1", "option 1", "default1");
     const opt2 = parser.value("opt2", "option 2", "default2");
+    const opt3 = parser.valueOrNull("opt3", "option 3");
+    const opt4 = parser.valueOrNull("opt4", "option 4");
     const num1 = parser.number("num1", "number 1", 1);
     const num2 = parser.number("num2", "number 2", 2);
+    const num3 = parser.numberOrNull("num3", "number 3");
+    const num4 = parser.numberOrNull("num4", "number 4");
     const flag1 = parser.flag("flag1", "flag 1");
     const flag2 = parser.flag("flag2", "flag 2");
     parser.parse();
     expect(opt1()).toBe("value1");
     expect(opt2()).toBe("default2");
+    expect(opt3()).toBe("value3");
+    expect(opt4()).toBeNull();
     expect(num1()).toBe(123);
     expect(num2()).toBe(2);
+    expect(num3()).toBe(456);
+    expect(num4()).toBeNull();
     expect(flag1()).toBeTruthy();
     expect(flag2()).toBeFalsy();
     expect(parser.args).toEqual(["arg1", "arg2"]);

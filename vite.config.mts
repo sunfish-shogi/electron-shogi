@@ -55,6 +55,7 @@ export default defineConfig({
         "src/command/common/preload.ts",
 
         // IPC
+        "src/renderer/ipc/bridge.ts",
         "src/renderer/ipc/preload.ts",
         "src/renderer/ipc/web.ts",
         "src/renderer/ipc/setup.ts",

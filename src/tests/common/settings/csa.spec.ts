@@ -1,13 +1,18 @@
 import * as uri from "@/common/uri";
 import {
   appendCSAGameSettingHistory,
+  CSAGameSetting,
   CSAProtocolVersion,
   decryptCSAGameSettingHistory,
   encryptCSAGameSettingHistory,
+  exportCSAGameSettingForCLI,
+  importCSAGameSettingForCLI,
   normalizeSecureCSAGameSettingHistory,
   validateCSAGameSetting,
 } from "@/common/settings/csa";
-import { csaGameSetting, emptyCSAGameSettingHistory } from "@/tests/mock/csa";
+import { defaultAppSetting } from "@/common/settings/app";
+import { csaGameSetting, csaGameSettingForCLI, csaServerSetting, emptyCSAGameSettingHistory, playerURI } from "@/tests/mock/csa";
+import { RecordFileFormat } from "@/common/file/record";
 
 describe("settings/csa", () => {
   it("validate/noError", () => {
@@ -423,5 +428,25 @@ describe("settings/csa", () => {
         },
       ],
     });
+  });
+
+  it("export-cli-settings", () => {
+    expect(exportCSAGameSettingForCLI(csaGameSetting, defaultAppSetting())).toEqual(
+      csaGameSettingForCLI,
+    );
+  });
+
+  it("import-cli-settings", () => {
+    const result = importCSAGameSettingForCLI(csaGameSettingForCLI, playerURI);
+    const expected = JSON.parse(JSON.stringify(csaGameSetting)) as CSAGameSetting;
+    expected.player.usi!.author = "";
+    expected.player.usi!.defaultName = expected.player.name;
+    Object.entries(expected.player.usi!.options).forEach(([_, option]) => {
+      delete option.default;
+      delete option.min;
+      delete option.max;
+      option.order = 0;
+    });
+    expect(result).toEqual(expected);
   });
 });

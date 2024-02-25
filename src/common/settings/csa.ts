@@ -387,8 +387,11 @@ export function exportCSAGameSettingForCLI(
   };
 }
 
-export function importCSAGameSettingForCLI(setting: CSAGameSettingForCLI): CSAGameSetting {
-  const usi = importUSIEngineSettingForCLI(setting.usi);
+export function importCSAGameSettingForCLI(
+  setting: CSAGameSettingForCLI,
+  playerURI?: string,
+): CSAGameSetting {
+  const usi = importUSIEngineSettingForCLI(setting.usi, playerURI);
   return {
     player: {
       name: setting.usi.name,

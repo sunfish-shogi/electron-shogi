@@ -302,7 +302,10 @@ export function exportUSIEngineSettingForCLI(engine: USIEngineSetting): USIEngin
   };
 }
 
-export function importUSIEngineSettingForCLI(engine: USIEngineSettingForCLI): USIEngineSetting {
+export function importUSIEngineSettingForCLI(
+  engine: USIEngineSettingForCLI,
+  uri?: string,
+): USIEngineSetting {
   const options: { [name: string]: USIEngineOption } = {};
   for (const name in engine.options) {
     const option = engine.options[name];
@@ -315,12 +318,13 @@ export function importUSIEngineSettingForCLI(engine: USIEngineSettingForCLI): US
     };
   }
   return {
-    uri: issueEngineURI(),
+    uri: uri || issueEngineURI(),
     name: engine.name,
     defaultName: engine.name,
     author: "",
     path: engine.path,
     options,
     enableEarlyPonder: engine.enableEarlyPonder,
+    labels: {},
   };
 }

@@ -110,6 +110,9 @@ npm test
 
 # coverange report
 npm run coverage
+
+# launch Vitest UI
+npm run test:ui
 ```
 
 ### Lint

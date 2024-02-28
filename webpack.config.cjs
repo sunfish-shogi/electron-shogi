@@ -1,4 +1,6 @@
 const TerserPlugin = require("terser-webpack-plugin");
+const webpack = require("webpack");
+const customPlugins = require("./plugins/webpack");
 
 const optimization = {
   minimize: true,
@@ -46,11 +48,15 @@ module.exports = [
     entry: "./dist/src/command/usi-csa-bridge/index.js",
     target: "node",
     output: {
-      filename: "usi-csa-bridge.js",
-      path: __dirname + "/dist/packed",
+      filename: "index.js",
+      path: __dirname + "/dist/command/usi-csa-bridge",
       libraryTarget: "commonjs2",
     },
     externals: ["electron"],
     optimization,
+    plugins: [
+      new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true }),
+      customPlugins.AddExecPermission,
+    ],
   },
 ];

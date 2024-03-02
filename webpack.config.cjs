@@ -52,7 +52,7 @@ module.exports = [
       path: __dirname + "/dist/command/usi-csa-bridge",
       libraryTarget: "commonjs2",
     },
-    externals: ["electron"],
+    externals: /^[^.].*$/,
     optimization,
     plugins: [
       new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true }),

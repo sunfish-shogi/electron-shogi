@@ -1,6 +1,5 @@
 import path from "node:path";
 import child_process from "node:child_process";
-import { shell } from "electron";
 import log4js from "log4js";
 import { loadAppSettingOnce } from "@/background/settings";
 import { getDateTimeString } from "@/common/helpers/datetime";
@@ -11,7 +10,8 @@ import { LogType } from "@/common/log";
 const rootDir = getAppPath("logs");
 
 export function openLogsDirectory(): void {
-  shell.openPath(rootDir);
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require("electron").shell.openPath(rootDir);
 }
 
 const datetime = getDateTimeString().replaceAll(" ", "_").replaceAll("/", "").replaceAll(":", "");
@@ -112,7 +112,8 @@ export function shutdownLoggers(): void {
 }
 
 export function openLogFile(logType: LogType): void {
-  shell.openPath(getFilePath(logType));
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require("electron").shell.openPath(getFilePath(logType));
 }
 
 export function getTailCommand(logType: LogType): string {

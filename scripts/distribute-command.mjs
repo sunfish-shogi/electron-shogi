@@ -27,8 +27,8 @@ const packageJson = {
   bin: {
     cli: "index.js",
   },
+  scripts: {},
 };
-delete packageJson.scripts;
 fs.writeFileSync(outputFilePath, JSON.stringify(packageJson, null, 2), "utf8");
 
 fs.copyFileSync(readmeSrcFilePath, readmeDistFilePath);

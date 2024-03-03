@@ -6,12 +6,12 @@ import { getDateTimeString } from "@/common/helpers/datetime";
 import { getAppPath, isTest } from "./proc/env";
 import { AppSetting } from "@/common/settings/app";
 import { LogType } from "@/common/log";
+import { requireElectron } from "./helpers/portability";
 
 const rootDir = getAppPath("logs");
 
 export function openLogsDirectory(): void {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("electron").shell.openPath(rootDir);
+  requireElectron().shell.openPath(rootDir);
 }
 
 const datetime = getDateTimeString().replaceAll(" ", "_").replaceAll("/", "").replaceAll(":", "");
@@ -112,8 +112,7 @@ export function shutdownLoggers(): void {
 }
 
 export function openLogFile(logType: LogType): void {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("electron").shell.openPath(getFilePath(logType));
+  requireElectron().shell.openPath(getFilePath(logType));
 }
 
 export function getTailCommand(logType: LogType): string {

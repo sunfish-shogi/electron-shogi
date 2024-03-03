@@ -111,6 +111,10 @@ npm run coverage
 npm run lint
 ```
 
+## CLI Tools
+
+- [usi-csa-bridge](https://github.com/sunfish-shogi/electron-shogi/tree/main/src/command/usi-csa-bridge#readme) - Communication bridge for USI and CSA protocol.
+
 ## Licences
 
 ### Electron Shogi

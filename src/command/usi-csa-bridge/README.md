@@ -1,14 +1,20 @@
 # usi-csa-bridge
 
-[Electron 将棋](../../../README.md) の機能のうち、 CSA 対局サーバーへ接続して USI のエンジンを対局に参加させる部分をコマンドラインから実行するツールです。
+[Electron 将棋](https://github.com/sunfish-shogi/electron-shogi#readme) の機能のうち、 CSA 対局サーバーへ接続して USI のエンジンを対局に参加させる部分をコマンドラインから実行するツールです。
 
 ## セットアップ方法
 
-### NPM でインストールする場合
+### NPM レジストリからインストールする場合
 
 ```
 npm install -g usi-csa-bridge
 ```
+
+インストール済みのバージョンは `npm list -g` で確認できます。
+最新バージョンのチェックは `npm outdated -g` 、アップデートは `npm update -g` または `npm install -g usi-csa-bridge@v{ここにバージョンを指定}` で可能です。
+
+`-g` オプションを指定すると（カレントディレクトリではなく）グローバルインストールになります。
+環境によっては管理者権限が必要なため、権限のエラーが出る場合は `sudo` コマンドを使用してください。
 
 ### ソースコードからビルドする場合
 
@@ -30,7 +36,9 @@ npm run usi-csa-bridge:install
 
 ## ヘルプを表示
 
+```
 npx usi-csa-bridge --help
+```
 
 ## 設定ファイルの作成
 

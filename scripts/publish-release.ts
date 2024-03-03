@@ -1,7 +1,7 @@
 /* eslint-disable no-console,no-restricted-imports */
 import fs from "node:fs";
 import { Releases } from "../src/background/version/types";
-import semver from "semver";
+import * as semver from "semver";
 
 async function updateReleaseJSON(target: string) {
   const releases = JSON.parse(fs.readFileSync("docs/release.json", "utf-8")) as Releases;

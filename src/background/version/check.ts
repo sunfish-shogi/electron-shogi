@@ -5,7 +5,7 @@ import { Releases, VersionStatus } from "./types";
 import { getAppPath, isDevelopment, isTest } from "@/background/proc/env";
 import { exists } from "@/background/helpers/file";
 import { fetch } from "@/background/helpers/http";
-import semver from "semver";
+import * as semver from "semver";
 import { t } from "@/common/i18n";
 import { getAppLogger } from "@/background/log";
 import { getAppVersion, showNotification } from "@/background/helpers/electron";

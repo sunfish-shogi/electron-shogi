@@ -1,6 +1,6 @@
 import path from "node:path";
 import child_process from "node:child_process";
-import log4js from "log4js";
+import * as log4js from "log4js";
 import { loadAppSettingOnce } from "@/background/settings";
 import { getDateTimeString } from "@/common/helpers/datetime";
 import { getAppPath, isTest } from "./proc/env";

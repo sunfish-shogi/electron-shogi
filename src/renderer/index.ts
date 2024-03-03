@@ -12,7 +12,7 @@ import { Chart, registerables } from "chart.js";
 import { LogLevel } from "@/common/log";
 import { useAppSetting } from "./store/setting";
 import { setLanguage, t } from "@/common/i18n";
-import dayjs from "dayjs";
+import { default as dayjs } from "dayjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as _en from "dayjs/locale/en";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -76,11 +76,10 @@
 
 <script setup lang="ts">
 import { Color, ImmutablePosition, Move, Record } from "electron-shogi-core";
-import { onMounted, PropType, ref, reactive, watch, onBeforeUnmount } from "vue";
+import { onMounted, PropType, ref, reactive, watch, onBeforeUnmount, computed } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { RectSize } from "@/common/assets/geometry.js";
-import { computed } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { IconType } from "@/renderer/assets/icons";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";

@@ -17,8 +17,13 @@ import { CSAProtocolVersion, CSAServerSetting } from "@/common/settings/csa";
 import { Socket } from "./socket";
 import { Logger } from "log4js";
 import { t } from "@/common/i18n";
-import { Command, CommandHistory, addCommand, newCommand } from "@/common/advanced/command";
-import { CommandType } from "@/common/advanced/command";
+import {
+  Command,
+  CommandHistory,
+  addCommand,
+  newCommand,
+  CommandType,
+} from "@/common/advanced/command";
 
 type GameSummaryCallback = (gameSummary: CSAGameSummary) => void;
 type RejectCallback = () => void;

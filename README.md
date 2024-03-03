@@ -121,6 +121,10 @@ npm run test:ui
 npm run lint
 ```
 
+## CLI Tools
+
+- [usi-csa-bridge](https://github.com/sunfish-shogi/electron-shogi/tree/main/src/command/usi-csa-bridge#readme) - USI のエンジンを CSA プロトコルの対局に参加させる。
+
 ## Licences
 
 ### Electron Shogi

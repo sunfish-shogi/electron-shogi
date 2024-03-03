@@ -2,9 +2,20 @@
   "name": "electron-shogi",
   "version": "1.13.0",
   "description": "Shogi Frontend Application",
-  "author": "Kubo Ryosuke",
+  "author": "Kubo, Ryosuke",
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunfish-shogi/electron-shogi.git"
+  },
+  "keywords": [
+    "shogi"
+  ],
+  "bugs": {
+    "url": "https://github.com/sunfish-shogi/electron-shogi/issues"
+  },
+  "homepage": "https://github.com/sunfish-shogi/electron-shogi#readme",
   "scripts": {
     "compile": "vite build",
     "serve": "vite",
@@ -30,8 +41,8 @@
     "release:minor": "npm version minor --no-commit-hooks --no-git-tag-version && npm run release",
     "release:stable": "ts-node scripts/publish-release.ts stable && npm run docs",
     "command:compile": "tsc --project ./tsconfig.cmd.json && tsc-alias",
-    "command:build": "npm run command:compile && webpack --config-name command:usi-csa-bridge",
-    "usi-csa-bridge": "npm run command:compile && node dist/src/command/usi-csa-bridge/index.js"
+    "usi-csa-bridge:build": "npm run command:compile && webpack --config-name command:usi-csa-bridge && node scripts/distribute-command.mjs usi-csa-bridge",
+    "usi-csa-bridge:install": "npm run usi-csa-bridge:build && npm install -g ./dist/command/usi-csa-bridge"
   },
   "main": "dist/src/background/index.js",
   "dependencies": {

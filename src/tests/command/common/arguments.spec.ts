@@ -133,7 +133,8 @@ describe("command/common/arguments", () => {
     parser.flag("flag1", "flag 1");
     parser.flag("flag2", "flag 2");
     expect(parser.help).toBe(
-      "Usage: test-command [options] <arg1> <arg2>\n" +
+      "Usage:\n" +
+        "  test-command [options] <arg1> <arg2>\n" +
         "\n" +
         "OPTIONS:\n" +
         "  --opt1 VALUE\n" +

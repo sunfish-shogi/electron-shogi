@@ -1,7 +1,7 @@
-import { app } from "electron";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { getElectron } from "@/background/helpers/portability";
 
 export function isDevelopment(): boolean {
   return process.env.npm_lifecycle_event === "electron:serve" && !isTest();
@@ -45,6 +45,7 @@ export function getAppPath(name: "userData" | "logs" | "exe" | "documents" | "pi
   }
 
   // electron app
+  const app = getElectron()?.app;
   if (app) {
     return app.getPath(name);
   }

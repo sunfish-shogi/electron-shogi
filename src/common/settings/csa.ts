@@ -8,6 +8,7 @@ import {
 } from "./usi";
 import { RecordFileFormat } from "@/common/file/record";
 import { AppSetting } from "./app";
+import { base64Decode, base64Encode } from "encoding-japanese";
 
 export enum CSAProtocolVersion {
   V121 = "v121",
@@ -406,4 +407,21 @@ export function importCSAGameSettingForCLI(
     autoRelogin: setting.autoRelogin,
     restartPlayerEveryGame: setting.restartPlayerEveryGame,
   };
+}
+
+export async function compressCSAGameSettingForCLI(setting: CSAGameSettingForCLI): Promise<string> {
+  const json = JSON.stringify(setting);
+  const cs = new CompressionStream("gzip");
+  new Blob([json]).stream().pipeThrough(cs);
+  const bin = await new Response(cs.readable).arrayBuffer();
+  return base64Encode(new Uint8Array(bin));
+}
+
+export async function decompressCSAGameSettingForCLI(
+  compressed: string,
+): Promise<CSAGameSettingForCLI> {
+  const bin = new Uint8Array(base64Decode(compressed));
+  const cs = new DecompressionStream("gzip");
+  new Blob([bin]).stream().pipeThrough(cs);
+  return JSON.parse(await new Response(cs.readable).text());
 }

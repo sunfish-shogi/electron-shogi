@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig",
+  "compilerOptions": {
+    "importHelpers": false
+  },
   "include": ["src/command/usi-csa-bridge/index.ts"]
 }

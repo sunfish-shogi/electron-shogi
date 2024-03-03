@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import { shell } from "electron";
 import path from "node:path";
 import { USIEngineSettings } from "@/common/settings/usi";
 import { AppSetting, defaultAppSetting, normalizeAppSetting } from "@/common/settings/app";
@@ -40,18 +39,19 @@ import {
   normalizeBatchConversionSetting,
 } from "@/common/settings/conversion";
 import { exists } from "./helpers/file";
+import { requireElectron } from "./helpers/portability";
 
 const userDir = getAppPath("userData");
 const rootDir = getPortableExeDir() || userDir;
 const docDir = path.join(getAppPath("documents"), "ElectronShogi");
 
 export function openSettingsDirectory(): void {
-  shell.openPath(rootDir);
+  requireElectron().shell.openPath(rootDir);
 }
 
 export async function openAutoSaveDirectory(): Promise<void> {
   const appSetting = await loadAppSetting();
-  shell.openPath(appSetting.autoSaveDirectory || docDir);
+  requireElectron().shell.openPath(appSetting.autoSaveDirectory || docDir);
 }
 
 const windowSettingPath = path.join(userDir, "window.json");

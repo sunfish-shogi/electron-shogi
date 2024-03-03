@@ -281,6 +281,7 @@ export const ja: Texts = {
   saveRecordAutomatically: "棋譜を自動で保存する",
   adjustBoardToHumanPlayer: "人を手前に表示する",
   adjustBoardAutomatically: "盤面の向きを自動調整",
+  command: "コマンド",
   startGame: "対局開始",
   cancelGame: "対局をキャンセル",
   allottedTime: "持ち時間",
@@ -471,6 +472,9 @@ export const ja: Texts = {
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "現在の棋譜を閉じて別のファイルを開きます。よろしいですか？",
   areYouSureWantToClearHistory: "履歴をクリアします。よろしいですか？",
+  yamlFormatSettingCopiedToClipboard: "YAML形式の設定をクリップボードにコピーしました。",
+  jsonFormatSettingCopiedToClipboard: "JSON形式の設定をクリップボードにコピーしました。",
+  usiCsaBridgeCommandCopiedToClipboard: "usi-csa-bridge コマンドをクリップボードにコピーしました。",
   youCanNotCloseAppWhileCSAOnlineGame: "CSAプロトコル使用中はアプリを終了できません。",
   fileExtensionNotSupported: "取り扱いできないファイル拡張子です。",
   errorOccuredWhileDisconnectingFromCSAServer: "CSAサーバーからの切断中にエラーが発生しました。",

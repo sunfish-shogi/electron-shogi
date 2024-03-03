@@ -1,13 +1,13 @@
-import { Notification, app } from "electron";
 import { getAppLogger } from "@/background/log";
+import { requireElectron } from "@/background/helpers/portability";
 
 export function getAppVersion(): string {
-  return app.getVersion();
+  return requireElectron().app.getVersion();
 }
 
 export function showNotification(title: string, body: string) {
   getAppLogger().debug(`show notification: ${title}: ${body}`);
-  new Notification({
+  new (requireElectron().Notification)({
     title,
     body,
     timeoutType: "never",

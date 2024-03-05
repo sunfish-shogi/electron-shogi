@@ -1,12 +1,12 @@
 {
  "stable": {
-  "version": "1.12.1",
-  "tag": "v1.12.1",
-  "link": "https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.12.1"
+  "version": "1.12.2",
+  "tag": "v1.12.2",
+  "link": "https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.12.2"
  },
  "latest": {
-  "version": "1.13.0",
-  "tag": "v1.13.0",
-  "link": "https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.13.0"
+  "version": "1.13.1",
+  "tag": "v1.13.1",
+  "link": "https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.13.1"
  }
 }

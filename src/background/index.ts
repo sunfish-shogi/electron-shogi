@@ -8,11 +8,16 @@ import {
   onClose,
   openRecord,
   sendError,
-  setup,
+  setupIPC,
 } from "@/background/window/ipc";
 import { loadAppSettingOnce, loadWindowSetting, saveWindowSetting } from "@/background/settings";
 import { buildWindowSetting } from "@/common/settings/window";
-import { getAppLogger, shutdownLoggers } from "@/background/log";
+import {
+  getAppLogger,
+  LogDestination,
+  setLogDestinations,
+  shutdownLoggers,
+} from "@/background/log";
 import { quitAll as usiQuitAll } from "@/background/usi";
 import { AppState } from "@/common/control/state";
 import { validateHTTPRequest } from "./window/security";
@@ -28,6 +33,19 @@ import { setLanguage, t } from "@/common/i18n";
 import { checkUpdates } from "./version/check";
 import { setInitialFilePath } from "./proc/args";
 import contextMenu from "electron-context-menu";
+import { LogType } from "@/common/log";
+import { isLogEnabled } from "@/common/settings/app";
+import { setupMenu } from "./window/menu";
+
+const appSetting = loadAppSettingOnce();
+for (const type of Object.values(LogType)) {
+  const destinations: LogDestination[] = isLogEnabled(type, appSetting)
+    ? ["file"]
+    : !isTest()
+      ? ["stdout"]
+      : ["recording"];
+  setLogDestinations(type, destinations, appSetting.logLevel);
+}
 
 getAppLogger().info(
   "start main process: %s %s %d",
@@ -41,7 +59,7 @@ if (isPortable()) {
   getAppLogger().info("portable mode: %s", getPortableExeDir());
 }
 
-setLanguage(loadAppSettingOnce().language);
+setLanguage(appSetting.language);
 
 contextMenu({
   showCopyImage: false,
@@ -97,7 +115,8 @@ function createWindow() {
     saveWindowSetting(setting);
   });
 
-  setup(win);
+  setupIPC(win);
+  setupMenu(win);
 
   if (isDevelopment() || isTest()) {
     // Development

@@ -3,13 +3,13 @@ import { BrowserWindow } from "electron";
 import { isDevelopment, isPreview, isProduction, isTest } from "@/background/proc/env";
 import { PromptTarget } from "@/common/advanced/prompt";
 import { getAppLogger } from "@/background/log";
-import { removePrompt } from "./ipc";
 
 export function createCommandWindow(
   parent: BrowserWindow,
   target: PromptTarget,
   sessionID: number,
   name: string,
+  onClose: (webContentsID: number) => void,
 ) {
   const preloadPath = isProduction() ? "./preload.js" : "../../../packed/preload.js";
 
@@ -27,7 +27,7 @@ export function createCommandWindow(
   win.menuBarVisible = false;
 
   win.on("close", () => {
-    removePrompt(target, sessionID, win.webContents.id);
+    onClose(win.webContents.id);
   });
 
   const query = {

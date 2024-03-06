@@ -5,7 +5,24 @@ import { getUSIEngineOptionCurrentValue, USIEngineSetting, USIPonder } from "@/c
 import { Color, ImmutablePosition, Move, Position } from "electron-shogi-core";
 import { Player, SearchInfo, SearchHandler, MateHandler } from "./player";
 import { GameResult } from "@/common/game/result";
-import { useStore } from "@/renderer/store";
+
+type onUpdateUSIInfoHandler = (
+  sessionID: number,
+  usi: string,
+  name: string,
+  info: USIInfoCommand,
+) => void;
+
+let onUpdateUSIInfo: onUpdateUSIInfoHandler = () => {};
+let onUpdateUSIPonderInfo: onUpdateUSIInfoHandler = () => {};
+
+export function setOnUpdateUSIInfoHandler(handler: onUpdateUSIInfoHandler) {
+  onUpdateUSIInfo = handler;
+}
+
+export function setOnUpdateUSIPonderInfoHandler(handler: onUpdateUSIInfoHandler) {
+  onUpdateUSIPonderInfo = handler;
+}
 
 export class USIPlayer implements Player {
   private _sessionID = 0;
@@ -302,7 +319,7 @@ export function onUSICheckmate(sessionID: number, usi: string, usiMoves: string[
   if (!player) {
     return;
   }
-  useStore().updateUSIInfo(sessionID, usi, player.name, {
+  onUpdateUSIInfo(sessionID, usi, player.name, {
     pv: usiMoves,
   });
   player.onCheckmate(usi, usiMoves);
@@ -337,7 +354,7 @@ export function onUSIInfo(sessionID: number, usi: string, info: USIInfoCommand) 
   if (!player) {
     return;
   }
-  useStore().updateUSIInfo(sessionID, usi, player.name, info);
+  onUpdateUSIInfo(sessionID, usi, player.name, info);
   player.onUSIInfo(usi, info);
 }
 
@@ -346,6 +363,6 @@ export function onUSIPonderInfo(sessionID: number, usi: string, info: USIInfoCom
   if (!player) {
     return;
   }
-  useStore().updateUSIPonderInfo(sessionID, usi, player.name, info);
+  onUpdateUSIPonderInfo(sessionID, usi, player.name, info);
   player.onUSIInfo(usi, info);
 }

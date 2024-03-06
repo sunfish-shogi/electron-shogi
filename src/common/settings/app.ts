@@ -1,5 +1,5 @@
 import { Language, t } from "@/common/i18n";
-import { LogLevel } from "@/common/log";
+import { LogLevel, LogType } from "@/common/log";
 import { RecordFileFormat } from "@/common/file/record";
 import { defaultRecordFileNameTemplate } from "@/renderer/helpers/path";
 
@@ -197,6 +197,17 @@ export type AppSetting = {
   lastOtherFilePath: string;
   emptyRecordInfoVisibility: boolean;
 };
+
+export function isLogEnabled(type: LogType, appSetting: AppSetting): boolean {
+  switch (type) {
+    case LogType.APP:
+      return appSetting.enableAppLog;
+    case LogType.USI:
+      return appSetting.enableUSILog;
+    case LogType.CSA:
+      return appSetting.enableCSALog;
+  }
+}
 
 export type AppSettingUpdate = {
   language?: Language;

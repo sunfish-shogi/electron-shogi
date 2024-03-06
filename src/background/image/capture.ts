@@ -1,25 +1,29 @@
-import { getWebContents, updateAppSetting } from "@/background/window/ipc";
 import fs from "node:fs";
 import path from "node:path";
 import { Rect } from "@/common/assets/geometry";
 import { getAppLogger } from "@/background/log";
 import { loadAppSetting } from "@/background/settings";
 import { requireElectron } from "@/background/helpers/portability";
+import { WebContents } from "electron";
 
 const jpegQuality = 85;
 
-export function exportCapturePNG(rect: Rect): Promise<void> {
-  return exportCaptureImage(rect, "png");
+export function exportCapturePNG(webContents: WebContents, rect: Rect): Promise<string | null> {
+  return exportCaptureImage(webContents, rect, "png");
 }
 
-export function exportCaptureJPEG(rect: Rect): Promise<void> {
-  return exportCaptureImage(rect, "jpeg");
+export function exportCaptureJPEG(webContents: WebContents, rect: Rect): Promise<string | null> {
+  return exportCaptureImage(webContents, rect, "jpeg");
 }
 
-async function exportCaptureImage(rect: Rect, ext: string): Promise<void> {
-  const zoomLevel = getWebContents().getZoomFactor();
+async function exportCaptureImage(
+  webContents: WebContents,
+  rect: Rect,
+  ext: string,
+): Promise<string | null> {
+  const zoomLevel = webContents.getZoomFactor();
   getAppLogger().info(`exportCaptureImage rect=${rect} zoom=${zoomLevel}`);
-  const image = await getWebContents().capturePage({
+  const image = await webContents.capturePage({
     x: Math.floor(rect.x * zoomLevel),
     y: Math.floor(rect.y * zoomLevel),
     width: Math.floor(rect.width * zoomLevel),
@@ -36,12 +40,9 @@ async function exportCaptureImage(rect: Rect, ext: string): Promise<void> {
     filters: [{ name: ext.toUpperCase(), extensions: [ext] }],
   });
   if (ret.canceled || !ret.filePath) {
-    return;
+    return null;
   }
   const filePath = ret.filePath;
-  updateAppSetting({
-    lastImageExportFilePath: filePath,
-  });
   switch (ext) {
     case "png":
       fs.promises.writeFile(filePath, image.toPNG());
@@ -50,4 +51,5 @@ async function exportCaptureImage(rect: Rect, ext: string): Promise<void> {
       fs.promises.writeFile(filePath, image.toJPEG(jpegQuality));
       break;
   }
+  return filePath;
 }

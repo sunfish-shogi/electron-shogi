@@ -16,6 +16,7 @@ import { isDevelopment, isPreview, isProduction, isTest } from "@/background/pro
 import { checkUpdates } from "@/background/version/check";
 import { setupMenu } from "@/background/window/menu";
 import { t } from "@/common/i18n";
+import { ghioDomain } from "@/common/links/github";
 
 export function createWindow() {
   let setting = loadWindowSetting();
@@ -97,7 +98,7 @@ export function createWindow() {
     process.on("uncaughtException", (e, origin) => {
       // ホストの解決ができない場合に uncaughtException が発生する。
       // github.io へのアクセスは更新確認以外に無いので、ここでエラー文言を付け加える。
-      if (e instanceof Error && e.message === "getaddrinfo ENOTFOUND sunfish-shogi.github.io") {
+      if (e instanceof Error && e.message === `getaddrinfo ENOTFOUND ${ghioDomain}`) {
         sendError(new Error(`${t.failedToCheckUpdates}: ${e}`));
         return;
       }

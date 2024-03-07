@@ -9,6 +9,7 @@ import * as semver from "semver";
 import { t } from "@/common/i18n";
 import { getAppLogger } from "@/background/log";
 import { getAppVersion, showNotification } from "@/background/helpers/electron";
+import { ghRepository, ghioDomain } from "@/common/links/github";
 
 const minimumCheckIntervalMs = isDevelopment()
   ? 60 * 1000 // Dev: 1 minute
@@ -18,9 +19,7 @@ const userDir = getAppPath("userData");
 const statusFilePath = path.join(userDir, "version.json");
 
 const baseURL =
-  isDevelopment() || isTest()
-    ? "http://localhost:6173"
-    : "https://sunfish-shogi.github.io/electron-shogi/";
+  isDevelopment() || isTest() ? "http://localhost:6173" : `https://${ghioDomain}/${ghRepository}/`;
 const releaseURL = url.resolve(baseURL, "release.json");
 
 export async function readStatus(): Promise<VersionStatus> {

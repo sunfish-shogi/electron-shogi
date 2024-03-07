@@ -774,6 +774,7 @@ import { RecordFileFormat } from "@/common/file/record";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { VersionStatus } from "@/background/version/types";
+import { fileNameTemplateWikiPageURL } from "@/common/links/github";
 
 enum PieceImage {
   HITOMOJI = "hitomoji",
@@ -1000,9 +1001,7 @@ const onOpenAutoSaveDirectory = () => {
 };
 
 const howToWriteFileNameTemplate = () => {
-  api.openWebBrowser(
-    "https://github.com/sunfish-shogi/electron-shogi/wiki/%E6%A3%8B%E8%AD%9C%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88",
-  );
+  api.openWebBrowser(fileNameTemplateWikiPageURL);
 };
 
 const sendTestNotification = () => {

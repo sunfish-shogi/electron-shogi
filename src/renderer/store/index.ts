@@ -23,7 +23,15 @@ import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
 import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";
 import { beepShort, beepUnlimited, playPieceBeat, stopBeep } from "@/renderer/devices/audio";
-import { RecordManager, SearchInfoSenderType, SearchInfo as SearchInfoParam } from "./record";
+import {
+  RecordManager,
+  SearchInfoSenderType,
+  SearchInfo as SearchInfoParam,
+  ResetRecordHandler,
+  ChangePositionHandler,
+  UpdateCustomDataHandler,
+  UpdateFollowingMovesHandler,
+} from "./record";
 import { GameManager, GameResults } from "./game";
 import { generateRecordFileName, join } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
@@ -111,10 +119,32 @@ class Store {
   private mateSearchManager = new MateSearchManager();
   private _reactive: UnwrapNestedRefs<Store>;
   private garbledNotified = false;
+  private onResetRecordHandlers: ResetRecordHandler[] = [];
+  private onChangePositionHandlers: ChangePositionHandler[] = [];
+  private onUpdateCustomDataHandlers: UpdateCustomDataHandler[] = [];
+  private onUpdateFollowingMovesHandlers: (() => void)[] = [];
 
   constructor() {
+    this.recordManager.on("resetRecord", () => {
+      for (const handler of this.onResetRecordHandlers) {
+        handler();
+      }
+    });
     this.recordManager.on("changePosition", () => {
-      this.onUpdatePosition();
+      this.updateResearchPosition();
+      for (const handler of this.onChangePositionHandlers) {
+        handler();
+      }
+    });
+    this.recordManager.on("updateCustomData", () => {
+      for (const handler of this.onUpdateCustomDataHandlers) {
+        handler();
+      }
+    });
+    this.recordManager.on("updateFollowingMoves", () => {
+      for (const handler of this.onUpdateFollowingMovesHandlers) {
+        handler();
+      }
     });
     const refs = reactive(this);
     const appSetting = useAppSetting();
@@ -150,6 +180,52 @@ class Store {
       .on("noMate", this.onNoMate.bind(refs))
       .on("error", this.onCheckmateError.bind(refs));
     this._reactive = refs;
+  }
+
+  addEventListener(event: "resetRecord", handler: ResetRecordHandler): void;
+  addEventListener(event: "changePosition", handler: ChangePositionHandler): void;
+  addEventListener(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
+  addEventListener(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
+  addEventListener(event: string, handler: unknown): void {
+    switch (event) {
+      case "resetRecord":
+        this.onResetRecordHandlers.push(handler as ResetRecordHandler);
+        break;
+      case "changePosition":
+        this.onChangePositionHandlers.push(handler as ChangePositionHandler);
+        break;
+      case "updateCustomData":
+        this.onUpdateCustomDataHandlers.push(handler as UpdateCustomDataHandler);
+        break;
+      case "updateFollowingMoves":
+        this.onUpdateFollowingMovesHandlers.push(handler as UpdateFollowingMovesHandler);
+        break;
+    }
+  }
+
+  removeEventListener(event: "resetRecord", handler: ResetRecordHandler): void;
+  removeEventListener(event: "changePosition", handler: ChangePositionHandler): void;
+  removeEventListener(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
+  removeEventListener(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
+  removeEventListener(event: string, handler: unknown): void {
+    switch (event) {
+      case "resetRecord":
+        this.onResetRecordHandlers = this.onResetRecordHandlers.filter((h) => h !== handler);
+        break;
+      case "changePosition":
+        this.onChangePositionHandlers = this.onChangePositionHandlers.filter((h) => h !== handler);
+        break;
+      case "updateCustomData":
+        this.onUpdateCustomDataHandlers = this.onUpdateCustomDataHandlers.filter(
+          (h) => h !== handler,
+        );
+        break;
+      case "updateFollowingMoves":
+        this.onUpdateFollowingMovesHandlers = this.onUpdateFollowingMovesHandlers.filter(
+          (h) => h !== handler,
+        );
+        break;
+    }
   }
 
   get reactive(): UnwrapNestedRefs<Store> {
@@ -652,7 +728,7 @@ class Store {
       .then(() => {
         this._appState = AppState.RESEARCH;
         this.usiMonitor.clear();
-        this.onUpdatePosition();
+        this.updateResearchPosition();
         const appSetting = useAppSetting();
         if (
           appSetting.tab !== Tab.SEARCH &&
@@ -789,7 +865,7 @@ class Store {
     this._appState = AppState.NORMAL;
   }
 
-  onUpdatePosition(): void {
+  updateResearchPosition(): void {
     if (this.researchManager) {
       this.researchManager.updatePosition(this.recordManager.record);
     }

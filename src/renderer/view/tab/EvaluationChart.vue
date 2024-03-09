@@ -21,7 +21,7 @@ import { computed, onMounted, onUnmounted, PropType, ref, watch } from "vue";
 import { ActiveElement, Chart, ChartEvent, Color as ChartColor, ChartDataset } from "chart.js";
 import { Color, ImmutableNode, ImmutableRecord } from "electron-shogi-core";
 import { scoreToPercentage } from "@/renderer/store/score";
-import { AppSetting, Thema } from "@/common/settings/app";
+import { Thema } from "@/common/settings/app";
 import { useAppSetting } from "@/renderer/store/setting";
 import { t } from "@/common/i18n";
 import { Lazy } from "@/renderer/helpers/lazy";
@@ -29,6 +29,11 @@ import { Lazy } from "@/renderer/helpers/lazy";
 const MATE_SCORE = 1000000;
 const MAX_SCORE = 2000;
 const MIN_SCORE = -MAX_SCORE;
+
+type ChartConfig = {
+  thema: Thema;
+  coefficientInSigmoid: number;
+};
 
 enum Series {
   BLACK_PLAYER,
@@ -177,7 +182,7 @@ const buildDataset = (
   borderColor: ChartColor,
   series: Series,
   record: ImmutableRecord,
-  appSetting: AppSetting,
+  config: ChartConfig,
 ) => {
   const dataPoints: { x: number; y: number }[] = [];
   const nodes = record.moves;
@@ -186,7 +191,7 @@ const buildDataset = (
     if (!searchInfo) {
       continue;
     }
-    const score = getScore(searchInfo, props.type, appSetting.coefficientInSigmoid);
+    const score = getScore(searchInfo, props.type, config.coefficientInSigmoid);
     if (score !== undefined) {
       dataPoints.push({
         x: node.ply,
@@ -201,7 +206,7 @@ const buildDataset = (
   ) {
     const data = lastNode.customData as RecordCustomData;
     if (data && data.opponentSearchInfo) {
-      const score = getScore(data.opponentSearchInfo, props.type, appSetting.coefficientInSigmoid);
+      const score = getScore(data.opponentSearchInfo, props.type, config.coefficientInSigmoid);
       if (score !== undefined) {
         dataPoints.push({
           x: lastNode.ply + 1,
@@ -232,7 +237,7 @@ const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
   };
 };
 
-const buildDatasets = (record: ImmutableRecord, appSetting: AppSetting, palette: ColorPalette) => {
+const buildDatasets = (record: ImmutableRecord, config: ChartConfig, palette: ColorPalette) => {
   const series = [
     { borderColor: palette.blackPlayer, type: Series.BLACK_PLAYER },
     { borderColor: palette.whitePlayer, type: Series.WHITE_PLAYER },
@@ -243,7 +248,7 @@ const buildDatasets = (record: ImmutableRecord, appSetting: AppSetting, palette:
   ];
   const datasets: ChartDataset[] = [verticalLine(record, palette)];
   for (const s of series) {
-    const dataset = buildDataset(s.borderColor, s.type, record, appSetting);
+    const dataset = buildDataset(s.borderColor, s.type, record, config);
     if (dataset.data.length > 0) {
       datasets.push(dataset);
     }
@@ -268,11 +273,11 @@ const buildScalesOption = (record: ImmutableRecord, palette: ColorPalette) => {
   };
 };
 
-const updateChart = (record: ImmutableRecord, appSetting: AppSetting) => {
-  const palette = getColorPalette(appSetting.thema);
-  chart.data.datasets = buildDatasets(record, appSetting, palette);
+const updateChart = (config: ChartConfig) => {
+  const palette = getColorPalette(config.thema);
+  chart.data.datasets = buildDatasets(store.record, config, palette);
   chart.options.color = palette.main;
-  chart.options.scales = buildScalesOption(record, palette);
+  chart.options.scales = buildScalesOption(store.record, palette);
   chart.update();
 };
 
@@ -287,10 +292,22 @@ const onClick = (event: ChartEvent, _: ActiveElement[], chart: Chart) => {
   store.changePly(ply);
 };
 
+const appSetting = useAppSetting();
+const config = computed(() => {
+  return {
+    thema: appSetting.thema,
+    coefficientInSigmoid: appSetting.coefficientInSigmoid,
+  };
+});
+
 const lazy = new Lazy();
+const updateChartLazy = () => {
+  lazy.after(() => {
+    updateChart(config.value);
+  }, 100);
+};
 
 onMounted(() => {
-  const appSetting = useAppSetting();
   const element = canvas.value as HTMLCanvasElement;
   const context = element.getContext("2d") as CanvasRenderingContext2D;
   chart = new Chart(context, {
@@ -309,22 +326,28 @@ onMounted(() => {
     },
   });
   chart.draw();
-  updateChart(store.record, appSetting);
+  updateChart(config.value);
 
   watch(
-    () => [store.record, appSetting],
-    ([record, appSetting]) => {
-      lazy.after(() => {
-        updateChart(record as ImmutableRecord, appSetting as AppSetting);
-      }, 100);
+    () => config,
+    (config) => {
+      updateChart(config.value);
     },
     { deep: true },
   );
+  store.addEventListener("resetRecord", updateChartLazy);
+  store.addEventListener("changePosition", updateChartLazy);
+  store.addEventListener("updateCustomData", updateChartLazy);
+  store.addEventListener("updateFollowingMoves", updateChartLazy);
 });
 
 onUnmounted(() => {
   chart.destroy();
   lazy.clear();
+  store.removeEventListener("resetRecord", updateChartLazy);
+  store.removeEventListener("changePosition", updateChartLazy);
+  store.removeEventListener("updateCustomData", updateChartLazy);
+  store.removeEventListener("updateFollowingMoves", updateChartLazy);
 });
 
 const style = computed(() => {

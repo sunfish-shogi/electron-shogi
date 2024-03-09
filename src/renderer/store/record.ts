@@ -219,13 +219,25 @@ type AppendMoveParams = {
   elapsedMs?: number;
 };
 
-type ChangePositionHandler = () => void;
+export type ResetRecordHandler = () => void;
+export type ChangePositionHandler = () => void;
+export type UpdateCustomDataHandler = () => void;
+export type UpdateFollowingMovesHandler = () => void;
 
 export class RecordManager {
   private _record = new Record();
   private _recordFilePath?: string;
   private _unsaved = false;
+  private onResetRecord: ResetRecordHandler = () => {
+    /* noop */
+  };
   private onChangePosition: ChangePositionHandler = () => {
+    /* noop */
+  };
+  private onUpdateCustomData: UpdateCustomDataHandler = () => {
+    /* noop */
+  };
+  private onUpdateFollowingMoves: UpdateFollowingMovesHandler = () => {
     /* noop */
   };
 
@@ -270,6 +282,7 @@ export class RecordManager {
     this._record.clear();
     this._unsaved = false;
     this._recordFilePath = undefined;
+    this.onResetRecord();
   }
 
   resetByInitialPositionType(startPosition: InitialPositionType): void {
@@ -285,6 +298,7 @@ export class RecordManager {
     this._record.clear(position);
     this._unsaved = false;
     this._recordFilePath = undefined;
+    this.onResetRecord();
     return true;
   }
 
@@ -293,6 +307,7 @@ export class RecordManager {
     this._record.clear(this._record.position);
     this._unsaved = false;
     this._recordFilePath = undefined;
+    this.onResetRecord();
   }
 
   importRecord(data: string, option?: ImportRecordOption): Error | undefined {
@@ -332,6 +347,7 @@ export class RecordManager {
     this._unsaved = !option?.markAsSaved;
     this._recordFilePath = undefined;
     restoreCustomData(this._record);
+    this.onResetRecord();
     return;
   }
 
@@ -354,6 +370,7 @@ export class RecordManager {
     this._unsaved = false;
     this.updateRecordFilePath(path);
     restoreCustomData(this._record);
+    this.onResetRecord();
     return;
   }
 
@@ -374,6 +391,7 @@ export class RecordManager {
     this._record.clear(position);
     this._unsaved = true;
     this._recordFilePath = undefined;
+    this.onResetRecord();
   }
 
   changePosition(change: PositionChange): void {
@@ -382,6 +400,7 @@ export class RecordManager {
     this._record.clear(position);
     this._unsaved = true;
     this._recordFilePath = undefined;
+    this.onResetRecord();
   }
 
   changePly(ply: number): void {
@@ -541,6 +560,7 @@ export class RecordManager {
         break;
     }
     this._record.current.customData = data;
+    this.onUpdateCustomData();
   }
 
   appendMove(params: AppendMoveParams): boolean {
@@ -568,6 +588,7 @@ export class RecordManager {
       }
       this._record.goto(ply);
       this._unsaved = true;
+      this.onUpdateFollowingMoves();
       return n;
     } finally {
       this.bindRecordHandlers();
@@ -579,12 +600,24 @@ export class RecordManager {
     this._unsaved = true;
   }
 
+  on(event: "resetRecord", handler: ResetRecordHandler): void;
   on(event: "changePosition", handler: ChangePositionHandler): void;
+  on(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
+  on(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
   on(event: string, handler: unknown): void {
     switch (event) {
+      case "resetRecord":
+        this.onResetRecord = handler as () => void;
+        break;
       case "changePosition":
         this.onChangePosition = handler as () => void;
         this.bindRecordHandlers();
+        break;
+      case "updateCustomData":
+        this.onUpdateCustomData = handler as () => void;
+        break;
+      case "updateFollowingMoves":
+        this.onUpdateFollowingMoves = handler as () => void;
         break;
     }
   }

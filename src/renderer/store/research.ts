@@ -37,6 +37,7 @@ export class ResearchManager {
   private record?: ImmutableRecord;
   private lazyPositionUpdate = new Lazy();
   private maxSecondsTimer?: NodeJS.Timeout;
+  private synced = true;
 
   on(event: "updateSearchInfo", handler: UpdateSearchInfoCallback): this;
   on(event: "error", handler: ErrorCallback): this;
@@ -78,7 +79,7 @@ export class ResearchManager {
     this.engines = engineSettings.map((usi, index) => {
       const type = getSenderTypeByIndex(index);
       return new USIPlayer(usi as USIEngineSetting, appSetting.engineTimeoutSeconds, (info) => {
-        if (type !== undefined) {
+        if (type !== undefined && this.synced) {
           this.onUpdateSearchInfo(type, info);
         }
       });
@@ -95,6 +96,8 @@ export class ResearchManager {
   }
 
   updatePosition(record: ImmutableRecord) {
+    // 反映を遅延させるので同期済みフラグを下ろす。
+    this.synced = false;
     // 200ms 以内に複数回更新されたら最後の 1 回だけを処理する。
     this.lazyPositionUpdate.after(() => {
       // 一時停止中のエンジンを除いて探索を開始する。
@@ -106,6 +109,8 @@ export class ResearchManager {
           this.onError(e);
         });
       });
+      // 同期済みフラグを立てる。
+      this.synced = true;
       // 一時停止からの再開のために棋譜を覚えておく。
       this.record = record;
       // タイマーを初期化する。

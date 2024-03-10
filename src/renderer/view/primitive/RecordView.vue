@@ -310,7 +310,7 @@ onUpdated(() => {
   text-overflow: clip;
 }
 .move-time {
-  min-width: 90px;
+  min-width: fit-content;
   height: 100%;
   padding-right: 5px;
   text-align: left;

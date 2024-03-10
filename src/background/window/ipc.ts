@@ -22,7 +22,6 @@ import {
   saveUSIEngineSetting,
 } from "@/background/settings";
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
-import { setupMenu, updateAppState } from "@/background/window/menu";
 import { MenuEvent } from "@/common/control/menu";
 import { USIInfoCommand } from "@/common/game/usi";
 import { AppState } from "@/common/control/state";
@@ -92,13 +91,12 @@ import { Command, CommandType } from "@/common/advanced/command";
 
 const isWindows = process.platform === "win32";
 
-let mainWindow: BrowserWindow; // TODO: refactoring
+let mainWindow: BrowserWindow;
 let appState = AppState.NORMAL;
 let closable = false;
 
-export function setup(win: BrowserWindow): void {
+export function setupIPC(win: BrowserWindow): void {
   mainWindow = win;
-  setupMenu();
 }
 
 export function getAppState(): AppState {
@@ -109,20 +107,24 @@ export function isClosable(): boolean {
   return closable;
 }
 
-export function getWebContents(): WebContents {
-  return mainWindow.webContents;
-}
-
 ipcMain.handle(Background.FETCH_INITIAL_RECORD_FILE_REQUEST, (event) => {
   validateIPCSender(event.senderFrame);
   return JSON.stringify(fetchInitialRecordFileRequest());
 });
 
+const onUpdateAppStateHandlers: ((state: AppState, bussy: boolean) => void)[] = [];
+
+export function onUpdateAppState(handler: (state: AppState, bussy: boolean) => void): void {
+  onUpdateAppStateHandlers.push(handler);
+}
+
 ipcMain.on(Background.UPDATE_APP_STATE, (event, state: AppState, bussy: boolean) => {
   validateIPCSender(event.senderFrame);
   getAppLogger().debug(`change app state: AppState=${state} BussyState=${bussy}`);
   appState = state;
-  updateAppState(state, bussy);
+  for (const handler of onUpdateAppStateHandlers) {
+    handler(state, bussy);
+  }
 });
 
 ipcMain.on(Background.OPEN_EXPLORER, async (event, targetPath: string) => {
@@ -329,12 +331,18 @@ ipcMain.handle(
 
 ipcMain.handle(Background.EXPORT_CAPTURE_AS_PNG, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
-  await exportCapturePNG(new Rect(json));
+  const filePath = await exportCapturePNG(mainWindow.webContents, new Rect(json));
+  if (filePath) {
+    updateAppSetting({ lastImageExportFilePath: filePath });
+  }
 });
 
 ipcMain.handle(Background.EXPORT_CAPTURE_AS_JPEG, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
-  await exportCaptureJPEG(new Rect(json));
+  const filePath = await exportCaptureJPEG(mainWindow.webContents, new Rect(json));
+  if (filePath) {
+    updateAppSetting({ lastImageExportFilePath: filePath });
+  }
 });
 
 ipcMain.handle(Background.CONVERT_RECORD_FILES, async (event, json: string): Promise<string> => {
@@ -716,7 +724,9 @@ ipcMain.on(
   Background.OPEN_PROMPT,
   (event, target: PromptTarget, sessionID: number, name: string) => {
     validateIPCSender(event.senderFrame);
-    createCommandWindow(mainWindow, target, sessionID, name);
+    createCommandWindow(mainWindow, target, sessionID, name, (webContentsID) => {
+      removePrompt(target, sessionID, webContentsID);
+    });
   },
 );
 
@@ -777,6 +787,7 @@ export function onMenuEvent(event: MenuEvent, ...args: any[]): void {
   mainWindow.webContents.send(Renderer.MENU_EVENT, event, ...args);
 }
 
+// FIXME: do not export
 export function updateAppSetting(setting: AppSettingUpdate): void {
   mainWindow.webContents.send(Renderer.UPDATE_APP_SETTING, JSON.stringify(setting));
 }

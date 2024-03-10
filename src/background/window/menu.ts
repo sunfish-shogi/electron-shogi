@@ -1,8 +1,21 @@
 import path from "node:path";
-import { app, clipboard, Menu, MenuItem, MenuItemConstructorOptions, shell } from "electron";
+import {
+  app,
+  BrowserWindow,
+  clipboard,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  shell,
+} from "electron";
 import { openAutoSaveDirectory, openSettingsDirectory } from "@/background/settings";
 import { getTailCommand, openLogFile, openLogsDirectory, tailLogFile } from "@/background/log";
-import { getWebContents, onMenuEvent } from "@/background/window/ipc";
+import {
+  onMenuEvent,
+  onUpdateAppState,
+  sendError,
+  updateAppSetting,
+} from "@/background/window/ipc";
 import { MenuEvent } from "@/common/control/menu";
 import { AppState } from "@/common/control/state";
 import { openHowToUse, openLatestReleasePage, openStableReleasePage, openWebSite } from "./help";
@@ -52,7 +65,7 @@ function menuItem(
   };
 }
 
-function createMenuTemplate() {
+function createMenuTemplate(window: BrowserWindow) {
   const menuTemplate: Array<MenuItemConstructorOptions | MenuItem> = [
     {
       label: t.file,
@@ -305,23 +318,23 @@ function createMenuTemplate() {
         {
           label: t.defaultFontSize,
           click: () => {
-            getWebContents().setZoomLevel(0);
+            window.webContents.setZoomLevel(0);
           },
           accelerator: "CmdOrCtrl+0",
         },
         {
           label: t.largerFontSize,
           click: () => {
-            const level = getWebContents().getZoomLevel();
-            getWebContents().setZoomLevel(level + 1);
+            const level = window.webContents.getZoomLevel();
+            window.webContents.setZoomLevel(level + 1);
           },
           accelerator: "CmdOrCtrl+Plus",
         },
         {
           label: t.smallerFontSize,
           click: () => {
-            const level = getWebContents().getZoomLevel();
-            getWebContents().setZoomLevel(level - 1);
+            const level = window.webContents.getZoomLevel();
+            window.webContents.setZoomLevel(level - 1);
           },
           accelerator: "CmdOrCtrl+-",
         },
@@ -459,7 +472,9 @@ function createMenuTemplate() {
         },
         {
           label: t.reloadCustomPieceImage,
-          click: refreshCustomPieceImages,
+          click: () => {
+            refreshCustomPieceImages(updateAppSetting).catch(sendError);
+          },
         },
         {
           label: t.notificationTest,
@@ -484,7 +499,9 @@ function createMenuTemplate() {
         },
         {
           label: t.openStableReleasePage,
-          click: openStableReleasePage,
+          click: () => {
+            openStableReleasePage().catch(sendError);
+          },
         },
       ],
     },
@@ -500,11 +517,8 @@ function createMenuTemplate() {
   return menuTemplate;
 }
 
-export function setupMenu(): void {
-  const menu = Menu.buildFromTemplate(createMenuTemplate());
+export function setupMenu(window: BrowserWindow): void {
+  const menu = Menu.buildFromTemplate(createMenuTemplate(window));
   Menu.setApplicationMenu(menu);
-}
-
-export function updateAppState(appState: AppState, bussy: boolean): void {
-  Array.from(stateChangeCallbacks).forEach((callback) => callback(appState, bussy));
+  Array.from(stateChangeCallbacks).forEach((callback) => onUpdateAppState(callback));
 }

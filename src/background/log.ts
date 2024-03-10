@@ -1,11 +1,9 @@
 import path from "node:path";
 import child_process from "node:child_process";
-import log4js from "log4js";
-import { loadAppSettingOnce } from "@/background/settings";
+import * as log4js from "log4js";
 import { getDateTimeString } from "@/common/helpers/datetime";
-import { getAppPath, isTest } from "./proc/env";
-import { AppSetting } from "@/common/settings/app";
-import { LogType } from "@/common/log";
+import { getAppPath } from "./proc/env";
+import { LogLevel, LogType } from "@/common/log";
 import { requireElectron } from "./helpers/portability";
 
 const rootDir = getAppPath("logs");
@@ -41,36 +39,27 @@ function getFilePath(type: LogType): string {
   }
 }
 
-function isLogEnabled(type: LogType, appSetting: AppSetting): boolean {
-  switch (type) {
-    case LogType.APP:
-      return appSetting.enableAppLog;
-    case LogType.USI:
-      return appSetting.enableUSILog;
-    case LogType.CSA:
-      return appSetting.enableCSALog;
-  }
-}
-
-function getDefaultAppenders(type: LogType): string[] {
-  const appSetting = loadAppSettingOnce();
-  return isLogEnabled(type, appSetting) ? [type] : !isTest() ? ["stdout"] : ["recording"];
-}
-
 const appenders = {
-  [LogType.APP]: null as string[] | null,
-  [LogType.USI]: null as string[] | null,
-  [LogType.CSA]: null as string[] | null,
+  [LogType.APP]: ["stdout"] as string[],
+  [LogType.USI]: ["stdout"] as string[],
+  [LogType.CSA]: ["stdout"] as string[],
+};
+
+const levels = {
+  [LogType.APP]: LogLevel.INFO,
+  [LogType.USI]: LogLevel.INFO,
+  [LogType.CSA]: LogLevel.INFO,
 };
 
 export type LogDestination = "file" | "stdout" | "recording";
 
-export function overrideLogDestinations(type: LogType, destinations: LogDestination[]): void {
+export function setLogDestinations(
+  type: LogType,
+  destinations: LogDestination[],
+  level: LogLevel,
+): void {
   appenders[type] = destinations.map((d) => (d === "file" ? type : d));
-}
-
-function getAppenders(type: LogType): string[] {
-  return appenders[type] || getDefaultAppenders(type);
+  levels[type] = level;
 }
 
 const loggers: { [key: string]: log4js.Logger } = {};
@@ -80,11 +69,10 @@ function getLogger(type: LogType): log4js.Logger {
     return loggers[type];
   }
   if (!config.appenders[type]) {
-    const appSetting = loadAppSettingOnce();
     config.appenders[type] = { type: "file", filename: getFilePath(type) };
     config.categories[type] = {
-      appenders: getAppenders(type),
-      level: appSetting.logLevel,
+      appenders: appenders[type],
+      level: levels[type],
     };
   }
   const logger = log4js.configure(config).getLogger(type);

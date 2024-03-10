@@ -172,7 +172,15 @@ import { showModalDialog } from "@/renderer/helpers/dialog";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
 import { Rect, RectSize } from "@/common/assets/geometry";
-import { Color, Move, formatMove } from "electron-shogi-core";
+import {
+  Color,
+  Move,
+  formatMove,
+  getBlackPlayerName,
+  getBlackPlayerNamePreferShort,
+  getWhitePlayerName,
+  getWhitePlayerNamePreferShort,
+} from "electron-shogi-core";
 import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";
@@ -184,12 +192,6 @@ import {
   PositionImageFontWeight,
   getPieceImageURLTemplate,
 } from "@/common/settings/app";
-import {
-  getBlackPlayerName,
-  getBlackPlayerNamePreferShort,
-  getWhitePlayerName,
-  getWhitePlayerNamePreferShort,
-} from "electron-shogi-core";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { readInputAsNumber } from "@/renderer/helpers/form";

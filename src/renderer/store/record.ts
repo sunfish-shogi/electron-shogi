@@ -28,8 +28,7 @@ import {
 } from "electron-shogi-core";
 import { getSituationText } from "./score";
 import { CommentBehavior } from "@/common/settings/analysis";
-import { t } from "@/common/i18n";
-import { localizeError } from "@/common/i18n";
+import { t, localizeError } from "@/common/i18n";
 import {
   ExportOptions,
   ExportResult,

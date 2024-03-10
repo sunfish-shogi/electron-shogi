@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { LogDestination, getAppLogger, overrideLogDestinations } from "@/background/log";
+import { LogDestination, getAppLogger, setLogDestinations } from "@/background/log";
 import {
   login as csaLogin,
   logout as csaLogout,
@@ -40,9 +40,9 @@ export function preload(config: Config) {
   const appDestinations: LogDestination[] = config.appLogFile ? fileAndStdout : ["stdout"];
   const usiDestinations: LogDestination[] = config.usiLogFile ? fileAndStdout : ["stdout"];
   const csaDestinations: LogDestination[] = config.csaLogFile ? fileAndStdout : ["stdout"];
-  overrideLogDestinations(LogType.APP, appDestinations);
-  overrideLogDestinations(LogType.USI, usiDestinations);
-  overrideLogDestinations(LogType.CSA, csaDestinations);
+  setLogDestinations(LogType.APP, appDestinations, LogLevel.INFO);
+  setLogDestinations(LogType.USI, usiDestinations, LogLevel.INFO);
+  setLogDestinations(LogType.CSA, csaDestinations, LogLevel.INFO);
 
   const bridge: Bridge = {
     async fetchInitialRecordFileRequest(): Promise<string> {

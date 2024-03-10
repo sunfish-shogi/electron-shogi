@@ -59,6 +59,7 @@ import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
 import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file/record";
+import { setOnUpdateUSIInfoHandler, setOnUpdateUSIPonderInfoHandler } from "@/renderer/players/usi";
 
 export type PVPreview = {
   position: ImmutablePosition;
@@ -180,6 +181,8 @@ class Store {
       .on("noMate", this.onNoMate.bind(refs))
       .on("error", this.onCheckmateError.bind(refs));
     this._reactive = refs;
+    setOnUpdateUSIInfoHandler(this.updateUSIInfo.bind(refs));
+    setOnUpdateUSIPonderInfoHandler(this.updateUSIPonderInfo.bind(refs));
   }
 
   addEventListener(event: "resetRecord", handler: ResetRecordHandler): void;

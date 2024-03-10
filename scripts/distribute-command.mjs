@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import depcheck from "depcheck";
 
 const name = process.argv[2];
 
@@ -28,8 +29,16 @@ const packageJson = {
     cli: "index.js",
   },
   scripts: {},
+  devDependencies: {},
 };
-fs.writeFileSync(outputFilePath, JSON.stringify(packageJson, null, 2), "utf8");
+depcheck(distDir, {
+  package: packageJson,
+}).then((result) => {
+  packageJson.dependencies = Object.fromEntries(
+    Object.entries(packageJson.dependencies).filter(([key]) => !result.dependencies.includes(key)),
+  );
+  fs.writeFileSync(outputFilePath, JSON.stringify(packageJson, null, 2), "utf8");
+});
 
 fs.copyFileSync(readmeSrcFilePath, readmeDistFilePath);
 fs.copyFileSync(licenseSrcFilePath, licenseDistFilePath);

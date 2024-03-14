@@ -3,6 +3,8 @@
 // --------------------------------------------------------------------------------
 
 import { ArgumentsParser } from "@/command/common/arguments";
+import { LogLevel } from "@/common/log";
+import { Language } from "@/common/i18n";
 const argParser = new ArgumentsParser("usi-csa-bridge", [
   "path/to/csa_game_config.yaml",
   "path/to/csa_game_config.json",
@@ -36,6 +38,12 @@ const recordFileFormat = argParser.valueOrNull(
   "record-file-format",
   "Overwrite recordFileFormat setting.",
 );
+const returnCodeName = argParser.value(
+  "return-code",
+  "Return code which one of LF or CRLF. It is used for record file.",
+  "CRLF",
+  ["LF", "CRLF"],
+);
 const repeat = argParser.numberOrNull("repeat", "Overwrite repeat setting.", { min: 1 });
 const enableAppLogFile = argParser.flag("app-log-file", "Enable application log file.");
 const enableUSILogFile = argParser.flag("usi-log-file", "Enable USI log file.");
@@ -44,6 +52,18 @@ const enableAllLogFile = argParser.flag("all-log-file", "Enable all log files.")
 const disableStdoutLog = argParser.flag(
   "disable-stdout-log",
   "Disable stdout log. Should be used with --XXX-log-file.",
+);
+const logLevel = argParser.value(
+  "log-level",
+  `Log level which one of: ${Object.values(LogLevel).join(", ")}`,
+  LogLevel.INFO,
+  [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR],
+);
+const language = argParser.value(
+  "lang",
+  `Language which one of: ${Object.values(Language).join(", ")}`,
+  Language.JA,
+  [Language.JA, Language.EN, Language.ZH_TW],
 );
 argParser.parse();
 
@@ -57,6 +77,8 @@ preload({
   usiLogFile: enableUSILogFile() || enableAllLogFile(),
   csaLogFile: enableCSALogFile() || enableAllLogFile(),
   stdoutLog: !disableStdoutLog(),
+  logLevel: logLevel() as LogLevel,
+  language: language() as Language,
 });
 
 // --------------------------------------------------------------------------------
@@ -155,6 +177,8 @@ async function main() {
     getAppLogger().info("completed. will exit after some seconds...");
   }
 
+  const returnCode = returnCodeName() === "CRLF" ? "\r\n" : "\n";
+
   function onSaveRecord() {
     const fileName = generateRecordFileName(
       recordManager.record.metadata,
@@ -168,7 +192,7 @@ async function main() {
     fs.promises
       .mkdir(dir, { recursive: true })
       .then(() => {
-        const result = recordManager.exportRecordAsBuffer(filePath, { returnCode: "\n" });
+        const result = recordManager.exportRecordAsBuffer(filePath, { returnCode });
         if (result instanceof Error) {
           getAppLogger().error(result);
           return;

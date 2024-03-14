@@ -27,22 +27,27 @@ import { GameResult } from "@/common/game/result";
 import { LogLevel, LogType } from "@/common/log";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { Bridge } from "@/renderer/ipc/bridge";
+import { Language, setLanguage } from "@/common/i18n";
 
 type Config = {
   appLogFile: boolean;
   usiLogFile: boolean;
   csaLogFile: boolean;
   stdoutLog: boolean;
+  logLevel: LogLevel;
+  language: Language;
 };
 
 export function preload(config: Config) {
+  setLanguage(config.language);
+
   const fileAndStdout: LogDestination[] = config.stdoutLog ? ["file", "stdout"] : ["file"];
   const appDestinations: LogDestination[] = config.appLogFile ? fileAndStdout : ["stdout"];
   const usiDestinations: LogDestination[] = config.usiLogFile ? fileAndStdout : ["stdout"];
   const csaDestinations: LogDestination[] = config.csaLogFile ? fileAndStdout : ["stdout"];
-  setLogDestinations(LogType.APP, appDestinations, LogLevel.INFO);
-  setLogDestinations(LogType.USI, usiDestinations, LogLevel.INFO);
-  setLogDestinations(LogType.CSA, csaDestinations, LogLevel.INFO);
+  setLogDestinations(LogType.APP, appDestinations, config.logLevel);
+  setLogDestinations(LogType.USI, usiDestinations, config.logLevel);
+  setLogDestinations(LogType.CSA, csaDestinations, config.logLevel);
 
   const bridge: Bridge = {
     async fetchInitialRecordFileRequest(): Promise<string> {

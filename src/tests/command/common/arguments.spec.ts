@@ -55,7 +55,7 @@ describe("command/common/arguments", () => {
   });
 
   it("not number", async () => {
-    const eixt = vi.spyOn(process, "exit").mockImplementation(neverFunc);
+    const exit = vi.spyOn(process, "exit").mockImplementation(neverFunc);
     process.argv = ["node", "test-command", "--num1", "foo"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1);
@@ -64,7 +64,27 @@ describe("command/common/arguments", () => {
     } catch {
       // ignore
     }
-    expect(eixt).toHaveBeenCalledWith(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it("restrictions: list: ok", async () => {
+    process.argv = ["node", "test-command", "--opt1", "foo"];
+    const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
+    parser.value("opt1", "option 1", "default1", ["foo", "bar"]);
+    parser.parse();
+  });
+
+  it("restrictions: list: error", async () => {
+    const exit = vi.spyOn(process, "exit").mockImplementation(neverFunc);
+    process.argv = ["node", "test-command", "--opt1", "baz"];
+    const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
+    parser.value("opt1", "option 1", "default1", ["foo", "bar"]);
+    try {
+      parser.parse();
+    } catch {
+      // ignore
+    }
+    expect(exit).toHaveBeenCalledWith(1);
   });
 
   it("restrictions: min: ok", async () => {
@@ -75,7 +95,7 @@ describe("command/common/arguments", () => {
   });
 
   it("restrictions: min: error", async () => {
-    const eixt = vi.spyOn(process, "exit").mockImplementation(neverFunc);
+    const exit = vi.spyOn(process, "exit").mockImplementation(neverFunc);
     process.argv = ["node", "test-command", "--num1", "99"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1, { min: 100, max: 200 });
@@ -84,7 +104,7 @@ describe("command/common/arguments", () => {
     } catch {
       // ignore
     }
-    expect(eixt).toHaveBeenCalledWith(1);
+    expect(exit).toHaveBeenCalledWith(1);
   });
 
   it("restrictions: max: ok", async () => {
@@ -95,7 +115,7 @@ describe("command/common/arguments", () => {
   });
 
   it("restrictions: max: error", async () => {
-    const eixt = vi.spyOn(process, "exit").mockImplementation(neverFunc);
+    const exit = vi.spyOn(process, "exit").mockImplementation(neverFunc);
     process.argv = ["node", "test-command", "--num1", "201"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1, { min: 100, max: 200 });
@@ -104,11 +124,11 @@ describe("command/common/arguments", () => {
     } catch {
       // ignore
     }
-    expect(eixt).toHaveBeenCalledWith(1);
+    expect(exit).toHaveBeenCalledWith(1);
   });
 
   it("unknown option", async () => {
-    const eixt = vi.spyOn(process, "exit").mockImplementation(neverFunc);
+    const exit = vi.spyOn(process, "exit").mockImplementation(neverFunc);
     process.argv = ["node", "test-command", "--opt", "foo"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     try {
@@ -116,7 +136,7 @@ describe("command/common/arguments", () => {
     } catch {
       // ignore
     }
-    expect(eixt).toHaveBeenCalledWith(1);
+    expect(exit).toHaveBeenCalledWith(1);
   });
 
   it("bare args", async () => {
@@ -136,7 +156,7 @@ describe("command/common/arguments", () => {
       "Usage:\n" +
         "  test-command [options] <arg1> <arg2>\n" +
         "\n" +
-        "OPTIONS:\n" +
+        "Options:\n" +
         "  --opt1 VALUE\n" +
         "      option 1\n" +
         "      (default: default1)\n" +

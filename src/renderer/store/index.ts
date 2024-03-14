@@ -126,35 +126,32 @@ class Store {
   private onUpdateFollowingMovesHandlers: (() => void)[] = [];
 
   constructor() {
-    this.recordManager.on("resetRecord", () => {
-      for (const handler of this.onResetRecordHandlers) {
-        handler();
-      }
-    });
-    this.recordManager.on("changePosition", () => {
-      this.updateResearchPosition();
-      for (const handler of this.onChangePositionHandlers) {
-        handler();
-      }
-    });
-    this.recordManager.on("updateCustomData", () => {
-      for (const handler of this.onUpdateCustomDataHandlers) {
-        handler();
-      }
-    });
-    this.recordManager.on("updateFollowingMoves", () => {
-      for (const handler of this.onUpdateFollowingMovesHandlers) {
-        handler();
-      }
-    });
+    this.recordManager
+      .on("resetRecord", () => {
+        this.onResetRecordHandlers.forEach((handler) => handler());
+      })
+      .on("changePosition", () => {
+        this.updateResearchPosition();
+        this.onChangePositionHandlers.forEach((handler) => handler());
+      })
+      .on("updateCustomData", () => {
+        this.onUpdateCustomDataHandlers.forEach((handler) => handler());
+      })
+      .on("updateFollowingMoves", () => {
+        this.onUpdateFollowingMovesHandlers.forEach((handler) => handler());
+      })
+      .on("backup", () => {
+        return {
+          returnCode: useAppSetting().returnCode,
+        };
+      });
     const refs = reactive(this);
-    const appSetting = useAppSetting();
     this.gameManager
       .on("saveRecord", refs.onSaveRecord.bind(refs))
       .on("gameNext", refs.onGameNext.bind(refs))
       .on("gameEnd", refs.onGameEnd.bind(refs))
       .on("flipBoard", refs.onFlipBoard.bind(refs))
-      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
+      .on("pieceBeat", () => playPieceBeat(useAppSetting().pieceVolume))
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
@@ -164,7 +161,7 @@ class Store {
       .on("gameNext", refs.onGameNext.bind(refs))
       .on("gameEnd", refs.onCSAGameEnd.bind(refs))
       .on("flipBoard", refs.onFlipBoard.bind(refs))
-      .on("pieceBeat", () => playPieceBeat(appSetting.pieceVolume))
+      .on("pieceBeat", () => playPieceBeat(useAppSetting().pieceVolume))
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)

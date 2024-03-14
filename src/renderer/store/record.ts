@@ -38,7 +38,6 @@ import {
 } from "@/common/file/record";
 import { SCORE_MATE_INFINITE } from "@/common/game/usi";
 import api from "@/renderer/ipc/api";
-import { useAppSetting } from "./setting";
 import { LogLevel } from "@/common/log";
 
 export enum SearchInfoSenderType {
@@ -218,10 +217,15 @@ type AppendMoveParams = {
   elapsedMs?: number;
 };
 
+type BackupOptions = {
+  returnCode?: string;
+};
+
 export type ResetRecordHandler = () => void;
 export type ChangePositionHandler = () => void;
 export type UpdateCustomDataHandler = () => void;
 export type UpdateFollowingMovesHandler = () => void;
+export type BackupHandler = () => BackupOptions | null | void;
 
 export class RecordManager {
   private _record = new Record();
@@ -237,6 +241,9 @@ export class RecordManager {
     /* noop */
   };
   private onUpdateFollowingMoves: UpdateFollowingMovesHandler = () => {
+    /* noop */
+  };
+  private onBackup: BackupHandler = () => {
     /* noop */
   };
 
@@ -264,9 +271,8 @@ export class RecordManager {
     if (!this.unsaved) {
       return;
     }
-    const kif = exportKIF(this.record, {
-      returnCode: useAppSetting().returnCode,
-    });
+    const opts = this.onBackup();
+    const kif = exportKIF(this.record, opts || {});
     await api.saveRecordFileBackup(kif);
   }
 
@@ -599,26 +605,31 @@ export class RecordManager {
     this._unsaved = true;
   }
 
-  on(event: "resetRecord", handler: ResetRecordHandler): void;
-  on(event: "changePosition", handler: ChangePositionHandler): void;
-  on(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
-  on(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
-  on(event: string, handler: unknown): void {
+  on(event: "resetRecord", handler: ResetRecordHandler): this;
+  on(event: "changePosition", handler: ChangePositionHandler): this;
+  on(event: "updateCustomData", handler: UpdateCustomDataHandler): this;
+  on(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): this;
+  on(event: "backup", handler: BackupHandler): this;
+  on(event: string, handler: unknown): this {
     switch (event) {
       case "resetRecord":
-        this.onResetRecord = handler as () => void;
+        this.onResetRecord = handler as ResetRecordHandler;
         break;
       case "changePosition":
-        this.onChangePosition = handler as () => void;
+        this.onChangePosition = handler as ChangePositionHandler;
         this.bindRecordHandlers();
         break;
       case "updateCustomData":
-        this.onUpdateCustomData = handler as () => void;
+        this.onUpdateCustomData = handler as UpdateCustomDataHandler;
         break;
       case "updateFollowingMoves":
-        this.onUpdateFollowingMoves = handler as () => void;
+        this.onUpdateFollowingMoves = handler as UpdateFollowingMovesHandler;
+        break;
+      case "backup":
+        this.onBackup = handler as BackupHandler;
         break;
     }
+    return this;
   }
 
   private bindRecordHandlers(): void {

@@ -4,6 +4,8 @@ type GetNumber = () => number;
 type GetNumberOrNull = () => number | null;
 type GetFlag = () => boolean;
 
+type StringRestriction = string[];
+
 type NumberRestriction = {
   min?: number;
   max?: number;
@@ -11,6 +13,7 @@ type NumberRestriction = {
 
 export class ArgumentsParser {
   private valueKeys: string[] = [];
+  private stringRestrictions = new Map<string, StringRestriction>();
   private numberKeys: string[] = [];
   private numberRestrictions = new Map<string, NumberRestriction>();
   private flagKeys: string[] = [];
@@ -28,26 +31,37 @@ export class ArgumentsParser {
     for (const format of bareArgFormats || [""]) {
       this.help += `  ${commandName} [options] ${format}\n`;
     }
-    this.help += `\nOPTIONS:\n`;
+    this.help += `\nOptions:\n`;
   }
 
-  value(name: string, description: string, defaultValue: string): GetValue {
+  value(
+    name: string,
+    description: string,
+    defaultValue: string,
+    restriction?: StringRestriction,
+  ): GetValue {
     const key = "--" + name;
     this.help += `  ${key} VALUE\n`;
     this.help += `      ${description}\n`;
     this.help += `      (default: ${defaultValue})\n`;
     this.valueKeys.push(key);
+    if (restriction) {
+      this.stringRestrictions.set(key, restriction);
+    }
     return () => {
       const value = this.values.get(key);
       return value !== undefined ? value : defaultValue;
     };
   }
 
-  valueOrNull(name: string, description: string): GetValueOrNull {
+  valueOrNull(name: string, description: string, restriction?: StringRestriction): GetValueOrNull {
     const key = "--" + name;
     this.help += `  ${key} VALUE\n`;
     this.help += `      ${description}\n`;
     this.valueKeys.push(key);
+    if (restriction) {
+      this.stringRestrictions.set(key, restriction);
+    }
     return () => {
       const value = this.values.get(key);
       return value !== undefined ? value : null;
@@ -111,7 +125,14 @@ export class ArgumentsParser {
         this.bareArgs.push(arg);
       } else if (this.valueKeys.includes(arg)) {
         // string
-        this.values.set(arg, process.argv[++i]);
+        const value = process.argv[++i];
+        const restriction = this.stringRestrictions.get(arg);
+        if (restriction) {
+          if (!restriction.includes(value)) {
+            this.onError(`${arg} option must be one of: ${restriction.join(", ")}`);
+          }
+        }
+        this.values.set(arg, value);
       } else if (this.numberKeys.includes(arg)) {
         // number
         const value = Number(process.argv[++i]);

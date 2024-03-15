@@ -31,6 +31,7 @@ import {
   ChangePositionHandler,
   UpdateCustomDataHandler,
   UpdateFollowingMovesHandler,
+  PieceSet,
 } from "./record";
 import { GameManager, GameResults } from "./game";
 import { generateRecordFileName, join } from "@/renderer/helpers/path";
@@ -970,6 +971,22 @@ class Store {
     if (this.appState == AppState.POSITION_EDITING) {
       this.recordManager.swapNextTurn();
     }
+  }
+
+  showPieceSetChangeDialog() {
+    if (this.appState === AppState.POSITION_EDITING) {
+      this._appState = AppState.PIECE_SET_CHANGE_DIALOG;
+    }
+  }
+
+  closePieceSetChangeDialog(pieceSet?: PieceSet) {
+    if (this.appState !== AppState.PIECE_SET_CHANGE_DIALOG) {
+      return;
+    }
+    if (pieceSet) {
+      this.recordManager.changePieceSet(pieceSet);
+    }
+    this._appState = AppState.POSITION_EDITING;
   }
 
   editPosition(change: PositionChange): void {

@@ -14,6 +14,7 @@
     <PasteDialog v-if="store.appState === AppState.PASTE_DIALOG" />
     <LaunchUSIEngineDialog v-if="store.appState === AppState.LAUNCH_USI_ENGINE_DIALOG" />
     <ConnectToCSAServerDialog v-if="store.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG" />
+    <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
     <BussyMessage v-if="store.isBussy" />
     <ConfirmDialog v-if="store.confirmation" />
     <CSAGameReadyDialog
@@ -69,6 +70,7 @@ import RecordFileHistoryDialog from "./view/dialog/RecordFileHistoryDialog.vue";
 import BatchConversionDialog from "./view/dialog/BatchConversionDialog.vue";
 import LaunchUSIEngineDialog from "./view/dialog/LaunchUSIEngineDialog.vue";
 import ConnectToCSAServerDialog from "./view/dialog/ConnectToCSAServerDialog.vue";
+import PieceSetChangeDialog from "./view/dialog/PieceSetChangeDialog.vue";
 
 const appSetting = useAppSetting();
 const store = useStore();

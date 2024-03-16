@@ -41,7 +41,7 @@ const recordFileFormat = argParser.valueOrNull(
 const returnCodeName = argParser.value(
   "return-code",
   "Return code which one of LF or CRLF. It is used for record file.",
-  "CRLF",
+  process.platform === "win32" ? "CRLF" : "LF",
   ["LF", "CRLF"],
 );
 const repeat = argParser.numberOrNull("repeat", "Overwrite repeat setting.", { min: 1 });

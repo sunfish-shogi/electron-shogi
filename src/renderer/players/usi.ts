@@ -187,7 +187,7 @@ export class USIPlayer implements Player {
     }
     this.ponder = ponder && `${usi} ${usiMove} ${ponder}`;
     this.flushUSIInfo();
-    if (this.info && this.info.pv && this.info.pv.length >= 1 && this.info.pv[0].equals(move)) {
+    if (this.info?.pv && this.info.pv.length >= 1 && this.info.pv[0].equals(move)) {
       const info = {
         ...this.info,
         pv: this.info.pv.slice(1),
@@ -227,9 +227,7 @@ export class USIPlayer implements Player {
   onCheckmateNotImplemented(): void {
     const mateHandler = this.mateHandler;
     this.clearHandlers();
-    if (mateHandler) {
-      mateHandler.onNotImplemented();
-    }
+    mateHandler?.onNotImplemented();
   }
 
   onCheckmateTimeout(usi: string): void {
@@ -238,9 +236,7 @@ export class USIPlayer implements Player {
     }
     const mateHandler = this.mateHandler;
     this.clearHandlers();
-    if (mateHandler) {
-      mateHandler.onTimeout();
-    }
+    mateHandler?.onTimeout();
   }
 
   onNoMate(usi: string): void {
@@ -249,9 +245,7 @@ export class USIPlayer implements Player {
     }
     const mateHandler = this.mateHandler;
     this.clearHandlers();
-    if (mateHandler) {
-      mateHandler.onNoMate();
-    }
+    mateHandler?.onNoMate();
   }
 
   onUSIInfo(usi: string, infoCommand: USIInfoCommand) {
@@ -298,8 +292,8 @@ export class USIPlayer implements Player {
       clearTimeout(this.usiInfoTimeout);
       this.usiInfoTimeout = undefined;
     }
-    if (this.onSearchInfo && this.info) {
-      this.onSearchInfo(this.info);
+    if (this.info) {
+      this.onSearchInfo?.(this.info);
     }
   }
 }
@@ -307,11 +301,7 @@ export class USIPlayer implements Player {
 const usiPlayers: { [sessionID: number]: USIPlayer } = {};
 
 export function onUSIBestMove(sessionID: number, usi: string, usiMove: string, ponder?: string) {
-  const player = usiPlayers[sessionID];
-  if (!player) {
-    return;
-  }
-  player.onBestMove(usi, usiMove, ponder);
+  usiPlayers[sessionID]?.onBestMove(usi, usiMove, ponder);
 }
 
 export function onUSICheckmate(sessionID: number, usi: string, usiMoves: string[]) {
@@ -326,27 +316,15 @@ export function onUSICheckmate(sessionID: number, usi: string, usiMoves: string[
 }
 
 export function onUSICheckmateNotImplemented(sessionID: number) {
-  const player = usiPlayers[sessionID];
-  if (!player) {
-    return;
-  }
-  player.onCheckmateNotImplemented();
+  usiPlayers[sessionID]?.onCheckmateNotImplemented();
 }
 
 export function onUSICheckmateTimeout(sessionID: number, usi: string) {
-  const player = usiPlayers[sessionID];
-  if (!player) {
-    return;
-  }
-  player.onCheckmateTimeout(usi);
+  usiPlayers[sessionID]?.onCheckmateTimeout(usi);
 }
 
 export function onUSINoMate(sessionID: number, usi: string) {
-  const player = usiPlayers[sessionID];
-  if (!player) {
-    return;
-  }
-  player.onNoMate(usi);
+  usiPlayers[sessionID]?.onNoMate(usi);
 }
 
 export function onUSIInfo(sessionID: number, usi: string, info: USIInfoCommand) {

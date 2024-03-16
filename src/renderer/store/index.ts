@@ -352,9 +352,7 @@ class Store {
       this.pushError("確認ダイアログ表示中に他の操作が行われたため処理が中止されました。");
       return;
     }
-    if (confirmation.onOk) {
-      confirmation.onOk();
-    }
+    confirmation.onOk();
   }
 
   confirmationCancel(): void {
@@ -904,9 +902,7 @@ class Store {
   }
 
   updateResearchPosition(): void {
-    if (this.researchManager) {
-      this.researchManager.updatePosition(this.recordManager.record);
-    }
+    this.researchManager?.updatePosition(this.recordManager.record);
   }
 
   resetRecord(): void {

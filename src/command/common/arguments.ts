@@ -140,13 +140,11 @@ export class ArgumentsParser {
           this.onError(`${arg} option must be a number: ${process.argv[i]}`);
         }
         const restriction = this.numberRestrictions.get(arg);
-        if (restriction) {
-          if (restriction.min && value < restriction.min) {
-            this.onError(`${arg} option must be greater than or equal to ${restriction.min}`);
-          }
-          if (restriction.max && value > restriction.max) {
-            this.onError(`${arg} option must be less than or equal to ${restriction.max}`);
-          }
+        if (restriction?.min && value < restriction.min) {
+          this.onError(`${arg} option must be greater than or equal to ${restriction.min}`);
+        }
+        if (restriction?.max && value > restriction.max) {
+          this.onError(`${arg} option must be less than or equal to ${restriction.max}`);
         }
         this.numbers.set(arg, value);
       } else if (this.flagKeys.includes(arg)) {

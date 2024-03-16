@@ -73,9 +73,7 @@ function scrollToEnd() {
     const latest = store.history.commands[store.history.commands.length - 1];
     if (autoScroll.value && (latestID === null || latest.id !== latestID)) {
       const elem = document.getElementById(`history-${latest.id}`);
-      if (elem) {
-        elem.scrollIntoView({ behavior: "auto", block: "nearest" });
-      }
+      elem?.scrollIntoView({ behavior: "auto", block: "nearest" });
       latestID = latest.id;
     }
   }

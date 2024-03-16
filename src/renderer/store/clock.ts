@@ -116,9 +116,7 @@ export class Clock {
 
   private timeout(): void {
     this.clearTimer();
-    if (this.setting.onTimeout) {
-      this.setting.onTimeout();
-    }
+    this.setting.onTimeout?.();
   }
 
   private clearTimer(): void {
@@ -126,9 +124,7 @@ export class Clock {
       window.clearInterval(this.timerHandle);
       this.timerHandle = 0;
     }
-    if (this.setting.onStopBeep) {
-      this.setting.onStopBeep();
-    }
+    this.setting.onStopBeep?.();
   }
 
   private incrementTime(): void {

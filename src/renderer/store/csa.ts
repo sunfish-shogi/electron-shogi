@@ -596,12 +596,10 @@ export class CSAGameManager {
       case CSAProtocolVersion.V121_FLOODGATE:
         // Floodgate 拡張では評価値と PV を送信する。
         score = info?.score;
-        if (info?.pv) {
-          for (const move of info.pv) {
-            pv = pv ? pv + " " : "";
-            pv += formatCSAMove(move);
-          }
-        }
+        info?.pv?.forEach((move) => {
+          pv = pv ? pv + " " : "";
+          pv += formatCSAMove(move);
+        });
         break;
     }
 
@@ -638,31 +636,19 @@ function releaseSession(sessionID: number): void {
 }
 
 export function onCSAGameSummary(sessionID: number, gameSummary: CSAGameSummary): void {
-  const manager = csaGameManagers[sessionID];
-  if (manager) {
-    manager.onGameSummary(gameSummary);
-  }
+  csaGameManagers[sessionID]?.onGameSummary(gameSummary);
 }
 
 export function onCSAReject(sessionID: number): void {
-  const manager = csaGameManagers[sessionID];
-  if (manager) {
-    manager.onReject();
-  }
+  csaGameManagers[sessionID]?.onReject();
 }
 
 export function onCSAStart(sessionID: number, playerStates: CSAPlayerStates): void {
-  const manager = csaGameManagers[sessionID];
-  if (manager) {
-    manager.onStart(playerStates);
-  }
+  csaGameManagers[sessionID]?.onStart(playerStates);
 }
 
 export function onCSAMove(sessionID: number, move: string, playerStates: CSAPlayerStates): void {
-  const manager = csaGameManagers[sessionID];
-  if (manager) {
-    manager.onMove(move, playerStates);
-  }
+  csaGameManagers[sessionID]?.onMove(move, playerStates);
 }
 
 export function onCSAGameResult(
@@ -670,15 +656,9 @@ export function onCSAGameResult(
   specialMove: CSASpecialMove,
   gameResult: CSAGameResult,
 ) {
-  const manager = csaGameManagers[sessionID];
-  if (manager) {
-    manager.onGameResult(specialMove, gameResult);
-  }
+  csaGameManagers[sessionID]?.onGameResult(specialMove, gameResult);
 }
 
 export function onCSAClose(sessionID: number) {
-  const manager = csaGameManagers[sessionID];
-  if (manager) {
-    manager.onClose();
-  }
+  csaGameManagers[sessionID]?.onClose();
 }

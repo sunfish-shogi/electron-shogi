@@ -11,9 +11,7 @@ export class Lazy {
   }
 
   private invoke(): void {
-    if (this.func) {
-      this.func();
-    }
+    this.func?.();
     this.clear();
   }
 

@@ -31,9 +31,7 @@ export function validateResearchSetting(setting: ResearchSetting): Error | undef
   if (!setting.usi) {
     return new Error(t.engineNotSelected);
   }
-  for (const secondary of setting.secondaries || []) {
-    if (!secondary.usi) {
-      return new Error(t.engineNotSelected);
-    }
+  if (setting.secondaries?.some((secondary) => !secondary.usi)) {
+    return new Error(t.engineNotSelected);
   }
 }

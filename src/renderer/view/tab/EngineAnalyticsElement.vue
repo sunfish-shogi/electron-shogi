@@ -134,12 +134,7 @@ const enableHighlight = computed(() => {
   if (!props.historyMode) {
     return false;
   }
-  for (const iteration of props.info.iterations) {
-    if (iteration.multiPV && iteration.multiPV !== 1) {
-      return true;
-    }
-  }
-  return false;
+  return props.info.iterations.some((iteration) => iteration.multiPV && iteration.multiPV !== 1);
 });
 
 const evaluationViewFrom = computed(() => {

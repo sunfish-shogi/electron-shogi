@@ -451,7 +451,7 @@ export class GameManager {
     this.onStopBeep();
     // エンジンの時間切れが無効の場合は通知を送って対局を継続する。
     const player = this.getPlayer(color);
-    if (player && player.isEngine() && !this.setting.enableEngineTimeout) {
+    if (player?.isEngine() && !this.setting.enableEngineTimeout) {
       player.stop().catch((e) => {
         this.onError(new Error(`GameManager#timeout: ${t.failedToSendStopCommand}: ${e}`));
       });

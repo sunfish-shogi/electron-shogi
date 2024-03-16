@@ -93,15 +93,13 @@ export class MateSearchManager {
   }
 
   close() {
-    if (this.engine) {
-      this.engine
-        .close()
-        .then(() => {
-          this.engine = null;
-        })
-        .catch((e) => {
-          this.onError(e);
-        });
-    }
+    this.engine
+      ?.close()
+      .then(() => {
+        this.engine = null;
+      })
+      .catch((e) => {
+        this.onError(e);
+      });
   }
 }

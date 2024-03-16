@@ -6,9 +6,7 @@ export function showModalDialog(dialog: Dialog, onCancel?: () => void): void {
   dialog.addEventListener("cancel", (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    if (onCancel) {
-      onCancel();
-    }
+    onCancel?.();
   });
   dialog.addEventListener("copy", (event: ClipboardEvent) => {
     event.stopPropagation();

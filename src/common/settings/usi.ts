@@ -34,10 +34,10 @@ export function getUSIEngineOptionCurrentValue(
   if (option.value !== undefined) {
     return option.value;
   }
+  if ((option.type === "string" || option.type === "filename") && option.default === "<empty>") {
+    return "";
+  }
   if (option.default !== undefined) {
-    if ((option.type === "string" || option.type === "filename") && option.default === "<empty>") {
-      return "";
-    }
     return option.default;
   }
   return;
@@ -179,8 +179,9 @@ export class USIEngineSettings {
   constructor(json?: string) {
     if (json) {
       const src = JSON.parse(json);
-      for (const engineURI in src.engines) {
-        if (uri.isUSIEngine(engineURI)) {
+      Object.keys(src.engines)
+        .filter(uri.isUSIEngine)
+        .forEach((engineURI) => {
           const emptyEngine = emptyUSIEngineSetting();
           const engine = src.engines[engineURI];
           this.engines[engineURI] = {
@@ -192,8 +193,7 @@ export class USIEngineSettings {
               ...engine.labels,
             },
           };
-        }
-      }
+        });
     }
   }
 
@@ -251,11 +251,9 @@ export class USIEngineSettings {
 
   filterByLabel(label: USIEngineLabel): USIEngineSettings {
     const engines = new USIEngineSettings();
-    for (const engine of this.engineList) {
-      if (engine.labels && engine.labels[label]) {
-        engines.addEngine(engine);
-      }
-    }
+    this.engineList
+      .filter((engine) => engine.labels && engine.labels[label])
+      .forEach((engine) => engines.addEngine(engine));
     return engines;
   }
 }

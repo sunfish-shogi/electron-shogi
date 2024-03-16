@@ -265,9 +265,7 @@ export class Client {
     this.socket.write(command);
     this._lastSent = newCommand(CommandType.SEND, this.hideSecureValues(command));
     this.updateCommendHistory(this._lastSent);
-    if (this.commandCallback) {
-      this.commandCallback(this._lastSent);
-    }
+    this.commandCallback?.(this._lastSent);
     this.logger.info("sid=%d: > %s", this.sessionID, this.hideSecureValues(command));
     this.setBlankLinePing(command);
   }
@@ -295,21 +293,15 @@ export class Client {
     }
     this.onError(e);
     this._state = State.CLOSED;
-    if (this.closeCallback) {
-      this.closeCallback();
-    }
+    this.closeCallback?.();
     const command = newCommand(CommandType.SYSTEM, "connection error");
     this.updateCommendHistory(command);
-    if (this.commandCallback) {
-      this.commandCallback(command);
-    }
+    this.commandCallback?.(command);
   }
 
   private onError(e: Error): void {
     this.logger.error("sid=%d: error: %s %s", this.sessionID, e.name, e.message);
-    if (this.errorCallback) {
-      this.errorCallback(e);
-    }
+    this.errorCallback?.(e);
   }
 
   private onFIN(): void {
@@ -340,23 +332,17 @@ export class Client {
         break;
     }
     this._state = State.CLOSED;
-    if (this.closeCallback) {
-      this.closeCallback();
-    }
+    this.closeCallback?.();
     const command = newCommand(CommandType.SYSTEM, hadError ? "closed (error)" : "closed");
     this.updateCommendHistory(command);
-    if (this.commandCallback) {
-      this.commandCallback(command);
-    }
+    this.commandCallback?.(command);
   }
 
   private onRead(command: string): void {
     this.setBlankLinePing();
     this._lastReceived = newCommand(CommandType.RECEIVE, command);
     this.updateCommendHistory(this._lastReceived);
-    if (this.commandCallback) {
-      this.commandCallback(this._lastReceived);
-    }
+    this.commandCallback?.(this._lastReceived);
     this.logger.info("sid=%d: < %s", this.sessionID, command);
     if (command === "") {
       return;
@@ -431,9 +417,7 @@ export class Client {
     }
 
     this._state = State.READY;
-    if (this.gameSummaryCallback) {
-      this.gameSummaryCallback(this.gameSummary);
-    }
+    this.gameSummaryCallback?.(this.gameSummary);
   }
 
   private onGameSummary(command: string): void {
@@ -540,16 +524,12 @@ export class Client {
 
   private onReject(): void {
     this._state = State.WAITING_GAME_SUMMARY;
-    if (this.rejectCallback) {
-      this.rejectCallback();
-    }
+    this.rejectCallback?.();
   }
 
   private onStart(): void {
     this._state = State.PLAYING;
-    if (this.startCallback) {
-      this.startCallback(this.playerStates);
-    }
+    this.startCallback?.(this.playerStates);
   }
 
   private onMove(command: string): void {
@@ -574,9 +554,7 @@ export class Client {
     } else {
       this.logger.error("sid=%d: invalid move format", this.sessionID);
     }
-    if (this.moveCallback) {
-      this.moveCallback(command, this.playerStates);
-    }
+    this.moveCallback?.(command, this.playerStates);
   }
 
   private updateTime(color: Color, elapsedMs: number): void {
@@ -634,9 +612,7 @@ export class Client {
 
   private onGameResult(gameResult: CSAGameResult) {
     this._state = State.WAITING_GAME_SUMMARY;
-    if (this.gameResultCallback) {
-      this.gameResultCallback(this.specialMove, gameResult);
-    }
+    this.gameResultCallback?.(this.specialMove, gameResult);
   }
 
   invoke(type: CommandType, command: string): void {

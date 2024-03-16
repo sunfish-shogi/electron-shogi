@@ -60,45 +60,27 @@ export function login(setting: CSAServerSetting): number {
 }
 
 export function logout(sessionID: number): void {
-  const client = clients.get(sessionID);
-  if (client) {
-    client.logout();
-  }
+  clients.get(sessionID)?.logout();
 }
 
 export function agree(sessionID: number, gameID: string): void {
-  const client = clients.get(sessionID);
-  if (client) {
-    client.agree(gameID);
-  }
+  clients.get(sessionID)?.agree(gameID);
 }
 
 export function doMove(sessionID: number, move: string, score?: number, pv?: string): void {
-  const client = clients.get(sessionID);
-  if (client) {
-    client.doMove(move, score, pv);
-  }
+  clients.get(sessionID)?.doMove(move, score, pv);
 }
 
 export function resign(sessionID: number): void {
-  const client = clients.get(sessionID);
-  if (client) {
-    client.resign();
-  }
+  clients.get(sessionID)?.resign();
 }
 
 export function win(sessionID: number): void {
-  const client = clients.get(sessionID);
-  if (client) {
-    client.win();
-  }
+  clients.get(sessionID)?.win();
 }
 
 export function stop(sessionID: number): void {
-  const client = clients.get(sessionID);
-  if (client) {
-    client.stop();
-  }
+  clients.get(sessionID)?.stop();
 }
 
 export function collectSessionStates(): CSASessionState[] {
@@ -129,8 +111,5 @@ export function getCommandHistory(sessionID: number): CommandHistory {
 }
 
 export function invokeCommand(sessionID: number, type: CommandType, command: string): void {
-  const client = clients.get(sessionID);
-  if (client) {
-    client.invoke(type, command);
-  }
+  clients.get(sessionID)?.invoke(type, command);
 }

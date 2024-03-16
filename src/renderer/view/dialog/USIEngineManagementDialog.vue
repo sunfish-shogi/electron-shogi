@@ -125,9 +125,7 @@ onBeforeUnmount(() => {
 onUpdated(() => {
   if (scrollTo) {
     const element = dialog.value.querySelector(`[value="${scrollTo}"]`);
-    if (element) {
-      element.scrollIntoView({ behavior: "auto", block: "nearest" });
-    }
+    element?.scrollIntoView({ behavior: "auto", block: "nearest" });
     scrollTo = "";
   }
 });

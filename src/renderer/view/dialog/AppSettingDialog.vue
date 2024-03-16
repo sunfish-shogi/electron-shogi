@@ -956,15 +956,13 @@ const saveAndClose = async () => {
     if (update.backgroundImageType !== BackgroundImageType.NONE) {
       update.backgroundImageFileURL = backgroundImageFileURL.value;
     }
-    if (update.pieceImage === PieceImageType.CUSTOM_IMAGE) {
-      if (pieceImageFileURL.value) {
-        update.croppedPieceImageBaseURL = await api.cropPieceImage(
-          pieceImageFileURL.value,
-          deletePieceImageMargin.value,
-        );
-        update.pieceImageFileURL = pieceImageFileURL.value;
-        update.deletePieceImageMargin = deletePieceImageMargin.value;
-      }
+    if (update.pieceImage === PieceImageType.CUSTOM_IMAGE && pieceImageFileURL.value) {
+      update.croppedPieceImageBaseURL = await api.cropPieceImage(
+        pieceImageFileURL.value,
+        deletePieceImageMargin.value,
+      );
+      update.pieceImageFileURL = pieceImageFileURL.value;
+      update.deletePieceImageMargin = deletePieceImageMargin.value;
     }
     if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
       update.boardImageFileURL = boardImageFileURL.value;

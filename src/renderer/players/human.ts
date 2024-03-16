@@ -47,25 +47,19 @@ export class HumanPlayer implements Player {
   doMove(move: Move) {
     const searchHandler = this.searchHandler;
     this.searchHandler = undefined;
-    if (searchHandler) {
-      searchHandler.onMove(move);
-    }
+    searchHandler?.onMove(move);
   }
 
   resign() {
     const searchHandler = this.searchHandler;
     this.searchHandler = undefined;
-    if (searchHandler) {
-      searchHandler.onResign();
-    }
+    searchHandler?.onResign();
   }
 
   win() {
     const searchHandler = this.searchHandler;
     this.searchHandler = undefined;
-    if (searchHandler) {
-      searchHandler.onWin();
-    }
+    searchHandler?.onWin();
   }
 }
 

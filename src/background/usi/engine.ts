@@ -482,9 +482,7 @@ export class EngineProcess {
 
   private setLaunchTimeout(): void {
     this.launchTimeout = setTimeout(() => {
-      if (this.timeoutCallback) {
-        this.timeoutCallback();
-      }
+      this.timeoutCallback?.();
       this.quit();
     }, this.option.timeout || DefaultTimeout);
   }
@@ -514,9 +512,7 @@ export class EngineProcess {
   }
 
   private onError(e: Error): void {
-    if (this.errorCallback) {
-      this.errorCallback(e);
-    }
+    this.errorCallback?.(e);
     this.quit();
   }
 
@@ -527,17 +523,15 @@ export class EngineProcess {
       code,
       signal,
     );
-    if (this.state !== State.WillQuit && this.errorCallback) {
-      this.errorCallback(new Error("closed unexpectedly"));
+    if (this.state !== State.WillQuit) {
+      this.errorCallback?.(new Error("closed unexpectedly"));
     }
     this.clearLaunchTimeout();
     this.clearQuitTimeout();
     this.process = null;
     const command = newCommand(CommandType.SYSTEM, `closed: close=${code} signal=${signal}`);
     this.updateCommendHistory(command);
-    if (this.commandCallback) {
-      this.commandCallback(command);
-    }
+    this.commandCallback?.(command);
   }
 
   private sendReservedGoCommands(): void {
@@ -578,18 +572,14 @@ export class EngineProcess {
     this.process.send(command);
     this._lastSent = newCommand(CommandType.SEND, command);
     this.updateCommendHistory(this._lastSent);
-    if (this.commandCallback) {
-      this.commandCallback(this._lastSent);
-    }
+    this.commandCallback?.(this._lastSent);
     this.logger.info("sid=%d: > %s", this.sessionID, command);
   }
 
   private onReceive(command: string): void {
     this._lastReceived = newCommand(CommandType.RECEIVE, command);
     this.updateCommendHistory(this._lastReceived);
-    if (this.commandCallback) {
-      this.commandCallback(this._lastReceived);
-    }
+    this.commandCallback?.(this._lastReceived);
     this.logger.info("sid=%d: < %s", this.sessionID, command);
     if (this.state === State.WillQuit) {
       return;
@@ -685,9 +675,7 @@ export class EngineProcess {
     }
     this.clearLaunchTimeout();
     this._state = State.NotReady;
-    if (this.usiOkCallback) {
-      this.usiOkCallback();
-    }
+    this.usiOkCallback?.();
   }
 
   private onReadyOk(): void {
@@ -696,9 +684,7 @@ export class EngineProcess {
       return;
     }
     this._state = State.Ready;
-    if (this.readyCallback) {
-      this.readyCallback();
-    }
+    this.readyCallback?.();
     this.send("usinewgame");
     this.sendReservedGoCommands();
   }
@@ -732,39 +718,27 @@ export class EngineProcess {
     }
     this._state = State.Ready;
     if (args.trim() === "notimplemented") {
-      if (this.checkmateNotImplementedCallback) {
-        this.checkmateNotImplementedCallback();
-      }
+      this.checkmateNotImplementedCallback?.();
       return;
     } else if (args.trim() === "timeout") {
-      if (this.checkmateTimeoutCallback) {
-        this.checkmateTimeoutCallback(this.currentPosition);
-      }
+      this.checkmateTimeoutCallback?.(this.currentPosition);
       return;
     } else if (args.trim() === "nomate") {
-      if (this.noMateCallback) {
-        this.noMateCallback(this.currentPosition);
-      }
+      this.noMateCallback?.(this.currentPosition);
       return;
     }
-    if (this.checkmateCallback) {
-      this.checkmateCallback(this.currentPosition, args.trim().split(" "));
-    }
+    this.checkmateCallback?.(this.currentPosition, args.trim().split(" "));
   }
 
   private onInfo(args: string): void {
     switch (this.state) {
       case State.WaitingForBestMove:
       case State.WaitingForCheckmate:
-        if (this.infoCallback) {
-          this.infoCallback(this.currentPosition, parseInfoCommand(args));
-        }
+        this.infoCallback?.(this.currentPosition, parseInfoCommand(args));
         break;
       case State.Ponder:
       case State.WaitingForPonderBestMove:
-        if (this.ponderInfoCallback) {
-          this.ponderInfoCallback(this.currentPosition, parseInfoCommand(args));
-        }
+        this.ponderInfoCallback?.(this.currentPosition, parseInfoCommand(args));
         break;
     }
   }

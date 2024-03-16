@@ -149,6 +149,7 @@ export type Texts = {
   completePositionSetup: string;
   changeTurn: string;
   initializePosition: string;
+  changePieceSet: string;
   appSettings: string;
   language: string;
   theme: string;
@@ -323,6 +324,7 @@ export type Texts = {
   userFile: string;
   automaticBackup: string;
   restore: string;
+  ok: string;
   cancel: string;
   back: string;
   name: string;

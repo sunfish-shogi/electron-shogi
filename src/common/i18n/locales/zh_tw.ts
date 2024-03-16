@@ -151,6 +151,7 @@ export const zh_tw: Texts = {
   completePositionSetup: "結束編輯局面",
   changeTurn: "變更手番",
   initializePosition: "初始化局面",
+  changePieceSet: "駒の増減", // TODO: translate
   appSettings: "程式設定",
   language: "語言",
   theme: "主題",
@@ -325,6 +326,7 @@ export const zh_tw: Texts = {
   userFile: "使用者檔案",
   automaticBackup: "自動備份",
   restore: "復原",
+  ok: "OK",
   cancel: "取消",
   back: "返回",
   name: "名稱",

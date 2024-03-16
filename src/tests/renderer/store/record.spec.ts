@@ -74,6 +74,72 @@ describe("store/record", () => {
     expect(recordManager.unsaved).toBeFalsy();
   });
 
+  it("changePieceSet/from_standard", () => {
+    const recordManager = new RecordManager();
+    recordManager.changePieceSet({
+      king: 1, // -1
+      rook: 1, // -1
+      bishop: 3, // +1
+      gold: 3, // -1
+      silver: 6, // +2
+      knight: 2, // -2
+      lance: 3, // -1
+      pawn: 15, // -3
+    });
+    expect(recordManager.record.position.sfen).toBe(
+      "BSsS1gs1l/7b1/3pppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
+    );
+  });
+
+  it("changePieceSet/with_hands", () => {
+    const recordManager = new RecordManager();
+    recordManager.resetBySFEN(
+      "l6nl/9/p3p2pp/2p3p2/3pk2P1/P1P3P2/3PP3P/1g1+r+s1G2/L3NKS+rL b Bb2g2s2n4p 114",
+    );
+    // no change
+    recordManager.changePieceSet({
+      king: 2,
+      rook: 2,
+      bishop: 2,
+      gold: 4,
+      silver: 4,
+      knight: 4,
+      lance: 4,
+      pawn: 18,
+    });
+    expect(recordManager.record.position.sfen).toBe(
+      "l6nl/9/p3p2pp/2p3p2/3pk2P1/P1P3P2/3PP3P/1g1+r+s1G2/L3NKS+rL b Bb2g2s2n4p 1",
+    );
+    // remove bishop and knight
+    recordManager.changePieceSet({
+      king: 2,
+      rook: 2,
+      bishop: 0,
+      gold: 4,
+      silver: 4,
+      knight: 0,
+      lance: 4,
+      pawn: 18,
+    });
+    expect(recordManager.record.position.sfen).toBe(
+      "l7l/9/p3p2pp/2p3p2/3pk2P1/P1P3P2/3PP3P/1g1+r+s1G2/L4KS+rL b 2g2s4p 1",
+    );
+    // add full pieces
+    recordManager.changePieceSet({
+      king: 18,
+      rook: 18,
+      bishop: 18,
+      gold: 18,
+      silver: 18,
+      knight: 18,
+      lance: 18,
+      pawn: 18,
+    });
+    expect(recordManager.record.position.sfen).toBe(
+      "lKKKKKKKl/KKKKKKKKK/pRRRpRRpp/RRpRRRpRR/RRRpkRBPB/PBPBBBPBB/BBBPPBBBP/BgB+r+sBGBG/LGGGGKS+rL b 6G8S9N7L5g8s9n7l4p 1",
+    );
+  });
+
   it("appendComment", () => {
     const recordManager = new RecordManager();
     recordManager.appendComment("aaa", CommentBehavior.INSERT);

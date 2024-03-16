@@ -132,7 +132,7 @@
             <span>{{ t.setupPosition }}</span>
           </button>
           <button
-            v-if="controlStates.endEditPosition"
+            v-if="controlStates.positionEditing"
             class="control-item"
             data-hotkey="Escape"
             @click="onEndEditPosition"
@@ -140,12 +140,19 @@
             <Icon :icon="IconType.CHECK" />
             <span>{{ t.completePositionSetup }}</span>
           </button>
-          <button v-if="controlStates.initPosition" class="control-item" @click="onChangeTurn">
+          <button v-if="controlStates.positionEditing" class="control-item" @click="onChangeTurn">
             <Icon :icon="IconType.SWAP" />
             <span>{{ t.changeTurn }}</span>
           </button>
-          <button v-if="controlStates.initPosition" class="control-item" @click="onInitPosition">
+          <button v-if="controlStates.positionEditing" class="control-item" @click="onInitPosition">
             <span>{{ t.initializePosition }}</span>
+          </button>
+          <button
+            v-if="controlStates.positionEditing"
+            class="control-item"
+            @click="onPieceSetChange"
+          >
+            <span>{{ t.changePieceSet }}</span>
           </button>
         </div>
       </template>
@@ -355,6 +362,10 @@ const onChangeTurn = () => {
   store.changeTurn();
 };
 
+const onPieceSetChange = () => {
+  store.showPieceSetChangeDialog();
+};
+
 const onOpenAppSettings = () => {
   store.showAppSettingDialog();
 };
@@ -420,8 +431,7 @@ const controlStates = computed(() => {
     mateSearch: store.appState === AppState.NORMAL,
     stopMateSearch: store.appState === AppState.MATE_SEARCH,
     startEditPosition: store.appState === AppState.NORMAL,
-    endEditPosition: store.appState === AppState.POSITION_EDITING,
-    initPosition: store.appState === AppState.POSITION_EDITING,
+    positionEditing: store.appState === AppState.POSITION_EDITING,
     removeCurrentMove: store.appState === AppState.NORMAL || store.appState === AppState.RESEARCH,
     engineSettings: store.appState === AppState.NORMAL,
   };

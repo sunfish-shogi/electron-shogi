@@ -40,14 +40,12 @@ describe("store/index", () => {
 
   it("updateAppSetting/error", async () => {
     const store = createAppSetting();
-    try {
-      await store.updateAppSetting({
+    await expect(() =>
+      store.updateAppSetting({
         pieceVolume: -1,
-      });
-      throw new Error("updateAppSetting must be rejected");
-    } catch {
-      expect(store.pieceVolume).toBe(30);
-    }
+      }),
+    ).rejects.toThrow();
+    expect(store.pieceVolume).toBe(30);
   });
 
   it("flipBoard", () => {

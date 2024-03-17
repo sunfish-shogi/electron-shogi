@@ -55,22 +55,13 @@ it("history", async () => {
   history = await getHistory();
   expect(history.entries).toHaveLength(20);
   expect(history.entries[0].backupFileName).toMatch(backupFileName2);
-  try {
-    await loadBackup(backupFileName1);
-    throw "should not reach here";
-  } catch {
-    // shoud reach here
-  }
+  await expect(() => loadBackup(backupFileName1)).rejects.toThrow();
+
   expect(await loadBackup(backupFileName2)).toBe("test-kif-data2");
 
   await clearHistory();
 
   history = await getHistory();
   expect(history.entries).toHaveLength(0);
-  try {
-    await loadBackup(backupFileName2);
-    throw "should not reach here";
-  } catch {
-    // shoud reach here
-  }
+  await expect(() => loadBackup(backupFileName2)).rejects.toThrow();
 });

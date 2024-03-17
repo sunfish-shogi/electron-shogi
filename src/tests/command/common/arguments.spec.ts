@@ -59,11 +59,7 @@ describe("command/common/arguments", () => {
     process.argv = ["node", "test-command", "--num1", "foo"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1);
-    try {
-      parser.parse();
-    } catch {
-      // ignore
-    }
+    expect(() => parser.parse()).toThrow();
     expect(exit).toHaveBeenCalledWith(1);
   });
 
@@ -79,11 +75,7 @@ describe("command/common/arguments", () => {
     process.argv = ["node", "test-command", "--opt1", "baz"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.value("opt1", "option 1", "default1", ["foo", "bar"]);
-    try {
-      parser.parse();
-    } catch {
-      // ignore
-    }
+    expect(() => parser.parse()).toThrow();
     expect(exit).toHaveBeenCalledWith(1);
   });
 
@@ -99,11 +91,7 @@ describe("command/common/arguments", () => {
     process.argv = ["node", "test-command", "--num1", "99"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1, { min: 100, max: 200 });
-    try {
-      parser.parse();
-    } catch {
-      // ignore
-    }
+    expect(() => parser.parse()).toThrow();
     expect(exit).toHaveBeenCalledWith(1);
   });
 
@@ -119,11 +107,7 @@ describe("command/common/arguments", () => {
     process.argv = ["node", "test-command", "--num1", "201"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
     parser.number("num1", "number 1", 1, { min: 100, max: 200 });
-    try {
-      parser.parse();
-    } catch {
-      // ignore
-    }
+    expect(() => parser.parse()).toThrow();
     expect(exit).toHaveBeenCalledWith(1);
   });
 
@@ -131,11 +115,7 @@ describe("command/common/arguments", () => {
     const exit = vi.spyOn(process, "exit").mockImplementation(neverFunc);
     process.argv = ["node", "test-command", "--opt", "foo"];
     const parser = new ArgumentsParser("test-command", "<arg1> <arg2>");
-    try {
-      parser.parse();
-    } catch {
-      // ignore
-    }
+    expect(() => parser.parse()).toThrow();
     expect(exit).toHaveBeenCalledWith(1);
   });
 

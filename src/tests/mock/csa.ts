@@ -121,32 +121,67 @@ P-
 
 export const csaGameSummary: CSAGameSummary = {
   id: "test-game",
-  blackPlayerName: "me",
-  whitePlayerName: "enemy",
+  players: {
+    black: {
+      playerName: "me",
+      time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 30, delay: 0, increment: 0 },
+    },
+    white: {
+      playerName: "enemy",
+      time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 30, delay: 0, increment: 0 },
+    },
+  },
   myColor: Color.BLACK,
   toMove: Color.BLACK,
   position: initialPosition,
-  timeUnitMs: 1000,
-  totalTime: 600,
-  byoyomi: 30,
-  delay: 0,
-  increment: 0,
+};
+
+export const csaGameSummaryWithUnequalTimeConfig: CSAGameSummary = {
+  id: "test-game",
+  players: {
+    black: {
+      playerName: "me",
+      time: { timeUnitMs: 1000, totalTime: 300, byoyomi: 0, delay: 0, increment: 5 },
+    },
+    white: {
+      playerName: "enemy",
+      time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 0, delay: 0, increment: 10 },
+    },
+  },
+  myColor: Color.BLACK,
+  toMove: Color.BLACK,
+  position: initialPosition,
 };
 
 const invalidPosition = `+2726FU,T12`;
 
 export const csaGameSummaryInvalidPosition: CSAGameSummary = {
   id: "test-game",
-  blackPlayerName: "me",
-  whitePlayerName: "enemy",
+  players: {
+    black: {
+      playerName: "me",
+      time: {
+        timeUnitMs: 1000,
+        totalTime: 600,
+        byoyomi: 30,
+        delay: 0,
+        increment: 0,
+      },
+    },
+    white: {
+      playerName: "enemy",
+      time: {
+        timeUnitMs: 1000,
+        totalTime: 600,
+        byoyomi: 30,
+        delay: 0,
+        increment: 0,
+      },
+    },
+  },
   myColor: Color.BLACK,
   toMove: Color.BLACK,
   position: invalidPosition,
-  timeUnitMs: 1000,
-  totalTime: 600,
-  byoyomi: 30,
-  delay: 0,
-  increment: 0,
 };
 
 export const csaGameSettingForCLI: CSAGameSettingForCLI = {

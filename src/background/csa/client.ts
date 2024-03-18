@@ -41,6 +41,8 @@ export enum State {
   WAITING_GAME_SUMMARY = "waitingGameSummary",
   GAME_SUMMARY = "gameSummary",
   GAME_TIME = "gameTime",
+  GAME_TIME_B = "gameTimeB",
+  GAME_TIME_W = "gameTimeW",
   GAME_POSITION = "gamePosition",
   READY = "ready",
   WAITING_START = "waitingStart",
@@ -186,6 +188,8 @@ export class Client {
           this.state === State.WAITING_GAME_SUMMARY ||
           this.state === State.GAME_SUMMARY ||
           this.state === State.GAME_TIME ||
+          this.state === State.GAME_TIME_B ||
+          this.state === State.GAME_TIME_W ||
           this.state === State.GAME_POSITION ||
           this.state === State.READY
         ) {
@@ -351,6 +355,10 @@ export class Client {
       this.onGameSummary(command);
     } else if (this.state === State.GAME_TIME) {
       this.onGameTime(command);
+    } else if (this.state === State.GAME_TIME_B) {
+      this.onGameTime(command, Color.BLACK);
+    } else if (this.state === State.GAME_TIME_W) {
+      this.onGameTime(command, Color.WHITE);
     } else if (this.state === State.GAME_POSITION) {
       this.onGamePosition(command);
     } else if (this.state === State.PLAYING) {
@@ -397,9 +405,11 @@ export class Client {
   }
 
   private onEndGameSummary(): void {
-    // 初回分の Increment を与える。
-    this.playerStates.black.time += this.gameSummary.increment;
-    this.playerStates.white.time += this.gameSummary.increment;
+    // 残り時間を初期化する。その際、初回分の Increment を与える。
+    const blackTime = this.gameSummary.players.black.time;
+    const whiteTime = this.gameSummary.players.white.time;
+    this.playerStates.black.time = blackTime.totalTime + blackTime.increment;
+    this.playerStates.white.time = whiteTime.totalTime + whiteTime.increment;
 
     // 途中から再開する場合に、前回消費した時間を計算する。
     const record = importCSA(this.gameSummary.position);
@@ -421,17 +431,22 @@ export class Client {
   }
 
   private onGameSummary(command: string): void {
-    if (command === "END Game_Summary") {
-      this.onEndGameSummary();
-      return;
-    }
-    if (command === "BEGIN Time") {
-      this._state = State.GAME_TIME;
-      return;
-    }
-    if (command === "BEGIN Position") {
-      this._state = State.GAME_POSITION;
-      return;
+    switch (command) {
+      case "END Game_Summary":
+        this.onEndGameSummary();
+        return;
+      case "BEGIN Time":
+        this._state = State.GAME_TIME;
+        return;
+      case "BEGIN Time+":
+        this._state = State.GAME_TIME_B;
+        return;
+      case "BEGIN Time-":
+        this._state = State.GAME_TIME_W;
+        return;
+      case "BEGIN Position":
+        this._state = State.GAME_POSITION;
+        return;
     }
     const [key, value] = command.split(":", 2);
     switch (key) {
@@ -457,10 +472,10 @@ export class Client {
         this.gameSummary.id = value;
         break;
       case "Name+":
-        this.gameSummary.blackPlayerName = value;
+        this.gameSummary.players.black.playerName = value;
         break;
       case "Name-":
-        this.gameSummary.whitePlayerName = value;
+        this.gameSummary.players.white.playerName = value;
         break;
       case "Your_Turn":
         this.gameSummary.myColor = value === "+" ? Color.BLACK : Color.WHITE;
@@ -474,11 +489,20 @@ export class Client {
     }
   }
 
-  private onGameTime(command: string): void {
-    if (command === "END Time") {
-      this._state = State.GAME_SUMMARY;
-      return;
+  private onGameTime(command: string, color?: Color): void {
+    switch (command) {
+      case "END Time":
+      case "END Time+":
+      case "END Time-":
+        this._state = State.GAME_SUMMARY;
+        return;
     }
+
+    // 対象の手番が指定されている場合は、その手番のみを設定する。
+    // そうでない場合は、両方の手番に設定する。
+    const timeConfigSet = color
+      ? [this.gameSummary.players[color].time]
+      : [this.gameSummary.players.black.time, this.gameSummary.players.white.time];
     const [key, value] = command.split(":", 2);
     switch (key) {
       case "Least_Time_Per_Move":
@@ -486,27 +510,35 @@ export class Client {
         // do nothing
         break;
       case "Time_Unit":
-        if (value.endsWith("msec")) {
-          this.gameSummary.timeUnitMs = Number(value.slice(0, -4));
-        } else if (value.endsWith("sec")) {
-          this.gameSummary.timeUnitMs = Number(value.slice(0, -3)) * 1e3;
-        } else if (value.endsWith("min")) {
-          this.gameSummary.timeUnitMs = Number(value.slice(0, -3)) * 60 * 1e3;
+        for (const timeConfig of timeConfigSet) {
+          if (value.endsWith("msec")) {
+            timeConfig.timeUnitMs = Number(value.slice(0, -4));
+          } else if (value.endsWith("sec")) {
+            timeConfig.timeUnitMs = Number(value.slice(0, -3)) * 1e3;
+          } else if (value.endsWith("min")) {
+            timeConfig.timeUnitMs = Number(value.slice(0, -3)) * 60 * 1e3;
+          }
         }
         break;
       case "Total_Time":
-        this.gameSummary.totalTime = Number(value);
-        this.playerStates.black.time = this.gameSummary.totalTime;
-        this.playerStates.white.time = this.gameSummary.totalTime;
+        for (const timeConfig of timeConfigSet) {
+          timeConfig.totalTime = Number(value);
+        }
         break;
       case "Byoyomi":
-        this.gameSummary.byoyomi = Number(value);
+        for (const timeConfig of timeConfigSet) {
+          timeConfig.byoyomi = Number(value);
+        }
         break;
       case "Delay":
-        this.gameSummary.delay = Number(value);
+        for (const timeConfig of timeConfigSet) {
+          timeConfig.delay = Number(value);
+        }
         break;
       case "Increment":
-        this.gameSummary.increment = Number(value);
+        for (const timeConfig of timeConfigSet) {
+          timeConfig.increment = Number(value);
+        }
         break;
       default:
         this.logger.warn("sid=%d: unknown command received", this.sessionID);
@@ -558,8 +590,9 @@ export class Client {
   }
 
   private updateTime(color: Color, elapsedMs: number): void {
-    const elapsed = elapsedMs / this.gameSummary.timeUnitMs;
-    const time = this.playerStates[color].time - elapsed + this.gameSummary.increment;
+    const timeConfig = this.gameSummary.players[color].time;
+    const elapsed = elapsedMs / timeConfig.timeUnitMs;
+    const time = this.playerStates[color].time - elapsed + timeConfig.increment;
     this.playerStates[color].time = Math.max(time, 0);
   }
 

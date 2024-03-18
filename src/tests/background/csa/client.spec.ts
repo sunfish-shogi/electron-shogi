@@ -193,6 +193,71 @@ const mockGameSummaryInvalidPosition = [
   "END Game_Summary",
 ];
 
+const mockGameSummaryWithUnequalTime = [
+  "BEGIN Game_Summary",
+  "Protocol_Version:1.2",
+  "Protocol_Mode:Server",
+  "Format:Shogi 1.0",
+  "Declaration:Jishogi 1.1",
+  "Game_ID:20150505-CSA25-3-5-7",
+  "Name+:TANUKI",
+  "Name-:KITSUNE",
+  "Your_Turn:-",
+  "Rematch_On_Draw:NO",
+  "To_Move:+",
+  "Max_Moves:256",
+  "BEGIN Time+",
+  "Time_Unit:1sec",
+  "Total_Time:300",
+  "Byoyomi:10",
+  "Least_Time_Per_Move:1",
+  "END Time+",
+  "BEGIN Time-",
+  "Time_Unit:1sec",
+  "Total_Time:600",
+  "Byoyomi:30",
+  "Least_Time_Per_Move:1",
+  "END Time-",
+  "BEGIN Position",
+  "局面1行目",
+  "局面2行目",
+  "END Position",
+  "END Game_Summary",
+];
+
+const mockGameSummaryWithUnequalTimeAndIncremnt = [
+  "BEGIN Game_Summary",
+  "Protocol_Version:1.2",
+  "Protocol_Mode:Server",
+  "Format:Shogi 1.0",
+  "Declaration:Jishogi 1.1",
+  "Game_ID:20150505-CSA25-3-5-7",
+  "Name+:TANUKI",
+  "Name-:KITSUNE",
+  "Your_Turn:-",
+  "Rematch_On_Draw:NO",
+  "To_Move:+",
+  "Max_Moves:256",
+  "BEGIN Time+",
+  "Time_Unit:1sec",
+  "Total_Time:300",
+  "Increment:5",
+  "Delay:1",
+  "Least_Time_Per_Move:1",
+  "END Time+",
+  "BEGIN Time-",
+  "Time_Unit:1sec",
+  "Total_Time:600",
+  "Increment:10",
+  "Least_Time_Per_Move:1",
+  "END Time-",
+  "BEGIN Position",
+  "局面1行目",
+  "局面2行目",
+  "END Position",
+  "END Game_Summary",
+];
+
 function bindHandlers(client: Client) {
   const handlers = {
     mockOnGameSummary: vi.fn(),
@@ -239,16 +304,19 @@ describe("background/csa/client", () => {
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
-      blackPlayerName: "TANUKI",
-      whitePlayerName: "KITSUNE",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 10, delay: 0, increment: 0 },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 10, delay: 0, increment: 0 },
+        },
+      },
       myColor: Color.WHITE,
       toMove: Color.BLACK,
       position: "局面1行目\n局面2行目\n",
-      timeUnitMs: 1000,
-      totalTime: 600,
-      byoyomi: 10,
-      delay: 0,
-      increment: 0,
     });
     client.agree("20150505-CSA25-3-5-7");
     expect(mockSocket.prototype.write).toBeCalledTimes(2);
@@ -354,16 +422,19 @@ describe("background/csa/client", () => {
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
-      blackPlayerName: "TANUKI",
-      whitePlayerName: "KITSUNE",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 10, delay: 0, increment: 0 },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 10, delay: 0, increment: 0 },
+        },
+      },
       myColor: Color.WHITE,
       toMove: Color.BLACK,
       position: "局面1行目\n局面2行目\n",
-      timeUnitMs: 1000,
-      totalTime: 600,
-      byoyomi: 10,
-      delay: 0,
-      increment: 0,
     });
     client.agree("20150505-CSA25-3-5-7");
     expect(mockSocket.prototype.write).toBeCalledTimes(2);
@@ -566,16 +637,19 @@ describe("background/csa/client", () => {
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
-      blackPlayerName: "TANUKI",
-      whitePlayerName: "KITSUNE",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: { timeUnitMs: 1000, totalTime: 900, byoyomi: 0, delay: 0, increment: 5 },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: { timeUnitMs: 1000, totalTime: 900, byoyomi: 0, delay: 0, increment: 5 },
+        },
+      },
       myColor: Color.BLACK,
       toMove: Color.BLACK,
       position: "局面1行目\n局面2行目\n",
-      timeUnitMs: 1000,
-      totalTime: 900,
-      byoyomi: 0,
-      delay: 0,
-      increment: 5,
     });
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
@@ -616,8 +690,16 @@ describe("background/csa/client", () => {
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
-      blackPlayerName: "TANUKI",
-      whitePlayerName: "KITSUNE",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: { timeUnitMs: 1000, totalTime: 900, byoyomi: 0, delay: 0, increment: 5 },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: { timeUnitMs: 1000, totalTime: 900, byoyomi: 0, delay: 0, increment: 5 },
+        },
+      },
       myColor: Color.BLACK,
       toMove: Color.BLACK,
       position:
@@ -637,11 +719,6 @@ describe("background/csa/client", () => {
         "-3334FU,T6\n" +
         "+7776FU,T5\n" +
         "-8384FU,T7\n",
-      timeUnitMs: 1000,
-      totalTime: 900,
-      byoyomi: 0,
-      delay: 0,
-      increment: 5,
     });
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
@@ -682,8 +759,28 @@ describe("background/csa/client", () => {
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
-      blackPlayerName: "TANUKI",
-      whitePlayerName: "KITSUNE",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: {
+            timeUnitMs: 1,
+            totalTime: 900 * 1e3,
+            byoyomi: 0,
+            delay: 0,
+            increment: 5 * 1e3,
+          },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: {
+            timeUnitMs: 1,
+            totalTime: 900 * 1e3,
+            byoyomi: 0,
+            delay: 0,
+            increment: 5 * 1e3,
+          },
+        },
+      },
       myColor: Color.BLACK,
       toMove: Color.BLACK,
       position:
@@ -703,11 +800,6 @@ describe("background/csa/client", () => {
         "-3334FU,T6\n" +
         "+7776FU,T5\n" +
         "-8384FU,T7\n",
-      timeUnitMs: 1,
-      totalTime: 900 * 1e3,
-      byoyomi: 0,
-      delay: 0,
-      increment: 5 * 1e3,
     });
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
@@ -748,16 +840,19 @@ describe("background/csa/client", () => {
     expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
     expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
       id: "20150505-CSA25-3-5-7",
-      blackPlayerName: "TANUKI",
-      whitePlayerName: "KITSUNE",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: { timeUnitMs: 60 * 1e3, totalTime: 15, byoyomi: 1, delay: 0, increment: 0 },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: { timeUnitMs: 60 * 1e3, totalTime: 15, byoyomi: 1, delay: 0, increment: 0 },
+        },
+      },
       myColor: Color.BLACK,
       toMove: Color.BLACK,
       position: "局面1行目\n局面2行目\n",
-      timeUnitMs: 60 * 1e3,
-      totalTime: 15,
-      byoyomi: 1,
-      delay: 0,
-      increment: 0,
     });
     client.agree("20150505-CSA25-3-5-7");
     socketHandlers.onRead("START:20150505-CSA25-3-5-7");
@@ -807,5 +902,63 @@ describe("background/csa/client", () => {
     expect(clientHandlers.mockOnError).toBeCalledTimes(1);
     expect(mockSocket.prototype.write).toBeCalledTimes(2);
     expect(mockSocket.prototype.write.mock.calls[1][0]).toBe("LOGOUT");
+  });
+
+  it("unequal_time_settings", async () => {
+    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const clientHandlers = bindHandlers(client);
+    client.login();
+    const socketHandlers = mockSocket.mock.calls[0][2];
+    socketHandlers.onConnect();
+    socketHandlers.onRead("LOGIN:TestPlayer OK");
+    for (const line of mockGameSummaryWithUnequalTime) {
+      socketHandlers.onRead(line);
+    }
+    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
+      id: "20150505-CSA25-3-5-7",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: { timeUnitMs: 1000, totalTime: 300, byoyomi: 10, delay: 0, increment: 0 },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 30, delay: 0, increment: 0 },
+        },
+      },
+      myColor: Color.WHITE,
+      toMove: Color.BLACK,
+      position: "局面1行目\n局面2行目\n",
+    });
+  });
+
+  it("unequal_time_settings_with_increment", async () => {
+    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const clientHandlers = bindHandlers(client);
+    client.login();
+    const socketHandlers = mockSocket.mock.calls[0][2];
+    socketHandlers.onConnect();
+    socketHandlers.onRead("LOGIN:TestPlayer OK");
+    for (const line of mockGameSummaryWithUnequalTimeAndIncremnt) {
+      socketHandlers.onRead(line);
+    }
+    expect(clientHandlers.mockOnGameSummary).toBeCalledTimes(1);
+    expect(clientHandlers.mockOnGameSummary.mock.calls[0][0]).toStrictEqual({
+      id: "20150505-CSA25-3-5-7",
+      players: {
+        black: {
+          playerName: "TANUKI",
+          time: { timeUnitMs: 1000, totalTime: 300, byoyomi: 0, delay: 1, increment: 5 },
+        },
+        white: {
+          playerName: "KITSUNE",
+          time: { timeUnitMs: 1000, totalTime: 600, byoyomi: 0, delay: 0, increment: 10 },
+        },
+      },
+      myColor: Color.WHITE,
+      toMove: Color.BLACK,
+      position: "局面1行目\n局面2行目\n",
+    });
   });
 });

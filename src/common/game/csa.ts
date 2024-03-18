@@ -1,17 +1,37 @@
 import { Color } from "electron-shogi-core";
 
-export type CSAGameSummary = {
-  id: string;
-  blackPlayerName?: string;
-  whitePlayerName?: string;
-  myColor: Color.BLACK | Color.WHITE;
-  toMove: Color.BLACK | Color.WHITE;
-  position: string;
+export type CSAGameTimeConfig = {
   timeUnitMs: number;
   totalTime: number;
   byoyomi: number;
   delay: number;
   increment: number;
+};
+
+export type CSAGamePlayerConfig = {
+  playerName?: string;
+  time: CSAGameTimeConfig;
+};
+
+function emptyCSAGameTimeConfig(): CSAGameTimeConfig {
+  return {
+    timeUnitMs: 1e3,
+    totalTime: 0,
+    byoyomi: 0,
+    delay: 0,
+    increment: 0,
+  };
+}
+
+export type CSAGameSummary = {
+  id: string;
+  players: {
+    black: CSAGamePlayerConfig;
+    white: CSAGamePlayerConfig;
+  };
+  myColor: Color.BLACK | Color.WHITE;
+  toMove: Color.BLACK | Color.WHITE;
+  position: string;
 };
 
 export function emptyCSAGameSummary(): CSAGameSummary {
@@ -20,11 +40,14 @@ export function emptyCSAGameSummary(): CSAGameSummary {
     myColor: Color.BLACK,
     toMove: Color.BLACK,
     position: "",
-    timeUnitMs: 1e3,
-    totalTime: 0,
-    byoyomi: 0,
-    delay: 0,
-    increment: 0,
+    players: {
+      black: {
+        time: emptyCSAGameTimeConfig(),
+      },
+      white: {
+        time: emptyCSAGameTimeConfig(),
+      },
+    },
   };
 }
 

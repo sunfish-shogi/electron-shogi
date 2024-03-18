@@ -328,14 +328,16 @@ export class CSAGameManager {
     this.onNewGame(this.repeat);
 
     // 対局情報を初期化する。
+    const blackTimeConfig = this.gameSummary.players.black.time;
     this.recordManager.setGameStartMetadata({
       gameTitle: this.gameSummary.id,
-      blackName: this.gameSummary.blackPlayerName,
-      whiteName: this.gameSummary.whitePlayerName,
+      blackName: this.gameSummary.players.black.playerName,
+      whiteName: this.gameSummary.players.white.playerName,
+      // 現状の KIF 形式や CSA 形式では手番ごとの持ち時間は表現できないため、先手の持ち時間のみを記述する。
       timeLimit: {
-        timeSeconds: (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3,
-        byoyomi: (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3,
-        increment: (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3,
+        timeSeconds: (blackTimeConfig.totalTime * blackTimeConfig.timeUnitMs) / 1e3,
+        byoyomi: (blackTimeConfig.byoyomi * blackTimeConfig.timeUnitMs) / 1e3,
+        increment: (blackTimeConfig.increment * blackTimeConfig.timeUnitMs) / 1e3,
       },
     });
 
@@ -365,7 +367,7 @@ export class CSAGameManager {
       moveOption: {
         ignoreValidation: true,
       },
-      elapsedMs: this.parseElapsedMs(data),
+      elapsedMs: this.parseElapsedMs(move.color, data),
     });
 
     // 探索情報を記録する。
@@ -386,9 +388,10 @@ export class CSAGameManager {
     this.next(playerStates);
   }
 
-  private parseElapsedMs(data: string): number {
+  private parseElapsedMs(color: Color, data: string): number {
+    const timeConfig = this.gameSummary.players[color].time;
     const parsed = /^.*,T([0-9]+)$/.exec(data);
-    return parsed ? Number(parseInt(parsed[1])) * this.gameSummary.timeUnitMs : 0;
+    return parsed ? Number(parseInt(parsed[1])) * timeConfig.timeUnitMs : 0;
   }
 
   onGameResult(move: CSASpecialMove, gameResult: CSAGameResult): void {
@@ -480,18 +483,21 @@ export class CSAGameManager {
 
   private syncClock(playerStates: CSAPlayerStates): void {
     const clockSetting = {
-      byoyomi: (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3,
       onBeepShort: () => this.onBeepShort(),
       onBeepUnlimited: () => this.onBeepUnlimited(),
       onStopBeep: () => this.onStopBeep(),
     };
+    const blackTimeConfig = this.gameSummary.players.black.time;
     this.blackClock.setup({
       ...clockSetting,
-      timeMs: playerStates.black.time * this.gameSummary.timeUnitMs,
+      timeMs: playerStates.black.time * blackTimeConfig.timeUnitMs,
+      byoyomi: (blackTimeConfig.byoyomi * blackTimeConfig.timeUnitMs) / 1e3,
     });
+    const whiteTimeConfig = this.gameSummary.players.white.time;
     this.whiteClock.setup({
       ...clockSetting,
-      timeMs: playerStates.white.time * this.gameSummary.timeUnitMs,
+      timeMs: playerStates.white.time * whiteTimeConfig.timeUnitMs,
+      byoyomi: (whiteTimeConfig.byoyomi * whiteTimeConfig.timeUnitMs) / 1e3,
     });
   }
 
@@ -514,8 +520,8 @@ export class CSAGameManager {
         this.recordManager.record.position,
         this.recordManager.record.usi,
         this.buildTimeLimitSetting(),
-        playerStates.black.time * this.gameSummary.timeUnitMs,
-        playerStates.white.time * this.gameSummary.timeUnitMs,
+        playerStates.black.time * this.gameSummary.players.black.time.timeUnitMs,
+        playerStates.white.time * this.gameSummary.players.white.time.timeUnitMs,
         {
           onMove: this.onPlayerMove.bind(this),
           onResign: this.onPlayerResign.bind(this),
@@ -572,10 +578,11 @@ export class CSAGameManager {
       });
   }
 
-  private buildTimeLimitSetting(): TimeLimitSetting {
-    const timeSeconds = (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3;
-    const byoyomi = (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3;
-    const increment = (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3;
+  private buildTimeLimitSetting(color: Color): TimeLimitSetting {
+    const timeConfig = this.gameSummary.players[color].time;
+    const timeSeconds = (timeConfig.totalTime * timeConfig.timeUnitMs) / 1e3;
+    const byoyomi = (timeConfig.byoyomi * timeConfig.timeUnitMs) / 1e3;
+    const increment = (timeConfig.increment * timeConfig.timeUnitMs) / 1e3;
     return {
       timeSeconds,
       byoyomi,

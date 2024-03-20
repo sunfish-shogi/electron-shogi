@@ -1,7 +1,6 @@
 import { USIEngineSetting, emptyUSIEngineSetting } from "@/common/settings/usi";
 import { EngineProcess, GameResult as USIGameResult, TimeState, State } from "./engine";
 import * as uri from "@/common/uri";
-import { TimeLimitSetting } from "@/common/settings/game";
 import { GameResult } from "@/common/game/result";
 import { t } from "@/common/i18n";
 import { resolveEnginePath } from "@/background/usi/path";
@@ -9,6 +8,8 @@ import { getUSILogger } from "@/background/log";
 import { USISessionState } from "@/common/advanced/monitor";
 import { CommandHistory, CommandType, Command } from "@/common/advanced/command";
 import { USIInfoCommand } from "@/common/game/usi";
+import { Color, getNextColorFromUSI } from "electron-shogi-core";
+import { TimeStates } from "@/common/game/time";
 
 interface Handlers {
   onUSIBestMove(sessionID: number, usi: string, usiMove: string, ponder?: string): void;
@@ -162,43 +163,37 @@ export function ready(sessionID: number): Promise<void> {
   });
 }
 
-function buildTimeState(
-  timeLimit: TimeLimitSetting,
-  blackTimeMs: number,
-  whiteTimeMs: number,
-): TimeState {
-  // USI では btime + binc (または wtime + winc) が今回利用可能な時間を表すとしている。
-  // Electron Shogi では既に加算した後の値を保持しているため、ここで減算する。
+function buildTimeState(color: Color, timeStates: TimeStates): TimeState {
+  const black = timeStates.black;
+  const white = timeStates.white;
+  const byoyomi = timeStates[color].byoyomi;
   return {
-    btime: blackTimeMs - timeLimit.increment * 1e3,
-    wtime: whiteTimeMs - timeLimit.increment * 1e3,
-    byoyomi: timeLimit.byoyomi * 1e3,
-    binc: timeLimit.increment * 1e3,
-    winc: timeLimit.increment * 1e3,
+    // NOTE:
+    //   USI では btime + binc (または wtime + winc) が今回利用可能な時間を表すとしている。
+    //   Electron Shogi では既に加算した後の値を保持しているため、ここで減算する。
+    btime: black.timeMs - black.increment * 1e3,
+    wtime: white.timeMs - white.increment * 1e3,
+    byoyomi: byoyomi * 1e3,
+    // NOTE:
+    //   USI で byoyomi と binc, winc の同時使用は認められていない。
+    //   Electron Shogi では一方が秒読みでもう一方がフィッシャーという設定も可能なので、
+    //   自分が秒読みの場合はそれを優先し、相手の加算時間は記述しない。
+    binc: byoyomi === 0 ? black.increment * 1e3 : 0,
+    winc: byoyomi === 0 ? white.increment * 1e3 : 0,
   };
 }
 
-export function go(
-  sessionID: number,
-  usi: string,
-  timeLimit: TimeLimitSetting,
-  blackTimeMs: number,
-  whiteTimeMs: number,
-): void {
+export function go(sessionID: number, usi: string, timeStates: TimeStates): void {
   const session = getSession(sessionID);
-  session.process.go(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
+  const nextColor = getNextColorFromUSI(usi);
+  session.process.go(usi, buildTimeState(nextColor, timeStates));
   session.process.on("info", (usi, info) => h.onUSIInfo(sessionID, usi, info));
 }
 
-export function goPonder(
-  sessionID: number,
-  usi: string,
-  timeLimit: TimeLimitSetting,
-  blackTimeMs: number,
-  whiteTimeMs: number,
-): void {
+export function goPonder(sessionID: number, usi: string, timeStates: TimeStates): void {
   const session = getSession(sessionID);
-  session.process.goPonder(usi, buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
+  const nextColor = getNextColorFromUSI(usi);
+  session.process.goPonder(usi, buildTimeState(nextColor, timeStates));
   session.process.on("ponderInfo", (usi, info) => {
     h.onUSIPonderInfo(sessionID, usi, info);
   });
@@ -216,14 +211,10 @@ export function goMate(sessionID: number, usi: string): void {
   session.process.on("info", (usi, info) => h.onUSIInfo(sessionID, usi, info));
 }
 
-export function ponderHit(
-  sessionID: number,
-  timeLimit: TimeLimitSetting,
-  blackTimeMs: number,
-  whiteTimeMs: number,
-): void {
+export function ponderHit(sessionID: number, timeStates: TimeStates): void {
   const session = getSession(sessionID);
-  session.process.ponderHit(buildTimeState(timeLimit, blackTimeMs, whiteTimeMs));
+  const nextColor = getNextColorFromUSI(session.process.currentPosition);
+  session.process.ponderHit(buildTimeState(nextColor, timeStates));
 }
 
 export function stop(sessionID: number): void {

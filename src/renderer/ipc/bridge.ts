@@ -49,26 +49,9 @@ export interface Bridge {
   sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void>;
   usiLaunch(json: string, timeoutSeconds: number): Promise<number>;
   usiReady(sessionID: number): Promise<void>;
-  usiGo(
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
-  usiGoPonder(
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
-  usiPonderHit(
-    sessionID: number,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
+  usiGo(sessionID: number, usi: string, timeStatesJSON: string): Promise<void>;
+  usiGoPonder(sessionID: number, usi: string, timeStatesJSON: string): Promise<void>;
+  usiPonderHit(sessionID: number, timeStatesJSON: string): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiGoMate(sessionID: number, usi: string): Promise<void>;
   usiStop(sessionID: number): Promise<void>;

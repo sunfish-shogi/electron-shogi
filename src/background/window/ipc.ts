@@ -534,43 +534,24 @@ ipcMain.handle(Background.USI_READY, async (event, sessionID: number) => {
 
 ipcMain.handle(
   Background.USI_GO,
-  (
-    event,
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ) => {
+  (event, sessionID: number, usi: string, timeStatesJSON: string) => {
     validateIPCSender(event.senderFrame);
-    const timeLimit = JSON.parse(json);
-    usiGo(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
+    usiGo(sessionID, usi, JSON.parse(timeStatesJSON));
   },
 );
 
 ipcMain.handle(
   Background.USI_GO_PONDER,
-  (
-    event,
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ) => {
+  (event, sessionID: number, usi: string, timeStatesJSON: string) => {
     validateIPCSender(event.senderFrame);
-    const timeLimit = JSON.parse(json);
-    usiGoPonder(sessionID, usi, timeLimit, blackTimeMs, whiteTimeMs);
+    usiGoPonder(sessionID, usi, JSON.parse(timeStatesJSON));
   },
 );
 
-ipcMain.handle(
-  Background.USI_GO_PONDER_HIT,
-  (event, sessionID: number, json: string, blackTimeMs: number, whiteTimeMs: number) => {
-    validateIPCSender(event.senderFrame);
-    usiPonderHit(sessionID, JSON.parse(json), blackTimeMs, whiteTimeMs);
-  },
-);
+ipcMain.handle(Background.USI_GO_PONDER_HIT, (event, sessionID: number, timeStatesJSON: string) => {
+  validateIPCSender(event.senderFrame);
+  usiPonderHit(sessionID, JSON.parse(timeStatesJSON));
+});
 
 ipcMain.handle(Background.USI_GO_INFINITE, (event, sessionID: number, usi: string) => {
   validateIPCSender(event.senderFrame);

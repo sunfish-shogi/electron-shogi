@@ -177,31 +177,14 @@ export function preload(config: Config) {
     async usiReady(sessionID: number): Promise<void> {
       return await usiReady(sessionID);
     },
-    async usiGo(
-      sessionID: number,
-      usi: string,
-      json: string,
-      blackTimeMs: number,
-      whiteTimeMs: number,
-    ): Promise<void> {
-      usiGo(sessionID, usi, JSON.parse(json), blackTimeMs, whiteTimeMs);
+    async usiGo(sessionID: number, usi: string, timeStates: string): Promise<void> {
+      usiGo(sessionID, usi, JSON.parse(timeStates));
     },
-    async usiGoPonder(
-      sessionID: number,
-      usi: string,
-      json: string,
-      blackTimeMs: number,
-      whiteTimeMs: number,
-    ): Promise<void> {
-      usiGoPonder(sessionID, usi, JSON.parse(json), blackTimeMs, whiteTimeMs);
+    async usiGoPonder(sessionID: number, usi: string, timeStatesJSON: string): Promise<void> {
+      usiGoPonder(sessionID, usi, JSON.parse(timeStatesJSON));
     },
-    async usiPonderHit(
-      sessionID: number,
-      json: string,
-      blackTimeMs: number,
-      whiteTimeMs: number,
-    ): Promise<void> {
-      usiPonderHit(sessionID, JSON.parse(json), blackTimeMs, whiteTimeMs);
+    async usiPonderHit(sessionID: number, timeStatesJSON: string): Promise<void> {
+      usiPonderHit(sessionID, JSON.parse(timeStatesJSON));
     },
     async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
       usiGoInfinite(sessionID, usi);

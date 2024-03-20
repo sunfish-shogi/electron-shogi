@@ -20,9 +20,9 @@ import {
 import { Clock } from "./clock";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
-import { TimeLimitSetting } from "@/common/settings/game";
 import { t } from "@/common/i18n";
 import { GameResult } from "@/common/game/result";
+import { TimeStates } from "@/common/game/time";
 
 export const loginRetryIntervalSeconds = 10;
 
@@ -505,18 +505,12 @@ export class CSAGameManager {
       return;
     }
     this.player
-      .startSearch(
-        this.recordManager.record,
-        this.buildTimeLimitSetting(),
-        playerStates.black.time * this.gameSummary.timeUnitMs,
-        playerStates.white.time * this.gameSummary.timeUnitMs,
-        {
-          onMove: this.onPlayerMove.bind(this),
-          onResign: this.onPlayerResign.bind(this),
-          onWin: this.onPlayerWin.bind(this),
-          onError: this.onPlayerError.bind(this),
-        },
-      )
+      .startSearch(this.recordManager.record, this.buildTimeStates(playerStates), {
+        onMove: this.onPlayerMove.bind(this),
+        onResign: this.onPlayerResign.bind(this),
+        onWin: this.onPlayerWin.bind(this),
+        onError: this.onPlayerError.bind(this),
+      })
       .catch((e) => {
         this.onError(new Error(`CSAGameManager#next: ${t.failedToSendGoCommand}: ${e}`));
       });
@@ -527,26 +521,29 @@ export class CSAGameManager {
       this.onError("CSAGameManager#startPonder: player is not initialized");
       return;
     }
-    this.player
-      .startPonder(
-        this.recordManager.record,
-        this.buildTimeLimitSetting(),
-        this.blackClock.timeMs,
-        this.whiteClock.timeMs,
-      )
-      .catch((e) => {
-        this.onError(new Error(`CSAGameManager#next: ${t.failedToSendPonderCommand}: ${e}`));
-      });
+    this.player.startPonder(this.recordManager.record, this.buildTimeStates()).catch((e) => {
+      this.onError(new Error(`CSAGameManager#startPonder: ${t.failedToSendPonderCommand}: ${e}`));
+    });
   }
 
-  private buildTimeLimitSetting(): TimeLimitSetting {
-    const timeSeconds = (this.gameSummary.totalTime * this.gameSummary.timeUnitMs) / 1e3;
+  private buildTimeStates(playerStates?: CSAPlayerStates): TimeStates {
     const byoyomi = (this.gameSummary.byoyomi * this.gameSummary.timeUnitMs) / 1e3;
     const increment = (this.gameSummary.increment * this.gameSummary.timeUnitMs) / 1e3;
     return {
-      timeSeconds,
-      byoyomi,
-      increment,
+      black: {
+        timeMs: playerStates
+          ? playerStates.black.time * this.gameSummary.timeUnitMs
+          : this.blackClock.timeMs,
+        byoyomi,
+        increment,
+      },
+      white: {
+        timeMs: playerStates
+          ? playerStates.white.time * this.gameSummary.timeUnitMs
+          : this.whiteClock.timeMs,
+        byoyomi,
+        increment,
+      },
     };
   }
 

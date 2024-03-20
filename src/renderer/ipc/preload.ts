@@ -140,30 +140,11 @@ const api: Bridge = {
   async usiReady(sessionID: number): Promise<void> {
     await ipcRenderer.invoke(Background.USI_READY, sessionID);
   },
-  async usiGo(
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void> {
-    await ipcRenderer.invoke(Background.USI_GO, sessionID, usi, json, blackTimeMs, whiteTimeMs);
+  async usiGo(sessionID: number, usi: string, timeStatesJSON: string): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_GO, sessionID, usi, timeStatesJSON);
   },
-  async usiGoPonder(
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void> {
-    await ipcRenderer.invoke(
-      Background.USI_GO_PONDER,
-      sessionID,
-      usi,
-      json,
-      blackTimeMs,
-      whiteTimeMs,
-    );
+  async usiGoPonder(sessionID: number, usi: string, timeStatesJSON: string): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_GO_PONDER, sessionID, usi, timeStatesJSON);
   },
   async usiPonderHit(sessionID: number): Promise<void> {
     await ipcRenderer.invoke(Background.USI_GO_PONDER_HIT, sessionID);

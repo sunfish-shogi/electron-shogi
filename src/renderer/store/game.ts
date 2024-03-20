@@ -20,6 +20,7 @@ import { Clock } from "./clock";
 import { defaultPlayerBuilder, PlayerBuilder } from "@/renderer/players/builder";
 import { GameResult } from "@/common/game/result";
 import { t } from "@/common/i18n";
+import { TimeStates } from "@/common/game/time";
 
 enum GameState {
   IDLE = "idle",
@@ -301,34 +302,34 @@ export class GameManager {
     }
     // イベント ID を発行する。
     const eventID = this.issueEventID();
+    // 時間の情報をまとめる。
+    const timeStates: TimeStates = {
+      black: {
+        timeMs: this.blackClock.timeMs,
+        byoyomi: this.blackClock.setting.byoyomi || 0,
+        increment: this.blackClock.setting.increment || 0,
+      },
+      white: {
+        timeMs: this.whiteClock.timeMs,
+        byoyomi: this.whiteClock.setting.byoyomi || 0,
+        increment: this.whiteClock.setting.increment || 0,
+      },
+    };
     // 手番側のプレイヤーの思考を開始する。
     player
-      .startSearch(
-        this.recordManager.record,
-        this.setting.timeLimit,
-        this.blackClock.timeMs,
-        this.whiteClock.timeMs,
-        {
-          onMove: (move, info) => this.onMove(eventID, move, info),
-          onResign: () => this.onResign(eventID),
-          onWin: () => this.onWin(eventID),
-          onError: (e) => this.onError(e),
-        },
-      )
+      .startSearch(this.recordManager.record, timeStates, {
+        onMove: (move, info) => this.onMove(eventID, move, info),
+        onResign: () => this.onResign(eventID),
+        onWin: () => this.onWin(eventID),
+        onError: (e) => this.onError(e),
+      })
       .catch((e) => {
         this.onError(new Error(`GameManager#nextMove: ${t.failedToSendGoCommand}: ${e}`));
       });
     // Ponder を開始する。
-    ponderPlayer
-      .startPonder(
-        this.recordManager.record,
-        this.setting.timeLimit,
-        this.blackClock.timeMs,
-        this.whiteClock.timeMs,
-      )
-      .catch((e) => {
-        this.onError(new Error(`GameManager#nextMove: ${t.failedToSendPonderCommand}: ${e}`));
-      });
+    ponderPlayer.startPonder(this.recordManager.record, timeStates).catch((e) => {
+      this.onError(new Error(`GameManager#nextMove: ${t.failedToSendPonderCommand}: ${e}`));
+    });
   }
 
   private onMove(eventID: number, move: Move, info?: SearchInfo): void {

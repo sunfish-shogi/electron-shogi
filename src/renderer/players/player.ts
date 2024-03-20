@@ -1,5 +1,5 @@
 import { GameResult } from "@/common/game/result";
-import { TimeLimitSetting } from "@/common/settings/game";
+import { TimeStates } from "@/common/game/time";
 import { ImmutablePosition, Move } from "electron-shogi-core";
 
 export type SearchInfo = {
@@ -31,18 +31,10 @@ export interface Player {
   startSearch(
     position: ImmutablePosition,
     usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
+    timeStates: TimeStates,
     handler: SearchHandler,
   ): Promise<void>;
-  startPonder(
-    position: ImmutablePosition,
-    usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
+  startPonder(position: ImmutablePosition, usi: string, timeStates: TimeStates): Promise<void>;
   startMateSearch(position: ImmutablePosition, usi: string, handler: MateHandler): Promise<void>;
   stop(): Promise<void>;
   gameover(result: GameResult): Promise<void>;

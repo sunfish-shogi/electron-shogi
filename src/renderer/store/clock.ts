@@ -9,7 +9,7 @@ export type ClockSetting = {
 };
 
 export class Clock {
-  private setting: ClockSetting = {
+  private _setting: ClockSetting = {
     timeMs: 0,
     byoyomi: 0,
     increment: 0,
@@ -22,10 +22,14 @@ export class Clock {
   private lastTimeMs = 0;
 
   setup(setting: ClockSetting): void {
-    this.setting = setting;
+    this._setting = setting;
     this._timeMs = setting.timeMs || 0;
     this._byoyomi = setting.byoyomi || 0;
     this._elapsedMs = 0;
+  }
+
+  get setting(): ClockSetting {
+    return this._setting;
   }
 
   get time(): number {

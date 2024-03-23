@@ -10,11 +10,7 @@ vi.mock("@/background/usi/process");
 const mockChildProcess = ChildProcess as MockedClass<typeof ChildProcess>;
 
 function getChildProcessHandler(mock: MockedClass<typeof ChildProcess>, name: string): any {
-  for (const call of mock.prototype.on.mock.calls) {
-    if (call[0] === name) {
-      return call[1];
-    }
-  }
+  return mock.prototype.on.mock.calls.find((call) => call[0] === name)![1];
 }
 
 function bindHandlers(engine: EngineProcess) {
@@ -45,7 +41,7 @@ function bindHandlers(engine: EngineProcess) {
   return handlers;
 }
 
-describe("ipc/background/usi/engine", () => {
+describe("background/usi/engine", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });

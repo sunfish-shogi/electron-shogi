@@ -354,7 +354,7 @@ export class EngineProcess {
   goMate(position: string): void {
     if (this.state !== State.Ready) {
       // Ready ステータス以外で go mate を実行するケースは考えにくいので無効とする。
-      this.logger.warn("sid=%d: goPonder: unexpected state: %s", this.sessionID, this.state);
+      this.logger.warn("sid=%d: goMate: unexpected state: %s", this.sessionID, this.state);
       return;
     }
     this.reservedGoCommand = {

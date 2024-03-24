@@ -1,5 +1,5 @@
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
-import { GameSetting, TimeLimitSetting } from "@/common/settings/game";
+import { GameSetting } from "@/common/settings/game";
 import { AppSetting } from "@/common/settings/app";
 import { MenuEvent } from "@/common/control/menu";
 import { webAPI } from "./web";
@@ -17,6 +17,7 @@ import { BatchConversionResult } from "@/common/file/conversion";
 import { RecordFileHistory } from "@/common/file/history";
 import { InitialRecordFileRequest } from "@/common/file/record";
 import { VersionStatus } from "@/background/version/types";
+import { TimeStates } from "@/common/game/time";
 
 type AppInfo = {
   appVersion?: string;
@@ -65,20 +66,8 @@ export interface Bridge {
   sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void>;
   usiLaunch(json: string, timeoutSeconds: number): Promise<number>;
   usiReady(sessionID: number): Promise<void>;
-  usiGo(
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
-  usiGoPonder(
-    sessionID: number,
-    usi: string,
-    json: string,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
+  usiGo(sessionID: number, usi: string, timeStatesJSON: string): Promise<void>;
+  usiGoPonder(sessionID: number, usi: string, timeStatesJSON: string): Promise<void>;
   usiPonderHit(sessionID: number): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiGoMate(sessionID: number, usi: string): Promise<void>;
@@ -165,20 +154,8 @@ export interface API {
   sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void>;
   usiLaunch(setting: USIEngineSetting, timeoutSeconds: number): Promise<number>;
   usiReady(sessionID: number): Promise<void>;
-  usiGo(
-    sessionID: number,
-    usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
-  usiGoPonder(
-    sessionID: number,
-    usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void>;
+  usiGo(sessionID: number, usi: string, timeStates: TimeStates): Promise<void>;
+  usiGoPonder(sessionID: number, usi: string, timeStates: TimeStates): Promise<void>;
   usiPonderHit(sessionID: number): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
   usiGoMate(sessionID: number, usi: string): Promise<void>;
@@ -286,23 +263,11 @@ const api: API = {
   usiReady(sessionID: number): Promise<void> {
     return bridge.usiReady(sessionID);
   },
-  usiGo(
-    sessionID: number,
-    usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void> {
-    return bridge.usiGo(sessionID, usi, JSON.stringify(timeLimit), blackTimeMs, whiteTimeMs);
+  usiGo(sessionID: number, usi: string, timeStates: TimeStates): Promise<void> {
+    return bridge.usiGo(sessionID, usi, JSON.stringify(timeStates));
   },
-  usiGoPonder(
-    sessionID: number,
-    usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
-  ): Promise<void> {
-    return bridge.usiGoPonder(sessionID, usi, JSON.stringify(timeLimit), blackTimeMs, whiteTimeMs);
+  usiGoPonder(sessionID: number, usi: string, timeStates: TimeStates): Promise<void> {
+    return bridge.usiGoPonder(sessionID, usi, JSON.stringify(timeStates));
   },
   csaLogin(setting: CSAServerSetting): Promise<number> {
     return bridge.csaLogin(JSON.stringify(setting));

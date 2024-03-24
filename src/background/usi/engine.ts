@@ -166,7 +166,7 @@ export class EngineProcess {
   private _author = "";
   private _engineOptions = {} as USIEngineOptions;
   private state = State.WaitingForUSIOK;
-  private currentPosition = "";
+  private _currentPosition = "";
   private invalidBestMoveCount = 0;
   private reservedGoCommand?: ReservedGoCommand;
   private launchTimeout?: NodeJS.Timeout;
@@ -204,6 +204,10 @@ export class EngineProcess {
 
   get engineOptions(): USIEngineOptions {
     return this._engineOptions;
+  }
+
+  get currentPosition(): string {
+    return this._currentPosition;
   }
 
   on(event: "timeout", callback: TimeoutCallback): this;
@@ -318,6 +322,8 @@ export class EngineProcess {
       position,
       timeState,
     };
+    // 検討の場合には bestmove を待たずに次の go コマンドの要求が来るので、
+    // go コマンドを予約して暗黙的に stop コマンドを送信する。
     switch (this.state) {
       case State.Ready:
         this.sendReservedGoCommands();
@@ -330,39 +336,32 @@ export class EngineProcess {
     }
   }
 
-  goPonder(position: string, timeState?: TimeState): void {
+  goPonder(position: string, timeState: TimeState): void {
+    if (this.state !== State.Ready) {
+      // ponder を実行する場合は必ず直前で bestmove が取得できているはず。
+      // Ready 以外のステータスで ponder を開始しても正常に機能しない。
+      this.logger.warn("sid=%d: goPonder: unexpected state: %s", this.sessionID, this.state);
+      return;
+    }
     this.reservedGoCommand = {
       position,
       timeState,
       ponder: true,
     };
-    switch (this.state) {
-      case State.Ready:
-        this.sendReservedGoCommands();
-        break;
-      case State.WaitingForBestMove:
-      case State.Ponder:
-      case State.WaitingForCheckmate:
-        this.stop();
-        break;
-    }
+    this.sendReservedGoCommands();
   }
 
   goMate(position: string): void {
+    if (this.state !== State.Ready) {
+      // Ready ステータス以外で go mate を実行するケースは考えにくいので無効とする。
+      this.logger.warn("sid=%d: goMate: unexpected state: %s", this.sessionID, this.state);
+      return;
+    }
     this.reservedGoCommand = {
       position,
       mate: true,
     };
-    switch (this.state) {
-      case State.Ready:
-        this.sendReservedGoCommands();
-        break;
-      case State.WaitingForBestMove:
-      case State.Ponder:
-      case State.WaitingForCheckmate:
-        this.stop();
-        break;
-    }
+    this.sendReservedGoCommands();
   }
 
   ponderHit(): void {
@@ -491,7 +490,7 @@ export class EngineProcess {
         (this.reservedGoCommand.mate ? "mate " : "") +
         buildTimeOptions(this.reservedGoCommand.timeState),
     );
-    this.currentPosition = this.reservedGoCommand.position;
+    this._currentPosition = this.reservedGoCommand.position;
     this.state = this.reservedGoCommand.ponder
       ? State.Ponder
       : this.reservedGoCommand.mate
@@ -640,7 +639,7 @@ export class EngineProcess {
       this.bestMoveCallback(this.currentPosition, move, ponder);
     }
     this.state = State.Ready;
-    this.currentPosition = "";
+    this._currentPosition = "";
     this.sendReservedGoCommands();
   }
 

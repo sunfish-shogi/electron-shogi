@@ -1,10 +1,10 @@
 import api from "@/renderer/ipc/api";
 import { parseUSIPV, USIInfoCommand } from "@/common/game/usi";
-import { TimeLimitSetting } from "@/common/settings/game";
 import { getUSIEngineOptionCurrentValue, USIEngineSetting, USIPonder } from "@/common/settings/usi";
 import { Color, ImmutablePosition, Move, Position } from "electron-shogi-core";
 import { Player, SearchInfo, SearchHandler, MateHandler } from "./player";
 import { GameResult } from "@/common/game/result";
+import { TimeStates } from "@/common/game/time";
 
 type onUpdateUSIInfoHandler = (
   sessionID: number,
@@ -65,9 +65,7 @@ export class USIPlayer implements Player {
   async startSearch(
     position: ImmutablePosition,
     usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
+    timeStates: TimeStates,
     handler: SearchHandler,
   ): Promise<void> {
     this.clearHandlers();
@@ -75,10 +73,10 @@ export class USIPlayer implements Player {
     this.usi = usi;
     this.position = position.clone();
     if (this.inPonder && this.ponder === this.usi) {
-      api.usiPonderHit(this.sessionID, timeLimit, blackTimeMs, whiteTimeMs);
+      api.usiPonderHit(this.sessionID, timeStates);
     } else {
       this.info = undefined;
-      await api.usiGo(this.sessionID, this.usi, timeLimit, blackTimeMs, whiteTimeMs);
+      await api.usiGo(this.sessionID, this.usi, timeStates);
     }
     this.inPonder = false;
     this.ponder = undefined;
@@ -87,9 +85,7 @@ export class USIPlayer implements Player {
   async startPonder(
     position: ImmutablePosition,
     usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
+    timeStates: TimeStates,
   ): Promise<void> {
     // エンジンの USI_Ponder オプションが無効なら何もしない。
     const ponderSetting = getUSIEngineOptionCurrentValue(this.setting.options[USIPonder]);
@@ -119,7 +115,7 @@ export class USIPlayer implements Player {
     this.position.doMove(ponderMove);
     this.info = undefined;
     this.inPonder = true;
-    await api.usiGoPonder(this.sessionID, this.ponder, timeLimit, blackTimeMs, whiteTimeMs);
+    await api.usiGoPonder(this.sessionID, this.ponder, timeStates);
   }
 
   async startMateSearch(

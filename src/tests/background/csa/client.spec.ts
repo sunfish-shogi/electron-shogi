@@ -213,7 +213,7 @@ function bindHandlers(client: Client) {
   return handlers;
 }
 
-describe("ipc/background/csa/client", () => {
+describe("background/csa/client", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });

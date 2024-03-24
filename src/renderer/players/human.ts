@@ -1,6 +1,6 @@
-import { TimeLimitSetting } from "@/common/settings/game";
 import { ImmutablePosition, Move } from "electron-shogi-core";
 import { Player, SearchHandler } from "./player";
+import { TimeStates } from "@/common/game/time";
 
 export class HumanPlayer implements Player {
   private searchHandler?: SearchHandler;
@@ -16,9 +16,7 @@ export class HumanPlayer implements Player {
   async startSearch(
     position: ImmutablePosition,
     usi: string,
-    timeLimit: TimeLimitSetting,
-    blackTimeMs: number,
-    whiteTimeMs: number,
+    timeStates: TimeStates,
     handler: SearchHandler,
   ): Promise<void> {
     this.searchHandler = handler;

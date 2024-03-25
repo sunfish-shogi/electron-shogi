@@ -48,7 +48,7 @@ export type CSAGameSetting = {
 
 export function defaultCSAServerSetting(): CSAServerSetting {
   return {
-    protocolVersion: CSAProtocolVersion.V121,
+    protocolVersion: CSAProtocolVersion.V121_FLOODGATE,
     host: "localhost",
     port: 4081,
     id: "",
@@ -229,7 +229,7 @@ export type SecureCSAServerSetting = {
 
 export function emptySecureCSAServerSetting(): SecureCSAServerSetting {
   return {
-    protocolVersion: CSAProtocolVersion.V121,
+    protocolVersion: CSAProtocolVersion.V121_FLOODGATE,
     host: "",
     port: 0,
     id: "",

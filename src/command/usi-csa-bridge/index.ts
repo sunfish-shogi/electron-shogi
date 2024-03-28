@@ -103,6 +103,7 @@ import { getAppLogger } from "@/background/log";
 import { defaultRecordFileNameTemplate, generateRecordFileName } from "@/renderer/helpers/path";
 import { RecordFileFormat } from "@/common/file/record";
 import { ordinal } from "@/common/helpers/string";
+import { exists } from "@/background/helpers/file";
 
 // --------------------------------------------------------------------------------
 // Phase-4. コマンド固有の処理を実行します。
@@ -110,21 +111,21 @@ import { ordinal } from "@/common/helpers/string";
 
 async function main() {
   // 設定ファイルを読み込みます。
+  const configFilePath = argParser.args[0];
   let cliSetting: CSAGameSettingForCLI;
   const base64Value = base64();
   if (base64Value) {
     cliSetting = await decompressCSAGameSettingForCLI(base64Value);
   } else {
-    const arg = argParser.args[0];
-    if (!arg) {
+    if (!configFilePath) {
       getAppLogger().error("config file is not specified.");
       argParser.showHelp();
       process.exit(1);
     }
-    if (arg.endsWith(".json")) {
-      cliSetting = JSON.parse(fs.readFileSync(arg, "utf-8")) as CSAGameSettingForCLI;
+    if (configFilePath.endsWith(".json")) {
+      cliSetting = JSON.parse(fs.readFileSync(configFilePath, "utf-8")) as CSAGameSettingForCLI;
     } else {
-      cliSetting = YAML.parse(fs.readFileSync(arg, "utf-8")) as CSAGameSettingForCLI;
+      cliSetting = YAML.parse(fs.readFileSync(configFilePath, "utf-8")) as CSAGameSettingForCLI;
     }
   }
 
@@ -137,6 +138,16 @@ async function main() {
   cliSetting.server.password = password() || cliSetting.server.password;
   cliSetting.saveRecordFile = saveRecordFile() || cliSetting.saveRecordFile;
   cliSetting.repeat = repeat() || cliSetting.repeat;
+
+  // USIエンジンが見つからない場合は、設定ファイルからの相対パスとみなして探します。
+  if (configFilePath && !(await exists(cliSetting.usi.path))) {
+    const relativePath = path.resolve(path.dirname(configFilePath), cliSetting.usi.path);
+    if (!(await exists(relativePath))) {
+      getAppLogger().error(`usi engine is not found: ${cliSetting.usi.path}`);
+      process.exit(1);
+    }
+    cliSetting.usi.path = relativePath;
+  }
 
   // CSAGameSetting に変換してバリデーションを実行します。
   const setting = importCSAGameSettingForCLI(cliSetting);

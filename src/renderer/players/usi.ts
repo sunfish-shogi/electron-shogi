@@ -233,18 +233,14 @@ export class USIPlayer implements Player {
         : infoCommand.currmove
           ? [infoCommand.currmove]
           : undefined;
-    const info = {
+    // 情報を更新する。
+    this.info = {
       usi: usi,
-      depth: infoCommand.depth,
-      score: infoCommand.scoreCP && infoCommand.scoreCP * sign,
-      mate: infoCommand.scoreMate && infoCommand.scoreMate * sign,
-      pv: pv && parseUSIPV(this.position, pv),
+      depth: infoCommand.depth ?? this.info?.depth,
+      score: (infoCommand.scoreCP && infoCommand.scoreCP * sign) ?? this.info?.score,
+      mate: (infoCommand.scoreMate && infoCommand.scoreMate * sign) ?? this.info?.mate,
+      pv: (pv && parseUSIPV(this.position, pv)) ?? this.info?.pv,
     };
-    this.updateUSIInfo(info);
-  }
-
-  private updateUSIInfo(info: SearchInfo) {
-    this.info = info;
     // Ponder 中はハンドラーを呼ばない。
     if (this.inPonder) {
       return;

@@ -45,7 +45,7 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
       );
       return Promise.resolve();
     }),
-    startPonder: vi.fn(() => Promise.resolve()),
+    startPonder: vi.fn<[ImmutablePosition, string, TimeStates]>(() => Promise.resolve()),
     startMateSearch: vi.fn(() => Promise.resolve()),
     stop: vi.fn(() => Promise.resolve()),
     gameover: vi.fn(() => Promise.resolve()),

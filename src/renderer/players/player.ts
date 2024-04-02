@@ -5,6 +5,7 @@ import { ImmutablePosition, Move } from "electron-shogi-core";
 export type SearchInfo = {
   usi: string; // 局面
   depth?: number; // 探索深さ
+  nodes?: number; // 探索ノード数
   score?: number; // 先手から見た評価値
   mate?: number; // 先手勝ちの場合に正の値、後手勝ちの場合に負の値
   pv?: Move[];

@@ -1,6 +1,6 @@
 import api, { API } from "@/renderer/ipc/api";
 import { onUSIBestMove, onUSIInfo, USIPlayer } from "@/renderer/players/usi";
-import { parsePV, Record } from "electron-shogi-core";
+import { Move, parsePV, Record } from "electron-shogi-core";
 import { usiEngineSetting, usiEngineSettingWithPonder } from "@/tests/mock/usi";
 import { Mocked } from "vitest";
 
@@ -47,22 +47,47 @@ describe("usi", () => {
         onWin: vi.fn(),
         onError: vi.fn(),
       };
+
+      // search
       await player.startSearch(record1.position, usi1, timeStates, searchHandler);
       expect(mockAPI.usiGo).toBeCalledWith(100, usi1, timeStates);
+      onUSIInfo(100, usi1, {
+        depth: 32,
+        nodes: 12345678,
+        scoreCP: 138,
+        pv: ["2g2f", "8c8d", "2f2e"],
+      });
       onUSIBestMove(100, usi1, "2g2f", "8c8d");
       expect(searchHandler.onMove.mock.calls[0][0].usi).toBe("2g2f");
+      expect(searchHandler.onMove.mock.calls[0][1].depth).toBe(32);
+      expect(searchHandler.onMove.mock.calls[0][1].nodes).toBe(12345678);
+      expect(searchHandler.onMove.mock.calls[0][1].score).toBe(138);
+      expect(searchHandler.onMove.mock.calls[0][1].pv.map((m: Move) => m.usi)).toEqual([
+        "8c8d",
+        "2f2e",
+      ]);
+
+      // ponder
       await player.startPonder(record2.position, usi2, timeStates);
       expect(mockAPI.usiGoPonder).toBeCalled();
       onUSIInfo(100, usi3, {
-        pv: ["2f2e", "8d8e"],
+        pv: ["2f2e", "8d8e", "6i7h", "4a3b"],
       });
+
+      // startPonder を連続して呼び出すと無視される。
       await player.startPonder(record2.position, usi2, timeStates);
-      expect(mockAPI.usiGoPonder).toBeCalledTimes(1); // startPonder を連続して呼び出すと無視される。
+      expect(mockAPI.usiGoPonder).toBeCalledTimes(1);
+
+      // search (ponderHit)
       await player.startSearch(record3.position, usi3, timeStates, searchHandler);
       expect(mockAPI.usiPonderHit).toBeCalledWith(100, timeStates);
       onUSIBestMove(100, usi3, "2f2e");
       expect(searchHandler.onMove.mock.calls[1][0].usi).toBe("2f2e");
-      expect(searchHandler.onMove.mock.calls[1][1].pv[0].usi).toBe("8d8e");
+      expect(searchHandler.onMove.mock.calls[1][1].pv.map((m: Move) => m.usi)).toEqual([
+        "8d8e",
+        "6i7h",
+        "4a3b",
+      ]);
     } finally {
       await player.close();
     }

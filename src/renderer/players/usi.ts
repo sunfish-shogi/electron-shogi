@@ -262,6 +262,7 @@ export class USIPlayer implements Player {
     this.info = {
       usi: usi,
       depth: infoCommand.depth ?? this.info?.depth,
+      nodes: infoCommand.nodes ?? this.info?.nodes,
       score: (infoCommand.scoreCP && infoCommand.scoreCP * sign) ?? this.info?.score,
       mate: (infoCommand.scoreMate && infoCommand.scoreMate * sign) ?? this.info?.mate,
       pv: (pv && parseUSIPV(this.position, pv)) ?? this.info?.pv,

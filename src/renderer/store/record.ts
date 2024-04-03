@@ -56,6 +56,7 @@ export enum SearchInfoSenderType {
 
 export type SearchInfo = {
   depth?: number; // 探索深さ
+  nodes?: number; // 探索ノード数
   score?: number; // 先手から見た評価値
   mate?: number; // 先手勝ちの場合に正の値、後手勝ちの場合に負の値
   pv?: Move[];
@@ -180,6 +181,9 @@ function buildSearchComment(
   }
   if (searchInfo.depth) {
     comment += `${prefix}深さ=${searchInfo.depth}\n`;
+  }
+  if (searchInfo.nodes) {
+    comment += `${prefix}ノード数=${searchInfo.nodes}\n`;
   }
   if (comment && options?.engineName) {
     comment += `${prefix}エンジン=${options.engineName}\n`;

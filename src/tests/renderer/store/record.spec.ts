@@ -164,6 +164,7 @@ describe("store/record", () => {
       {
         depth: 8,
         score: 158,
+        nodes: 123456,
         pv: [
           new Move(new Square(7, 7), new Square(7, 6), false, Color.BLACK, PieceType.PAWN, null),
           new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
@@ -179,6 +180,7 @@ describe("store/record", () => {
       {
         depth: 10,
         score: 210,
+        nodes: 12345678,
         pv: [
           new Move(new Square(2, 7), new Square(2, 6), false, Color.BLACK, PieceType.PAWN, null),
           new Move(new Square(3, 3), new Square(3, 4), false, Color.WHITE, PieceType.PAWN, null),
@@ -187,7 +189,7 @@ describe("store/record", () => {
       CommentBehavior.INSERT,
     );
     expect(recordManager.record.current.comment).toBe(
-      "先手有望\n*評価値=210\n*読み筋=▲２六歩△３四歩\n*深さ=10\n\n互角\n#評価値=158\n#読み筋=▲７六歩△３四歩\n#深さ=8\n#エンジン=Engine01\n",
+      "先手有望\n*評価値=210\n*読み筋=▲２六歩△３四歩\n*深さ=10\n*ノード数=12345678\n\n互角\n#評価値=158\n#読み筋=▲７六歩△３四歩\n#深さ=8\n#ノード数=123456\n#エンジン=Engine01\n",
     );
     expect(recordManager.unsaved).toBeTruthy();
   });

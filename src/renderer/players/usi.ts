@@ -181,7 +181,8 @@ export class USIPlayer implements Player {
       searchHandler.onResign();
       return;
     }
-    this.ponder = ponder && `${usi} ${usiMove} ${ponder}`;
+    const includesMoves = usi.indexOf(" moves ") > 0;
+    this.ponder = ponder && `${usi}${includesMoves ? "" : " moves"} ${usiMove} ${ponder}`;
     this.flushUSIInfo();
     if (this.info?.pv && this.info.pv.length >= 1 && this.info.pv[0].equals(move)) {
       const info = {

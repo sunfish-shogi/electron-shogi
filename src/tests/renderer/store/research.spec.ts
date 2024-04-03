@@ -30,7 +30,7 @@ describe("store/research", () => {
     manager.updatePosition(record);
     vi.runOnlyPendingTimers(); // 遅延実行
     expect(mockAPI.usiGoInfinite).toBeCalledTimes(1);
-    expect(mockAPI.usiGoInfinite).toBeCalledWith(100, "position startpos moves");
+    expect(mockAPI.usiGoInfinite).toBeCalledWith(100, "position startpos");
 
     // 時間制限が無いので stop コマンドは送信されない。
     vi.runOnlyPendingTimers();

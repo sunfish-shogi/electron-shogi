@@ -15,7 +15,7 @@ describe("settings/analysis", () => {
         author: "test author",
         path: "/path/to/test-engine",
         options: {
-          USI_Hash: { name: "USI_Hash", type: "spin", order: 1, vars: [] },
+          USI_Hash: { name: "USI_Hash", type: "spin", order: 1 },
         },
         labels: {},
         enableEarlyPonder: false,

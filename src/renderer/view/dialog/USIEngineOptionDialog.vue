@@ -153,7 +153,7 @@
               </span>
               <!-- デフォルト値 -->
               <span
-                v-if="option.default !== undefined && option.default !== ''"
+                v-if="option.type !== 'button' && (option.default || option.default === 0)"
                 class="option-default-value"
               >
                 {{ t.defaultValue }}:
@@ -216,7 +216,6 @@ import {
   emptyUSIEngineSetting,
   getUSIEngineOptionCurrentValue,
   mergeUSIEngineSetting,
-  USIEngineOption,
   USIEngineSetting,
 } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
@@ -224,11 +223,6 @@ import { computed, onBeforeUnmount, onMounted, onUpdated, PropType, ref } from "
 import { useAppSetting } from "@/renderer/store/setting";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
-
-type Option = USIEngineOption & {
-  displayName?: string;
-  visible: boolean;
-};
 
 const props = defineProps({
   latestEngineSetting: {
@@ -280,16 +274,16 @@ const options = computed(() =>
   Object.values(engine.value.options)
     .sort((a, b): number => (a.order < b.order ? -1 : 1))
     .map((option) => {
-      const enableFilter = filterWords.value.length > 0;
-      const ret: Option = {
+      const ret = {
+        displayName: "",
         ...option,
         value: getUSIEngineOptionCurrentValue(option),
-        visible: !enableFilter,
+        visible: true,
       };
       if (appSetting.translateEngineOptionName) {
         ret.displayName = usiOptionNameMap[option.name];
       }
-      if (enableFilter) {
+      if (filterWords.value.length > 0) {
         ret.visible =
           (ret.displayName && filterString(ret.displayName, filterWords.value)) ||
           filterString(ret.name, filterWords.value);
@@ -353,34 +347,34 @@ const sendOption = async (name: string) => {
 const reset = () => {
   engineNameInput.value.value = engine.value.defaultName;
   enableEarlyPonder.value = engine.value.enableEarlyPonder;
-  for (const option of options.value) {
+  Object.values(engine.value.options).forEach((option) => {
     const value =
-      engine.value.options[option.name].default !== undefined
-        ? engine.value.options[option.name].default + ""
-        : "";
+      option.type !== "button" && option.default !== undefined ? option.default + "" : "";
     if (option.type === "check") {
       selectors.value[option.name].setValue(value);
     } else if (inputs.value[option.name]) {
       inputs.value[option.name].value = value;
     }
-  }
+  });
 };
 const ok = () => {
   engine.value.name = engineNameInput.value.value;
   engine.value.enableEarlyPonder = enableEarlyPonder.value;
-  for (const option of options.value) {
+  Object.values(engine.value.options).forEach((option) => {
+    if (option.type === "button") {
+      return;
+    }
     if (option.type === "check") {
-      engine.value.options[option.name].value =
-        selectors.value[option.name].getValue() || undefined;
+      option.value = (selectors.value[option.name].getValue() as "true" | "false") || undefined;
     } else if (inputs.value[option.name]) {
       const elem = inputs.value[option.name];
-      engine.value.options[option.name].value = !elem.value
+      option.value = !elem.value
         ? undefined
         : option.type === "spin"
           ? readInputAsNumber(elem as HTMLInputElement)
           : elem.value;
     }
-  }
+  });
   emit("ok", engine.value);
 };
 const cancel = () => {

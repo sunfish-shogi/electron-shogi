@@ -616,26 +616,33 @@ export class EngineProcess {
       this.logger.error("sid=%d: invalid option command", this.sessionID);
       return;
     }
-    const option: USIEngineOption = {
-      name: args[1],
-      type: args[3] as USIEngineOptionType,
-      order: UserDefinedOptionOrderStart + Object.keys(this._engineOptions).length,
-      vars: [],
-    };
-    for (let i = 4; i + 1 < args.length; i = i + 2) {
-      switch (args[i]) {
-        case "default":
-          option.default = option.type === "spin" ? Number(args[i + 1]) : args[i + 1];
-          break;
-        case "min":
-          option.min = Number(args[i + 1]);
-          break;
-        case "max":
-          option.max = Number(args[i + 1]);
-          break;
-        case "var":
-          option.vars.push(args[i + 1]);
-          break;
+    const name = args[1];
+    const type = args[3] as USIEngineOptionType;
+    const order = UserDefinedOptionOrderStart + Object.keys(this._engineOptions).length;
+    const option: USIEngineOption =
+      type === "combo" ? { name, type, order, vars: [] } : { name, type, order };
+    if (option.type !== "button") {
+      for (let i = 4; i + 1 < args.length; i = i + 2) {
+        switch (args[i]) {
+          case "default":
+            option.default = option.type === "spin" ? Number(args[i + 1]) : args[i + 1];
+            break;
+          case "min":
+            if (option.type === "spin") {
+              option.min = Number(args[i + 1]);
+            }
+            break;
+          case "max":
+            if (option.type === "spin") {
+              option.max = Number(args[i + 1]);
+            }
+            break;
+          case "var":
+            if (option.type === "combo") {
+              option.vars.push(args[i + 1]);
+            }
+            break;
+        }
       }
     }
     this._engineOptions[option.name] = option;
@@ -652,7 +659,6 @@ export class EngineProcess {
         type: "spin",
         order: USIHashOptionOrder,
         default: 32,
-        vars: [],
       };
     }
     if (!this.engineOptions[USIPonder]) {
@@ -661,7 +667,6 @@ export class EngineProcess {
         type: "check",
         order: USIPonderOptionOrder,
         default: "true",
-        vars: [],
       };
     }
     if (this.option.engineOptions) {

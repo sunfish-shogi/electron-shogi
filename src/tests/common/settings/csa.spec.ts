@@ -443,13 +443,18 @@ describe("settings/csa", () => {
   it("import-cli-settings", () => {
     const result = importCSAGameSettingForCLI(csaGameSettingForCLI, playerURI);
     const expected = JSON.parse(JSON.stringify(csaGameSetting)) as CSAGameSetting;
+    // CLI 用設定から逆変換するときに入らない情報を除去してから比較する。
     expected.player.usi!.author = "";
     expected.player.usi!.defaultName = expected.player.name;
-    Object.values(expected.player.usi!.options).forEach((option) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Object.values(expected.player.usi!.options).forEach((option: any) => {
       delete option.default;
       delete option.min;
       delete option.max;
       option.order = 0;
+      if (option.vars) {
+        option.vars = [option.value];
+      }
     });
     expect(result).toEqual(expected);
   });

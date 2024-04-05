@@ -171,6 +171,54 @@ describe("background/usi/engine", () => {
           order: 1,
           value: 32,
         },
+        {
+          name: "USI_Ponder",
+          type: "check",
+          vars: [],
+          order: 2,
+          value: "true",
+        },
+        {
+          name: "StringA",
+          type: "string",
+          default: "foo",
+          vars: [],
+          order: 100,
+        },
+        {
+          name: "StringB",
+          type: "string",
+          default: "bar",
+          vars: [],
+          order: 101,
+          value: "baz",
+        },
+        {
+          name: "StringC",
+          type: "string",
+          vars: [],
+          order: 102,
+        },
+        {
+          name: "Filename",
+          type: "filename",
+          vars: [],
+          order: 103,
+          value: "/path/to/file",
+        },
+        {
+          name: "Spin",
+          type: "spin",
+          vars: [],
+          order: 104,
+          value: -81,
+        },
+        {
+          name: "Button",
+          type: "button",
+          vars: [],
+          order: 105,
+        },
       ],
     });
     const handlers = bindHandlers(engine);
@@ -180,10 +228,21 @@ describe("background/usi/engine", () => {
     onReceive("id name DummyEngine");
     onReceive("option name Button type button");
     onReceive("usiok");
-    expect(mockChildProcess.prototype.send).toBeCalledTimes(2);
-    expect(mockChildProcess.prototype.send).lastCalledWith("setoption name USI_Hash value 32");
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(7);
+    expect(mockChildProcess.prototype.send).nthCalledWith(2, "setoption name USI_Hash value 32");
+    expect(mockChildProcess.prototype.send).nthCalledWith(
+      3,
+      "setoption name USI_Ponder value true",
+    );
+    expect(mockChildProcess.prototype.send).nthCalledWith(4, "setoption name StringA value foo");
+    expect(mockChildProcess.prototype.send).nthCalledWith(5, "setoption name StringB value baz");
+    expect(mockChildProcess.prototype.send).nthCalledWith(
+      6,
+      "setoption name Filename value /path/to/file",
+    );
+    expect(mockChildProcess.prototype.send).nthCalledWith(7, "setoption name Spin value -81");
     engine.setOption("Button");
-    expect(mockChildProcess.prototype.send).toBeCalledTimes(3);
+    expect(mockChildProcess.prototype.send).toBeCalledTimes(8);
     expect(mockChildProcess.prototype.send).lastCalledWith("setoption name Button");
     engine.quit();
     onClose();

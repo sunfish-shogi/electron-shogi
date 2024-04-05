@@ -65,6 +65,11 @@ describe("background/usi/engine", () => {
     onReceive("option name StringB type string");
     onReceive("option name CheckA type check default true");
     onReceive("option name CheckB type check");
+    onReceive("option name ComboA type combo default baz var bar var baz var qux");
+    onReceive("option name ComboB type combo default quux var default var quux var corge");
+    onReceive("option name Filename type filename default /path/to/file");
+    onReceive("option name SpinA type spin");
+    onReceive("option name SpinB type spin default 8 min -20 max 30");
     onReceive("usiok");
     expect(handlers.usiok).toBeCalledTimes(1);
     expect(engine.name).toBe("DummyEngine");
@@ -109,6 +114,42 @@ describe("background/usi/engine", () => {
         type: "check",
         vars: [],
         order: 103,
+      },
+      ComboA: {
+        name: "ComboA",
+        type: "combo",
+        default: "baz",
+        vars: ["bar", "baz", "qux"],
+        order: 104,
+      },
+      ComboB: {
+        name: "ComboB",
+        type: "combo",
+        default: "quux",
+        vars: ["default", "quux", "corge"],
+        order: 105,
+      },
+      Filename: {
+        name: "Filename",
+        type: "filename",
+        default: "/path/to/file",
+        vars: [],
+        order: 106,
+      },
+      SpinA: {
+        name: "SpinA",
+        type: "spin",
+        vars: [],
+        order: 107,
+      },
+      SpinB: {
+        name: "SpinB",
+        type: "spin",
+        default: 8,
+        min: -20,
+        max: 30,
+        vars: [],
+        order: 108,
       },
     });
     engine.quit();

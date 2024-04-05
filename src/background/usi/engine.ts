@@ -551,7 +551,7 @@ export class EngineProcess {
       order: UserDefinedOptionOrderStart + Object.keys(this._engineOptions).length,
       vars: [],
     };
-    for (let i = 4; i + 1 < args.length; i = i + 1) {
+    for (let i = 4; i + 1 < args.length; i = i + 2) {
       switch (args[i]) {
         case "default":
           option.default = option.type === "spin" ? Number(args[i + 1]) : args[i + 1];

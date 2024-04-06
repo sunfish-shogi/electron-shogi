@@ -14,21 +14,52 @@ export const MultiPV = "MultiPV";
 
 export type USIEngineOptionType = "check" | "spin" | "combo" | "button" | "string" | "filename";
 
-export type USIEngineOption = {
-  name: string;
-  type: USIEngineOptionType;
-  order: number;
-  default?: string | number;
+type USIEngineCheckOption = {
+  type: "check";
+  default?: "true" | "false";
+  value?: "true" | "false";
+};
+
+type USIEngineSpinOption = {
+  type: "spin";
+  default?: number;
   min?: number;
   max?: number;
-  vars: string[];
-  value?: string | number;
+  value?: number;
 };
+
+type USIEngineComboOption = {
+  type: "combo";
+  default?: string;
+  vars: string[];
+  value?: string;
+};
+
+type USIEngineButtonOption = {
+  type: "button";
+};
+
+type USIEngineStringOption = {
+  type: "string" | "filename";
+  default?: string;
+  value?: string;
+};
+
+export type USIEngineOption = {
+  name: string;
+  order: number;
+} & (
+  | USIEngineCheckOption
+  | USIEngineSpinOption
+  | USIEngineComboOption
+  | USIEngineButtonOption
+  | USIEngineStringOption
+);
 
 export function getUSIEngineOptionCurrentValue(
   option: USIEngineOption | null | undefined,
 ): string | number | undefined {
-  if (!option) {
+  if (!option || option.type === "button") {
     return;
   }
   if (option.value !== undefined) {
@@ -37,10 +68,7 @@ export function getUSIEngineOptionCurrentValue(
   if ((option.type === "string" || option.type === "filename") && option.default === "<empty>") {
     return "";
   }
-  if (option.default !== undefined) {
-    return option.default;
-  }
-  return;
+  return option.default;
 }
 
 export type USIEngineOptions = { [name: string]: USIEngineOption };
@@ -95,11 +123,12 @@ export function duplicateEngineSetting(src: USIEngineSetting): USIEngineSetting 
 export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngineSetting): void {
   engine.uri = local.uri;
   engine.name = local.name;
-  Object.keys(local.options).forEach((name) => {
-    if (!engine.options[name]) {
+  Object.values(local.options).forEach((localOption) => {
+    const engineOption = engine.options[localOption.name];
+    if (!engineOption || engineOption.type === "button" || engineOption.type !== localOption.type) {
       return;
     }
-    engine.options[name].value = local.options[name].value;
+    engineOption.value = localOption.value;
   });
   engine.labels = local.labels;
   engine.enableEarlyPonder = local.enableEarlyPonder;
@@ -122,40 +151,45 @@ export function validateUSIEngineSetting(setting: USIEngineSetting): Error | und
     }
     if (!isValidOptionValue(option)) {
       return new Error(
-        `invalid option value: name=[${name}] type=[${option.type}] value=[${option.value}]`,
+        `invalid option value: name=[${name}] type=[${option.type}]` +
+          (option.type !== "button" ? ` value=[${option.value}]` : ""),
       );
     }
   }
 }
 
 function isValidOptionValue(option: USIEngineOption): boolean {
-  const value = getUSIEngineOptionCurrentValue(option);
+  if (option.type === "button" || option.value === undefined) {
+    return true;
+  }
   switch (option.type) {
     case "check":
-      if (value !== "true" && value !== "false") {
+      if (option.value !== "true" && option.value !== "false") {
         return false;
       }
       break;
     case "spin":
-      if (typeof value !== "number") {
+      if (typeof option.value !== "number") {
         return false;
       }
-      if (option.min !== undefined && value < option.min) {
+      if (option.min !== undefined && option.value < option.min) {
         return false;
       }
-      if (option.max !== undefined && value > option.max) {
+      if (option.max !== undefined && option.value > option.max) {
+        return false;
+      }
+      break;
+    case "string":
+    case "filename":
+      if (typeof option.value !== "string") {
         return false;
       }
       break;
     case "combo":
-    case "string":
-    case "filename":
-      if (typeof value !== "string") {
+      if (typeof option.value !== "string") {
         return false;
       }
-      break;
-    case "button":
-      if (value !== undefined) {
+      if (!option.vars.includes(option.value)) {
         return false;
       }
       break;
@@ -258,10 +292,25 @@ export class USIEngineSettings {
   }
 }
 
-export type USIEngineOptionForCLI = {
-  type: USIEngineOptionType;
-  value: string | number | boolean;
+type USIEngineCheckOptionForCLI = {
+  type: "check";
+  value: boolean;
 };
+
+type USIEngineSpinOptionForCLI = {
+  type: "spin";
+  value: number;
+};
+
+type USIEngineStringOptionForCLI = {
+  type: "combo" | "string" | "filename";
+  value: string;
+};
+
+export type USIEngineOptionForCLI =
+  | USIEngineCheckOptionForCLI
+  | USIEngineSpinOptionForCLI
+  | USIEngineStringOptionForCLI;
 
 export type USIEngineSettingForCLI = {
   name: string;
@@ -278,17 +327,17 @@ export function exportUSIEngineSettingForCLI(engine: USIEngineSetting): USIEngin
       continue;
     }
     switch (option.type) {
-      default:
-        options[option.name] = {
-          type: option.type,
-          value,
-        };
-        break;
       case "check":
-        options[option.name] = {
-          type: option.type,
-          value: value === "true",
-        };
+        options[option.name] = { type: "check", value: value === "true" };
+        break;
+      case "spin":
+        options[option.name] = { type: "spin", value: value as number };
+        break;
+      case "button":
+        // unreachable
+        break;
+      default:
+        options[option.name] = { type: option.type, value: value as string };
         break;
     }
   }
@@ -307,13 +356,26 @@ export function importUSIEngineSettingForCLI(
   const options: { [name: string]: USIEngineOption } = {};
   for (const name in engine.options) {
     const option = engine.options[name];
-    options[name] = {
-      name,
-      type: option.type,
-      order: 0,
-      value: option.value === true ? "true" : option.value === false ? "false" : option.value,
-      vars: [],
-    };
+    switch (option.type) {
+      case "check":
+        options[name] = { name, type: "check", order: 0, value: option.value ? "true" : "false" };
+        break;
+      case "spin":
+        options[name] = { name, type: "spin", order: 0, value: option.value };
+        break;
+      case "combo":
+        options[name] = {
+          name,
+          type: "combo",
+          order: 0,
+          value: option.value,
+          vars: [option.value],
+        };
+        break;
+      default:
+        options[name] = { name, type: option.type, order: 0, value: option.value };
+        break;
+    }
   }
   return {
     uri: uri || issueEngineURI(),

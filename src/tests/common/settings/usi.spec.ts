@@ -1,6 +1,8 @@
 import {
   duplicateEngineSetting,
+  exportUSIEngineSettingForCLI,
   getUSIEngineOptionCurrentValue,
+  importUSIEngineSettingForCLI,
   mergeUSIEngineSetting,
   USIEngineOption,
   USIEngineSetting,
@@ -18,7 +20,6 @@ describe("settings/usi", () => {
         default: 5,
         min: 0,
         max: 10,
-        vars: [],
         value: 8,
       }),
     ).toBe(8);
@@ -30,7 +31,6 @@ describe("settings/usi", () => {
         default: 5,
         min: 0,
         max: 10,
-        vars: [],
       }),
     ).toBe(5);
     expect(
@@ -39,7 +39,6 @@ describe("settings/usi", () => {
         type: "string",
         order: 1,
         default: "foo",
-        vars: [],
         value: "bar",
       }),
     ).toBe("bar");
@@ -49,7 +48,6 @@ describe("settings/usi", () => {
         type: "string",
         order: 1,
         default: "foo",
-        vars: [],
       }),
     ).toBe("foo");
     expect(
@@ -57,7 +55,6 @@ describe("settings/usi", () => {
         name: "test",
         type: "string",
         order: 1,
-        vars: [],
       }),
     ).toBeUndefined();
     expect(
@@ -66,7 +63,6 @@ describe("settings/usi", () => {
         type: "string",
         order: 1,
         default: "<empty>",
-        vars: [],
       }),
     ).toBe("");
     expect(
@@ -75,7 +71,6 @@ describe("settings/usi", () => {
         type: "filename",
         order: 1,
         default: "<empty>",
-        vars: [],
       }),
     ).toBe("");
     expect(getUSIEngineOptionCurrentValue(null)).toBeUndefined();
@@ -96,7 +91,6 @@ describe("settings/usi", () => {
           default: 5,
           min: 0,
           max: 10,
-          vars: [],
           value: 8,
         },
       },
@@ -117,7 +111,6 @@ describe("settings/usi", () => {
         default: 5,
         min: 0,
         max: 10,
-        vars: [],
         value: 8,
       },
     });
@@ -133,13 +126,12 @@ describe("settings/usi", () => {
       path: "path-a",
       options: {
         foo: {
-          name: "name-foo-a",
+          name: "foo",
           type: "spin",
           order: 1,
           default: 5,
           min: 0,
           max: 20,
-          vars: [],
           value: 8,
         },
       },
@@ -154,13 +146,12 @@ describe("settings/usi", () => {
       path: "path-b",
       options: {
         foo: {
-          name: "name-foo-b",
+          name: "foo",
           type: "spin",
           order: 1,
           default: 10,
           min: 0,
           max: 25,
-          vars: [],
           value: 15,
         },
       },
@@ -179,13 +170,12 @@ describe("settings/usi", () => {
       path: "path-a",
       options: {
         foo: {
-          name: "name-foo-a",
+          name: "foo",
           type: "spin",
           order: 1,
           default: 5,
           min: 0,
           max: 20,
-          vars: [],
           value: 15,
         },
       },
@@ -204,7 +194,6 @@ describe("settings/usi", () => {
       order: 1,
       default: "true",
       value: "false",
-      vars: [],
     };
     const validUSIHashOption: USIEngineOption = {
       name: "USI_Hash",
@@ -213,7 +202,6 @@ describe("settings/usi", () => {
       default: 32,
       min: 1,
       value: 128,
-      vars: [],
     };
     const validStringOption: USIEngineOption = {
       name: "MyString",
@@ -221,7 +209,6 @@ describe("settings/usi", () => {
       order: 3,
       default: "default",
       value: "value",
-      vars: [],
     };
     const validComboOption: USIEngineOption = {
       name: "MyCombo",
@@ -237,13 +224,11 @@ describe("settings/usi", () => {
       order: 5,
       default: "<empty>",
       value: "/path/to/file",
-      vars: [],
     };
     const validButtonOption: USIEngineOption = {
       name: "MyButton",
       type: "button",
       order: 6,
-      vars: [],
     };
 
     it("ok", () => {
@@ -303,7 +288,6 @@ describe("settings/usi", () => {
               order: 0,
               default: "true",
               value: "NOT-A-BOOLEAN",
-              vars: [],
             },
             USI_Hash: validUSIHashOption,
             MyString: validStringOption,
@@ -312,7 +296,7 @@ describe("settings/usi", () => {
             MyButton: validButtonOption,
           },
           enableEarlyPonder: false,
-        }),
+        } as unknown as USIEngineSetting),
       ).toBeInstanceOf(Error);
     });
 
@@ -333,7 +317,6 @@ describe("settings/usi", () => {
               default: 32,
               min: 1,
               value: "NOT-A-NUMBER",
-              vars: [],
             },
             MyString: validStringOption,
             MyCombo: validComboOption,
@@ -341,7 +324,7 @@ describe("settings/usi", () => {
             MyButton: validButtonOption,
           },
           enableEarlyPonder: false,
-        }),
+        } as unknown as USIEngineSetting),
       ).toBeInstanceOf(Error);
     });
 
@@ -362,14 +345,13 @@ describe("settings/usi", () => {
               order: 0,
               default: "default",
               value: 123,
-              vars: [],
             },
             MyCombo: validComboOption,
             MyFilename: validFilenameOption,
             MyButton: validButtonOption,
           },
           enableEarlyPonder: false,
-        }),
+        } as unknown as USIEngineSetting),
       ).toBeInstanceOf(Error);
     });
   });
@@ -468,6 +450,97 @@ describe("settings/usi", () => {
       game: true,
       research: true,
       mate: true,
+    });
+  });
+
+  it("USIEngineSetting/exportUSIEngineSettingForCLI", () => {
+    expect(
+      exportUSIEngineSettingForCLI({
+        uri: "es://usi-engine/test-engine",
+        name: "My Test Engine",
+        defaultName: "Test Engine",
+        author: "Kubo, Ryosuke",
+        path: "/path/to/engine",
+        options: {
+          USI_Ponder: { name: "USI_Ponder", type: "check", order: 1, default: "true" },
+          ClearCache: { name: "ClearCache", type: "button", order: 2 },
+          BookFile: {
+            name: "BookFile",
+            type: "filename",
+            order: 3,
+            default: "book.db",
+            value: "path/to/book.db",
+          },
+          Threads: { name: "Threads", type: "spin", order: 4, default: 1, min: 1, value: 2 },
+          LogFileName: {
+            name: "LogFileName",
+            type: "string",
+            order: 5,
+            default: "log.txt",
+            value: "usi.log",
+          },
+          JishogiRule: {
+            name: "JishogiRule",
+            type: "combo",
+            order: 6,
+            default: "standard24",
+            value: "standard27",
+            vars: ["standard24", "standard27", "try"],
+          },
+        },
+        labels: {},
+        enableEarlyPonder: true,
+      }),
+    ).toEqual({
+      name: "My Test Engine",
+      path: "/path/to/engine",
+      options: {
+        USI_Ponder: { type: "check", value: true },
+        BookFile: { type: "filename", value: "path/to/book.db" },
+        Threads: { type: "spin", value: 2 },
+        LogFileName: { type: "string", value: "usi.log" },
+        JishogiRule: { type: "combo", value: "standard27" },
+      },
+      enableEarlyPonder: true,
+    });
+  });
+
+  it("USIEngineSetting/importUSIEngineSettingForCLI", () => {
+    const result = importUSIEngineSettingForCLI({
+      name: "My Test Engine",
+      path: "/path/to/engine",
+      options: {
+        USI_Ponder: { type: "check", value: true },
+        BookFile: { type: "filename", value: "path/to/book.db" },
+        Threads: { type: "spin", value: 2 },
+        LogFileName: { type: "string", value: "usi.log" },
+        JishogiRule: { type: "combo", value: "standard27" },
+      },
+      enableEarlyPonder: true,
+    });
+    expect(result.uri).match(/^es:\/\/usi-engine\/.*$/);
+    result.uri = "";
+    expect(result).toEqual({
+      uri: "",
+      name: "My Test Engine",
+      defaultName: "My Test Engine",
+      author: "",
+      path: "/path/to/engine",
+      options: {
+        USI_Ponder: { name: "USI_Ponder", type: "check", order: 0, value: "true" },
+        BookFile: { name: "BookFile", type: "filename", order: 0, value: "path/to/book.db" },
+        Threads: { name: "Threads", type: "spin", order: 0, value: 2 },
+        LogFileName: { name: "LogFileName", type: "string", order: 0, value: "usi.log" },
+        JishogiRule: {
+          name: "JishogiRule",
+          type: "combo",
+          order: 0,
+          value: "standard27",
+          vars: ["standard27"],
+        },
+      },
+      labels: {},
+      enableEarlyPonder: true,
     });
   });
 });

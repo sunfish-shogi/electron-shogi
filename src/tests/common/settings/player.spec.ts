@@ -1,4 +1,4 @@
-import { validatePlayerSetting } from "@/common/settings/player";
+import { PlayerSetting, validatePlayerSetting } from "@/common/settings/player";
 
 describe("settings/player", () => {
   describe("validate", () => {
@@ -47,7 +47,6 @@ describe("settings/player", () => {
                 order: 0,
                 default: "true",
                 value: "false",
-                vars: [],
               },
             },
             enableEarlyPonder: false,
@@ -74,12 +73,11 @@ describe("settings/player", () => {
                 order: 0,
                 default: "true",
                 value: "INVALID",
-                vars: [],
               },
             },
             enableEarlyPonder: false,
           },
-        }),
+        } as unknown as PlayerSetting),
       ).toBeInstanceOf(Error);
     });
   });

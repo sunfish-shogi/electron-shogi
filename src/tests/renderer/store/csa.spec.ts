@@ -76,7 +76,7 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
-      "position startpos moves": {
+      "position startpos": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },
@@ -111,7 +111,7 @@ describe("store/csa", () => {
     expect(mockAPI.csaMove.mock.calls[0][1]).toBe("+7776FU");
     expect(mockPlayer.startSearch).toBeCalledTimes(1);
     expect(mockPlayer.startSearch.mock.calls[0][0].sfen).toBe(InitialPositionSFEN.STANDARD);
-    expect(mockPlayer.startSearch.mock.calls[0][1]).toBe("position startpos moves");
+    expect(mockPlayer.startSearch.mock.calls[0][1]).toBe("position startpos");
     expect(mockPlayer.startSearch.mock.calls[0][2]).toEqual({
       black: { timeMs: 600e3, byoyomi: 30, increment: 0 },
       white: { timeMs: 600e3, byoyomi: 30, increment: 0 },
@@ -215,7 +215,7 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
-      "position startpos moves": {
+      "position startpos": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },
@@ -326,7 +326,7 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValue();
     const mockPlayer = createMockPlayer({
-      "position startpos moves": {
+      "position startpos": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },
@@ -420,7 +420,7 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValue();
     const mockPlayer = createMockPlayer({
-      "position startpos moves": {
+      "position startpos": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },
@@ -518,7 +518,7 @@ describe("store/csa", () => {
     mockAPI.csaMove.mockResolvedValue();
     mockAPI.csaLogout.mockResolvedValueOnce();
     const mockPlayer = createMockPlayer({
-      "position startpos moves": {
+      "position startpos": {
         usi: "7g7f",
         info: { score: 82, pv: ["3c3d", "2g2f", "8c8d"] },
       },

@@ -40,7 +40,7 @@ describe("store/analysis", () => {
     vi.runOnlyPendingTimers();
     expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
     manager.updateSearchInfo({
-      usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves",
+      usi: "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
       score: 10,
     });
     vi.runOnlyPendingTimers();

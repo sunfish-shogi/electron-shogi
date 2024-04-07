@@ -19,7 +19,7 @@ export class Rect {
   constructor(x: number, y: number, width: number, height: number);
   constructor(json: string);
   constructor(x: number | string, y?: number, width?: number, height?: number) {
-    if (y && width && height) {
+    if (y !== undefined && width !== undefined && height !== undefined) {
       this.x = x as number;
       this.y = y;
       this.width = width;

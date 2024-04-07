@@ -30,7 +30,7 @@ export const minWidth = 200;
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import RecordView from "@/renderer/view/primitive/RecordView.vue";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
@@ -48,7 +48,7 @@ onMounted(() => {
   installHotKeyForMainWindow(root.value);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   uninstallHotKeyForMainWindow(root.value);
 });
 

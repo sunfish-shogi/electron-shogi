@@ -23,6 +23,7 @@ const config = {
     "dist/sound",
     "dist/index.html",
     "dist/prompt.html",
+    "dist/layout-manager.html",
     "dist/packed",
     "!node_modules/**/*",
   ],

@@ -9,7 +9,7 @@ describe("settings/analysis", () => {
   it("normalize", () => {
     const setting: AnalysisSetting = {
       usi: {
-        uri: uri.ES_USI_ENGINE + "test-engine",
+        uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
         defaultName: "test engine",
         author: "test author",

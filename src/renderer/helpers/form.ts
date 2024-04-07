@@ -8,3 +8,13 @@ export function readInputAsNumber(input: HTMLInputElement): number {
   }
   return value;
 }
+
+export function inputEventToString(event: Event): string {
+  const target = event.target as HTMLInputElement;
+  return target.value;
+}
+
+export function inputEventToNumber(event: Event): number {
+  const target = event.target as HTMLInputElement;
+  return readInputAsNumber(target);
+}

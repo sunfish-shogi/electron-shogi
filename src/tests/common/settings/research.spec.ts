@@ -9,7 +9,7 @@ describe("settings/research", () => {
   it("normalize", () => {
     const setting: ResearchSetting = {
       usi: {
-        uri: uri.ES_USI_ENGINE + "test-engine",
+        uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
         defaultName: "test engine",
         author: "test author",
@@ -31,7 +31,7 @@ describe("settings/research", () => {
   it("validate/ok", () => {
     const setting: ResearchSetting = {
       usi: {
-        uri: uri.ES_USI_ENGINE + "test-engine",
+        uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
         defaultName: "test engine",
         author: "test author",
@@ -61,7 +61,7 @@ describe("settings/research", () => {
   it("validate/invalidSecondaryEngine", () => {
     const setting: ResearchSetting = {
       usi: {
-        uri: uri.ES_USI_ENGINE + "test-engine",
+        uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
         defaultName: "test engine",
         author: "test author",

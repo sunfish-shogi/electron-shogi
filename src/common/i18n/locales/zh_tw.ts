@@ -39,6 +39,7 @@ export const zh_tw: Texts = {
   appendSpecialMove: "特殊手",
   deleteMoves: "刪除現在位置後的棋譜",
   view: "表示",
+  openLayoutManager: "レイアウトマネージャー", // TODO: translate
   toggleFullScreen: "切換全螢幕",
   defaultFontSize: "預設字體尺寸",
   largerFontSize: "增加字體尺寸",
@@ -418,6 +419,34 @@ export const zh_tw: Texts = {
   installed: "已安裝",
   stable: "安定版",
   latest: "最新版",
+  backgroundColor: "背景色", // TODO: translate
+  record: "棋譜", // TODO: translate
+  chart: "グラフ", // TODO: translate
+  analytics: "解析", // TODO: translate
+  controlGroup: "メニュー", // TODO: translate
+  left: "左", // TODO: translate
+  top: "上", // TODO: translate
+  width: "幅", // TODO: translate
+  height: "高さ", // TODO: translate
+  newCustomProfile: "新規カスタムプロファイル", // TODO: translate
+  addCustomLayoutProfile: "新規レイアウトプロファイル", // TODO: translate
+  duplicateCurrentProfile: "現在のプロファイルを複製", // TODO: translate
+  removeCurrentProfile: "現在のプロファイルを削除", // TODO: translate
+  exportProfileToClipboard: "プロファイルをクリップボードに出力", // TODO: translate
+  importProfileFromClipboard: "クリップボードからプロファイルを取り込む", // TODO: translate
+  profileExportedToClipboard: "プロファイルをクリップボードに出力しました。", // TODO: translate
+  profileImported: "プロファイルを取り込みました。", // TODO: translate
+  failedToImportProfile: "プロファイルの取り込みに失敗しました。", // TODO: translate
+  rightControlBox: "右側メニュー", // TODO: translate
+  leftControlBox: "左側メニュー", // TODO: translate
+  topControlBox: "操作ボタン", // TODO: translate
+  legends: "凡例", // TODO: translate
+  historyMode: "履歴モード", // TODO: translate
+  headers: "ヘッダー", // TODO: translate
+  playButton: "再現ボタン", // TODO: translate
+  insert: "挿入", // TODO: translate
+  up: "上へ", // TODO: translate
+  down: "下へ", // TODO: translate
   updatedAt: "更新時間",
   createdAt: "建立時間",
   lastSent: "最後送出",
@@ -486,6 +515,7 @@ export const zh_tw: Texts = {
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "會將現在的棋譜關閉並開啟別的檔案，請問您要繼續嗎？",
   areYouSureWantToClearHistory: "將清除紀錄。請問您要繼續嗎？",
+  areYouSureWantToRemoveCurrentProfile: "現在のプロファイルを削除します。よろしいですか？", // TODO: translate
   yamlFormatSettingCopiedToClipboard: "YAML形式の設定をクリップボードにコピーしました。", // TODO: translate
   jsonFormatSettingCopiedToClipboard: "JSON形式の設定をクリップボードにコピーしました。", // TODO: translate
   usiCsaBridgeCommandCopiedToClipboard: "usi-csa-bridge コマンドをクリップボードにコピーしました。", // TODO: translate

@@ -6,13 +6,6 @@
   </div>
 </template>
 
-<script lang="ts">
-export enum EvaluationChartType {
-  RAW = "raw",
-  WIN_RATE = "winRate",
-}
-</script>
-
 <script setup lang="ts">
 import { RectSize } from "@/common/assets/geometry.js";
 import { useStore } from "@/renderer/store";
@@ -22,18 +15,13 @@ import { ActiveElement, Chart, ChartEvent, Color as ChartColor, ChartDataset } f
 import { Color, ImmutableNode, ImmutableRecord } from "tsshogi";
 import { scoreToPercentage } from "@/renderer/store/score";
 import { Thema } from "@/common/settings/app";
-import { useAppSetting } from "@/renderer/store/setting";
 import { t } from "@/common/i18n";
 import { Lazy } from "@/renderer/helpers/lazy";
+import { EvaluationChartType } from "@/common/settings/layout";
 
 const MATE_SCORE = 1000000;
 const MAX_SCORE = 2000;
 const MIN_SCORE = -MAX_SCORE;
-
-type ChartConfig = {
-  thema: Thema;
-  coefficientInSigmoid: number;
-};
 
 enum Series {
   BLACK_PLAYER,
@@ -154,6 +142,13 @@ function getColorPalette(thema: Thema): ColorPalette {
   }
 }
 
+type ChartConfig = {
+  type: EvaluationChartType;
+  palette: ColorPalette;
+  coefficientInSigmoid: number;
+  showLegend: boolean;
+};
+
 const props = defineProps({
   size: {
     type: RectSize,
@@ -163,17 +158,32 @@ const props = defineProps({
     type: String as PropType<EvaluationChartType>,
     required: true,
   },
+  thema: {
+    type: String as PropType<Thema>,
+    required: true,
+  },
+  coefficientInSigmoid: {
+    type: Number,
+    required: true,
+  },
+  showLegend: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 });
 
 const canvas = ref();
 const store = useStore();
 let chart: Chart;
-let maxScore = MAX_SCORE;
-let minScore = MIN_SCORE;
-if (props.type === EvaluationChartType.WIN_RATE) {
-  maxScore = 100;
-  minScore = 0;
-}
+
+const getMaxScore = (type: EvaluationChartType) => {
+  return type === EvaluationChartType.RAW ? MAX_SCORE : 100;
+};
+
+const getMinScore = (type: EvaluationChartType) => {
+  return type === EvaluationChartType.RAW ? MIN_SCORE : 0;
+};
 
 const buildDataset = (
   borderColor: ChartColor,
@@ -188,7 +198,7 @@ const buildDataset = (
     if (!searchInfo) {
       continue;
     }
-    const score = getScore(searchInfo, props.type, config.coefficientInSigmoid);
+    const score = getScore(searchInfo, config.type, config.coefficientInSigmoid);
     if (score !== undefined) {
       dataPoints.push({
         x: node.ply,
@@ -203,7 +213,7 @@ const buildDataset = (
   ) {
     const data = lastNode.customData as RecordCustomData;
     if (data && data.opponentSearchInfo) {
-      const score = getScore(data.opponentSearchInfo, props.type, config.coefficientInSigmoid);
+      const score = getScore(data.opponentSearchInfo, config.type, config.coefficientInSigmoid);
       if (score !== undefined) {
         dataPoints.push({
           x: lastNode.ply + 1,
@@ -220,13 +230,17 @@ const buildDataset = (
   };
 };
 
-const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
+const verticalLine = (
+  type: EvaluationChartType,
+  record: ImmutableRecord,
+  palette: ColorPalette,
+) => {
   return {
     label: t.currentPosition,
     borderColor: palette.head,
     data: [
-      { x: record.current.ply, y: maxScore },
-      { x: record.current.ply, y: minScore },
+      { x: record.current.ply, y: getMaxScore(type) },
+      { x: record.current.ply, y: getMinScore(type) },
     ],
     showLine: true,
     pointBorderWidth: 0,
@@ -234,16 +248,16 @@ const verticalLine = (record: ImmutableRecord, palette: ColorPalette) => {
   };
 };
 
-const buildDatasets = (record: ImmutableRecord, config: ChartConfig, palette: ColorPalette) => {
+const buildDatasets = (record: ImmutableRecord, config: ChartConfig) => {
   const series = [
-    { borderColor: palette.blackPlayer, type: Series.BLACK_PLAYER },
-    { borderColor: palette.whitePlayer, type: Series.WHITE_PLAYER },
-    { borderColor: palette.researcher, type: Series.RESEARCHER },
-    { borderColor: palette.researcher2, type: Series.RESEARCHER_2 },
-    { borderColor: palette.researcher3, type: Series.RESEARCHER_3 },
-    { borderColor: palette.researcher4, type: Series.RESEARCHER_4 },
+    { borderColor: config.palette.blackPlayer, type: Series.BLACK_PLAYER },
+    { borderColor: config.palette.whitePlayer, type: Series.WHITE_PLAYER },
+    { borderColor: config.palette.researcher, type: Series.RESEARCHER },
+    { borderColor: config.palette.researcher2, type: Series.RESEARCHER_2 },
+    { borderColor: config.palette.researcher3, type: Series.RESEARCHER_3 },
+    { borderColor: config.palette.researcher4, type: Series.RESEARCHER_4 },
   ];
-  const datasets: ChartDataset[] = [verticalLine(record, palette)];
+  const datasets: ChartDataset[] = [verticalLine(config.type, record, config.palette)];
   for (const s of series) {
     const dataset = buildDataset(s.borderColor, s.type, record, config);
     if (dataset.data.length > 0) {
@@ -253,28 +267,32 @@ const buildDatasets = (record: ImmutableRecord, config: ChartConfig, palette: Co
   return datasets;
 };
 
-const buildScalesOption = (record: ImmutableRecord, palette: ColorPalette) => {
+const buildScalesOption = (record: ImmutableRecord, config: ChartConfig) => {
   return {
     x: {
       min: 0,
       max: record.length + 10,
-      ticks: { color: palette.ticks },
-      grid: { color: palette.grid },
+      ticks: { color: config.palette.ticks },
+      grid: { color: config.palette.grid },
     },
     y: {
-      min: minScore,
-      max: maxScore,
-      ticks: { color: palette.ticks },
-      grid: { color: palette.grid },
+      min: getMinScore(config.type),
+      max: getMaxScore(config.type),
+      ticks: { color: config.palette.ticks },
+      grid: { color: config.palette.grid },
     },
   };
 };
 
 const updateChart = (config: ChartConfig) => {
-  const palette = getColorPalette(config.thema);
-  chart.data.datasets = buildDatasets(store.record, config, palette);
-  chart.options.color = palette.main;
-  chart.options.scales = buildScalesOption(store.record, palette);
+  chart.data.datasets = buildDatasets(store.record, config);
+  chart.options.color = config.palette.main;
+  chart.options.scales = buildScalesOption(store.record, config);
+  chart.options.plugins = {
+    legend: {
+      display: config.showLegend,
+    },
+  };
   chart.update();
 };
 
@@ -289,11 +307,12 @@ const onClick = (event: ChartEvent, _: ActiveElement[], chart: Chart) => {
   store.changePly(ply);
 };
 
-const appSetting = useAppSetting();
 const config = computed(() => {
   return {
-    thema: appSetting.thema,
-    coefficientInSigmoid: appSetting.coefficientInSigmoid,
+    type: props.type,
+    palette: getColorPalette(props.thema),
+    coefficientInSigmoid: props.coefficientInSigmoid,
+    showLegend: props.showLegend,
   };
 });
 

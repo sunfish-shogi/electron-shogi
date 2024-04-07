@@ -11,9 +11,9 @@ describe("settings/game", () => {
       },
       white: {
         name: "後手番",
-        uri: uri.ES_USI_ENGINE + "test-engine",
+        uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         usi: {
-          uri: uri.ES_USI_ENGINE + "test-engine",
+          uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
           name: "Test Engine",
           defaultName: "test engine",
           author: "test author",

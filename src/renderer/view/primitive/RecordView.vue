@@ -1,6 +1,6 @@
 <template>
   <div class="full column record-view">
-    <div class="row control">
+    <div v-show="showTopControl" class="row control">
       <button :disabled="!operational" data-hotkey="ArrowLeft" @click="goBegin">
         <Icon :icon="IconType.FIRST" />
       </button>
@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-    <div class="auto row branch-list-area">
+    <div v-if="showBranches" class="row branch-list-area">
       <!-- NOTE: 背景だけを透過させるために背景専用の要素を作る。 -->
       <div class="move-list-background" :style="{ opacity }"></div>
       <div ref="branchList" class="auto branch-list">
@@ -64,7 +64,7 @@
         </button>
       </div>
     </div>
-    <div class="row wrap options">
+    <div v-if="showBottomControl" class="row wrap options">
       <div class="option">
         <ToggleButton
           :label="elapsedTimeToggleLabel"
@@ -120,6 +120,21 @@ const props = defineProps({
     required: false,
     default: 1.0,
   },
+  showTopControl: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+  showBottomControl: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+  showBranches: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 });
 
 const emit = defineEmits<{
@@ -136,7 +151,7 @@ const emit = defineEmits<{
 }>();
 
 const moveList = ref(null as HTMLDivElement | null);
-const branchList = ref();
+const branchList = ref(null as HTMLDivElement | null);
 
 const goBegin = () => {
   if (props.operational) {
@@ -199,14 +214,14 @@ const branches = computed(() => {
 });
 
 onUpdated(() => {
-  const moveListElement = moveList.value as HTMLElement;
-  moveListElement.childNodes.forEach((elem) => {
+  const moveListElement = moveList.value;
+  moveListElement?.childNodes.forEach((elem) => {
     if (elem instanceof HTMLElement && elem.classList.contains("selected")) {
       elem.scrollIntoView({ behavior: "auto", block: "nearest" });
     }
   });
   const branchListElement = branchList.value as HTMLElement;
-  branchListElement.childNodes.forEach((elem) => {
+  branchListElement?.childNodes.forEach((elem) => {
     if (elem instanceof HTMLElement && elem.classList.contains("selected")) {
       elem.scrollIntoView({ behavior: "auto", block: "nearest" });
     }
@@ -221,7 +236,7 @@ onUpdated(() => {
 }
 .control {
   width: 100%;
-  height: 40px;
+  height: 8.6%;
 }
 .control button {
   height: 100%;
@@ -241,7 +256,8 @@ onUpdated(() => {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: calc(70% - 50px);
+  height: 0%;
+  flex: auto;
 }
 .move-list {
   margin-top: 1px;
@@ -256,7 +272,7 @@ onUpdated(() => {
   z-index: 1;
   margin-top: 2px;
   width: 100%;
-  height: calc(30% - 50px);
+  height: calc(26.2% - 15px);
 }
 .branch-list {
   width: auto;
@@ -276,6 +292,7 @@ onUpdated(() => {
 }
 .branch-list-control button .icon {
   height: 40px;
+  max-height: 100%;
 }
 .move-element {
   height: 1.4em;

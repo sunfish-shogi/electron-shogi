@@ -1,6 +1,14 @@
 <template>
   <div class="root full" :class="appSetting.thema" :style="style">
-    <StandardLayout class="full" />
+    <!-- Main Contents -->
+    <CustomLayout v-if="store.customLayout" :profile="store.customLayout" />
+    <StandardLayout v-else class="full" />
+
+    <!-- Dialogs -->
+    <BusyMessage v-if="busyState.isBusy" />
+    <InfoMessage v-if="messageStore.hasMessage" />
+    <ErrorMessage v-if="errorStore.hasError" />
+    <ConfirmDialog v-if="confirmation.message" />
     <GameDialog v-if="store.appState === AppState.GAME_DIALOG" />
     <CSAGameDialog v-if="store.appState === AppState.CSA_GAME_DIALOG" />
     <AnalysisDialog v-if="store.appState === AppState.ANALYSIS_DIALOG" />
@@ -16,8 +24,6 @@
     <LoadRemoteFileDialog v-if="store.appState === AppState.LOAD_REMOTE_FILE_DIALOG" />
     <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
     <ResearchDialog v-if="store.researchState === ResearchState.STARTUP_DIALOG" />
-    <BusyMessage v-if="busyState.isBusy" />
-    <ConfirmDialog v-if="confirmation.message" />
     <CSAGameReadyDialog
       v-if="
         store.csaGameState === CSAGameState.PLAYER_SETUP ||
@@ -39,8 +45,6 @@
       :pv="store.pvPreview.pv"
       @close="store.closePVPreviewDialog()"
     />
-    <InfoMessage v-if="messageStore.hasMessage" />
-    <ErrorMessage v-if="errorStore.hasError" />
   </div>
 </template>
 
@@ -77,6 +81,7 @@ import { useBusyState } from "./store/busy";
 import { useMessageStore } from "./store/message";
 import { useErrorStore } from "./store/error";
 import { useConfirmationStore } from "./store/confirm";
+import CustomLayout from "./view/main/CustomLayout.vue";
 
 const appSetting = useAppSetting();
 const store = useStore();
@@ -108,28 +113,30 @@ onMounted(() => {
 });
 
 const style = computed(() => {
+  const style: { [key: string]: string } = {};
   if (
-    appSetting.backgroundImageType == BackgroundImageType.NONE ||
-    !appSetting.backgroundImageFileURL
+    appSetting.backgroundImageType !== BackgroundImageType.NONE &&
+    appSetting.backgroundImageFileURL
   ) {
-    return {};
+    let size = "";
+    switch (appSetting.backgroundImageType) {
+      case BackgroundImageType.COVER:
+        size = "cover";
+        break;
+      case BackgroundImageType.CONTAIN:
+        size = "contain";
+        break;
+      case BackgroundImageType.TILE:
+        size = "auto";
+        break;
+    }
+    style["background-image"] = `url("${appSetting.backgroundImageFileURL}")`;
+    style["background-size"] = size;
   }
-  let size = "";
-  switch (appSetting.backgroundImageType) {
-    case BackgroundImageType.COVER:
-      size = "cover";
-      break;
-    case BackgroundImageType.CONTAIN:
-      size = "contain";
-      break;
-    case BackgroundImageType.TILE:
-      size = "auto";
-      break;
+  if (store.customLayout?.backgroundColor) {
+    style["background-color"] = store.customLayout.backgroundColor;
   }
-  return {
-    "background-image": `url("${appSetting.backgroundImageFileURL}")`,
-    "background-size": size,
-  };
+  return style;
 });
 </script>
 

@@ -20,6 +20,7 @@ import { PromptTarget } from "@/common/advanced/prompt";
 import { CommandHistory, CommandType } from "@/common/advanced/command";
 import { Bridge } from "./bridge";
 import { TimeStates } from "@/common/game/time";
+import { LayoutProfileList } from "@/common/settings/layout";
 
 type AppInfo = {
   appVersion?: string;
@@ -102,6 +103,10 @@ export interface API {
   cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string>;
   exportCaptureAsPNG(rect: Rect): Promise<void>;
   exportCaptureAsJPEG(rect: Rect): Promise<void>;
+
+  // Layout
+  loadLayoutProfileList(): Promise<[string, LayoutProfileList]>;
+  updateLayoutProfileList(uri: string, profileList: LayoutProfileList): void;
 
   // Log
   openLogFile(logType: LogType): void;
@@ -233,6 +238,15 @@ const api: API = {
   },
   exportCaptureAsJPEG(rect: Rect): Promise<void> {
     return bridge.exportCaptureAsJPEG(rect.json);
+  },
+
+  // Layout
+  async loadLayoutProfileList(): Promise<[string, LayoutProfileList]> {
+    const [uri, json] = await bridge.loadLayoutProfileList();
+    return [uri, JSON.parse(json)];
+  },
+  updateLayoutProfileList(uri: string, profileList: LayoutProfileList): void {
+    bridge.updateLayoutProfileList(uri, JSON.stringify(profileList));
   },
 
   // MISC

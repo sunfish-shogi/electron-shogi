@@ -9,6 +9,7 @@ import {
   loadBatchConversionSetting,
   loadCSAGameSettingHistory,
   loadGameSetting,
+  loadLayoutProfileList,
   loadMateSearchSetting,
   loadResearchSetting,
   loadUSIEngineSetting,
@@ -17,6 +18,7 @@ import {
   saveBatchConversionSetting,
   saveCSAGameSettingHistory,
   saveGameSetting,
+  saveLayoutProfileList,
   saveMateSearchSetting,
   saveResearchSetting,
   saveUSIEngineSetting,
@@ -89,6 +91,7 @@ import { createCommandWindow } from "./prompt";
 import { PromptTarget } from "@/common/advanced/prompt";
 import { Command, CommandType } from "@/common/advanced/command";
 import { fetch } from "@/background/helpers/http";
+import * as uri from "@/common/uri";
 
 const isWindows = process.platform === "win32";
 
@@ -483,6 +486,25 @@ ipcMain.handle(Background.LOAD_RECORD_FILE_BACKUP, async (event, name: string): 
   validateIPCSender(event.senderFrame);
   getAppLogger().debug("load record file backup: %s", name);
   return await loadBackup(name);
+});
+
+let layoutURI = uri.ES_STANDARD_LAYOUT_PROFILE;
+
+ipcMain.handle(Background.LOAD_LAYOUT_PROFILE_LIST, async (event): Promise<[string, string]> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load layout config");
+  const json = JSON.stringify(await loadLayoutProfileList());
+  return [layoutURI, json];
+});
+
+ipcMain.on(Background.UPDATE_LAYOUT_PROFILE_LIST, (event, uri: string, json: string) => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("update layout: %s", uri);
+  layoutURI = uri;
+  mainWindow.webContents.send(Renderer.UPDATE_LAYOUT_PROFILE_LIST, uri, json);
+  saveLayoutProfileList(JSON.parse(json)).catch((e) => {
+    sendError(new Error(`failed to save layout config: ${e}`));
+  });
 });
 
 ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, async (event): Promise<string> => {

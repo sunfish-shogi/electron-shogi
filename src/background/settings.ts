@@ -40,6 +40,7 @@ import {
 } from "@/common/settings/conversion";
 import { exists } from "./helpers/file";
 import { requireElectron } from "./helpers/portability";
+import { emptyLayoutProfileList, LayoutProfileList } from "@/common/settings/layout";
 
 const userDir = getAppPath("userData");
 const rootDir = getPortableExeDir() || userDir;
@@ -231,4 +232,17 @@ export async function loadMateSearchSetting(): Promise<MateSearchSetting> {
   return normalizeMateSearchSetting(
     JSON.parse(await fs.promises.readFile(mateSearchSettingPath, "utf8")),
   );
+}
+
+const layoutProfileListPath = path.join(userDir, "layouts.json");
+
+export async function saveLayoutProfileList(setting: LayoutProfileList): Promise<void> {
+  await fs.promises.writeFile(layoutProfileListPath, JSON.stringify(setting, undefined, 2), "utf8");
+}
+
+export async function loadLayoutProfileList(): Promise<LayoutProfileList> {
+  if (!(await exists(layoutProfileListPath))) {
+    return emptyLayoutProfileList();
+  }
+  return JSON.parse(await fs.promises.readFile(layoutProfileListPath, "utf8"));
 }

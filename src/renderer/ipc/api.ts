@@ -39,6 +39,7 @@ export interface API {
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
   showSelectImageDialog(defaultURL?: string): Promise<string>;
   showSaveMergedRecordDialog(defaultPath: string): Promise<string>;
+  loadRemoteRecordFile(url: string): Promise<string>;
   exportCaptureAsPNG(rect: Rect): Promise<void>;
   exportCaptureAsJPEG(rect: Rect): Promise<void>;
   convertRecordFiles(setting: BatchConversionSetting): Promise<BatchConversionResult>;

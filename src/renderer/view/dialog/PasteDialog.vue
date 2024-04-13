@@ -6,7 +6,7 @@
           <div class="message">{{ t.importingFollowingRecordOrPosition }}</div>
           <div class="message">{{ t.supportsKIF_KI2_CSA_USI_SFEN_JKF }}</div>
           <div v-if="!isNative()" class="message">
-            {{ t.plesePasteRecordIntoTextArea }}
+            {{ t.pleasePasteRecordIntoTextArea }}
           </div>
           <div v-if="!isNative()" class="message">
             {{ t.desktopVersionPastesAutomatically }}

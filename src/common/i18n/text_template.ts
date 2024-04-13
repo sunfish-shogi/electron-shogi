@@ -324,6 +324,9 @@ export type Texts = {
   userFile: string;
   automaticBackup: string;
   restore: string;
+  loadRecordFromWeb: string;
+  fetchLatestData: string;
+  sourceURL: string;
   ok: string;
   cancel: string;
   back: string;
@@ -436,7 +439,9 @@ export type Texts = {
   processingPleaseWait: string;
   importingFollowingRecordOrPosition: string;
   supportsKIF_KI2_CSA_USI_SFEN_JKF: string;
-  plesePasteRecordIntoTextArea: string;
+  pleasePasteRecordIntoTextArea: string;
+  pleaseSpecifyPlainTextURL: string;
+  redirectNotSupported: string;
   desktopVersionPastesAutomatically: string;
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions: string;
   ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior: string;

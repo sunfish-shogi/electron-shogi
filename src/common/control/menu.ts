@@ -4,6 +4,7 @@ export enum MenuEvent {
   SAVE_RECORD = "saveRecord",
   SAVE_RECORD_AS = "saveRecordAs",
   HISTORY = "history",
+  LOAD_REMOTE_RECORD = "loadRemoteRecord",
   BATCH_CONVERSION = "batchConversion",
   EXPORT_POSITION_IMAGE = "exportPositionImage",
   COPY_RECORD = "copyRecord",

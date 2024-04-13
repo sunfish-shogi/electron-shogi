@@ -14,6 +14,7 @@
     <PasteDialog v-if="store.appState === AppState.PASTE_DIALOG" />
     <LaunchUSIEngineDialog v-if="store.appState === AppState.LAUNCH_USI_ENGINE_DIALOG" />
     <ConnectToCSAServerDialog v-if="store.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG" />
+    <LoadRemoteFileDialog v-if="store.appState === AppState.LOAD_REMOTE_FILE_DIALOG" />
     <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
     <BussyMessage v-if="store.isBussy" />
     <ConfirmDialog v-if="store.confirmation" />
@@ -71,6 +72,7 @@ import BatchConversionDialog from "./view/dialog/BatchConversionDialog.vue";
 import LaunchUSIEngineDialog from "./view/dialog/LaunchUSIEngineDialog.vue";
 import ConnectToCSAServerDialog from "./view/dialog/ConnectToCSAServerDialog.vue";
 import PieceSetChangeDialog from "./view/dialog/PieceSetChangeDialog.vue";
+import LoadRemoteFileDialog from "./view/dialog/LoadRemoteFileDialog.vue";
 
 const appSetting = useAppSetting();
 const store = useStore();

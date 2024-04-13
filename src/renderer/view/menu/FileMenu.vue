@@ -29,6 +29,10 @@
             <Icon :icon="IconType.HISTORY" />
             <div class="label">{{ t.history }}</div>
           </button>
+          <button :disabled="!states.loadRemoteFile" @click="onLoadRemoteFile">
+            <Icon :icon="IconType.INTERNET" />
+            <div class="label">{{ t.loadRecordFromWeb }}</div>
+          </button>
         </div>
         <div class="group">
           <button :disabled="!states.batchConversion" @click="onBatchConversion">
@@ -128,6 +132,10 @@ const onHistory = () => {
   store.showRecordFileHistoryDialog();
   emit("close");
 };
+const onLoadRemoteFile = () => {
+  store.showLoadRemoteFileDialog();
+  emit("close");
+};
 const onBatchConversion = () => {
   store.showBatchConversionDialog();
   emit("close");
@@ -175,6 +183,7 @@ const states = computed(() => {
     save: store.appState === AppState.NORMAL,
     saveAs: store.appState === AppState.NORMAL,
     history: store.appState === AppState.NORMAL,
+    loadRemoteFile: store.appState === AppState.NORMAL,
     batchConversion: store.appState === AppState.NORMAL,
     exportImage: store.appState === AppState.NORMAL,
     paste: store.appState === AppState.NORMAL,

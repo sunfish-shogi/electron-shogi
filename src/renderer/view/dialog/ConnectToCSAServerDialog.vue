@@ -53,7 +53,7 @@
       </div>
       <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="onStart()">
-          {{ t.startGame }}
+          {{ t.ok }}
         </button>
         <button data-hotkey="Escape" @click="onCancel()">
           {{ t.cancel }}

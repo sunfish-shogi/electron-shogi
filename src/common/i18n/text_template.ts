@@ -322,6 +322,7 @@ export type Texts = {
   userFile: string;
   automaticBackup: string;
   restore: string;
+  ok: string;
   cancel: string;
   back: string;
   name: string;

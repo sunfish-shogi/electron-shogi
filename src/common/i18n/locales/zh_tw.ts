@@ -324,6 +324,7 @@ export const zh_tw: Texts = {
   userFile: "使用者檔案",
   automaticBackup: "自動備份",
   restore: "復原",
+  ok: "OK",
   cancel: "取消",
   back: "返回",
   name: "名稱",

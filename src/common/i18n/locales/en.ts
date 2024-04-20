@@ -442,7 +442,7 @@ export const en: Texts = {
   hasNoOldLogCleanUpFeature: "*This app has no clean-up feature. Please remove old logs manually.",
   processingPleaseWait: "Processing, please wait.",
   importingFollowingRecordOrPosition: "Importing the following record(or position).",
-  supportsKIF_KI2_CSA_USI_JKF: "*Supports KIF, KI2, CSA, USI, and JKF.",
+  supportsKIF_KI2_CSA_USI_SFEN_JKF: "*Supports KIF, KI2, CSA, USI, SFEN, and JKF.",
   plesePasteRecordIntoTextArea: "*Please paste record data into the text area.",
   desktopVersionPastesAutomatically:
     "*In desktop version, it will paste automatically from clipboard.",

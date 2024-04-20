@@ -438,7 +438,7 @@ export const zh_tw: Texts = {
   hasNoOldLogCleanUpFeature: "※現在並沒有舊紀錄的自動刪除機制。",
   processingPleaseWait: "現在處理中。請稍待一會。",
   importingFollowingRecordOrPosition: "將匯入以下棋譜（局面）。",
-  supportsKIF_KI2_CSA_USI_JKF: "※支援KIF/KI2/CSA/SFEN/JKF形式。",
+  supportsKIF_KI2_CSA_USI_SFEN_JKF: "※支援KIF/KI2/CSA/USI/SFEN/JKF形式。",
   plesePasteRecordIntoTextArea: "※請在文字輸入區域貼上您的棋譜。",
   desktopVersionPastesAutomatically: "※安裝程式版將會自動貼上棋譜。",
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:

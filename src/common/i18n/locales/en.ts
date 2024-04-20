@@ -327,6 +327,7 @@ export const en: Texts = {
   userFile: "User File",
   automaticBackup: "Automatic Backup",
   restore: "Restore",
+  ok: "OK",
   cancel: "Cancel",
   back: "Back",
   name: "Name",

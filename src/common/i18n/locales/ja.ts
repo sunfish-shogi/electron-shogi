@@ -327,6 +327,7 @@ export const ja: Texts = {
   userFile: "ユーザーのファイル",
   automaticBackup: "自動バックアップ",
   restore: "復元",
+  ok: "OK",
   cancel: "キャンセル",
   back: "戻る",
   name: "名前",

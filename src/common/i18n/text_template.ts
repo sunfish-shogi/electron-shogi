@@ -433,7 +433,7 @@ export type Texts = {
   hasNoOldLogCleanUpFeature: string;
   processingPleaseWait: string;
   importingFollowingRecordOrPosition: string;
-  supportsKIF_KI2_CSA_USI_JKF: string;
+  supportsKIF_KI2_CSA_USI_SFEN_JKF: string;
   plesePasteRecordIntoTextArea: string;
   desktopVersionPastesAutomatically: string;
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions: string;

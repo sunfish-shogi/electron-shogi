@@ -440,7 +440,7 @@ export const ja: Texts = {
   hasNoOldLogCleanUpFeature: "※現在、古いログファイルの自動削除機能はありません。",
   processingPleaseWait: "処理中です。お待ちください。",
   importingFollowingRecordOrPosition: "以下の棋譜(または局面)を取り込みます。",
-  supportsKIF_KI2_CSA_USI_JKF: "※KIF形式/KI2形式/CSA形式/SFEN/JKFに対応しています。",
+  supportsKIF_KI2_CSA_USI_SFEN_JKF: "※KIF形式/KI2形式/CSA形式/USI/SFEN/JKFに対応しています。",
   plesePasteRecordIntoTextArea: "※テキストエリアに棋譜を貼り付けてください。",
   desktopVersionPastesAutomatically: "※インストールアプリ版では自動的に貼り付けられます。",
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:

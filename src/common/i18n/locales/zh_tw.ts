@@ -326,6 +326,9 @@ export const zh_tw: Texts = {
   userFile: "使用者檔案",
   automaticBackup: "自動備份",
   restore: "復原",
+  loadRecordFromWeb: "Webの棋譜を取得", // TODO: translate
+  fetchLatestData: "最新データを取得", // TODO: translate
+  sourceURL: "ソースURL", // TODO: translate
   ok: "OK",
   cancel: "取消",
   back: "返回",
@@ -439,7 +442,9 @@ export const zh_tw: Texts = {
   processingPleaseWait: "現在處理中。請稍待一會。",
   importingFollowingRecordOrPosition: "將匯入以下棋譜（局面）。",
   supportsKIF_KI2_CSA_USI_SFEN_JKF: "※支援KIF/KI2/CSA/USI/SFEN/JKF形式。",
-  plesePasteRecordIntoTextArea: "※請在文字輸入區域貼上您的棋譜。",
+  pleasePasteRecordIntoTextArea: "※請在文字輸入區域貼上您的棋譜。",
+  pleaseSpecifyPlainTextURL: "※プレーンテキストのURLを指定してください。", // TODO: translate
+  redirectNotSupported: "※リダイレクトはサポートされていません。", // TODO: translate
   desktopVersionPastesAutomatically: "※安裝程式版將會自動貼上棋譜。",
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:
     "早期Ponder機能は、やねうら王の独自オプションでponderhitコマンドを送信します。", // TODO: translate

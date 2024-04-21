@@ -32,6 +32,7 @@ import {
   UpdateCustomDataHandler,
   UpdateFollowingMovesHandler,
   PieceSet,
+  UpdateTreeHandler,
 } from "./record";
 import { GameManager, GameResults } from "./game";
 import { generateRecordFileName, join } from "@/renderer/helpers/path";
@@ -123,6 +124,7 @@ class Store {
   private garbledNotified = false;
   private onResetRecordHandlers: ResetRecordHandler[] = [];
   private onChangePositionHandlers: ChangePositionHandler[] = [];
+  private onUpdateRecordTreeHandlers: UpdateTreeHandler[] = [];
   private onUpdateCustomDataHandlers: UpdateCustomDataHandler[] = [];
   private onUpdateFollowingMovesHandlers: (() => void)[] = [];
 
@@ -134,6 +136,9 @@ class Store {
       .on("changePosition", () => {
         this.updateResearchPosition();
         this.onChangePositionHandlers.forEach((handler) => handler());
+      })
+      .on("updateTree", () => {
+        this.onUpdateRecordTreeHandlers.forEach((handler) => handler());
       })
       .on("updateCustomData", () => {
         this.onUpdateCustomDataHandlers.forEach((handler) => handler());
@@ -185,6 +190,7 @@ class Store {
 
   addEventListener(event: "resetRecord", handler: ResetRecordHandler): void;
   addEventListener(event: "changePosition", handler: ChangePositionHandler): void;
+  addEventListener(event: "updateRecordTree", handler: UpdateTreeHandler): void;
   addEventListener(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
   addEventListener(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
   addEventListener(event: string, handler: unknown): void {
@@ -194,6 +200,9 @@ class Store {
         break;
       case "changePosition":
         this.onChangePositionHandlers.push(handler as ChangePositionHandler);
+        break;
+      case "updateRecordTree":
+        this.onUpdateRecordTreeHandlers.push(handler as UpdateTreeHandler);
         break;
       case "updateCustomData":
         this.onUpdateCustomDataHandlers.push(handler as UpdateCustomDataHandler);
@@ -206,6 +215,7 @@ class Store {
 
   removeEventListener(event: "resetRecord", handler: ResetRecordHandler): void;
   removeEventListener(event: "changePosition", handler: ChangePositionHandler): void;
+  removeEventListener(event: "updateRecordTree", handler: UpdateTreeHandler): void;
   removeEventListener(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
   removeEventListener(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
   removeEventListener(event: string, handler: unknown): void {
@@ -215,6 +225,11 @@ class Store {
         break;
       case "changePosition":
         this.onChangePositionHandlers = this.onChangePositionHandlers.filter((h) => h !== handler);
+        break;
+      case "updateRecordTree":
+        this.onUpdateRecordTreeHandlers = this.onUpdateRecordTreeHandlers.filter(
+          (h) => h !== handler,
+        );
         break;
       case "updateCustomData":
         this.onUpdateCustomDataHandlers = this.onUpdateCustomDataHandlers.filter(
@@ -443,6 +458,12 @@ class Store {
     }
   }
 
+  showLoadRemoteFileDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.LOAD_REMOTE_FILE_DIALOG;
+    }
+  }
+
   destroyModalDialog(): void {
     if (
       this.appState === AppState.PASTE_DIALOG ||
@@ -456,7 +477,8 @@ class Store {
       this.appState === AppState.RECORD_FILE_HISTORY_DIALOG ||
       this.appState === AppState.BATCH_CONVERSION_DIALOG ||
       this.appState === AppState.LAUNCH_USI_ENGINE_DIALOG ||
-      this.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG
+      this.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG ||
+      this.appState === AppState.LOAD_REMOTE_FILE_DIALOG
     ) {
       this._appState = AppState.NORMAL;
     }
@@ -1238,6 +1260,18 @@ class Store {
       .finally(() => {
         this.releaseBussyState();
       });
+  }
+
+  get remoteRecordFileURL() {
+    return this.recordManager.sourceURL;
+  }
+
+  loadRemoteRecordFile(url?: string) {
+    this.retainBussyState();
+    this.recordManager
+      .importRecordFromRemoteURL(url)
+      .catch((e) => this.pushError(e))
+      .finally(() => this.releaseBussyState());
   }
 
   showJishogiPoints(): void {

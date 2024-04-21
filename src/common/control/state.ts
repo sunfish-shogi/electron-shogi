@@ -19,4 +19,5 @@ export enum AppState {
   BATCH_CONVERSION_DIALOG = "batchConversionDialog",
   LAUNCH_USI_ENGINE_DIALOG = "launchUsiEngineDialog",
   CONNECT_TO_CSA_SERVER_DIALOG = "connectToCsaServerDialog",
+  LOAD_REMOTE_FILE_DIALOG = "loadRemoteFileDialog",
 }

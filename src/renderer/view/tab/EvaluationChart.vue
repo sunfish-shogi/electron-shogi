@@ -337,6 +337,7 @@ onMounted(() => {
   );
   store.addEventListener("resetRecord", updateChartLazy);
   store.addEventListener("changePosition", updateChartLazy);
+  store.addEventListener("updateRecordTree", updateChartLazy);
   store.addEventListener("updateCustomData", updateChartLazy);
   store.addEventListener("updateFollowingMoves", updateChartLazy);
 });
@@ -346,6 +347,7 @@ onUnmounted(() => {
   lazy.clear();
   store.removeEventListener("resetRecord", updateChartLazy);
   store.removeEventListener("changePosition", updateChartLazy);
+  store.removeEventListener("updateRecordTree", updateChartLazy);
   store.removeEventListener("updateCustomData", updateChartLazy);
   store.removeEventListener("updateFollowingMoves", updateChartLazy);
 });

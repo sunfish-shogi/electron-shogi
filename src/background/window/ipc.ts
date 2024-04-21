@@ -88,6 +88,7 @@ import { SessionStates } from "@/common/advanced/monitor";
 import { createCommandWindow } from "./prompt";
 import { PromptTarget } from "@/common/advanced/prompt";
 import { Command, CommandType } from "@/common/advanced/command";
+import { fetch } from "@/background/helpers/http";
 
 const isWindows = process.platform === "win32";
 
@@ -320,6 +321,11 @@ ipcMain.handle(
     return await showSaveDialog(path.resolve(defaultPath), filters, "OK");
   },
 );
+
+ipcMain.handle(Background.LOAD_REMOTE_RECORD_FILE, async (event, url: string) => {
+  validateIPCSender(event.senderFrame);
+  return await fetch(url);
+});
 
 ipcMain.handle(
   Background.CROP_PIECE_IMAGE,

@@ -329,6 +329,9 @@ export const en: Texts = {
   userFile: "User File",
   automaticBackup: "Automatic Backup",
   restore: "Restore",
+  loadRecordFromWeb: "Load Record from Web",
+  fetchLatestData: "Fetch Latest Data",
+  sourceURL: "Source URL",
   ok: "OK",
   cancel: "Cancel",
   back: "Back",
@@ -443,7 +446,9 @@ export const en: Texts = {
   processingPleaseWait: "Processing, please wait.",
   importingFollowingRecordOrPosition: "Importing the following record(or position).",
   supportsKIF_KI2_CSA_USI_SFEN_JKF: "*Supports KIF, KI2, CSA, USI, SFEN, and JKF.",
-  plesePasteRecordIntoTextArea: "*Please paste record data into the text area.",
+  pleasePasteRecordIntoTextArea: "*Please paste record data into the text area.",
+  pleaseSpecifyPlainTextURL: "*Please specify plain text URL.",
+  redirectNotSupported: "*Redirect is not supported.",
   desktopVersionPastesAutomatically:
     "*In desktop version, it will paste automatically from clipboard.",
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:

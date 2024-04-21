@@ -86,6 +86,9 @@ export function preload(config: Config) {
     async showSaveMergedRecordDialog(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
+    async loadRemoteRecordFile(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
     async cropPieceImage(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },

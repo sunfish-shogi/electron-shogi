@@ -76,6 +76,8 @@ function createMenuTemplate(window: BrowserWindow) {
         menuItem(t.saveRecordAs, MenuEvent.SAVE_RECORD_AS, [AppState.NORMAL], "CmdOrCtrl+Shift+S"),
         menuItem(t.history, MenuEvent.HISTORY, [AppState.NORMAL], "CmdOrCtrl+H"),
         { type: "separator" },
+        menuItem(t.loadRecordFromWeb, MenuEvent.LOAD_REMOTE_RECORD, [AppState.NORMAL]),
+        { type: "separator" },
         menuItem(t.batchConversion, MenuEvent.BATCH_CONVERSION, [AppState.NORMAL]),
         menuItem(
           t.exportPositionImage,

@@ -65,6 +65,9 @@ export function setup(): void {
       case MenuEvent.HISTORY:
         store.showRecordFileHistoryDialog();
         break;
+      case MenuEvent.LOAD_REMOTE_RECORD:
+        store.showLoadRemoteFileDialog();
+        break;
       case MenuEvent.BATCH_CONVERSION:
         store.showBatchConversionDialog();
         break;

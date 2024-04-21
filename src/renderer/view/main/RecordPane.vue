@@ -21,6 +21,9 @@
         @toggle-show-comment="onToggleComment"
       />
     </div>
+    <div v-if="store.remoteRecordFileURL">
+      <button class="wide" @click="store.loadRemoteRecordFile()">{{ t.fetchLatestData }}</button>
+    </div>
   </div>
 </template>
 
@@ -112,5 +115,8 @@ const isRecordOperational = computed(() => {
 .record {
   width: 100%;
   min-height: 0;
+}
+button.wide {
+  width: 100%;
 }
 </style>

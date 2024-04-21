@@ -71,6 +71,11 @@ export type RecordCustomData = {
   researchInfo4?: SearchInfo;
 };
 
+type replaceRecordOption = {
+  path?: string;
+  markAsSaved?: boolean;
+};
+
 export type ImportRecordOption = {
   type?: RecordFormatType;
   markAsSaved?: boolean;
@@ -243,6 +248,7 @@ type BackupOptions = {
 
 export type ResetRecordHandler = () => void;
 export type ChangePositionHandler = () => void;
+export type UpdateTreeHandler = () => void;
 export type UpdateCustomDataHandler = () => void;
 export type UpdateFollowingMovesHandler = () => void;
 export type BackupHandler = () => BackupOptions | null | void;
@@ -251,10 +257,14 @@ export class RecordManager {
   private _record = new Record();
   private _recordFilePath?: string;
   private _unsaved = false;
+  private _sourceURL?: string;
   private onResetRecord: ResetRecordHandler = () => {
     /* noop */
   };
   private onChangePosition: ChangePositionHandler = () => {
+    /* noop */
+  };
+  private onUpdateTree: UpdateTreeHandler = () => {
     /* noop */
   };
   private onUpdateCustomData: UpdateCustomDataHandler = () => {
@@ -279,12 +289,19 @@ export class RecordManager {
     return this._unsaved;
   }
 
-  private updateRecordFilePath(recordFilePath: string): void {
+  get sourceURL(): string | undefined {
+    return this._sourceURL;
+  }
+
+  private updateRecordFilePath(recordFilePath: string | undefined): void {
+    this._unsaved = false;
     if (recordFilePath === this._recordFilePath) {
       return;
     }
     this._recordFilePath = recordFilePath;
-    api.addRecordFileHistory(recordFilePath);
+    if (recordFilePath) {
+      api.addRecordFileHistory(recordFilePath);
+    }
   }
 
   async saveBackup(): Promise<void> {
@@ -298,16 +315,32 @@ export class RecordManager {
 
   private saveBackupOnBackground(): void {
     this.saveBackup().catch((e) => {
-      api.log(LogLevel.ERROR, `failed to save backup: ${e}`);
+      api.log(LogLevel.ERROR, `RecordManager#saveBackupOnBackground: failed to save backup: ${e}`);
     });
   }
 
-  reset(): void {
+  private clearRecord(position?: ImmutablePosition): void {
     this.saveBackupOnBackground();
-    this._record.clear();
+    this._record.clear(position);
     this._unsaved = false;
     this._recordFilePath = undefined;
+    this._sourceURL = undefined;
     this.onResetRecord();
+  }
+
+  private replaceRecord(record: Record, option?: replaceRecordOption): void {
+    this.saveBackupOnBackground();
+    this._record = record;
+    this.bindRecordHandlers();
+    this.updateRecordFilePath(option?.path);
+    this._unsaved = !option?.markAsSaved;
+    this._sourceURL = undefined;
+    restoreCustomData(this._record);
+    this.onResetRecord();
+  }
+
+  reset(): void {
+    this.clearRecord();
   }
 
   resetByInitialPositionType(startPosition: InitialPositionType): void {
@@ -319,26 +352,17 @@ export class RecordManager {
     if (!position.resetBySFEN(sfen)) {
       return false;
     }
-    this.saveBackupOnBackground();
-    this._record.clear(position);
-    this._unsaved = false;
-    this._recordFilePath = undefined;
-    this.onResetRecord();
+    this.clearRecord(position);
     return true;
   }
 
   resetByCurrentPosition(): void {
-    this.saveBackupOnBackground();
-    this._record.clear(this._record.position);
-    this._unsaved = false;
-    this._recordFilePath = undefined;
-    this.onResetRecord();
+    this.clearRecord(this._record.position);
   }
 
-  importRecord(data: string, option?: ImportRecordOption): Error | undefined {
+  private parseRecordData(data: string, type?: RecordFormatType): Record | Error {
     let recordOrError: Record | Error;
-    const type = option?.type || detectRecordFormat(data);
-    switch (type) {
+    switch (type || detectRecordFormat(data)) {
       case RecordFormatType.SFEN: {
         const position = Position.newBySFEN(data);
         recordOrError = position ? new Record(position) : new Error(t.failedToParseSFEN);
@@ -366,13 +390,15 @@ export class RecordManager {
     if (recordOrError instanceof Error) {
       return localizeError(recordOrError);
     }
-    this.saveBackupOnBackground();
-    this._record = recordOrError;
-    this.bindRecordHandlers();
-    this._unsaved = !option?.markAsSaved;
-    this._recordFilePath = undefined;
-    restoreCustomData(this._record);
-    this.onResetRecord();
+    return recordOrError;
+  }
+
+  importRecord(data: string, option?: ImportRecordOption): Error | undefined {
+    const recordOrError = this.parseRecordData(data, option?.type);
+    if (recordOrError instanceof Error) {
+      return recordOrError;
+    }
+    this.replaceRecord(recordOrError, option);
     return;
   }
 
@@ -389,14 +415,28 @@ export class RecordManager {
     if (recordOrError instanceof Error) {
       return localizeError(recordOrError);
     }
-    this.saveBackupOnBackground();
-    this._record = recordOrError;
-    this.bindRecordHandlers();
-    this._unsaved = false;
-    this.updateRecordFilePath(path);
-    restoreCustomData(this._record);
-    this.onResetRecord();
+    this.replaceRecord(recordOrError, { path, markAsSaved: true });
     return;
+  }
+
+  async importRecordFromRemoteURL(url?: string): Promise<void> {
+    const mergeMode = !url;
+    url = url || this._sourceURL;
+    if (!url) {
+      api.log(LogLevel.ERROR, "RecordManager#importRecordFromRemoteURL: source URL is not set");
+      return;
+    }
+    const data = await api.loadRemoteRecordFile(url);
+    const recordOrError = this.parseRecordData(data);
+    if (recordOrError instanceof Error) {
+      throw recordOrError;
+    }
+    if (mergeMode) {
+      this.mergeRecord(recordOrError);
+    } else {
+      this.replaceRecord(recordOrError);
+    }
+    this._sourceURL = url;
   }
 
   exportRecordAsBuffer(path: string, opt: ExportOptions): ExportResult | Error {
@@ -405,27 +445,27 @@ export class RecordManager {
       return new Error(`${t.unknownFileExtension}: ${path}`);
     }
     const result = exportRecordAsBuffer(this._record, format, opt);
-    this._unsaved = false;
     this.updateRecordFilePath(path);
     return result;
+  }
+
+  private applyPosition(position: ImmutablePosition): void {
+    this._record.clear(position);
+    this._unsaved = true;
+    this._recordFilePath = undefined;
+    this.onResetRecord();
   }
 
   swapNextTurn(): void {
     const position = this.record.position.clone();
     position.setColor(reverseColor(position.color));
-    this._record.clear(position);
-    this._unsaved = true;
-    this._recordFilePath = undefined;
-    this.onResetRecord();
+    this.applyPosition(position);
   }
 
   changePosition(change: PositionChange): void {
     const position = this.record.position.clone();
     position.edit(change);
-    this._record.clear(position);
-    this._unsaved = true;
-    this._recordFilePath = undefined;
-    this.onResetRecord();
+    this.applyPosition(position);
   }
 
   changePieceSet(pieceSet: PieceSet): void {
@@ -477,10 +517,7 @@ export class RecordManager {
           }
         }
       });
-    this._record.clear(position);
-    this._unsaved = true;
-    this._recordFilePath = undefined;
-    this.onResetRecord();
+    this.applyPosition(position);
   }
 
   changePly(ply: number): void {
@@ -675,6 +712,13 @@ export class RecordManager {
     }
   }
 
+  mergeRecord(record: ImmutableRecord): void {
+    this._record.merge(record);
+    this._unsaved = true;
+    restoreCustomData(this._record);
+    this.onUpdateTree();
+  }
+
   updateStandardMetadata(update: { key: RecordMetadataKey; value: string }): void {
     this._record.metadata.setStandardMetadata(update.key, update.value);
     this._unsaved = true;
@@ -682,6 +726,7 @@ export class RecordManager {
 
   on(event: "resetRecord", handler: ResetRecordHandler): this;
   on(event: "changePosition", handler: ChangePositionHandler): this;
+  on(event: "updateTree", handler: () => void): this;
   on(event: "updateCustomData", handler: UpdateCustomDataHandler): this;
   on(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): this;
   on(event: "backup", handler: BackupHandler): this;
@@ -693,6 +738,9 @@ export class RecordManager {
       case "changePosition":
         this.onChangePosition = handler as ChangePositionHandler;
         this.bindRecordHandlers();
+        break;
+      case "updateTree":
+        this.onUpdateTree = handler as UpdateTreeHandler;
         break;
       case "updateCustomData":
         this.onUpdateCustomData = handler as UpdateCustomDataHandler;

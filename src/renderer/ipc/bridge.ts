@@ -20,6 +20,7 @@ export interface Bridge {
   showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
   showSelectImageDialog(defaultURL?: string): Promise<string>;
   showSaveMergedRecordDialog(defaultPath: string): Promise<string>;
+  loadRemoteRecordFile(url: string): Promise<string>;
   exportCaptureAsPNG(json: string): Promise<void>;
   exportCaptureAsJPEG(json: string): Promise<void>;
   convertRecordFiles(json: string): Promise<string>;

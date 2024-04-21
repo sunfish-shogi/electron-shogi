@@ -9,6 +9,10 @@
             {{ store.recordFilePath || t.newRecord }}
           </div>
         </div>
+        <div v-if="store.remoteRecordFileURL" class="row element">
+          <div class="key">{{ t.sourceURL }}</div>
+          <div class="value">{{ store.remoteRecordFileURL }}</div>
+        </div>
         <div
           v-for="element in list"
           :key="element.key"

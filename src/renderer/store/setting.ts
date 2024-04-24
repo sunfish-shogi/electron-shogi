@@ -141,6 +141,9 @@ class AppSettingStore {
   get recordFileNameTemplate(): string {
     return this.setting.recordFileNameTemplate;
   }
+  get useCSAV3(): boolean {
+    return this.setting.useCSAV3;
+  }
   get enableUSIFileStartpos(): boolean {
     return this.setting.enableUSIFileStartpos;
   }

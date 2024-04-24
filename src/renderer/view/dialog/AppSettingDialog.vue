@@ -481,6 +481,11 @@
               <Icon :icon="IconType.HELP" />
             </button>
           </div>
+          <!-- CSA V3 で出力 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">CSA V3 で出力</div>
+            <ToggleButton :value="useCSAV3" @change="(checked: boolean) => (useCSAV3 = checked)" />
+          </div>
           <!-- USI の局面表記 -->
           <div class="form-item row">
             <div class="form-item-label-wide">{{ t.positionOfUSIOutput }}</div>
@@ -871,6 +876,7 @@ const textDecodingRule = ref(appSetting.textDecodingRule);
 const returnCode = ref(returnCodeToName[appSetting.returnCode]);
 const autoSaveDirectory = ref();
 const recordFileNameTemplate = ref();
+const useCSAV3 = ref(appSetting.useCSAV3);
 const enableUSIFileStartpos = ref(appSetting.enableUSIFileStartpos);
 const enableUSIFileResign = ref(appSetting.enableUSIFileResign);
 const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
@@ -938,6 +944,7 @@ const saveAndClose = async () => {
       returnCode: nameToReturnCode[returnCode.value],
       autoSaveDirectory: autoSaveDirectory.value.value,
       recordFileNameTemplate: recordFileNameTemplate.value.value,
+      useCSAV3: useCSAV3.value,
       enableUSIFileStartpos: enableUSIFileStartpos.value,
       enableUSIFileResign: enableUSIFileResign.value,
       translateEngineOptionName: translateEngineOptionName.value,

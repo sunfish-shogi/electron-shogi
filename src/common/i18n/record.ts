@@ -25,10 +25,18 @@ export function getRecordMetadataName(key: RecordMetadataKey): string {
       return t.gameTitle;
     case RecordMetadataKey.TIME_LIMIT:
       return t.timeLimit;
+    case RecordMetadataKey.BLACK_TIME_LIMIT:
+      return t.blackTimeLimit;
+    case RecordMetadataKey.WHITE_TIME_LIMIT:
+      return t.whiteTimeLimit;
     case RecordMetadataKey.BYOYOMI:
       return t.byoyomi;
     case RecordMetadataKey.TIME_SPENT:
       return t.elapsedTime;
+    case RecordMetadataKey.MAX_MOVES:
+      return t.maxMoves;
+    case RecordMetadataKey.JISHOGI:
+      return t.jishogi;
     case RecordMetadataKey.PLACE:
       return t.place;
     case RecordMetadataKey.POSTED_ON:

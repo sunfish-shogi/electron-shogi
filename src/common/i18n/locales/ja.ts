@@ -362,6 +362,8 @@ export const ja: Texts = {
   strategy: "戦型",
   gameTitle: "表題",
   timeLimit: "持ち時間",
+  blackTimeLimit: "先手の持ち時間",
+  whiteTimeLimit: "後手の持ち時間",
   place: "場所",
   postedOn: "掲載",
   note: "備考",

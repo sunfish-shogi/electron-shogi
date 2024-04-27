@@ -13,18 +13,18 @@ You can use this app with any Shogi engine(AI) based on [USI Protocol](http://sh
 ## Concept
 
 We can already use excellent softwares such as 将棋所 and [ShogiGUI](http://shogigui.siganus.com/) etc.
-However, most of those source code are not public.
-The authority of Shogi AI advocates [importance of source code sharing](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/).
-Electron Shogi publishes fully source code. And you can use/modify under only few limits.
+However, most of those source codes are not public.
+The authority of Shogi AI advocates [the importance of source code sharing](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/).
+Electron Shogi publishes full source code. And you can use/modify under only few limits.
 
-Electron Shogi is developed by [Electron](https://www.electronjs.org/) which is web based GUI framework.
+Electron Shogi is developed by [Electron](https://www.electronjs.org/) which is a web based GUI framework.
 We want to use this project to wide usages by making use of modern web technologies on the future.
 Currently, you can use the part of features on your web browser.
 Electron based app bundles Chromium, so it is easy to keep quality regardless of OS or its versions.
 
-These days, 2-in-1 tablet and convertible PC are becoming popular.
+These days, 2-in-1 laptops are becoming popular.
 So, it is possible to play shogi on PC with touch screen.
-However, legacy desktop Shogi apps have very small UI components. So it's not good for compatibility with touch display.
+However, legacy desktop Shogi apps have very small UI components. So it's not good for compatibility with a touch display.
 We design this app to have operability for touch devices.
 
 ## Website

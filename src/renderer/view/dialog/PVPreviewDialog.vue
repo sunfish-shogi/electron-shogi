@@ -161,7 +161,7 @@ const updateRecord = () => {
   record.goto(1);
 };
 
-onMounted(async () => {
+onMounted(() => {
   updateSize();
   updateRecord();
   window.addEventListener("resize", updateSize);

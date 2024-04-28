@@ -28,15 +28,30 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useStore } from "@/renderer/store";
+import { isNative } from "@/renderer/ipc/api";
 
 const store = useStore();
 const dialog = ref();
 const input = ref();
+const localStorageLastURLKey = "LoadRemoteFileDialog.lastURL";
 
+store.retainBussyState();
 onMounted(async () => {
-  showModalDialog(dialog.value);
-  installHotKeyForDialog(dialog.value);
-  input.value.focus();
+  try {
+    showModalDialog(dialog.value);
+    installHotKeyForDialog(dialog.value);
+    input.value.focus();
+    input.value.value = localStorage.getItem(localStorageLastURLKey);
+    if (!isNative()) {
+      return;
+    }
+    const copied = (await navigator.clipboard.readText()).trim();
+    if (copied && copied.match(/^https?:\/\//)) {
+      input.value.value = copied;
+    }
+  } finally {
+    store.releaseBussyState();
+  }
 });
 
 onBeforeUnmount(() => {
@@ -49,6 +64,7 @@ const onOK = () => {
     store.pushError("URL is required.");
     return;
   }
+  localStorage.setItem(localStorageLastURLKey, url);
   store.closeModalDialog();
   store.loadRemoteRecordFile(url);
 };

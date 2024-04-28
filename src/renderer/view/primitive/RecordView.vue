@@ -282,12 +282,16 @@ onUpdated(() => {
   width: 100%;
   line-height: 1.4em;
   font-size: 0.85em;
+  scroll-margin: 1em;
 }
 .move-element.has-branch:not(.selected) {
   background-color: var(--text-bg-color-warning);
 }
 .move-element.selected {
   background-color: var(--text-bg-color-selected);
+}
+.move-element:last-child {
+  margin-bottom: 1em;
 }
 .move-number {
   min-width: 38px;

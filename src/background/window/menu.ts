@@ -70,7 +70,7 @@ function createMenuTemplate(window: BrowserWindow) {
     {
       label: t.file,
       submenu: [
-        menuItem(t.newRecord, MenuEvent.NEW_RECORD, [AppState.NORMAL]),
+        menuItem(t.newRecord, MenuEvent.NEW_RECORD, [AppState.NORMAL], "CmdOrCtrl+N"),
         menuItem(t.openRecord, MenuEvent.OPEN_RECORD, [AppState.NORMAL], "CmdOrCtrl+O"),
         menuItem(t.saveRecord, MenuEvent.SAVE_RECORD, [AppState.NORMAL], "CmdOrCtrl+S"),
         menuItem(t.saveRecordAs, MenuEvent.SAVE_RECORD_AS, [AppState.NORMAL], "CmdOrCtrl+Shift+S"),

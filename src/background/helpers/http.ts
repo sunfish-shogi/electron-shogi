@@ -1,11 +1,10 @@
 import https from "node:https";
 import http from "node:http";
-import { isProduction } from "@/background/proc/env";
 import { getAppLogger } from "@/background/log";
 
 export function fetch(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    const get = !isProduction() && url.startsWith("http://") ? http.get : https.get;
+    const get = url.startsWith("http://") ? http.get : https.get;
     getAppLogger().debug(`fetch remote file: ${url}`);
     const req = get(url);
     req.setTimeout(5000, () => {

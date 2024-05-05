@@ -93,14 +93,11 @@ function getScore(
   type: EvaluationChartType,
   coefficientInSigmoid: number,
 ): number | undefined {
-  const score =
-    searchInfo.score !== undefined
-      ? searchInfo.score
-      : searchInfo.mate !== undefined
-        ? searchInfo.mate > 0
-          ? MATE_SCORE
-          : -MATE_SCORE
-        : undefined;
+  let score = searchInfo.score;
+  // mateがある場合はMATE_SCOREを代わりに使用する。
+  if (searchInfo.mate !== undefined) {
+    score = searchInfo.mate > 0 ? MATE_SCORE : -MATE_SCORE;
+  }
   if (score === undefined) {
     return;
   }

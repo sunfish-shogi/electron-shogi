@@ -272,7 +272,7 @@ const insertToComment = () => {
     SearchInfoSenderType.RESEARCHER,
     {
       depth: props.depth,
-      score: props.score,
+      score: props.score && props.score * (props.position.color == Color.BLACK ? 1 : -1),
       mate: props.mate,
       pv: props.pv,
     },

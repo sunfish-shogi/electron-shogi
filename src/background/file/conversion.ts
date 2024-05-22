@@ -133,6 +133,7 @@ class DirectoryWriter {
     // Export record
     const exportResult = exportRecordAsBuffer(record, this.setting.destinationFormat, {
       returnCode: this.appSetting.returnCode,
+      csa: { v3: this.appSetting.useCSAV3 },
     });
     await fs.writeFile(destination, exportResult.data);
     getAppLogger().debug(`batch conversion: succeeded: ${source} -> ${destination}`);

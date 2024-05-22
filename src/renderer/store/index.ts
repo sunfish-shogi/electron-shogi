@@ -1076,6 +1076,7 @@ class Store {
     const appSetting = useAppSetting();
     const str = exportCSA(this.recordManager.record, {
       returnCode: appSetting.returnCode,
+      v3: appSetting.useCSAV3 ? { milliseconds: true } : undefined,
     });
     navigator.clipboard.writeText(str);
   }
@@ -1220,6 +1221,7 @@ class Store {
     const result = this.recordManager.exportRecordAsBuffer(path, {
       returnCode: appSetting.returnCode,
       detectGarbled: opt?.detectGarbled,
+      csa: { v3: appSetting.useCSAV3 },
     });
     if (result instanceof Error) {
       throw result;

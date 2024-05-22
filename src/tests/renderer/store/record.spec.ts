@@ -6,6 +6,7 @@ import {
   Move,
   PieceType,
   RecordFormatType,
+  RecordMetadataKey,
   SpecialMoveType,
   Square,
   formatPV,
@@ -247,6 +248,36 @@ describe("store/record", () => {
         "▲４七飛△４二金▲４四歩△同　歩▲同　角△４三歩▲５五角△３三桂▲６五歩△６二金▲６四歩△５四銀▲４四歩△５一桂▲４三歩成△同　金▲同　飛成△同　玉",
       );
     });
+  });
+
+  it("setGameStartMetadata/csa-v2-time", () => {
+    const recordManager = new RecordManager();
+    recordManager.setGameStartMetadata({
+      gameTitle: "New Game",
+      blackName: "Player 1",
+      whiteName: "Player 2",
+      blackTimeLimit: { timeSeconds: 600, byoyomi: 30, increment: 0 },
+      whiteTimeLimit: { timeSeconds: 600, byoyomi: 30, increment: 0 },
+    });
+    const metadata = recordManager.record.metadata;
+    expect(metadata.getStandardMetadata(RecordMetadataKey.TITLE)).toBe("New Game");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe("Player 1");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe("Player 2");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)).toBe("10:00+30");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT)).toBeUndefined();
+    expect(metadata.getStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT)).toBeUndefined();
+  });
+
+  it("setGameStartMetadata/csa-v3-time", () => {
+    const recordManager = new RecordManager();
+    recordManager.setGameStartMetadata({
+      blackTimeLimit: { timeSeconds: 300, byoyomi: 0, increment: 5 },
+      whiteTimeLimit: { timeSeconds: 150, byoyomi: 0, increment: 5 },
+    });
+    const metadata = recordManager.record.metadata;
+    expect(metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)).toBeUndefined();
+    expect(metadata.getStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT)).toBe("300+0+5");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT)).toBe("150+0+5");
   });
 
   it("appendMovesSilently", () => {

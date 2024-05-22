@@ -166,6 +166,7 @@ export type AppSetting = {
   returnCode: string;
   autoSaveDirectory: string;
   recordFileNameTemplate: string;
+  useCSAV3: boolean;
   enableUSIFileStartpos: boolean;
   enableUSIFileResign: boolean;
   translateEngineOptionName: boolean;
@@ -247,6 +248,7 @@ export type AppSettingUpdate = {
   returnCode?: string;
   autoSaveDirectory?: string;
   recordFileNameTemplate?: string;
+  useCSAV3?: boolean;
   enableUSIFileStartpos?: boolean;
   enableUSIFileResign?: boolean;
   translateEngineOptionName?: boolean;
@@ -348,6 +350,7 @@ export function defaultAppSetting(opt?: {
     returnCode: opt?.returnCode || "\r\n",
     autoSaveDirectory: opt?.autoSaveDirectory || "",
     recordFileNameTemplate: defaultRecordFileNameTemplate,
+    useCSAV3: false,
     enableUSIFileStartpos: true,
     enableUSIFileResign: false,
     translateEngineOptionName: true,

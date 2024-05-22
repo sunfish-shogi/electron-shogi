@@ -44,6 +44,7 @@ const returnCodeName = argParser.value(
   process.platform === "win32" ? "CRLF" : "LF",
   ["LF", "CRLF"],
 );
+const useCSAV3 = argParser.flag("csa-v3", "Use CSA V3 format for record file.");
 const repeat = argParser.numberOrNull("repeat", "Overwrite repeat setting.", { min: 1 });
 const enableAppLogFile = argParser.flag("app-log-file", "Enable application log file.");
 const enableUSILogFile = argParser.flag("usi-log-file", "Enable USI log file.");
@@ -203,7 +204,10 @@ async function main() {
     fs.promises
       .mkdir(dir, { recursive: true })
       .then(() => {
-        const result = recordManager.exportRecordAsBuffer(filePath, { returnCode });
+        const result = recordManager.exportRecordAsBuffer(filePath, {
+          returnCode,
+          csa: { v3: useCSAV3() },
+        });
         if (result instanceof Error) {
           getAppLogger().error(result);
           return;

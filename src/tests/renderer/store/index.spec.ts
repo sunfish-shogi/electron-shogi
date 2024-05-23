@@ -717,8 +717,24 @@ describe("store/index", () => {
         {
           type: "list",
           items: [
-            { text: "先手", children: ["Points: 28", "Rule-24: DRAW", "Rule-27: WIN"] },
-            { text: "後手", children: ["Points: 15", "Rule-24: LOSE", "Rule-27: LOSE"] },
+            {
+              text: "先手",
+              children: [
+                "Points (Total): 28",
+                "Points (Declaration): 28",
+                "Rule-24: DRAW",
+                "Rule-27: WIN",
+              ],
+            },
+            {
+              text: "後手",
+              children: [
+                "Points (Total): 26",
+                "Points (Declaration): 15",
+                "Rule-24: LOSE",
+                "Rule-27: LOSE",
+              ],
+            },
           ],
         },
       ],

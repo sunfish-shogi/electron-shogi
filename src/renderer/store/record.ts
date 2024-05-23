@@ -121,6 +121,26 @@ function parseFloodgateScoreComment(line: string): number | undefined {
   return matched ? Number(matched[1]) : undefined;
 }
 
+function parseShogiGUIPlayerScoreComment(line: string): number | undefined {
+  const matched = /^\*対局 .* 評価値 ([+-]?[0-9]+)/.exec(line);
+  return matched ? Number(matched[1]) : undefined;
+}
+
+function parseShogiGUIAnalysisScoreComment(line: string): number | undefined {
+  const matched = /^\*解析 .* 評価値 ([+-]?[0-9]+)/.exec(line);
+  return matched ? Number(matched[1]) : undefined;
+}
+
+function parseKishinAnalyticsScoreComment(line: string): number | undefined {
+  const matched = /^\* .* 評価値 ([+-]?[0-9]+)/.exec(line);
+  return matched ? Number(matched[1]) : undefined;
+}
+
+function parseKShogiPlayerScoreComment(line: string): number | undefined {
+  const matched = /^#(?:形勢|指し手)\[([+-]?[0-9]+)\]/.exec(line);
+  return matched ? Number(matched[1]) : undefined;
+}
+
 function restoreCustomData(record: Record): void {
   record.forEach((node) => {
     const data = (node.customData || {}) as RecordCustomData;
@@ -140,14 +160,21 @@ function restoreCustomData(record: Record): void {
           mate: researchMateScore,
         };
       }
-      const playerScore = parsePlayerScoreComment(line) || parseFloodgateScoreComment(line);
+      const playerScore =
+        parsePlayerScoreComment(line) ||
+        parseFloodgateScoreComment(line) ||
+        parseShogiGUIPlayerScoreComment(line);
       if (playerScore !== undefined) {
         data.playerSearchInfo = {
           ...data.playerSearchInfo,
           score: playerScore,
         };
       }
-      const researchScore = parseResearchScoreComment(line);
+      const researchScore =
+        parseResearchScoreComment(line) ||
+        parseShogiGUIAnalysisScoreComment(line) ||
+        parseKishinAnalyticsScoreComment(line) ||
+        parseKShogiPlayerScoreComment(line);
       if (researchScore !== undefined) {
         data.researchInfo = {
           ...data.researchInfo,
@@ -212,17 +239,35 @@ function parseFloodgatePVComment(position: ImmutablePosition, line: string): Mov
 }
 
 function getPVsFromSearchComment(position: ImmutablePosition, comment: string): Move[][] {
-  return comment
-    .split("\n")
-    .filter((line) => line.match(/^[#*]読み筋=/) || line.match(/^\* -?[0-9]+ /))
-    .map((line) => {
-      if (line.startsWith("* ")) {
-        return parseFloodgatePVComment(position, line);
-      } else {
-        return parsePV(position, line.substring(5));
-      }
-    })
-    .filter((pv) => pv.length !== 0);
+  const pvs: Move[][] = [];
+  for (const line of comment.split("\n")) {
+    let pv: Move[] | undefined;
+    // Electron将棋
+    if (line.match(/^[#*]読み筋=/)) {
+      pv = parsePV(position, line.substring(5));
+    }
+    // ShogiGUI or 棋神アナリティクス
+    else if (line.match(/^\*.* 読み筋 /)) {
+      const moveStr = line.substring(line.indexOf(" 読み筋 ") + 5);
+      const sign = position.color === Color.BLACK ? "▲" : "△";
+      pv = parsePV(position, moveStr.substring(moveStr.indexOf(sign)));
+    }
+    // K-Shogi or ぴよ将棋
+    // "#推奨手[" という表記もあるが、それは 1 つ前の局面で別の手を指した場合の手順なので対象外とする。
+    else if (line.match(/^#(?:指し手|形勢)\[/)) {
+      const moveStr = line.substring(line.indexOf("]") + 1);
+      const sign = position.color === Color.BLACK ? "▲" : "△";
+      pv = parsePV(position, moveStr.substring(moveStr.indexOf(sign)));
+    }
+    // Floodgate
+    else if (line.match(/^\* -?[0-9]+ /)) {
+      pv = parseFloodgatePVComment(position, line);
+    }
+    if (pv?.length) {
+      pvs.push(pv);
+    }
+  }
+  return pvs;
 }
 
 function formatTimeLimitCSAV3(setting: TimeLimitSetting): string {

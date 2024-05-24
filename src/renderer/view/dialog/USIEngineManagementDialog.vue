@@ -17,9 +17,9 @@
           </div>
           <div
             v-for="engine in engines"
+            v-show="engine.visible"
             :key="engine.uri"
             class="row engine"
-            :class="{ hidden: !engine.visible }"
             :value="engine.uri"
           >
             <div class="column">

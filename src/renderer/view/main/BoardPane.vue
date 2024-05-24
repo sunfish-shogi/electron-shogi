@@ -30,11 +30,9 @@
     >
       <template #right-control>
         <div
+          v-show="appSetting.rightSideControlType !== RightSideControlType.NONE"
           ref="rightControl"
           class="full column top-control"
-          :class="{
-            hidden: appSetting.rightSideControlType === RightSideControlType.NONE,
-          }"
         >
           <!-- 対局 -->
           <button v-if="store.appState === AppState.NORMAL" class="control-item" @click="onGame">
@@ -203,11 +201,9 @@
       </template>
       <template #left-control>
         <div
+          v-show="appSetting.leftSideControlType !== LeftSideControlType.NONE"
           ref="leftControl"
           class="full column reverse bottom-control"
-          :class="{
-            hidden: appSetting.leftSideControlType === LeftSideControlType.NONE,
-          }"
         >
           <!-- アプリ設定 -->
           <button class="control-item" data-hotkey="Mod+," @click="onOpenAppSettings">

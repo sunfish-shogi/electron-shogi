@@ -71,11 +71,9 @@
             />
           </div>
           <div
+            v-show="backgroundImageType !== BackgroundImageType.NONE"
             ref="backgroundImageSelector"
             class="form-item"
-            :class="{
-              hidden: backgroundImageType === BackgroundImageType.NONE,
-            }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
@@ -113,11 +111,9 @@
               "
             />
             <div
+              v-show="pieceImage === PieceImage.CUSTOM_IMAGE"
               ref="pieceImageSelector"
               class="form-item"
-              :class="{
-                hidden: pieceImage !== PieceImage.CUSTOM_IMAGE,
-              }"
             >
               <div class="form-item-label-wide"></div>
               <ImageSelector
@@ -126,12 +122,7 @@
                 @select="(url: string) => (pieceImageFileURL = url)"
               />
             </div>
-            <div
-              class="form-item"
-              :class="{
-                hidden: pieceImage !== PieceImage.CUSTOM_IMAGE,
-              }"
-            >
+            <div v-show="pieceImage === PieceImage.CUSTOM_IMAGE" class="form-item">
               <div class="form-item-label-wide"></div>
               <ToggleButton
                 :label="t.imageHasMarginsRemoveToDisplayLarger"
@@ -171,11 +162,9 @@
             />
           </div>
           <div
+            v-show="boardImage === BoardImageType.CUSTOM_IMAGE"
             ref="boardImageSelector"
             class="form-item"
-            :class="{
-              hidden: boardImage !== BoardImageType.CUSTOM_IMAGE,
-            }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
@@ -214,11 +203,9 @@
             />
           </div>
           <div
+            v-show="pieceStandImage === PieceStandImageType.CUSTOM_IMAGE"
             ref="pieceStandImageSelector"
             class="form-item"
-            :class="{
-              hidden: pieceStandImage !== PieceStandImageType.CUSTOM_IMAGE,
-            }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
@@ -285,7 +272,7 @@
             />
           </div>
           <!-- 左コントロールの表示 -->
-          <div :class="{ hidden: !isNative() }" class="form-item">
+          <div v-show="isNative()" class="form-item">
             <div class="form-item-label-wide">
               {{ t.displayLeftControls }}
             </div>
@@ -295,7 +282,7 @@
             />
           </div>
           <!-- 右コントロールの表示 -->
-          <div :class="{ hidden: !isNative() }" class="form-item">
+          <div v-show="isNative()" class="form-item">
             <div class="form-item-label-wide">
               {{ t.displayRightControls }}
             </div>

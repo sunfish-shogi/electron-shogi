@@ -18,12 +18,12 @@
             <div class="option-unchangeable">{{ engine.defaultName }}</div>
           </div>
           <!-- 作者 -->
-          <div class="row option" :class="{ hidden: filterWords.length }">
+          <div v-show="!filterWords.length" class="row option">
             <div class="option-name">{{ t.author }}</div>
             <div class="option-unchangeable">{{ engine.author }}</div>
           </div>
           <!-- 場所 -->
-          <div class="row option" :class="{ hidden: filterWords.length }">
+          <div v-show="!filterWords.length" class="row option">
             <div class="option-name">{{ t.enginePath }}</div>
             <div class="option-unchangeable">
               <div>{{ engine.path }}</div>
@@ -33,7 +33,7 @@
             </div>
           </div>
           <!-- 表示名 -->
-          <div class="row option" :class="{ hidden: filterWords.length }">
+          <div v-show="!filterWords.length" class="row option">
             <div class="option-name">{{ t.displayName }}</div>
             <div class="option-value">
               <input
@@ -47,9 +47,9 @@
           <!-- オプション -->
           <div
             v-for="option in options"
+            v-show="option.visible"
             :key="option.name"
             class="row option"
-            :class="{ hidden: !option.visible }"
           >
             <div class="option-name">
               <!-- オプション名 -->
@@ -179,7 +179,7 @@
                     }
                   "
                 />
-                <div class="form-group warning" :class="{ hidden: !enableEarlyPonder }">
+                <div v-show="enableEarlyPonder" class="form-group warning">
                   <div class="note">
                     {{ t.earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions }}
                     {{ t.ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior }}

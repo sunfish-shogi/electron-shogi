@@ -106,10 +106,7 @@
             "
           />
         </div>
-        <div
-          class="form-item row"
-          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
-        >
+        <div v-show="destinationType !== DestinationType.SINGLE_FILE" class="form-item row">
           <input ref="destination" class="grow" type="text" />
           <button class="thin" @click="selectDirectory(destination)">
             {{ t.select }}
@@ -118,10 +115,7 @@
             <Icon :icon="IconType.OPEN_FOLDER" />
           </button>
         </div>
-        <div
-          class="form-item row"
-          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
-        >
+        <div v-show="destinationType !== DestinationType.SINGLE_FILE" class="form-item row">
           <div class="form-item-label-wide">{{ t.format }}</div>
           <div class="formats">
             <HorizontalSelector
@@ -142,10 +136,7 @@
             />
           </div>
         </div>
-        <div
-          class="form-item row"
-          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
-        >
+        <div v-show="destinationType !== DestinationType.SINGLE_FILE" class="form-item row">
           <div class="form-item-label-wide">{{ t.createSubdirectories }}</div>
           <ToggleButton
             class="toggle"
@@ -157,10 +148,7 @@
             "
           />
         </div>
-        <div
-          class="form-item row"
-          :class="{ hidden: destinationType === DestinationType.SINGLE_FILE }"
-        >
+        <div v-show="destinationType !== DestinationType.SINGLE_FILE" class="form-item row">
           <div class="form-item-label-wide">{{ t.nameConflictAction }}</div>
           <HorizontalSelector
             :items="[
@@ -179,10 +167,7 @@
             "
           />
         </div>
-        <div
-          class="form-item row"
-          :class="{ hidden: destinationType !== DestinationType.SINGLE_FILE }"
-        >
+        <div v-show="destinationType === DestinationType.SINGLE_FILE" class="form-item row">
           <input ref="singleFileDestination" class="grow" type="text" />
           <button class="thin" @click="selectDestinationFile(singleFileDestination)">
             {{ t.select }}

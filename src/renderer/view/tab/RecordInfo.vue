@@ -15,11 +15,9 @@
         </div>
         <div
           v-for="element in list"
+          v-show="appSetting.emptyRecordInfoVisibility || element.value"
           :key="element.key"
           class="row element"
-          :class="{
-            hidden: !appSetting.emptyRecordInfoVisibility && !element.value,
-          }"
         >
           <div class="key">{{ element.displayName }}</div>
           <input class="value" :value="element.value" @input="change($event, element.key)" />

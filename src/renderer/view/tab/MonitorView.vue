@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="full">
-      <div ref="root" class="full column">
+      <div ref="root" class="full column" @copy.stop>
         <div class="headers">
           <div>
             {{ t.updatedAt }}: {{ updatedMs ? getDateTimeStringMs(new Date(updatedMs)) : "---" }}
@@ -156,7 +156,6 @@ defineProps({
 });
 
 const store = useStore();
-const root = ref();
 let timer: number | null = null;
 const states = ref<SessionStates>({
   usiSessions: [],
@@ -182,9 +181,6 @@ function formatRelativeTime(ms: number, baseMs: number) {
 }
 
 onMounted(() => {
-  root.value.addEventListener("copy", (event: ClipboardEvent) => {
-    event.stopPropagation();
-  });
   update();
   timer = window.setInterval(update, 1000);
 });

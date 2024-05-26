@@ -30,30 +30,36 @@
     >
       <template #right-control>
         <div
+          v-show="appSetting.rightSideControlType !== RightSideControlType.NONE"
           ref="rightControl"
           class="full column top-control"
-          :class="{
-            hidden: appSetting.rightSideControlType === RightSideControlType.NONE,
-          }"
         >
-          <button v-if="controlStates.game" class="control-item" @click="onGame">
+          <!-- 対局 -->
+          <button v-if="store.appState === AppState.NORMAL" class="control-item" @click="onGame">
             <Icon :icon="IconType.GAME" />
             <span>{{ t.game }}</span>
           </button>
-          <button v-if="controlStates.jishogiPoints" class="control-item" @click="onJishogiPoints">
+          <!-- 持将棋の点数 -->
+          <button
+            v-if="store.appState === AppState.GAME || store.appState === AppState.CSA_GAME"
+            class="control-item"
+            @click="onJishogiPoints"
+          >
             <Icon :icon="IconType.QUESTION" />
             <span>{{ t.jishogiPoints }}</span>
           </button>
+          <!-- 戦績確認 -->
           <button
-            v-if="controlStates.showGameResults"
+            v-if="store.appState === AppState.GAME && store.gameSetting.repeat >= 2"
             class="control-item"
             @click="onShowGameResults"
           >
             <Icon :icon="IconType.SCORE" />
             <span>{{ t.displayGameResults }}</span>
           </button>
+          <!-- 対局中断 -->
           <button
-            v-if="controlStates.stop"
+            v-if="store.appState === AppState.GAME || store.appState === AppState.CSA_GAME"
             class="control-item"
             data-hotkey="Escape"
             @click="onStop"
@@ -61,16 +67,35 @@
             <Icon :icon="IconType.STOP" />
             <span>{{ t.stopGame }}</span>
           </button>
-          <button v-if="controlStates.win" class="control-item" @click="onWin">
+          <!-- 勝ち宣言 -->
+          <button
+            v-if="
+              store.isMovableByUser &&
+              (store.appState === AppState.CSA_GAME ||
+                (store.appState === AppState.GAME &&
+                  DeclarableJishogiRules.includes(store.gameSetting.jishogiRule)))
+            "
+            class="control-item"
+            @click="onWin"
+          >
             <Icon :icon="IconType.CALL" />
             <span>{{ t.declareWinning }}</span>
           </button>
-          <button v-if="controlStates.resign" class="control-item" @click="onResign">
+          <!-- 投了 -->
+          <button
+            v-if="
+              (store.appState === AppState.GAME || store.appState === AppState.CSA_GAME) &&
+              store.isMovableByUser
+            "
+            class="control-item"
+            @click="onResign"
+          >
             <Icon :icon="IconType.RESIGN" />
             <span>{{ t.resign }}</span>
           </button>
+          <!-- 検討 -->
           <button
-            v-if="controlStates.research"
+            v-if="store.appState === AppState.NORMAL"
             class="control-item"
             data-hotkey="Mod+r"
             @click="onResearch"
@@ -78,8 +103,9 @@
             <Icon :icon="IconType.RESEARCH" />
             <span>{{ t.research }}</span>
           </button>
+          <!-- 検討終了 -->
           <button
-            v-if="controlStates.endResearch"
+            v-if="store.appState === AppState.RESEARCH"
             class="control-item"
             data-hotkey="Escape"
             @click="onEndResearch"
@@ -87,8 +113,9 @@
             <Icon :icon="IconType.END" />
             <span>{{ t.endResearch }}</span>
           </button>
+          <!-- 解析 -->
           <button
-            v-if="controlStates.analysis"
+            v-if="store.appState === AppState.NORMAL"
             class="control-item"
             data-hotkey="Mod+a"
             @click="onAnalysis"
@@ -96,8 +123,9 @@
             <Icon :icon="IconType.ANALYSIS" />
             <span>{{ t.analysis }}</span>
           </button>
+          <!-- 解析中断 -->
           <button
-            v-if="controlStates.endAnalysis"
+            v-if="store.appState === AppState.ANALYSIS"
             class="control-item"
             data-hotkey="Escape"
             @click="onEndAnalysis"
@@ -105,8 +133,9 @@
             <Icon :icon="IconType.STOP" />
             <span>{{ t.stopAnalysis }}</span>
           </button>
+          <!-- 詰み探索 -->
           <button
-            v-if="controlStates.mateSearch"
+            v-if="store.appState === AppState.NORMAL"
             class="control-item"
             data-hotkey="Mod+m"
             @click="onMateSearch"
@@ -114,8 +143,9 @@
             <Icon :icon="IconType.MATE_SEARCH" />
             <span>{{ t.mateSearch }}</span>
           </button>
+          <!-- 詰み探索終了 -->
           <button
-            v-if="controlStates.stopMateSearch"
+            v-if="store.appState === AppState.MATE_SEARCH"
             class="control-item"
             data-hotkey="Escape"
             @click="onStopMateSearch"
@@ -123,16 +153,18 @@
             <Icon :icon="IconType.END" />
             <span>{{ t.stopMateSearch }}</span>
           </button>
+          <!-- 局面編集 -->
           <button
-            v-if="controlStates.startEditPosition"
+            v-if="store.appState === AppState.NORMAL"
             class="control-item"
             @click="onStartEditPosition"
           >
             <Icon :icon="IconType.EDIT" />
             <span>{{ t.setupPosition }}</span>
           </button>
+          <!-- 盤面編集終了 -->
           <button
-            v-if="controlStates.positionEditing"
+            v-if="store.appState === AppState.POSITION_EDITING"
             class="control-item"
             data-hotkey="Escape"
             @click="onEndEditPosition"
@@ -140,15 +172,26 @@
             <Icon :icon="IconType.CHECK" />
             <span>{{ t.completePositionSetup }}</span>
           </button>
-          <button v-if="controlStates.positionEditing" class="control-item" @click="onChangeTurn">
+          <!-- 手番変更 -->
+          <button
+            v-if="store.appState === AppState.POSITION_EDITING"
+            class="control-item"
+            @click="onChangeTurn"
+          >
             <Icon :icon="IconType.SWAP" />
             <span>{{ t.changeTurn }}</span>
           </button>
-          <button v-if="controlStates.positionEditing" class="control-item" @click="onInitPosition">
+          <!-- 局面の初期化 -->
+          <button
+            v-if="store.appState === AppState.POSITION_EDITING"
+            class="control-item"
+            @click="onInitPosition"
+          >
             <span>{{ t.initializePosition }}</span>
           </button>
+          <!-- 駒の増減 -->
           <button
-            v-if="controlStates.positionEditing"
+            v-if="store.appState === AppState.POSITION_EDITING"
             class="control-item"
             @click="onPieceSetChange"
           >
@@ -158,37 +201,40 @@
       </template>
       <template #left-control>
         <div
+          v-show="appSetting.leftSideControlType !== LeftSideControlType.NONE"
           ref="leftControl"
           class="full column reverse bottom-control"
-          :class="{
-            hidden: appSetting.leftSideControlType === LeftSideControlType.NONE,
-          }"
         >
+          <!-- アプリ設定 -->
           <button class="control-item" data-hotkey="Mod+," @click="onOpenAppSettings">
             <Icon :icon="IconType.SETTINGS" />
             <span>{{ t.appSettings }}</span>
           </button>
+          <!-- エンジン設定 -->
           <button
             class="control-item"
             data-hotkey="Mod+."
-            :disabled="!controlStates.engineSettings"
+            :disabled="store.appState !== AppState.NORMAL"
             @click="onOpenEngineSettings"
           >
             <Icon :icon="IconType.ENGINE_SETTINGS" />
             <span>{{ t.engineSettings }}</span>
           </button>
+          <!-- 盤面反転 -->
           <button class="control-item" data-hotkey="Mod+t" @click="onFlip">
             <Icon :icon="IconType.FLIP" />
             <span>{{ t.flipBoard }}</span>
           </button>
+          <!-- ファイル -->
           <button class="control-item" @click="onFileAction">
             <Icon :icon="IconType.FILE" />
             <span>{{ t.file }}</span>
           </button>
+          <!-- 指し手削除 -->
           <button
             class="control-item"
             data-hotkey="Mod+d"
-            :disabled="!controlStates.removeCurrentMove"
+            :disabled="store.appState !== AppState.NORMAL && store.appState !== AppState.RESEARCH"
             @click="onRemoveCurrentMove"
           >
             <Icon :icon="IconType.DELETE" />
@@ -408,33 +454,6 @@ const clock = computed(() => {
     };
   }
   return undefined;
-});
-
-const controlStates = computed(() => {
-  return {
-    game: store.appState === AppState.NORMAL,
-    showGameResults: store.appState === AppState.GAME && store.gameSetting.repeat >= 2,
-    stop: store.appState === AppState.GAME || store.appState === AppState.CSA_GAME,
-    win:
-      store.isMovableByUser &&
-      (store.appState === AppState.CSA_GAME ||
-        (store.appState === AppState.GAME &&
-          DeclarableJishogiRules.includes(store.gameSetting.jishogiRule))),
-    resign:
-      (store.appState === AppState.GAME || store.appState === AppState.CSA_GAME) &&
-      store.isMovableByUser,
-    jishogiPoints: store.appState === AppState.GAME || store.appState === AppState.CSA_GAME,
-    research: store.appState === AppState.NORMAL,
-    endResearch: store.appState === AppState.RESEARCH,
-    analysis: store.appState === AppState.NORMAL,
-    endAnalysis: store.appState === AppState.ANALYSIS,
-    mateSearch: store.appState === AppState.NORMAL,
-    stopMateSearch: store.appState === AppState.MATE_SEARCH,
-    startEditPosition: store.appState === AppState.NORMAL,
-    positionEditing: store.appState === AppState.POSITION_EDITING,
-    removeCurrentMove: store.appState === AppState.NORMAL || store.appState === AppState.RESEARCH,
-    engineSettings: store.appState === AppState.NORMAL,
-  };
 });
 </script>
 

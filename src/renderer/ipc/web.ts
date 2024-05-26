@@ -26,57 +26,24 @@ enum STORAGE_KEY {
 
 // Electron を使わずにシンプルな Web アプリケーションとして実行した場合に使用します。
 export const webAPI: Bridge = {
-  async fetchInitialRecordFileRequest(): Promise<string> {
-    return "null";
-  },
+  // Core
   updateAppState(): void {
     // DO NOTHING
   },
-  openExplorer() {
-    // DO NOTHING
+  onClosable(): void {
+    // Do Nothing
   },
-  openWebBrowser(url: string) {
-    window.open(url, "_blank");
+  onClose(): void {
+    // Do Nothing
   },
-  async showOpenRecordDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  onSendError(): void {
+    // Do Nothing
   },
-  async openRecord(): Promise<Uint8Array> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  onMenuEvent(): void {
+    // Do Nothing
   },
-  async showSaveRecordDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async saveRecord(): Promise<void> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async showSelectFileDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async showSelectDirectoryDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async showSelectImageDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async showSaveMergedRecordDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async loadRemoteRecordFile(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async cropPieceImage(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async exportCaptureAsPNG(): Promise<void> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async exportCaptureAsJPEG(): Promise<void> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async convertRecordFiles(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
+
+  // Settings
   async loadAppSetting(): Promise<string> {
     const json = localStorage.getItem(STORAGE_KEY.APP_SETTING);
     if (!json) {
@@ -168,6 +135,35 @@ export const webAPI: Bridge = {
   async saveMateSearchSetting(json: string): Promise<void> {
     localStorage.setItem(STORAGE_KEY.MATE_SEARCH_SETTING, json);
   },
+  async loadUSIEngineSetting(): Promise<string> {
+    return new USIEngineSettings().json;
+  },
+  async saveUSIEngineSetting(): Promise<void> {
+    // Do Nothing
+  },
+  onUpdateAppSetting(): void {
+    // Do Nothing
+  },
+
+  // Record File
+  async fetchInitialRecordFileRequest(): Promise<string> {
+    return "null";
+  },
+  async showOpenRecordDialog(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async showSaveRecordDialog(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async showSaveMergedRecordDialog(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async openRecord(): Promise<Uint8Array> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async saveRecord(): Promise<void> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   async loadRecordFileHistory(): Promise<string> {
     return JSON.stringify(getEmptyHistory());
   },
@@ -183,12 +179,17 @@ export const webAPI: Bridge = {
   async loadRecordFileBackup(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
-  async loadUSIEngineSetting(): Promise<string> {
-    return new USIEngineSettings().json;
+  async loadRemoteRecordFile(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
-  async saveUSIEngineSetting(): Promise<void> {
+  async convertRecordFiles(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  onOpenRecord(): void {
     // Do Nothing
   },
+
+  // USI
   async showSelectUSIEngineDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
@@ -228,88 +229,6 @@ export const webAPI: Bridge = {
   async usiQuit(): Promise<void> {
     // Do Nothing
   },
-  async csaLogin(): Promise<number> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async csaLogout(): Promise<void> {
-    // Do Nothing
-  },
-  async csaAgree(): Promise<void> {
-    // Do Nothing
-  },
-  async csaMove(): Promise<void> {
-    // Do Nothing
-  },
-  async csaResign(): Promise<void> {
-    // Do Nothing
-  },
-  async csaWin(): Promise<void> {
-    // Do Nothing
-  },
-  async csaStop(): Promise<void> {
-    // Do Nothing
-  },
-  async collectSessionStates(): Promise<string> {
-    return JSON.stringify({
-      usiSessions: [],
-      csaSessions: [],
-    } as SessionStates);
-  },
-  async setupPrompt(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async openPrompt() {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  invokePromptCommand(): void {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  async isEncryptionAvailable(): Promise<boolean> {
-    return false;
-  },
-  async getVersionStatus(): Promise<string> {
-    return JSON.stringify({} as VersionStatus);
-  },
-  sendTestNotification(): void {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
-  },
-  openLogFile(): void {
-    // Do Nothing
-  },
-  log(level: LogLevel, message: string): void {
-    switch (level) {
-      case LogLevel.DEBUG:
-        console.debug(message);
-        break;
-      case LogLevel.INFO:
-        console.log(message);
-        break;
-      case LogLevel.WARN:
-        console.warn(message);
-        break;
-      case LogLevel.ERROR:
-        console.error(message);
-        break;
-    }
-  },
-  onClosable(): void {
-    // Do Nothing
-  },
-  onClose(): void {
-    // Do Nothing
-  },
-  onSendError(): void {
-    // Do Nothing
-  },
-  onMenuEvent(): void {
-    // Do Nothing
-  },
-  updateAppSetting(): void {
-    // Do Nothing
-  },
-  onOpenRecord(): void {
-    // Do Nothing
-  },
   onUSIBestMove(): void {
     // Do Nothing
   },
@@ -331,6 +250,29 @@ export const webAPI: Bridge = {
   onUSIPonderInfo(): void {
     // Do Nothing
   },
+
+  // CSA
+  async csaLogin(): Promise<number> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async csaLogout(): Promise<void> {
+    // Do Nothing
+  },
+  async csaAgree(): Promise<void> {
+    // Do Nothing
+  },
+  async csaMove(): Promise<void> {
+    // Do Nothing
+  },
+  async csaResign(): Promise<void> {
+    // Do Nothing
+  },
+  async csaWin(): Promise<void> {
+    // Do Nothing
+  },
+  async csaStop(): Promise<void> {
+    // Do Nothing
+  },
   onCSAGameSummary(): void {
     // Do Nothing
   },
@@ -349,7 +291,82 @@ export const webAPI: Bridge = {
   onCSAClose(): void {
     // Do Nothing
   },
+
+  // Sessions
+  async collectSessionStates(): Promise<string> {
+    return JSON.stringify({
+      usiSessions: [],
+      csaSessions: [],
+    } as SessionStates);
+  },
+  async setupPrompt(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async openPrompt() {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  invokePromptCommand(): void {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
   onPromptCommand(): void {
     // Do Nothing
+  },
+
+  // Images
+  async showSelectImageDialog(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async cropPieceImage(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async exportCaptureAsPNG(): Promise<void> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async exportCaptureAsJPEG(): Promise<void> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+
+  // Log
+  openLogFile(): void {
+    // Do Nothing
+  },
+  log(level: LogLevel, message: string): void {
+    switch (level) {
+      case LogLevel.DEBUG:
+        console.debug(message);
+        break;
+      case LogLevel.INFO:
+        console.log(message);
+        break;
+      case LogLevel.WARN:
+        console.warn(message);
+        break;
+      case LogLevel.ERROR:
+        console.error(message);
+        break;
+    }
+  },
+
+  // MISC
+  async showSelectFileDialog(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  async showSelectDirectoryDialog(): Promise<string> {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  },
+  openExplorer() {
+    // DO NOTHING
+  },
+  openWebBrowser(url: string) {
+    window.open(url, "_blank");
+  },
+  async isEncryptionAvailable(): Promise<boolean> {
+    return false;
+  },
+  async getVersionStatus(): Promise<string> {
+    return JSON.stringify({} as VersionStatus);
+  },
+  sendTestNotification(): void {
+    throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
 };

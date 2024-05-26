@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="full column root">
-      <div ref="root" class="full column main" :style="{ height: `${size.height - 25}px` }">
+      <div
+        ref="root"
+        class="full column main"
+        :style="{ height: `${size.height - 25}px` }"
+        @copy.stop
+        @paste.stop
+      >
         <div class="row element">
           <div class="key">{{ t.file }}</div>
           <div class="value">
@@ -15,11 +21,9 @@
         </div>
         <div
           v-for="element in list"
+          v-show="appSetting.emptyRecordInfoVisibility || element.value"
           :key="element.key"
           class="row element"
-          :class="{
-            hidden: !appSetting.emptyRecordInfoVisibility && !element.value,
-          }"
         >
           <div class="key">{{ element.displayName }}</div>
           <input class="value" :value="element.value" @input="change($event, element.key)" />
@@ -40,7 +44,7 @@
 import { getRecordMetadataName, t } from "@/common/i18n";
 import { RecordMetadataKey } from "electron-shogi-core";
 import { useStore } from "@/renderer/store";
-import { computed, onMounted, ref } from "vue";
+import { computed } from "vue";
 import { RectSize } from "@/common/assets/geometry.js";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useAppSetting } from "@/renderer/store/setting";
@@ -52,7 +56,6 @@ defineProps({
   },
 });
 
-const root = ref();
 const store = useStore();
 const appSetting = useAppSetting();
 const list = computed(() => {
@@ -63,15 +66,6 @@ const list = computed(() => {
       displayName: getRecordMetadataName(key),
       value: metadata.getStandardMetadata(key) || "",
     };
-  });
-});
-
-onMounted(() => {
-  root.value.addEventListener("copy", (event: ClipboardEvent) => {
-    event.stopPropagation();
-  });
-  root.value.addEventListener("paste", (event: ClipboardEvent) => {
-    event.stopPropagation();
   });
 });
 

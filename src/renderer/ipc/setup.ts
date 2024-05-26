@@ -31,6 +31,13 @@ import { LogLevel } from "@/common/log";
 export function setup(): void {
   const store = useStore();
   const appSetting = useAppSetting();
+
+  // Core
+  watch(
+    () => [store.appState, store.isBussy],
+    ([appState, bussy]) => bridge.updateAppState(appState as AppState, bussy as boolean),
+  );
+  bridge.updateAppState(store.appState, store.isBussy);
   bridge.onClose(() => {
     store
       .onMainWindowClose()
@@ -224,9 +231,13 @@ export function setup(): void {
         break;
     }
   });
-  bridge.updateAppSetting((json: string) => {
+
+  // Settings
+  bridge.onUpdateAppSetting((json: string) => {
     appSetting.updateAppSetting(JSON.parse(json));
   });
+
+  // Record File
   bridge.onOpenRecord((path: string) => {
     store.showConfirmation({
       message: t.areYouSureWantToOpenFileInsteadOfCurrentRecord,
@@ -235,6 +246,8 @@ export function setup(): void {
       },
     });
   });
+
+  // USI
   bridge.onUSIBestMove(onUSIBestMove);
   bridge.onUSICheckmate(onUSICheckmate);
   bridge.onUSICheckmateNotImplemented(onUSICheckmateNotImplemented);
@@ -248,6 +261,8 @@ export function setup(): void {
     const info = JSON.parse(json) as USIInfoCommand;
     onUSIPonderInfo(sessionID, usi, info);
   });
+
+  // CSA
   bridge.onCSAGameSummary((sessionID: number, gameSummary: string): void => {
     onCSAGameSummary(sessionID, JSON.parse(gameSummary));
   });
@@ -260,11 +275,6 @@ export function setup(): void {
   });
   bridge.onCSAGameResult(onCSAGameResult);
   bridge.onCSAClose(onCSAClose);
-  watch(
-    () => [store.appState, store.isBussy],
-    ([appState, bussy]) => bridge.updateAppState(appState as AppState, bussy as boolean),
-  );
-  bridge.updateAppState(store.appState, store.isBussy);
 }
 
 export function setupPrompt(): void {

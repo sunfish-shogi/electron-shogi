@@ -67,6 +67,7 @@ body::-webkit-scrollbar {
   justify-content: space-evenly;
 }
 
+/* deprecated: use v-show instead */
 .hidden {
   display: none !important;
 }

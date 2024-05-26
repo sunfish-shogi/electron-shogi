@@ -10,63 +10,27 @@ import { PromptTarget } from "@/common/advanced/prompt";
 import { CommandType } from "@/common/advanced/command";
 
 const api: Bridge = {
-  // NOTICE:
-  //   Do NOT publish any libraries or any references to scure objects.
-  //   Must create wrapper function and publish only minimum required references.
-  //   ライブラリやセキュアなオブジェクトを直接公開しないでください。
-  //   必ず関数でラップして、必要最小限の参照だけをレンダラーに公開してください。
-  //   See https://www.electronjs.org/docs/latest/tutorial/context-isolation#security-considerations
-  async fetchInitialRecordFileRequest(): Promise<string> {
-    return await ipcRenderer.invoke(Background.FETCH_INITIAL_RECORD_FILE_REQUEST);
-  },
+  // Core
   updateAppState(appState: AppState, bussy: boolean): void {
     ipcRenderer.send(Background.UPDATE_APP_STATE, appState, bussy);
   },
-  openExplorer(path: string) {
-    ipcRenderer.send(Background.OPEN_EXPLORER, path);
+  onClosable(): void {
+    ipcRenderer.send(Background.ON_CLOSABLE);
   },
-  openWebBrowser(url: string) {
-    ipcRenderer.send(Background.OPEN_WEB_BROWSER, url);
+  onClose(callback: () => void): void {
+    ipcRenderer.on(Renderer.CLOSE, callback);
   },
-  async showOpenRecordDialog(): Promise<string> {
-    return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);
+  onSendError(callback: (e: Error) => void): void {
+    ipcRenderer.on(Renderer.SEND_ERROR, (_, e) => {
+      callback(e);
+    });
   },
-  async openRecord(path: string): Promise<Uint8Array> {
-    return await ipcRenderer.invoke(Background.OPEN_RECORD, path);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onMenuEvent(callback: (event: MenuEvent, ...args: any[]) => void): void {
+    ipcRenderer.on(Renderer.MENU_EVENT, (_, event, ...args) => callback(event, ...args));
   },
-  async showSaveRecordDialog(defaultPath: string): Promise<string> {
-    return await ipcRenderer.invoke(Background.SHOW_SAVE_RECORD_DIALOG, defaultPath);
-  },
-  async saveRecord(path: string, data: Uint8Array): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_RECORD, path, data);
-  },
-  async showSelectFileDialog(): Promise<string> {
-    return await ipcRenderer.invoke(Background.SHOW_SELECT_FILE_DIALOG);
-  },
-  async showSelectDirectoryDialog(defaultPath?: string): Promise<string> {
-    return await ipcRenderer.invoke(Background.SHOW_SELECT_DIRECTORY_DIALOG, defaultPath);
-  },
-  async showSelectImageDialog(defaultURL?: string): Promise<string> {
-    return await ipcRenderer.invoke(Background.SHOW_SELECT_IMAGE_DIALOG, defaultURL);
-  },
-  async showSaveMergedRecordDialog(defaultPath: string): Promise<string> {
-    return await ipcRenderer.invoke(Background.SHOW_SAVE_MERGED_RECORD_DIALOG, defaultPath);
-  },
-  async loadRemoteRecordFile(url: string): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_REMOTE_RECORD_FILE, url);
-  },
-  async cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string> {
-    return await ipcRenderer.invoke(Background.CROP_PIECE_IMAGE, srcURL, deleteMargin);
-  },
-  async exportCaptureAsPNG(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);
-  },
-  async exportCaptureAsJPEG(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_JPEG, json);
-  },
-  async convertRecordFiles(json: string): Promise<string> {
-    return await ipcRenderer.invoke(Background.CONVERT_RECORD_FILES, json);
-  },
+
+  // Settings
   async loadAppSetting(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_APP_SETTING);
   },
@@ -109,6 +73,41 @@ const api: Bridge = {
   async saveMateSearchSetting(json: string): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_MATE_SEARCH_SETTING, json);
   },
+  async loadUSIEngineSetting(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_USI_ENGINE_SETTING);
+  },
+  async saveUSIEngineSetting(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_USI_ENGINE_SETTING, json);
+  },
+  onUpdateAppSetting(callback: (json: string) => void): void {
+    ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));
+  },
+
+  // Record File
+  async fetchInitialRecordFileRequest(): Promise<string> {
+    return await ipcRenderer.invoke(Background.FETCH_INITIAL_RECORD_FILE_REQUEST);
+  },
+  async showOpenRecordDialog(): Promise<string> {
+    return await ipcRenderer.invoke(Background.SHOW_OPEN_RECORD_DIALOG);
+  },
+  async showSaveRecordDialog(defaultPath: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.SHOW_SAVE_RECORD_DIALOG, defaultPath);
+  },
+  async showSaveMergedRecordDialog(defaultPath: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.SHOW_SAVE_MERGED_RECORD_DIALOG, defaultPath);
+  },
+  async openRecord(path: string): Promise<Uint8Array> {
+    return await ipcRenderer.invoke(Background.OPEN_RECORD, path);
+  },
+  async saveRecord(path: string, data: Uint8Array): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_RECORD, path, data);
+  },
+  async loadRemoteRecordFile(url: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_REMOTE_RECORD_FILE, url);
+  },
+  async convertRecordFiles(json: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.CONVERT_RECORD_FILES, json);
+  },
   async loadRecordFileHistory(): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_RECORD_FILE_HISTORY);
   },
@@ -124,12 +123,11 @@ const api: Bridge = {
   async loadRecordFileBackup(name: string): Promise<string> {
     return await ipcRenderer.invoke(Background.LOAD_RECORD_FILE_BACKUP, name);
   },
-  async loadUSIEngineSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_USI_ENGINE_SETTING);
+  onOpenRecord(callback: (path: string) => void): void {
+    ipcRenderer.on(Renderer.OPEN_RECORD, (_, path) => callback(path));
   },
-  async saveUSIEngineSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_USI_ENGINE_SETTING, json);
-  },
+
+  // USI
   async showSelectUSIEngineDialog(): Promise<string> {
     return await ipcRenderer.invoke(Background.SHOW_SELECT_USI_ENGINE_DIALOG);
   },
@@ -169,80 +167,6 @@ const api: Bridge = {
   async usiQuit(sessionID: number): Promise<void> {
     await ipcRenderer.invoke(Background.USI_QUIT, sessionID);
   },
-  async csaLogin(json: string): Promise<number> {
-    return await ipcRenderer.invoke(Background.CSA_LOGIN, json);
-  },
-  async csaLogout(sessionID: number): Promise<void> {
-    return await ipcRenderer.invoke(Background.CSA_LOGOUT, sessionID);
-  },
-  async csaAgree(sessionID: number, gameID: string): Promise<void> {
-    return await ipcRenderer.invoke(Background.CSA_AGREE, sessionID, gameID);
-  },
-  async csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void> {
-    return await ipcRenderer.invoke(Background.CSA_MOVE, sessionID, move, score, pv);
-  },
-  async csaResign(sessionID: number): Promise<void> {
-    return await ipcRenderer.invoke(Background.CSA_RESIGN, sessionID);
-  },
-  async csaWin(sessionID: number): Promise<void> {
-    return await ipcRenderer.invoke(Background.CSA_WIN, sessionID);
-  },
-  async csaStop(sessionID: number): Promise<void> {
-    return await ipcRenderer.invoke(Background.CSA_STOP, sessionID);
-  },
-  async collectSessionStates(): Promise<string> {
-    return await ipcRenderer.invoke(Background.COLLECT_SESSION_STATES);
-  },
-  async setupPrompt(target: PromptTarget, sessionID: number): Promise<string> {
-    return await ipcRenderer.invoke(Background.SETUP_PROMPT, target, sessionID);
-  },
-  openPrompt(target: PromptTarget, sessionID: number, name: string): void {
-    ipcRenderer.send(Background.OPEN_PROMPT, target, sessionID, name);
-  },
-  invokePromptCommand(
-    target: PromptTarget,
-    sessionID: number,
-    type: CommandType,
-    command: string,
-  ): void {
-    ipcRenderer.send(Background.INVOKE_PROMPT_COMMAND, target, sessionID, type, command);
-  },
-  async isEncryptionAvailable(): Promise<boolean> {
-    return await ipcRenderer.invoke(Background.IS_ENCRYPTION_AVAILABLE);
-  },
-  async getVersionStatus(): Promise<string> {
-    return await ipcRenderer.invoke(Background.GET_VERSION_STATUS);
-  },
-  sendTestNotification(): void {
-    ipcRenderer.send(Background.SEND_TEST_NOTIFICATION);
-  },
-  openLogFile(logType: LogType): void {
-    ipcRenderer.send(Background.OPEN_LOG_FILE, logType);
-  },
-  log(level: LogLevel, message: string): void {
-    ipcRenderer.send(Background.LOG, level, message);
-  },
-  onClosable(): void {
-    ipcRenderer.send(Background.ON_CLOSABLE);
-  },
-  onClose(callback: () => void): void {
-    ipcRenderer.on(Renderer.CLOSE, callback);
-  },
-  onSendError(callback: (e: Error) => void): void {
-    ipcRenderer.on(Renderer.SEND_ERROR, (_, e) => {
-      callback(e);
-    });
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onMenuEvent(callback: (event: MenuEvent, ...args: any[]) => void): void {
-    ipcRenderer.on(Renderer.MENU_EVENT, (_, event, ...args) => callback(event, ...args));
-  },
-  updateAppSetting(callback: (json: string) => void): void {
-    ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));
-  },
-  onOpenRecord(callback: (path: string) => void): void {
-    ipcRenderer.on(Renderer.OPEN_RECORD, (_, path) => callback(path));
-  },
   onUSIBestMove(
     callback: (sessionID: number, usi: string, usiMove: string, ponder?: string) => void,
   ): void {
@@ -280,6 +204,29 @@ const api: Bridge = {
       callback(sessionID, usi, json);
     });
   },
+
+  // CSA
+  async csaLogin(json: string): Promise<number> {
+    return await ipcRenderer.invoke(Background.CSA_LOGIN, json);
+  },
+  async csaLogout(sessionID: number): Promise<void> {
+    return await ipcRenderer.invoke(Background.CSA_LOGOUT, sessionID);
+  },
+  async csaAgree(sessionID: number, gameID: string): Promise<void> {
+    return await ipcRenderer.invoke(Background.CSA_AGREE, sessionID, gameID);
+  },
+  async csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void> {
+    return await ipcRenderer.invoke(Background.CSA_MOVE, sessionID, move, score, pv);
+  },
+  async csaResign(sessionID: number): Promise<void> {
+    return await ipcRenderer.invoke(Background.CSA_RESIGN, sessionID);
+  },
+  async csaWin(sessionID: number): Promise<void> {
+    return await ipcRenderer.invoke(Background.CSA_WIN, sessionID);
+  },
+  async csaStop(sessionID: number): Promise<void> {
+    return await ipcRenderer.invoke(Background.CSA_STOP, sessionID);
+  },
   onCSAGameSummary(callback: (sessionID: number, gameSummary: string) => void): void {
     ipcRenderer.on(Renderer.CSA_GAME_SUMMARY, (_, sessionID, gameSummary) => {
       callback(sessionID, gameSummary);
@@ -312,10 +259,74 @@ const api: Bridge = {
       callback(sessionID);
     });
   },
+
+  // Sessions
+  async collectSessionStates(): Promise<string> {
+    return await ipcRenderer.invoke(Background.COLLECT_SESSION_STATES);
+  },
+  async setupPrompt(target: PromptTarget, sessionID: number): Promise<string> {
+    return await ipcRenderer.invoke(Background.SETUP_PROMPT, target, sessionID);
+  },
+  openPrompt(target: PromptTarget, sessionID: number, name: string): void {
+    ipcRenderer.send(Background.OPEN_PROMPT, target, sessionID, name);
+  },
+  invokePromptCommand(
+    target: PromptTarget,
+    sessionID: number,
+    type: CommandType,
+    command: string,
+  ): void {
+    ipcRenderer.send(Background.INVOKE_PROMPT_COMMAND, target, sessionID, type, command);
+  },
   onPromptCommand(callback: (command: string) => void): void {
     ipcRenderer.on(Renderer.PROMPT_COMMAND, (_, command) => {
       callback(command);
     });
+  },
+
+  // Images
+  async showSelectImageDialog(defaultURL?: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.SHOW_SELECT_IMAGE_DIALOG, defaultURL);
+  },
+  async cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string> {
+    return await ipcRenderer.invoke(Background.CROP_PIECE_IMAGE, srcURL, deleteMargin);
+  },
+  async exportCaptureAsPNG(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_PNG, json);
+  },
+  async exportCaptureAsJPEG(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.EXPORT_CAPTURE_AS_JPEG, json);
+  },
+
+  // Log
+  openLogFile(logType: LogType): void {
+    ipcRenderer.send(Background.OPEN_LOG_FILE, logType);
+  },
+  log(level: LogLevel, message: string): void {
+    ipcRenderer.send(Background.LOG, level, message);
+  },
+
+  // MISC
+  async showSelectFileDialog(): Promise<string> {
+    return await ipcRenderer.invoke(Background.SHOW_SELECT_FILE_DIALOG);
+  },
+  async showSelectDirectoryDialog(defaultPath?: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.SHOW_SELECT_DIRECTORY_DIALOG, defaultPath);
+  },
+  openExplorer(path: string) {
+    ipcRenderer.send(Background.OPEN_EXPLORER, path);
+  },
+  openWebBrowser(url: string) {
+    ipcRenderer.send(Background.OPEN_WEB_BROWSER, url);
+  },
+  async isEncryptionAvailable(): Promise<boolean> {
+    return await ipcRenderer.invoke(Background.IS_ENCRYPTION_AVAILABLE);
+  },
+  async getVersionStatus(): Promise<string> {
+    return await ipcRenderer.invoke(Background.GET_VERSION_STATUS);
+  },
+  sendTestNotification(): void {
+    ipcRenderer.send(Background.SEND_TEST_NOTIFICATION);
   },
 };
 

@@ -50,57 +50,24 @@ export function preload(config: Config) {
   setLogDestinations(LogType.CSA, csaDestinations, config.logLevel);
 
   const bridge: Bridge = {
-    async fetchInitialRecordFileRequest(): Promise<string> {
-      return "null";
-    },
+    // Core
     updateAppState(): void {
       // DO NOTHING
     },
-    openExplorer() {
-      throw new Error("This feature is not available on command line tool");
+    onClosable(): void {
+      // Do Nothing
     },
-    openWebBrowser() {
-      throw new Error("This feature is not available on command line tool");
+    onClose(): void {
+      // Do Nothing
     },
-    async showOpenRecordDialog(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
+    onSendError(): void {
+      // Do Nothing
     },
-    async openRecord(): Promise<Uint8Array> {
-      throw new Error("This feature is not available on command line tool");
+    onMenuEvent(): void {
+      // Do Nothing
     },
-    async showSaveRecordDialog(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async saveRecord(): Promise<void> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async showSelectFileDialog(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async showSelectDirectoryDialog(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async showSelectImageDialog(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async showSaveMergedRecordDialog(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async loadRemoteRecordFile(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async cropPieceImage(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async exportCaptureAsPNG(): Promise<void> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async exportCaptureAsJPEG(): Promise<void> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async convertRecordFiles(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
+
+    // Settings
     async loadAppSetting(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
@@ -143,6 +110,35 @@ export function preload(config: Config) {
     async saveMateSearchSetting(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
+    async loadUSIEngineSetting(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async saveUSIEngineSetting(): Promise<void> {
+      // Do Nothing
+    },
+    onUpdateAppSetting(): void {
+      // Do Nothing
+    },
+
+    // Record File
+    async fetchInitialRecordFileRequest(): Promise<string> {
+      return "null";
+    },
+    async showOpenRecordDialog(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async showSaveRecordDialog(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async showSaveMergedRecordDialog(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async openRecord(): Promise<Uint8Array> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async saveRecord(): Promise<void> {
+      throw new Error("This feature is not available on command line tool");
+    },
     async loadRecordFileHistory(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
@@ -158,12 +154,17 @@ export function preload(config: Config) {
     async loadRecordFileBackup(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadUSIEngineSetting(): Promise<string> {
+    async loadRemoteRecordFile(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveUSIEngineSetting(): Promise<void> {
+    async convertRecordFiles(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    onOpenRecord(): void {
       // Do Nothing
     },
+
+    // USI
     async showSelectUSIEngineDialog(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
@@ -204,85 +205,6 @@ export function preload(config: Config) {
     async usiQuit(sessionID: number): Promise<void> {
       usiQuit(sessionID);
     },
-    async csaLogin(json: string): Promise<number> {
-      return csaLogin(JSON.parse(json));
-    },
-    async csaLogout(sessionID: number): Promise<void> {
-      csaLogout(sessionID);
-    },
-    async csaAgree(sessionID: number, gameID: string): Promise<void> {
-      csaAgree(sessionID, gameID);
-    },
-    async csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void> {
-      csaMove(sessionID, move, score, pv);
-    },
-    async csaResign(sessionID: number): Promise<void> {
-      csaResign(sessionID);
-    },
-    async csaWin(sessionID: number): Promise<void> {
-      csaWin(sessionID);
-    },
-    async csaStop(sessionID: number): Promise<void> {
-      csaStop(sessionID);
-    },
-    async collectSessionStates(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async setupPrompt(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async openPrompt() {
-      throw new Error("This feature is not available on command line tool");
-    },
-    invokePromptCommand(): void {
-      throw new Error("This feature is not available on command line tool");
-    },
-    async isEncryptionAvailable(): Promise<boolean> {
-      return false;
-    },
-    async getVersionStatus(): Promise<string> {
-      throw new Error("This feature is not available on command line tool");
-    },
-    sendTestNotification(): void {
-      throw new Error("This feature is not available on command line tool");
-    },
-    openLogFile(): void {
-      // Do Nothing
-    },
-    log(level: LogLevel, message: string): void {
-      switch (level) {
-        case LogLevel.DEBUG:
-          console.debug(message);
-          break;
-        case LogLevel.INFO:
-          console.log(message);
-          break;
-        case LogLevel.WARN:
-          console.warn(message);
-          break;
-        case LogLevel.ERROR:
-          console.error(message);
-          break;
-      }
-    },
-    onClosable(): void {
-      // Do Nothing
-    },
-    onClose(): void {
-      // Do Nothing
-    },
-    onSendError(): void {
-      // Do Nothing
-    },
-    onMenuEvent(): void {
-      // Do Nothing
-    },
-    updateAppSetting(): void {
-      // Do Nothing
-    },
-    onOpenRecord(): void {
-      // Do Nothing
-    },
     onUSIBestMove(): void {
       // Do Nothing
     },
@@ -304,6 +226,29 @@ export function preload(config: Config) {
     onUSIPonderInfo(): void {
       // Do Nothing
     },
+
+    // CSA
+    async csaLogin(json: string): Promise<number> {
+      return csaLogin(JSON.parse(json));
+    },
+    async csaLogout(sessionID: number): Promise<void> {
+      csaLogout(sessionID);
+    },
+    async csaAgree(sessionID: number, gameID: string): Promise<void> {
+      csaAgree(sessionID, gameID);
+    },
+    async csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void> {
+      csaMove(sessionID, move, score, pv);
+    },
+    async csaResign(sessionID: number): Promise<void> {
+      csaResign(sessionID);
+    },
+    async csaWin(sessionID: number): Promise<void> {
+      csaWin(sessionID);
+    },
+    async csaStop(sessionID: number): Promise<void> {
+      csaStop(sessionID);
+    },
     onCSAGameSummary(): void {
       // Do Nothing
     },
@@ -322,8 +267,80 @@ export function preload(config: Config) {
     onCSAClose(): void {
       // Do Nothing
     },
+
+    // Sessions
+    async collectSessionStates(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async setupPrompt(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async openPrompt() {
+      throw new Error("This feature is not available on command line tool");
+    },
+    invokePromptCommand(): void {
+      throw new Error("This feature is not available on command line tool");
+    },
     onPromptCommand(): void {
       // Do Nothing
+    },
+
+    // Images
+    async showSelectImageDialog(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async cropPieceImage(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async exportCaptureAsPNG(): Promise<void> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async exportCaptureAsJPEG(): Promise<void> {
+      throw new Error("This feature is not available on command line tool");
+    },
+
+    // Log
+    openLogFile(): void {
+      // Do Nothing
+    },
+    log(level: LogLevel, message: string): void {
+      switch (level) {
+        case LogLevel.DEBUG:
+          console.debug(message);
+          break;
+        case LogLevel.INFO:
+          console.log(message);
+          break;
+        case LogLevel.WARN:
+          console.warn(message);
+          break;
+        case LogLevel.ERROR:
+          console.error(message);
+          break;
+      }
+    },
+
+    // MISC
+    async showSelectFileDialog(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async showSelectDirectoryDialog(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    openExplorer() {
+      throw new Error("This feature is not available on command line tool");
+    },
+    openWebBrowser() {
+      throw new Error("This feature is not available on command line tool");
+    },
+    async isEncryptionAvailable(): Promise<boolean> {
+      return false;
+    },
+    async getVersionStatus(): Promise<string> {
+      throw new Error("This feature is not available on command line tool");
+    },
+    sendTestNotification(): void {
+      throw new Error("This feature is not available on command line tool");
     },
   };
 

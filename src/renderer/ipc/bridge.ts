@@ -7,23 +7,14 @@ import { GameResult } from "@/common/game/result";
 import { LogLevel, LogType } from "@/common/log";
 
 export interface Bridge {
-  fetchInitialRecordFileRequest(): Promise<string>;
+  // Core
   updateAppState(appState: AppState, bussy: boolean): void;
-  openExplorer(path: string): void;
-  openWebBrowser(url: string): void;
-  showOpenRecordDialog(): Promise<string>;
-  openRecord(path: string): Promise<Uint8Array>;
-  cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string>;
-  showSaveRecordDialog(defaultPath: string): Promise<string>;
-  saveRecord(path: string, data: Uint8Array): Promise<void>;
-  showSelectFileDialog(): Promise<string>;
-  showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
-  showSelectImageDialog(defaultURL?: string): Promise<string>;
-  showSaveMergedRecordDialog(defaultPath: string): Promise<string>;
-  loadRemoteRecordFile(url: string): Promise<string>;
-  exportCaptureAsPNG(json: string): Promise<void>;
-  exportCaptureAsJPEG(json: string): Promise<void>;
-  convertRecordFiles(json: string): Promise<string>;
+  onClosable(): void;
+  onClose(callback: () => void): void;
+  onSendError(callback: (e: Error) => void): void;
+  onMenuEvent(callback: (event: MenuEvent) => void): void;
+
+  // Settings
   loadAppSetting(): Promise<string>;
   saveAppSetting(setting: string): Promise<void>;
   loadBatchConversionSetting(): Promise<string>;
@@ -38,13 +29,27 @@ export interface Bridge {
   saveCSAGameSettingHistory(setting: string): Promise<void>;
   loadMateSearchSetting(): Promise<string>;
   saveMateSearchSetting(setting: string): Promise<void>;
+  loadUSIEngineSetting(): Promise<string>;
+  saveUSIEngineSetting(setting: string): Promise<void>;
+  onUpdateAppSetting(callback: (json: string) => void): void;
+
+  // Record File
+  fetchInitialRecordFileRequest(): Promise<string>;
+  showOpenRecordDialog(): Promise<string>;
+  showSaveRecordDialog(defaultPath: string): Promise<string>;
+  showSaveMergedRecordDialog(defaultPath: string): Promise<string>;
+  openRecord(path: string): Promise<Uint8Array>;
+  saveRecord(path: string, data: Uint8Array): Promise<void>;
   loadRecordFileHistory(): Promise<string>;
   addRecordFileHistory(path: string): void;
   clearRecordFileHistory(): Promise<void>;
   saveRecordFileBackup(kif: string): Promise<void>;
   loadRecordFileBackup(name: string): Promise<string>;
-  loadUSIEngineSetting(): Promise<string>;
-  saveUSIEngineSetting(setting: string): Promise<void>;
+  loadRemoteRecordFile(url: string): Promise<string>;
+  convertRecordFiles(json: string): Promise<string>;
+  onOpenRecord(callback: (path: string) => void): void;
+
+  // USI
   showSelectUSIEngineDialog(): Promise<string>;
   getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<string>;
   sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void>;
@@ -58,33 +63,6 @@ export interface Bridge {
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;
-  csaLogin(json: string): Promise<number>;
-  csaLogout(sessionID: number): Promise<void>;
-  csaAgree(sessionID: number, gameID: string): Promise<void>;
-  csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void>;
-  csaResign(sessionID: number): Promise<void>;
-  csaWin(sessionID: number): Promise<void>;
-  csaStop(sessionID: number): Promise<void>;
-  collectSessionStates(): Promise<string>;
-  setupPrompt(target: PromptTarget, sessionID: number): Promise<string>;
-  openPrompt(target: PromptTarget, sessionID: number, name: string): void;
-  invokePromptCommand(
-    target: PromptTarget,
-    sessionID: number,
-    type: CommandType,
-    command: string,
-  ): void;
-  isEncryptionAvailable(): Promise<boolean>;
-  getVersionStatus(): Promise<string>;
-  sendTestNotification(): void;
-  openLogFile(logType: LogType): void;
-  log(level: LogLevel, message: string): void;
-  onClosable(): void;
-  onClose(callback: () => void): void;
-  onSendError(callback: (e: Error) => void): void;
-  onMenuEvent(callback: (event: MenuEvent) => void): void;
-  updateAppSetting(callback: (json: string) => void): void;
-  onOpenRecord(callback: (path: string) => void): void;
   onUSIBestMove(
     callback: (sessionID: number, usi: string, usiMove: string, ponder?: string) => void,
   ): void;
@@ -94,6 +72,15 @@ export interface Bridge {
   onUSINoMate(callback: (sessionID: number, usi: string) => void): void;
   onUSIInfo(callback: (sessionID: number, usi: string, json: string) => void): void;
   onUSIPonderInfo(callback: (sessionID: number, usi: string, json: string) => void): void;
+
+  // CSA
+  csaLogin(json: string): Promise<number>;
+  csaLogout(sessionID: number): Promise<void>;
+  csaAgree(sessionID: number, gameID: string): Promise<void>;
+  csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void>;
+  csaResign(sessionID: number): Promise<void>;
+  csaWin(sessionID: number): Promise<void>;
+  csaStop(sessionID: number): Promise<void>;
   onCSAGameSummary(callback: (sessionID: number, gameSummary: string) => void): void;
   onCSAReject(callback: (sessionID: number) => void): void;
   onCSAStart(callback: (sessionID: number, playerStates: string) => void): void;
@@ -102,5 +89,35 @@ export interface Bridge {
     callback: (sessionID: number, specialMove: CSASpecialMove, gameResult: CSAGameResult) => void,
   ): void;
   onCSAClose(callback: (sessionID: number) => void): void;
+
+  // Sessions
+  collectSessionStates(): Promise<string>;
+  setupPrompt(target: PromptTarget, sessionID: number): Promise<string>;
+  openPrompt(target: PromptTarget, sessionID: number, name: string): void;
+  invokePromptCommand(
+    target: PromptTarget,
+    sessionID: number,
+    type: CommandType,
+    command: string,
+  ): void;
   onPromptCommand(callback: (command: string) => void): void;
+
+  // Images
+  showSelectImageDialog(defaultURL?: string): Promise<string>;
+  cropPieceImage(srcURL: string, deleteMargin: boolean): Promise<string>;
+  exportCaptureAsPNG(json: string): Promise<void>;
+  exportCaptureAsJPEG(json: string): Promise<void>;
+
+  // Log
+  openLogFile(logType: LogType): void;
+  log(level: LogLevel, message: string): void;
+
+  // MISC
+  showSelectFileDialog(): Promise<string>;
+  showSelectDirectoryDialog(defaultPath?: string): Promise<string>;
+  openExplorer(path: string): void;
+  openWebBrowser(url: string): void;
+  isEncryptionAvailable(): Promise<boolean>;
+  getVersionStatus(): Promise<string>;
+  sendTestNotification(): void;
 }

@@ -321,22 +321,31 @@ function createMenuTemplate(window: BrowserWindow) {
           label: t.defaultFontSize,
           click: () => {
             window.webContents.setZoomLevel(0);
+            window.getChildWindows().forEach((child) => {
+              child.webContents.setZoomLevel(0);
+            });
           },
           accelerator: "CmdOrCtrl+0",
         },
         {
           label: t.largerFontSize,
           click: () => {
-            const level = window.webContents.getZoomLevel();
-            window.webContents.setZoomLevel(level + 1);
+            const level = window.webContents.getZoomLevel() + 1;
+            window.webContents.setZoomLevel(level);
+            window.getChildWindows().forEach((child) => {
+              child.webContents.setZoomLevel(level);
+            });
           },
           accelerator: "CmdOrCtrl+Plus",
         },
         {
           label: t.smallerFontSize,
           click: () => {
-            const level = window.webContents.getZoomLevel();
-            window.webContents.setZoomLevel(level - 1);
+            const level = window.webContents.getZoomLevel() - 1;
+            window.webContents.setZoomLevel(level);
+            window.getChildWindows().forEach((child) => {
+              child.webContents.setZoomLevel(level);
+            });
           },
           accelerator: "CmdOrCtrl+-",
         },

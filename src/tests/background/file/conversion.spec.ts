@@ -129,6 +129,42 @@ describe("conversion", () => {
         ],
       },
       {
+        sourceFormats: [
+          RecordFileFormat.KIF,
+          RecordFileFormat.KIFU,
+          RecordFileFormat.KI2,
+          RecordFileFormat.KI2U,
+          RecordFileFormat.CSA,
+        ],
+        subdirectories: false,
+        destination: "all-to-csa/v3",
+        destinationFormat: RecordFileFormat.CSA,
+        csaV3: true,
+        createSubdirectories: true,
+        fileNameConflictAction: FileNameConflictAction.OVERWRITE,
+        expectedReport: {
+          succeededTotal: 5,
+          succeeded: {
+            ".kif": 1,
+            ".kifu": 1,
+            ".ki2": 1,
+            ".ki2u": 1,
+            ".csa": 1,
+          },
+          failedTotal: 0,
+          failed: {},
+          skippedTotal: 0,
+          skipped: {},
+        },
+        expectedFiles: [
+          "csa-sjis.csa",
+          "ki2-sjis.csa",
+          "ki2u-utf8.csa",
+          "kif-sjis.csa",
+          "kifu-utf8.csa",
+        ],
+      },
+      {
         sourceFormats: [RecordFileFormat.CSA],
         subdirectories: false,
         destination: "csa-to-ki2",
@@ -210,11 +246,12 @@ describe("conversion", () => {
         expectedFiles: ["ki2u-utf8.kifu"],
       },
     ];
-    await saveAppSetting({
-      ...defaultAppSetting(),
-      returnCode: "\n",
-    });
     for (const testCase of testCases) {
+      await saveAppSetting({
+        ...defaultAppSetting(),
+        returnCode: "\n",
+        useCSAV3: !!testCase.csaV3,
+      });
       const destinationFullPath = path.join(tmpdir, testCase.destination);
       for (let i = 0; i < 1 + (testCase.repeat || 0); i++) {
         const result = await convertRecordFiles({

@@ -144,7 +144,7 @@
               "
             />
           </div>
-          <div class="form-item" :class="{ hidden: !blankLinePing }">
+          <div v-show="blankLinePing" class="form-item">
             <div class="form-item-label-wide">{{ t.blankLinePingInitialDelay }}</div>
             <input
               ref="blankLineInitialDelay"
@@ -158,7 +158,7 @@
               {{ t.secondsSuffix }} ({{ t.between(30, 7200) }})
             </div>
           </div>
-          <div class="form-item" :class="{ hidden: !blankLinePing }">
+          <div v-show="blankLinePing" class="form-item">
             <div class="form-item-label-wide">{{ t.blankLinePingInterval }}</div>
             <input
               ref="blankLineInterval"

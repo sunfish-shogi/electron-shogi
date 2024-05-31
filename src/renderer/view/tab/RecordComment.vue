@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="root" class="full column root">
+    <div ref="root" class="full column root" @copy.stop @paste.stop>
       <textarea class="auto text" :value="comment" :readonly="readonly" @input="change"> </textarea>
       <div v-if="pvs.length !== 0" class="row play-buttons">
         <button v-for="(pv, index) of pvs" :key="index" class="play" @click="play(pv)">
@@ -33,7 +33,7 @@
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { Move } from "electron-shogi-core";
@@ -43,7 +43,6 @@ const store = useStore();
 const readonly = computed(
   () => store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH,
 );
-const root = ref();
 const comment = computed(() => store.record.current.comment);
 const pvs = computed(() => store.inCommentPVs);
 const bookmark = computed(() => store.record.current.bookmark);
@@ -69,15 +68,6 @@ const play = (pv: Move[]) => {
     pv: pv,
   });
 };
-
-onMounted(() => {
-  root.value.addEventListener("copy", (event: ClipboardEvent) => {
-    event.stopPropagation();
-  });
-  root.value.addEventListener("paste", (event: ClipboardEvent) => {
-    event.stopPropagation();
-  });
-});
 </script>
 
 <style scoped>

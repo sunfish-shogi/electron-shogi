@@ -362,6 +362,8 @@ export const en: Texts = {
   strategy: "Strategy",
   gameTitle: "Title",
   timeLimit: "Time Limit",
+  blackTimeLimit: "Time Limit (Sente)",
+  whiteTimeLimit: "Time Limit (Gote)",
   place: "Place",
   postedOn: "Posted On",
   note: "Note",

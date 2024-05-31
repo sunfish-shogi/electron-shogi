@@ -25,6 +25,9 @@ export function createCommandWindow(
   win.setBackgroundColor("#888");
   win.setParentWindow(parent);
   win.menuBarVisible = false;
+  win.once("ready-to-show", () => {
+    win.webContents.setZoomLevel(parent.webContents.getZoomLevel());
+  });
 
   win.on("close", () => {
     onClose(win.webContents.id);

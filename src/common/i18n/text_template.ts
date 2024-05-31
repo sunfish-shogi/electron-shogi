@@ -357,6 +357,8 @@ export type Texts = {
   strategy: string;
   gameTitle: string;
   timeLimit: string;
+  blackTimeLimit: string;
+  whiteTimeLimit: string;
   place: string;
   postedOn: string;
   note: string;

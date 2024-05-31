@@ -216,7 +216,8 @@ export class GameManager {
         this.setting.repeat >= 2 ? `連続対局 ${this.repeat}/${this.setting.repeat}` : undefined,
       blackName: this.setting.black.name,
       whiteName: this.setting.white.name,
-      timeLimit: this.setting.timeLimit,
+      blackTimeLimit: this.setting.timeLimit,
+      whiteTimeLimit: this.setting.whiteTimeLimit || this.setting.timeLimit,
     });
     // 対局時計を設定する。
     this.blackClock.setup(this.getBlackClockSetting());

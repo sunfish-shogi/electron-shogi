@@ -48,8 +48,8 @@
         v-for="square in layout.square"
         :key="square.id"
         :style="square.style"
-        @click="clickSquare($event, square.file, square.rank)"
-        @contextmenu="clickSquareR($event, square.file, square.rank)"
+        @click.stop.prevent="clickSquare(square.file, square.rank)"
+        @contextmenu.stop.prevent="clickSquareR(square.file, square.rank)"
       ></div>
       <div :style="layout.blackHand.backgroundStyle">
         <img
@@ -71,7 +71,7 @@
           v-for="pointer in layout.blackHand.pointers"
           :key="pointer.id"
           :style="pointer.style"
-          @click="clickHand($event, Color.BLACK, pointer.type)"
+          @click.stop.prevent="clickHand(Color.BLACK, pointer.type)"
         ></div>
       </div>
       <div :style="layout.whiteHand.backgroundStyle">
@@ -94,14 +94,14 @@
           v-for="pointer in layout.whiteHand.pointers"
           :key="pointer.id"
           :style="pointer.style"
-          @click="clickHand($event, Color.WHITE, pointer.type)"
+          @click.stop.prevent="clickHand(Color.WHITE, pointer.type)"
         ></div>
       </div>
       <div v-if="layout.promotion" class="promotion-selector" :style="layout.promotion.style">
-        <div class="select-button promote" @click="clickPromote($event)">
+        <div class="select-button promote" @click.stop.prevent="clickPromote()">
           <img class="piece-image" :src="layout.promotion.promoteImagePath" />
         </div>
-        <div class="select-button not-promote" @click="clickNotPromote($event)">
+        <div class="select-button not-promote" @click.stop.prevent="clickNotPromote()">
           <img class="piece-image" :src="layout.promotion.notPromoteImagePath" />
         </div>
       </div>
@@ -335,25 +335,19 @@ const updatePointer = (newPointer: Square | Piece, empty: boolean, color: Color 
   state.pointer = newPointer;
 };
 
-const clickSquare = (event: Event, file: number, rank: number) => {
-  event.stopPropagation();
-  event.preventDefault();
+const clickSquare = (file: number, rank: number) => {
   const square = new Square(file, rank);
   const piece = props.position.board.at(square);
   const empty = !piece;
   updatePointer(square, empty, piece?.color);
 };
 
-const clickHand = (event: Event, color: Color, type: PieceType) => {
-  event.stopPropagation();
-  event.preventDefault();
+const clickHand = (color: Color, type: PieceType) => {
   const empty = props.position.hand(color).count(type) === 0;
   updatePointer(new Piece(color, type), empty, color);
 };
 
-const clickSquareR = (event: Event, file: number, rank: number) => {
-  event.stopPropagation();
-  event.preventDefault();
+const clickSquareR = (file: number, rank: number) => {
   resetState();
   const square = new Square(file, rank);
   if (props.allowEdit && props.position.board.at(square)) {
@@ -361,9 +355,7 @@ const clickSquareR = (event: Event, file: number, rank: number) => {
   }
 };
 
-const clickPromote = (event: Event) => {
-  event.stopPropagation();
-  event.preventDefault();
+const clickPromote = () => {
   const move = state.reservedMove;
   resetState();
   if (move && props.position.isValidMove(move.withPromote())) {
@@ -371,9 +363,7 @@ const clickPromote = (event: Event) => {
   }
 };
 
-const clickNotPromote = (event: Event) => {
-  event.stopPropagation();
-  event.preventDefault();
+const clickNotPromote = () => {
   const move = state.reservedMove;
   resetState();
   if (move && props.position.isValidMove(move)) {

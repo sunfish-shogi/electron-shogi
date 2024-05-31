@@ -18,6 +18,7 @@ import {
   countJishogiDeclarationPoint,
   judgeJishogiDeclaration,
   JishogiDeclarationRule,
+  countJishogiPoint,
 } from "electron-shogi-core";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
@@ -1076,6 +1077,7 @@ class Store {
     const appSetting = useAppSetting();
     const str = exportCSA(this.recordManager.record, {
       returnCode: appSetting.returnCode,
+      v3: appSetting.useCSAV3 ? { milliseconds: true } : undefined,
     });
     navigator.clipboard.writeText(str);
   }
@@ -1220,6 +1222,7 @@ class Store {
     const result = this.recordManager.exportRecordAsBuffer(path, {
       returnCode: appSetting.returnCode,
       detectGarbled: opt?.detectGarbled,
+      csa: { v3: appSetting.useCSAV3 },
     });
     if (result instanceof Error) {
       throw result;
@@ -1276,6 +1279,7 @@ class Store {
 
   showJishogiPoints(): void {
     const position = this.recordManager.record.position;
+    const blackTotalPoint = countJishogiPoint(position, Color.BLACK);
     const blackPoint = countJishogiDeclarationPoint(position, Color.BLACK);
     const black24 = judgeJishogiDeclaration(
       JishogiDeclarationRule.GENERAL24,
@@ -1287,6 +1291,7 @@ class Store {
       position,
       Color.BLACK,
     );
+    const whiteTotalPoint = countJishogiPoint(position, Color.WHITE);
     const whitePoint = countJishogiDeclarationPoint(position, Color.WHITE);
     const white24 = judgeJishogiDeclaration(
       JishogiDeclarationRule.GENERAL24,
@@ -1307,7 +1312,8 @@ class Store {
             {
               text: t.sente,
               children: [
-                `Points: ${blackPoint}`,
+                `Points (Total): ${blackTotalPoint}`,
+                `Points (Declaration): ${blackPoint}`,
                 `Rule-24: ${black24.toUpperCase()}`,
                 `Rule-27: ${black27.toUpperCase()}`,
               ],
@@ -1315,7 +1321,8 @@ class Store {
             {
               text: t.gote,
               children: [
-                `Points: ${whitePoint}`,
+                `Points (Total): ${whiteTotalPoint}`,
+                `Points (Declaration): ${whitePoint}`,
                 `Rule-24: ${white24.toUpperCase()}`,
                 `Rule-27: ${white27.toUpperCase()}`,
               ],

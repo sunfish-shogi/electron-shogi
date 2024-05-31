@@ -71,11 +71,9 @@
             />
           </div>
           <div
+            v-show="backgroundImageType !== BackgroundImageType.NONE"
             ref="backgroundImageSelector"
             class="form-item"
-            :class="{
-              hidden: backgroundImageType === BackgroundImageType.NONE,
-            }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
@@ -113,11 +111,9 @@
               "
             />
             <div
+              v-show="pieceImage === PieceImage.CUSTOM_IMAGE"
               ref="pieceImageSelector"
               class="form-item"
-              :class="{
-                hidden: pieceImage !== PieceImage.CUSTOM_IMAGE,
-              }"
             >
               <div class="form-item-label-wide"></div>
               <ImageSelector
@@ -126,12 +122,7 @@
                 @select="(url: string) => (pieceImageFileURL = url)"
               />
             </div>
-            <div
-              class="form-item"
-              :class="{
-                hidden: pieceImage !== PieceImage.CUSTOM_IMAGE,
-              }"
-            >
+            <div v-show="pieceImage === PieceImage.CUSTOM_IMAGE" class="form-item">
               <div class="form-item-label-wide"></div>
               <ToggleButton
                 :label="t.imageHasMarginsRemoveToDisplayLarger"
@@ -171,11 +162,9 @@
             />
           </div>
           <div
+            v-show="boardImage === BoardImageType.CUSTOM_IMAGE"
             ref="boardImageSelector"
             class="form-item"
-            :class="{
-              hidden: boardImage !== BoardImageType.CUSTOM_IMAGE,
-            }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
@@ -214,11 +203,9 @@
             />
           </div>
           <div
+            v-show="pieceStandImage === PieceStandImageType.CUSTOM_IMAGE"
             ref="pieceStandImageSelector"
             class="form-item"
-            :class="{
-              hidden: pieceStandImage !== PieceStandImageType.CUSTOM_IMAGE,
-            }"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
@@ -285,7 +272,7 @@
             />
           </div>
           <!-- 左コントロールの表示 -->
-          <div :class="{ hidden: !isNative() }" class="form-item">
+          <div v-show="isNative()" class="form-item">
             <div class="form-item-label-wide">
               {{ t.displayLeftControls }}
             </div>
@@ -295,7 +282,7 @@
             />
           </div>
           <!-- 右コントロールの表示 -->
-          <div :class="{ hidden: !isNative() }" class="form-item">
+          <div v-show="isNative()" class="form-item">
             <div class="form-item-label-wide">
               {{ t.displayRightControls }}
             </div>
@@ -480,6 +467,11 @@
             <button class="thin auxiliary" @click="howToWriteFileNameTemplate">
               <Icon :icon="IconType.HELP" />
             </button>
+          </div>
+          <!-- CSA V3 で出力 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">CSA V3 で出力</div>
+            <ToggleButton :value="useCSAV3" @change="(checked: boolean) => (useCSAV3 = checked)" />
           </div>
           <!-- USI の局面表記 -->
           <div class="form-item row">
@@ -871,6 +863,7 @@ const textDecodingRule = ref(appSetting.textDecodingRule);
 const returnCode = ref(returnCodeToName[appSetting.returnCode]);
 const autoSaveDirectory = ref();
 const recordFileNameTemplate = ref();
+const useCSAV3 = ref(appSetting.useCSAV3);
 const enableUSIFileStartpos = ref(appSetting.enableUSIFileStartpos);
 const enableUSIFileResign = ref(appSetting.enableUSIFileResign);
 const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
@@ -938,6 +931,7 @@ const saveAndClose = async () => {
       returnCode: nameToReturnCode[returnCode.value],
       autoSaveDirectory: autoSaveDirectory.value.value,
       recordFileNameTemplate: recordFileNameTemplate.value.value,
+      useCSAV3: useCSAV3.value,
       enableUSIFileStartpos: enableUSIFileStartpos.value,
       enableUSIFileResign: enableUSIFileResign.value,
       translateEngineOptionName: translateEngineOptionName.value,

@@ -6,6 +6,7 @@ import {
   Move,
   PieceType,
   RecordFormatType,
+  RecordMetadataKey,
   SpecialMoveType,
   Square,
   formatPV,
@@ -247,6 +248,84 @@ describe("store/record", () => {
         "▲４七飛△４二金▲４四歩△同　歩▲同　角△４三歩▲５五角△３三桂▲６五歩△６二金▲６四歩△５四銀▲４四歩△５一桂▲４三歩成△同　金▲同　飛成△同　玉",
       );
     });
+
+    it("shogi-gui", () => {
+      const recordManager = new RecordManager();
+      recordManager.importRecord(
+        "lnsgk1snl/6gb1/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL w 3P2p 16",
+      );
+      recordManager.updateComment(
+        "*対局 時間 00:00.8 深さ 22/28 ノード数 744743 評価値 88 読み筋 ▲３四飛(24) △３三角(22) ▲５八玉(59) △５二玉(51) ▲３六歩(37) △７六飛(86) ▲７七角(88) △７四飛(76) ▲同　飛(34) △同　歩(73) ▲２四歩打 △２五飛打 ▲３七桂(29) △２九飛成(25) ▲４五桂(37) △４四角(33) ▲同　角(77) △同　歩(43) ▲８二歩打 △同　銀(71) ▲５五角打 \n" +
+          "*解析 0 △ 候補1 時間 00:00.0 深さ 32 ノード数 1 評価値 0 読み筋 △３三角(22) \n" +
+          "*解析 0  候補2 時間 00:00.0 深さ 32 ノード数 1 評価値 0 読み筋 △３三角(22) \n",
+      );
+      const pvs = recordManager.inCommentPVs;
+      expect(pvs).toHaveLength(3);
+      expect(formatPV(recordManager.record.position, pvs[0])).toBe(
+        "△３三角▲５八玉△５二玉▲３六歩△７六飛▲７七角△７四飛▲同　飛△同　歩▲２四歩△２五飛▲３七桂△２九飛成▲４五桂△４四角▲同　角△同　歩▲８二歩△同　銀▲５五角",
+      );
+      expect(formatPV(recordManager.record.position, pvs[1])).toBe("△３三角");
+      expect(formatPV(recordManager.record.position, pvs[2])).toBe("△３三角");
+    });
+
+    it("piyo-shogi", () => {
+      const recordManager = new RecordManager();
+      recordManager.importRecord(
+        "ln1g1kb1l/1r4g2/p2p1snp1/4spp1p/1pp1p2N1/2PP1PS1P/PPBSP1P2/2G1G2R1/LN1K4L b P 41",
+      );
+      recordManager.updateComment(
+        "#指し手[62]△７五歩  ▲３三桂成  △同金  ▲７五歩  △同角  ▲４八飛  △６四角  ▲７九玉  △７四桂打  ▲４五歩  △８六歩  ▲同歩  △同桂  ▲８八金  △３二玉  ",
+      );
+      expect(recordManager.inCommentPVs).toHaveLength(1);
+      expect(formatPV(recordManager.record.position, recordManager.inCommentPVs[0])).toBe(
+        "▲３三桂成△同　金▲７五歩△同　角▲４八飛△６四角▲７九玉△７四桂▲４五歩△８六歩▲同　歩△同　桂▲８八金△３二玉",
+      );
+    });
+
+    it("kishin-analytics", () => {
+      const recordManager = new RecordManager();
+      recordManager.importRecord(
+        "ln2k2nl/1r4gb1/p1pgpp1p1/5sP1p/9/3PPS3/PPP1SP2P/2G1G2R1/LN1K3NL w S3Pbp 54",
+      );
+      recordManager.updateComment(
+        "* Engine suisho Version Suisho5/YaneuraOu-V7.50 候補1 深さ 13/19 ノード数 596119 評価値 -47 読み筋 △７四金(63) ▲５五歩(56)\n" +
+          "* Engine suisho Version Suisho5/YaneuraOu-V7.50 候補2 深さ 12/14 ノード数 596119 評価値 -46 読み筋 △１三角(22) ▲１六歩(17) △５二玉(51) ▲１五歩(16) △同　歩(14) ▲同　香(19) △４六角(13) ▲同　歩(47) △１五香(11) ▲１二銀打 △４九銀打 ▲２一銀(12) △５八銀成(49) ▲同　飛(28)\n" +
+          "* Engine suisho Version Suisho5/YaneuraOu-V7.50 候補3 深さ 12/19 ノード数 596119 評価値 -20 読み筋 △３八歩打 ▲同　飛(28) △２七角打 ▲３七飛(38) △４九角成(27) ▲５九金(58) △８五馬(49) ▲５八金(59) △７四歩(73) ▲１六歩(17)",
+      );
+      const pvs = recordManager.inCommentPVs;
+      expect(pvs).toHaveLength(3);
+      expect(formatPV(recordManager.record.position, pvs[0])).toBe("△７四金▲５五歩");
+    });
+  });
+
+  it("setGameStartMetadata/csa-v2-time", () => {
+    const recordManager = new RecordManager();
+    recordManager.setGameStartMetadata({
+      gameTitle: "New Game",
+      blackName: "Player 1",
+      whiteName: "Player 2",
+      blackTimeLimit: { timeSeconds: 600, byoyomi: 30, increment: 0 },
+      whiteTimeLimit: { timeSeconds: 600, byoyomi: 30, increment: 0 },
+    });
+    const metadata = recordManager.record.metadata;
+    expect(metadata.getStandardMetadata(RecordMetadataKey.TITLE)).toBe("New Game");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe("Player 1");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe("Player 2");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)).toBe("10:00+30");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT)).toBeUndefined();
+    expect(metadata.getStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT)).toBeUndefined();
+  });
+
+  it("setGameStartMetadata/csa-v3-time", () => {
+    const recordManager = new RecordManager();
+    recordManager.setGameStartMetadata({
+      blackTimeLimit: { timeSeconds: 300, byoyomi: 0, increment: 5 },
+      whiteTimeLimit: { timeSeconds: 150, byoyomi: 0, increment: 5 },
+    });
+    const metadata = recordManager.record.metadata;
+    expect(metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)).toBeUndefined();
+    expect(metadata.getStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT)).toBe("300+0+5");
+    expect(metadata.getStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT)).toBe("150+0+5");
   });
 
   it("appendMovesSilently", () => {

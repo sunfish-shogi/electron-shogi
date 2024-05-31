@@ -359,6 +359,8 @@ export const zh_tw: Texts = {
   strategy: "戰型",
   gameTitle: "標題",
   timeLimit: "持時間",
+  blackTimeLimit: "先手の持ち時間", // TODO: translate
+  whiteTimeLimit: "後手の持ち時間", // TODO: translate
   place: "場所",
   postedOn: "登錄於",
   note: "備註",

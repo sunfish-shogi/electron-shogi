@@ -329,15 +329,20 @@ export class CSAGameManager {
 
     // 対局情報を初期化する。
     const blackTimeConfig = this.gameSummary.players.black.time;
+    const whiteTimeConfig = this.gameSummary.players.white.time;
     this.recordManager.setGameStartMetadata({
       gameTitle: this.gameSummary.id,
       blackName: this.gameSummary.players.black.playerName,
       whiteName: this.gameSummary.players.white.playerName,
-      // 現状の KIF 形式や CSA 形式では手番ごとの持ち時間は表現できないため、先手の持ち時間のみを記述する。
-      timeLimit: {
+      blackTimeLimit: {
         timeSeconds: (blackTimeConfig.totalTime * blackTimeConfig.timeUnitMs) / 1e3,
         byoyomi: (blackTimeConfig.byoyomi * blackTimeConfig.timeUnitMs) / 1e3,
         increment: (blackTimeConfig.increment * blackTimeConfig.timeUnitMs) / 1e3,
+      },
+      whiteTimeLimit: {
+        timeSeconds: (whiteTimeConfig.totalTime * whiteTimeConfig.timeUnitMs) / 1e3,
+        byoyomi: (whiteTimeConfig.byoyomi * whiteTimeConfig.timeUnitMs) / 1e3,
+        increment: (whiteTimeConfig.increment * whiteTimeConfig.timeUnitMs) / 1e3,
       },
     });
 

@@ -1,6 +1,7 @@
 import https from "node:https";
 import http from "node:http";
 import { getAppLogger } from "@/background/log";
+import { convert } from "encoding-japanese";
 
 export function fetch(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -20,14 +21,17 @@ export function fetch(url: string): Promise<string> {
         reject(new Error(`request failed: ${url}: ${res.statusCode}`));
         return;
       }
-      let data = "";
+      const data: Buffer[] = [];
       res
-        .setEncoding("utf8")
-        .on("data", (chunk) => {
-          data += chunk;
+        .on("readable", () => {
+          for (let chunk = res.read(); chunk; chunk = res.read()) {
+            data.push(chunk);
+          }
         })
         .on("end", () => {
-          resolve(data);
+          const concat = Buffer.concat(data);
+          const decoded = convert(concat, { type: "string", to: "UNICODE" });
+          resolve(decoded);
         })
         .on("error", (e) => {
           reject(new Error(`request failed: ${url}: ${e}`));

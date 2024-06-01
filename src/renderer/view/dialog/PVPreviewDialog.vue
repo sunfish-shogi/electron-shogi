@@ -252,10 +252,7 @@ const displayPV = computed(() => {
 });
 
 const enableInsertion = computed(() => {
-  return (
-    (store.appState === AppState.NORMAL || store.appState === AppState.RESEARCH) &&
-    store.record.position.sfen === props.position.sfen
-  );
+  return store.appState === AppState.NORMAL && store.record.position.sfen === props.position.sfen;
 });
 
 const insertToRecord = () => {

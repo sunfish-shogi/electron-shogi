@@ -1,14 +1,14 @@
 import { CommandType } from "@/common/advanced/command";
 import { PromptTarget } from "@/common/advanced/prompt";
 import { MenuEvent } from "@/common/control/menu";
-import { AppState } from "@/common/control/state";
+import { AppState, ResearchState } from "@/common/control/state";
 import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 import { GameResult } from "@/common/game/result";
 import { LogLevel, LogType } from "@/common/log";
 
 export interface Bridge {
   // Core
-  updateAppState(appState: AppState, bussy: boolean): void;
+  updateAppState(appState: AppState, researchState: ResearchState, bussy: boolean): void;
   onClosable(): void;
   onClose(callback: () => void): void;
   onSendError(callback: (e: Error) => void): void;

@@ -149,7 +149,7 @@ const onStart = () => {
 };
 
 const onCancel = () => {
-  store.closeModalDialog();
+  store.closeResearchDialog();
 };
 
 const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {

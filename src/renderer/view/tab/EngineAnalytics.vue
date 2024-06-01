@@ -7,6 +7,7 @@
         :history-mode="historyMode"
         :info="monitor"
         :height="elementHeight"
+        :can-be-paused="store.isResearchEngineSessionID(monitor.sessionID)"
       />
     </div>
   </div>

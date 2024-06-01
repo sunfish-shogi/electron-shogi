@@ -3,7 +3,7 @@ import { GameSetting } from "@/common/settings/game";
 import { AppSetting } from "@/common/settings/app";
 import { webAPI } from "./web";
 import { ResearchSetting } from "@/common/settings/research";
-import { AppState } from "@/common/control/state";
+import { AppState, ResearchState } from "@/common/control/state";
 import { GameResult } from "@/common/game/result";
 import { AnalysisSetting } from "@/common/settings/analysis";
 import { LogLevel, LogType } from "@/common/log";
@@ -27,7 +27,7 @@ type AppInfo = {
 
 export interface API {
   // Core
-  updateAppState(appState: AppState, bussy: boolean): void;
+  updateAppState(appState: AppState, researchState: ResearchState, bussy: boolean): void;
 
   // Settings
   loadAppSetting(): Promise<AppSetting>;

@@ -15,7 +15,7 @@ import { humanPlayer } from "@/renderer/players/human";
 import { bridge } from "./api";
 import { MenuEvent } from "@/common/control/menu";
 import { USIInfoCommand } from "@/common/game/usi";
-import { AppState } from "@/common/control/state";
+import { AppState, ResearchState } from "@/common/control/state";
 import {
   onCSAClose,
   onCSAGameResult,
@@ -34,10 +34,11 @@ export function setup(): void {
 
   // Core
   watch(
-    () => [store.appState, store.isBussy],
-    ([appState, bussy]) => bridge.updateAppState(appState as AppState, bussy as boolean),
+    () => [store.appState, store.researchState, store.isBussy],
+    ([appState, researchState, bussy]) =>
+      bridge.updateAppState(appState as AppState, researchState as ResearchState, bussy as boolean),
   );
-  bridge.updateAppState(store.appState, store.isBussy);
+  bridge.updateAppState(store.appState, store.researchState, store.isBussy);
   bridge.onClose(() => {
     store
       .onMainWindowClose()

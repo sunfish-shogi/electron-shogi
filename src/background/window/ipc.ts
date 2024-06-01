@@ -24,7 +24,7 @@ import {
 import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
 import { MenuEvent } from "@/common/control/menu";
 import { USIInfoCommand } from "@/common/game/usi";
-import { AppState } from "@/common/control/state";
+import { AppState, ResearchState } from "@/common/control/state";
 import {
   gameover as usiGameover,
   getUSIEngineInfo as usiGetUSIEngineInfo,
@@ -113,20 +113,29 @@ ipcMain.handle(Background.FETCH_INITIAL_RECORD_FILE_REQUEST, (event) => {
   return JSON.stringify(fetchInitialRecordFileRequest());
 });
 
-const onUpdateAppStateHandlers: ((state: AppState, bussy: boolean) => void)[] = [];
+const onUpdateAppStateHandlers: ((
+  state: AppState,
+  researchState: ResearchState,
+  bussy: boolean,
+) => void)[] = [];
 
-export function onUpdateAppState(handler: (state: AppState, bussy: boolean) => void): void {
+export function onUpdateAppState(
+  handler: (state: AppState, researchState: ResearchState, bussy: boolean) => void,
+): void {
   onUpdateAppStateHandlers.push(handler);
 }
 
-ipcMain.on(Background.UPDATE_APP_STATE, (event, state: AppState, bussy: boolean) => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug(`change app state: AppState=${state} BussyState=${bussy}`);
-  appState = state;
-  for (const handler of onUpdateAppStateHandlers) {
-    handler(state, bussy);
-  }
-});
+ipcMain.on(
+  Background.UPDATE_APP_STATE,
+  (event, state: AppState, researchState: ResearchState, bussy: boolean) => {
+    validateIPCSender(event.senderFrame);
+    getAppLogger().debug(`change app state: AppState=${state} BussyState=${bussy}`);
+    appState = state;
+    for (const handler of onUpdateAppStateHandlers) {
+      handler(state, researchState, bussy);
+    }
+  },
+);
 
 ipcMain.on(Background.OPEN_EXPLORER, async (event, targetPath: string) => {
   validateIPCSender(event.senderFrame);

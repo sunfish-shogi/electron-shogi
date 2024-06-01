@@ -551,6 +551,8 @@ export const ja: Texts = {
   pleaseEndActiveFeaturesBeforeOpenRecord: "棋譜を開くには現在利用している機能を終了してください。",
   bothTimeLimitAndByoyomiAreNotSet: "持ち時間と秒読みが両方とも0です。",
   canNotUseByoyomiWithFischer: "秒読みとフィッシャールールは併用できません。",
+  repeatsMustBeOneIfHumanPlayerIncluded:
+    "人が対局する場合、連続対局の回数は1以外を設定できません。",
   protocolVersionNotSelected: "プロトコルのバージョンを選択してください。",
   hostNameIsEmpty: "ホスト名が空です。",
   invalidPortNumber: "無効なポート番号です。",

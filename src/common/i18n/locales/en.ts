@@ -554,6 +554,8 @@ export const en: Texts = {
   pleaseEndActiveFeaturesBeforeOpenRecord: "Please end active features before open record.",
   bothTimeLimitAndByoyomiAreNotSet: "Both time limit and byoyomi are not set.",
   canNotUseByoyomiWithFischer: "You can not use Byoyomi with Fischer.",
+  repeatsMustBeOneIfHumanPlayerIncluded:
+    "The number of repeats must be 1, if a human player is included.",
   protocolVersionNotSelected: "Protocol version is not selected.",
   hostNameIsEmpty: "Host name is empty.",
   invalidPortNumber: "Invalid port number.",

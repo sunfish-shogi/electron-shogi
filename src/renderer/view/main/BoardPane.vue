@@ -34,10 +34,66 @@
           ref="rightControl"
           class="full column top-control"
         >
+          <!-- 検討 -->
+          <button
+            v-if="store.researchState !== ResearchState.RUNNING"
+            class="control-item"
+            data-hotkey="Mod+r"
+            @click="onResearch"
+          >
+            <Icon :icon="IconType.RESEARCH" />
+            <span>{{ t.research }}</span>
+          </button>
+          <!-- 検討終了 -->
+          <button
+            v-if="store.researchState === ResearchState.RUNNING"
+            class="control-item close"
+            data-hotkey="Escape"
+            @click="onEndResearch"
+          >
+            <Icon :icon="IconType.END" />
+            <span>{{ t.endResearch }}</span>
+          </button>
           <!-- 対局 -->
           <button v-if="store.appState === AppState.NORMAL" class="control-item" @click="onGame">
             <Icon :icon="IconType.GAME" />
             <span>{{ t.game }}</span>
+          </button>
+          <!-- 対局中断 -->
+          <button
+            v-if="store.appState === AppState.GAME || store.appState === AppState.CSA_GAME"
+            class="control-item close"
+            data-hotkey="Escape"
+            @click="onStop"
+          >
+            <Icon :icon="IconType.STOP" />
+            <span>{{ t.stopGame }}</span>
+          </button>
+          <!-- 勝ち宣言 -->
+          <button
+            v-if="
+              store.isMovableByUser &&
+              (store.appState === AppState.CSA_GAME ||
+                (store.appState === AppState.GAME &&
+                  DeclarableJishogiRules.includes(store.gameSetting.jishogiRule)))
+            "
+            class="control-item close"
+            @click="onWin"
+          >
+            <Icon :icon="IconType.CALL" />
+            <span>{{ t.declareWinning }}</span>
+          </button>
+          <!-- 投了 -->
+          <button
+            v-if="
+              (store.appState === AppState.GAME || store.appState === AppState.CSA_GAME) &&
+              store.isMovableByUser
+            "
+            class="control-item close"
+            @click="onResign"
+          >
+            <Icon :icon="IconType.RESIGN" />
+            <span>{{ t.resign }}</span>
           </button>
           <!-- 持将棋の点数 -->
           <button
@@ -57,62 +113,6 @@
             <Icon :icon="IconType.SCORE" />
             <span>{{ t.displayGameResults }}</span>
           </button>
-          <!-- 対局中断 -->
-          <button
-            v-if="store.appState === AppState.GAME || store.appState === AppState.CSA_GAME"
-            class="control-item"
-            data-hotkey="Escape"
-            @click="onStop"
-          >
-            <Icon :icon="IconType.STOP" />
-            <span>{{ t.stopGame }}</span>
-          </button>
-          <!-- 勝ち宣言 -->
-          <button
-            v-if="
-              store.isMovableByUser &&
-              (store.appState === AppState.CSA_GAME ||
-                (store.appState === AppState.GAME &&
-                  DeclarableJishogiRules.includes(store.gameSetting.jishogiRule)))
-            "
-            class="control-item"
-            @click="onWin"
-          >
-            <Icon :icon="IconType.CALL" />
-            <span>{{ t.declareWinning }}</span>
-          </button>
-          <!-- 投了 -->
-          <button
-            v-if="
-              (store.appState === AppState.GAME || store.appState === AppState.CSA_GAME) &&
-              store.isMovableByUser
-            "
-            class="control-item"
-            @click="onResign"
-          >
-            <Icon :icon="IconType.RESIGN" />
-            <span>{{ t.resign }}</span>
-          </button>
-          <!-- 検討 -->
-          <button
-            v-if="store.appState === AppState.NORMAL"
-            class="control-item"
-            data-hotkey="Mod+r"
-            @click="onResearch"
-          >
-            <Icon :icon="IconType.RESEARCH" />
-            <span>{{ t.research }}</span>
-          </button>
-          <!-- 検討終了 -->
-          <button
-            v-if="store.appState === AppState.RESEARCH"
-            class="control-item"
-            data-hotkey="Escape"
-            @click="onEndResearch"
-          >
-            <Icon :icon="IconType.END" />
-            <span>{{ t.endResearch }}</span>
-          </button>
           <!-- 解析 -->
           <button
             v-if="store.appState === AppState.NORMAL"
@@ -126,7 +126,7 @@
           <!-- 解析中断 -->
           <button
             v-if="store.appState === AppState.ANALYSIS"
-            class="control-item"
+            class="control-item close"
             data-hotkey="Escape"
             @click="onEndAnalysis"
           >
@@ -146,7 +146,7 @@
           <!-- 詰み探索終了 -->
           <button
             v-if="store.appState === AppState.MATE_SEARCH"
-            class="control-item"
+            class="control-item close"
             data-hotkey="Escape"
             @click="onStopMateSearch"
           >
@@ -165,7 +165,7 @@
           <!-- 盤面編集終了 -->
           <button
             v-if="store.appState === AppState.POSITION_EDITING"
-            class="control-item"
+            class="control-item close"
             data-hotkey="Escape"
             @click="onEndEditPosition"
           >
@@ -234,7 +234,7 @@
           <button
             class="control-item"
             data-hotkey="Mod+d"
-            :disabled="store.appState !== AppState.NORMAL && store.appState !== AppState.RESEARCH"
+            :disabled="store.appState !== AppState.NORMAL"
             @click="onRemoveCurrentMove"
           >
             <Icon :icon="IconType.DELETE" />
@@ -260,7 +260,7 @@ import { Move, PositionChange, getBlackPlayerName, getWhitePlayerName } from "el
 import { RectSize } from "@/common/assets/geometry.js";
 import { useStore } from "@/renderer/store";
 import Icon from "@/renderer/view/primitive/Icon.vue";
-import { AppState } from "@/common/control/state.js";
+import { AppState, ResearchState } from "@/common/control/state.js";
 import { humanPlayer } from "@/renderer/players/human";
 import { IconType } from "@/renderer/assets/icons";
 import GameMenu from "@/renderer/view/menu/GameMenu.vue";

@@ -17,7 +17,7 @@ import {
   updateAppSetting,
 } from "@/background/window/ipc";
 import { MenuEvent } from "@/common/control/menu";
-import { AppState } from "@/common/control/state";
+import { AppState, ResearchState } from "@/common/control/state";
 import { openHowToUse, openLatestReleasePage, openStableReleasePage, openWebSite } from "./help";
 import { t } from "@/common/i18n";
 import { InitialPositionSFEN } from "electron-shogi-core";
@@ -30,19 +30,23 @@ import { LogType } from "@/common/log";
 const isWin = process.platform === "win32";
 const isMac = process.platform === "darwin";
 
-const stateChangeCallbacks: ((appState: AppState, bussy: boolean) => void)[] = [];
+const stateChangeCallbacks: ((
+  appState: AppState,
+  researchState: ResearchState,
+  bussy: boolean,
+) => void)[] = [];
 
 function menuItem(
   label: string,
   event: MenuEvent,
-  appStates: AppState[] | null,
+  appStates: (AppState | ResearchState)[] | null,
   accelerator?: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ): MenuItemConstructorOptions {
   const index = stateChangeCallbacks.length;
   const id = "menuItem" + index;
-  stateChangeCallbacks.push((appState: AppState, bussy: boolean) => {
+  stateChangeCallbacks.push((appState: AppState, researchState: ResearchState, bussy: boolean) => {
     const menu = Menu.getApplicationMenu();
     if (!menu) {
       return;
@@ -55,7 +59,7 @@ function menuItem(
       ? false
       : !appStates || appStates.length === 0
         ? true
-        : !!appStates.find((value) => value === appState);
+        : !!appStates.find((value) => value === appState || value === researchState);
   });
   return {
     id,
@@ -119,37 +123,25 @@ function createMenuTemplate(window: BrowserWindow) {
         {
           label: t.appendSpecialMove,
           submenu: [
-            menuItem(t.interrupt, MenuEvent.INSERT_INTERRUPT, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.resign, MenuEvent.INSERT_RESIGN, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.draw, MenuEvent.INSERT_DRAW, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.impass, MenuEvent.INSERT_IMPASS, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.repetitionDraw, MenuEvent.INSERT_REPETITION_DRAW, [
-              AppState.NORMAL,
-              AppState.RESEARCH,
-            ]),
-            menuItem(t.mate, MenuEvent.INSERT_MATE, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.noMate, MenuEvent.INSERT_NO_MATE, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.timeout, MenuEvent.INSERT_TIMEOUT, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.foulWin, MenuEvent.INSERT_FOUL_WIN, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.foulLose, MenuEvent.INSERT_FOUL_LOSE, [AppState.NORMAL, AppState.RESEARCH]),
-            menuItem(t.enteringOfKing, MenuEvent.INSERT_ENTERING_OF_KING, [
-              AppState.NORMAL,
-              AppState.RESEARCH,
-            ]),
-            menuItem(t.winByDefault, MenuEvent.INSERT_WIN_BY_DEFAULT, [
-              AppState.NORMAL,
-              AppState.RESEARCH,
-            ]),
-            menuItem(t.loseByDefault, MenuEvent.INSERT_LOSE_BY_DEFAULT, [
-              AppState.NORMAL,
-              AppState.RESEARCH,
-            ]),
+            menuItem(t.interrupt, MenuEvent.INSERT_INTERRUPT, [AppState.NORMAL]),
+            menuItem(t.resign, MenuEvent.INSERT_RESIGN, [AppState.NORMAL]),
+            menuItem(t.draw, MenuEvent.INSERT_DRAW, [AppState.NORMAL]),
+            menuItem(t.impass, MenuEvent.INSERT_IMPASS, [AppState.NORMAL]),
+            menuItem(t.repetitionDraw, MenuEvent.INSERT_REPETITION_DRAW, [AppState.NORMAL]),
+            menuItem(t.mate, MenuEvent.INSERT_MATE, [AppState.NORMAL]),
+            menuItem(t.noMate, MenuEvent.INSERT_NO_MATE, [AppState.NORMAL]),
+            menuItem(t.timeout, MenuEvent.INSERT_TIMEOUT, [AppState.NORMAL]),
+            menuItem(t.foulWin, MenuEvent.INSERT_FOUL_WIN, [AppState.NORMAL]),
+            menuItem(t.foulLose, MenuEvent.INSERT_FOUL_LOSE, [AppState.NORMAL]),
+            menuItem(t.enteringOfKing, MenuEvent.INSERT_ENTERING_OF_KING, [AppState.NORMAL]),
+            menuItem(t.winByDefault, MenuEvent.INSERT_WIN_BY_DEFAULT, [AppState.NORMAL]),
+            menuItem(t.loseByDefault, MenuEvent.INSERT_LOSE_BY_DEFAULT, [AppState.NORMAL]),
           ],
         },
         menuItem(
           t.deleteMoves,
           MenuEvent.REMOVE_CURRENT_MOVE,
-          [AppState.NORMAL, AppState.RESEARCH, AppState.MATE_SEARCH],
+          [AppState.NORMAL, AppState.MATE_SEARCH],
           "CmdOrCtrl+D",
         ),
         { type: "separator" },
@@ -284,8 +276,8 @@ function createMenuTemplate(window: BrowserWindow) {
     {
       label: t.research,
       submenu: [
-        menuItem(t.startResearch, MenuEvent.START_RESEARCH, [AppState.NORMAL], "CmdOrCtrl+R"),
-        menuItem(t.endResearch, MenuEvent.STOP_RESEARCH, [AppState.RESEARCH]),
+        menuItem(t.startResearch, MenuEvent.START_RESEARCH, [ResearchState.IDLE], "CmdOrCtrl+R"),
+        menuItem(t.endResearch, MenuEvent.STOP_RESEARCH, [ResearchState.RUNNING]),
         { type: "separator" },
         menuItem(
           t.analyze,

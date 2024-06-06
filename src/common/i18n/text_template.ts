@@ -99,6 +99,16 @@ export type Texts = {
   version: string;
   gameProgress: string;
   allGamesCompleted: string;
+  wins: string;
+  draws: string;
+  validGames: string;
+  invalidGames: string;
+  eloRatingDiff: string;
+  ignoreDraws: string;
+  drawsAreHalfWin: string;
+  zValue: string;
+  significance5pc: string;
+  significance1pc: string;
   gameEnded: string;
   offlineGame: string;
   csaOnlineGame: string;

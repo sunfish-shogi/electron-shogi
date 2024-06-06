@@ -101,6 +101,16 @@ export const zh_tw: Texts = {
   version: "版本",
   gameProgress: "對局過程",
   allGamesCompleted: "連續對局結束",
+  wins: "勝ち数", // TODO: translate
+  draws: "引き分け", // TODO: translate
+  validGames: "有効対局数", // TODO: translate
+  invalidGames: "無効対局数", // TODO: translate
+  eloRatingDiff: "レーティング差", // TODO: translate
+  ignoreDraws: "引き分け無効", // TODO: translate
+  drawsAreHalfWin: "引き分け0.5勝", // TODO: translate
+  zValue: "Z値", // TODO: translate
+  significance5pc: "有意水準5%", // TODO: translate
+  significance1pc: "有意水準1%", // TODO: translate
   gameEnded: "對局結束",
   offlineGame: "本地（單機）對局",
   csaOnlineGame: "通訊對局（CSA）",

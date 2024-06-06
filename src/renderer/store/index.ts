@@ -35,7 +35,7 @@ import {
   PieceSet,
   UpdateTreeHandler,
 } from "./record";
-import { GameManager, GameResults } from "./game";
+import { calculateGameStatistics, GameManager, GameResults } from "./game";
 import { generateRecordFileName, join } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
 import { BussyStore } from "./bussy";
@@ -49,7 +49,7 @@ import { AnalysisManager } from "./analysis";
 import { AnalysisSetting, CommentBehavior } from "@/common/settings/analysis";
 import { MateSearchSetting } from "@/common/settings/mate";
 import { LogLevel } from "@/common/log";
-import { formatPercentage, toString } from "@/common/helpers/string";
+import { toString } from "@/common/helpers/string";
 import { CSAGameManager, CSAGameState } from "./csa";
 import { Clock } from "./clock";
 import { CSAGameSetting, appendCSAGameSettingHistory } from "@/common/settings/csa";
@@ -77,28 +77,45 @@ export type PVPreview = {
 };
 
 function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] {
-  const validTotal = results.total - results.invalid;
+  const statistics = calculateGameStatistics(results);
   return [
     {
       type: "list",
       items: [
         {
           text: results.player1.name,
-          children: [
-            `勝ち数: ${results.player1.win}`,
-            `勝率: ${formatPercentage(results.player1.win, validTotal, 1)}`,
-          ],
+          children: [`${t.wins}: ${results.player1.win}`],
         },
         {
           text: results.player2.name,
+          children: [`${t.wins}: ${results.player2.win}`],
+        },
+        { text: `${t.draws}: ${results.draw}` },
+        { text: `${t.validGames}: ${results.total - results.invalid}` },
+        { text: `${t.invalidGames}: ${results.invalid}` },
+        {
+          text: `${t.eloRatingDiff} (${t.ignoreDraws})`,
           children: [
-            `勝ち数: ${results.player2.win}`,
-            `勝率: ${formatPercentage(results.player2.win, validTotal, 1)}`,
+            `${statistics.rating.toPrecision(6)}`,
+            `95% CI: [${statistics.ratingLower.toPrecision(6)}, ${statistics.ratingUpper.toPrecision(6)}]`,
           ],
         },
-        { text: `引き分け: ${results.draw}` },
-        { text: `有効対局数: ${validTotal}` },
-        { text: `無効対局数: ${results.invalid}` },
+        {
+          text: `${t.eloRatingDiff} (${t.drawsAreHalfWin})`,
+          children: [
+            `${statistics.ratingWithDraw.toPrecision(6)}`,
+            `95% CI: [${statistics.ratingWithDrawLower.toPrecision(6)}, ${statistics.ratingWithDrawUpper.toPrecision(6)}]`,
+          ],
+        },
+        {
+          text: "二項検定",
+          children: [
+            `np > 5: ${statistics.npIsGreaterThan5 ? "True" : "False"}`,
+            `${t.zValue}: ${statistics.zValue.toPrecision(5)}`,
+            `${t.significance5pc}: ${statistics.significance5pc ? "True" : "False"}`,
+            `${t.significance1pc}: ${statistics.significance1pc ? "True" : "False"}`,
+          ],
+        },
       ],
     },
   ];
@@ -691,6 +708,7 @@ class Store {
     if (this.appState !== AppState.GAME) {
       return;
     }
+    api.log(LogLevel.INFO, `game end: ${JSON.stringify(results)}`);
     if (results && results.total >= 2) {
       this.enqueueMessage({
         text: t.allGamesCompleted,

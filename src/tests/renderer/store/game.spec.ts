@@ -1,6 +1,6 @@
 import { InitialPositionType, Move, RecordMetadataKey, SpecialMoveType } from "electron-shogi-core";
 import { Clock } from "@/renderer/store/clock";
-import { GameManager, GameResults } from "@/renderer/store/game";
+import { calculateGameStatistics, GameManager, GameResults } from "@/renderer/store/game";
 import { RecordManager } from "@/renderer/store/record";
 import { playerURI01, playerURI02, gameSetting10m30s } from "@/tests/mock/game";
 import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
@@ -68,6 +68,66 @@ function invoke(
 describe("store/game", () => {
   afterEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("statistics/case1", async () => {
+    const statistics = calculateGameStatistics({
+      player1: { name: "Player1", win: 15 },
+      player2: { name: "Player2", win: 3 },
+      draw: 2,
+      invalid: 1,
+      total: 21,
+    });
+    expect(statistics.rating.toPrecision(6)).toBe("279.588");
+    expect(statistics.ratingLower.toPrecision(6)).toBe("116.129");
+    expect(statistics.ratingUpper.toPrecision(6)).toBe("NaN");
+    expect(statistics.ratingWithDraw.toPrecision(6)).toBe("240.824");
+    expect(statistics.ratingWithDrawLower.toPrecision(6)).toBe("88.5114");
+    expect(statistics.ratingWithDrawUpper.toPrecision(6)).toBe("638.632");
+    expect(statistics.zValue.toPrecision(6)).toBe("2.82843");
+    expect(statistics.npIsGreaterThan5).toBeTruthy();
+    expect(statistics.significance5pc).toBeTruthy();
+    expect(statistics.significance1pc).toBeTruthy();
+  });
+
+  it("statistics/case2", async () => {
+    const statistics = calculateGameStatistics({
+      player1: { name: "Player1", win: 9 },
+      player2: { name: "Player2", win: 1 },
+      draw: 2,
+      invalid: 1,
+      total: 13,
+    });
+    expect(statistics.npIsGreaterThan5).toBeFalsy();
+    expect(statistics.rating.toPrecision(6)).toBe("381.697");
+    expect(statistics.ratingLower.toPrecision(6)).toBe("158.982");
+    expect(statistics.ratingUpper.toPrecision(6)).toBe("NaN");
+    expect(statistics.ratingWithDraw.toPrecision(6)).toBe("279.588");
+    expect(statistics.ratingWithDrawLower.toPrecision(6)).toBe("86.8675");
+    expect(statistics.ratingWithDrawUpper.toPrecision(6)).toBe("NaN");
+    expect(statistics.zValue.toPrecision(6)).toBe("2.52982");
+    expect(statistics.significance5pc).toBeTruthy();
+    expect(statistics.significance1pc).toBeFalsy();
+  });
+
+  it("statistics/case3", async () => {
+    const statistics = calculateGameStatistics({
+      player1: { name: "Player1", win: 76 },
+      player2: { name: "Player2", win: 21 },
+      draw: 2,
+      invalid: 1,
+      total: 100,
+    });
+    expect(statistics.npIsGreaterThan5).toBeTruthy();
+    expect(statistics.rating.toPrecision(6)).toBe("223.438");
+    expect(statistics.ratingLower.toPrecision(6)).toBe("148.469");
+    expect(statistics.ratingUpper.toPrecision(6)).toBe("323.370");
+    expect(statistics.ratingWithDraw.toPrecision(6)).toBe("217.627");
+    expect(statistics.ratingWithDrawLower.toPrecision(6)).toBe("143.798");
+    expect(statistics.ratingWithDrawUpper.toPrecision(6)).toBe("314.877");
+    expect(statistics.zValue.toPrecision(6)).toBe("5.58440");
+    expect(statistics.significance5pc).toBeTruthy();
+    expect(statistics.significance1pc).toBeTruthy();
   });
 
   it("GameManager/resign", () => {

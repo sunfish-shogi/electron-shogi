@@ -101,14 +101,14 @@ export const zh_tw: Texts = {
   version: "版本",
   gameProgress: "對局過程",
   allGamesCompleted: "連續對局結束",
-  wins: "勝ち数", // TODO: translate
-  draws: "引き分け", // TODO: translate
+  wins: "勝利數目",
+  draws: "平手數目",
   validGames: "有効対局数", // TODO: translate
   invalidGames: "無効対局数", // TODO: translate
-  eloRatingDiff: "レーティング差", // TODO: translate
+  eloRatingDiff: "等級分相差",
   ignoreDraws: "引き分け無効", // TODO: translate
-  drawsAreHalfWin: "引き分け0.5勝", // TODO: translate
-  zValue: "Z値", // TODO: translate
+  drawsAreHalfWin: "平手作0.5勝",
+  zValue: "Z值",
   significance5pc: "有意水準5%", // TODO: translate
   significance1pc: "有意水準1%", // TODO: translate
   gameEnded: "對局結束",
@@ -289,7 +289,7 @@ export const zh_tw: Texts = {
   saveRecordAutomatically: "自動保存棋譜",
   adjustBoardToHumanPlayer: "調整到玩家所在方向",
   adjustBoardAutomatically: "自動調整盤面方向",
-  command: "Command", // TODO: translate
+  command: "指令",
   startGame: "對局開始",
   cancelGame: "取消對局",
   allottedTime: "持時間",
@@ -310,7 +310,7 @@ export const zh_tw: Texts = {
   toSuffix: "",
   plyPrefix: "第",
   plySuffix: "手",
-  hoursSuffix: "時間",
+  hoursSuffix: "小時",
   minutesSuffix: "分",
   secondsSuffix: "秒",
   engineManagement: "引擎管理",
@@ -336,7 +336,7 @@ export const zh_tw: Texts = {
   userFile: "使用者檔案",
   automaticBackup: "自動備份",
   restore: "復原",
-  loadRecordFromWeb: "Webの棋譜を取得", // TODO: translate
+  loadRecordFromWeb: "從網上取得棋譜",
   fetchLatestData: "最新データを取得", // TODO: translate
   sourceURL: "ソースURL", // TODO: translate
   ok: "OK",
@@ -368,10 +368,10 @@ export const zh_tw: Texts = {
   tournament: "棋戰",
   strategy: "戰型",
   gameTitle: "標題",
-  timeLimit: "持時間",
-  blackTimeLimit: "先手の持ち時間", // TODO: translate
-  whiteTimeLimit: "後手の持ち時間", // TODO: translate
-  place: "場所",
+  timeLimit: "限時",
+  blackTimeLimit: "先手限時",
+  whiteTimeLimit: "後手限時",
+  place: "地點",
   postedOn: "登錄於",
   note: "備註",
   senteShortName: "先手省略名",
@@ -389,9 +389,9 @@ export const zh_tw: Texts = {
   filterByEngineName: "搜尋引擎名稱",
   bookStyle: "書籍風",
   gameStyle: "對局畫面風",
-  thin: "細", // TODO: translate
-  bold: "太", // TODO: translate
-  extraBold: "極太", // TODO: translate
+  thin: "細",
+  bold: "粗",
+  extraBold: "特粗",
   playerName: "對局者名稱",
   typeface: "字體",
   weight: "字體粗細",
@@ -546,8 +546,8 @@ export const zh_tw: Texts = {
   hostNameIsEmpty: "主機名稱為空。",
   invalidPortNumber: "不可用的連接埠號碼。",
   idIsEmpty: "ID 為空。",
-  idContainsSpace: "ID contains space.", // TODO: translate
-  passwordContainsSpace: "Password contains space.", // TODO: translate
+  idContainsSpace: "ID 含有空白字符。",
+  passwordContainsSpace: "密碼含有空白字符。",
   tcpKeepaliveInitialDelayMustBePositive: "請輸入正確的TCP Keepalive初始延遲時間。",
   blankLinePingInitialDelayMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出初始延遲時間。",
   blankLinePingIntervalMustBeGreaterThanOrEqualTo30: "請輸入正確的空行輸出間隔時間。",

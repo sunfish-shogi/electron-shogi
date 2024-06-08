@@ -110,7 +110,7 @@ npm run build
 # test only
 npm test
 
-# coverange report
+# coverage report
 npm run coverage
 
 # launch Vitest UI

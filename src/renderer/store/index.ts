@@ -96,22 +96,22 @@ function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] 
         {
           text: `${t.eloRatingDiff} (${t.ignoreDraws})`,
           children: [
-            `${statistics.rating.toPrecision(6)}`,
-            `95% CI: [${statistics.ratingLower.toPrecision(6)}, ${statistics.ratingUpper.toPrecision(6)}]`,
+            `${statistics.rating.toFixed(2)}`,
+            `95% CI: [${statistics.ratingLower.toFixed(1)}, ${statistics.ratingUpper.toFixed(1)}]`,
           ],
         },
         {
           text: `${t.eloRatingDiff} (${t.drawsAreHalfWin})`,
           children: [
-            `${statistics.ratingWithDraw.toPrecision(6)}`,
-            `95% CI: [${statistics.ratingWithDrawLower.toPrecision(6)}, ${statistics.ratingWithDrawUpper.toPrecision(6)}]`,
+            `${statistics.ratingWithDraw.toFixed(2)}`,
+            `95% CI: [${statistics.ratingWithDrawLower.toFixed(1)}, ${statistics.ratingWithDrawUpper.toFixed(1)}]`,
           ],
         },
         {
           text: "二項検定",
           children: [
             `np > 5: ${statistics.npIsGreaterThan5 ? "True" : "False"}`,
-            `${t.zValue}: ${statistics.zValue.toPrecision(5)}`,
+            `${t.zValue}: ${statistics.zValue.toFixed(2)}`,
             `${t.significance5pc}: ${statistics.significance5pc ? "True" : "False"}`,
             `${t.significance1pc}: ${statistics.significance1pc ? "True" : "False"}`,
           ],

@@ -107,7 +107,7 @@ export const zh_tw: Texts = {
   invalidGames: "無効対局数", // TODO: translate
   eloRatingDiff: "等級分相差",
   ignoreDraws: "引き分け無効", // TODO: translate
-  drawsAreHalfWin: "平手作0.5勝", // TODO: translate
+  drawsAreHalfWin: "平手作0.5勝",
   zValue: "Z值",
   significance5pc: "有意水準5%", // TODO: translate
   significance1pc: "有意水準1%", // TODO: translate
@@ -310,7 +310,7 @@ export const zh_tw: Texts = {
   toSuffix: "",
   plyPrefix: "第",
   plySuffix: "手",
-  hoursSuffix: "時間",
+  hoursSuffix: "小時",
   minutesSuffix: "分",
   secondsSuffix: "秒",
   engineManagement: "引擎管理",
@@ -368,10 +368,10 @@ export const zh_tw: Texts = {
   tournament: "棋戰",
   strategy: "戰型",
   gameTitle: "標題",
-  timeLimit: "持時間",
+  timeLimit: "限時",
   blackTimeLimit: "先手限時",
   whiteTimeLimit: "後手限時",
-  place: "場所",
+  place: "地點",
   postedOn: "登錄於",
   note: "備註",
   senteShortName: "先手省略名",

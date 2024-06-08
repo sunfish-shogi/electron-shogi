@@ -5,33 +5,33 @@
 
 [日本語](./README.md)
 
-This is Shogi GUI app.
+This is a Shogi GUI app.
 You can play Shogi with AI and manage records.
 
-You can use this app with any Shogi engine(AI) based on [USI Protocol](http://shogidokoro.starfree.jp/usi.html), just like [将棋所](http://shogidokoro.starfree.jp/).
+You can use this app with any Shogi engine (AI) based on the [USI Protocol](http://shogidokoro.starfree.jp/usi.html), just like [将棋所](http://shogidokoro.starfree.jp/).
 
 ## Concept
 
-We can already use excellent softwares such as 将棋所 and [ShogiGUI](http://shogigui.siganus.com/) etc.
-However, most of those source codes are not public.
-The authority of Shogi AI advocates [the importance of source code sharing](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/).
-Electron Shogi publishes full source code. And you can use/modify under only few limits.
+Excellent shogi software such as 将棋所 and [ShogiGUI](http://shogigui.siganus.com/) already exist.
+However, the source code of most of these programs are not public.
+Authoritative Shogi AI developers have advocated [the importance of source code sharing](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/).
+Electron Shogi publishes its source code fully. You can use or modify it under only a few restrictions.
 
-Electron Shogi is developed by [Electron](https://www.electronjs.org/) which is a web based GUI framework.
-We want to use this project to wide usages by making use of modern web technologies on the future.
-Currently, you can use the part of features on your web browser.
-Electron based app bundles Chromium, so it is easy to keep quality regardless of OS or its versions.
+Electron Shogi is developed using [Electron](https://www.electronjs.org/) which is a web-based GUI framework.
+We make use of modern web technologies since we want this project to see widespread usage in the future.
+You can even run this on your web browser although only a portion of features are supported.
+As an Electron-based app, this is bundled with Chromium, so it is easy to guarantee the same operability and quality across different OSs.
 
 These days, 2-in-1 laptops are becoming popular.
-So, it is possible to play shogi on PC with touch screen.
-However, legacy desktop Shogi apps have very small UI components. So it's not good for compatibility with a touch display.
-We design this app to have operability for touch devices.
+It is now possible to play shogi on PCs with a touch screen.
+However, legacy desktop Shogi apps have very small UI components. These are not good for compatibility with a touch display.
+We designed this app to have operability for touch devices.
 
 ## Website
 
 https://sunfish-shogi.github.io/electron-shogi/
 
-You can try web version from the website.
+You can try the web version from the website.
 
 ## Wiki
 
@@ -47,14 +47,14 @@ https://github.com/sunfish-shogi/electron-shogi/wiki
 
 ## Downloads
 
-You can download any versions from [Releases](https://github.com/sunfish-shogi/electron-shogi/releases).
+You can download any version from [Releases](https://github.com/sunfish-shogi/electron-shogi/releases).
 
 ## Bug Reports / Suggestions
 
-If you have a GitHub account, please create Issue or Pull Request.
-If you want to send large changes, please create Issue before development.
+If you have a GitHub account, please create an Issue or a Pull Request.
+If you want to make large changes, please create an Issue before development.
 
-If not, please send message from [Web Form](https://form.run/@sunfish-shogi-1650819491).
+If not, please send messages through the [Web Form](https://form.run/@sunfish-shogi-1650819491).
 
 You can see the development progress at [Project Board](https://github.com/users/sunfish-shogi/projects/1/views/1).
 
@@ -101,7 +101,7 @@ npm run build
 # test only
 npm test
 
-# coverange report
+# coverage report
 npm run coverage
 ```
 

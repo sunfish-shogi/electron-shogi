@@ -184,7 +184,7 @@ export const zh_tw: Texts = {
   pieceStand: "駒台",
   lightWoodyTexture: "木目（亮色）",
   warmWoodTexture: "木目（暖色）",
-  regin: "樹脂",
+  resin: "樹脂",
   transparent: "透明",
   boardOpacity: "盤面不透明度",
   pieceStandOpacity: "駒台不透明度",

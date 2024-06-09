@@ -187,7 +187,7 @@ export const en: Texts = {
   pieceStand: "Piece Stand",
   lightWoodyTexture: "Woody Texture (Light)",
   warmWoodTexture: "Woody Texture (Warm)",
-  regin: "Resin",
+  resin: "Resin",
   transparent: "Transparent",
   boardOpacity: "Board Opacity",
   pieceStandOpacity: "Piece Stand Opacity",

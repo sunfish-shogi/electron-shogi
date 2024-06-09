@@ -140,9 +140,9 @@
               :items="[
                 { label: t.lightWoodyTexture, value: BoardImageType.LIGHT },
                 { label: t.warmWoodTexture, value: BoardImageType.WARM },
-                { label: t.regin, value: BoardImageType.RESIN },
-                { label: t.regin + '2', value: BoardImageType.RESIN2 },
-                { label: t.regin + '3', value: BoardImageType.RESIN3 },
+                { label: t.resin, value: BoardImageType.RESIN },
+                { label: t.resin + '2', value: BoardImageType.RESIN2 },
+                { label: t.resin + '3', value: BoardImageType.RESIN3 },
                 { label: t.green, value: BoardImageType.GREEN },
                 {
                   label: t.cherryBlossom,

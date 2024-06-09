@@ -182,7 +182,7 @@ export type Texts = {
   pieceStand: string;
   lightWoodyTexture: string;
   warmWoodTexture: string;
-  regin: string;
+  resin: string;
   transparent: string;
   boardOpacity: string;
   pieceStandOpacity: string;

@@ -21,6 +21,7 @@ describe("security", () => {
     validateHTTPRequest("GET", "ws://localhost:1234/foo/bar.baz");
     validateHTTPRequest("GET", "file:///home/shogi/apps/electron-shogi/assets.asr");
     validateHTTPRequest("GET", "devtools://devtools/bundled/index.html");
+    validateHTTPRequest("GET", "devtools://foo/bar/baz.qux");
   });
 
   it("validateHTTPRequest/notAllowed", () => {
@@ -28,7 +29,5 @@ describe("security", () => {
     expect(() => validateHTTPRequest("GET", "http://foo.bar/baz/qux.quux")).toThrow();
     // https will not used with localhost
     expect(() => validateHTTPRequest("GET", "https://localhost:1234/foo/bar.baz")).toThrow();
-    // unexpected devtools URL
-    expect(() => validateHTTPRequest("GET", "devtools://foo/bar/baz.qux")).toThrow();
   });
 });

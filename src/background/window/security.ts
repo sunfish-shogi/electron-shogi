@@ -33,7 +33,7 @@ const allowedHTTPRequestURLs = [
   { protocol: "http:", host: /^localhost:[0-9]+$/ },
   { protocol: "ws:", host: /^localhost:[0-9]+$/ },
   { protocol: "file:", host: /^$/ },
-  { protocol: "devtools:", host: /^devtools$/ },
+  { protocol: "devtools:" },
 ];
 
 function validateHTTPRequestURL(url: string) {
@@ -42,7 +42,7 @@ function validateHTTPRequestURL(url: string) {
   }
   const u = new URL(url);
   for (const allowed of allowedHTTPRequestURLs) {
-    if (u.protocol === allowed.protocol && allowed.host.test(u.host)) {
+    if (u.protocol === allowed.protocol && (!allowed.host || allowed.host.test(u.host))) {
       return;
     }
   }

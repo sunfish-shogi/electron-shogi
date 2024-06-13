@@ -109,7 +109,7 @@ describe("version", () => {
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
     await checkUpdates();
     expect(spy.mock.calls).toHaveLength(1);
-    expect(spy.mock.calls[0][0]).toBe("Electron将棋");
+    expect(spy.mock.calls[0][0]).toBe("ShogiHome");
     expect(spy.mock.calls[0][1]).toBe("安定版 v1.0.4 がリリースされました！");
     expect(server.accessCount).toBe(1);
     expect(server.invalidCount).toBe(0);
@@ -132,7 +132,7 @@ describe("version", () => {
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
     await checkUpdates();
     expect(spy.mock.calls).toHaveLength(1);
-    expect(spy.mock.calls[0][0]).toBe("Electron将棋");
+    expect(spy.mock.calls[0][0]).toBe("ShogiHome");
     expect(spy.mock.calls[0][1]).toBe("最新版 v1.1.1 がリリースされました！");
     expect(server.accessCount).toBe(1);
     expect(server.invalidCount).toBe(0);
@@ -261,7 +261,7 @@ describe("version", () => {
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
     await checkUpdates();
     expect(spy.mock.calls).toHaveLength(1);
-    expect(spy.mock.calls[0][0]).toBe("Electron将棋");
+    expect(spy.mock.calls[0][0]).toBe("ShogiHome");
     expect(spy.mock.calls[0][1]).toBe("安定版 v1.1.1 がリリースされました！");
     expect(server.accessCount).toBe(1);
     expect(server.invalidCount).toBe(0);
@@ -284,7 +284,7 @@ describe("version", () => {
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
     await checkUpdates();
     expect(spy.mock.calls).toHaveLength(1);
-    expect(spy.mock.calls[0][0]).toBe("Electron将棋");
+    expect(spy.mock.calls[0][0]).toBe("ShogiHome");
     expect(spy.mock.calls[0][1]).toBe("最新版 v1.2.0 がリリースされました！");
     expect(server.accessCount).toBe(1);
     expect(server.invalidCount).toBe(0);
@@ -307,7 +307,7 @@ describe("version", () => {
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
     await checkUpdates();
     expect(spy.mock.calls).toHaveLength(1);
-    expect(spy.mock.calls[0][0]).toBe("Electron将棋");
+    expect(spy.mock.calls[0][0]).toBe("ShogiHome");
     expect(spy.mock.calls[0][1]).toBe("最新版 v1.2.0 がリリースされました！");
     expect(server.accessCount).toBe(1);
     expect(server.invalidCount).toBe(0);

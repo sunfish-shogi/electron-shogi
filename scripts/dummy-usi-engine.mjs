@@ -12,7 +12,7 @@ function start() {
 
 function onReadLine(line) {
   if (line === "usi") {
-    console.log("id name ElectronShogiDummyEngine");
+    console.log("id name ShogiHomeDummyEngine");
     console.log("id authoer Ryosuke Kubo");
     console.log("option name StringA type string default foo");
     console.log("option name StringB type string");

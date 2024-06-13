@@ -1,7 +1,7 @@
 import { Texts } from "@/common/i18n/text_template";
 
 export const zh_tw: Texts = {
-  electronShogi: "Electron將棋",
+  shogiHome: "ShogiHome",
   clear: "清除",
   open: "開啟",
   saveOverwrite: "覆蓋檔案",

@@ -17,7 +17,7 @@ const commonPackageJson = JSON.parse(fs.readFileSync(packageJsonFileName, "utf8"
 const packageJson = {
   ...commonPackageJson,
   name,
-  description: `command line tool derived from ElectronShogi(https://github.com/sunfish-shogi/electron-shogi)`,
+  description: `command line tool derived from ShogiHome(https://github.com/sunfish-shogi/electron-shogi)`,
   private: false,
   publishConfig: {
     access: "public",

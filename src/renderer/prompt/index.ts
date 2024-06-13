@@ -17,7 +17,7 @@ setupIPC();
 
 const store = useStore();
 
-document.title = `ElectronShogi Prompt - ${store.target} [${store.sessionID}] ${store.name}`;
+document.title = `ShogiHome Prompt - ${store.target} [${store.sessionID}] ${store.name}`;
 
 Promise.allSettled([
   store.setup(),

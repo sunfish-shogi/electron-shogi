@@ -36,12 +36,7 @@
           <div v-show="!filterWords.length" class="row option">
             <div class="option-name">{{ t.displayName }}</div>
             <div class="option-value">
-              <input
-                ref="engineNameInput"
-                class="option-value-text"
-                type="text"
-                name="ElectronShogiEngineName"
-              />
+              <input ref="engineNameInput" class="option-value-text" type="text" />
             </div>
           </div>
           <!-- オプション -->

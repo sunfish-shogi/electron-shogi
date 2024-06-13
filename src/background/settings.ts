@@ -43,7 +43,7 @@ import { requireElectron } from "./helpers/portability";
 
 const userDir = getAppPath("userData");
 const rootDir = getPortableExeDir() || userDir;
-const docDir = path.join(getAppPath("documents"), "ElectronShogi");
+const docDir = path.join(getAppPath("documents"), "ShogiHome");
 
 export function openSettingsDirectory(): void {
   requireElectron().shell.openPath(rootDir);

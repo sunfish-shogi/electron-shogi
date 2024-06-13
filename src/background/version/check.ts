@@ -66,7 +66,7 @@ function suggestUpdate(releases: Releases, last: VersionStatus) {
   const stableUpdated = !knownStable || semver.gt(stable, knownStable);
   const stableNotInstalled = semver.gt(stable, current);
   if (stablePreferred && stableUpdated && stableNotInstalled) {
-    showNotification(t.electronShogi, t.stableVersionReleased("v" + stable));
+    showNotification(t.shogiHome, t.stableVersionReleased("v" + stable));
     return;
   }
 
@@ -74,7 +74,7 @@ function suggestUpdate(releases: Releases, last: VersionStatus) {
   const latestUpdated = !knownLatest || semver.gt(latest, knownLatest);
   const latestNotInstalled = semver.gt(latest, current);
   if (latestPreferred && latestUpdated && latestNotInstalled) {
-    showNotification(t.electronShogi, t.latestVersionReleased("v" + latest));
+    showNotification(t.shogiHome, t.latestVersionReleased("v" + latest));
     return;
   }
 }

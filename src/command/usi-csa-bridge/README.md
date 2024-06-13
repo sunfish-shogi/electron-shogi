@@ -1,6 +1,6 @@
 # usi-csa-bridge
 
-[Electron 将棋](https://github.com/sunfish-shogi/electron-shogi#readme) の機能のうち、 CSA 対局サーバーへ接続して USI のエンジンを対局に参加させる部分をコマンドラインから実行するツールです。
+[ShogiHome](https://github.com/sunfish-shogi/electron-shogi#readme) の機能のうち、 CSA 対局サーバーへ接続して USI のエンジンを対局に参加させる部分をコマンドラインから実行するツールです。
 
 ## セットアップ方法
 
@@ -42,7 +42,7 @@ npx usi-csa-bridge --help
 
 ## 設定ファイルの作成
 
-### Electron 将棋からエクスポートする場合 (v1.14.0 以上)
+### ShogiHomeからエクスポートする場合 (v1.14.0 以上)
 
 【注意】この機能を利用するには v1.14.0 (2024年5月リリース予定) 以上のバージョンをインストールするか main ブランチのソースコードからビルドする必要があります。
 
@@ -147,7 +147,7 @@ npx csa-usi-bridge <JSON 形式の設定を gzip 圧縮して Base64 エンコ�
 ```
 
 コマンド引数に設定を直接指定する場合は、JSON 形式で設定を作成した上で gzip 圧縮と Base64 エンコードが必要です。
-Electron将棋の画面からコピーするのが簡単ですが、自分でエンコードする場合は Linux のコマンドを使って以下の要領で変換します。
+ShogiHomeの画面からコピーするのが簡単ですが、自分でエンコードする場合は Linux のコマンドを使って以下の要領で変換します。
 
 ```
 # エンコード

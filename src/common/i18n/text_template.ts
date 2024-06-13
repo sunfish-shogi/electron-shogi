@@ -1,5 +1,5 @@
 export type Texts = {
-  electronShogi: string;
+  shogiHome: string;
   clear: string;
   open: string;
   saveOverwrite: string;

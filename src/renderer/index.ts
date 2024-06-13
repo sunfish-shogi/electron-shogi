@@ -36,7 +36,7 @@ function updateTitle(path: string | undefined, unsaved: boolean) {
   if (!document) {
     return;
   }
-  const appName = t.electronShogi;
+  const appName = t.shogiHome;
   const appVersion = appInfo.appVersion;
   if (path || unsaved) {
     const unsavedMaker = unsaved ? `${t.unsaved}: ` : "";

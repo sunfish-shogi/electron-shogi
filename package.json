@@ -63,6 +63,7 @@
   "devDependencies": {
     "@types/async-lock": "^1.4.0",
     "@types/encoding-japanese": "^2.0.1",
+    "@types/semver": "^7.5.8",
     "@types/splitpanes": "^2.2.1",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
@@ -75,7 +76,7 @@
     "archiver": "^7.0.1",
     "concurrently": "^8.0.1",
     "depcheck": "^1.4.7",
-    "electron": "^30.0.1",
+    "electron": "^31.0.1",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.26.0",

@@ -1,4 +1,8 @@
-# Electron Shogi
+<img width="200" src="./docs/icon.png" />
+
+# ShogiHome
+
+Codename: electron-shogi
 
 [![Test](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/sunfish-shogi/electron-shogi/branch/main/graph/badge.svg?token=TLSQXAIJFY)](https://codecov.io/gh/sunfish-shogi/electron-shogi)
@@ -15,9 +19,9 @@ You can use this app with any Shogi engine (AI) based on the [USI Protocol](http
 Excellent shogi software such as 将棋所 and [ShogiGUI](http://shogigui.siganus.com/) already exist.
 However, the source code of most of these programs are not public.
 Authoritative Shogi AI developers have advocated [the importance of source code sharing](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/).
-Electron Shogi publishes its source code fully. You can use or modify it under only a few restrictions.
+ShogiHome publishes its source code fully. You can use or modify it under only a few restrictions.
 
-Electron Shogi is developed using [Electron](https://www.electronjs.org/) which is a web-based GUI framework.
+ShogiHome is developed using [Electron](https://www.electronjs.org/) which is a web-based GUI framework.
 We make use of modern web technologies since we want this project to see widespread usage in the future.
 You can even run this on your web browser although only a portion of features are supported.
 As an Electron-based app, this is bundled with Chromium, so it is easy to guarantee the same operability and quality across different OSs.
@@ -117,7 +121,7 @@ npm run lint
 
 ## Licences
 
-### Electron Shogi
+### ShogiHome
 
 [MIT License](LICENSE)
 

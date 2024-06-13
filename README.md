@@ -1,4 +1,8 @@
-# Electron 将棋
+<img width="200" src="./docs/icon.png" />
+
+# ShogiHome
+
+コードネーム: electron-shogi
 
 [![Test](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/sunfish-shogi/electron-shogi/branch/main/graph/badge.svg?token=TLSQXAIJFY)](https://codecov.io/gh/sunfish-shogi/electron-shogi)
@@ -15,15 +19,15 @@
 私達は既に将棋所や[ShogiGUI](http://shogigui.siganus.com/)などの洗練されたソフトウェアで将棋の対局や研究が可能です。
 しかし、その多くは個人がクローズドに開発しているものです。
 コンピューター将棋界の権威ある開発者も[ソースコード公開の必要性に言及](https://yaneuraou.yaneu.com/2022/01/15/new-gui-for-shogi-is-needed-to-improve-the-usi-protocol/)しています。
-Electron 将棋はソースコードを公開しており、そして低い制限のもとで自由に利用・改変が可能です。
+ShogiHomeはソースコードを公開しており、そして低い制限のもとで自由に利用・改変が可能です。
 
-Electron 将棋は Web ベースの GUI フレームワークである [Electron](https://www.electronjs.org/) を使っています。
+ShogiHome は Web ベースの GUI フレームワークである [Electron](https://www.electronjs.org/) を使っています。
 Web の技術を使うことで将来の幅広い活用を目指しており、機能は限られますが通常のブラウザでも動作します。
 Electron は Chromium をバンドルするため、どの OS でも同じ操作性と品質が担保しやすいのも特徴です。
 
 昨今では 2in1 タブレットやコンバーチブル型 PC の普及により、PC 向けの OS でもタッチパネルを使って将棋の対局ができるようになりました。
 しかし、 PC 向けの伝統的なアプリケーションは UI コンポーネントが細かく、タッチ操作との相性がよくありません。
-Electron 将棋ではタッチ操作のしやすさも重視して UI を設計しています。
+ShogiHome ではタッチ操作のしやすさも重視して UI を設計しています。
 
 ## Website
 
@@ -129,7 +133,7 @@ npm run lint
 
 ## Licences
 
-### Electron Shogi
+### ShogiHome
 
 [MIT License](LICENSE)
 

@@ -104,7 +104,7 @@ const onToggleComment = (enabled: boolean) => {
 };
 
 const isRecordOperational = computed(() => {
-  return store.appState === AppState.NORMAL || store.appState === AppState.RESEARCH;
+  return store.appState === AppState.NORMAL;
 });
 </script>
 

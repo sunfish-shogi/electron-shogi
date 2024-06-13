@@ -8,8 +8,6 @@ export enum AppState {
   GAME = "game",
   CSA_GAME_DIALOG = "csaGameDialog",
   CSA_GAME = "csaGame",
-  RESEARCH = "research",
-  RESEARCH_DIALOG = "researchDialog",
   ANALYSIS = "analysis",
   ANALYSIS_DIALOG = "analysisDialog",
   MATE_SEARCH = "mateSearch",
@@ -20,4 +18,10 @@ export enum AppState {
   LAUNCH_USI_ENGINE_DIALOG = "launchUsiEngineDialog",
   CONNECT_TO_CSA_SERVER_DIALOG = "connectToCsaServerDialog",
   LOAD_REMOTE_FILE_DIALOG = "loadRemoteFileDialog",
+}
+
+export enum ResearchState {
+  IDLE = "idle",
+  STARTUP_DIALOG = "startupDialog",
+  RUNNING = "running",
 }

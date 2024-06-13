@@ -338,3 +338,7 @@ export function onUSIPonderInfo(sessionID: number, usi: string, info: USIInfoCom
   onUpdateUSIPonderInfo(sessionID, usi, player.name, info);
   player.onUSIInfo(usi, info);
 }
+
+export function isActiveUSIPlayerSession(sessionID: number): boolean {
+  return !!usiPlayers[sessionID];
+}

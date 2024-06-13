@@ -27,6 +27,7 @@ type UpdateSearchInfoCallback = (type: SearchInfoSenderType, info: SearchInfo) =
 export class ResearchManager {
   private setting = defaultResearchSetting();
   private engines: USIPlayer[] = [];
+  private ready: boolean = false;
   private onUpdateSearchInfo: UpdateSearchInfoCallback = () => {
     /* noop */
   };
@@ -73,9 +74,7 @@ export class ResearchManager {
 
     // エンジンを設定する。
     const appSetting = useAppSetting();
-    const engineSettings = [setting.usi, ...(setting.secondaries?.map((s) => s.usi) || [])].filter(
-      (usi) => !!usi,
-    );
+    const engineSettings = [setting.usi, ...(setting.secondaries?.map((s) => s.usi) || [])];
     this.engines = engineSettings.map((usi, index) => {
       const type = getSenderTypeByIndex(index);
       return new USIPlayer(usi as USIEngineSetting, appSetting.engineTimeoutSeconds, (info) => {
@@ -89,6 +88,7 @@ export class ResearchManager {
     try {
       await Promise.all(this.engines.map((engine) => engine.launch()));
       await Promise.all(this.engines.map((engine) => engine.readyNewGame()));
+      this.ready = true;
     } catch (e) {
       this.close();
       throw e;
@@ -100,6 +100,10 @@ export class ResearchManager {
     this.synced = false;
     // 200ms 以内に複数回更新されたら最後の 1 回だけを処理する。
     this.lazyPositionUpdate.after(() => {
+      // 初期化処理が終わっていない場合は何もしない。
+      if (!this.ready) {
+        return;
+      }
       // 一時停止中のエンジンを除いて探索を開始する。
       this.engines.forEach((engine) => {
         if (this.pausedEngineMap[engine.sessionID]) {
@@ -151,6 +155,10 @@ export class ResearchManager {
     }
   }
 
+  isSessionExists(sessionID: number): boolean {
+    return this.engines.some((engine) => engine.sessionID === sessionID);
+  }
+
   private stopAll() {
     clearTimeout(this.maxSecondsTimer);
     Promise.all(this.engines.map((engine) => engine.stop())).catch((e) => {
@@ -165,6 +173,7 @@ export class ResearchManager {
       .then(() => {
         this.engines = [];
         this.pausedEngineMap = {};
+        this.ready = false;
       })
       .catch((e) => {
         this.onError(e);

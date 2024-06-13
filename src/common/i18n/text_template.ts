@@ -533,6 +533,7 @@ export type Texts = {
   pleaseEndActiveFeaturesBeforeOpenRecord: string;
   bothTimeLimitAndByoyomiAreNotSet: string;
   canNotUseByoyomiWithFischer: string;
+  repeatsMustBeOneIfHumanPlayerIncluded: string;
   protocolVersionNotSelected: string;
   hostNameIsEmpty: string;
   invalidPortNumber: string;

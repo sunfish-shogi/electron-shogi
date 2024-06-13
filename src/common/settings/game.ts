@@ -1,6 +1,7 @@
 import { InitialPositionType } from "electron-shogi-core";
 import { PlayerSetting, defaultPlayerSetting } from "./player";
 import { t } from "@/common/i18n";
+import * as uri from "@/common/uri";
 
 export type TimeLimitSetting = {
   timeSeconds: number;
@@ -96,6 +97,14 @@ export function validateGameSetting(gameSetting: GameSetting): Error | undefined
     gameSetting.whiteTimeLimit.increment !== 0
   ) {
     return new Error(t.canNotUseByoyomiWithFischer);
+  }
+  if (gameSetting.repeat < 1) {
+    return new Error("The number of repeats must be positive.");
+  }
+  const containsHuman =
+    gameSetting.black.uri === uri.ES_HUMAN || gameSetting.white.uri === uri.ES_HUMAN;
+  if (containsHuman && gameSetting.repeat > 1) {
+    return new Error(t.repeatsMustBeOneIfHumanPlayerIncluded);
   }
   return;
 }

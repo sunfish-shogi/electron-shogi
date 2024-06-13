@@ -40,9 +40,7 @@ import { Move } from "electron-shogi-core";
 import BookmarkListDialog from "@/renderer/view/dialog/BookmarkListDialog.vue";
 
 const store = useStore();
-const readonly = computed(
-  () => store.appState != AppState.NORMAL && store.appState != AppState.RESEARCH,
-);
+const readonly = computed(() => store.appState != AppState.NORMAL);
 const comment = computed(() => store.record.current.comment);
 const pvs = computed(() => store.inCommentPVs);
 const bookmark = computed(() => store.record.current.bookmark);

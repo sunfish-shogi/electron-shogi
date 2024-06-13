@@ -542,6 +542,8 @@ export const zh_tw: Texts = {
   pleaseEndActiveFeaturesBeforeOpenRecord: "請關閉現正運行的功能再開啟棋譜。",
   bothTimeLimitAndByoyomiAreNotSet: "持時間與讀秒尚未設置。",
   canNotUseByoyomiWithFischer: "讀秒與 Fischer 選項無法同時併用。",
+  repeatsMustBeOneIfHumanPlayerIncluded:
+    "人が対局する場合、連続対局の回数は1以外を設定できません。", // TODO: translate
   protocolVersionNotSelected: "請選擇協定版本。",
   hostNameIsEmpty: "主機名稱為空。",
   invalidPortNumber: "不可用的連接埠號碼。",

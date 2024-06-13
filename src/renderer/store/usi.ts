@@ -1,5 +1,6 @@
 import { USIInfoCommand } from "@/common/game/usi";
 import { Color, ImmutablePosition, Move, Position, formatMove } from "electron-shogi-core";
+import { isActiveUSIPlayerSession } from "@/renderer/players/usi";
 
 export type USIIteration = {
   id: number;
@@ -168,15 +169,6 @@ export class USIMonitor {
     return this._sessions;
   }
 
-  clear(): void {
-    this._sessions = [];
-    this.updateQueue = [];
-    if (this.timeoutHandle) {
-      window.clearTimeout(this.timeoutHandle);
-      this.timeoutHandle = undefined;
-    }
-  }
-
   update(
     sessionID: number,
     position: ImmutablePosition,
@@ -200,6 +192,15 @@ export class USIMonitor {
   }
 
   private dequeue() {
+    // 終了しているセッションを検出して削除する。
+    // ただし、現在の更新処理に含まれているセッションは削除しない。
+    this._sessions = this._sessions.filter((session) => {
+      return (
+        isActiveUSIPlayerSession(session.sessionID) ||
+        this.updateQueue.some((update) => update.sessionID === session.sessionID)
+      );
+    });
+
     for (const update of this.updateQueue) {
       this._update(update);
     }

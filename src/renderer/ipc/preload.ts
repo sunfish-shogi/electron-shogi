@@ -1,5 +1,5 @@
 import { MenuEvent } from "@/common/control/menu";
-import { AppState } from "@/common/control/state";
+import { AppState, ResearchState } from "@/common/control/state";
 import { GameResult } from "@/common/game/result";
 import { contextBridge, ipcRenderer } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
@@ -11,8 +11,8 @@ import { CommandType } from "@/common/advanced/command";
 
 const api: Bridge = {
   // Core
-  updateAppState(appState: AppState, bussy: boolean): void {
-    ipcRenderer.send(Background.UPDATE_APP_STATE, appState, bussy);
+  updateAppState(appState: AppState, researchState: ResearchState, bussy: boolean): void {
+    ipcRenderer.send(Background.UPDATE_APP_STATE, appState, researchState, bussy);
   },
   onClosable(): void {
     ipcRenderer.send(Background.ON_CLOSABLE);

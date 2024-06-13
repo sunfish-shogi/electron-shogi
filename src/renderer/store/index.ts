@@ -40,7 +40,7 @@ import { generateRecordFileName, join } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
 import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
-import { AppState } from "@/common/control/state";
+import { AppState, ResearchState } from "@/common/control/state";
 import { Message, MessageStore, Attachment, ListItem } from "./message";
 import { ErrorEntry, ErrorStore } from "./error";
 import * as uri from "@/common/uri";
@@ -135,9 +135,10 @@ class Store {
   private whiteClock = new Clock();
   private gameManager = new GameManager(this.recordManager, this.blackClock, this.whiteClock);
   private csaGameManager = new CSAGameManager(this.recordManager, this.blackClock, this.whiteClock);
-  private researchManager = new ResearchManager();
   private analysisManager = new AnalysisManager(this.recordManager);
   private mateSearchManager = new MateSearchManager();
+  private _researchState = ResearchState.IDLE;
+  private researchManager = new ResearchManager();
   private _reactive: UnwrapNestedRefs<Store>;
   private garbledNotified = false;
   private onResetRecordHandlers: ResetRecordHandler[] = [];
@@ -149,6 +150,7 @@ class Store {
   constructor() {
     this.recordManager
       .on("resetRecord", () => {
+        this.updateResearchPosition();
         this.onResetRecordHandlers.forEach((handler) => handler());
       })
       .on("changePosition", () => {
@@ -172,7 +174,6 @@ class Store {
     const refs = reactive(this);
     this.gameManager
       .on("saveRecord", refs.onSaveRecord.bind(refs))
-      .on("gameNext", refs.onGameNext.bind(refs))
       .on("gameEnd", refs.onGameEnd.bind(refs))
       .on("flipBoard", refs.onFlipBoard.bind(refs))
       .on("pieceBeat", () => playPieceBeat(useAppSetting().pieceVolume))
@@ -182,7 +183,6 @@ class Store {
       .on("error", refs.pushError.bind(refs));
     this.csaGameManager
       .on("saveRecord", refs.onSaveRecord.bind(refs))
-      .on("gameNext", refs.onGameNext.bind(refs))
       .on("gameEnd", refs.onCSAGameEnd.bind(refs))
       .on("flipBoard", refs.onFlipBoard.bind(refs))
       .on("pieceBeat", () => playPieceBeat(useAppSetting().pieceVolume))
@@ -351,6 +351,10 @@ class Store {
     return this._appState;
   }
 
+  get researchState(): ResearchState {
+    return this._researchState;
+  }
+
   get confirmation(): string | undefined {
     return this._confirmation?.message;
   }
@@ -422,12 +426,6 @@ class Store {
     }
   }
 
-  showResearchDialog(): void {
-    if (this.appState === AppState.NORMAL) {
-      this._appState = AppState.RESEARCH_DIALOG;
-    }
-  }
-
   showAnalysisDialog(): void {
     if (this.appState === AppState.NORMAL) {
       this._appState = AppState.ANALYSIS_DIALOG;
@@ -487,7 +485,6 @@ class Store {
       this.appState === AppState.PASTE_DIALOG ||
       this.appState === AppState.GAME_DIALOG ||
       this.appState === AppState.CSA_GAME_DIALOG ||
-      this.appState === AppState.RESEARCH_DIALOG ||
       this.appState === AppState.ANALYSIS_DIALOG ||
       this.appState === AppState.MATE_SEARCH_DIALOG ||
       this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
@@ -614,15 +611,8 @@ class Store {
   }
 
   get usiSessionIDs(): number[] {
-    switch (this.appState) {
-      case AppState.GAME:
-        throw new Error("not implemented");
-      case AppState.CSA_GAME:
-        return [this.csaGameManager.usiSessionID].filter((id) => id);
-      case AppState.RESEARCH:
-        throw new Error("not implemented");
-      case AppState.ANALYSIS:
-        throw new Error("not implemented");
+    if (this.appState == AppState.CSA_GAME) {
+      return [this.csaGameManager.usiSessionID].filter((id) => id);
     }
     return [];
   }
@@ -700,10 +690,6 @@ class Store {
     });
   }
 
-  onGameNext(): void {
-    this.usiMonitor.clear();
-  }
-
   onGameEnd(results: GameResults, specialMoveType: SpecialMoveType): void {
     if (this.appState !== AppState.GAME) {
       return;
@@ -772,7 +758,7 @@ class Store {
   }
 
   doMove(move: Move): void {
-    if (this.appState !== AppState.NORMAL && this.appState !== AppState.RESEARCH) {
+    if (this.appState !== AppState.NORMAL) {
       return;
     }
     if (!this.recordManager.appendMove({ move })) {
@@ -789,8 +775,20 @@ class Store {
     }
   }
 
+  showResearchDialog(): void {
+    if (this._researchState === ResearchState.IDLE) {
+      this._researchState = ResearchState.STARTUP_DIALOG;
+    }
+  }
+
+  closeResearchDialog(): void {
+    if (this._researchState === ResearchState.STARTUP_DIALOG) {
+      this._researchState = ResearchState.IDLE;
+    }
+  }
+
   startResearch(researchSetting: ResearchSetting): void {
-    if (this.appState !== AppState.RESEARCH_DIALOG || this.isBussy) {
+    if (this._researchState !== ResearchState.STARTUP_DIALOG || this.isBussy) {
       return;
     }
     this.retainBussyState();
@@ -802,8 +800,7 @@ class Store {
       .saveResearchSetting(researchSetting)
       .then(() => this.researchManager.launch(researchSetting))
       .then(() => {
-        this._appState = AppState.RESEARCH;
-        this.usiMonitor.clear();
+        this._researchState = ResearchState.RUNNING;
         this.updateResearchPosition();
         const appSetting = useAppSetting();
         if (
@@ -825,11 +822,15 @@ class Store {
   }
 
   stopResearch(): void {
-    if (this.appState !== AppState.RESEARCH) {
+    if (this._researchState !== ResearchState.RUNNING) {
       return;
     }
     this.researchManager.close();
-    this._appState = AppState.NORMAL;
+    this._researchState = ResearchState.IDLE;
+  }
+
+  isResearchEngineSessionID(sessionID: number): boolean {
+    return this.researchManager.isSessionExists(sessionID);
   }
 
   onUpdateSearchInfo(type: SearchInfoSenderType, info: SearchInfo): void {
@@ -846,7 +847,6 @@ class Store {
       .then(() => this.analysisManager.start(analysisSetting))
       .then(() => {
         this._appState = AppState.ANALYSIS;
-        this.usiMonitor.clear();
       })
       .catch((e) => {
         this.pushError("検討の初期化中にエラーが出ました: " + e);
@@ -878,7 +878,6 @@ class Store {
       .then(() => this.mateSearchManager.start(mateSearchSetting, this.recordManager.record))
       .then(() => {
         this._appState = AppState.MATE_SEARCH;
-        this.usiMonitor.clear();
         const appSetting = useAppSetting();
         if (appSetting.tab !== Tab.SEARCH && appSetting.tab !== Tab.PV) {
           useAppSetting().updateAppSetting({ tab: Tab.SEARCH });
@@ -967,7 +966,7 @@ class Store {
   }
 
   insertSpecialMove(specialMoveType: SpecialMoveType): void {
-    if (this.appState !== AppState.NORMAL && this.appState !== AppState.RESEARCH) {
+    if (this.appState !== AppState.NORMAL) {
       return;
     }
     this.recordManager.appendMove({ move: specialMoveType });
@@ -1033,13 +1032,13 @@ class Store {
   }
 
   changePly(ply: number): void {
-    if (this.appState === AppState.NORMAL || this.appState === AppState.RESEARCH) {
+    if (this.appState === AppState.NORMAL) {
       this.recordManager.changePly(ply);
     }
   }
 
   changeBranch(index: number): void {
-    if (this.appState === AppState.NORMAL || this.appState === AppState.RESEARCH) {
+    if (this.appState === AppState.NORMAL) {
       this.recordManager.changeBranch(index);
     }
   }
@@ -1053,7 +1052,7 @@ class Store {
   }
 
   removeCurrentMove(): void {
-    if (this.appState !== AppState.NORMAL && this.appState !== AppState.RESEARCH) {
+    if (this.appState !== AppState.NORMAL) {
       return;
     }
     if (this.recordManager.record.current.isLastMove) {
@@ -1069,7 +1068,7 @@ class Store {
   }
 
   jumpToBookmark(bookmark: string): boolean {
-    if (this.appState === AppState.NORMAL || this.appState === AppState.RESEARCH) {
+    if (this.appState === AppState.NORMAL) {
       return this.recordManager.jumpToBookmark(bookmark);
     }
     return false;
@@ -1354,7 +1353,6 @@ class Store {
   get isMovableByUser() {
     switch (this.appState) {
       case AppState.NORMAL:
-      case AppState.RESEARCH:
         return true;
       case AppState.GAME:
         return (

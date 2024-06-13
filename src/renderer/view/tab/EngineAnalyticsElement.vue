@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="full column root" :class="{ paused }">
-      <div v-if="store.appState === AppState.RESEARCH" class="overlay-control row reverse">
+      <div v-if="canBePaused" class="overlay-control row reverse">
         <button v-if="paused" @click="onUnpause">
           <Icon :icon="IconType.RESUME" />
           <span>{{ t.resume }}</span>
@@ -107,7 +107,6 @@ import { EvaluationViewFrom } from "@/common/settings/app";
 import { Color, Move, Position } from "electron-shogi-core";
 import { useAppSetting } from "@/renderer/store/setting";
 import { useStore } from "@/renderer/store";
-import { AppState } from "@/common/control/state";
 
 const props = defineProps({
   historyMode: {
@@ -121,6 +120,11 @@ const props = defineProps({
   height: {
     type: Number,
     required: true,
+  },
+  canBePaused: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
 

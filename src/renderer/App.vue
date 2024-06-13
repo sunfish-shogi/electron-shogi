@@ -3,7 +3,6 @@
     <StandardLayout class="full" />
     <GameDialog v-if="store.appState === AppState.GAME_DIALOG" />
     <CSAGameDialog v-if="store.appState === AppState.CSA_GAME_DIALOG" />
-    <ResearchDialog v-if="store.appState === AppState.RESEARCH_DIALOG" />
     <AnalysisDialog v-if="store.appState === AppState.ANALYSIS_DIALOG" />
     <MateSearchDialog v-if="store.appState === AppState.MATE_SEARCH_DIALOG" />
     <USIEngineManagementDialog v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG" />
@@ -16,6 +15,7 @@
     <ConnectToCSAServerDialog v-if="store.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG" />
     <LoadRemoteFileDialog v-if="store.appState === AppState.LOAD_REMOTE_FILE_DIALOG" />
     <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
+    <ResearchDialog v-if="store.researchState === ResearchState.STARTUP_DIALOG" />
     <BussyMessage v-if="store.isBussy" />
     <ConfirmDialog v-if="store.confirmation" />
     <CSAGameReadyDialog
@@ -59,7 +59,7 @@ import ConfirmDialog from "@/renderer/view/dialog/ConfirmDialog.vue";
 import InfoMessage from "@/renderer/view/dialog/InfoMessage.vue";
 import ErrorMessage from "@/renderer/view/dialog/ErrorMessage.vue";
 import { useStore } from "@/renderer/store";
-import { AppState } from "@/common/control/state.js";
+import { AppState, ResearchState } from "@/common/control/state.js";
 import AnalysisDialog from "@/renderer/view/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";

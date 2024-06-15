@@ -9,7 +9,7 @@ const target = process.argv[2];
  * @see https://www.electron.build/configuration/configuration
  */
 const config = {
-  productName: "ElectronShogi",
+  productName: "ShogiHome",
   extraMetadata: {
     main: "dist/packed/background.js",
   },

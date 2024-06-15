@@ -13,7 +13,7 @@
                   ? `\u25B6 ${t.csaServer}`
                   : `\u25B6 ${t.usiEngine}`,
             },
-            { value: CommandType.RECEIVE, label: `\u25C0 ${t.electronShogi}` },
+            { value: CommandType.RECEIVE, label: `\u25C0 ${t.shogiHome}` },
           ]"
           @change="
             (value) => {

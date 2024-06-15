@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Electron将棋</title>
+    <title>ShogiHome</title>
     <link href="css/style.css?202204272252" rel="stylesheet" />
     <link rel="icon" href="webapp/favicon.ico" />
     <meta charset="utf-8" />
@@ -8,7 +8,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:url" content="https://sunfish-shogi.github.io/electron-shogi/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Electron将棋" />
+    <meta property="og:title" content="ShogiHome" />
     <meta property="og:description" content="USIプロトコル対応のPC将棋アプリ" />
     <meta
       property="og:image"
@@ -43,12 +43,12 @@
       </div>
       <div class="title">
         <img class="icon" src="icon.png" alt="" />
-        <div><span>Electron</span><span>将棋</span></div>
+        <div>ShogiHome</div>
       </div>
     </header>
     <nav class="sticky">
       <ul>
-        <li><a href="#whatis">Electron将棋とは</a></li>
+        <li><a href="#whatis">ShogiHomeとは</a></li>
         <li><a href="#license">ライセンス</a></li>
         <li><a href="#pcapp">PCアプリ</a></li>
         <li><a href="#webapp">ブラウザアプリ</a></li>
@@ -61,13 +61,17 @@
     </nav>
     <article>
       <section id="whatis">
-        <h2>Electron将棋とは</h2>
+        <div>
+          【お知らせ】 v1.15 から名称とロゴが変更されました。
+          <a
+            href="https://github.com/sunfish-shogi/electron-shogi/wiki/v1.15%E3%81%8B%E3%82%89%E3%81%AE%E5%90%8D%E7%A7%B0%E3%81%A8%E3%83%AD%E3%82%B4%E3%81%AE%E5%A4%89%E6%9B%B4"
+          >
+            [詳細]
+          </a>
+        </div>
+        <h2>ShogiHomeとは</h2>
         <div class="long-text">
-          Electron将棋 (ElectronShogi, えれくとろんしょうぎ) は
-          <a href="https://www.electronjs.org/" target="_blank"
-            >Electron<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
-          /></a>
-          を使って作られた将棋アプリです。 Windows または macOS、Linux で動作します。
+          ShogiHome (しょうぎほーむ) は Windows または macOS、Linux で動作する将棋アプリです。
           公開されたソースコードを用いて独自のバージョンを作成して配布することが可能です。
         </div>
         <div class="images">
@@ -84,7 +88,7 @@
             >USIプロトコル<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
           /></a>
           を用いています。
-          Electron将棋はそういったUSIプロトコル対応のAIを登録して対局や検討ができるフロントエンドです。
+          ShogiHomeはそういったUSIプロトコル対応のAIを登録して対局や検討ができるフロントエンドです。
         </div>
         <div class="images">
           <a href="./screenshots/screenshot002.png"
@@ -97,7 +101,7 @@
         <div class="long-text">
           昨今では2in1
           タブレットやコンバーチブル型PCの普及により、PC向けのOSでもタッチパネルを使って将棋の対局ができるようになりました。
-          Electron将棋では多くの機能を大きめのボタンで操作でき、様々な環境で扱いやすい画面構成になっています。
+          ShogiHomeでは多くの機能を大きめのボタンで操作でき、様々な環境で扱いやすい画面構成になっています。
           また、Electronを使うことでOSへの依存を最小限にしているため、どのOSでも変わらない見た目と操作性を実現しています。
         </div>
       </section>
@@ -109,7 +113,7 @@
           ソフトウェアの改変や再配布を行う場合にはライセンスの表示義務やその他の制約事項に従ってください。
         </div>
         <div class="long-text">
-          ElectronShogiの本体とソースコードについては
+          ShogiHomeの本体とソースコードについては
           <a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE"
             >MIT License</a
           >
@@ -234,7 +238,7 @@
             <ul>
               <li>
                 A.
-                CSAプロトコルはコンピューター将棋協会(CSA)が策定した将棋AIのための通信規格です。主に将棋エンジン開発者の方が利用します。CSAプロトコルで対局するにはElectron将棋とは別でCSAサーバーが必要です。
+                CSAプロトコルはコンピューター将棋協会(CSA)が策定した将棋AIのための通信規格です。主に将棋エンジン開発者の方が利用します。CSAプロトコルで対局するにはShogiHomeとは別でCSAサーバーが必要です。
               </li>
             </ul>
           </li>

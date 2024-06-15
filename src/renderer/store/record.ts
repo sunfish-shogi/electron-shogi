@@ -242,7 +242,7 @@ function getPVsFromSearchComment(position: ImmutablePosition, comment: string): 
   const pvs: Move[][] = [];
   for (const line of comment.split("\n")) {
     let pv: Move[] | undefined;
-    // Electron将棋
+    // ShogiHome
     if (line.match(/^[#*]読み筋=/)) {
       pv = parsePV(position, line.substring(5));
     }

@@ -22,7 +22,7 @@ export async function refreshCustomPieceImages(
 
 export function sendTestNotification() {
   new Notification({
-    title: t.electronShogi,
+    title: t.shogiHome,
     body: t.thisIsTestNotification,
   }).show();
 }

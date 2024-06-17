@@ -1,4 +1,4 @@
-import { RecordMetadataKey } from "electron-shogi-core";
+import { RecordMetadataKey } from "tsshogi";
 import { t } from "./translation_table";
 
 export function getRecordMetadataName(key: RecordMetadataKey): string {

@@ -1,4 +1,4 @@
-import { Color } from "electron-shogi-core";
+import { Color } from "tsshogi";
 
 export type CSAGameTimeConfig = {
   timeUnitMs: number;

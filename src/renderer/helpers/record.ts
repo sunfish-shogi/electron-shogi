@@ -1,5 +1,5 @@
 import { RecordFileFormat } from "@/common/file/record";
-import { ImmutableRecord } from "electron-shogi-core";
+import { ImmutableRecord } from "tsshogi";
 
 export type RecordProperties = {
   branch: boolean;

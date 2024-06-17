@@ -1,4 +1,4 @@
-import { Color, PieceType, pieceTypes } from "electron-shogi-core";
+import { Color, PieceType, pieceTypes } from "tsshogi";
 
 export const pieceAssetTypes: (PieceType | "king2")[] = [...pieceTypes, "king2"];
 

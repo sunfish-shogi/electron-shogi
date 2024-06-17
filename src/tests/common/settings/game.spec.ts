@@ -1,5 +1,5 @@
 import { GameSetting, JishogiRule, normalizeGameSetting } from "@/common/settings/game";
-import { InitialPositionType } from "electron-shogi-core";
+import { InitialPositionType } from "tsshogi";
 import * as uri from "@/common/uri";
 
 describe("settings/game", () => {

@@ -11,7 +11,7 @@ import {
   Square,
   formatPV,
   specialMove,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { SCORE_MATE_INFINITE } from "@/common/game/usi";
 import { RecordManager, SearchInfoSenderType } from "@/renderer/store/record";
 

@@ -1,10 +1,4 @@
-import {
-  Color,
-  SpecialMoveType,
-  importCSA,
-  isKnownSpecialMove,
-  reverseColor,
-} from "electron-shogi-core";
+import { Color, SpecialMoveType, importCSA, isKnownSpecialMove, reverseColor } from "tsshogi";
 import {
   emptyCSAGameSummary,
   CSAGameSummary,

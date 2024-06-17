@@ -20,7 +20,7 @@ import { MenuEvent } from "@/common/control/menu";
 import { AppState, ResearchState } from "@/common/control/state";
 import { openHowToUse, openLatestReleasePage, openStableReleasePage, openWebSite } from "./help";
 import { t } from "@/common/i18n";
-import { InitialPositionSFEN } from "electron-shogi-core";
+import { InitialPositionSFEN } from "tsshogi";
 import { getAppPath } from "@/background/proc/env";
 import { openBackupDirectory } from "@/background/file/history";
 import { openCacheDirectory } from "@/background/image/cache";

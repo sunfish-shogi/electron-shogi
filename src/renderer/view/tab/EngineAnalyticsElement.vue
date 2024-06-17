@@ -104,7 +104,7 @@ import { computed } from "vue";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { EvaluationViewFrom } from "@/common/settings/app";
-import { Color, Move, Position } from "electron-shogi-core";
+import { Color, Move, Position } from "tsshogi";
 import { useAppSetting } from "@/renderer/store/setting";
 import { useStore } from "@/renderer/store";
 

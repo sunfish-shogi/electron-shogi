@@ -180,7 +180,7 @@ import {
   getBlackPlayerNamePreferShort,
   getWhitePlayerName,
   getWhitePlayerNamePreferShort,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import api from "@/renderer/ipc/api";

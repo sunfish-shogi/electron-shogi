@@ -1,7 +1,7 @@
 import { ResearchSetting, defaultResearchSetting } from "@/common/settings/research";
 import { USIPlayer } from "@/renderer/players/usi";
 import { SearchInfo } from "@/renderer/players/player";
-import { ImmutableRecord } from "electron-shogi-core";
+import { ImmutableRecord } from "tsshogi";
 import { USIEngineSetting } from "@/common/settings/usi";
 import { SearchInfoSenderType } from "./record";
 import { useAppSetting } from "./setting";

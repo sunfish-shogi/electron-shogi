@@ -74,7 +74,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
-import { InitialPositionSFEN } from "electron-shogi-core";
+import { InitialPositionSFEN } from "tsshogi";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 
 const emit = defineEmits<{

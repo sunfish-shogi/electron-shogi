@@ -256,7 +256,7 @@
 import { t } from "@/common/i18n";
 import { computed, onUpdated, onBeforeUpdate, ref, onMounted, onBeforeUnmount } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
-import { Move, PositionChange, getBlackPlayerName, getWhitePlayerName } from "electron-shogi-core";
+import { Move, PositionChange, getBlackPlayerName, getWhitePlayerName } from "tsshogi";
 import { RectSize } from "@/common/assets/geometry.js";
 import { useStore } from "@/renderer/store";
 import Icon from "@/renderer/view/primitive/Icon.vue";

@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { ImmutableRecord, ImmutableNode } from "electron-shogi-core";
+import { ImmutableRecord, ImmutableNode } from "tsshogi";
 import { computed, ref, PropType, onUpdated } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";

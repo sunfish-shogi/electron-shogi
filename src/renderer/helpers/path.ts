@@ -3,7 +3,7 @@ import {
   getBlackPlayerName,
   getWhitePlayerName,
   ImmutableRecordMetadata,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { getDateString } from "@/common/helpers/datetime";
 
 export function dirname(path: string): string {

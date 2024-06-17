@@ -126,7 +126,7 @@ import {
   ImmutablePosition,
   PositionChange,
   secondsToHHMMSS,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { computed, reactive, watch, PropType } from "vue";
 import {
   BoardImageType,

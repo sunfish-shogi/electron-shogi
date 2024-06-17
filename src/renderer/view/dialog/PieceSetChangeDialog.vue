@@ -45,7 +45,7 @@ import {
   isPromotable,
   promotedPieceType,
   standardPieceName,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const store = useStore();

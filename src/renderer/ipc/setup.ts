@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import { SpecialMoveType } from "electron-shogi-core";
+import { SpecialMoveType } from "tsshogi";
 import { useStore } from "@/renderer/store";
 import { useStore as usePromptStore } from "@/renderer/prompt/store";
 import {

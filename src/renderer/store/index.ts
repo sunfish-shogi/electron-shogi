@@ -19,7 +19,7 @@ import {
   judgeJishogiDeclaration,
   JishogiDeclarationRule,
   countJishogiPoint,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSetting } from "@/common/settings/game";
 import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";

@@ -1,4 +1,4 @@
-import { Move, Record } from "electron-shogi-core";
+import { Move, Record } from "tsshogi";
 import api, { API } from "@/renderer/ipc/api";
 import { ResearchManager } from "@/renderer/store/research";
 import {

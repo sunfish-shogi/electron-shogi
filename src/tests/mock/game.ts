@@ -1,5 +1,5 @@
 import { GameSetting, JishogiRule } from "@/common/settings/game";
-import { InitialPositionType } from "electron-shogi-core";
+import { InitialPositionType } from "tsshogi";
 
 export const playerURI01 = "es://usi/test-engine-01";
 export const playerURI02 = "es://usi/test-engine-02";

@@ -8,7 +8,7 @@ import { getUSILogger } from "@/background/log";
 import { USISessionState } from "@/common/advanced/monitor";
 import { CommandHistory, CommandType, Command } from "@/common/advanced/command";
 import { USIInfoCommand } from "@/common/game/usi";
-import { Color, getNextColorFromUSI } from "electron-shogi-core";
+import { Color, getNextColorFromUSI } from "tsshogi";
 import { TimeStates } from "@/common/game/time";
 
 interface Handlers {

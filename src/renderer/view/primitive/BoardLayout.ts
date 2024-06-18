@@ -14,7 +14,7 @@ import {
   ImmutablePosition,
   reverseColor,
   Square,
-} from "electron-shogi-core";
+} from "tsshogi";
 import preloadImage from "@/renderer/assets/preload";
 import { RectSize } from "@/common/assets/geometry";
 import { getPieceImageAssetName, pieceAssetTypes } from "@/common/assets/pieces";

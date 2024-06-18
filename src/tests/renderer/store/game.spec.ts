@@ -1,4 +1,4 @@
-import { InitialPositionType, Move, RecordMetadataKey, SpecialMoveType } from "electron-shogi-core";
+import { InitialPositionType, Move, RecordMetadataKey, SpecialMoveType } from "tsshogi";
 import { Clock } from "@/renderer/store/clock";
 import { calculateGameStatistics, GameManager, GameResults } from "@/renderer/store/game";
 import { RecordManager } from "@/renderer/store/record";

@@ -29,7 +29,7 @@ import {
   Square,
   Piece,
   Color,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { getSituationText } from "./score";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { t, localizeError } from "@/common/i18n";

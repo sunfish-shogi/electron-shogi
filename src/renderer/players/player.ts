@@ -1,6 +1,6 @@
 import { GameResult } from "@/common/game/result";
 import { TimeStates } from "@/common/game/time";
-import { ImmutablePosition, Move } from "electron-shogi-core";
+import { ImmutablePosition, Move } from "tsshogi";
 
 export type SearchInfo = {
   usi: string; // 局面

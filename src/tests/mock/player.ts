@@ -1,7 +1,7 @@
 import { parseUSIPV } from "@/common/game/usi";
 import { Player, SearchHandler } from "@/renderer/players/player";
 import { PlayerSetting } from "@/common/settings/player";
-import { ImmutablePosition, Move } from "electron-shogi-core";
+import { ImmutablePosition, Move } from "tsshogi";
 import { TimeStates } from "@/common/game/time";
 
 export type MoveWithOption = {

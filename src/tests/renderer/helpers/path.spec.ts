@@ -1,5 +1,5 @@
 import { generateRecordFileName, dirname, join } from "@/renderer/helpers/path";
-import { RecordMetadata, RecordMetadataKey } from "electron-shogi-core";
+import { RecordMetadata, RecordMetadataKey } from "tsshogi";
 
 describe("helpers/path", () => {
   it("dirname", async () => {

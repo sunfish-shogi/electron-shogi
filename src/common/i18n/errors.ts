@@ -9,7 +9,7 @@ import {
   InvalidTurnError,
   InvalidUSIError,
   PieceNotExistsError,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { t } from "./translation_table";
 
 export function localizeError(err: Error): Error {

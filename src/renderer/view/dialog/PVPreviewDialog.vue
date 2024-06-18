@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { Color, ImmutablePosition, Move, Record } from "electron-shogi-core";
+import { Color, ImmutablePosition, Move, Record } from "tsshogi";
 import { onMounted, PropType, ref, reactive, watch, onBeforeUnmount, computed } from "vue";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";

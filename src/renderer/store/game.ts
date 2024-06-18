@@ -13,7 +13,7 @@ import {
   reverseColor,
   SpecialMoveType,
   Square,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { RecordManager, SearchInfoSenderType } from "./record";
 import { Clock } from "./clock";

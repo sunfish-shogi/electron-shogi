@@ -1,6 +1,6 @@
 import { shallowMount } from "@vue/test-utils";
 import BoardView from "@/renderer/view/primitive/BoardView.vue";
-import { Position } from "electron-shogi-core";
+import { Position } from "tsshogi";
 import { RectSize } from "@/common/assets/geometry";
 import {
   BoardImageType,

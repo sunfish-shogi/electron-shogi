@@ -1,4 +1,4 @@
-import { ImmutablePosition, Move } from "electron-shogi-core";
+import { ImmutablePosition, Move } from "tsshogi";
 import { Player, SearchHandler } from "./player";
 import { TimeStates } from "@/common/game/time";
 

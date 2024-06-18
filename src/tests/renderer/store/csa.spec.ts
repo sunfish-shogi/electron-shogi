@@ -9,7 +9,7 @@ import {
   SpecialMoveType,
   Square,
   specialMove,
-} from "electron-shogi-core";
+} from "tsshogi";
 import { Clock } from "@/renderer/store/clock";
 import {
   CSAGameManager,

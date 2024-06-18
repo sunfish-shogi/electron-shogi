@@ -1,5 +1,5 @@
 import { USIInfoCommand } from "@/common/game/usi";
-import { Color, ImmutablePosition, Move, Position, formatMove } from "electron-shogi-core";
+import { Color, ImmutablePosition, Move, Position, formatMove } from "tsshogi";
 import { isActiveUSIPlayerSession } from "@/renderer/players/usi";
 
 export type USIIteration = {

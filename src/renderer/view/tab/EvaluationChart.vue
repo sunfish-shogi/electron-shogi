@@ -19,7 +19,7 @@ import { useStore } from "@/renderer/store";
 import { RecordCustomData, SearchInfo } from "@/renderer/store/record";
 import { computed, onMounted, onUnmounted, PropType, ref, watch } from "vue";
 import { ActiveElement, Chart, ChartEvent, Color as ChartColor, ChartDataset } from "chart.js";
-import { Color, ImmutableNode, ImmutableRecord } from "electron-shogi-core";
+import { Color, ImmutableNode, ImmutableRecord } from "tsshogi";
 import { scoreToPercentage } from "@/renderer/store/score";
 import { Thema } from "@/common/settings/app";
 import { useAppSetting } from "@/renderer/store/setting";

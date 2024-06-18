@@ -10,7 +10,7 @@ import {
   importKIF,
   exportJKFString,
   importJKFString,
-} from "electron-shogi-core";
+} from "tsshogi";
 
 export enum RecordFileFormat {
   KIF = ".kif",

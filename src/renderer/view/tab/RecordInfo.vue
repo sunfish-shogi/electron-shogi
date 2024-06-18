@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { getRecordMetadataName, t } from "@/common/i18n";
-import { RecordMetadataKey } from "electron-shogi-core";
+import { RecordMetadataKey } from "tsshogi";
 import { useStore } from "@/renderer/store";
 import { computed } from "vue";
 import { RectSize } from "@/common/assets/geometry.js";

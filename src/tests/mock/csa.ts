@@ -9,7 +9,7 @@ import {
 } from "@/common/settings/csa";
 import { PlayerSetting } from "@/common/settings/player";
 import { defaultRecordFileNameTemplate } from "@/renderer/helpers/path";
-import { Color } from "electron-shogi-core";
+import { Color } from "tsshogi";
 
 export const playerURI = "es://usi-engine/test-engine";
 

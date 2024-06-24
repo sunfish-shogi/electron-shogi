@@ -65,7 +65,7 @@
             }}{{ iteration.selectiveDepth }}
           </div>
           <div class="list-column nodes">
-            {{ iteration.nodes }}
+            {{ iteration.nodes && formatLargeInteger(iteration.nodes, 7) }}
           </div>
           <div class="list-column score">
             {{
@@ -107,6 +107,7 @@ import { EvaluationViewFrom } from "@/common/settings/app";
 import { Color, Move, Position } from "tsshogi";
 import { useAppSetting } from "@/renderer/store/setting";
 import { useStore } from "@/renderer/store";
+import { formatLargeInteger } from "@/common/helpers/math";
 
 const props = defineProps({
   historyMode: {

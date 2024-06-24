@@ -4,6 +4,7 @@ export const ja: Texts = {
   shogiHome: "ShogiHome",
   clear: "初期化",
   open: "開く",
+  openNewInstance: "新しい ShogiHome ウィンドウを開く",
   saveOverwrite: "上書き保存",
   newRecord: "新規棋譜",
   openRecord: "棋譜を開く",

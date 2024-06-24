@@ -5,6 +5,7 @@ export const en: Texts = {
   shogiHome: "ShogiHome",
   clear: "Clear",
   open: "Open",
+  openNewInstance: "Open a New ShogiHome Instance",
   saveOverwrite: "Overwrite",
   newRecord: "New Record",
   openRecord: "Open Record",

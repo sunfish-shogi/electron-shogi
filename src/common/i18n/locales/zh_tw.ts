@@ -4,6 +4,7 @@ export const zh_tw: Texts = {
   shogiHome: "ShogiHome",
   clear: "清除",
   open: "開啟",
+  openNewInstance: "開啟新的 ShogiHome 視窗",
   saveOverwrite: "覆蓋檔案",
   newRecord: "新棋譜",
   openRecord: "打開棋譜",

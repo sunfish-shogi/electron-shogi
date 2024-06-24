@@ -2,6 +2,7 @@ export type Texts = {
   shogiHome: string;
   clear: string;
   open: string;
+  openNewInstance: string;
   saveOverwrite: string;
   newRecord: string;
   openRecord: string;

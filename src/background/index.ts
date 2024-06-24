@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, BrowserWindow, session } from "electron";
+import { app, BrowserWindow, session, Menu } from "electron";
 import { loadAppSettingOnce } from "@/background/settings";
 import {
   getAppLogger,
@@ -17,6 +17,7 @@ import contextMenu from "electron-context-menu";
 import { LogType } from "@/common/log";
 import { isLogEnabled } from "@/common/settings/app";
 import { createWindow } from "./window/main";
+import { spawn } from "child_process";
 
 const appSetting = loadAppSettingOnce();
 for (const type of Object.values(LogType)) {
@@ -102,6 +103,23 @@ async function installElectronDevTools() {
   await installer.default(installer.VUEJS_DEVTOOLS);
 }
 
+// opens a new MacOS App Instance using shell command.
+function openNewInstance() {
+  const appPath = app.getPath("exe").replace("/Contents/MacOS/ShogiHome", "");
+  const child = spawn("open", ["-jn", appPath], { detached: true, stdio: "ignore" });
+  child.unref();
+}
+
+// MacOS dock menu for opening multiple ShogiHome Instances.
+const dockMenu = Menu.buildFromTemplate([
+  {
+    label: t.openNewInstance,
+    click() {
+      openNewInstance();
+    },
+  },
+]);
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -114,6 +132,12 @@ app.on("ready", () => {
       throw e;
     });
   }
+
+  // Set dock menu (MacOS only)
+  if (process.platform == "darwin") {
+    app.dock.setMenu(dockMenu);
+  }
+
   session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
     validateHTTPRequest(details.method, details.url);
     callback({});

@@ -2,12 +2,19 @@ import { spawn, ChildProcessWithoutNullStreams } from "node:child_process";
 import { createInterface as readline, Interface as Readline } from "node:readline";
 import path from "node:path";
 
+const isWin = process.platform === "win32";
+
 export class ChildProcess {
   private handle: ChildProcessWithoutNullStreams;
   private readline: Readline | null = null;
 
   constructor(cmd: string) {
-    this.handle = spawn(cmd, {
+    let args = [] as string[];
+    if (isWin && (cmd.endsWith(".bat") || cmd.endsWith(".cmd"))) {
+      args = ["/c", cmd];
+      cmd = "cmd";
+    }
+    this.handle = spawn(cmd, args, {
       cwd: path.dirname(cmd),
     }).on("close", this.onClose.bind(this));
   }

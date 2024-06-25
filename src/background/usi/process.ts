@@ -9,14 +9,15 @@ export class ChildProcess {
   private readline: Readline | null = null;
 
   constructor(cmd: string) {
-    let args = [] as string[];
-    if (isWin && (cmd.endsWith(".bat") || cmd.endsWith(".cmd"))) {
-      args = ["/c", cmd];
-      cmd = "cmd";
-    }
-    this.handle = spawn(cmd, args, {
+    const options = {
       cwd: path.dirname(cmd),
-    }).on("close", this.onClose.bind(this));
+    };
+    if (isWin && (cmd.endsWith(".bat") || cmd.endsWith(".cmd"))) {
+      this.handle = spawn("cmd.exe", ["/c", cmd], options);
+    } else {
+      this.handle = spawn(cmd, options);
+    }
+    this.handle.on("close", this.onClose.bind(this));
   }
 
   get pid(): number | undefined {

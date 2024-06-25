@@ -252,7 +252,7 @@ const onUnpause = () => {
   text-align: right;
 }
 .list-column.nodes {
-  width: 78px;
+  width: 82px;
   text-align: right;
 }
 .list-column.time {

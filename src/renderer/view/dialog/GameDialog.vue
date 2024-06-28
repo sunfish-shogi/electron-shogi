@@ -248,10 +248,10 @@ import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/dev
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { InitialPositionType } from "tsshogi";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const dialog = ref();
 const hours = ref();
 const minutes = ref();
@@ -278,7 +278,7 @@ const whitePlayerURI = ref("");
 
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   try {
@@ -293,7 +293,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

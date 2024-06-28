@@ -116,23 +116,23 @@ ipcMain.handle(Background.FETCH_INITIAL_RECORD_FILE_REQUEST, (event) => {
 const onUpdateAppStateHandlers: ((
   state: AppState,
   researchState: ResearchState,
-  bussy: boolean,
+  busy: boolean,
 ) => void)[] = [];
 
 export function onUpdateAppState(
-  handler: (state: AppState, researchState: ResearchState, bussy: boolean) => void,
+  handler: (state: AppState, researchState: ResearchState, busy: boolean) => void,
 ): void {
   onUpdateAppStateHandlers.push(handler);
 }
 
 ipcMain.on(
   Background.UPDATE_APP_STATE,
-  (event, state: AppState, researchState: ResearchState, bussy: boolean) => {
+  (event, state: AppState, researchState: ResearchState, busy: boolean) => {
     validateIPCSender(event.senderFrame);
-    getAppLogger().debug(`change app state: AppState=${state} BussyState=${bussy}`);
+    getAppLogger().debug(`change app state: AppState=${state} BusyState=${busy}`);
     appState = state;
     for (const handler of onUpdateAppStateHandlers) {
-      handler(state, researchState, bussy);
+      handler(state, researchState, busy);
     }
   },
 );

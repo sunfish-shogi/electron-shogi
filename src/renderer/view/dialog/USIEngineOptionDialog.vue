@@ -218,7 +218,7 @@ import { useAppSetting } from "@/renderer/store/setting";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const props = defineProps({
   latestEngineSetting: {
@@ -236,7 +236,7 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
 const dialog = ref();
 const engineNameInput = ref();
@@ -248,7 +248,7 @@ const selectors = ref({} as { [key: string]: InstanceType<typeof HorizontalSelec
 const engine = ref(emptyUSIEngineSetting());
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
-bussyState.retain();
+busyState.retain();
 onMounted(async () => {
   showModalDialog(dialog.value, cancel);
   installHotKeyForDialog(dialog.value);
@@ -263,7 +263,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     emit("cancel");
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 const options = computed(() =>
@@ -316,7 +316,7 @@ const openEngineDir = () => {
   api.openExplorer(engine.value.path);
 };
 const selectFile = async (name: string) => {
-  bussyState.retain();
+  busyState.retain();
   try {
     const path = await api.showSelectFileDialog();
     const elem = inputs.value[name];
@@ -326,18 +326,18 @@ const selectFile = async (name: string) => {
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 const sendOption = async (name: string) => {
-  bussyState.retain();
+  busyState.retain();
   try {
     const timeoutSeconds = appSetting.engineTimeoutSeconds;
     await api.sendUSISetOption(engine.value.path, name, timeoutSeconds);
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 const reset = () => {

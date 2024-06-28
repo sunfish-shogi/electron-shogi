@@ -52,15 +52,15 @@ import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/dev
 import { t } from "@/common/i18n";
 import { useAppSetting } from "@/renderer/store/setting";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 import { useConfirmationStore } from "@/renderer/store/confirm";
 
 const dialog = ref();
 const entries = ref([] as RecordFileHistoryEntry[]);
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   try {
@@ -72,7 +72,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

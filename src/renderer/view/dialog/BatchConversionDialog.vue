@@ -220,11 +220,11 @@ import { IconType } from "@/renderer/assets/icons";
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogType, LogLevel } from "@/common/log";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 import { useMessageStore } from "@/renderer/store/message";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
 const dialog = ref();
 const source = ref();
@@ -244,7 +244,7 @@ const createSubdirectories = ref(false);
 const fileNameConflictAction = ref(FileNameConflictAction.OVERWRITE);
 const singleFileDestination = ref();
 
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   try {
@@ -271,7 +271,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 
@@ -280,7 +280,7 @@ onBeforeUnmount(() => {
 });
 
 const selectDirectory = async (elem: HTMLInputElement) => {
-  bussyState.retain();
+  busyState.retain();
   try {
     const path = await api.showSelectDirectoryDialog(elem.value);
     if (path) {
@@ -289,12 +289,12 @@ const selectDirectory = async (elem: HTMLInputElement) => {
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 
 const selectDestinationFile = async (elem: HTMLInputElement) => {
-  bussyState.retain();
+  busyState.retain();
   try {
     const path = await api.showSaveMergedRecordDialog(elem.value);
     if (path) {
@@ -303,7 +303,7 @@ const selectDestinationFile = async (elem: HTMLInputElement) => {
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 
@@ -337,7 +337,7 @@ const convert = async () => {
     useErrorStore().add(error);
     return;
   }
-  bussyState.retain();
+  busyState.retain();
   try {
     await api.saveBatchConversionSetting(batchConversionSetting);
     const result = await api.convertRecordFiles(batchConversionSetting);
@@ -381,7 +381,7 @@ const convert = async () => {
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 

@@ -42,15 +42,15 @@ import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "./PlayerSelector.vue";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const dialog = ref();
 const engineSettings = ref(new USIEngineSettings());
 const engineURI = ref("");
 
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -63,7 +63,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

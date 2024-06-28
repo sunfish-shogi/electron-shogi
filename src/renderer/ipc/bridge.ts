@@ -8,7 +8,7 @@ import { LogLevel, LogType } from "@/common/log";
 
 export interface Bridge {
   // Core
-  updateAppState(appState: AppState, researchState: ResearchState, bussy: boolean): void;
+  updateAppState(appState: AppState, researchState: ResearchState, busy: boolean): void;
   onClosable(): void;
   onClose(callback: () => void): void;
   onSendError(callback: (e: Error) => void): void;

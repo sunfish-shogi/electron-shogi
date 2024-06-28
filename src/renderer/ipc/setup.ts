@@ -28,21 +28,21 @@ import { useAppSetting } from "@/renderer/store/setting";
 import { t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 import { useConfirmationStore } from "@/renderer/store/confirm";
 
 export function setup(): void {
   const store = useStore();
   const appSetting = useAppSetting();
-  const bussyState = useBussyState();
+  const busyState = useBusyState();
 
   // Core
   watch(
-    () => [store.appState, store.researchState, bussyState.isBussy],
-    ([appState, researchState, bussy]) =>
-      bridge.updateAppState(appState as AppState, researchState as ResearchState, bussy as boolean),
+    () => [store.appState, store.researchState, busyState.isBusy],
+    ([appState, researchState, busy]) =>
+      bridge.updateAppState(appState as AppState, researchState as ResearchState, busy as boolean),
   );
-  bridge.updateAppState(store.appState, store.researchState, bussyState.isBussy);
+  bridge.updateAppState(store.appState, store.researchState, busyState.isBusy);
   bridge.onClose(() => {
     store
       .onMainWindowClose()
@@ -58,7 +58,7 @@ export function setup(): void {
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   bridge.onMenuEvent((event: MenuEvent, ...args: any[]) => {
-    if (bussyState.isBussy) {
+    if (busyState.isBusy) {
       return;
     }
     switch (event) {

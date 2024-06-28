@@ -108,10 +108,10 @@ import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/dev
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const dialog = ref();
 const enableStartNumber = ref(false);
 const startNumber = ref();
@@ -122,7 +122,7 @@ const commentBehavior = ref(CommentBehavior.NONE);
 const engineSettings = ref(new USIEngineSettings());
 const engineURI = ref("");
 
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -141,7 +141,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

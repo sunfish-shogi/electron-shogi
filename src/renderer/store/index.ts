@@ -60,7 +60,7 @@ import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
 import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file/record";
 import { setOnUpdateUSIInfoHandler, setOnUpdateUSIPonderInfoHandler } from "@/renderer/players/usi";
 import { useErrorStore } from "./error";
-import { useBussyState } from "./bussy";
+import { useBusyState } from "./busy";
 import { Confirmation, useConfirmationStore } from "./confirm";
 
 export type PVPreview = {
@@ -415,7 +415,7 @@ class Store {
   }
 
   closeModalDialog(): void {
-    if (!useBussyState().isBussy) {
+    if (!useBusyState().isBusy) {
       this.destroyModalDialog();
     }
   }
@@ -485,10 +485,10 @@ class Store {
   }
 
   startGame(setting: GameSetting): void {
-    if (this.appState !== AppState.GAME_DIALOG || useBussyState().isBussy) {
+    if (this.appState !== AppState.GAME_DIALOG || useBusyState().isBusy) {
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     api
       .saveGameSetting(setting)
       .then(() => {
@@ -501,7 +501,7 @@ class Store {
         useErrorStore().add("対局の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
@@ -533,10 +533,10 @@ class Store {
   }
 
   loginCSAGame(setting: CSAGameSetting, opt: { saveHistory: boolean }): void {
-    if (this.appState !== AppState.CSA_GAME_DIALOG || useBussyState().isBussy) {
+    if (this.appState !== AppState.CSA_GAME_DIALOG || useBusyState().isBusy) {
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     Promise.resolve()
       .then(async () => {
         if (opt.saveHistory) {
@@ -555,7 +555,7 @@ class Store {
         useErrorStore().add("対局の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
@@ -703,10 +703,10 @@ class Store {
   }
 
   startResearch(researchSetting: ResearchSetting): void {
-    if (this._researchState !== ResearchState.STARTUP_DIALOG || useBussyState().isBussy) {
+    if (this._researchState !== ResearchState.STARTUP_DIALOG || useBusyState().isBusy) {
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     if (!researchSetting.usi) {
       useErrorStore().add(new Error("エンジンが設定されていません。"));
       return;
@@ -732,7 +732,7 @@ class Store {
         useErrorStore().add("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
@@ -753,10 +753,10 @@ class Store {
   }
 
   startAnalysis(analysisSetting: AnalysisSetting): void {
-    if (this.appState !== AppState.ANALYSIS_DIALOG || useBussyState().isBussy) {
+    if (this.appState !== AppState.ANALYSIS_DIALOG || useBusyState().isBusy) {
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     api
       .saveAnalysisSetting(analysisSetting)
       .then(() => this.analysisManager.start(analysisSetting))
@@ -767,7 +767,7 @@ class Store {
         useErrorStore().add("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
@@ -780,10 +780,10 @@ class Store {
   }
 
   startMateSearch(mateSearchSetting: MateSearchSetting): void {
-    if (this.appState !== AppState.MATE_SEARCH_DIALOG || useBussyState().isBussy) {
+    if (this.appState !== AppState.MATE_SEARCH_DIALOG || useBusyState().isBusy) {
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     if (!mateSearchSetting.usi) {
       useErrorStore().add(new Error("エンジンが設定されていません。"));
       return;
@@ -802,7 +802,7 @@ class Store {
         useErrorStore().add("詰将棋探索の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
@@ -1055,11 +1055,11 @@ class Store {
   }
 
   openRecord(path?: string, opt?: { ply?: number }): void {
-    if (this.appState !== AppState.NORMAL || useBussyState().isBussy) {
+    if (this.appState !== AppState.NORMAL || useBusyState().isBusy) {
       useErrorStore().add(t.pleaseEndActiveFeaturesBeforeOpenRecord);
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     Promise.resolve()
       .then(() => {
         return path || api.showOpenRecordDialog();
@@ -1086,15 +1086,15 @@ class Store {
         useErrorStore().add("棋譜の読み込み中にエラーが出ました: " + e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
   saveRecord(options?: { overwrite: boolean }): void {
-    if (this.appState !== AppState.NORMAL || useBussyState().isBussy) {
+    if (this.appState !== AppState.NORMAL || useBusyState().isBusy) {
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     Promise.resolve()
       .then(() => {
         const path = this.recordManager.recordFilePath;
@@ -1145,7 +1145,7 @@ class Store {
         useErrorStore().add(e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
@@ -1173,10 +1173,10 @@ class Store {
   }
 
   restoreFromBackup(name: string): void {
-    if (this.appState !== AppState.RECORD_FILE_HISTORY_DIALOG || useBussyState().isBussy) {
+    if (this.appState !== AppState.RECORD_FILE_HISTORY_DIALOG || useBusyState().isBusy) {
       return;
     }
-    useBussyState().retain();
+    useBusyState().retain();
     api
       .loadRecordFileBackup(name)
       .then((data) => {
@@ -1193,7 +1193,7 @@ class Store {
         useErrorStore().add(e);
       })
       .finally(() => {
-        useBussyState().release();
+        useBusyState().release();
       });
   }
 
@@ -1202,11 +1202,11 @@ class Store {
   }
 
   loadRemoteRecordFile(url?: string) {
-    useBussyState().retain();
+    useBusyState().retain();
     this.recordManager
       .importRecordFromRemoteURL(url)
       .catch((e) => useErrorStore().add(e))
-      .finally(() => useBussyState().release());
+      .finally(() => useBusyState().release());
   }
 
   showJishogiPoints(): void {
@@ -1284,11 +1284,11 @@ class Store {
   }
 
   async onMainWindowClose(): Promise<void> {
-    useBussyState().retain();
+    useBusyState().retain();
     try {
       await this.recordManager.saveBackup();
     } finally {
-      useBussyState().release();
+      useBusyState().release();
     }
   }
 

@@ -65,7 +65,7 @@ import {
 } from "@/common/settings/usi";
 import api from "@/renderer/ipc/api";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const props = defineProps({
   playerUri: {
@@ -103,7 +103,7 @@ const emit = defineEmits<{
   updateEngineSetting: [setting: USIEngineSettings];
 }>();
 
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const playerSelect = ref();
 const engineSettingDialog = ref(null as USIEngineSetting | null);
 
@@ -170,14 +170,14 @@ const savePlayerSetting = async (setting: USIEngineSetting) => {
   engineSettingDialog.value = null;
   const clone = props.engineSettings.getClone();
   clone.updateEngine(setting);
-  bussyState.retain();
+  busyState.retain();
   try {
     await api.saveUSIEngineSetting(clone);
     emit("updateEngineSetting", clone);
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 

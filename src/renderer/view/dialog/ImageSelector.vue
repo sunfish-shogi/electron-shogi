@@ -12,7 +12,7 @@ import { onMounted, ref, toRef } from "vue";
 import { t } from "@/common/i18n";
 import api from "@/renderer/ipc/api";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const props = defineProps({
   defaultUrl: {
@@ -25,7 +25,7 @@ const emit = defineEmits<{
   select: [url: string];
 }>();
 
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const url = ref(toRef(() => props.defaultUrl).value);
 
 onMounted(() => {
@@ -33,7 +33,7 @@ onMounted(() => {
 });
 
 const select = async () => {
-  bussyState.retain();
+  busyState.retain();
   try {
     const newURL = await api.showSelectImageDialog(url.value);
     if (newURL) {
@@ -43,7 +43,7 @@ const select = async () => {
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 </script>

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <dialog ref="dialog" class="bussy">
+    <dialog ref="dialog" class="busy">
       <div class="message-box">
-        <Icon :icon="IconType.BUSSY" />
+        <Icon :icon="IconType.BUSY" />
         <div class="message">{{ t.processingPleaseWait }}</div>
       </div>
     </dialog>
@@ -23,9 +23,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
-dialog.bussy {
-  color: var(--bussy-dialog-color);
-  background-color: var(--bussy-dialog-bg-color);
-  border: 3px solid var(--bussy-dialog-border-color);
+dialog.busy {
+  color: var(--busy-dialog-color);
+  background-color: var(--busy-dialog-bg-color);
+  border: 3px solid var(--busy-dialog-border-color);
 }
 </style>

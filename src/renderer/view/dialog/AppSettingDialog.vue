@@ -768,7 +768,7 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { VersionStatus } from "@/background/version/types";
 import { fileNameTemplateWikiPageURL } from "@/common/links/github";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 enum PieceImage {
   HITOMOJI = "hitomoji",
@@ -836,7 +836,7 @@ const nameToReturnCode: { [name: string]: string } = {
 };
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
 const dialog = ref();
 const language = ref(appSetting.language);
@@ -901,7 +901,7 @@ onBeforeUnmount(() => {
 });
 
 const saveAndClose = async () => {
-  bussyState.retain();
+  busyState.retain();
   try {
     const update: AppSettingUpdate = {
       language: language.value,
@@ -973,12 +973,12 @@ const saveAndClose = async () => {
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 
 const selectAutoSaveDirectory = async () => {
-  bussyState.retain();
+  busyState.retain();
   try {
     const path = await api.showSelectDirectoryDialog(autoSaveDirectory.value.value);
     if (path) {
@@ -987,7 +987,7 @@ const selectAutoSaveDirectory = async () => {
   } catch (e) {
     useErrorStore().add(e);
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 };
 

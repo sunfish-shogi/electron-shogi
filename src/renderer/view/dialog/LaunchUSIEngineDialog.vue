@@ -46,16 +46,16 @@ import { useAppSetting } from "@/renderer/store/setting";
 import { PromptTarget } from "@/common/advanced/prompt";
 import { Tab } from "@/common/settings/app";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
 const dialog = ref();
 const engineSettings = ref(new USIEngineSettings());
 const engineURI = ref("");
 
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -66,7 +66,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

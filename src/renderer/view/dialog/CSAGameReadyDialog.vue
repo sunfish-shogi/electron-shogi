@@ -1,8 +1,8 @@
 <template>
   <div>
-    <dialog ref="dialog" class="bussy">
+    <dialog ref="dialog" class="busy">
       <div class="message-box">
-        <Icon :icon="IconType.BUSSY" />
+        <Icon :icon="IconType.BUSY" />
         <div class="message">
           <span v-if="store.csaGameState === CSAGameState.READY">
             {{ t.waitingForNewGame }}
@@ -101,7 +101,7 @@ const onOpenServerPrompt = () => {
 </script>
 
 <style scoped>
-dialog.bussy {
+dialog.busy {
   color: var(--info-dialog-color);
   background-color: var(--info-dialog-bg-color);
   border: 3px solid var(--info-dialog-border-color);

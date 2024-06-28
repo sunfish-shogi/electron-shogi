@@ -288,11 +288,11 @@ import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 import { useMessageStore } from "@/renderer/store/message";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const messageStore = useMessageStore();
 const appSetting = useAppSetting();
 const dialog = ref();
@@ -320,7 +320,7 @@ const playerURI = ref("");
 
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   try {
@@ -334,7 +334,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

@@ -30,15 +30,15 @@ import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/dev
 import { useStore } from "@/renderer/store";
 import { isNative } from "@/renderer/ipc/api";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const dialog = ref();
 const input = ref();
 const localStorageLastURLKey = "LoadRemoteFileDialog.lastURL";
 
-bussyState.retain();
+busyState.retain();
 onMounted(async () => {
   try {
     showModalDialog(dialog.value);
@@ -53,7 +53,7 @@ onMounted(async () => {
       input.value.value = copied;
     }
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

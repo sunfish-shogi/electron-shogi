@@ -92,10 +92,10 @@ import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useErrorStore } from "@/renderer/store/error";
-import { useBussyState } from "@/renderer/store/bussy";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
-const bussyState = useBussyState();
+const busyState = useBusyState();
 const dialog = ref();
 const researchSetting = ref(defaultResearchSetting());
 const engineSettings = ref(new USIEngineSettings());
@@ -104,7 +104,7 @@ const secondaryEngineURIs = ref([] as string[]);
 const enableMaxSeconds = ref(false);
 const maxSeconds = ref();
 
-bussyState.retain();
+busyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -120,7 +120,7 @@ onMounted(async () => {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    bussyState.release();
+    busyState.release();
   }
 });
 

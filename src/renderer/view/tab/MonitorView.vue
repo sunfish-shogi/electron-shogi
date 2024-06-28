@@ -147,6 +147,7 @@ import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { LogLevel } from "@/common/log";
 import { t } from "@/common/i18n";
+import { useErrorStore } from "@/renderer/store/error";
 
 defineProps({
   size: {
@@ -171,7 +172,7 @@ function update() {
       updatedMs.value = new Date().getTime();
     })
     .catch((e) => {
-      store.pushError(e);
+      useErrorStore().add(e);
     });
 }
 
@@ -209,7 +210,7 @@ function sendUSIQuit(session: USISessionState) {
         `MonitorView: Send USI quit command to SID=${session.sessionID} Name=[${session.name}]`,
       );
       api.usiQuit(session.sessionID).catch((e) => {
-        store.pushError(e);
+        useErrorStore().add(e);
       });
     },
   });
@@ -233,7 +234,7 @@ function closeCSA(session: CSASessionState) {
         `MonitorView: Close CSA session for SID=${session.sessionID} Server=[${session.host}:${session.port}]`,
       );
       api.csaLogout(session.sessionID).catch((e) => {
-        store.pushError(e);
+        useErrorStore().add(e);
       });
     },
   });

@@ -75,6 +75,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useAppSetting } from "@/renderer/store/setting";
 import { Tab } from "@/common/settings/app";
+import { useErrorStore } from "@/renderer/store/error";
 
 const store = useStore();
 const dialog = ref();
@@ -109,7 +110,7 @@ const onStart = () => {
   };
   const error = validateCSAServerSetting(setting);
   if (error) {
-    store.pushError(error);
+    useErrorStore().add(error);
     return;
   }
   api.csaLogin(setting).then((sessionID: number) => {

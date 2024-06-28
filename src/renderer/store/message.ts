@@ -1,3 +1,5 @@
+import { reactive, UnwrapNestedRefs } from "vue";
+
 export type ListItem = {
   text: string;
   children?: string[];
@@ -33,4 +35,17 @@ export class MessageStore {
   dequeue(): void {
     this._queue.shift();
   }
+}
+
+export function createMessageStore(): UnwrapNestedRefs<MessageStore> {
+  return reactive(new MessageStore());
+}
+
+let store: UnwrapNestedRefs<MessageStore>;
+
+export function useMessageStore(): UnwrapNestedRefs<MessageStore> {
+  if (!store) {
+    store = createMessageStore();
+  }
+  return store;
 }

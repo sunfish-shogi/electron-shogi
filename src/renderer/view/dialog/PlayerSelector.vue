@@ -63,8 +63,9 @@ import {
   USIEngineSettings,
   USIEngineLabel,
 } from "@/common/settings/usi";
-import { useStore } from "@/renderer/store";
 import api from "@/renderer/ipc/api";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBussyState } from "@/renderer/store/bussy";
 
 const props = defineProps({
   playerUri: {
@@ -102,7 +103,7 @@ const emit = defineEmits<{
   updateEngineSetting: [setting: USIEngineSettings];
 }>();
 
-const store = useStore();
+const bussyState = useBussyState();
 const playerSelect = ref();
 const engineSettingDialog = ref(null as USIEngineSetting | null);
 
@@ -158,7 +159,7 @@ const openPlayerSetting = () => {
   if (uri.isUSIEngine(props.playerUri)) {
     const engine = filteredEngineSettings.value.getEngine(props.playerUri);
     if (!engine) {
-      store.pushError("利用可能なエンジンが選択されていません。");
+      useErrorStore().add("利用可能なエンジンが選択されていません。");
       return;
     }
     engineSettingDialog.value = engine;
@@ -169,14 +170,14 @@ const savePlayerSetting = async (setting: USIEngineSetting) => {
   engineSettingDialog.value = null;
   const clone = props.engineSettings.getClone();
   clone.updateEngine(setting);
-  store.retainBussyState();
+  bussyState.retain();
   try {
     await api.saveUSIEngineSetting(clone);
     emit("updateEngineSetting", clone);
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    bussyState.release();
   }
 };
 

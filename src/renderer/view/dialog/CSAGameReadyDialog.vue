@@ -50,6 +50,7 @@ import { CSAGameState, loginRetryIntervalSeconds } from "@/renderer/store/csa";
 import { t } from "@/common/i18n";
 import api from "@/renderer/ipc/api";
 import { PromptTarget } from "@/common/advanced/prompt";
+import { useErrorStore } from "@/renderer/store/error";
 
 const store = useStore();
 const dialog = ref();
@@ -85,7 +86,7 @@ const onLogout = () => {
 const onOpenEnginePrompt = () => {
   const sessionIDs = store.usiSessionIDs;
   if (sessionIDs.length === 0) {
-    store.pushError("USI session is not found.");
+    useErrorStore().add("USI session is not found.");
     return;
   }
   const setting = store.csaGameSetting;

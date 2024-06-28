@@ -51,12 +51,15 @@ import { showModalDialog } from "@/renderer/helpers/dialog";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { t } from "@/common/i18n";
 import { useAppSetting } from "@/renderer/store/setting";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBussyState } from "@/renderer/store/bussy";
 
 const dialog = ref();
 const entries = ref([] as RecordFileHistoryEntry[]);
 const store = useStore();
+const bussyState = useBussyState();
 const appSetting = useAppSetting();
-store.retainBussyState();
+bussyState.retain();
 
 onMounted(async () => {
   try {
@@ -65,10 +68,10 @@ onMounted(async () => {
     showModalDialog(dialog.value, onClose);
     installHotKeyForDialog(dialog.value);
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    bussyState.release();
   }
 });
 
@@ -93,7 +96,7 @@ const clear = () => {
         await api.clearRecordFileHistory();
         entries.value = [];
       } catch (e) {
-        store.pushError(e);
+        useErrorStore().add(e);
       }
     },
   });

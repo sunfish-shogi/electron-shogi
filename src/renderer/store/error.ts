@@ -1,3 +1,5 @@
+import { reactive, UnwrapNestedRefs } from "vue";
+
 export type ErrorEntry = {
   message: string;
   count: number;
@@ -32,4 +34,17 @@ export class ErrorStore {
   clear(): void {
     this.errorCounts = {};
   }
+}
+
+export function createErrorStore(): UnwrapNestedRefs<ErrorStore> {
+  return reactive(new ErrorStore());
+}
+
+let store: UnwrapNestedRefs<ErrorStore>;
+
+export function useErrorStore(): UnwrapNestedRefs<ErrorStore> {
+  if (!store) {
+    store = createErrorStore();
+  }
+  return store;
 }

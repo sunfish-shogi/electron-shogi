@@ -91,8 +91,11 @@ import { readInputAsNumber } from "@/renderer/helpers/form";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBussyState } from "@/renderer/store/bussy";
 
 const store = useStore();
+const bussyState = useBussyState();
 const dialog = ref();
 const researchSetting = ref(defaultResearchSetting());
 const engineSettings = ref(new USIEngineSettings());
@@ -101,7 +104,7 @@ const secondaryEngineURIs = ref([] as string[]);
 const enableMaxSeconds = ref(false);
 const maxSeconds = ref();
 
-store.retainBussyState();
+bussyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -114,10 +117,10 @@ onMounted(async () => {
       researchSetting.value.secondaries?.map((setting) => setting.usi?.uri || "") || [];
     enableMaxSeconds.value = researchSetting.value.enableMaxSeconds;
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    bussyState.release();
   }
 });
 
@@ -142,7 +145,7 @@ const onStart = () => {
   };
   const e = validateResearchSetting(researchSetting);
   if (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     return;
   }
   store.startResearch(researchSetting);

@@ -16,7 +16,7 @@
     <LoadRemoteFileDialog v-if="store.appState === AppState.LOAD_REMOTE_FILE_DIALOG" />
     <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
     <ResearchDialog v-if="store.researchState === ResearchState.STARTUP_DIALOG" />
-    <BussyMessage v-if="store.isBussy" />
+    <BussyMessage v-if="bussyState.isBussy" />
     <ConfirmDialog v-if="store.confirmation" />
     <CSAGameReadyDialog
       v-if="
@@ -39,8 +39,8 @@
       :pv="store.pvPreview.pv"
       @close="store.closePVPreviewDialog()"
     />
-    <InfoMessage v-if="store.hasMessage" />
-    <ErrorMessage v-if="store.hasError" />
+    <InfoMessage v-if="messageStore.hasMessage" />
+    <ErrorMessage v-if="errorStore.hasError" />
   </div>
 </template>
 
@@ -73,9 +73,15 @@ import LaunchUSIEngineDialog from "./view/dialog/LaunchUSIEngineDialog.vue";
 import ConnectToCSAServerDialog from "./view/dialog/ConnectToCSAServerDialog.vue";
 import PieceSetChangeDialog from "./view/dialog/PieceSetChangeDialog.vue";
 import LoadRemoteFileDialog from "./view/dialog/LoadRemoteFileDialog.vue";
+import { useBussyState } from "./store/bussy";
+import { useMessageStore } from "./store/message";
+import { useErrorStore } from "./store/error";
 
 const appSetting = useAppSetting();
 const store = useStore();
+const messageStore = useMessageStore();
+const errorStore = useErrorStore();
+const bussyState = useBussyState();
 
 onMounted(() => {
   const body = document.getElementsByTagName("body")[0];

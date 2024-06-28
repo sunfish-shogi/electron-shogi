@@ -93,8 +93,11 @@ import CheckBox from "@/renderer/view/primitive/CheckBox.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBussyState } from "@/renderer/store/bussy";
 
 const store = useStore();
+const bussyState = useBussyState();
 const dialog = ref();
 const optionDialog = ref(null as USIEngineSetting | null);
 const setting = ref(new USIEngineSettings());
@@ -103,7 +106,7 @@ const filterWords = ref([] as string[]);
 const lastAdded = ref("");
 let scrollTo = "";
 
-store.retainBussyState();
+bussyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, cancel);
@@ -111,10 +114,10 @@ onMounted(async () => {
   try {
     setting.value = await api.loadUSIEngineSetting();
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    bussyState.release();
   }
 });
 
@@ -153,7 +156,7 @@ const updateFilter = () => {
 
 const add = async () => {
   try {
-    store.retainBussyState();
+    bussyState.retain();
     const path = await api.showSelectUSIEngineDialog();
     if (!path) {
       return;
@@ -164,9 +167,9 @@ const add = async () => {
     setting.value.addEngine(engine);
     lastAdded.value = scrollTo = engine.uri;
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    bussyState.release();
   }
 };
 
@@ -195,13 +198,13 @@ const duplicate = (uri: string) => {
 
 const saveAndClose = async () => {
   try {
-    store.retainBussyState();
+    bussyState.retain();
     await api.saveUSIEngineSetting(setting.value as USIEngineSettings);
     store.destroyModalDialog();
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    bussyState.release();
   }
 };
 

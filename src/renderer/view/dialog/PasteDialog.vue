@@ -33,12 +33,15 @@ import { isNative } from "@/renderer/ipc/api";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBussyState } from "@/renderer/store/bussy";
 
 const store = useStore();
+const bussyState = useBussyState();
 const dialog = ref();
 const textarea = ref();
 
-store.retainBussyState();
+bussyState.retain();
 onMounted(async () => {
   try {
     showModalDialog(dialog.value, onCancel);
@@ -47,7 +50,7 @@ onMounted(async () => {
       textarea.value.value = await navigator.clipboard.readText();
     }
   } finally {
-    store.releaseBussyState();
+    bussyState.release();
   }
 });
 
@@ -58,7 +61,7 @@ onBeforeUnmount(() => {
 const onOk = () => {
   const data = textarea.value.value;
   if (!data) {
-    store.pushError(new Error(t.emptyRecordInput));
+    useErrorStore().add(new Error(t.emptyRecordInput));
     return;
   }
   store.closeModalDialog();

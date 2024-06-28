@@ -27,18 +27,21 @@ import {
 import { useAppSetting } from "@/renderer/store/setting";
 import { t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBussyState } from "@/renderer/store/bussy";
 
 export function setup(): void {
   const store = useStore();
   const appSetting = useAppSetting();
+  const bussyState = useBussyState();
 
   // Core
   watch(
-    () => [store.appState, store.researchState, store.isBussy],
+    () => [store.appState, store.researchState, bussyState.isBussy],
     ([appState, researchState, bussy]) =>
       bridge.updateAppState(appState as AppState, researchState as ResearchState, bussy as boolean),
   );
-  bridge.updateAppState(store.appState, store.researchState, store.isBussy);
+  bridge.updateAppState(store.appState, store.researchState, bussyState.isBussy);
   bridge.onClose(() => {
     store
       .onMainWindowClose()
@@ -50,11 +53,11 @@ export function setup(): void {
       });
   });
   bridge.onSendError((e: Error) => {
-    store.pushError(e);
+    useErrorStore().add(e);
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   bridge.onMenuEvent((event: MenuEvent, ...args: any[]) => {
-    if (store.isBussy) {
+    if (bussyState.isBussy) {
       return;
     }
     switch (event) {

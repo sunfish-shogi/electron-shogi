@@ -195,6 +195,7 @@ import {
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { readInputAsNumber } from "@/renderer/helpers/form";
+import { useErrorStore } from "@/renderer/store/error";
 
 const lazyUpdateDelay = 100;
 const marginHor = 150;
@@ -361,13 +362,13 @@ const getRect = () => {
 
 const saveAsPNG = () => {
   api.exportCaptureAsPNG(getRect()).catch((e) => {
-    store.pushError(e);
+    useErrorStore().add(e);
   });
 };
 
 const saveAsJPEG = () => {
   api.exportCaptureAsJPEG(getRect()).catch((e) => {
-    store.pushError(e);
+    useErrorStore().add(e);
   });
 };
 

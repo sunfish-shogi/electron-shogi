@@ -24,6 +24,7 @@ import { defaultAppSetting } from "@/common/settings/app";
 import { useMessageStore } from "@/renderer/store/message";
 import { useBussyState } from "@/renderer/store/bussy";
 import { useErrorStore } from "@/renderer/store/error";
+import { useConfirmationStore } from "@/renderer/store/confirm";
 
 vi.mock("@/renderer/devices/audio");
 vi.mock("@/renderer/ipc/api");
@@ -128,28 +129,6 @@ describe("store/index", () => {
     }
     useErrorStore().clear();
     useAppSetting().updateAppSetting(defaultAppSetting());
-  });
-
-  it("showConfirmation", () => {
-    const store = createStore();
-    const confirmation1 = {
-      message: "Are you ready?",
-      onOk: vi.fn(),
-    };
-    store.showConfirmation(confirmation1);
-    expect(store.confirmation).toBe("Are you ready?");
-    store.confirmationOk();
-    expect(store.confirmation).toBeUndefined();
-    expect(confirmation1.onOk).toBeCalledTimes(1);
-    const confirmation2 = {
-      message: "Do you really want to delete?",
-      onOk: vi.fn(),
-    };
-    store.showConfirmation(confirmation2);
-    expect(store.confirmation).toBe("Do you really want to delete?");
-    store.confirmationCancel();
-    expect(store.confirmation).toBeUndefined();
-    expect(confirmation2.onOk).toBeCalledTimes(0);
   });
 
   it("updateUSIInfo", () => {
@@ -353,8 +332,8 @@ describe("store/index", () => {
     expect(store.record.moves.length).not.toBe(1);
     expect(store.recordFilePath).not.toBeUndefined();
     store.resetRecord();
-    expect(store.confirmation).toBe("現在の棋譜は削除されます。よろしいですか？");
-    store.confirmationOk();
+    expect(useConfirmationStore().message).toBe("現在の棋譜は削除されます。よろしいですか？");
+    useConfirmationStore().ok();
     expect(store.record.moves.length).toBe(1);
     expect(store.recordFilePath).toBeUndefined();
   });
@@ -364,21 +343,21 @@ describe("store/index", () => {
     store.pasteRecord(sampleBranchKIF);
     store.changePly(8);
     store.removeCurrentMove();
-    expect(store.confirmation).toBeUndefined();
+    expect(useConfirmationStore().message).toBeUndefined();
     expect(store.record.current.ply).toBe(7);
     expect(store.record.moves.length).toBe(8);
     store.removeCurrentMove();
-    expect(store.confirmation).toBeUndefined();
+    expect(useConfirmationStore().message).toBeUndefined();
     expect(store.record.current.ply).toBe(6);
     expect(store.record.moves.length).toBe(8);
     store.removeCurrentMove();
-    expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
-    store.confirmationCancel();
+    expect(useConfirmationStore().message).toBe("6手目以降を削除します。よろしいですか？");
+    useConfirmationStore().cancel();
     expect(store.record.current.ply).toBe(6);
     expect(store.record.moves.length).toBe(8);
     store.removeCurrentMove();
-    expect(store.confirmation).toBe("6手目以降を削除します。よろしいですか？");
-    store.confirmationOk();
+    expect(useConfirmationStore().message).toBe("6手目以降を削除します。よろしいですか？");
+    useConfirmationStore().ok();
     expect(store.record.current.ply).toBe(5);
     expect(store.record.moves.length).toBe(6);
   });

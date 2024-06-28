@@ -17,7 +17,7 @@
     <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
     <ResearchDialog v-if="store.researchState === ResearchState.STARTUP_DIALOG" />
     <BussyMessage v-if="bussyState.isBussy" />
-    <ConfirmDialog v-if="store.confirmation" />
+    <ConfirmDialog v-if="confirmation.message" />
     <CSAGameReadyDialog
       v-if="
         store.csaGameState === CSAGameState.PLAYER_SETUP ||
@@ -76,12 +76,14 @@ import LoadRemoteFileDialog from "./view/dialog/LoadRemoteFileDialog.vue";
 import { useBussyState } from "./store/bussy";
 import { useMessageStore } from "./store/message";
 import { useErrorStore } from "./store/error";
+import { useConfirmationStore } from "./store/confirm";
 
 const appSetting = useAppSetting();
 const store = useStore();
 const messageStore = useMessageStore();
 const errorStore = useErrorStore();
 const bussyState = useBussyState();
+const confirmation = useConfirmationStore();
 
 onMounted(() => {
   const body = document.getElementsByTagName("body")[0];

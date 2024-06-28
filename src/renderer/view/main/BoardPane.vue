@@ -278,6 +278,7 @@ import {
   getPieceImageURLTemplate,
 } from "@/common/settings/app";
 import { DeclarableJishogiRules } from "@/common/settings/game";
+import { useConfirmationStore } from "@/renderer/store/confirm";
 
 defineProps({
   maxSize: {
@@ -347,7 +348,7 @@ const onStop = () => {
 };
 
 const onWin = () => {
-  store.showConfirmation({
+  useConfirmationStore().show({
     message: t.areYouSureWantToDoDeclaration,
     onOk: () => {
       humanPlayer.win();
@@ -356,7 +357,7 @@ const onWin = () => {
 };
 
 const onResign = () => {
-  store.showConfirmation({
+  useConfirmationStore().show({
     message: t.areYouSureWantToResign,
     onOk: () => {
       humanPlayer.resign();

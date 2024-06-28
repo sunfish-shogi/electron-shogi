@@ -53,6 +53,7 @@ import { t } from "@/common/i18n";
 import { useAppSetting } from "@/renderer/store/setting";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBussyState } from "@/renderer/store/bussy";
+import { useConfirmationStore } from "@/renderer/store/confirm";
 
 const dialog = ref();
 const entries = ref([] as RecordFileHistoryEntry[]);
@@ -89,7 +90,7 @@ const restore = (name: string) => {
 };
 
 const clear = () => {
-  store.showConfirmation({
+  useConfirmationStore().show({
     message: t.areYouSureWantToClearHistory,
     onOk: async () => {
       try {

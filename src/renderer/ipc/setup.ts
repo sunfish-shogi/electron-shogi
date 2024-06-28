@@ -29,6 +29,7 @@ import { t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBussyState } from "@/renderer/store/bussy";
+import { useConfirmationStore } from "@/renderer/store/confirm";
 
 export function setup(): void {
   const store = useStore();
@@ -182,7 +183,7 @@ export function setup(): void {
         if (!store.isMovableByUser) {
           break;
         }
-        store.showConfirmation({
+        useConfirmationStore().show({
           message: t.areYouSureWantToResign,
           onOk: () => {
             humanPlayer.resign();
@@ -193,7 +194,7 @@ export function setup(): void {
         if (!store.isMovableByUser) {
           break;
         }
-        store.showConfirmation({
+        useConfirmationStore().show({
           message: t.areYouSureWantToDoDeclaration,
           onOk: () => {
             humanPlayer.win();
@@ -243,7 +244,7 @@ export function setup(): void {
 
   // Record File
   bridge.onOpenRecord((path: string) => {
-    store.showConfirmation({
+    useConfirmationStore().show({
       message: t.areYouSureWantToOpenFileInsteadOfCurrentRecord,
       onOk: () => {
         store.openRecord(path);

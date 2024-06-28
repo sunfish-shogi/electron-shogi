@@ -143,11 +143,11 @@ import { getDateTimeStringMs } from "@/common/helpers/datetime";
 import { CSASessionState, SessionStates, USISessionState } from "@/common/advanced/monitor";
 import { PromptTarget } from "@/common/advanced/prompt";
 import api from "@/renderer/ipc/api";
-import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { LogLevel } from "@/common/log";
 import { t } from "@/common/i18n";
 import { useErrorStore } from "@/renderer/store/error";
+import { useConfirmationStore } from "@/renderer/store/confirm";
 
 defineProps({
   size: {
@@ -156,7 +156,6 @@ defineProps({
   },
 });
 
-const store = useStore();
 let timer: number | null = null;
 const states = ref<SessionStates>({
   usiSessions: [],
@@ -202,7 +201,7 @@ function openUSIPrompt(session: USISessionState) {
 }
 
 function sendUSIQuit(session: USISessionState) {
-  store.showConfirmation({
+  useConfirmationStore().show({
     message: `${session.name} に "quit" を送信します。本当に実行しますか？`,
     onOk: () => {
       api.log(
@@ -226,7 +225,7 @@ function openCSAPrompt(session: CSASessionState) {
 }
 
 function closeCSA(session: CSASessionState) {
-  store.showConfirmation({
+  useConfirmationStore().show({
     message: `${session.host}:${session.port} への接続を強制終了します。本当に実行しますか？`,
     onOk: () => {
       api.log(

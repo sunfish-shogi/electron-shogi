@@ -42,7 +42,6 @@ import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { AppState, ResearchState } from "@/common/control/state";
 import { Attachment, ListItem, useMessageStore } from "./message";
 import * as uri from "@/common/uri";
-import { Confirmation } from "./confirm";
 import { AnalysisManager } from "./analysis";
 import { AnalysisSetting, CommentBehavior } from "@/common/settings/analysis";
 import { MateSearchSetting } from "@/common/settings/mate";
@@ -62,6 +61,7 @@ import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file/re
 import { setOnUpdateUSIInfoHandler, setOnUpdateUSIPonderInfoHandler } from "@/renderer/players/usi";
 import { useErrorStore } from "./error";
 import { useBussyState } from "./bussy";
+import { Confirmation, useConfirmationStore } from "./confirm";
 
 export type PVPreview = {
   position: ImmutablePosition;
@@ -124,7 +124,6 @@ class Store {
   private recordManager = new RecordManager();
   private _appState = AppState.NORMAL;
   private _isAppSettingDialogVisible = false;
-  private _confirmation?: Confirmation & { appState: AppState };
   private _pvPreview?: PVPreview;
   private usiMonitor = new USIMonitor();
   private blackClock = new Clock();
@@ -310,47 +309,6 @@ class Store {
 
   get researchState(): ResearchState {
     return this._researchState;
-  }
-
-  get confirmation(): string | undefined {
-    return this._confirmation?.message;
-  }
-
-  /**
-   * 確認ダイアログを表示します。既に表示されているものは消えます。
-   * @param confirmation 確認ダイアログの情報とハンドラーを指定します。
-   */
-  showConfirmation(confirmation: Confirmation): void {
-    if (this._confirmation) {
-      api.log(
-        LogLevel.WARN,
-        "Store#showConfirmation: 確認ダイアログを多重に表示しようとしました。" +
-          ` appState=${this.appState}` +
-          ` currentMessage=${this._confirmation.message}` +
-          ` newMessage=${confirmation.message}`,
-      );
-    }
-    this._confirmation = {
-      ...confirmation,
-      appState: this.appState,
-    };
-  }
-
-  confirmationOk(): void {
-    if (!this._confirmation) {
-      return;
-    }
-    const confirmation = this._confirmation;
-    this._confirmation = undefined;
-    if (this.appState !== confirmation.appState) {
-      useErrorStore().add("確認ダイアログ表示中に他の操作が行われたため処理が中止されました。");
-      return;
-    }
-    confirmation.onOk();
-  }
-
-  confirmationCancel(): void {
-    this._confirmation = undefined;
   }
 
   get pvPreview(): PVPreview | undefined {
@@ -1332,6 +1290,20 @@ class Store {
     } finally {
       useBussyState().release();
     }
+  }
+
+  private showConfirmation(confirmation: Confirmation): void {
+    const lastAppState = this.appState;
+    useConfirmationStore().show({
+      ...confirmation,
+      onOk: () => {
+        if (this.appState !== lastAppState) {
+          useErrorStore().add("確認ダイアログ表示中に他の操作が行われたため処理が中止されました。");
+          return;
+        }
+        confirmation.onOk();
+      },
+    });
   }
 }
 

@@ -27,7 +27,7 @@ type AppInfo = {
 
 export interface API {
   // Core
-  updateAppState(appState: AppState, researchState: ResearchState, bussy: boolean): void;
+  updateAppState(appState: AppState, researchState: ResearchState, busy: boolean): void;
 
   // Settings
   loadAppSetting(): Promise<AppSetting>;

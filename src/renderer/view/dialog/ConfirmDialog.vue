@@ -3,7 +3,7 @@
     <dialog ref="dialog" class="confirm">
       <div class="message-box">
         <Icon :icon="IconType.QUESTION" />
-        <div class="message">{{ store.confirmation }}</div>
+        <div class="message">{{ store.message }}</div>
       </div>
       <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="onOk()">OK</button>
@@ -20,19 +20,19 @@ import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
-import { useStore } from "@/renderer/store";
 import { IconType } from "@/renderer/assets/icons";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
+import { useConfirmationStore } from "@/renderer/store/confirm";
 
-const store = useStore();
+const store = useConfirmationStore();
 const dialog = ref();
 
 const onOk = () => {
-  store.confirmationOk();
+  store.ok();
 };
 
 const onClose = () => {
-  store.confirmationCancel();
+  store.cancel();
 };
 
 onMounted(() => {

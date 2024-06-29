@@ -29,13 +29,16 @@ import { showModalDialog } from "@/renderer/helpers/dialog";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useStore } from "@/renderer/store";
 import { isNative } from "@/renderer/ipc/api";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
+const busyState = useBusyState();
 const dialog = ref();
 const input = ref();
 const localStorageLastURLKey = "LoadRemoteFileDialog.lastURL";
 
-store.retainBussyState();
+busyState.retain();
 onMounted(async () => {
   try {
     showModalDialog(dialog.value);
@@ -50,7 +53,7 @@ onMounted(async () => {
       input.value.value = copied;
     }
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 
@@ -61,7 +64,7 @@ onBeforeUnmount(() => {
 const onOK = () => {
   const url = input.value?.value.trim();
   if (!url) {
-    store.pushError("URL is required.");
+    useErrorStore().add("URL is required.");
     return;
   }
   localStorage.setItem(localStorageLastURLKey, url);

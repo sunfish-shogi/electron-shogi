@@ -38,18 +38,14 @@ import {
 import { calculateGameStatistics, GameManager, GameResults } from "./game";
 import { generateRecordFileName, join } from "@/renderer/helpers/path";
 import { ResearchSetting } from "@/common/settings/research";
-import { BussyStore } from "./bussy";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { AppState, ResearchState } from "@/common/control/state";
-import { Message, MessageStore, Attachment, ListItem } from "./message";
-import { ErrorEntry, ErrorStore } from "./error";
+import { Attachment, ListItem, useMessageStore } from "./message";
 import * as uri from "@/common/uri";
-import { Confirmation } from "./confirm";
 import { AnalysisManager } from "./analysis";
 import { AnalysisSetting, CommentBehavior } from "@/common/settings/analysis";
 import { MateSearchSetting } from "@/common/settings/mate";
 import { LogLevel } from "@/common/log";
-import { toString } from "@/common/helpers/string";
 import { CSAGameManager, CSAGameState } from "./csa";
 import { Clock } from "./clock";
 import { CSAGameSetting, appendCSAGameSettingHistory } from "@/common/settings/csa";
@@ -63,6 +59,9 @@ import { MateSearchManager } from "./mate";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
 import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file/record";
 import { setOnUpdateUSIInfoHandler, setOnUpdateUSIPonderInfoHandler } from "@/renderer/players/usi";
+import { useErrorStore } from "./error";
+import { useBusyState } from "./busy";
+import { Confirmation, useConfirmationStore } from "./confirm";
 
 export type PVPreview = {
   position: ImmutablePosition;
@@ -122,13 +121,9 @@ function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] 
 }
 
 class Store {
-  private _bussy = new BussyStore();
-  private _message = new MessageStore();
-  private _error = new ErrorStore();
   private recordManager = new RecordManager();
   private _appState = AppState.NORMAL;
   private _isAppSettingDialogVisible = false;
-  private _confirmation?: Confirmation & { appState: AppState };
   private _pvPreview?: PVPreview;
   private usiMonitor = new USIMonitor();
   private blackClock = new Clock();
@@ -180,7 +175,9 @@ class Store {
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
-      .on("error", refs.pushError.bind(refs));
+      .on("error", (e) => {
+        useErrorStore().add(e);
+      });
     this.csaGameManager
       .on("saveRecord", refs.onSaveRecord.bind(refs))
       .on("gameEnd", refs.onCSAGameEnd.bind(refs))
@@ -189,13 +186,17 @@ class Store {
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
-      .on("error", refs.pushError.bind(refs));
+      .on("error", (e) => {
+        useErrorStore().add(e);
+      });
     this.researchManager
       .on("updateSearchInfo", this.onUpdateSearchInfo.bind(refs))
-      .on("error", this.pushError.bind(refs));
-    this.analysisManager
-      .on("finish", this.onFinish.bind(refs))
-      .on("error", this.pushError.bind(refs));
+      .on("error", (e) => {
+        useErrorStore().add(e);
+      });
+    this.analysisManager.on("finish", this.onFinish.bind(refs)).on("error", (e) => {
+      useErrorStore().add(e);
+    });
     this.mateSearchManager
       .on("checkmate", this.onCheckmate.bind(refs))
       .on("notImplemented", this.onNotImplemented.bind(refs))
@@ -266,51 +267,6 @@ class Store {
     return this._reactive;
   }
 
-  get isBussy(): boolean {
-    return this._bussy.isBussy;
-  }
-
-  retainBussyState(): void {
-    return this._bussy.retain();
-  }
-
-  releaseBussyState(): void {
-    return this._bussy.release();
-  }
-
-  get message(): Message {
-    return this._message.message;
-  }
-
-  get hasMessage(): boolean {
-    return this._message.hasMessage;
-  }
-
-  enqueueMessage(message: Message): void {
-    this._message.enqueue(message);
-  }
-
-  dequeueMessage(): void {
-    this._message.dequeue();
-  }
-
-  get errors(): ErrorEntry[] {
-    return this._error.errors;
-  }
-
-  get hasError(): boolean {
-    return this._error.hasError;
-  }
-
-  pushError(e: unknown): void {
-    api.log(LogLevel.ERROR, toString(e));
-    this._error.add(e);
-  }
-
-  clearErrors(): void {
-    this._error.clear();
-  }
-
   get record(): ImmutableRecord {
     return this.recordManager.record;
   }
@@ -353,47 +309,6 @@ class Store {
 
   get researchState(): ResearchState {
     return this._researchState;
-  }
-
-  get confirmation(): string | undefined {
-    return this._confirmation?.message;
-  }
-
-  /**
-   * 確認ダイアログを表示します。既に表示されているものは消えます。
-   * @param confirmation 確認ダイアログの情報とハンドラーを指定します。
-   */
-  showConfirmation(confirmation: Confirmation): void {
-    if (this._confirmation) {
-      api.log(
-        LogLevel.WARN,
-        "Store#showConfirmation: 確認ダイアログを多重に表示しようとしました。" +
-          ` appState=${this.appState}` +
-          ` currentMessage=${this._confirmation.message}` +
-          ` newMessage=${confirmation.message}`,
-      );
-    }
-    this._confirmation = {
-      ...confirmation,
-      appState: this.appState,
-    };
-  }
-
-  confirmationOk(): void {
-    if (!this._confirmation) {
-      return;
-    }
-    const confirmation = this._confirmation;
-    this._confirmation = undefined;
-    if (this.appState !== confirmation.appState) {
-      this.pushError("確認ダイアログ表示中に他の操作が行われたため処理が中止されました。");
-      return;
-    }
-    confirmation.onOk();
-  }
-
-  confirmationCancel(): void {
-    this._confirmation = undefined;
   }
 
   get pvPreview(): PVPreview | undefined {
@@ -500,7 +415,7 @@ class Store {
   }
 
   closeModalDialog(): void {
-    if (!this.isBussy) {
+    if (!useBusyState().isBusy) {
       this.destroyModalDialog();
     }
   }
@@ -570,10 +485,10 @@ class Store {
   }
 
   startGame(setting: GameSetting): void {
-    if (this.appState !== AppState.GAME_DIALOG || this.isBussy) {
+    if (this.appState !== AppState.GAME_DIALOG || useBusyState().isBusy) {
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     api
       .saveGameSetting(setting)
       .then(() => {
@@ -583,10 +498,10 @@ class Store {
       })
       .then(() => (this._appState = AppState.GAME))
       .catch((e) => {
-        this.pushError("対局の初期化中にエラーが出ました: " + e);
+        useErrorStore().add("対局の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
@@ -618,10 +533,10 @@ class Store {
   }
 
   loginCSAGame(setting: CSAGameSetting, opt: { saveHistory: boolean }): void {
-    if (this.appState !== AppState.CSA_GAME_DIALOG || this.isBussy) {
+    if (this.appState !== AppState.CSA_GAME_DIALOG || useBusyState().isBusy) {
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     Promise.resolve()
       .then(async () => {
         if (opt.saveHistory) {
@@ -637,10 +552,10 @@ class Store {
       })
       .then(() => (this._appState = AppState.CSA_GAME))
       .catch((e) => {
-        this.pushError("対局の初期化中にエラーが出ました: " + e);
+        useErrorStore().add("対局の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
@@ -649,7 +564,7 @@ class Store {
       return;
     }
     if (this.csaGameManager.state === CSAGameState.GAME) {
-      this.pushError("対局が始まっているため通信対局をキャンセルできませんでした。");
+      useErrorStore().add("対局が始まっているため通信対局をキャンセルできませんでした。");
       return;
     }
     this.csaGameManager.logout();
@@ -684,7 +599,7 @@ class Store {
       return;
     }
     const results = this.gameManager.results;
-    this.enqueueMessage({
+    useMessageStore().enqueue({
       text: t.gameProgress,
       attachments: getMessageAttachmentsByGameResults(results),
     });
@@ -696,12 +611,12 @@ class Store {
     }
     api.log(LogLevel.INFO, `game end: ${JSON.stringify(results)}`);
     if (results && results.total >= 2) {
-      this.enqueueMessage({
+      useMessageStore().enqueue({
         text: t.allGamesCompleted,
         attachments: getMessageAttachmentsByGameResults(results),
       });
     } else if (specialMoveType) {
-      this.enqueueMessage({
+      useMessageStore().enqueue({
         text: `${t.gameEnded}（${formatSpecialMove(specialMoveType)})`,
       });
     }
@@ -731,7 +646,7 @@ class Store {
     );
     const path = join(appSetting.autoSaveDirectory, fname);
     this.saveRecordByPath(path).catch((e) => {
-      this.pushError(e);
+      useErrorStore().add(e);
     });
   }
 
@@ -770,7 +685,7 @@ class Store {
 
   onFinish(): void {
     if (this.appState === AppState.ANALYSIS) {
-      this._message.enqueue({ text: "棋譜解析が終了しました。" });
+      useMessageStore().enqueue({ text: "棋譜解析が終了しました。" });
       this._appState = AppState.NORMAL;
     }
   }
@@ -788,12 +703,12 @@ class Store {
   }
 
   startResearch(researchSetting: ResearchSetting): void {
-    if (this._researchState !== ResearchState.STARTUP_DIALOG || this.isBussy) {
+    if (this._researchState !== ResearchState.STARTUP_DIALOG || useBusyState().isBusy) {
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     if (!researchSetting.usi) {
-      this.pushError(new Error("エンジンが設定されていません。"));
+      useErrorStore().add(new Error("エンジンが設定されていません。"));
       return;
     }
     api
@@ -814,10 +729,10 @@ class Store {
         }
       })
       .catch((e) => {
-        this.pushError("検討の初期化中にエラーが出ました: " + e);
+        useErrorStore().add("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
@@ -838,10 +753,10 @@ class Store {
   }
 
   startAnalysis(analysisSetting: AnalysisSetting): void {
-    if (this.appState !== AppState.ANALYSIS_DIALOG || this.isBussy) {
+    if (this.appState !== AppState.ANALYSIS_DIALOG || useBusyState().isBusy) {
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     api
       .saveAnalysisSetting(analysisSetting)
       .then(() => this.analysisManager.start(analysisSetting))
@@ -849,10 +764,10 @@ class Store {
         this._appState = AppState.ANALYSIS;
       })
       .catch((e) => {
-        this.pushError("検討の初期化中にエラーが出ました: " + e);
+        useErrorStore().add("検討の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
@@ -865,12 +780,12 @@ class Store {
   }
 
   startMateSearch(mateSearchSetting: MateSearchSetting): void {
-    if (this.appState !== AppState.MATE_SEARCH_DIALOG || this.isBussy) {
+    if (this.appState !== AppState.MATE_SEARCH_DIALOG || useBusyState().isBusy) {
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     if (!mateSearchSetting.usi) {
-      this.pushError(new Error("エンジンが設定されていません。"));
+      useErrorStore().add(new Error("エンジンが設定されていません。"));
       return;
     }
     api
@@ -884,10 +799,10 @@ class Store {
         }
       })
       .catch((e) => {
-        this.pushError("詰将棋探索の初期化中にエラーが出ました: " + e);
+        useErrorStore().add("詰将棋探索の初期化中にエラーが出ました: " + e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
@@ -921,7 +836,7 @@ class Store {
     if (this.appState !== AppState.MATE_SEARCH) {
       return;
     }
-    this.pushError(new Error(t.thisEngineNotSupportsMateSearch));
+    useErrorStore().add(new Error(t.thisEngineNotSupportsMateSearch));
     this._appState = AppState.NORMAL;
   }
 
@@ -929,7 +844,7 @@ class Store {
     if (this.appState !== AppState.MATE_SEARCH) {
       return;
     }
-    this.enqueueMessage({ text: t.noMateFound });
+    useMessageStore().enqueue({ text: t.noMateFound });
     this._appState = AppState.NORMAL;
   }
 
@@ -937,7 +852,7 @@ class Store {
     if (this.appState !== AppState.MATE_SEARCH) {
       return;
     }
-    this.pushError(e);
+    useErrorStore().add(e);
     this._appState = AppState.NORMAL;
   }
 
@@ -1134,17 +1049,17 @@ class Store {
     }
     const error = this.recordManager.importRecord(data);
     if (error) {
-      this.pushError(error);
+      useErrorStore().add(error);
       return;
     }
   }
 
   openRecord(path?: string, opt?: { ply?: number }): void {
-    if (this.appState !== AppState.NORMAL || this.isBussy) {
-      this.pushError(t.pleaseEndActiveFeaturesBeforeOpenRecord);
+    if (this.appState !== AppState.NORMAL || useBusyState().isBusy) {
+      useErrorStore().add(t.pleaseEndActiveFeaturesBeforeOpenRecord);
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     Promise.resolve()
       .then(() => {
         return path || api.showOpenRecordDialog();
@@ -1168,18 +1083,18 @@ class Store {
         }
       })
       .catch((e) => {
-        this.pushError("棋譜の読み込み中にエラーが出ました: " + e);
+        useErrorStore().add("棋譜の読み込み中にエラーが出ました: " + e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
   saveRecord(options?: { overwrite: boolean }): void {
-    if (this.appState !== AppState.NORMAL || this.isBussy) {
+    if (this.appState !== AppState.NORMAL || useBusyState().isBusy) {
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     Promise.resolve()
       .then(() => {
         const path = this.recordManager.recordFilePath;
@@ -1219,7 +1134,7 @@ class Store {
             })
             .map((v) => ({ text: v })) as ListItem[];
           if (items.length) {
-            this.enqueueMessage({
+            useMessageStore().enqueue({
               text: t.followingDataNotSavedBecauseNotSupporetedBy(fileFormat),
               attachments: [{ type: "list", items }],
             });
@@ -1227,10 +1142,10 @@ class Store {
         });
       })
       .catch((e) => {
-        this.pushError(e);
+        useErrorStore().add(e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
@@ -1247,7 +1162,7 @@ class Store {
     try {
       await api.saveRecord(path, result.data);
       if (result.garbled && !this.garbledNotified) {
-        this.enqueueMessage({
+        useMessageStore().enqueue({
           text: `${t.recordSavedWithGarbledCharacters}\n${t.pleaseConsiderToUseKIFU}\n${t.youCanChangeDefaultRecordFileFormatFromAppSettings}`,
         });
         this.garbledNotified = true;
@@ -1258,10 +1173,10 @@ class Store {
   }
 
   restoreFromBackup(name: string): void {
-    if (this.appState !== AppState.RECORD_FILE_HISTORY_DIALOG || this.isBussy) {
+    if (this.appState !== AppState.RECORD_FILE_HISTORY_DIALOG || useBusyState().isBusy) {
       return;
     }
-    this.retainBussyState();
+    useBusyState().retain();
     api
       .loadRecordFileBackup(name)
       .then((data) => {
@@ -1275,10 +1190,10 @@ class Store {
         this._appState = AppState.NORMAL;
       })
       .catch((e) => {
-        this.pushError(e);
+        useErrorStore().add(e);
       })
       .finally(() => {
-        this.releaseBussyState();
+        useBusyState().release();
       });
   }
 
@@ -1287,11 +1202,11 @@ class Store {
   }
 
   loadRemoteRecordFile(url?: string) {
-    this.retainBussyState();
+    useBusyState().retain();
     this.recordManager
       .importRecordFromRemoteURL(url)
-      .catch((e) => this.pushError(e))
-      .finally(() => this.releaseBussyState());
+      .catch((e) => useErrorStore().add(e))
+      .finally(() => useBusyState().release());
   }
 
   showJishogiPoints(): void {
@@ -1320,7 +1235,7 @@ class Store {
       position,
       Color.WHITE,
     );
-    this.enqueueMessage({
+    useMessageStore().enqueue({
       text: t.jishogiPoints,
       attachments: [
         {
@@ -1369,12 +1284,26 @@ class Store {
   }
 
   async onMainWindowClose(): Promise<void> {
-    this.retainBussyState();
+    useBusyState().retain();
     try {
       await this.recordManager.saveBackup();
     } finally {
-      this.releaseBussyState();
+      useBusyState().release();
     }
+  }
+
+  private showConfirmation(confirmation: Confirmation): void {
+    const lastAppState = this.appState;
+    useConfirmationStore().show({
+      ...confirmation,
+      onOk: () => {
+        if (this.appState !== lastAppState) {
+          useErrorStore().add("確認ダイアログ表示中に他の操作が行われたため処理が中止されました。");
+          return;
+        }
+        confirmation.onOk();
+      },
+    });
   }
 }
 

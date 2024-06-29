@@ -34,7 +34,7 @@ enum GameState {
   STARTING = "STARTING",
   ACTIVE = "active",
   PENDING = "pending",
-  BUSSY = "bussy",
+  BUSY = "busy",
 }
 
 export type PlayerGameResults = {
@@ -524,7 +524,7 @@ export class GameManager {
     if (this.state !== GameState.ACTIVE && this.state !== GameState.PENDING) {
       return;
     }
-    this.state = GameState.BUSSY;
+    this.state = GameState.BUSY;
     const color = this.recordManager.record.position.color;
     Promise.resolve()
       .then(() => {

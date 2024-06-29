@@ -219,8 +219,12 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useAppSetting } from "@/renderer/store/setting";
 import { LogType, LogLevel } from "@/common/log";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
+import { useMessageStore } from "@/renderer/store/message";
 
 const store = useStore();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
 const dialog = ref();
 const source = ref();
@@ -240,7 +244,7 @@ const createSubdirectories = ref(false);
 const fileNameConflictAction = ref(FileNameConflictAction.OVERWRITE);
 const singleFileDestination = ref();
 
-store.retainBussyState();
+busyState.retain();
 
 onMounted(async () => {
   try {
@@ -264,10 +268,10 @@ onMounted(async () => {
     fileNameConflictAction.value = batchConversionSetting.fileNameConflictAction;
     singleFileDestination.value.value = batchConversionSetting.singleFileDestination;
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 
@@ -276,30 +280,30 @@ onBeforeUnmount(() => {
 });
 
 const selectDirectory = async (elem: HTMLInputElement) => {
-  store.retainBussyState();
+  busyState.retain();
   try {
     const path = await api.showSelectDirectoryDialog(elem.value);
     if (path) {
       elem.value = path;
     }
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 };
 
 const selectDestinationFile = async (elem: HTMLInputElement) => {
-  store.retainBussyState();
+  busyState.retain();
   try {
     const path = await api.showSaveMergedRecordDialog(elem.value);
     if (path) {
       elem.value = path;
     }
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 };
 
@@ -330,14 +334,14 @@ const convert = async () => {
   };
   const error = validateBatchConversionSetting(batchConversionSetting);
   if (error) {
-    store.pushError(error);
+    useErrorStore().add(error);
     return;
   }
-  store.retainBussyState();
+  busyState.retain();
   try {
     await api.saveBatchConversionSetting(batchConversionSetting);
     const result = await api.convertRecordFiles(batchConversionSetting);
-    store.enqueueMessage({
+    useMessageStore().enqueue({
       text: t.conversionCompleted,
       attachments: [
         {
@@ -375,9 +379,9 @@ const convert = async () => {
       ],
     });
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 };
 

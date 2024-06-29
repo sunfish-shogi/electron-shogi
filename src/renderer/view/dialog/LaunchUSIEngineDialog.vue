@@ -45,14 +45,17 @@ import api from "@/renderer/ipc/api";
 import { useAppSetting } from "@/renderer/store/setting";
 import { PromptTarget } from "@/common/advanced/prompt";
 import { Tab } from "@/common/settings/app";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
 const dialog = ref();
 const engineSettings = ref(new USIEngineSettings());
 const engineURI = ref("");
 
-store.retainBussyState();
+busyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -60,10 +63,10 @@ onMounted(async () => {
   try {
     engineSettings.value = await api.loadUSIEngineSetting();
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 
@@ -74,7 +77,7 @@ onBeforeUnmount(() => {
 const onStart = async () => {
   const setting = engineSettings.value.getEngine(engineURI.value);
   if (!setting) {
-    store.pushError(t.engineNotSelected);
+    useErrorStore().add(t.engineNotSelected);
     return;
   }
   const sessionID = await api.usiLaunch(setting, appSetting.engineTimeoutSeconds);

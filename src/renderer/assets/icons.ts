@@ -1,7 +1,7 @@
 import preloadImage from "./preload";
 
 export enum IconType {
-  BUSSY = "bussy",
+  BUSY = "busy",
   ERROR = "error",
   INFO = "info",
   GAME = "game",
@@ -58,7 +58,7 @@ export enum IconType {
 }
 
 export const iconSourceMap = {
-  [IconType.BUSSY]: "icon/hourglass_empty_white_24dp.svg",
+  [IconType.BUSY]: "icon/hourglass_empty_white_24dp.svg",
   [IconType.ERROR]: "icon/error_outline_white_24dp.svg",
   [IconType.INFO]: "icon/info_white_24dp.svg",
   [IconType.GAME]: "icon/sports_esports_white_24dp.svg",

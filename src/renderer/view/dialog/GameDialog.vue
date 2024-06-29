@@ -247,8 +247,11 @@ import { PlayerSetting } from "@/common/settings/player";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { InitialPositionType } from "tsshogi";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
+const busyState = useBusyState();
 const dialog = ref();
 const hours = ref();
 const minutes = ref();
@@ -275,7 +278,7 @@ const whitePlayerURI = ref("");
 
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
-store.retainBussyState();
+busyState.retain();
 
 onMounted(async () => {
   try {
@@ -287,10 +290,10 @@ onMounted(async () => {
     installHotKeyForDialog(dialog.value);
     defaultValueLoaded = true;
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 
@@ -379,7 +382,7 @@ const onStart = () => {
     ? validateGameSetting(gameSetting)
     : validateGameSettingForWeb(gameSetting);
   if (error) {
-    store.pushError(error);
+    useErrorStore().add(error);
   } else {
     store.startGame(gameSetting);
   }

@@ -33,7 +33,7 @@ const isMac = process.platform === "darwin";
 const stateChangeCallbacks: ((
   appState: AppState,
   researchState: ResearchState,
-  bussy: boolean,
+  busy: boolean,
 ) => void)[] = [];
 
 function menuItem(
@@ -46,7 +46,7 @@ function menuItem(
 ): MenuItemConstructorOptions {
   const index = stateChangeCallbacks.length;
   const id = "menuItem" + index;
-  stateChangeCallbacks.push((appState: AppState, researchState: ResearchState, bussy: boolean) => {
+  stateChangeCallbacks.push((appState: AppState, researchState: ResearchState, busy: boolean) => {
     const menu = Menu.getApplicationMenu();
     if (!menu) {
       return;
@@ -55,7 +55,7 @@ function menuItem(
     if (!item) {
       return;
     }
-    item.enabled = bussy
+    item.enabled = busy
       ? false
       : !appStates || appStates.length === 0
         ? true

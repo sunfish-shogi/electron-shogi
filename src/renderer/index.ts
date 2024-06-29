@@ -20,6 +20,7 @@ import * as _ja from "dayjs/locale/ja";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as _zh_tw from "dayjs/locale/zh-tw";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useErrorStore } from "@/renderer/store/error";
 
 api.log(LogLevel.INFO, `start renderer process: APP_VERSION=${appInfo.appVersion}`);
 
@@ -56,7 +57,7 @@ Promise.allSettled([
   useAppSetting()
     .loadAppSetting()
     .catch((e) => {
-      store.pushError(new Error("アプリ設定の読み込み中にエラーが発生しました: " + e));
+      useErrorStore().add(new Error("アプリ設定の読み込み中にエラーが発生しました: " + e));
     }),
   api
     .fetchInitialRecordFileRequest()
@@ -68,7 +69,7 @@ Promise.allSettled([
       }
     })
     .catch((e) => {
-      store.pushError(new Error("起動パラメーターの取得に失敗しました: " + e));
+      useErrorStore().add(new Error("起動パラメーターの取得に失敗しました: " + e));
     }),
 ]).finally(() => {
   const language = useAppSetting().language;

@@ -11,8 +11,8 @@ import { CommandType } from "@/common/advanced/command";
 
 const api: Bridge = {
   // Core
-  updateAppState(appState: AppState, researchState: ResearchState, bussy: boolean): void {
-    ipcRenderer.send(Background.UPDATE_APP_STATE, appState, researchState, bussy);
+  updateAppState(appState: AppState, researchState: ResearchState, busy: boolean): void {
+    ipcRenderer.send(Background.UPDATE_APP_STATE, appState, researchState, busy);
   },
   onClosable(): void {
     ipcRenderer.send(Background.ON_CLOSABLE);

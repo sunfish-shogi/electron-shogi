@@ -287,8 +287,13 @@ import { useAppSetting } from "@/renderer/store/setting";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
+import { useMessageStore } from "@/renderer/store/message";
 
 const store = useStore();
+const busyState = useBusyState();
+const messageStore = useMessageStore();
 const appSetting = useAppSetting();
 const dialog = ref();
 const protocolVersion = ref();
@@ -315,7 +320,7 @@ const playerURI = ref("");
 
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
-store.retainBussyState();
+busyState.retain();
 
 onMounted(async () => {
   try {
@@ -326,10 +331,10 @@ onMounted(async () => {
     installHotKeyForDialog(dialog.value);
     defaultValueLoaded = true;
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 
@@ -408,11 +413,11 @@ const buildConfig = (): CSAGameSetting => {
 const onExportYAML = () => {
   const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
   if (setting instanceof Error) {
-    store.pushError(setting);
+    useErrorStore().add(setting);
     return;
   }
   navigator.clipboard.writeText(YAML.stringify(setting));
-  store.enqueueMessage({
+  messageStore.enqueue({
     text: t.yamlFormatSettingCopiedToClipboard,
   });
 };
@@ -420,11 +425,11 @@ const onExportYAML = () => {
 const onExportJSON = () => {
   const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
   if (setting instanceof Error) {
-    store.pushError(setting);
+    useErrorStore().add(setting);
     return;
   }
   navigator.clipboard.writeText(JSON.stringify(setting, null, 2));
-  store.enqueueMessage({
+  messageStore.enqueue({
     text: t.jsonFormatSettingCopiedToClipboard,
   });
 };
@@ -432,12 +437,12 @@ const onExportJSON = () => {
 const onExportCommand = () => {
   const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
   if (setting instanceof Error) {
-    store.pushError(setting);
+    useErrorStore().add(setting);
     return;
   }
   compressCSAGameSettingForCLI(setting).then((compressed) => {
     navigator.clipboard.writeText(`npx usi-csa-bridge --base64 ${compressed}`);
-    store.enqueueMessage({
+    messageStore.enqueue({
       text: t.usiCsaBridgeCommandCopiedToClipboard,
     });
   });
@@ -447,7 +452,7 @@ const onStart = () => {
   const csaGameSetting = buildConfig();
   const error = validateCSAGameSetting(csaGameSetting);
   if (error) {
-    store.pushError(error);
+    useErrorStore().add(error);
   } else {
     store.loginCSAGame(csaGameSetting, {
       saveHistory: saveHistory.value,

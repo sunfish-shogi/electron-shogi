@@ -107,8 +107,11 @@ import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
+const busyState = useBusyState();
 const dialog = ref();
 const enableStartNumber = ref(false);
 const startNumber = ref();
@@ -119,7 +122,7 @@ const commentBehavior = ref(CommentBehavior.NONE);
 const engineSettings = ref(new USIEngineSettings());
 const engineURI = ref("");
 
-store.retainBussyState();
+busyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -135,10 +138,10 @@ onMounted(async () => {
     maxSecondsPerMove.value.value = analysisSetting.perMoveCriteria.maxSeconds;
     commentBehavior.value = analysisSetting.commentBehavior;
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 
@@ -148,7 +151,7 @@ onBeforeUnmount(() => {
 
 const onStart = () => {
   if (!engineURI.value || !engineSettings.value.hasEngine(engineURI.value)) {
-    store.pushError(t.engineNotSelected);
+    useErrorStore().add(t.engineNotSelected);
     return;
   }
   const engine = engineSettings.value.getEngine(engineURI.value);

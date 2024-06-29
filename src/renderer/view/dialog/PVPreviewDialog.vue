@@ -90,6 +90,7 @@ import { useStore } from "@/renderer/store";
 import { SearchInfoSenderType } from "@/renderer/store/record";
 import { CommentBehavior } from "@/common/settings/analysis";
 import { AppState } from "@/common/control/state";
+import { useMessageStore } from "@/renderer/store/message";
 
 const props = defineProps({
   position: {
@@ -142,6 +143,7 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
+const messageStore = useMessageStore();
 const appSetting = useAppSetting();
 const dialog = ref();
 const maxSize = reactive(new RectSize(0, 0));
@@ -259,7 +261,7 @@ const insertToRecord = () => {
   const n = store.appendMovesSilently(props.pv, {
     ignoreValidation: true,
   });
-  store.enqueueMessage({
+  messageStore.enqueue({
     text: t.insertedNMovesToRecord(n),
   });
 };
@@ -275,7 +277,7 @@ const insertToComment = () => {
     },
     CommentBehavior.APPEND,
   );
-  store.enqueueMessage({
+  messageStore.enqueue({
     text: t.insertedComment,
   });
 };

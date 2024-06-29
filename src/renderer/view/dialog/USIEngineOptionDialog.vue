@@ -213,11 +213,12 @@ import {
   mergeUSIEngineSetting,
   USIEngineSetting,
 } from "@/common/settings/usi";
-import { useStore } from "@/renderer/store";
 import { computed, onBeforeUnmount, onMounted, onUpdated, PropType, ref } from "vue";
 import { useAppSetting } from "@/renderer/store/setting";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
 
 const props = defineProps({
   latestEngineSetting: {
@@ -235,7 +236,7 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const store = useStore();
+const busyState = useBusyState();
 const appSetting = useAppSetting();
 const dialog = ref();
 const engineNameInput = ref();
@@ -247,7 +248,7 @@ const selectors = ref({} as { [key: string]: InstanceType<typeof HorizontalSelec
 const engine = ref(emptyUSIEngineSetting());
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
-store.retainBussyState();
+busyState.retain();
 onMounted(async () => {
   showModalDialog(dialog.value, cancel);
   installHotKeyForDialog(dialog.value);
@@ -259,10 +260,10 @@ onMounted(async () => {
     enableEarlyPonder.value = engine.value.enableEarlyPonder;
     defaultValueLoaded = true;
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     emit("cancel");
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 const options = computed(() =>
@@ -315,7 +316,7 @@ const openEngineDir = () => {
   api.openExplorer(engine.value.path);
 };
 const selectFile = async (name: string) => {
-  store.retainBussyState();
+  busyState.retain();
   try {
     const path = await api.showSelectFileDialog();
     const elem = inputs.value[name];
@@ -323,20 +324,20 @@ const selectFile = async (name: string) => {
       elem.value = path;
     }
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 };
 const sendOption = async (name: string) => {
-  store.retainBussyState();
+  busyState.retain();
   try {
     const timeoutSeconds = appSetting.engineTimeoutSeconds;
     await api.sendUSISetOption(engine.value.path, name, timeoutSeconds);
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 };
 const reset = () => {

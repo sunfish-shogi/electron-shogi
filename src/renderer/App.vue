@@ -16,8 +16,8 @@
     <LoadRemoteFileDialog v-if="store.appState === AppState.LOAD_REMOTE_FILE_DIALOG" />
     <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
     <ResearchDialog v-if="store.researchState === ResearchState.STARTUP_DIALOG" />
-    <BussyMessage v-if="store.isBussy" />
-    <ConfirmDialog v-if="store.confirmation" />
+    <BusyMessage v-if="busyState.isBusy" />
+    <ConfirmDialog v-if="confirmation.message" />
     <CSAGameReadyDialog
       v-if="
         store.csaGameState === CSAGameState.PLAYER_SETUP ||
@@ -39,8 +39,8 @@
       :pv="store.pvPreview.pv"
       @close="store.closePVPreviewDialog()"
     />
-    <InfoMessage v-if="store.hasMessage" />
-    <ErrorMessage v-if="store.hasError" />
+    <InfoMessage v-if="messageStore.hasMessage" />
+    <ErrorMessage v-if="errorStore.hasError" />
   </div>
 </template>
 
@@ -54,7 +54,7 @@ import USIEngineManagementDialog from "@/renderer/view/dialog/USIEngineManagemen
 import PositionImageExportDialog from "@/renderer/view/dialog/PositionImageExportDialog.vue";
 import AppSettingDialog from "@/renderer/view/dialog/AppSettingDialog.vue";
 import PasteDialog from "@/renderer/view/dialog/PasteDialog.vue";
-import BussyMessage from "@/renderer/view/dialog/BussyMessage.vue";
+import BusyMessage from "@/renderer/view/dialog/BusyMessage.vue";
 import ConfirmDialog from "@/renderer/view/dialog/ConfirmDialog.vue";
 import InfoMessage from "@/renderer/view/dialog/InfoMessage.vue";
 import ErrorMessage from "@/renderer/view/dialog/ErrorMessage.vue";
@@ -73,9 +73,17 @@ import LaunchUSIEngineDialog from "./view/dialog/LaunchUSIEngineDialog.vue";
 import ConnectToCSAServerDialog from "./view/dialog/ConnectToCSAServerDialog.vue";
 import PieceSetChangeDialog from "./view/dialog/PieceSetChangeDialog.vue";
 import LoadRemoteFileDialog from "./view/dialog/LoadRemoteFileDialog.vue";
+import { useBusyState } from "./store/busy";
+import { useMessageStore } from "./store/message";
+import { useErrorStore } from "./store/error";
+import { useConfirmationStore } from "./store/confirm";
 
 const appSetting = useAppSetting();
 const store = useStore();
+const messageStore = useMessageStore();
+const errorStore = useErrorStore();
+const busyState = useBusyState();
+const confirmation = useConfirmationStore();
 
 onMounted(() => {
   const body = document.getElementsByTagName("body")[0];

@@ -41,13 +41,16 @@ import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/dev
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "./PlayerSelector.vue";
+import { useErrorStore } from "@/renderer/store/error";
+import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
+const busyState = useBusyState();
 const dialog = ref();
 const engineSettings = ref(new USIEngineSettings());
 const engineURI = ref("");
 
-store.retainBussyState();
+busyState.retain();
 
 onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
@@ -57,10 +60,10 @@ onMounted(async () => {
     engineSettings.value = await api.loadUSIEngineSetting();
     engineURI.value = mateSearchSetting.usi?.uri || "";
   } catch (e) {
-    store.pushError(e);
+    useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
-    store.releaseBussyState();
+    busyState.release();
   }
 });
 
@@ -70,7 +73,7 @@ onBeforeUnmount(() => {
 
 const onStart = () => {
   if (!engineURI.value || !engineSettings.value.hasEngine(engineURI.value)) {
-    store.pushError("エンジンを選択してください。");
+    useErrorStore().add("エンジンを選択してください。");
     return;
   }
   const engine = engineSettings.value.getEngine(engineURI.value);

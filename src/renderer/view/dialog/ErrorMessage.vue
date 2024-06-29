@@ -27,13 +27,13 @@
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
-import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
-const store = useStore();
+import { useErrorStore } from "@/renderer/store/error";
+const store = useErrorStore();
 const dialog = ref();
 
 onMounted(() => {
@@ -46,7 +46,7 @@ onBeforeUnmount(() => {
 });
 
 const onClose = () => {
-  store.clearErrors();
+  store.clear();
 };
 </script>
 

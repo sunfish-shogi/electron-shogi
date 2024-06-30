@@ -4,11 +4,14 @@
       <RecordView
         :record="store.record"
         :operational="isRecordOperational"
-        :show-comment="appSetting.showCommentInRecordView"
-        :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
+        :show-comment="showComment"
+        :show-elapsed-time="showElapsedTime"
         :elapsed-time-toggle-label="t.elapsedTime"
         :comment-toggle-label="t.commentsAndBookmarks"
         :opacity="appSetting.enableTransparent ? appSetting.recordOpacity : 1"
+        :show-top-control="showTopControl"
+        :show-bottom-control="showBottomControl"
+        :show-branches="showBranches"
         @go-begin="goBegin"
         @go-back="goBack"
         @go-forward="goForward"
@@ -42,6 +45,32 @@ import {
   uninstallHotKeyForMainWindow,
 } from "@/renderer/devices/hotkey";
 import { useAppSetting } from "@/renderer/store/setting";
+
+defineProps({
+  showElapsedTime: {
+    type: Boolean,
+    required: false,
+  },
+  showComment: {
+    type: Boolean,
+    required: false,
+  },
+  showTopControl: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+  showBottomControl: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+  showBranches: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+});
 
 const store = useStore();
 const appSetting = useAppSetting();

@@ -40,4 +40,18 @@ export class Rect {
       height: this.height,
     });
   }
+  get style() {
+    return {
+      left: `${this.x}px`,
+      top: `${this.y}px`,
+      width: `${this.width}px`,
+      height: `${this.height}px`,
+    };
+  }
+  get size() {
+    return new RectSize(this.width, this.height);
+  }
+  multiply(m: number): Rect {
+    return new Rect(this.x * m, this.y * m, this.width * m, this.height * m);
+  }
 }

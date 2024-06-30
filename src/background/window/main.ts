@@ -12,7 +12,7 @@ import { loadWindowSetting, saveWindowSetting } from "@/background/settings";
 import { buildWindowSetting } from "@/common/settings/window";
 import { getAppLogger } from "@/background/log";
 import { AppState } from "@/common/control/state";
-import { isDevelopment, isPreview, isProduction, isTest } from "@/background/proc/env";
+import { getPreloadPath, isDevelopment, isPreview, isTest } from "@/background/proc/env";
 import { checkUpdates } from "@/background/version/check";
 import { setupMenu } from "@/background/window/menu";
 import { t } from "@/common/i18n";
@@ -23,15 +23,13 @@ export function createWindow() {
 
   getAppLogger().info("create BrowserWindow");
 
-  const preloadPath = isProduction() ? "./preload.js" : "../../../packed/preload.js";
-
   // Create the browser window.
   const win = new BrowserWindow({
     width: setting.width,
     height: setting.height,
     fullscreen: setting.fullscreen,
     webPreferences: {
-      preload: path.join(__dirname, preloadPath),
+      preload: path.join(__dirname, getPreloadPath()),
       // on development, disable webSecurity to allow mix of "file://" and "http://localhost:5173"
       webSecurity: !isDevelopment(),
       // 対局や棋譜解析の用途では処理の遅延が致命的なのでスロットリングを無効にする。

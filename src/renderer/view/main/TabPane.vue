@@ -41,12 +41,16 @@
           class="full tab-content"
           :size="contentSize"
           :type="EvaluationChartType.RAW"
+          :thema="appSetting.thema"
+          :coefficient-in-sigmoid="appSetting.coefficientInSigmoid"
         />
         <EvaluationChart
           v-if="activeTab === Tab.PERCENTAGE_CHART"
           class="full tab-content"
           :size="contentSize"
           :type="EvaluationChartType.WIN_RATE"
+          :thema="appSetting.thema"
+          :coefficient-in-sigmoid="appSetting.coefficientInSigmoid"
         />
         <MonitorView
           v-if="activeTab === Tab.MONITOR"
@@ -66,14 +70,16 @@ export const headerHeight = 30;
 import { PropType, computed } from "vue";
 import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import EngineAnalytics from "@/renderer/view/tab/EngineAnalytics.vue";
-import EvaluationChart, { EvaluationChartType } from "@/renderer/view/tab/EvaluationChart.vue";
+import EvaluationChart from "@/renderer/view/tab/EvaluationChart.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
 import MonitorView from "@/renderer/view/tab/MonitorView.vue";
 import { RectSize } from "@/common/assets/geometry.js";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { Tab } from "@/common/settings/app";
+import { EvaluationChartType } from "@/common/settings/layout";
 import { IconType } from "@/renderer/assets/icons";
 import { t } from "@/common/i18n";
+import { useAppSetting } from "@/renderer/store/setting";
 
 const props = defineProps({
   size: {
@@ -99,6 +105,7 @@ const emit = defineEmits<{
   onMinimize: [];
 }>();
 
+const appSetting = useAppSetting();
 const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
 const minimize = () => emit("onMinimize");
 const contentSize = computed(() => props.size.reduce(new RectSize(0, headerHeight)));

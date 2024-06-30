@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="full column root" :class="{ paused }">
-      <div v-if="canBePaused" class="overlay-control row reverse">
+      <div v-if="showHeader && canBePaused" class="overlay-control row reverse">
         <button v-if="paused" @click="onUnpause">
           <Icon :icon="IconType.RESUME" />
           <span>{{ t.resume }}</span>
@@ -11,7 +11,7 @@
           <span>{{ t.stop }}</span>
         </button>
       </div>
-      <div class="row headers">
+      <div v-if="showHeader" class="row headers">
         <div class="header">
           <span>{{ t.name }}: </span>
           <span>{{ info.name }}</span>
@@ -40,13 +40,15 @@
         </div>
       </div>
       <div class="row list-header">
-        <div class="list-column time">{{ t.elapsed }}</div>
-        <div class="list-column multipv-index">{{ t.rank }}</div>
-        <div class="list-column depth">{{ t.depth }}</div>
-        <div class="list-column nodes">{{ t.nodes }}</div>
-        <div class="list-column score">{{ t.eval }}</div>
+        <div v-if="showTimeColumn" class="list-column time">{{ t.elapsed }}</div>
+        <div v-if="showMultiPvColumn" class="list-column multipv-index">{{ t.rank }}</div>
+        <div v-if="showDepthColumn" class="list-column depth">{{ t.depth }}</div>
+        <div v-if="showNodesColumn" class="list-column nodes">{{ t.nodes }}</div>
+        <div v-if="showScoreColumn" class="list-column score">{{ t.eval }}</div>
+        <div v-if="showScoreColumn" class="list-column score-flag"></div>
+        <div class="list-column text">{{ t.pv }}</div>
       </div>
-      <div class="list" :style="{ height: `${height - 37}px` }">
+      <div class="list" :style="{ height: `${height - (showHeader ? 37 : 15)}px` }">
         <div
           v-for="iteration in historyMode ? info.iterations : info.latestIteration"
           :key="iteration.id"
@@ -54,20 +56,20 @@
           class="row list-item"
           :class="{ highlight: enableHighlight && iteration.multiPV === 1 }"
         >
-          <div class="list-column time">
+          <div v-if="showTimeColumn" class="list-column time">
             {{ iteration.timeMs ? (iteration.timeMs / 1e3).toFixed(1) + "s" : "" }}
           </div>
-          <div class="list-column multipv-index">
+          <div v-if="showMultiPvColumn" class="list-column multipv-index">
             {{ iteration.multiPV || "" }}
           </div>
-          <div class="list-column depth">
+          <div v-if="showDepthColumn" class="list-column depth">
             {{ iteration.depth }}{{ iteration.selectiveDepth && iteration.depth ? "/" : ""
             }}{{ iteration.selectiveDepth }}
           </div>
-          <div class="list-column nodes">
+          <div v-if="showNodesColumn" class="list-column nodes">
             {{ iteration.nodes }}
           </div>
-          <div class="list-column score">
+          <div v-if="showScoreColumn" class="list-column score">
             {{
               iteration.scoreMate !== undefined
                 ? getDisplayScore(iteration.scoreMate, iteration.color, evaluationViewFrom)
@@ -76,14 +78,14 @@
                   : ""
             }}
           </div>
-          <div class="list-column score-flag">
+          <div v-if="showScoreColumn" class="list-column score-flag">
             {{ iteration.lowerBound ? "++" : "" }}
             {{ iteration.upperBound ? "--" : "" }}
             {{ iteration.scoreMate ? t.mateShort : "" }}
           </div>
           <div class="grow list-column text">
             <button
-              v-if="iteration.pv && iteration.pv.length !== 0 && iteration.text"
+              v-if="showPlayButton && iteration.pv && iteration.pv.length !== 0 && iteration.text"
               @click="showPreview(iteration)"
             >
               <Icon :icon="IconType.PLAY" />
@@ -109,23 +111,17 @@ import { useAppSetting } from "@/renderer/store/setting";
 import { useStore } from "@/renderer/store";
 
 const props = defineProps({
-  historyMode: {
-    type: Boolean,
-    required: true,
-  },
-  info: {
-    type: USIPlayerMonitor,
-    required: true,
-  },
-  height: {
-    type: Number,
-    required: true,
-  },
-  canBePaused: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
+  historyMode: { type: Boolean, required: true },
+  info: { type: USIPlayerMonitor, required: true },
+  height: { type: Number, required: true },
+  showHeader: { type: Boolean, default: true },
+  showTimeColumn: { type: Boolean, default: true },
+  showMultiPvColumn: { type: Boolean, default: true },
+  showDepthColumn: { type: Boolean, default: true },
+  showNodesColumn: { type: Boolean, default: true },
+  showScoreColumn: { type: Boolean, default: true },
+  showPlayButton: { type: Boolean, default: true },
+  canBePaused: { type: Boolean, required: false, default: false },
 });
 
 const store = useStore();

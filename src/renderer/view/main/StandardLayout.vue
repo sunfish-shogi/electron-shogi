@@ -13,9 +13,15 @@
             <BoardPane
               :style="boardPaneStyle"
               :max-size="boardPaneMaxSize"
+              :left-control-type="appSetting.leftSideControlType"
+              :right-control-type="appSetting.rightSideControlType"
               @resize="onBoardPaneResize"
             />
-            <RecordPane :style="recordPaneStyle" />
+            <RecordPane
+              :style="recordPaneStyle"
+              :show-comment="appSetting.showCommentInRecordView"
+              :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
+            />
           </div>
           <button
             v-if="!isBottomPaneVisible"

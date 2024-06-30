@@ -60,3 +60,7 @@ export function getAppPath(name: "userData" | "logs" | "exe" | "documents" | "pi
       return process.cwd();
   }
 }
+
+export function getPreloadPath() {
+  return isProduction() ? "./preload.js" : "../../../packed/preload.js";
+}

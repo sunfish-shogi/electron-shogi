@@ -35,6 +35,8 @@ export enum Background {
   CLEAR_RECORD_FILE_HISTORY = "clearRecordFileHistory",
   SAVE_RECORD_FILE_BACKUP = "saveRecordFileBackup",
   LOAD_RECORD_FILE_BACKUP = "loadRecordFileBackup",
+  LOAD_LAYOUT_PROFILE_LIST = "loadLayoutProfileList",
+  UPDATE_LAYOUT_PROFILE_LIST = "updateLayoutProfileList",
   LOAD_USI_ENGINE_SETTING = "loadUSIEngineSetting",
   SAVE_USI_ENGINE_SETTING = "saveUSIEngineSetting",
   SHOW_SELECT_USI_ENGINE_DIALOG = "showSelectUSIEngineDialog",
@@ -89,4 +91,5 @@ export enum Renderer {
   CSA_GAME_RESULT = "csaGameResult",
   CSA_CLOSE = "csaClose",
   PROMPT_COMMAND = "promptCommand",
+  UPDATE_LAYOUT_PROFILE_LIST = "updateLayoutProfileList",
 }

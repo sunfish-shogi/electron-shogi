@@ -62,6 +62,7 @@ import { setOnUpdateUSIInfoHandler, setOnUpdateUSIPonderInfoHandler } from "@/re
 import { useErrorStore } from "./error";
 import { useBusyState } from "./busy";
 import { Confirmation, useConfirmationStore } from "./confirm";
+import { LayoutProfile, LayoutProfileList } from "@/common/settings/layout";
 
 export type PVPreview = {
   position: ImmutablePosition;
@@ -123,6 +124,7 @@ function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] 
 class Store {
   private recordManager = new RecordManager();
   private _appState = AppState.NORMAL;
+  private _customLayout: LayoutProfile | null = null;
   private _isAppSettingDialogVisible = false;
   private _pvPreview?: PVPreview;
   private usiMonitor = new USIMonitor();
@@ -309,6 +311,14 @@ class Store {
 
   get researchState(): ResearchState {
     return this._researchState;
+  }
+
+  get customLayout() {
+    return this._customLayout;
+  }
+
+  updateLayoutProfileList(uri: string, profileList: LayoutProfileList): void {
+    this._customLayout = profileList.profiles.find((p) => p.uri === uri) || null;
   }
 
   get pvPreview(): PVPreview | undefined {

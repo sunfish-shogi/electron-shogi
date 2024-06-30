@@ -26,7 +26,7 @@
           :placeholder="t.highlightByPartialMatch"
           @input="
             (event) => {
-              searchText = (event.target as HTMLInputElement).value;
+              searchText = inputEventToString(event);
             }
           "
         />
@@ -61,6 +61,7 @@ import { useStore } from "@/renderer/prompt/store";
 import { onMounted, onUpdated, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { t } from "@/common/i18n";
+import { inputEventToString } from "@/renderer/helpers/form";
 
 const store = useStore();
 const autoScroll = ref(true);

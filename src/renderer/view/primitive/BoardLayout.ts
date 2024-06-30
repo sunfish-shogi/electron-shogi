@@ -357,7 +357,7 @@ export type AssetConfig = {
   kingPieceType: KingPieceType;
 };
 
-export type LayoutConfig = {
+export type LayoutProfileList = {
   boardImageOpacity: number;
   pieceStandImageOpacity: number;
   boardLabelType: BoardLabelType;
@@ -401,7 +401,7 @@ export default class LayoutBuilder {
   }
 
   build(
-    config: LayoutConfig,
+    config: LayoutProfileList,
     position: ImmutablePosition,
     lastMove: Move | null | undefined,
     pointer: Square | Piece | null | undefined,

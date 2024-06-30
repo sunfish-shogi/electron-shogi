@@ -8,7 +8,7 @@
           <span>{{ t.pv }}{{ pvs.length >= 2 ? " " + (index + 1) : "" }}</span>
         </button>
       </div>
-      <div class="bookmark-area">
+      <div v-if="showBookmark" class="bookmark-area">
         <input
           type="text"
           class="bookmark"
@@ -38,6 +38,13 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { Move } from "tsshogi";
 import BookmarkListDialog from "@/renderer/view/dialog/BookmarkListDialog.vue";
+
+defineProps({
+  showBookmark: {
+    type: Boolean,
+    default: true,
+  },
+});
 
 const store = useStore();
 const readonly = computed(() => store.appState != AppState.NORMAL);

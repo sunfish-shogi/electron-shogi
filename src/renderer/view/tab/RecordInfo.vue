@@ -86,6 +86,7 @@ const changeEmptyInfoVisibility = (visible: boolean) => {
 
 <style scoped>
 .root {
+  color: var(--text-color);
   background-color: var(--text-bg-color);
 }
 .main {

@@ -20,6 +20,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         prompt: resolve(__dirname, "prompt.html"),
+        "layout-manager": resolve(__dirname, "layout-manager.html"),
       },
     },
     outDir: resolve(__dirname, "dist"),
@@ -65,6 +66,7 @@ export default defineConfig({
         "src/background/window/ipc.ts",
         "src/background/window/menu.ts",
         "src/background/window/prompt.ts",
+        "src/background/window/layout.ts",
         "src/renderer/index.ts",
         "src/renderer/assets/icons.ts",
         "src/renderer/devices/audio.ts",

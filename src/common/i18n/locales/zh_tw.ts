@@ -39,7 +39,7 @@ export const zh_tw: Texts = {
   appendSpecialMove: "特殊手",
   deleteMoves: "刪除現在位置後的棋譜",
   view: "表示",
-  openLayoutManager: "レイアウトマネージャー", // TODO: translate
+  openLayoutManager: "開啟佈局管理員",
   toggleFullScreen: "切換全螢幕",
   defaultFontSize: "預設字體尺寸",
   largerFontSize: "增加字體尺寸",
@@ -105,14 +105,14 @@ export const zh_tw: Texts = {
   allGamesCompleted: "連續對局結束",
   wins: "勝利數目",
   draws: "平手數目",
-  validGames: "有効対局数", // TODO: translate
-  invalidGames: "無効対局数", // TODO: translate
+  validGames: "有效對局數",
+  invalidGames: "無效對局數",
   eloRatingDiff: "等級分相差",
-  ignoreDraws: "引き分け無効", // TODO: translate
+  ignoreDraws: "忽略平手對局",
   drawsAreHalfWin: "平手作0.5勝",
   zValue: "Z值",
-  significance5pc: "有意水準5%", // TODO: translate
-  significance1pc: "有意水準1%", // TODO: translate
+  significance5pc: "顯著性水準5%",
+  significance1pc: "顯著性水準1%",
   gameEnded: "對局結束",
   offlineGame: "本地（單機）對局",
   csaOnlineGame: "通訊對局（CSA）",
@@ -163,7 +163,7 @@ export const zh_tw: Texts = {
   completePositionSetup: "結束編輯局面",
   changeTurn: "變更手番",
   initializePosition: "初始化局面",
-  changePieceSet: "駒の増減", // TODO: translate
+  changePieceSet: "調整棋駒數",
   appSettings: "程式設定",
   language: "語言",
   theme: "主題",
@@ -255,7 +255,7 @@ export const zh_tw: Texts = {
   alwaysSenteIsPositive: "先手有利時為正值",
   signOfEvaluation: "評價值符號",
   winRateCoefficient: "勝率換算係數",
-  monitor: "監視", // TODO: translate
+  monitor: "引擎監視",
   hideTabView: "最小化",
   expandTabView: "展開分頁",
   sente: "先手",
@@ -274,7 +274,7 @@ export const zh_tw: Texts = {
   rank: "順位",
   depth: "深度",
   searchEngine: "引擎",
-  ponder: "對方手番時運算(Ponder)",
+  ponder: "對方手番時運算 (Ponder)",
   numberOfThreads: "執行緒數",
   multiPV: "多重PV",
   startPosition: "開始局面",
@@ -283,7 +283,7 @@ export const zh_tw: Texts = {
   jishogi: "持將棋",
   rule24: "24點法",
   rule27: "27點法",
-  tryRule: "Try Rule", // TODO: translate
+  tryRule: "Try Rule",
   autoRelogin: "自動重新登入",
   restartItEveryGame: "每局重新啟動",
   swapTurnWhenGameRepetition: "每局交換手番",
@@ -318,7 +318,7 @@ export const zh_tw: Texts = {
   engineManagement: "引擎管理",
   engineName: "引擎名稱",
   author: "作者",
-  earlyPonder: "早期Ponder", // TODO: translate
+  earlyPonder: "預先Ponder",
   enginePath: "場所",
   openDirectory: "開啟資料夾",
   displayName: "表示名稱",
@@ -338,9 +338,9 @@ export const zh_tw: Texts = {
   userFile: "使用者檔案",
   automaticBackup: "自動備份",
   restore: "復原",
-  loadRecordFromWeb: "從網上取得棋譜",
-  fetchLatestData: "最新データを取得", // TODO: translate
-  sourceURL: "ソースURL", // TODO: translate
+  loadRecordFromWeb: "從網際網路取得棋譜",
+  fetchLatestData: "取得最新資料",
+  sourceURL: "來源網址",
   ok: "OK",
   cancel: "取消",
   back: "返回",
@@ -419,34 +419,34 @@ export const zh_tw: Texts = {
   installed: "已安裝",
   stable: "安定版",
   latest: "最新版",
-  backgroundColor: "背景色", // TODO: translate
-  record: "棋譜", // TODO: translate
-  chart: "グラフ", // TODO: translate
-  analytics: "解析", // TODO: translate
-  controlGroup: "メニュー", // TODO: translate
-  left: "左", // TODO: translate
-  top: "上", // TODO: translate
-  width: "幅", // TODO: translate
-  height: "高さ", // TODO: translate
-  newCustomProfile: "新規カスタムプロファイル", // TODO: translate
-  addCustomLayoutProfile: "新規レイアウトプロファイル", // TODO: translate
-  duplicateCurrentProfile: "現在のプロファイルを複製", // TODO: translate
-  removeCurrentProfile: "現在のプロファイルを削除", // TODO: translate
-  exportProfileToClipboard: "プロファイルをクリップボードに出力", // TODO: translate
-  importProfileFromClipboard: "クリップボードからプロファイルを取り込む", // TODO: translate
-  profileExportedToClipboard: "プロファイルをクリップボードに出力しました。", // TODO: translate
-  profileImported: "プロファイルを取り込みました。", // TODO: translate
-  failedToImportProfile: "プロファイルの取り込みに失敗しました。", // TODO: translate
-  rightControlBox: "右側メニュー", // TODO: translate
-  leftControlBox: "左側メニュー", // TODO: translate
-  topControlBox: "操作ボタン", // TODO: translate
-  legends: "凡例", // TODO: translate
-  historyMode: "履歴モード", // TODO: translate
-  headers: "ヘッダー", // TODO: translate
-  playButton: "再現ボタン", // TODO: translate
-  insert: "挿入", // TODO: translate
-  up: "上へ", // TODO: translate
-  down: "下へ", // TODO: translate
+  backgroundColor: "背景顏色",
+  record: "棋譜",
+  chart: "圖表",
+  analytics: "解析",
+  controlGroup: "選單",
+  left: "左方間隔",
+  top: "上方間隔",
+  width: "寬度",
+  height: "高度",
+  newCustomProfile: "新增佈局設定",
+  addCustomLayoutProfile: "新增佈局設定",
+  duplicateCurrentProfile: "複製目前佈局設定",
+  removeCurrentProfile: "移除該佈局設定",
+  exportProfileToClipboard: "將佈局設定複製至剪貼板",
+  importProfileFromClipboard: "自剪貼板匯入佈局設定",
+  profileExportedToClipboard: "該佈局已複製至剪貼板。",
+  profileImported: "該佈局已成功匯入。",
+  failedToImportProfile: "佈局匯入失敗。",
+  rightControlBox: "右側選單",
+  leftControlBox: "左側選單",
+  topControlBox: "操作按鈕",
+  legends: "圖例",
+  historyMode: "歷史模式",
+  headers: "解析表頭",
+  playButton: "再現按鈕",
+  insert: "插入",
+  up: "向上移動",
+  down: "向下移動",
   updatedAt: "更新時間",
   createdAt: "建立時間",
   lastSent: "最後送出",
@@ -485,13 +485,13 @@ export const zh_tw: Texts = {
   importingFollowingRecordOrPosition: "將匯入以下棋譜（局面）。",
   supportsKIF_KI2_CSA_USI_SFEN_JKF: "※支援KIF/KI2/CSA/USI/SFEN/JKF形式。",
   pleasePasteRecordIntoTextArea: "※請在文字輸入區域貼上您的棋譜。",
-  pleaseSpecifyPlainTextURL: "※プレーンテキストのURLを指定してください。", // TODO: translate
-  redirectNotSupported: "※リダイレクトはサポートされていません。", // TODO: translate
+  pleaseSpecifyPlainTextURL: "※請輸入您要使用的URL。",
+  redirectNotSupported: "※無法使用重新導向連結。",
   desktopVersionPastesAutomatically: "※安裝程式版將會自動貼上棋譜。",
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:
-    "早期Ponder機能は、やねうら王の独自オプションでponderhitコマンドを送信します。", // TODO: translate
+    "早期 Ponder 機能將會發送やねうら王自行定義之 ponderhit 指令。",
   ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior:
-    "エンジンがこのオプションに対応していない場合、予期しない動作を引き起こす可能性があります。", // TODO: translate
+    "若您的引擎不支援該指令，可能會有預期外之行為發生。",
   someLogsDisabled: "部份 log 已被無效化。",
   logsRecommendedForCSAProtocol: "若使用CSA協定對局，建議輸出各項紀錄。",
   pleaseEnableLogsAndRestart: "請在程式設定中開啟紀錄並重新啟動本程式。",
@@ -515,12 +515,12 @@ export const zh_tw: Texts = {
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
     "會將現在的棋譜關閉並開啟別的檔案，請問您要繼續嗎？",
   areYouSureWantToClearHistory: "將清除紀錄。請問您要繼續嗎？",
-  areYouSureWantToRemoveCurrentProfile: "現在のプロファイルを削除します。よろしいですか？", // TODO: translate
-  yamlFormatSettingCopiedToClipboard: "YAML形式の設定をクリップボードにコピーしました。", // TODO: translate
-  jsonFormatSettingCopiedToClipboard: "JSON形式の設定をクリップボードにコピーしました。", // TODO: translate
-  usiCsaBridgeCommandCopiedToClipboard: "usi-csa-bridge コマンドをクリップボードにコピーしました。", // TODO: translate
+  areYouSureWantToRemoveCurrentProfile: "將移除現在的設定。請問您要繼續嗎？",
+  yamlFormatSettingCopiedToClipboard: "已將 YAML 格式之設定複製到剪貼板。",
+  jsonFormatSettingCopiedToClipboard: "已將 JSON 格式之設定複製到剪貼板。",
+  usiCsaBridgeCommandCopiedToClipboard: "已將 usi-csa-bridge 指令複製到剪貼板。",
   youCanNotCloseAppWhileCSAOnlineGame: "由於CSA協定正在使用中，本程式無法被關閉。",
-  fileExtensionNotSupported: "無法支援的副檔名。",
+  fileExtensionNotSupported: "無法使用該副檔名。",
   errorOccuredWhileDisconnectingFromCSAServer: "在與CSA伺服器中斷連線時發生錯誤。",
   failedToConnectToCSAServer: "無法連接CSA伺服器。",
   errorOccuredWhileLogoutFromCSAServer: "在登出 CSA 伺服器時發生錯誤。",
@@ -537,7 +537,7 @@ export const zh_tw: Texts = {
   failedToSaveRecord: "棋譜保存失敗。",
   failedToParseSFEN: "SFEN讀取失敗。",
   failedToDetectRecordFormat: "無法判別棋譜形式。",
-  unknown: "不明",
+  unknown: "未知",
   unknownFileExtension: "未知的檔案形式。",
   emptyRecordInput: "您尚未輸入棋譜。",
   invalidPieceName: "不合法的棋駒",
@@ -573,8 +573,7 @@ export const zh_tw: Texts = {
   pleaseEndActiveFeaturesBeforeOpenRecord: "請關閉現正運行的功能再開啟棋譜。",
   bothTimeLimitAndByoyomiAreNotSet: "持時間與讀秒尚未設置。",
   canNotUseByoyomiWithFischer: "讀秒與 Fischer 選項無法同時併用。",
-  repeatsMustBeOneIfHumanPlayerIncluded:
-    "人が対局する場合、連続対局の回数は1以外を設定できません。", // TODO: translate
+  repeatsMustBeOneIfHumanPlayerIncluded: "若要與人對局，連續對局次數僅能設為 1 。",
   protocolVersionNotSelected: "請選擇協定版本。",
   hostNameIsEmpty: "主機名稱為空。",
   invalidPortNumber: "不可用的連接埠號碼。",

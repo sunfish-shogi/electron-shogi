@@ -99,10 +99,10 @@
       </div>
       <div v-if="layout.promotion" class="promotion-selector" :style="layout.promotion.style">
         <div class="select-button promote" @click.stop.prevent="clickPromote()">
-          <img class="piece-image" :src="layout.promotion.promoteImagePath" />
+          <img class="piece-image" :src="layout.promotion.promoteImagePath" draggable="false" />
         </div>
         <div class="select-button not-promote" @click.stop.prevent="clickNotPromote()">
-          <img class="piece-image" :src="layout.promotion.notPromoteImagePath" />
+          <img class="piece-image" :src="layout.promotion.notPromoteImagePath" draggable="false" />
         </div>
       </div>
       <div class="turn" :style="layout.turn.style">{{ nextMoveLabel }}</div>

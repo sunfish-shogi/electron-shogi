@@ -25,9 +25,17 @@
             />
           </div>
           <div class="form-group warning">
-            <div class="note">翻訳の改善にご協力ください。 We'd like your help to translate.</div>
             <div class="note">
-              言語の変更には再起動が必要です。 You should restart this app to change the language.
+              {{ t.translationHelpNeeded }}
+              {{ appSetting.language != Language.EN ? "We'd like your help to translate." : "" }}
+            </div>
+            <div class="note">
+              {{ t.restartRequiredAfterLocaleChange }}
+              {{
+                appSetting.language != Language.EN
+                  ? "You should restart this app to change the language."
+                  : ""
+              }}
             </div>
           </div>
           <!-- テーマ -->

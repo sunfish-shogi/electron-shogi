@@ -512,6 +512,8 @@ export const ja: Texts = {
     "上のボタンで「これは通知のテストです。」というメッセージを確認してください。",
   ifNotWorkYouShouldAllowNotificationOnOSSetting:
     "表示されない場合はOSの設定で通知を許可してください。",
+  translationHelpNeeded: "翻訳の改善にご協力ください。",
+  restartRequiredAfterLocaleChange: "言語の変更には再起動が必要です。",
   areYouSureWantToResign: "投了しますか？",
   areYouSureWantToDoDeclaration: "宣言しますか？",
   areYouSureWantToQuitGames: "連続対局を中断しますか？",

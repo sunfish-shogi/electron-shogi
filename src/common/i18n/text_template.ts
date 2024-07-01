@@ -498,6 +498,8 @@ export type Texts = {
   whenNewVersionIsAvailableItWillBeNotified: string;
   pleaseCheckMessageThisIsTestNotificationByAboveButton: string;
   ifNotWorkYouShouldAllowNotificationOnOSSetting: string;
+  translationHelpNeeded: string;
+  restartRequiredAfterLocaleChange: string;
   areYouSureWantToResign: string;
   areYouSureWantToDoDeclaration: string;
   areYouSureWantToQuitGames: string;

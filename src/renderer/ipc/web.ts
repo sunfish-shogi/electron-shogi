@@ -1,15 +1,15 @@
 /* eslint-disable no-console */
-import { defaultAnalysisSetting } from "@/common/settings/analysis";
-import { defaultAppSetting } from "@/common/settings/app";
-import { defaultGameSetting } from "@/common/settings/game";
-import { defaultResearchSetting } from "@/common/settings/research";
-import { USIEngineSettings } from "@/common/settings/usi";
+import { defaultAnalysisSettings } from "@/common/settings/analysis";
+import { defaultAppSettings } from "@/common/settings/app";
+import { defaultGameSettings } from "@/common/settings/game";
+import { defaultResearchSettings } from "@/common/settings/research";
+import { USIEngines } from "@/common/settings/usi";
 import { LogLevel } from "@/common/log";
 import { Bridge } from "@/renderer/ipc/bridge";
 import { t } from "@/common/i18n";
-import { defaultCSAGameSettingHistory } from "@/common/settings/csa";
-import { defaultMateSearchSetting } from "@/common/settings/mate";
-import { defaultBatchConversionSetting } from "@/common/settings/conversion";
+import { defaultCSAGameSettingsHistory } from "@/common/settings/csa";
+import { defaultMateSearchSettings } from "@/common/settings/mate";
+import { defaultBatchConversionSettings } from "@/common/settings/conversion";
 import { getEmptyHistory } from "@/common/file/history";
 import { VersionStatus } from "@/background/version/types";
 import { SessionStates } from "@/common/advanced/monitor";
@@ -17,13 +17,13 @@ import { emptyLayoutProfileList } from "@/common/settings/layout";
 import * as uri from "@/common/uri";
 
 enum STORAGE_KEY {
-  APP_SETTING = "appSetting",
-  RESEARCH_SETTING = "researchSetting",
-  BATCH_CONVERSION_SETTING = "batchConversionSetting",
-  ANALYSIS_SETTING = "analysisSetting",
-  GAME_SETTING = "gameSetting",
-  MATE_SEARCH_SETTING = "mateSearchSetting",
-  CSA_GAME_SETTING_HISTORY = "csaGameSettingHistory",
+  APP_SETTINGS = "appSetting",
+  RESEARCH_SETTINGS = "researchSetting",
+  BATCH_CONVERSION_SETTINGS = "batchConversionSetting",
+  ANALYSIS_SETTINGS = "analysisSetting",
+  GAME_SETTINGS = "gameSetting",
+  MATE_SEARCH_SETTINGS = "mateSearchSetting",
+  CSA_GAME_SETTINGS_HISTORY = "csaGameSettingHistory",
 }
 
 // Electron を使わずにシンプルな Web アプリケーションとして実行した場合に使用します。
@@ -46,104 +46,104 @@ export const webAPI: Bridge = {
   },
 
   // Settings
-  async loadAppSetting(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.APP_SETTING);
+  async loadAppSettings(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.APP_SETTINGS);
     if (!json) {
-      return JSON.stringify(defaultAppSetting());
+      return JSON.stringify(defaultAppSettings());
     }
     return JSON.stringify({
-      ...defaultAppSetting(),
+      ...defaultAppSettings(),
       ...JSON.parse(json),
     });
   },
-  async saveAppSetting(json: string): Promise<void> {
-    localStorage.setItem(STORAGE_KEY.APP_SETTING, json);
+  async saveAppSettings(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.APP_SETTINGS, json);
   },
-  async loadBatchConversionSetting(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.BATCH_CONVERSION_SETTING);
+  async loadBatchConversionSettings(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.BATCH_CONVERSION_SETTINGS);
     if (!json) {
-      return JSON.stringify(defaultBatchConversionSetting());
+      return JSON.stringify(defaultBatchConversionSettings());
     }
     return JSON.stringify({
-      ...defaultBatchConversionSetting(),
+      ...defaultBatchConversionSettings(),
       ...JSON.parse(json),
     });
   },
-  async saveBatchConversionSetting(json: string): Promise<void> {
-    localStorage.setItem(STORAGE_KEY.BATCH_CONVERSION_SETTING, json);
+  async saveBatchConversionSettings(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.BATCH_CONVERSION_SETTINGS, json);
   },
-  async loadResearchSetting(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.RESEARCH_SETTING);
+  async loadResearchSettings(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.RESEARCH_SETTINGS);
     if (!json) {
-      return JSON.stringify(defaultResearchSetting());
+      return JSON.stringify(defaultResearchSettings());
     }
     return JSON.stringify({
-      ...defaultResearchSetting(),
+      ...defaultResearchSettings(),
       ...JSON.parse(json),
     });
   },
-  async saveResearchSetting(json: string): Promise<void> {
-    localStorage.setItem(STORAGE_KEY.RESEARCH_SETTING, json);
+  async saveResearchSettings(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.RESEARCH_SETTINGS, json);
   },
-  async loadAnalysisSetting(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.ANALYSIS_SETTING);
+  async loadAnalysisSettings(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.ANALYSIS_SETTINGS);
     if (!json) {
-      return JSON.stringify(defaultAnalysisSetting());
+      return JSON.stringify(defaultAnalysisSettings());
     }
     return JSON.stringify({
-      ...defaultAnalysisSetting(),
+      ...defaultAnalysisSettings(),
       ...JSON.parse(json),
     });
   },
-  async saveAnalysisSetting(json: string): Promise<void> {
-    localStorage.setItem(STORAGE_KEY.ANALYSIS_SETTING, json);
+  async saveAnalysisSettings(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.ANALYSIS_SETTINGS, json);
   },
-  async loadGameSetting(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.GAME_SETTING);
+  async loadGameSettings(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.GAME_SETTINGS);
     if (!json) {
-      return JSON.stringify(defaultGameSetting());
+      return JSON.stringify(defaultGameSettings());
     }
     return JSON.stringify({
-      ...defaultGameSetting(),
+      ...defaultGameSettings(),
       ...JSON.parse(json),
     });
   },
-  async saveGameSetting(json: string): Promise<void> {
-    localStorage.setItem(STORAGE_KEY.GAME_SETTING, json);
+  async saveGameSettings(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.GAME_SETTINGS, json);
   },
-  async loadCSAGameSettingHistory(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY);
+  async loadCSAGameSettingsHistory(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.CSA_GAME_SETTINGS_HISTORY);
     if (!json) {
-      return JSON.stringify(defaultCSAGameSettingHistory());
+      return JSON.stringify(defaultCSAGameSettingsHistory());
     }
     return JSON.stringify({
-      ...defaultCSAGameSettingHistory(),
+      ...defaultCSAGameSettingsHistory(),
       ...JSON.parse(json),
     });
   },
-  async saveCSAGameSettingHistory(json: string): Promise<void> {
-    localStorage.setItem(STORAGE_KEY.CSA_GAME_SETTING_HISTORY, json);
+  async saveCSAGameSettingsHistory(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.CSA_GAME_SETTINGS_HISTORY, json);
   },
-  async loadMateSearchSetting(): Promise<string> {
-    const json = localStorage.getItem(STORAGE_KEY.MATE_SEARCH_SETTING);
+  async loadMateSearchSettings(): Promise<string> {
+    const json = localStorage.getItem(STORAGE_KEY.MATE_SEARCH_SETTINGS);
     if (!json) {
-      return JSON.stringify(defaultMateSearchSetting());
+      return JSON.stringify(defaultMateSearchSettings());
     }
     return JSON.stringify({
-      ...defaultMateSearchSetting(),
+      ...defaultMateSearchSettings(),
       ...JSON.parse(json),
     });
   },
-  async saveMateSearchSetting(json: string): Promise<void> {
-    localStorage.setItem(STORAGE_KEY.MATE_SEARCH_SETTING, json);
+  async saveMateSearchSettings(json: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.MATE_SEARCH_SETTINGS, json);
   },
-  async loadUSIEngineSetting(): Promise<string> {
-    return new USIEngineSettings().json;
+  async loadUSIEngines(): Promise<string> {
+    return new USIEngines().json;
   },
-  async saveUSIEngineSetting(): Promise<void> {
+  async saveUSIEngines(): Promise<void> {
     // Do Nothing
   },
-  onUpdateAppSetting(): void {
+  onUpdateAppSettings(): void {
     // Do Nothing
   },
 

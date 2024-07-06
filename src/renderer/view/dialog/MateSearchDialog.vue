@@ -5,13 +5,13 @@
       <div class="form-group scroll">
         <PlayerSelector
           :player-uri="engineURI"
-          :engine-settings="engineSettings"
+          :engines="engines"
           :filter-label="USIEngineLabel.MATE"
           :display-thread-state="true"
           :display-multi-pv-state="false"
-          @update-engine-setting="
-            (settings: USIEngineSettings) => {
-              engineSettings = settings;
+          @update-engines="
+            (val: USIEngines) => {
+              engines = val;
             }
           "
           @select-player="
@@ -33,8 +33,8 @@
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
-import { MateSearchSetting } from "@/common/settings/mate";
-import { USIEngineLabel, USIEngineSettings } from "@/common/settings/usi";
+import { MateSearchSettings } from "@/common/settings/mate";
+import { USIEngineLabel, USIEngines } from "@/common/settings/usi";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import api from "@/renderer/ipc/api";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
@@ -47,7 +47,7 @@ import { useBusyState } from "@/renderer/store/busy";
 const store = useStore();
 const busyState = useBusyState();
 const dialog = ref();
-const engineSettings = ref(new USIEngineSettings());
+const engines = ref(new USIEngines());
 const engineURI = ref("");
 
 busyState.retain();
@@ -56,9 +56,9 @@ onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
   installHotKeyForDialog(dialog.value);
   try {
-    const mateSearchSetting = await api.loadMateSearchSetting();
-    engineSettings.value = await api.loadUSIEngineSetting();
-    engineURI.value = mateSearchSetting.usi?.uri || "";
+    const mateSearchSettings = await api.loadMateSearchSettings();
+    engines.value = await api.loadUSIEngines();
+    engineURI.value = mateSearchSettings.usi?.uri || "";
   } catch (e) {
     useErrorStore().add(e);
     store.destroyModalDialog();
@@ -72,15 +72,15 @@ onBeforeUnmount(() => {
 });
 
 const onStart = () => {
-  if (!engineURI.value || !engineSettings.value.hasEngine(engineURI.value)) {
+  if (!engineURI.value || !engines.value.hasEngine(engineURI.value)) {
     useErrorStore().add("エンジンを選択してください。");
     return;
   }
-  const engine = engineSettings.value.getEngine(engineURI.value);
-  const mateSearchSetting: MateSearchSetting = {
+  const engine = engines.value.getEngine(engineURI.value);
+  const mateSearchSettings: MateSearchSettings = {
     usi: engine,
   };
-  store.startMateSearch(mateSearchSetting);
+  store.startMateSearch(mateSearchSettings);
 };
 
 const onCancel = () => {

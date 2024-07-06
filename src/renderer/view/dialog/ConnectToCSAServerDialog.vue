@@ -66,14 +66,14 @@
 <script setup lang="ts">
 import { PromptTarget } from "@/common/advanced/prompt";
 import { t } from "@/common/i18n";
-import { CSAProtocolVersion, validateCSAServerSetting } from "@/common/settings/csa";
+import { CSAProtocolVersion, validateCSAServerSettings } from "@/common/settings/csa";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import api from "@/renderer/ipc/api";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { Tab } from "@/common/settings/app";
 import { useErrorStore } from "@/renderer/store/error";
 
@@ -98,7 +98,7 @@ const onTogglePasswordVisibility = (value: boolean) => {
 };
 
 const onStart = () => {
-  const setting = {
+  const settings = {
     protocolVersion: CSAProtocolVersion.V121_X1,
     host: host.value.value,
     port: port.value.value,
@@ -108,14 +108,14 @@ const onStart = () => {
       initialDelay: 60,
     },
   };
-  const error = validateCSAServerSetting(setting);
+  const error = validateCSAServerSettings(settings);
   if (error) {
     useErrorStore().add(error);
     return;
   }
-  api.csaLogin(setting).then((sessionID: number) => {
-    api.openPrompt(PromptTarget.CSA, sessionID, `${setting.host}:${setting.port}`);
-    useAppSetting().updateAppSetting({ tab: Tab.MONITOR });
+  api.csaLogin(settings).then((sessionID: number) => {
+    api.openPrompt(PromptTarget.CSA, sessionID, `${settings.host}:${settings.port}`);
+    useAppSettings().updateAppSettings({ tab: Tab.MONITOR });
     store.closeModalDialog();
   });
 };

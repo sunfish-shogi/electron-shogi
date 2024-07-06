@@ -1,4 +1,4 @@
-import { USIEngineSetting, emptyUSIEngineSetting } from "@/common/settings/usi";
+import { USIEngine, emptyUSIEngine } from "@/common/settings/usi";
 import { EngineProcess, GameResult as USIGameResult, TimeState, State } from "./engine";
 import * as uri from "@/common/uri";
 import { GameResult } from "@/common/game/result";
@@ -35,9 +35,9 @@ function newTimeoutError(timeoutSeconds: number): Error {
   return new Error(t.noResponseFromEnginePleaseExtendTimeout(timeoutSeconds));
 }
 
-export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngineSetting> {
+export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngine> {
   const sessionID = issueSessionID();
-  return new Promise<USIEngineSetting>((resolve, reject) => {
+  return new Promise<USIEngine>((resolve, reject) => {
     const process = new EngineProcess(resolveEnginePath(path), sessionID, getUSILogger(), {
       timeout: timeoutSeconds * 1e3,
     })
@@ -45,7 +45,7 @@ export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
       .on("usiok", () => {
         resolve({
-          ...emptyUSIEngineSetting(),
+          ...emptyUSIEngine(),
           uri: uri.issueEngineURI(),
           name: process.name,
           defaultName: process.name,
@@ -90,7 +90,7 @@ export function sendSetOptionCommand(
 
 type Session = {
   process: EngineProcess;
-  setting: USIEngineSetting;
+  engine: USIEngine;
   createdMs: number;
 };
 
@@ -115,16 +115,16 @@ function getSession(sessionID: number): Session {
   return session;
 }
 
-export function setupPlayer(setting: USIEngineSetting, timeoutSeconds: number): Promise<number> {
+export function setupPlayer(engine: USIEngine, timeoutSeconds: number): Promise<number> {
   const sessionID = issueSessionID();
-  const process = new EngineProcess(resolveEnginePath(setting.path), sessionID, getUSILogger(), {
+  const process = new EngineProcess(resolveEnginePath(engine.path), sessionID, getUSILogger(), {
     timeout: timeoutSeconds * 1e3,
-    engineOptions: Object.values(setting.options),
-    enableEarlyPonder: setting.enableEarlyPonder,
+    engineOptions: Object.values(engine.options),
+    enableEarlyPonder: engine.enableEarlyPonder,
   });
   sessions.set(sessionID, {
     process,
-    setting,
+    engine: engine,
     createdMs: Date.now(),
   });
   return new Promise<number>((resolve, reject) => {
@@ -259,9 +259,9 @@ export function collectSessionStates(): USISessionState[] {
   return Array.from(sessions.entries())
     .map(([id, session]) => ({
       sessionID: id,
-      uri: session.setting.uri,
-      name: session.setting.name,
-      path: session.setting.path,
+      uri: session.engine.uri,
+      name: session.engine.name,
+      path: session.engine.path,
       pid: session.process.pid,
       stateCode: session.process.state,
       createdMs: session.createdMs,

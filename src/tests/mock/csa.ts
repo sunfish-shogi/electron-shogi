@@ -1,19 +1,19 @@
 import { RecordFileFormat } from "@/common/file/record";
 import { CSAGameSummary } from "@/common/game/csa";
 import {
-  CSAGameSetting,
-  CSAGameSettingForCLI,
-  CSAGameSettingHistory,
+  CSAGameSettings,
+  CSAGameSettingsForCLI,
+  CSAGameSettingsHistory,
   CSAProtocolVersion,
-  CSAServerSetting,
+  CSAServerSettings as CSAServerSettings,
 } from "@/common/settings/csa";
-import { PlayerSetting } from "@/common/settings/player";
+import { PlayerSettings } from "@/common/settings/player";
 import { defaultRecordFileNameTemplate } from "@/renderer/helpers/path";
 import { Color } from "tsshogi";
 
 export const playerURI = "es://usi-engine/test-engine";
 
-const playerSetting: PlayerSetting = {
+const playerSettings: PlayerSettings = {
   name: "my usi engine",
   uri: playerURI,
   usi: {
@@ -66,7 +66,7 @@ const playerSetting: PlayerSetting = {
   },
 };
 
-export const csaServerSetting: CSAServerSetting = {
+export const csaServerSettings: CSAServerSettings = {
   protocolVersion: CSAProtocolVersion.V121,
   host: "test-server",
   port: 4081,
@@ -75,9 +75,9 @@ export const csaServerSetting: CSAServerSetting = {
   tcpKeepalive: { initialDelay: 10 },
 };
 
-export const csaGameSetting: CSAGameSetting = {
-  player: playerSetting,
-  server: csaServerSetting,
+export const csaGameSettings: CSAGameSettings = {
+  player: playerSettings,
+  server: csaServerSettings,
   autoFlip: true,
   enableComment: true,
   enableAutoSave: true,
@@ -86,8 +86,8 @@ export const csaGameSetting: CSAGameSetting = {
   restartPlayerEveryGame: false,
 };
 
-export const emptyCSAGameSettingHistory: CSAGameSettingHistory = {
-  player: playerSetting,
+export const emptyCSAGameSettingsHistory: CSAGameSettingsHistory = {
+  player: playerSettings,
   serverHistory: [],
   autoFlip: true,
   enableComment: true,
@@ -97,8 +97,8 @@ export const emptyCSAGameSettingHistory: CSAGameSettingHistory = {
   restartPlayerEveryGame: false,
 };
 
-export const singleCSAGameSettingHistory: CSAGameSettingHistory = {
-  player: playerSetting,
+export const singleCSAGameSettingsHistory: CSAGameSettingsHistory = {
+  player: playerSettings,
   serverHistory: [
     {
       protocolVersion: CSAProtocolVersion.V121,
@@ -196,7 +196,7 @@ export const csaGameSummaryInvalidPosition: CSAGameSummary = {
   position: invalidPosition,
 };
 
-export const csaGameSettingForCLI: CSAGameSettingForCLI = {
+export const csaGameSettingsForCLI: CSAGameSettingsForCLI = {
   usi: {
     name: "my usi engine",
     path: "/path/to/engine",
@@ -209,7 +209,7 @@ export const csaGameSettingForCLI: CSAGameSettingForCLI = {
     },
     enableEarlyPonder: false,
   },
-  server: csaServerSetting,
+  server: csaServerSettings,
   saveRecordFile: true,
   enableComment: true,
   recordFileNameTemplate: defaultRecordFileNameTemplate,

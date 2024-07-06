@@ -1,5 +1,5 @@
 <template>
-  <div class="root full" :class="appSetting.thema" :style="style">
+  <div class="root full" :class="appSettings.thema" :style="style">
     <!-- Main Contents -->
     <CustomLayout v-if="store.customLayout" :profile="store.customLayout" />
     <StandardLayout v-else class="full" />
@@ -13,11 +13,11 @@
     <CSAGameDialog v-if="store.appState === AppState.CSA_GAME_DIALOG" />
     <AnalysisDialog v-if="store.appState === AppState.ANALYSIS_DIALOG" />
     <MateSearchDialog v-if="store.appState === AppState.MATE_SEARCH_DIALOG" />
-    <USIEngineManagementDialog v-if="store.appState === AppState.USI_ENGINE_SETTING_DIALOG" />
+    <USIEngineManagementDialog v-if="store.appState === AppState.USI_ENGINES_DIALOG" />
     <RecordFileHistoryDialog v-if="store.appState === AppState.RECORD_FILE_HISTORY_DIALOG" />
     <BatchConversionDialog v-if="store.appState === AppState.BATCH_CONVERSION_DIALOG" />
     <PositionImageExportDialog v-if="store.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG" />
-    <AppSettingDialog v-if="store.isAppSettingDialogVisible" />
+    <AppSettingsDialog v-if="store.isAppSettingsDialogVisible" />
     <PasteDialog v-if="store.appState === AppState.PASTE_DIALOG" />
     <LaunchUSIEngineDialog v-if="store.appState === AppState.LAUNCH_USI_ENGINE_DIALOG" />
     <ConnectToCSAServerDialog v-if="store.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG" />
@@ -56,7 +56,7 @@ import CSAGameDialog from "@/renderer/view/dialog/CSAGameDialog.vue";
 import ResearchDialog from "@/renderer/view/dialog/ResearchDialog.vue";
 import USIEngineManagementDialog from "@/renderer/view/dialog/USIEngineManagementDialog.vue";
 import PositionImageExportDialog from "@/renderer/view/dialog/PositionImageExportDialog.vue";
-import AppSettingDialog from "@/renderer/view/dialog/AppSettingDialog.vue";
+import AppSettingsDialog from "@/renderer/view/dialog/AppSettingsDialog.vue";
 import PasteDialog from "@/renderer/view/dialog/PasteDialog.vue";
 import BusyMessage from "@/renderer/view/dialog/BusyMessage.vue";
 import ConfirmDialog from "@/renderer/view/dialog/ConfirmDialog.vue";
@@ -67,7 +67,7 @@ import { AppState, ResearchState } from "@/common/control/state.js";
 import AnalysisDialog from "@/renderer/view/dialog/AnalysisDialog.vue";
 import CSAGameReadyDialog from "@/renderer/view/dialog/CSAGameReadyDialog.vue";
 import { CSAGameState } from "@/renderer/store/csa";
-import { useAppSetting } from "./store/setting";
+import { useAppSettings } from "./store/settings";
 import { BackgroundImageType } from "@/common/settings/app";
 import MateSearchDialog from "./view/dialog/MateSearchDialog.vue";
 import PVPreviewDialog from "./view/dialog/PVPreviewDialog.vue";
@@ -83,7 +83,7 @@ import { useErrorStore } from "./store/error";
 import { useConfirmationStore } from "./store/confirm";
 import CustomLayout from "./view/main/CustomLayout.vue";
 
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const store = useStore();
 const messageStore = useMessageStore();
 const errorStore = useErrorStore();
@@ -115,11 +115,11 @@ onMounted(() => {
 const style = computed(() => {
   const style: { [key: string]: string } = {};
   if (
-    appSetting.backgroundImageType !== BackgroundImageType.NONE &&
-    appSetting.backgroundImageFileURL
+    appSettings.backgroundImageType !== BackgroundImageType.NONE &&
+    appSettings.backgroundImageFileURL
   ) {
     let size = "";
-    switch (appSetting.backgroundImageType) {
+    switch (appSettings.backgroundImageType) {
       case BackgroundImageType.COVER:
         size = "cover";
         break;
@@ -130,7 +130,7 @@ const style = computed(() => {
         size = "auto";
         break;
     }
-    style["background-image"] = `url("${appSetting.backgroundImageFileURL}")`;
+    style["background-image"] = `url("${appSettings.backgroundImageFileURL}")`;
     style["background-size"] = size;
   }
   if (store.customLayout?.backgroundColor) {

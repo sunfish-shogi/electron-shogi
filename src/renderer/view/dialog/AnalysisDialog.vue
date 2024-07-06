@@ -6,11 +6,11 @@
         <div>{{ t.searchEngine }}</div>
         <PlayerSelector
           :player-uri="engineURI"
-          :engine-settings="engineSettings"
+          :engines="engines"
           :filter-label="USIEngineLabel.RESEARCH"
           :display-thread-state="true"
           :display-multi-pv-state="true"
-          @update-engine-setting="onUpdatePlayerSetting"
+          @update-engines="onUpdatePlayerSettings"
           @select-player="onSelectPlayer"
         />
       </div>
@@ -99,8 +99,8 @@ import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
-import { AnalysisSetting, CommentBehavior } from "@/common/settings/analysis";
-import { USIEngineLabel, USIEngineSettings } from "@/common/settings/usi";
+import { AnalysisSettings, CommentBehavior } from "@/common/settings/analysis";
+import { USIEngineLabel, USIEngines } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
@@ -119,7 +119,7 @@ const enableEndNumber = ref(false);
 const endNumber = ref();
 const maxSecondsPerMove = ref();
 const commentBehavior = ref(CommentBehavior.NONE);
-const engineSettings = ref(new USIEngineSettings());
+const engines = ref(new USIEngines());
 const engineURI = ref("");
 
 busyState.retain();
@@ -128,15 +128,15 @@ onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
   installHotKeyForDialog(dialog.value);
   try {
-    const analysisSetting = await api.loadAnalysisSetting();
-    engineSettings.value = await api.loadUSIEngineSetting();
-    engineURI.value = analysisSetting.usi?.uri || "";
-    enableStartNumber.value = analysisSetting.startCriteria.enableNumber;
-    startNumber.value.value = analysisSetting.startCriteria.number;
-    enableEndNumber.value = analysisSetting.endCriteria.enableNumber;
-    endNumber.value.value = analysisSetting.endCriteria.number;
-    maxSecondsPerMove.value.value = analysisSetting.perMoveCriteria.maxSeconds;
-    commentBehavior.value = analysisSetting.commentBehavior;
+    const analysisSettings = await api.loadAnalysisSettings();
+    engines.value = await api.loadUSIEngines();
+    engineURI.value = analysisSettings.usi?.uri || "";
+    enableStartNumber.value = analysisSettings.startCriteria.enableNumber;
+    startNumber.value.value = analysisSettings.startCriteria.number;
+    enableEndNumber.value = analysisSettings.endCriteria.enableNumber;
+    endNumber.value.value = analysisSettings.endCriteria.number;
+    maxSecondsPerMove.value.value = analysisSettings.perMoveCriteria.maxSeconds;
+    commentBehavior.value = analysisSettings.commentBehavior;
   } catch (e) {
     useErrorStore().add(e);
     store.destroyModalDialog();
@@ -150,12 +150,12 @@ onBeforeUnmount(() => {
 });
 
 const onStart = () => {
-  if (!engineURI.value || !engineSettings.value.hasEngine(engineURI.value)) {
+  if (!engineURI.value || !engines.value.hasEngine(engineURI.value)) {
     useErrorStore().add(t.engineNotSelected);
     return;
   }
-  const engine = engineSettings.value.getEngine(engineURI.value);
-  const analysisSetting: AnalysisSetting = {
+  const engine = engines.value.getEngine(engineURI.value);
+  const analysisSettings: AnalysisSettings = {
     usi: engine,
     startCriteria: {
       enableNumber: enableStartNumber.value,
@@ -170,15 +170,15 @@ const onStart = () => {
     },
     commentBehavior: commentBehavior.value,
   };
-  store.startAnalysis(analysisSetting);
+  store.startAnalysis(analysisSettings);
 };
 
 const onCancel = () => {
   store.closeModalDialog();
 };
 
-const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
-  engineSettings.value = settings;
+const onUpdatePlayerSettings = async (val: USIEngines) => {
+  engines.value = val;
 };
 
 const onSelectPlayer = (uri: string) => {

@@ -41,8 +41,8 @@
         v-else-if="c.type === 'Chart'"
         :size="c.rect.size"
         :type="c.chartType"
-        :thema="appSetting.thema"
-        :coefficient-in-sigmoid="appSetting.coefficientInSigmoid"
+        :thema="appSettings.thema"
+        :coefficient-in-sigmoid="appSettings.coefficientInSigmoid"
         :show-legend="!!c.showLegend"
       />
       <RecordComment
@@ -67,13 +67,13 @@ import RecordPane from "./RecordPane.vue";
 import EngineAnalytics from "@/renderer/view/tab/EngineAnalytics.vue";
 import EvaluationChart from "@/renderer/view/tab/EvaluationChart.vue";
 import ControlPane, { ControlGroup } from "./ControlPane.vue";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
 
 const props = defineProps<{ profile: LayoutProfile }>();
 
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 
 const components = computed(() => {
   return props.profile.components.map((c, i) => {

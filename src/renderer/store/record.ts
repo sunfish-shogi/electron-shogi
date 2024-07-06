@@ -1,5 +1,5 @@
 import { getDateString, getDateTimeString } from "@/common/helpers/datetime";
-import { TimeLimitSetting } from "@/common/settings/game";
+import { TimeLimitSettings } from "@/common/settings/game";
 import {
   detectRecordFormat,
   DoMoveOption,
@@ -270,20 +270,20 @@ function getPVsFromSearchComment(position: ImmutablePosition, comment: string): 
   return pvs;
 }
 
-function formatTimeLimitCSAV3(setting: TimeLimitSetting): string {
-  return setting.timeSeconds + "+" + setting.byoyomi + "+" + setting.increment;
+function formatTimeLimitCSAV3(settings: TimeLimitSettings): string {
+  return settings.timeSeconds + "+" + settings.byoyomi + "+" + settings.increment;
 }
 
-function formatTimeLimitCSAV2(setting: TimeLimitSetting): string {
-  return secondsToMMSS(setting.timeSeconds) + "+" + String(setting.byoyomi).padStart(2, "0");
+function formatTimeLimitCSAV2(settings: TimeLimitSettings): string {
+  return secondsToMMSS(settings.timeSeconds) + "+" + String(settings.byoyomi).padStart(2, "0");
 }
 
 type GameStartMetadata = {
   gameTitle?: string;
   blackName?: string;
   whiteName?: string;
-  blackTimeLimit: TimeLimitSetting;
-  whiteTimeLimit: TimeLimitSetting;
+  blackTimeLimit: TimeLimitSettings;
+  whiteTimeLimit: TimeLimitSettings;
 };
 
 type AppendMoveParams = {

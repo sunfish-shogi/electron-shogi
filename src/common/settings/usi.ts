@@ -85,7 +85,7 @@ export type USIEngineLabels = {
   [USIEngineLabel.MATE]?: boolean;
 };
 
-export type USIEngineSetting = {
+export type USIEngine = {
   uri: string;
   name: string;
   defaultName: string;
@@ -96,7 +96,7 @@ export type USIEngineSetting = {
   enableEarlyPonder: boolean;
 };
 
-export function emptyUSIEngineSetting(): USIEngineSetting {
+export function emptyUSIEngine(): USIEngine {
   return {
     uri: "",
     name: "",
@@ -113,14 +113,14 @@ export function emptyUSIEngineSetting(): USIEngineSetting {
   };
 }
 
-export function duplicateEngineSetting(src: USIEngineSetting): USIEngineSetting {
-  const engine: USIEngineSetting = JSON.parse(JSON.stringify(src));
+export function duplicateEngine(src: USIEngine): USIEngine {
+  const engine: USIEngine = JSON.parse(JSON.stringify(src));
   engine.uri = issueEngineURI();
   engine.name = t.copyOf(engine.name);
   return engine;
 }
 
-export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngineSetting): void {
+export function mergeUSIEngine(engine: USIEngine, local: USIEngine): void {
   engine.uri = local.uri;
   engine.name = local.name;
   Object.values(local.options).forEach((localOption) => {
@@ -134,18 +134,18 @@ export function mergeUSIEngineSetting(engine: USIEngineSetting, local: USIEngine
   engine.enableEarlyPonder = local.enableEarlyPonder;
 }
 
-export function validateUSIEngineSetting(setting: USIEngineSetting): Error | undefined {
-  if (!uri.isUSIEngine(setting.uri)) {
+export function validateUSIEngine(engine: USIEngine): Error | undefined {
+  if (!uri.isUSIEngine(engine.uri)) {
     return new Error("invalid engine URI");
   }
-  if (!setting.name && !setting.defaultName) {
+  if (!engine.name && !engine.defaultName) {
     return new Error("engine name is required");
   }
-  if (!setting.path) {
+  if (!engine.path) {
     return new Error("engine path is required");
   }
-  for (const name in setting.options) {
-    const option = setting.options[name];
+  for (const name in engine.options) {
+    const option = engine.options[name];
     if (!["check", "spin", "combo", "button", "string", "filename"].includes(option.type)) {
       return new Error(`invalid option type: name=[${name}] type=[${option.type}]`);
     }
@@ -197,18 +197,18 @@ function isValidOptionValue(option: USIEngineOption): boolean {
   return true;
 }
 
-export interface ImmutableUSIEngineSettings {
+export interface ImmutableUSIEngines {
   hasEngine(uri: string): boolean;
-  getEngine(uri: string): USIEngineSetting | undefined;
-  get engineList(): USIEngineSetting[];
+  getEngine(uri: string): USIEngine | undefined;
+  get engineList(): USIEngine[];
   get json(): string;
   get jsonWithIndent(): string;
-  getClone(): USIEngineSettings;
-  filterByLabel(label: USIEngineLabel): USIEngineSettings;
+  getClone(): USIEngines;
+  filterByLabel(label: USIEngineLabel): USIEngines;
 }
 
-export class USIEngineSettings {
-  private engines: { [uri: string]: USIEngineSetting } = {};
+export class USIEngines {
+  private engines: { [uri: string]: USIEngine } = {};
 
   constructor(json?: string) {
     if (json) {
@@ -216,7 +216,7 @@ export class USIEngineSettings {
       Object.keys(src.engines)
         .filter(uri.isUSIEngine)
         .forEach((engineURI) => {
-          const emptyEngine = emptyUSIEngineSetting();
+          const emptyEngine = emptyUSIEngine();
           const engine = src.engines[engineURI];
           this.engines[engineURI] = {
             ...emptyEngine,
@@ -235,11 +235,11 @@ export class USIEngineSettings {
     return !!this.engines[uri];
   }
 
-  addEngine(engine: USIEngineSetting): void {
+  addEngine(engine: USIEngine): void {
     this.engines[engine.uri] = engine;
   }
 
-  updateEngine(engine: USIEngineSetting): boolean {
+  updateEngine(engine: USIEngine): boolean {
     if (!this.engines[engine.uri]) {
       return false;
     }
@@ -255,11 +255,11 @@ export class USIEngineSettings {
     return true;
   }
 
-  getEngine(uri: string): USIEngineSetting | undefined {
+  getEngine(uri: string): USIEngine | undefined {
     return this.engines[uri];
   }
 
-  get engineList(): USIEngineSetting[] {
+  get engineList(): USIEngine[] {
     return Object.values(this.engines).sort((a, b): number => {
       if (a.name !== b.name) {
         return a.name > b.name ? 1 : -1;
@@ -279,12 +279,12 @@ export class USIEngineSettings {
     return JSON.stringify(this, undefined, 2);
   }
 
-  getClone(): USIEngineSettings {
-    return new USIEngineSettings(this.json);
+  getClone(): USIEngines {
+    return new USIEngines(this.json);
   }
 
-  filterByLabel(label: USIEngineLabel): USIEngineSettings {
-    const engines = new USIEngineSettings();
+  filterByLabel(label: USIEngineLabel): USIEngines {
+    const engines = new USIEngines();
     this.engineList
       .filter((engine) => engine.labels && engine.labels[label])
       .forEach((engine) => engines.addEngine(engine));
@@ -312,14 +312,14 @@ export type USIEngineOptionForCLI =
   | USIEngineSpinOptionForCLI
   | USIEngineStringOptionForCLI;
 
-export type USIEngineSettingForCLI = {
+export type USIEngineForCLI = {
   name: string;
   path: string;
   options: { [name: string]: USIEngineOptionForCLI };
   enableEarlyPonder: boolean;
 };
 
-export function exportUSIEngineSettingForCLI(engine: USIEngineSetting): USIEngineSettingForCLI {
+export function exportUSIEnginesForCLI(engine: USIEngine): USIEngineForCLI {
   const options: { [name: string]: USIEngineOptionForCLI } = {};
   for (const option of Object.values(engine.options)) {
     const value = getUSIEngineOptionCurrentValue(option);
@@ -349,10 +349,7 @@ export function exportUSIEngineSettingForCLI(engine: USIEngineSetting): USIEngin
   };
 }
 
-export function importUSIEngineSettingForCLI(
-  engine: USIEngineSettingForCLI,
-  uri?: string,
-): USIEngineSetting {
+export function importUSIEnginesForCLI(engine: USIEngineForCLI, uri?: string): USIEngine {
   const options: { [name: string]: USIEngineOption } = {};
   for (const name in engine.options) {
     const option = engine.options[name];

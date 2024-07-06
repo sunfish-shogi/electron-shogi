@@ -1,10 +1,10 @@
-import { ResearchSetting, defaultResearchSetting } from "@/common/settings/research";
+import { ResearchSettings, defaultResearchSettings } from "@/common/settings/research";
 import { USIPlayer } from "@/renderer/players/usi";
 import { SearchInfo } from "@/renderer/players/player";
 import { ImmutableRecord } from "tsshogi";
-import { USIEngineSetting } from "@/common/settings/usi";
+import { USIEngine } from "@/common/settings/usi";
 import { SearchInfoSenderType } from "./record";
-import { useAppSetting } from "./setting";
+import { useAppSettings } from "./settings";
 import { Lazy } from "@/renderer/helpers/lazy";
 
 function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
@@ -25,7 +25,7 @@ function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
 type UpdateSearchInfoCallback = (type: SearchInfoSenderType, info: SearchInfo) => void;
 
 export class ResearchManager {
-  private setting = defaultResearchSetting();
+  private settings = defaultResearchSettings();
   private engines: USIPlayer[] = [];
   private ready: boolean = false;
   private onUpdateSearchInfo: UpdateSearchInfoCallback = () => {
@@ -54,14 +54,14 @@ export class ResearchManager {
     return this;
   }
 
-  async launch(setting: ResearchSetting) {
-    this.setting = setting;
+  async launch(settings: ResearchSettings) {
+    this.settings = settings;
 
     // Validation
-    if (setting.usi === undefined) {
+    if (settings.usi === undefined) {
       throw new Error("ResearchManager#launch: USIエンジンの設定は必須です。");
     }
-    for (const s of setting.secondaries || []) {
+    for (const s of settings.secondaries || []) {
       if (s.usi === undefined) {
         throw new Error("ResearchManager#launch: USIエンジンの設定は必須です。");
       }
@@ -73,11 +73,11 @@ export class ResearchManager {
     }
 
     // エンジンを設定する。
-    const appSetting = useAppSetting();
-    const engineSettings = [setting.usi, ...(setting.secondaries?.map((s) => s.usi) || [])];
-    this.engines = engineSettings.map((usi, index) => {
+    const appSettings = useAppSettings();
+    const usiEngines = [settings.usi, ...(settings.secondaries?.map((s) => s.usi) || [])];
+    this.engines = usiEngines.map((usi, index) => {
       const type = getSenderTypeByIndex(index);
-      return new USIPlayer(usi as USIEngineSetting, appSetting.engineTimeoutSeconds, (info) => {
+      return new USIPlayer(usi as USIEngine, appSettings.engineTimeoutSeconds, (info) => {
         if (type !== undefined && this.synced) {
           this.onUpdateSearchInfo(type, info);
         }
@@ -119,10 +119,10 @@ export class ResearchManager {
       this.record = record;
       // タイマーを初期化する。
       clearTimeout(this.maxSecondsTimer);
-      if (this.setting.enableMaxSeconds && this.setting.maxSeconds > 0) {
+      if (this.settings.enableMaxSeconds && this.settings.maxSeconds > 0) {
         this.maxSecondsTimer = setTimeout(() => {
           this.stopAll();
-        }, this.setting.maxSeconds * 1e3);
+        }, this.settings.maxSeconds * 1e3);
       }
     }, 200);
   }

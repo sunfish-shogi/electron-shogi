@@ -25,7 +25,7 @@ import {
 } from "@/background/usi";
 import { GameResult } from "@/common/game/result";
 import { LogLevel, LogType } from "@/common/log";
-import { USIEngineSetting } from "@/common/settings/usi";
+import { USIEngine } from "@/common/settings/usi";
 import { Bridge } from "@/renderer/ipc/bridge";
 import { Language, setLanguage } from "@/common/i18n";
 
@@ -68,55 +68,55 @@ export function preload(config: Config) {
     },
 
     // Settings
-    async loadAppSetting(): Promise<string> {
+    async loadAppSettings(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveAppSetting(): Promise<void> {
+    async saveAppSettings(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadBatchConversionSetting(): Promise<string> {
+    async loadBatchConversionSettings(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveBatchConversionSetting(): Promise<void> {
+    async saveBatchConversionSettings(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadResearchSetting(): Promise<string> {
+    async loadResearchSettings(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveResearchSetting(): Promise<void> {
+    async saveResearchSettings(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadAnalysisSetting(): Promise<string> {
+    async loadAnalysisSettings(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveAnalysisSetting(): Promise<void> {
+    async saveAnalysisSettings(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadGameSetting(): Promise<string> {
+    async loadGameSettings(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveGameSetting(): Promise<void> {
+    async saveGameSettings(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadCSAGameSettingHistory(): Promise<string> {
+    async loadCSAGameSettingsHistory(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveCSAGameSettingHistory(): Promise<void> {
+    async saveCSAGameSettingsHistory(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadMateSearchSetting(): Promise<string> {
+    async loadMateSearchSettings(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveMateSearchSetting(): Promise<void> {
+    async saveMateSearchSettings(): Promise<void> {
       throw new Error("This feature is not available on command line tool");
     },
-    async loadUSIEngineSetting(): Promise<string> {
+    async loadUSIEngines(): Promise<string> {
       throw new Error("This feature is not available on command line tool");
     },
-    async saveUSIEngineSetting(): Promise<void> {
+    async saveUSIEngines(): Promise<void> {
       // Do Nothing
     },
-    onUpdateAppSetting(): void {
+    onUpdateAppSettings(): void {
       // Do Nothing
     },
 
@@ -175,8 +175,8 @@ export function preload(config: Config) {
       // Do Nothing
     },
     async usiLaunch(json: string, timeoutSeconds: number): Promise<number> {
-      const setting = JSON.parse(json) as USIEngineSetting;
-      return await usiSetupPlayer(setting, timeoutSeconds);
+      const engine = JSON.parse(json) as USIEngine;
+      return await usiSetupPlayer(engine, timeoutSeconds);
     },
     async usiReady(sessionID: number): Promise<void> {
       return await usiReady(sessionID);

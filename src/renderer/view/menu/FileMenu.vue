@@ -92,7 +92,7 @@ import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
 import api from "@/renderer/ipc/api";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 
 const emit = defineEmits<{
@@ -100,7 +100,7 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const dialog = ref();
 const onClose = () => {
   emit("close");
@@ -145,7 +145,7 @@ const onExportImage = () => {
   emit("close");
 };
 const onOpenAutoSaveDirectory = () => {
-  api.openExplorer(appSetting.autoSaveDirectory);
+  api.openExplorer(appSettings.autoSaveDirectory);
   emit("close");
 };
 const onCopyKIF = () => {

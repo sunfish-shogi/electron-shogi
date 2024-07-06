@@ -1,21 +1,21 @@
-import { ResearchSetting } from "@/common/settings/research";
-import { usiEngineSetting } from "./usi";
+import { ResearchSettings } from "@/common/settings/research";
+import { usiEngines } from "./usi";
 
-export const researchSetting: ResearchSetting = {
-  usi: usiEngineSetting,
+export const researchSettings: ResearchSettings = {
+  usi: usiEngines,
   enableMaxSeconds: false,
   maxSeconds: 5,
 };
 
-export const researchSettingMax5Seconds: ResearchSetting = {
-  usi: usiEngineSetting,
+export const researchSettingsMax5Seconds: ResearchSettings = {
+  usi: usiEngines,
   enableMaxSeconds: true,
   maxSeconds: 5,
 };
 
-export const researchSettingSecondaryEngines: ResearchSetting = {
-  usi: usiEngineSetting,
-  secondaries: [{ usi: usiEngineSetting }, { usi: usiEngineSetting }],
+export const researchSettingsSecondaryEngines: ResearchSettings = {
+  usi: usiEngines,
+  secondaries: [{ usi: usiEngines }, { usi: usiEngines }],
   enableMaxSeconds: false,
   maxSeconds: 5,
 };

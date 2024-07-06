@@ -89,13 +89,13 @@ const onOpenEnginePrompt = () => {
     useErrorStore().add("USI session is not found.");
     return;
   }
-  const setting = store.csaGameSetting;
-  api.openPrompt(PromptTarget.USI, sessionIDs[0], setting.player.name);
+  const settings = store.csaGameSettings;
+  api.openPrompt(PromptTarget.USI, sessionIDs[0], settings.player.name);
 };
 
 const onOpenServerPrompt = () => {
-  const setting = store.csaGameSetting;
-  const name = `${setting.server.host}:${setting.server.port}`;
+  const settings = store.csaGameSettings;
+  const name = `${settings.server.host}:${settings.server.port}`;
   api.openPrompt(PromptTarget.CSA, store.csaServerSessionID, name);
 };
 </script>

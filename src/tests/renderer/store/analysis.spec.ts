@@ -1,6 +1,6 @@
 import { AnalysisManager } from "@/renderer/store/analysis";
 import { RecordManager } from "@/renderer/store/record";
-import { analysisSetting as baseAnalysisSetting } from "@/tests/mock/analysis";
+import { analysisSettings as baseAnalysisSettings } from "@/tests/mock/analysis";
 import { USIPlayer } from "@/renderer/players/usi";
 import { MockedClass } from "vitest";
 
@@ -27,13 +27,13 @@ describe("store/analysis", () => {
     recordManager.importRecord(
       "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d",
     );
-    const analysisSetting = baseAnalysisSetting;
-    analysisSetting.startCriteria.enableNumber = false;
-    analysisSetting.endCriteria.enableNumber = false;
+    const analysisSettings = JSON.parse(JSON.stringify(baseAnalysisSettings));
+    analysisSettings.startCriteria.enableNumber = false;
+    analysisSettings.endCriteria.enableNumber = false;
     const onFinish = vi.fn();
     const onError = vi.fn();
     const manager = new AnalysisManager(recordManager).on("finish", onFinish).on("error", onError);
-    await manager.start(analysisSetting);
+    await manager.start(analysisSettings);
     expect(mockUSIPlayer).toBeCalledTimes(1);
     expect(mockUSIPlayer.prototype.launch).toBeCalled();
     expect(mockUSIPlayer.prototype.startResearch).not.toBeCalled();

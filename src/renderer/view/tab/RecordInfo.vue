@@ -21,7 +21,7 @@
         </div>
         <div
           v-for="element in list"
-          v-show="appSetting.emptyRecordInfoVisibility || element.value"
+          v-show="appSettings.emptyRecordInfoVisibility || element.value"
           :key="element.key"
           class="row element"
         >
@@ -31,7 +31,7 @@
       </div>
       <div class="options">
         <ToggleButton
-          :value="appSetting.emptyRecordInfoVisibility"
+          :value="appSettings.emptyRecordInfoVisibility"
           :label="t.displayEmptyElements"
           @change="changeEmptyInfoVisibility"
         />
@@ -47,7 +47,7 @@ import { useStore } from "@/renderer/store";
 import { computed } from "vue";
 import { RectSize } from "@/common/assets/geometry.js";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 
 defineProps({
   size: {
@@ -57,7 +57,7 @@ defineProps({
 });
 
 const store = useStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const list = computed(() => {
   return Object.values(RecordMetadataKey).map((key) => {
     const metadata = store.record.metadata;
@@ -78,7 +78,7 @@ const change = (event: Event, key: RecordMetadataKey) => {
 };
 
 const changeEmptyInfoVisibility = (visible: boolean) => {
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     emptyRecordInfoVisibility: visible,
   });
 };

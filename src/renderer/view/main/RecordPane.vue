@@ -8,7 +8,7 @@
         :show-elapsed-time="showElapsedTime"
         :elapsed-time-toggle-label="t.elapsedTime"
         :comment-toggle-label="t.commentsAndBookmarks"
-        :opacity="appSetting.enableTransparent ? appSetting.recordOpacity : 1"
+        :opacity="appSettings.enableTransparent ? appSettings.recordOpacity : 1"
         :show-top-control="showTopControl"
         :show-bottom-control="showBottomControl"
         :show-branches="showBranches"
@@ -44,7 +44,7 @@ import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
 } from "@/renderer/devices/hotkey";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 
 defineProps({
   showElapsedTime: {
@@ -73,7 +73,7 @@ defineProps({
 });
 
 const store = useStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const root = ref();
 
 onMounted(() => {
@@ -121,13 +121,13 @@ const swapWithNextBranch = () => {
 };
 
 const onToggleElapsedTime = (enabled: boolean) => {
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     showElapsedTimeInRecordView: enabled,
   });
 };
 
 const onToggleComment = (enabled: boolean) => {
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     showCommentInRecordView: enabled,
   });
 };

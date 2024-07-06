@@ -1,26 +1,26 @@
 import * as uri from "@/common/uri";
 import {
-  appendCSAGameSettingHistory,
-  CSAGameSetting,
+  appendCSAGameSettingsHistory,
+  CSAGameSettings,
   CSAProtocolVersion,
-  decryptCSAGameSettingHistory,
-  encryptCSAGameSettingHistory,
-  exportCSAGameSettingForCLI,
-  importCSAGameSettingForCLI,
-  normalizeSecureCSAGameSettingHistory,
-  validateCSAGameSetting,
+  decryptCSAGameSettingsHistory,
+  encryptCSAGameSettingsHistory,
+  exportCSAGameSettingsForCLI,
+  importCSAGameSettingsForCLI,
+  normalizeSecureCSAGameSettingsHistory,
+  validateCSAGameSettings,
 } from "@/common/settings/csa";
-import { defaultAppSetting } from "@/common/settings/app";
+import { defaultAppSettings } from "@/common/settings/app";
 import {
-  csaGameSetting,
-  csaGameSettingForCLI,
-  emptyCSAGameSettingHistory,
+  csaGameSettings,
+  csaGameSettingsForCLI,
+  emptyCSAGameSettingsHistory,
   playerURI,
 } from "@/tests/mock/csa";
 
 describe("settings/csa", () => {
   it("validate/noError", () => {
-    const result = validateCSAGameSetting({
+    const result = validateCSAGameSettings({
       player: {
         name: "参加者",
         uri: uri.ES_HUMAN,
@@ -44,7 +44,7 @@ describe("settings/csa", () => {
   });
 
   it("validate/noHost", () => {
-    const result = validateCSAGameSetting({
+    const result = validateCSAGameSettings({
       player: {
         name: "人",
         uri: uri.ES_HUMAN,
@@ -68,7 +68,7 @@ describe("settings/csa", () => {
   });
 
   it("validate/invalidPortNumber", () => {
-    const result = validateCSAGameSetting({
+    const result = validateCSAGameSettings({
       player: {
         name: "人",
         uri: uri.ES_HUMAN,
@@ -92,7 +92,7 @@ describe("settings/csa", () => {
   });
 
   it("validate/noID", () => {
-    const result = validateCSAGameSetting({
+    const result = validateCSAGameSettings({
       player: {
         name: "人",
         uri: uri.ES_HUMAN,
@@ -116,7 +116,7 @@ describe("settings/csa", () => {
   });
 
   it("validate/idContainsSpace", () => {
-    const result = validateCSAGameSetting({
+    const result = validateCSAGameSettings({
       player: {
         name: "参加者",
         uri: uri.ES_HUMAN,
@@ -140,7 +140,7 @@ describe("settings/csa", () => {
   });
 
   it("validate/passwordContainsSpace", () => {
-    const result = validateCSAGameSetting({
+    const result = validateCSAGameSettings({
       player: {
         name: "参加者",
         uri: uri.ES_HUMAN,
@@ -164,7 +164,7 @@ describe("settings/csa", () => {
   });
 
   it("normalize", () => {
-    const setting = {
+    const settings = {
       player: {
         name: "人",
         uri: uri.ES_HUMAN,
@@ -185,19 +185,19 @@ describe("settings/csa", () => {
       autoRelogin: false,
       restartPlayerEveryGame: false,
     };
-    const result = normalizeSecureCSAGameSettingHistory(setting);
-    expect(result).toStrictEqual(setting);
+    const result = normalizeSecureCSAGameSettingsHistory(settings);
+    expect(result).toStrictEqual(settings);
   });
 
-  it("appendCSAGameSettingHistory", () => {
-    const buildSetting = (n: number) => {
+  it("appendCSAGameSettingsHistory", () => {
+    const buildSettings = (n: number) => {
       return {
         player: {
           name: `Player ${n}`,
           uri: uri.ES_HUMAN,
         },
         server: {
-          ...csaGameSetting.server,
+          ...csaGameSettings.server,
           id: `TestPlayer${n}`,
         },
         autoFlip: true,
@@ -208,11 +208,11 @@ describe("settings/csa", () => {
         restartPlayerEveryGame: false,
       };
     };
-    let history = emptyCSAGameSettingHistory;
+    let history = emptyCSAGameSettingsHistory;
     // 異なる設定を追加している間は件数が増える。
     for (let i = 0; i < 5; i++) {
       expect(history.serverHistory).toHaveLength(i);
-      history = appendCSAGameSettingHistory(history, buildSetting(i));
+      history = appendCSAGameSettingsHistory(history, buildSettings(i));
       expect(history.player.name).toBe(`Player ${i}`);
     }
     expect(history.serverHistory[0].id).toBe("TestPlayer4");
@@ -221,7 +221,7 @@ describe("settings/csa", () => {
     expect(history.serverHistory[3].id).toBe("TestPlayer1");
     expect(history.serverHistory[4].id).toBe("TestPlayer0");
     // 重複する設定を追加すると順序のみが入れ替わる。
-    history = appendCSAGameSettingHistory(history, buildSetting(2));
+    history = appendCSAGameSettingsHistory(history, buildSettings(2));
     expect(history.serverHistory).toHaveLength(5);
     expect(history.serverHistory[0].id).toBe("TestPlayer2");
     expect(history.serverHistory[1].id).toBe("TestPlayer4");
@@ -231,11 +231,11 @@ describe("settings/csa", () => {
     // 異なる設定を追加している間は件数が増える。
     for (let i = 5; i < 10; i++) {
       expect(history.serverHistory).toHaveLength(i);
-      history = appendCSAGameSettingHistory(history, buildSetting(i));
+      history = appendCSAGameSettingsHistory(history, buildSettings(i));
       expect(history.player.name).toBe(`Player ${i}`);
     }
     // 上限を超えると古いものが削除される。
-    history = appendCSAGameSettingHistory(history, buildSetting(10));
+    history = appendCSAGameSettingsHistory(history, buildSettings(10));
     expect(history.serverHistory).toHaveLength(10);
     expect(history.serverHistory[0].id).toBe("TestPlayer10");
     expect(history.serverHistory[9].id).toBe("TestPlayer1");
@@ -272,7 +272,7 @@ describe("settings/csa", () => {
       autoRelogin: true,
       restartPlayerEveryGame: false,
     };
-    const secure = encryptCSAGameSettingHistory(raw, (src) => {
+    const secure = encryptCSAGameSettingsHistory(raw, (src) => {
       return (
         {
           test01: "xyz01",
@@ -305,7 +305,7 @@ describe("settings/csa", () => {
         },
       ],
     });
-    const insecure = encryptCSAGameSettingHistory(raw);
+    const insecure = encryptCSAGameSettingsHistory(raw);
     expect(insecure).toStrictEqual({
       ...raw,
       serverHistory: [
@@ -381,7 +381,7 @@ describe("settings/csa", () => {
         },
       ],
     };
-    const raw = decryptCSAGameSettingHistory(secure, (src) => {
+    const raw = decryptCSAGameSettingsHistory(secure, (src) => {
       return (
         {
           xyz01: "test01",
@@ -410,7 +410,7 @@ describe("settings/csa", () => {
         },
       ],
     });
-    const raw2 = decryptCSAGameSettingHistory(insecure);
+    const raw2 = decryptCSAGameSettingsHistory(insecure);
     expect(raw2).toStrictEqual({
       ...secure,
       serverHistory: [
@@ -435,14 +435,14 @@ describe("settings/csa", () => {
   });
 
   it("export-cli-settings", () => {
-    expect(exportCSAGameSettingForCLI(csaGameSetting, defaultAppSetting())).toEqual(
-      csaGameSettingForCLI,
+    expect(exportCSAGameSettingsForCLI(csaGameSettings, defaultAppSettings())).toEqual(
+      csaGameSettingsForCLI,
     );
   });
 
   it("import-cli-settings", () => {
-    const result = importCSAGameSettingForCLI(csaGameSettingForCLI, playerURI);
-    const expected = JSON.parse(JSON.stringify(csaGameSetting)) as CSAGameSetting;
+    const result = importCSAGameSettingsForCLI(csaGameSettingsForCLI, playerURI);
+    const expected = JSON.parse(JSON.stringify(csaGameSettings)) as CSAGameSettings;
     // CLI 用設定から逆変換するときに入らない情報を除去してから比較する。
     expected.player.usi!.author = "";
     expected.player.usi!.defaultName = expected.player.name;

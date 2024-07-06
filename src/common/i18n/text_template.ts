@@ -224,7 +224,7 @@ export type Texts = {
   enableUSILog: string;
   enableCSALog: string;
   logLevel: string;
-  engineSettings: string;
+  manageEngines: string;
   flipBoard: string;
   file: string;
   recordFile: string;
@@ -509,8 +509,8 @@ export type Texts = {
   areYouSureWantToOpenFileInsteadOfCurrentRecord: string;
   areYouSureWantToClearHistory: string;
   areYouSureWantToRemoveCurrentProfile: string;
-  yamlFormatSettingCopiedToClipboard: string;
-  jsonFormatSettingCopiedToClipboard: string;
+  yamlFormatSettingsCopiedToClipboard: string;
+  jsonFormatSettingsCopiedToClipboard: string;
   usiCsaBridgeCommandCopiedToClipboard: string;
   youCanNotCloseAppWhileCSAOnlineGame: string;
   fileExtensionNotSupported: string;

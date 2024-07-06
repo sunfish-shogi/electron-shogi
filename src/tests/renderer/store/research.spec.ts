@@ -2,9 +2,9 @@ import { Move, Record } from "tsshogi";
 import api, { API } from "@/renderer/ipc/api";
 import { ResearchManager } from "@/renderer/store/research";
 import {
-  researchSetting,
-  researchSettingMax5Seconds,
-  researchSettingSecondaryEngines,
+  researchSettings,
+  researchSettingsMax5Seconds,
+  researchSettingsSecondaryEngines,
 } from "@/tests/mock/research";
 import { Mocked } from "vitest";
 
@@ -23,8 +23,8 @@ describe("store/research", () => {
     mockAPI.usiLaunch.mockResolvedValueOnce(100);
     mockAPI.usiGo.mockResolvedValue();
     const manager = new ResearchManager();
-    await manager.launch(researchSetting);
-    expect(mockAPI.usiLaunch).toBeCalledWith(researchSetting.usi, 10);
+    await manager.launch(researchSettings);
+    expect(mockAPI.usiLaunch).toBeCalledWith(researchSettings.usi, 10);
     expect(mockAPI.usiReady).toBeCalledTimes(1);
     const record = new Record();
     manager.updatePosition(record);
@@ -48,7 +48,7 @@ describe("store/research", () => {
     mockAPI.usiLaunch.mockResolvedValueOnce(100);
     mockAPI.usiGo.mockResolvedValue();
     const manager = new ResearchManager();
-    await manager.launch(researchSettingMax5Seconds);
+    await manager.launch(researchSettingsMax5Seconds);
     const record = new Record();
     manager.updatePosition(record);
     vi.runOnlyPendingTimers(); // 遅延実行
@@ -64,7 +64,7 @@ describe("store/research", () => {
     mockAPI.usiLaunch.mockResolvedValue(100);
     mockAPI.usiGo.mockResolvedValue();
     const manager = new ResearchManager();
-    await manager.launch(researchSettingSecondaryEngines);
+    await manager.launch(researchSettingsSecondaryEngines);
     expect(mockAPI.usiLaunch).toBeCalledTimes(3);
     expect(mockAPI.usiReady).toBeCalledTimes(3);
     const record = new Record();
@@ -84,7 +84,7 @@ describe("store/research", () => {
     mockAPI.usiLaunch.mockResolvedValueOnce(103);
     mockAPI.usiGo.mockResolvedValue();
     const manager = new ResearchManager();
-    await manager.launch(researchSettingSecondaryEngines);
+    await manager.launch(researchSettingsSecondaryEngines);
     const record = new Record();
     manager.updatePosition(record);
     vi.runOnlyPendingTimers();

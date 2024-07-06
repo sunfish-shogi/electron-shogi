@@ -21,7 +21,7 @@ import {
   countJishogiPoint,
 } from "tsshogi";
 import { reactive, UnwrapNestedRefs } from "vue";
-import { GameSetting } from "@/common/settings/game";
+import { GameSettings } from "@/common/settings/game";
 import { ClockSoundTarget, Tab, TextDecodingRule } from "@/common/settings/app";
 import { beepShort, beepUnlimited, playPieceBeat, stopBeep } from "@/renderer/devices/audio";
 import {
@@ -37,23 +37,23 @@ import {
 } from "./record";
 import { calculateGameStatistics, GameManager, GameResults } from "./game";
 import { generateRecordFileName, join } from "@/renderer/helpers/path";
-import { ResearchSetting } from "@/common/settings/research";
+import { ResearchSettings } from "@/common/settings/research";
 import { USIPlayerMonitor, USIMonitor } from "./usi";
 import { AppState, ResearchState } from "@/common/control/state";
 import { Attachment, ListItem, useMessageStore } from "./message";
 import * as uri from "@/common/uri";
 import { AnalysisManager } from "./analysis";
-import { AnalysisSetting, CommentBehavior } from "@/common/settings/analysis";
-import { MateSearchSetting } from "@/common/settings/mate";
+import { AnalysisSettings, CommentBehavior } from "@/common/settings/analysis";
+import { MateSearchSettings } from "@/common/settings/mate";
 import { LogLevel } from "@/common/log";
 import { CSAGameManager, CSAGameState } from "./csa";
 import { Clock } from "./clock";
-import { CSAGameSetting, appendCSAGameSettingHistory } from "@/common/settings/csa";
+import { CSAGameSettings, appendCSAGameSettingsHistory } from "@/common/settings/csa";
 import { defaultPlayerBuilder } from "@/renderer/players/builder";
 import { USIInfoCommand } from "@/common/game/usi";
 import { ResearchManager } from "./research";
 import { SearchInfo } from "@/renderer/players/player";
-import { useAppSetting } from "./setting";
+import { useAppSettings } from "./settings";
 import { t } from "@/common/i18n";
 import { MateSearchManager } from "./mate";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record";
@@ -125,7 +125,7 @@ class Store {
   private recordManager = new RecordManager();
   private _appState = AppState.NORMAL;
   private _customLayout: LayoutProfile | null = null;
-  private _isAppSettingDialogVisible = false;
+  private _isAppSettingsDialogVisible = false;
   private _pvPreview?: PVPreview;
   private usiMonitor = new USIMonitor();
   private blackClock = new Clock();
@@ -165,7 +165,7 @@ class Store {
       })
       .on("backup", () => {
         return {
-          returnCode: useAppSetting().returnCode,
+          returnCode: useAppSettings().returnCode,
         };
       });
     const refs = reactive(this);
@@ -173,7 +173,7 @@ class Store {
       .on("saveRecord", refs.onSaveRecord.bind(refs))
       .on("gameEnd", refs.onGameEnd.bind(refs))
       .on("flipBoard", refs.onFlipBoard.bind(refs))
-      .on("pieceBeat", () => playPieceBeat(useAppSetting().pieceVolume))
+      .on("pieceBeat", () => playPieceBeat(useAppSettings().pieceVolume))
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
@@ -184,7 +184,7 @@ class Store {
       .on("saveRecord", refs.onSaveRecord.bind(refs))
       .on("gameEnd", refs.onCSAGameEnd.bind(refs))
       .on("flipBoard", refs.onFlipBoard.bind(refs))
-      .on("pieceBeat", () => playPieceBeat(useAppSetting().pieceVolume))
+      .on("pieceBeat", () => playPieceBeat(useAppSettings().pieceVolume))
       .on("beepShort", this.onBeepShort.bind(this))
       .on("beepUnlimited", this.onBeepUnlimited.bind(this))
       .on("stopBeep", stopBeep)
@@ -365,7 +365,7 @@ class Store {
 
   showUsiEngineManagementDialog(): void {
     if (this.appState === AppState.NORMAL) {
-      this._appState = AppState.USI_ENGINE_SETTING_DIALOG;
+      this._appState = AppState.USI_ENGINES_DIALOG;
     }
   }
 
@@ -412,7 +412,7 @@ class Store {
       this.appState === AppState.CSA_GAME_DIALOG ||
       this.appState === AppState.ANALYSIS_DIALOG ||
       this.appState === AppState.MATE_SEARCH_DIALOG ||
-      this.appState === AppState.USI_ENGINE_SETTING_DIALOG ||
+      this.appState === AppState.USI_ENGINES_DIALOG ||
       this.appState === AppState.EXPORT_POSITION_IMAGE_DIALOG ||
       this.appState === AppState.RECORD_FILE_HISTORY_DIALOG ||
       this.appState === AppState.BATCH_CONVERSION_DIALOG ||
@@ -430,16 +430,16 @@ class Store {
     }
   }
 
-  get isAppSettingDialogVisible(): boolean {
-    return this._isAppSettingDialogVisible;
+  get isAppSettingsDialogVisible(): boolean {
+    return this._isAppSettingsDialogVisible;
   }
 
-  showAppSettingDialog(): void {
-    this._isAppSettingDialogVisible = true;
+  showAppSettingsDialog(): void {
+    this._isAppSettingsDialogVisible = true;
   }
 
-  closeAppSettingDialog(): void {
-    this._isAppSettingDialogVisible = false;
+  closeAppSettingsDialog(): void {
+    this._isAppSettingsDialogVisible = false;
   }
 
   get usiMonitors(): USIPlayerMonitor[] {
@@ -494,17 +494,17 @@ class Store {
     return this.whiteClock.byoyomi;
   }
 
-  startGame(setting: GameSetting): void {
+  startGame(settings: GameSettings): void {
     if (this.appState !== AppState.GAME_DIALOG || useBusyState().isBusy) {
       return;
     }
     useBusyState().retain();
     api
-      .saveGameSetting(setting)
+      .saveGameSettings(settings)
       .then(() => {
-        const appSetting = useAppSetting();
-        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
-        return this.gameManager.start(setting, builder);
+        const appSettings = useAppSettings();
+        const builder = defaultPlayerBuilder(appSettings.engineTimeoutSeconds);
+        return this.gameManager.start(settings, builder);
       })
       .then(() => (this._appState = AppState.GAME))
       .catch((e) => {
@@ -515,8 +515,8 @@ class Store {
       });
   }
 
-  get gameSetting(): GameSetting {
-    return this.gameManager.setting;
+  get gameSettings(): GameSettings {
+    return this.gameManager.settings;
   }
 
   get gameResults(): GameResults {
@@ -531,8 +531,8 @@ class Store {
     return this.csaGameManager.sessionID;
   }
 
-  get csaGameSetting(): CSAGameSetting {
-    return this.csaGameManager.setting;
+  get csaGameSettings(): CSAGameSettings {
+    return this.csaGameManager.settings;
   }
 
   get usiSessionIDs(): number[] {
@@ -542,7 +542,7 @@ class Store {
     return [];
   }
 
-  loginCSAGame(setting: CSAGameSetting, opt: { saveHistory: boolean }): void {
+  loginCSAGame(settings: CSAGameSettings, opt: { saveHistory: boolean }): void {
     if (this.appState !== AppState.CSA_GAME_DIALOG || useBusyState().isBusy) {
       return;
     }
@@ -550,15 +550,15 @@ class Store {
     Promise.resolve()
       .then(async () => {
         if (opt.saveHistory) {
-          const latestHistory = await api.loadCSAGameSettingHistory();
-          const history = appendCSAGameSettingHistory(latestHistory, setting);
-          await api.saveCSAGameSettingHistory(history);
+          const latestHistory = await api.loadCSAGameSettingsHistory();
+          const history = appendCSAGameSettingsHistory(latestHistory, settings);
+          await api.saveCSAGameSettingsHistory(history);
         }
       })
       .then(() => {
-        const appSetting = useAppSetting();
-        const builder = defaultPlayerBuilder(appSetting.engineTimeoutSeconds);
-        return this.csaGameManager.login(setting, builder);
+        const appSettings = useAppSettings();
+        const builder = defaultPlayerBuilder(appSettings.engineTimeoutSeconds);
+        return this.csaGameManager.login(settings, builder);
       })
       .then(() => (this._appState = AppState.CSA_GAME))
       .catch((e) => {
@@ -585,7 +585,7 @@ class Store {
     switch (this.appState) {
       case AppState.GAME:
         // 連続対局の場合は確認ダイアログを表示する。
-        if (this.gameManager.setting.repeat >= 2) {
+        if (this.gameManager.settings.repeat >= 2) {
           this.showConfirmation({
             message: t.areYouSureWantToQuitGames,
             onOk: () => this.gameManager.stop(),
@@ -641,44 +641,44 @@ class Store {
   }
 
   onFlipBoard(flip: boolean): void {
-    const appSetting = useAppSetting();
-    if (appSetting.boardFlipping !== flip) {
-      useAppSetting().flipBoard();
+    const appSettings = useAppSettings();
+    if (appSettings.boardFlipping !== flip) {
+      useAppSettings().flipBoard();
     }
   }
 
   onSaveRecord(): void {
-    const appSetting = useAppSetting();
+    const appSettings = useAppSettings();
     const fname = generateRecordFileName(
       this.recordManager.record.metadata,
-      appSetting.recordFileNameTemplate,
-      appSetting.defaultRecordFileFormat,
+      appSettings.recordFileNameTemplate,
+      appSettings.defaultRecordFileFormat,
     );
-    const path = join(appSetting.autoSaveDirectory, fname);
+    const path = join(appSettings.autoSaveDirectory, fname);
     this.saveRecordByPath(path).catch((e) => {
       useErrorStore().add(e);
     });
   }
 
   private onBeepShort(): void {
-    const appSetting = useAppSetting();
-    if (appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER && !this.isMovableByUser) {
+    const appSettings = useAppSettings();
+    if (appSettings.clockSoundTarget === ClockSoundTarget.ONLY_USER && !this.isMovableByUser) {
       return;
     }
     beepShort({
-      frequency: appSetting.clockPitch,
-      volume: appSetting.clockVolume,
+      frequency: appSettings.clockPitch,
+      volume: appSettings.clockVolume,
     });
   }
 
   private onBeepUnlimited(): void {
-    const appSetting = useAppSetting();
-    if (appSetting.clockSoundTarget === ClockSoundTarget.ONLY_USER && !this.isMovableByUser) {
+    const appSettings = useAppSettings();
+    if (appSettings.clockSoundTarget === ClockSoundTarget.ONLY_USER && !this.isMovableByUser) {
       return;
     }
     beepUnlimited({
-      frequency: appSetting.clockPitch,
-      volume: appSetting.clockVolume,
+      frequency: appSettings.clockPitch,
+      volume: appSettings.clockVolume,
     });
   }
 
@@ -689,8 +689,8 @@ class Store {
     if (!this.recordManager.appendMove({ move })) {
       return;
     }
-    const appSetting = useAppSetting();
-    playPieceBeat(appSetting.pieceVolume);
+    const appSettings = useAppSettings();
+    playPieceBeat(appSettings.pieceVolume);
   }
 
   onFinish(): void {
@@ -712,30 +712,30 @@ class Store {
     }
   }
 
-  startResearch(researchSetting: ResearchSetting): void {
+  startResearch(researchSettings: ResearchSettings): void {
     if (this._researchState !== ResearchState.STARTUP_DIALOG || useBusyState().isBusy) {
       return;
     }
     useBusyState().retain();
-    if (!researchSetting.usi) {
+    if (!researchSettings.usi) {
       useErrorStore().add(new Error("エンジンが設定されていません。"));
       return;
     }
     api
-      .saveResearchSetting(researchSetting)
-      .then(() => this.researchManager.launch(researchSetting))
+      .saveResearchSettings(researchSettings)
+      .then(() => this.researchManager.launch(researchSettings))
       .then(() => {
         this._researchState = ResearchState.RUNNING;
         this.updateResearchPosition();
-        const appSetting = useAppSetting();
+        const appSettings = useAppSettings();
         if (
-          appSetting.tab !== Tab.SEARCH &&
-          appSetting.tab !== Tab.PV &&
-          appSetting.tab !== Tab.CHART &&
-          appSetting.tab !== Tab.PERCENTAGE_CHART &&
-          appSetting.tab !== Tab.MONITOR
+          appSettings.tab !== Tab.SEARCH &&
+          appSettings.tab !== Tab.PV &&
+          appSettings.tab !== Tab.CHART &&
+          appSettings.tab !== Tab.PERCENTAGE_CHART &&
+          appSettings.tab !== Tab.MONITOR
         ) {
-          useAppSetting().updateAppSetting({ tab: Tab.PV });
+          useAppSettings().updateAppSettings({ tab: Tab.PV });
         }
       })
       .catch((e) => {
@@ -762,14 +762,14 @@ class Store {
     this.recordManager.updateSearchInfo(type, info);
   }
 
-  startAnalysis(analysisSetting: AnalysisSetting): void {
+  startAnalysis(analysisSettings: AnalysisSettings): void {
     if (this.appState !== AppState.ANALYSIS_DIALOG || useBusyState().isBusy) {
       return;
     }
     useBusyState().retain();
     api
-      .saveAnalysisSetting(analysisSetting)
-      .then(() => this.analysisManager.start(analysisSetting))
+      .saveAnalysisSettings(analysisSettings)
+      .then(() => this.analysisManager.start(analysisSettings))
       .then(() => {
         this._appState = AppState.ANALYSIS;
       })
@@ -789,23 +789,23 @@ class Store {
     this._appState = AppState.NORMAL;
   }
 
-  startMateSearch(mateSearchSetting: MateSearchSetting): void {
+  startMateSearch(mateSearchSettings: MateSearchSettings): void {
     if (this.appState !== AppState.MATE_SEARCH_DIALOG || useBusyState().isBusy) {
       return;
     }
     useBusyState().retain();
-    if (!mateSearchSetting.usi) {
+    if (!mateSearchSettings.usi) {
       useErrorStore().add(new Error("エンジンが設定されていません。"));
       return;
     }
     api
-      .saveMateSearchSetting(mateSearchSetting)
-      .then(() => this.mateSearchManager.start(mateSearchSetting, this.recordManager.record))
+      .saveMateSearchSettings(mateSearchSettings)
+      .then(() => this.mateSearchManager.start(mateSearchSettings, this.recordManager.record))
       .then(() => {
         this._appState = AppState.MATE_SEARCH;
-        const appSetting = useAppSetting();
-        if (appSetting.tab !== Tab.SEARCH && appSetting.tab !== Tab.PV) {
-          useAppSetting().updateAppSetting({ tab: Tab.SEARCH });
+        const appSettings = useAppSettings();
+        if (appSettings.tab !== Tab.SEARCH && appSettings.tab !== Tab.PV) {
+          useAppSettings().updateAppSettings({ tab: Tab.SEARCH });
         }
       })
       .catch((e) => {
@@ -1000,44 +1000,44 @@ class Store {
   }
 
   copyRecordKIF(): void {
-    const appSetting = useAppSetting();
+    const appSettings = useAppSettings();
     const str = exportKIF(this.recordManager.record, {
-      returnCode: appSetting.returnCode,
+      returnCode: appSettings.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordKI2(): void {
-    const appSetting = useAppSetting();
+    const appSettings = useAppSettings();
     const str = exportKI2(this.recordManager.record, {
-      returnCode: appSetting.returnCode,
+      returnCode: appSettings.returnCode,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordCSA(): void {
-    const appSetting = useAppSetting();
+    const appSettings = useAppSettings();
     const str = exportCSA(this.recordManager.record, {
-      returnCode: appSetting.returnCode,
-      v3: appSetting.useCSAV3 ? { milliseconds: true } : undefined,
+      returnCode: appSettings.returnCode,
+      v3: appSettings.useCSAV3 ? { milliseconds: true } : undefined,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordUSIBefore(): void {
-    const appSetting = useAppSetting();
+    const appSettings = useAppSettings();
     const str = this.recordManager.record.getUSI({
-      startpos: appSetting.enableUSIFileStartpos,
-      resign: appSetting.enableUSIFileResign,
+      startpos: appSettings.enableUSIFileStartpos,
+      resign: appSettings.enableUSIFileResign,
     });
     navigator.clipboard.writeText(str);
   }
 
   copyRecordUSIAll(): void {
-    const appSetting = useAppSetting();
+    const appSettings = useAppSettings();
     const str = this.recordManager.record.getUSI({
-      startpos: appSetting.enableUSIFileStartpos,
-      resign: appSetting.enableUSIFileResign,
+      startpos: appSettings.enableUSIFileStartpos,
+      resign: appSettings.enableUSIFileResign,
       allMoves: true,
     });
     navigator.clipboard.writeText(str);
@@ -1078,8 +1078,8 @@ class Store {
         if (!path) {
           return;
         }
-        const appSetting = useAppSetting();
-        const autoDetect = appSetting.textDecodingRule == TextDecodingRule.AUTO_DETECT;
+        const appSettings = useAppSettings();
+        const autoDetect = appSettings.textDecodingRule == TextDecodingRule.AUTO_DETECT;
         return api.openRecord(path).then((data) => {
           const e = this.recordManager.importRecordFromBuffer(data, path, {
             autoDetect,
@@ -1111,13 +1111,13 @@ class Store {
         if (options?.overwrite && path) {
           return path;
         }
-        const appSetting = useAppSetting();
+        const appSettings = useAppSettings();
         const defaultPath =
           path ||
           generateRecordFileName(
             this.recordManager.record.metadata,
-            appSetting.recordFileNameTemplate,
-            appSetting.defaultRecordFileFormat,
+            appSettings.recordFileNameTemplate,
+            appSettings.defaultRecordFileFormat,
           );
         return api.showSaveRecordDialog(defaultPath);
       })
@@ -1160,11 +1160,11 @@ class Store {
   }
 
   private async saveRecordByPath(path: string, opt?: { detectGarbled: boolean }): Promise<void> {
-    const appSetting = useAppSetting();
+    const appSettings = useAppSettings();
     const result = this.recordManager.exportRecordAsBuffer(path, {
-      returnCode: appSetting.returnCode,
+      returnCode: appSettings.returnCode,
       detectGarbled: opt?.detectGarbled,
-      csa: { v3: appSetting.useCSAV3 },
+      csa: { v3: appSettings.useCSAV3 },
     });
     if (result instanceof Error) {
       throw result;
@@ -1282,12 +1282,12 @@ class Store {
       case AppState.GAME:
         return (
           (this.recordManager.record.position.color === Color.BLACK
-            ? this.gameManager.setting.black.uri
-            : this.gameManager.setting.white.uri) === uri.ES_HUMAN
+            ? this.gameManager.settings.black.uri
+            : this.gameManager.settings.white.uri) === uri.ES_HUMAN
         );
       case AppState.CSA_GAME:
         return (
-          this.csaGameManager.isMyTurn && this.csaGameManager.setting.player.uri === uri.ES_HUMAN
+          this.csaGameManager.isMyTurn && this.csaGameManager.settings.player.uri === uri.ES_HUMAN
         );
     }
     return false;

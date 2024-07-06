@@ -14,7 +14,7 @@
                 entry.class === HistoryClass.USER ? t.userFile : t.automaticBackup
               }}</span>
               <span class="time">{{
-                dayjs(entry.time).locale(appSetting.language.replace("_", "-")).fromNow()
+                dayjs(entry.time).locale(appSettings.language.replace("_", "-")).fromNow()
               }}</span>
               <span class="datetime">{{ getDateTimeString(new Date(entry.time)) }}</span>
             </span>
@@ -50,7 +50,7 @@ import { getDateTimeString } from "@/common/helpers/datetime";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { t } from "@/common/i18n";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
 import { useConfirmationStore } from "@/renderer/store/confirm";
@@ -59,7 +59,7 @@ const dialog = ref();
 const entries = ref([] as RecordFileHistoryEntry[]);
 const store = useStore();
 const busyState = useBusyState();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 busyState.retain();
 
 onMounted(async () => {

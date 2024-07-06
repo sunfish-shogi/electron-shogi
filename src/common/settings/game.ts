@@ -1,15 +1,15 @@
 import { InitialPositionType } from "tsshogi";
-import { PlayerSetting, defaultPlayerSetting } from "./player";
+import { PlayerSettings, defaultPlayerSettings } from "./player";
 import { t } from "@/common/i18n";
 import * as uri from "@/common/uri";
 
-export type TimeLimitSetting = {
+export type TimeLimitSettings = {
   timeSeconds: number;
   byoyomi: number;
   increment: number;
 };
 
-export function defaultTimeLimitSetting(): TimeLimitSetting {
+export function defaultTimeLimitSettings(): TimeLimitSettings {
   return {
     timeSeconds: 0,
     byoyomi: 30,
@@ -26,11 +26,11 @@ export enum JishogiRule {
 
 export const DeclarableJishogiRules = [JishogiRule.GENERAL24, JishogiRule.GENERAL27];
 
-export type GameSetting = {
-  black: PlayerSetting;
-  white: PlayerSetting;
-  timeLimit: TimeLimitSetting;
-  whiteTimeLimit?: TimeLimitSetting;
+export type GameSettings = {
+  black: PlayerSettings;
+  white: PlayerSettings;
+  timeLimit: TimeLimitSettings;
+  whiteTimeLimit?: TimeLimitSettings;
   startPosition?: InitialPositionType;
   enableEngineTimeout: boolean;
   humanIsFront: boolean;
@@ -42,11 +42,11 @@ export type GameSetting = {
   jishogiRule: JishogiRule;
 };
 
-export function defaultGameSetting(): GameSetting {
+export function defaultGameSettings(): GameSettings {
   return {
-    black: defaultPlayerSetting(),
-    white: defaultPlayerSetting(),
-    timeLimit: defaultTimeLimitSetting(),
+    black: defaultPlayerSettings(),
+    white: defaultPlayerSettings(),
+    timeLimit: defaultTimeLimitSettings(),
     enableEngineTimeout: false,
     humanIsFront: true,
     enableComment: true,
@@ -58,63 +58,63 @@ export function defaultGameSetting(): GameSetting {
   };
 }
 
-export function normalizeGameSetting(setting: GameSetting): GameSetting {
+export function normalizeGameSettings(settings: GameSettings): GameSettings {
   return {
-    ...defaultGameSetting(),
-    ...setting,
+    ...defaultGameSettings(),
+    ...settings,
     black: {
-      ...defaultPlayerSetting(),
-      ...setting.black,
+      ...defaultPlayerSettings(),
+      ...settings.black,
     },
     white: {
-      ...defaultPlayerSetting(),
-      ...setting.white,
+      ...defaultPlayerSettings(),
+      ...settings.white,
     },
     timeLimit: {
-      ...defaultTimeLimitSetting(),
-      ...setting.timeLimit,
+      ...defaultTimeLimitSettings(),
+      ...settings.timeLimit,
     },
   };
 }
 
-export function validateGameSetting(gameSetting: GameSetting): Error | undefined {
-  if (gameSetting.timeLimit.timeSeconds === 0 && gameSetting.timeLimit.byoyomi === 0) {
+export function validateGameSettings(gameSettings: GameSettings): Error | undefined {
+  if (gameSettings.timeLimit.timeSeconds === 0 && gameSettings.timeLimit.byoyomi === 0) {
     return new Error(t.bothTimeLimitAndByoyomiAreNotSet);
   }
-  if (gameSetting.timeLimit.byoyomi !== 0 && gameSetting.timeLimit.increment !== 0) {
+  if (gameSettings.timeLimit.byoyomi !== 0 && gameSettings.timeLimit.increment !== 0) {
     return new Error(t.canNotUseByoyomiWithFischer);
   }
   if (
-    gameSetting.whiteTimeLimit &&
-    gameSetting.whiteTimeLimit.timeSeconds === 0 &&
-    gameSetting.whiteTimeLimit.byoyomi === 0
+    gameSettings.whiteTimeLimit &&
+    gameSettings.whiteTimeLimit.timeSeconds === 0 &&
+    gameSettings.whiteTimeLimit.byoyomi === 0
   ) {
     return new Error(t.bothTimeLimitAndByoyomiAreNotSet);
   }
   if (
-    gameSetting.whiteTimeLimit &&
-    gameSetting.whiteTimeLimit.byoyomi !== 0 &&
-    gameSetting.whiteTimeLimit.increment !== 0
+    gameSettings.whiteTimeLimit &&
+    gameSettings.whiteTimeLimit.byoyomi !== 0 &&
+    gameSettings.whiteTimeLimit.increment !== 0
   ) {
     return new Error(t.canNotUseByoyomiWithFischer);
   }
-  if (gameSetting.repeat < 1) {
+  if (gameSettings.repeat < 1) {
     return new Error("The number of repeats must be positive.");
   }
   const containsHuman =
-    gameSetting.black.uri === uri.ES_HUMAN || gameSetting.white.uri === uri.ES_HUMAN;
-  if (containsHuman && gameSetting.repeat > 1) {
+    gameSettings.black.uri === uri.ES_HUMAN || gameSettings.white.uri === uri.ES_HUMAN;
+  if (containsHuman && gameSettings.repeat > 1) {
     return new Error(t.repeatsMustBeOneIfHumanPlayerIncluded);
   }
   return;
 }
 
-export function validateGameSettingForWeb(gameSetting: GameSetting): Error | undefined {
-  const result = validateGameSetting(gameSetting);
+export function validateGameSettingsForWeb(gameSettings: GameSettings): Error | undefined {
+  const result = validateGameSettings(gameSettings);
   if (result) {
     return result;
   }
-  if (gameSetting.enableAutoSave) {
+  if (gameSettings.enableAutoSave) {
     return new Error("自動保存はWeb版で利用できません。");
   }
   return;

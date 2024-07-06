@@ -8,8 +8,8 @@ import {
   sendError,
   setupIPC,
 } from "@/background/window/ipc";
-import { loadWindowSetting, saveWindowSetting } from "@/background/settings";
-import { buildWindowSetting } from "@/common/settings/window";
+import { loadWindowSettings, saveWindowSettings } from "@/background/settings";
+import { buildWindowSettings } from "@/common/settings/window";
 import { getAppLogger } from "@/background/log";
 import { AppState } from "@/common/control/state";
 import { getPreloadPath, isDevelopment, isPreview, isTest } from "@/background/proc/env";
@@ -19,15 +19,15 @@ import { t } from "@/common/i18n";
 import { ghioDomain } from "@/common/links/github";
 
 export function createWindow() {
-  let setting = loadWindowSetting();
+  let settings = loadWindowSettings();
 
   getAppLogger().info("create BrowserWindow");
 
   // Create the browser window.
   const win = new BrowserWindow({
-    width: setting.width,
-    height: setting.height,
-    fullscreen: setting.fullscreen,
+    width: settings.width,
+    height: settings.height,
+    fullscreen: settings.fullscreen,
     webPreferences: {
       preload: path.join(__dirname, getPreloadPath()),
       // on development, disable webSecurity to allow mix of "file://" and "http://localhost:5173"
@@ -37,11 +37,11 @@ export function createWindow() {
     },
   });
   win.setBackgroundColor("#888");
-  if (setting.maximized) {
+  if (settings.maximized) {
     win.maximize();
   }
   win.on("resized", () => {
-    setting = buildWindowSetting(setting, win);
+    settings = buildWindowSettings(settings, win);
   });
   win.on("close", (event) => {
     if (getAppState() === AppState.CSA_GAME) {
@@ -54,8 +54,8 @@ export function createWindow() {
       onClose();
       return;
     }
-    setting = buildWindowSetting(setting, win);
-    saveWindowSetting(setting);
+    settings = buildWindowSettings(settings, win);
+    saveWindowSettings(settings);
   });
 
   setupIPC(win);

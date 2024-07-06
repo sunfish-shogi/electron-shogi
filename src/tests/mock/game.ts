@@ -1,10 +1,10 @@
-import { GameSetting, JishogiRule } from "@/common/settings/game";
+import { GameSettings, JishogiRule } from "@/common/settings/game";
 import { InitialPositionType } from "tsshogi";
 
 export const playerURI01 = "es://usi/test-engine-01";
 export const playerURI02 = "es://usi/test-engine-02";
 
-const blackPlayerSetting = {
+const blackPlayerSettings = {
   name: "USI Engine 01",
   uri: playerURI01,
   usi: {
@@ -19,7 +19,7 @@ const blackPlayerSetting = {
   },
 };
 
-const whitePlayerSetting = {
+const whitePlayerSettings = {
   name: "USI Engine 02",
   uri: playerURI02,
   usi: {
@@ -34,16 +34,16 @@ const whitePlayerSetting = {
   },
 };
 
-export const timeLimitSetting = {
+export const timeLimitSettings = {
   timeSeconds: 600,
   byoyomi: 30,
   increment: 0,
 };
 
-export const gameSetting10m30s: GameSetting = {
-  black: blackPlayerSetting,
-  white: whitePlayerSetting,
-  timeLimit: timeLimitSetting,
+export const gameSettings10m30s: GameSettings = {
+  black: blackPlayerSettings,
+  white: whitePlayerSettings,
+  timeLimit: timeLimitSettings,
   startPosition: InitialPositionType.STANDARD,
   enableEngineTimeout: false,
   humanIsFront: false,

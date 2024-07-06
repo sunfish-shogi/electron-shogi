@@ -3,13 +3,13 @@
     <dialog ref="dialog">
       <BoardView
         class="board"
-        :board-image-type="appSetting.boardImage"
-        :piece-stand-image-type="appSetting.pieceStandImage"
-        :piece-image-url-template="getPieceImageURLTemplate(appSetting)"
-        :king-piece-type="appSetting.kingPieceType"
-        :board-label-type="appSetting.boardLabelType"
-        :custom-board-image-url="appSetting.boardImageFileURL"
-        :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
+        :board-image-type="appSettings.boardImage"
+        :piece-stand-image-type="appSettings.pieceStandImage"
+        :piece-image-url-template="getPieceImageURLTemplate(appSettings)"
+        :king-piece-type="appSettings.kingPieceType"
+        :board-label-type="appSettings.boardLabelType"
+        :custom-board-image-url="appSettings.boardImageFileURL"
+        :custom-piece-stand-image-url="appSettings.pieceStandImageFileURL"
         :max-size="maxSize"
         :position="record.position"
         :last-move="lastMove"
@@ -83,7 +83,7 @@ import { RectSize } from "@/common/assets/geometry.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { IconType } from "@/renderer/assets/icons";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { EvaluationViewFrom, getPieceImageURLTemplate } from "@/common/settings/app";
 import { t } from "@/common/i18n";
 import { useStore } from "@/renderer/store";
@@ -144,11 +144,11 @@ const emit = defineEmits<{
 
 const store = useStore();
 const messageStore = useMessageStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const dialog = ref();
 const maxSize = reactive(new RectSize(0, 0));
 const record = reactive(new Record());
-const flip = ref(appSetting.boardFlipping);
+const flip = ref(appSettings.boardFlipping);
 
 const updateSize = () => {
   maxSize.width = window.innerWidth * 0.8;
@@ -218,7 +218,7 @@ const info = computed(() => {
   }
   if (props.score !== undefined) {
     elements.push(
-      `評価値=${getDisplayScore(props.score, props.position.color, appSetting.evaluationViewFrom)}`,
+      `評価値=${getDisplayScore(props.score, props.position.color, appSettings.evaluationViewFrom)}`,
     );
     if (props.lowerBound) {
       elements.push("（下界値）");
@@ -232,7 +232,7 @@ const info = computed(() => {
       `詰み手数=${getDisplayScore(
         props.mate,
         props.position.color,
-        appSetting.evaluationViewFrom,
+        appSettings.evaluationViewFrom,
       )}`,
     );
   }

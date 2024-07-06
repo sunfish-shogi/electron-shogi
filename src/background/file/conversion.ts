@@ -6,16 +6,16 @@ import {
   importRecordFromBuffer,
 } from "@/common/file/record";
 import {
-  BatchConversionSetting,
+  BatchConversionSettings,
   DestinationType,
   FileNameConflictAction,
 } from "@/common/settings/conversion";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { getAppLogger } from "@/background/log";
-import { AppSetting, TextDecodingRule } from "@/common/settings/app";
+import { AppSettings, TextDecodingRule } from "@/common/settings/app";
 import { exists, listFiles } from "@/background/helpers/file";
-import { loadAppSetting } from "@/background/settings";
+import { loadAppSettings } from "@/background/settings";
 import {
   ImmutableNode,
   ImmutableRecord,
@@ -41,9 +41,9 @@ async function getAlternativeFilePathWithNumberSuffix(
 }
 
 export async function convertRecordFiles(
-  setting: BatchConversionSetting,
+  settings: BatchConversionSettings,
 ): Promise<BatchConversionResult> {
-  const appSetting = await loadAppSetting();
+  const appSettings = await loadAppSettings();
   const result: BatchConversionResult = {
     succeeded: {},
     succeededTotal: 0,
@@ -53,25 +53,25 @@ export async function convertRecordFiles(
     skippedTotal: 0,
   };
 
-  getAppLogger().debug(`batch conversion: start ${JSON.stringify(setting)}`);
+  getAppLogger().debug(`batch conversion: start ${JSON.stringify(settings)}`);
   const sourceFiles = (
-    await listFiles(setting.source, setting.subdirectories ? Infinity : 0)
+    await listFiles(settings.source, settings.subdirectories ? Infinity : 0)
   ).filter((file) => {
     const ext = path.extname(file).toLowerCase();
-    return setting.sourceFormats.includes(ext as RecordFileFormat);
+    return settings.sourceFormats.includes(ext as RecordFileFormat);
   });
 
   const writer =
-    setting.destinationType === DestinationType.DIRECTORY
-      ? new DirectoryWriter(setting, appSetting)
-      : new SingleFileWriter(setting, appSetting);
+    settings.destinationType === DestinationType.DIRECTORY
+      ? new DirectoryWriter(settings, appSettings)
+      : new SingleFileWriter(settings, appSettings);
   await writer.open();
   for (const source of sourceFiles) {
     const sourceFormat = detectRecordFileFormatByPath(source) as RecordFileFormat;
     try {
       const sourceData = await fs.readFile(source);
       const record = importRecordFromBuffer(sourceData, sourceFormat, {
-        autoDetect: appSetting.textDecodingRule === TextDecodingRule.AUTO_DETECT,
+        autoDetect: appSettings.textDecodingRule === TextDecodingRule.AUTO_DETECT,
       });
       if (record instanceof Error) {
         throw record;
@@ -97,8 +97,8 @@ export async function convertRecordFiles(
 
 class DirectoryWriter {
   constructor(
-    private setting: BatchConversionSetting,
-    private appSetting: AppSetting,
+    private settings: BatchConversionSettings,
+    private appSettings: AppSettings,
   ) {}
 
   async open(): Promise<void> {
@@ -107,14 +107,14 @@ class DirectoryWriter {
 
   async write(record: ImmutableRecord, source: string): Promise<boolean> {
     // Generate destination path
-    const parsed = path.parse(path.relative(this.setting.source, source));
-    const name = parsed.name + this.setting.destinationFormat;
+    const parsed = path.parse(path.relative(this.settings.source, source));
+    const name = parsed.name + this.settings.destinationFormat;
     let destination = path.join(
-      this.setting.destination,
-      this.setting.createSubdirectories ? path.join(parsed.dir, name) : name,
+      this.settings.destination,
+      this.settings.createSubdirectories ? path.join(parsed.dir, name) : name,
     );
     if (await exists(destination)) {
-      switch (this.setting.fileNameConflictAction) {
+      switch (this.settings.fileNameConflictAction) {
         case FileNameConflictAction.OVERWRITE:
           break;
         case FileNameConflictAction.NUMBER_SUFFIX:
@@ -131,9 +131,9 @@ class DirectoryWriter {
     await fs.mkdir(destinationDir, { recursive: true });
 
     // Export record
-    const exportResult = exportRecordAsBuffer(record, this.setting.destinationFormat, {
-      returnCode: this.appSetting.returnCode,
-      csa: { v3: this.appSetting.useCSAV3 },
+    const exportResult = exportRecordAsBuffer(record, this.settings.destinationFormat, {
+      returnCode: this.appSettings.returnCode,
+      csa: { v3: this.appSettings.useCSAV3 },
     });
     await fs.writeFile(destination, exportResult.data);
     getAppLogger().debug(`batch conversion: succeeded: ${source} -> ${destination}`);
@@ -148,12 +148,12 @@ class DirectoryWriter {
 class SingleFileWriter {
   private fd?: fs.FileHandle;
   constructor(
-    private setting: BatchConversionSetting,
-    private appSetting: AppSetting,
+    private settings: BatchConversionSettings,
+    private appSettings: AppSettings,
   ) {}
 
   async open(): Promise<void> {
-    this.fd = await fs.open(this.setting.singleFileDestination, "w");
+    this.fd = await fs.open(this.settings.singleFileDestination, "w");
   }
 
   async write(record: ImmutableRecord, source: string): Promise<boolean> {
@@ -169,7 +169,7 @@ class SingleFileWriter {
   async writeUSI(record: ImmutableRecord): Promise<void> {
     let position: string;
     const sfen = record.initialPosition.sfen;
-    if (this.appSetting.enableUSIFileStartpos && sfen === InitialPositionSFEN.STANDARD) {
+    if (this.appSettings.enableUSIFileStartpos && sfen === InitialPositionSFEN.STANDARD) {
       position = "startpos";
     } else {
       position = "sfen " + sfen;
@@ -177,9 +177,9 @@ class SingleFileWriter {
     const branches = this.getUSIBranches(record);
     for (const moves of branches) {
       if (moves) {
-        await this.fd?.write(position + " moves" + moves + this.appSetting.returnCode);
+        await this.fd?.write(position + " moves" + moves + this.appSettings.returnCode);
       } else {
-        await this.fd?.write(position + this.appSetting.returnCode);
+        await this.fd?.write(position + this.appSettings.returnCode);
       }
     }
   }
@@ -203,7 +203,7 @@ class SingleFileWriter {
       }
       if (p.move instanceof Move) {
         branches.push(moves + " " + p.move.usi);
-      } else if (this.appSetting.enableUSIFileResign && p.move.type === SpecialMoveType.RESIGN) {
+      } else if (this.appSettings.enableUSIFileResign && p.move.type === SpecialMoveType.RESIGN) {
         branches.push(moves + " resign");
       } else {
         branches.push(moves);

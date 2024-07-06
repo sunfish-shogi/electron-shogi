@@ -1,6 +1,6 @@
-import { USIEngineSetting } from "@/common/settings/usi";
+import { USIEngine } from "@/common/settings/usi";
 
-export const usiEngineSetting: USIEngineSetting = {
+export const usiEngines: USIEngine = {
   uri: "es://usi/test-engine",
   name: "my usi engine",
   defaultName: "engine",
@@ -11,7 +11,7 @@ export const usiEngineSetting: USIEngineSetting = {
   enableEarlyPonder: false,
 };
 
-export const usiEngineSettingWithPonder: USIEngineSetting = {
+export const usiEnginesWithPonder: USIEngine = {
   uri: "es://usi/test-engine",
   name: "my usi engine",
   defaultName: "engine",

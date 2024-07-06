@@ -1,4 +1,4 @@
-import { USIEngineSetting } from "./usi";
+import { USIEngine } from "./usi";
 
 type StartCriteria = {
   enableNumber: boolean;
@@ -41,15 +41,15 @@ export enum CommentBehavior {
   OVERWRITE = "overwrite",
 }
 
-export type AnalysisSetting = {
-  usi?: USIEngineSetting;
+export type AnalysisSettings = {
+  usi?: USIEngine;
   startCriteria: StartCriteria;
   endCriteria: EndCriteria;
   perMoveCriteria: PerMoveCriteria;
   commentBehavior: CommentBehavior;
 };
 
-export function defaultAnalysisSetting(): AnalysisSetting {
+export function defaultAnalysisSettings(): AnalysisSettings {
   return {
     startCriteria: defaultStartCriteria(),
     endCriteria: defaultEndCriteria(),
@@ -58,21 +58,21 @@ export function defaultAnalysisSetting(): AnalysisSetting {
   };
 }
 
-export function normalizeAnalysisSetting(setting: AnalysisSetting): AnalysisSetting {
+export function normalizeAnalysisSettings(settings: AnalysisSettings): AnalysisSettings {
   return {
-    ...defaultAnalysisSetting(),
-    ...setting,
+    ...defaultAnalysisSettings(),
+    ...settings,
     startCriteria: {
       ...defaultStartCriteria(),
-      ...setting.startCriteria,
+      ...settings.startCriteria,
     },
     endCriteria: {
       ...defaultEndCriteria(),
-      ...setting.endCriteria,
+      ...settings.endCriteria,
     },
     perMoveCriteria: {
       ...defaultPerMoveCriteria(),
-      ...setting.perMoveCriteria,
+      ...settings.perMoveCriteria,
     },
   };
 }

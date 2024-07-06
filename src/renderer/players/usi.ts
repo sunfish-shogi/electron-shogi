@@ -1,6 +1,6 @@
 import api from "@/renderer/ipc/api";
 import { parseUSIPV, USIInfoCommand } from "@/common/game/usi";
-import { getUSIEngineOptionCurrentValue, USIEngineSetting, USIPonder } from "@/common/settings/usi";
+import { getUSIEngineOptionCurrentValue, USIEngine, USIPonder } from "@/common/settings/usi";
 import { Color, ImmutablePosition, Move, Position } from "tsshogi";
 import { Player, SearchInfo, SearchHandler, MateHandler } from "./player";
 import { GameResult } from "@/common/game/result";
@@ -36,13 +36,13 @@ export class USIPlayer implements Player {
   private usiInfoTimeout?: number;
 
   constructor(
-    private setting: USIEngineSetting,
+    private engine: USIEngine,
     private timeoutSeconds: number,
     private onSearchInfo?: (info: SearchInfo) => void,
   ) {}
 
   get name(): string {
-    return this.setting.name;
+    return this.engine.name;
   }
 
   get sessionID(): number {
@@ -50,7 +50,7 @@ export class USIPlayer implements Player {
   }
 
   async launch(): Promise<void> {
-    this._sessionID = await api.usiLaunch(this.setting, this.timeoutSeconds);
+    this._sessionID = await api.usiLaunch(this.engine, this.timeoutSeconds);
     usiPlayers[this.sessionID] = this;
   }
 
@@ -88,7 +88,7 @@ export class USIPlayer implements Player {
     timeStates: TimeStates,
   ): Promise<void> {
     // エンジンの USI_Ponder オプションが無効なら何もしない。
-    const ponderSetting = getUSIEngineOptionCurrentValue(this.setting.options[USIPonder]);
+    const ponderSetting = getUSIEngineOptionCurrentValue(this.engine.options[USIPonder]);
     if (ponderSetting !== "true") {
       return;
     }

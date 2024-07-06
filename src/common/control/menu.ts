@@ -47,8 +47,8 @@ export enum MenuEvent {
   LOGOUT = "logout",
   CALCULATE_POINTS = "calculateJishogiPoints",
   FLIP_BOARD = "flipBoard",
-  APP_SETTING_DIALOG = "appSetting",
-  USI_ENGINE_SETTING_DIALOG = "usiEngineSetting",
+  APP_SETTINGS_DIALOG = "appSettings",
+  USI_ENGINES_DIALOG = "usiEngines",
   LAUNCH_USI_ENGINE = "launchUsiEngine",
   CONNECT_TO_CSA_SERVER = "connectToCsaServer",
 }

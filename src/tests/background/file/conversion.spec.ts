@@ -3,13 +3,13 @@ import { RecordFileFormat } from "@/common/file/record";
 import {
   DestinationType,
   FileNameConflictAction,
-  defaultBatchConversionSetting,
+  defaultBatchConversionSettings,
 } from "@/common/settings/conversion";
 import fs from "node:fs";
 import path from "node:path";
 import { listFiles } from "@/background/helpers/file";
-import { defaultAppSetting } from "@/common/settings/app";
-import { saveAppSetting } from "@/background/settings";
+import { defaultAppSettings } from "@/common/settings/app";
+import { saveAppSettings } from "@/background/settings";
 import { getTempPathForTesting } from "@/background/proc/env";
 
 const tmpdir = path.join(getTempPathForTesting(), "conversion");
@@ -247,15 +247,15 @@ describe("conversion", () => {
       },
     ];
     for (const testCase of testCases) {
-      await saveAppSetting({
-        ...defaultAppSetting(),
+      await saveAppSettings({
+        ...defaultAppSettings(),
         returnCode: "\n",
         useCSAV3: !!testCase.csaV3,
       });
       const destinationFullPath = path.join(tmpdir, testCase.destination);
       for (let i = 0; i < 1 + (testCase.repeat || 0); i++) {
         const result = await convertRecordFiles({
-          ...defaultBatchConversionSetting(),
+          ...defaultBatchConversionSettings(),
           source: "src/tests/testdata/conversion/input",
           sourceFormats: testCase.sourceFormats,
           subdirectories: testCase.subdirectories,
@@ -287,7 +287,7 @@ describe("conversion", () => {
   it("sfen", async () => {
     const testCases = [
       {
-        appSetting: defaultAppSetting(),
+        appSettings: defaultAppSettings(),
         destination: "all.sfen",
         expected: [
           "startpos moves 2g2f 3c3d 7g7f 5c5d 3i4h 8b5b 5i6h 5d5e 6h7h 3a4b 5g5f 4b3c 5f5e 3c4d 4h5g 4d5e P*5f 5e4d 4i5h",
@@ -302,8 +302,8 @@ describe("conversion", () => {
         ],
       },
       {
-        appSetting: {
-          ...defaultAppSetting(),
+        appSettings: {
+          ...defaultAppSettings(),
           enableUSIFileResign: true,
         },
         destination: "all-noStartpos-resign.sfen",
@@ -320,8 +320,8 @@ describe("conversion", () => {
         ],
       },
       {
-        appSetting: {
-          ...defaultAppSetting(),
+        appSettings: {
+          ...defaultAppSettings(),
           enableUSIFileStartpos: false,
         },
         destination: "all-noStartpos-resign.sfen",
@@ -339,10 +339,10 @@ describe("conversion", () => {
       },
     ];
     for (const testCase of testCases) {
-      await saveAppSetting(testCase.appSetting);
+      await saveAppSettings(testCase.appSettings);
       const destinationFullPath = path.join(tmpdir, testCase.destination);
       const result = await convertRecordFiles({
-        ...defaultBatchConversionSetting(),
+        ...defaultBatchConversionSettings(),
         source: "src/tests/testdata/conversion/input",
         sourceFormats: [
           RecordFileFormat.KIF,

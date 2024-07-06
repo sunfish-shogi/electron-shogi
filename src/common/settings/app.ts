@@ -128,7 +128,7 @@ export enum PositionImageFontWeight {
   W700X = "700+",
 }
 
-export type AppSetting = {
+export type AppSettings = {
   language: Language;
   thema: Thema;
   backgroundImageType: BackgroundImageType;
@@ -199,18 +199,18 @@ export type AppSetting = {
   emptyRecordInfoVisibility: boolean;
 };
 
-export function isLogEnabled(type: LogType, appSetting: AppSetting): boolean {
+export function isLogEnabled(type: LogType, appSettings: AppSettings): boolean {
   switch (type) {
     case LogType.APP:
-      return appSetting.enableAppLog;
+      return appSettings.enableAppLog;
     case LogType.USI:
-      return appSetting.enableUSILog;
+      return appSettings.enableUSILog;
     case LogType.CSA:
-      return appSetting.enableCSALog;
+      return appSettings.enableCSALog;
   }
 }
 
-export type AppSettingUpdate = {
+export type AppSettingsUpdate = {
   language?: Language;
   thema?: Thema;
   backgroundImageType?: BackgroundImageType;
@@ -281,10 +281,10 @@ export type AppSettingUpdate = {
   emptyRecordInfoVisibility?: boolean;
 };
 
-export function buildUpdatedAppSetting(
-  org: AppSetting,
-  update: AppSettingUpdate,
-): AppSetting | Error {
+export function buildUpdatedAppSettings(
+  org: AppSettings,
+  update: AppSettingsUpdate,
+): AppSettings | Error {
   const updated = {
     ...org,
     ...update,
@@ -310,14 +310,14 @@ export function buildUpdatedAppSetting(
     updated.topPanePreviousHeightPercentage = org.topPaneHeightPercentage;
   }
 
-  const error = validateAppSetting(updated);
+  const error = validateAppSettings(updated);
   return error || updated;
 }
 
-export function defaultAppSetting(opt?: {
+export function defaultAppSettings(opt?: {
   returnCode?: string;
   autoSaveDirectory?: string;
-}): AppSetting {
+}): AppSettings {
   return {
     language: Language.JA,
     thema: Thema.STANDARD,
@@ -384,23 +384,23 @@ export function defaultAppSetting(opt?: {
   };
 }
 
-export function normalizeAppSetting(
-  setting: AppSetting,
+export function normalizeAppSettings(
+  settings: AppSettings,
   opt?: {
     returnCode?: string;
     autoSaveDirectory?: string;
   },
-): AppSetting {
+): AppSettings {
   const result = {
-    ...defaultAppSetting(opt),
-    ...setting,
+    ...defaultAppSettings(opt),
+    ...settings,
   };
   if (result.autoSaveDirectory.endsWith("\\") || result.autoSaveDirectory.endsWith("/")) {
     result.autoSaveDirectory = result.autoSaveDirectory.slice(0, -1);
   }
   // 旧バージョンでは盤画像に合わせて自動で駒台の色が選ばれていた。
-  if (!setting.pieceStandImage) {
-    switch (setting.boardImage) {
+  if (!settings.pieceStandImage) {
+    switch (settings.boardImage) {
       default:
         result.pieceStandImage = PieceStandImageType.STANDARD;
         break;
@@ -420,8 +420,8 @@ export function normalizeAppSetting(
     result.tab = Tab.RECORD_INFO;
   }
   // 旧バージョンではフォントの太さは設定項目になく、明朝体とゴシック体で違っていた。
-  if (!setting.positionImageFontWeight) {
-    switch (setting.positionImageTypeface) {
+  if (!settings.positionImageFontWeight) {
+    switch (settings.positionImageTypeface) {
       default:
         result.positionImageFontWeight = PositionImageFontWeight.W400X;
         break;
@@ -433,65 +433,68 @@ export function normalizeAppSetting(
   return result;
 }
 
-export function validateAppSetting(setting: AppSetting): Error | undefined {
-  if (setting.backgroundImageType !== BackgroundImageType.NONE && !setting.backgroundImageFileURL) {
+export function validateAppSettings(settings: AppSettings): Error | undefined {
+  if (
+    settings.backgroundImageType !== BackgroundImageType.NONE &&
+    !settings.backgroundImageFileURL
+  ) {
     return new Error(t.backgroundImageFileNotSelected);
   }
   if (
-    setting.pieceImage === PieceImageType.CUSTOM_IMAGE &&
-    (!setting.pieceImageFileURL || !setting.croppedPieceImageBaseURL)
+    settings.pieceImage === PieceImageType.CUSTOM_IMAGE &&
+    (!settings.pieceImageFileURL || !settings.croppedPieceImageBaseURL)
   ) {
     return new Error(t.pieceImageFileNotSelected);
   }
-  if (setting.boardImage === BoardImageType.CUSTOM_IMAGE && !setting.boardImageFileURL) {
+  if (settings.boardImage === BoardImageType.CUSTOM_IMAGE && !settings.boardImageFileURL) {
     return new Error(t.boardImageFileNotSelected);
   }
   if (
-    setting.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE &&
-    !setting.pieceStandImageFileURL
+    settings.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE &&
+    !settings.pieceStandImageFileURL
   ) {
     return new Error(t.pieceStandImageFileNotSelected);
   }
-  if (setting.pieceVolume < 0 || setting.pieceVolume > 100) {
+  if (settings.pieceVolume < 0 || settings.pieceVolume > 100) {
     return new Error(t.pieceVolumeMustBe0To100Percent);
   }
-  if (setting.clockVolume < 0 || setting.clockVolume > 100) {
+  if (settings.clockVolume < 0 || settings.clockVolume > 100) {
     return new Error(t.clockVolumeMustBe0To100Percent);
   }
-  if (setting.clockPitch < 220 || setting.clockPitch > 880) {
+  if (settings.clockPitch < 220 || settings.clockPitch > 880) {
     return new Error(t.clockPitchMustBe220To880Hz);
   }
-  if (setting.engineTimeoutSeconds < 1 || setting.engineTimeoutSeconds > 300) {
+  if (settings.engineTimeoutSeconds < 1 || settings.engineTimeoutSeconds > 300) {
     return new Error(t.engineTimeoutMustBe1To300Seconds);
   }
-  if (setting.coefficientInSigmoid <= 0) {
+  if (settings.coefficientInSigmoid <= 0) {
     return new Error(t.coefficientInSigmoidMustBeGreaterThan0);
   }
-  if (setting.badMoveLevelThreshold1 < 1 || setting.badMoveLevelThreshold1 > 100) {
+  if (settings.badMoveLevelThreshold1 < 1 || settings.badMoveLevelThreshold1 > 100) {
     return new Error(t.inaccuracyThresholdMustBe1To100Percent);
   }
-  if (setting.badMoveLevelThreshold2 < 1 || setting.badMoveLevelThreshold2 > 100) {
+  if (settings.badMoveLevelThreshold2 < 1 || settings.badMoveLevelThreshold2 > 100) {
     return new Error(t.dubiousThresholdMustBe1To100Percent);
   }
-  if (setting.badMoveLevelThreshold3 < 1 || setting.badMoveLevelThreshold3 > 100) {
+  if (settings.badMoveLevelThreshold3 < 1 || settings.badMoveLevelThreshold3 > 100) {
     return new Error(t.mistakeThresholdMustBe1To100Percent);
   }
-  if (setting.badMoveLevelThreshold4 < 1 || setting.badMoveLevelThreshold4 > 100) {
+  if (settings.badMoveLevelThreshold4 < 1 || settings.badMoveLevelThreshold4 > 100) {
     return new Error(t.blunderThresholdMustBe1To100Percent);
   }
-  if (setting.badMoveLevelThreshold1 >= setting.badMoveLevelThreshold2) {
+  if (settings.badMoveLevelThreshold1 >= settings.badMoveLevelThreshold2) {
     return new Error(t.inaccuracyThresholdMustBeLessThanDubiousThreshold);
   }
-  if (setting.badMoveLevelThreshold2 >= setting.badMoveLevelThreshold3) {
+  if (settings.badMoveLevelThreshold2 >= settings.badMoveLevelThreshold3) {
     return new Error(t.dubiousThresholdMustBeLessThanMistakeThreshold);
   }
-  if (setting.badMoveLevelThreshold3 >= setting.badMoveLevelThreshold4) {
+  if (settings.badMoveLevelThreshold3 >= settings.badMoveLevelThreshold4) {
     return new Error(t.mistakeThresholdMustBeLessThanBlunderThreshold);
   }
 }
 
-export function getPieceImageURLTemplate(setting: AppSetting): string {
-  switch (setting.pieceImage) {
+export function getPieceImageURLTemplate(settings: AppSettings): string {
+  switch (settings.pieceImage) {
     case PieceImageType.HITOMOJI_DARK:
       return "./piece/hitomoji_dark/${piece}.png";
     case PieceImageType.HITOMOJI_GOTHIC:
@@ -499,9 +502,9 @@ export function getPieceImageURLTemplate(setting: AppSetting): string {
     case PieceImageType.HITOMOJI_GOTHIC_DARK:
       return "./piece/hitomoji_gothic_dark/${piece}.png";
     case PieceImageType.CUSTOM_IMAGE:
-      if (setting.croppedPieceImageBaseURL) {
-        const query = setting.croppedPieceImageQuery ? `?${setting.croppedPieceImageQuery}` : "";
-        return setting.croppedPieceImageBaseURL + "/${piece}.png" + query;
+      if (settings.croppedPieceImageBaseURL) {
+        const query = settings.croppedPieceImageQuery ? `?${settings.croppedPieceImageQuery}` : "";
+        return settings.croppedPieceImageBaseURL + "/${piece}.png" + query;
       }
   }
   return "./piece/hitomoji/${piece}.png";

@@ -1,16 +1,16 @@
-import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
-import { GameSetting } from "@/common/settings/game";
-import { AppSetting } from "@/common/settings/app";
+import { USIEngine, USIEngines } from "@/common/settings/usi";
+import { GameSettings } from "@/common/settings/game";
+import { AppSettings } from "@/common/settings/app";
 import { webAPI } from "./web";
-import { ResearchSetting } from "@/common/settings/research";
+import { ResearchSettings } from "@/common/settings/research";
 import { AppState, ResearchState } from "@/common/control/state";
 import { GameResult } from "@/common/game/result";
-import { AnalysisSetting } from "@/common/settings/analysis";
+import { AnalysisSettings } from "@/common/settings/analysis";
 import { LogLevel, LogType } from "@/common/log";
-import { CSAGameSettingHistory, CSAServerSetting } from "@/common/settings/csa";
+import { CSAGameSettingsHistory, CSAServerSettings } from "@/common/settings/csa";
 import { Rect } from "@/common/assets/geometry";
-import { MateSearchSetting } from "@/common/settings/mate";
-import { BatchConversionSetting } from "@/common/settings/conversion";
+import { MateSearchSettings } from "@/common/settings/mate";
+import { BatchConversionSettings } from "@/common/settings/conversion";
 import { BatchConversionResult } from "@/common/file/conversion";
 import { RecordFileHistory } from "@/common/file/history";
 import { InitialRecordFileRequest } from "@/common/file/record";
@@ -31,22 +31,22 @@ export interface API {
   updateAppState(appState: AppState, researchState: ResearchState, busy: boolean): void;
 
   // Settings
-  loadAppSetting(): Promise<AppSetting>;
-  saveAppSetting(setting: AppSetting): Promise<void>;
-  loadBatchConversionSetting(): Promise<BatchConversionSetting>;
-  saveBatchConversionSetting(setting: BatchConversionSetting): Promise<void>;
-  loadResearchSetting(): Promise<ResearchSetting>;
-  saveResearchSetting(setting: ResearchSetting): Promise<void>;
-  loadAnalysisSetting(): Promise<AnalysisSetting>;
-  saveAnalysisSetting(setting: AnalysisSetting): Promise<void>;
-  loadGameSetting(): Promise<GameSetting>;
-  saveGameSetting(setting: GameSetting): Promise<void>;
-  loadCSAGameSettingHistory(): Promise<CSAGameSettingHistory>;
-  saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void>;
-  loadMateSearchSetting(): Promise<MateSearchSetting>;
-  saveMateSearchSetting(setting: MateSearchSetting): Promise<void>;
-  loadUSIEngineSetting(): Promise<USIEngineSettings>;
-  saveUSIEngineSetting(setting: USIEngineSettings): Promise<void>;
+  loadAppSettings(): Promise<AppSettings>;
+  saveAppSettings(settings: AppSettings): Promise<void>;
+  loadBatchConversionSettings(): Promise<BatchConversionSettings>;
+  saveBatchConversionSettings(settings: BatchConversionSettings): Promise<void>;
+  loadResearchSettings(): Promise<ResearchSettings>;
+  saveResearchSettings(settings: ResearchSettings): Promise<void>;
+  loadAnalysisSettings(): Promise<AnalysisSettings>;
+  saveAnalysisSettings(settings: AnalysisSettings): Promise<void>;
+  loadGameSettings(): Promise<GameSettings>;
+  saveGameSettings(settings: GameSettings): Promise<void>;
+  loadCSAGameSettingsHistory(): Promise<CSAGameSettingsHistory>;
+  saveCSAGameSettingsHistory(settings: CSAGameSettingsHistory): Promise<void>;
+  loadMateSearchSettings(): Promise<MateSearchSettings>;
+  saveMateSearchSettings(settings: MateSearchSettings): Promise<void>;
+  loadUSIEngines(): Promise<USIEngines>;
+  saveUSIEngines(usiEngines: USIEngines): Promise<void>;
 
   // Record File
   fetchInitialRecordFileRequest(): Promise<InitialRecordFileRequest>;
@@ -61,13 +61,13 @@ export interface API {
   saveRecordFileBackup(kif: string): Promise<void>;
   loadRecordFileBackup(name: string): Promise<string>;
   loadRemoteRecordFile(url: string): Promise<string>;
-  convertRecordFiles(setting: BatchConversionSetting): Promise<BatchConversionResult>;
+  convertRecordFiles(settings: BatchConversionSettings): Promise<BatchConversionResult>;
 
   // USI
   showSelectUSIEngineDialog(): Promise<string>;
-  getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngineSetting>;
+  getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngine>;
   sendUSISetOption(path: string, name: string, timeoutSeconds: number): Promise<void>;
-  usiLaunch(setting: USIEngineSetting, timeoutSeconds: number): Promise<number>;
+  usiLaunch(engine: USIEngine, timeoutSeconds: number): Promise<number>;
   usiReady(sessionID: number): Promise<void>;
   usiGo(sessionID: number, usi: string, timeStates: TimeStates): Promise<void>;
   usiGoPonder(sessionID: number, usi: string, timeStates: TimeStates): Promise<void>;
@@ -79,7 +79,7 @@ export interface API {
   usiQuit(sessionID: number): Promise<void>;
 
   // CSA
-  csaLogin(setting: CSAServerSetting): Promise<number>;
+  csaLogin(settings: CSAServerSettings): Promise<number>;
   csaLogout(sessionID: number): Promise<void>;
   csaAgree(sessionID: number, gameID: string): Promise<void>;
   csaMove(sessionID: number, move: string, score?: number, pv?: string): Promise<void>;
@@ -139,72 +139,72 @@ const api: API = {
   ...bridge,
 
   // Settings
-  async loadAppSetting(): Promise<AppSetting> {
-    return JSON.parse(await bridge.loadAppSetting());
+  async loadAppSettings(): Promise<AppSettings> {
+    return JSON.parse(await bridge.loadAppSettings());
   },
-  saveAppSetting(setting: AppSetting): Promise<void> {
-    return bridge.saveAppSetting(JSON.stringify(setting));
+  saveAppSettings(settings: AppSettings): Promise<void> {
+    return bridge.saveAppSettings(JSON.stringify(settings));
   },
-  async loadBatchConversionSetting(): Promise<BatchConversionSetting> {
-    return JSON.parse(await bridge.loadBatchConversionSetting());
+  async loadBatchConversionSettings(): Promise<BatchConversionSettings> {
+    return JSON.parse(await bridge.loadBatchConversionSettings());
   },
-  saveBatchConversionSetting(setting: BatchConversionSetting): Promise<void> {
-    return bridge.saveBatchConversionSetting(JSON.stringify(setting));
+  saveBatchConversionSettings(settings: BatchConversionSettings): Promise<void> {
+    return bridge.saveBatchConversionSettings(JSON.stringify(settings));
   },
-  async loadResearchSetting(): Promise<ResearchSetting> {
-    return JSON.parse(await bridge.loadResearchSetting());
+  async loadResearchSettings(): Promise<ResearchSettings> {
+    return JSON.parse(await bridge.loadResearchSettings());
   },
-  saveResearchSetting(setting: ResearchSetting): Promise<void> {
-    return bridge.saveResearchSetting(JSON.stringify(setting));
+  saveResearchSettings(settings: ResearchSettings): Promise<void> {
+    return bridge.saveResearchSettings(JSON.stringify(settings));
   },
-  async loadAnalysisSetting(): Promise<AnalysisSetting> {
-    return JSON.parse(await bridge.loadAnalysisSetting());
+  async loadAnalysisSettings(): Promise<AnalysisSettings> {
+    return JSON.parse(await bridge.loadAnalysisSettings());
   },
-  saveAnalysisSetting(setting: AnalysisSetting): Promise<void> {
-    return bridge.saveAnalysisSetting(JSON.stringify(setting));
+  saveAnalysisSettings(settings: AnalysisSettings): Promise<void> {
+    return bridge.saveAnalysisSettings(JSON.stringify(settings));
   },
-  async loadGameSetting(): Promise<GameSetting> {
-    return JSON.parse(await bridge.loadGameSetting());
+  async loadGameSettings(): Promise<GameSettings> {
+    return JSON.parse(await bridge.loadGameSettings());
   },
-  saveGameSetting(setting: GameSetting): Promise<void> {
-    return bridge.saveGameSetting(JSON.stringify(setting));
+  saveGameSettings(settings: GameSettings): Promise<void> {
+    return bridge.saveGameSettings(JSON.stringify(settings));
   },
-  async loadCSAGameSettingHistory(): Promise<CSAGameSettingHistory> {
-    return JSON.parse(await bridge.loadCSAGameSettingHistory());
+  async loadCSAGameSettingsHistory(): Promise<CSAGameSettingsHistory> {
+    return JSON.parse(await bridge.loadCSAGameSettingsHistory());
   },
-  saveCSAGameSettingHistory(setting: CSAGameSettingHistory): Promise<void> {
-    return bridge.saveCSAGameSettingHistory(JSON.stringify(setting));
+  saveCSAGameSettingsHistory(settings: CSAGameSettingsHistory): Promise<void> {
+    return bridge.saveCSAGameSettingsHistory(JSON.stringify(settings));
   },
-  async loadMateSearchSetting(): Promise<MateSearchSetting> {
-    return JSON.parse(await bridge.loadMateSearchSetting());
+  async loadMateSearchSettings(): Promise<MateSearchSettings> {
+    return JSON.parse(await bridge.loadMateSearchSettings());
   },
-  saveMateSearchSetting(setting: MateSearchSetting): Promise<void> {
-    return bridge.saveMateSearchSetting(JSON.stringify(setting));
+  saveMateSearchSettings(settings: MateSearchSettings): Promise<void> {
+    return bridge.saveMateSearchSettings(JSON.stringify(settings));
   },
   async loadRecordFileHistory(): Promise<RecordFileHistory> {
     return JSON.parse(await bridge.loadRecordFileHistory());
   },
-  async loadUSIEngineSetting(): Promise<USIEngineSettings> {
-    return new USIEngineSettings(await bridge.loadUSIEngineSetting());
+  async loadUSIEngines(): Promise<USIEngines> {
+    return new USIEngines(await bridge.loadUSIEngines());
   },
-  saveUSIEngineSetting(settings: USIEngineSettings): Promise<void> {
-    return bridge.saveUSIEngineSetting(settings.json);
+  saveUSIEngines(usiEngines: USIEngines): Promise<void> {
+    return bridge.saveUSIEngines(usiEngines.json);
   },
 
   // Record File
   async fetchInitialRecordFileRequest(): Promise<InitialRecordFileRequest> {
     return JSON.parse(await bridge.fetchInitialRecordFileRequest());
   },
-  async convertRecordFiles(setting: BatchConversionSetting): Promise<BatchConversionResult> {
-    return JSON.parse(await bridge.convertRecordFiles(JSON.stringify(setting)));
+  async convertRecordFiles(settings: BatchConversionSettings): Promise<BatchConversionResult> {
+    return JSON.parse(await bridge.convertRecordFiles(JSON.stringify(settings)));
   },
 
   // USI
-  async getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngineSetting> {
+  async getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<USIEngine> {
     return JSON.parse(await bridge.getUSIEngineInfo(path, timeoutSeconds));
   },
-  usiLaunch(setting: USIEngineSetting, timeoutSeconds: number): Promise<number> {
-    return bridge.usiLaunch(JSON.stringify(setting), timeoutSeconds);
+  usiLaunch(engine: USIEngine, timeoutSeconds: number): Promise<number> {
+    return bridge.usiLaunch(JSON.stringify(engine), timeoutSeconds);
   },
   usiReady(sessionID: number): Promise<void> {
     return bridge.usiReady(sessionID);
@@ -220,8 +220,8 @@ const api: API = {
   },
 
   // CSA
-  csaLogin(setting: CSAServerSetting): Promise<number> {
-    return bridge.csaLogin(JSON.stringify(setting));
+  csaLogin(settings: CSAServerSettings): Promise<number> {
+    return bridge.csaLogin(JSON.stringify(settings));
   },
 
   // Sessions

@@ -1,37 +1,37 @@
 import { t } from "@/common/i18n";
-import { USIEngineSetting } from "./usi";
+import { USIEngine } from "./usi";
 
-export type SecondaryResearchSetting = {
-  usi?: USIEngineSetting;
+export type SecondaryResearchSettings = {
+  usi?: USIEngine;
 };
 
-export type ResearchSetting = {
-  usi?: USIEngineSetting;
-  secondaries?: SecondaryResearchSetting[];
+export type ResearchSettings = {
+  usi?: USIEngine;
+  secondaries?: SecondaryResearchSettings[];
   enableMaxSeconds: boolean;
   maxSeconds: number;
 };
 
-export function defaultResearchSetting(): ResearchSetting {
+export function defaultResearchSettings(): ResearchSettings {
   return {
     enableMaxSeconds: false,
     maxSeconds: 10,
   };
 }
 
-export function normalizeResearchSetting(setting: ResearchSetting): ResearchSetting {
+export function normalizeResearchSettings(settings: ResearchSettings): ResearchSettings {
   return {
-    ...defaultResearchSetting(),
-    ...setting,
-    secondaries: setting.secondaries?.filter((secondary) => !!secondary.usi),
+    ...defaultResearchSettings(),
+    ...settings,
+    secondaries: settings.secondaries?.filter((secondary) => !!secondary.usi),
   };
 }
 
-export function validateResearchSetting(setting: ResearchSetting): Error | undefined {
-  if (!setting.usi) {
+export function validateResearchSettings(settings: ResearchSettings): Error | undefined {
+  if (!settings.usi) {
     return new Error(t.engineNotSelected);
   }
-  if (setting.secondaries?.some((secondary) => !secondary.usi)) {
+  if (settings.secondaries?.some((secondary) => !secondary.usi)) {
     return new Error(t.engineNotSelected);
   }
 }

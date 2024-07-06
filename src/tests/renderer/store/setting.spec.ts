@@ -1,6 +1,6 @@
 import api, { API } from "@/renderer/ipc/api";
 import { Tab, TabPaneType, Thema } from "@/common/settings/app";
-import { createAppSetting } from "@/renderer/store/setting";
+import { createAppSettings } from "@/renderer/store/settings";
 import { Mocked } from "vitest";
 
 vi.mock("@/renderer/ipc/api");
@@ -12,14 +12,14 @@ describe("store/index", () => {
     vi.clearAllMocks();
   });
 
-  it("updateAppSetting/success", async () => {
-    mockAPI.saveAppSetting.mockResolvedValue();
-    const store = createAppSetting();
+  it("updateAppSettings/success", async () => {
+    mockAPI.saveAppSettings.mockResolvedValue();
+    const store = createAppSettings();
     expect(store.thema).toBe(Thema.STANDARD);
     expect(store.pieceVolume).toBe(30);
     expect(store.clockVolume).toBe(30);
     expect(store.tab).toBe(Tab.RECORD_INFO);
-    await store.updateAppSetting({
+    await store.updateAppSettings({
       thema: Thema.DARK,
       pieceVolume: 0,
       tabPaneType: TabPaneType.SINGLE,
@@ -30,18 +30,18 @@ describe("store/index", () => {
     expect(store.clockVolume).toBe(30);
     expect(store.tab).toBe(Tab.COMMENT);
     expect(store.tabPaneType).toBe(TabPaneType.SINGLE);
-    await store.updateAppSetting({
+    await store.updateAppSettings({
       tabPaneType: TabPaneType.DOUBLE,
     });
     expect(store.tab).toBe(Tab.RECORD_INFO); // コメントタブの選択が自動で解除される。
     expect(store.tabPaneType).toBe(TabPaneType.DOUBLE);
-    expect(mockAPI.saveAppSetting).toBeCalledTimes(2);
+    expect(mockAPI.saveAppSettings).toBeCalledTimes(2);
   });
 
-  it("updateAppSetting/error", async () => {
-    const store = createAppSetting();
+  it("updateAppSettings/error", async () => {
+    const store = createAppSettings();
     await expect(() =>
-      store.updateAppSetting({
+      store.updateAppSettings({
         pieceVolume: -1,
       }),
     ).rejects.toThrow();
@@ -49,7 +49,7 @@ describe("store/index", () => {
   });
 
   it("flipBoard", () => {
-    const store = createAppSetting();
+    const store = createAppSettings();
     expect(store.boardFlipping).toBeFalsy();
     store.flipBoard();
     expect(store.boardFlipping).toBeTruthy();

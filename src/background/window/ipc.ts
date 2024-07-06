@@ -4,26 +4,26 @@ import path from "node:path";
 import { promises as fs } from "node:fs";
 import url from "node:url";
 import {
-  loadAnalysisSetting,
-  loadAppSetting,
-  loadBatchConversionSetting,
-  loadCSAGameSettingHistory,
-  loadGameSetting,
+  loadAnalysisSettings,
+  loadAppSettings,
+  loadBatchConversionSettings,
+  loadCSAGameSettingsHistory,
+  loadGameSettings,
   loadLayoutProfileList,
-  loadMateSearchSetting,
-  loadResearchSetting,
-  loadUSIEngineSetting,
-  saveAnalysisSetting,
-  saveAppSetting,
-  saveBatchConversionSetting,
-  saveCSAGameSettingHistory,
-  saveGameSetting,
+  loadMateSearchSettings,
+  loadResearchSettings,
+  loadUSIEngines,
+  saveAnalysisSettings,
+  saveAppSettings,
+  saveBatchConversionSettings,
+  saveCSAGameSettingsHistory,
+  saveGameSettings,
   saveLayoutProfileList,
-  saveMateSearchSetting,
-  saveResearchSetting,
-  saveUSIEngineSetting,
+  saveMateSearchSettings,
+  saveResearchSettings,
+  saveUSIEngines,
 } from "@/background/settings";
-import { USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
+import { USIEngine, USIEngines } from "@/common/settings/usi";
 import { MenuEvent } from "@/common/control/menu";
 import { USIInfoCommand } from "@/common/game/usi";
 import { AppState, ResearchState } from "@/common/control/state";
@@ -62,7 +62,7 @@ import {
   setHandlers,
 } from "@/background/csa";
 import { CSAGameResult, CSAGameSummary, CSAPlayerStates, CSASpecialMove } from "@/common/game/csa";
-import { CSAServerSetting } from "@/common/settings/csa";
+import { CSAServerSettings } from "@/common/settings/csa";
 import { isEncryptionAvailable } from "@/background/helpers/encrypt";
 import { validateIPCSender } from "./security";
 import { t } from "@/common/i18n";
@@ -71,9 +71,9 @@ import { exportCaptureJPEG, exportCapturePNG } from "@/background/image/capture"
 import { cropPieceImage } from "@/background/image/cropper";
 import { getRelativeEnginePath, resolveEnginePath } from "@/background/usi/path";
 import { fileURLToPath } from "@/background/helpers/url";
-import { AppSettingUpdate } from "@/common/settings/app";
+import { AppSettingsUpdate } from "@/common/settings/app";
 import { convertRecordFiles } from "@/background/file/conversion";
-import { BatchConversionSetting } from "@/common/settings/conversion";
+import { BatchConversionSettings } from "@/common/settings/conversion";
 import {
   addHistory,
   clearHistory,
@@ -162,16 +162,16 @@ ipcMain.on(Background.OPEN_WEB_BROWSER, (event, url: string) => {
 
 ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
-  const appSetting = await loadAppSetting();
+  const appSettings = await loadAppSettings();
   getAppLogger().debug(`show open-record dialog`);
-  const ret = await showOpenDialog(["openFile"], appSetting.lastRecordFilePath, [
+  const ret = await showOpenDialog(["openFile"], appSettings.lastRecordFilePath, [
     {
       name: t.recordFile,
       extensions: ["kif", "kifu", "ki2", "ki2u", "csa", "jkf"],
     },
   ]);
   if (ret) {
-    updateAppSetting({ lastRecordFilePath: ret });
+    updateAppSettings({ lastRecordFilePath: ret });
   }
   return ret;
 });
@@ -244,7 +244,7 @@ ipcMain.handle(
     if (!win) {
       throw new Error("failed to open dialog by unexpected error.");
     }
-    const appSetting = await loadAppSetting();
+    const appSettings = await loadAppSettings();
     const filters = [
       { name: "KIF (Shift_JIS)", extensions: ["kif"] },
       { name: "KIF (UTF-8)", extensions: ["kifu"] },
@@ -254,11 +254,11 @@ ipcMain.handle(
       { name: "JSON Kifu Format", extensions: ["jkf"] },
     ];
     const result = await showSaveDialog(
-      path.resolve(path.dirname(appSetting.lastRecordFilePath), defaultPath),
+      path.resolve(path.dirname(appSettings.lastRecordFilePath), defaultPath),
       filters,
     );
     if (result) {
-      updateAppSetting({ lastRecordFilePath: result });
+      updateAppSettings({ lastRecordFilePath: result });
     }
     return result;
   },
@@ -284,11 +284,11 @@ ipcMain.handle(Background.SHOW_SELECT_FILE_DIALOG, async (event): Promise<string
   if (!win) {
     throw new Error("failed to open dialog by unexpected error.");
   }
-  const appSetting = await loadAppSetting();
+  const appSettings = await loadAppSettings();
   getAppLogger().debug("show select-file dialog");
-  const ret = await showOpenDialog(["openFile"], appSetting.lastOtherFilePath);
+  const ret = await showOpenDialog(["openFile"], appSettings.lastOtherFilePath);
   if (ret) {
-    updateAppSetting({ lastOtherFilePath: ret });
+    updateAppSettings({ lastOtherFilePath: ret });
   }
   return ret;
 });
@@ -351,7 +351,7 @@ ipcMain.handle(Background.EXPORT_CAPTURE_AS_PNG, async (event, json: string): Pr
   validateIPCSender(event.senderFrame);
   const filePath = await exportCapturePNG(mainWindow.webContents, new Rect(json));
   if (filePath) {
-    updateAppSetting({ lastImageExportFilePath: filePath });
+    updateAppSettings({ lastImageExportFilePath: filePath });
   }
 });
 
@@ -359,104 +359,104 @@ ipcMain.handle(Background.EXPORT_CAPTURE_AS_JPEG, async (event, json: string): P
   validateIPCSender(event.senderFrame);
   const filePath = await exportCaptureJPEG(mainWindow.webContents, new Rect(json));
   if (filePath) {
-    updateAppSetting({ lastImageExportFilePath: filePath });
+    updateAppSettings({ lastImageExportFilePath: filePath });
   }
 });
 
 ipcMain.handle(Background.CONVERT_RECORD_FILES, async (event, json: string): Promise<string> => {
   validateIPCSender(event.senderFrame);
-  const setting = JSON.parse(json) as BatchConversionSetting;
-  return JSON.stringify(await convertRecordFiles(setting));
+  const settings = JSON.parse(json) as BatchConversionSettings;
+  return JSON.stringify(await convertRecordFiles(settings));
 });
 
-ipcMain.handle(Background.LOAD_APP_SETTING, async (event): Promise<string> => {
+ipcMain.handle(Background.LOAD_APP_SETTINGS, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load app setting");
-  return JSON.stringify(await loadAppSetting());
+  getAppLogger().debug("load app settings");
+  return JSON.stringify(await loadAppSettings());
 });
 
-ipcMain.handle(Background.SAVE_APP_SETTING, async (event, json: string): Promise<void> => {
+ipcMain.handle(Background.SAVE_APP_SETTINGS, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save app setting");
-  await saveAppSetting(JSON.parse(json));
+  getAppLogger().debug("save app settings");
+  await saveAppSettings(JSON.parse(json));
 });
 
-ipcMain.handle(Background.LOAD_BATCH_CONVERSION_SETTING, async (event): Promise<string> => {
+ipcMain.handle(Background.LOAD_BATCH_CONVERSION_SETTINGS, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load batch conversion setting");
-  return JSON.stringify(await loadBatchConversionSetting());
-});
-
-ipcMain.handle(
-  Background.SAVE_BATCH_CONVERSION_SETTING,
-  async (event, json: string): Promise<void> => {
-    validateIPCSender(event.senderFrame);
-    getAppLogger().debug("save batch conversion setting");
-    await saveBatchConversionSetting(JSON.parse(json));
-  },
-);
-
-ipcMain.handle(Background.LOAD_RESEARCH_SETTING, async (event): Promise<string> => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load research setting");
-  return JSON.stringify(await loadResearchSetting());
-});
-
-ipcMain.handle(Background.SAVE_RESEARCH_SETTING, async (event, json: string): Promise<void> => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save research setting");
-  await saveResearchSetting(JSON.parse(json));
-});
-
-ipcMain.handle(Background.LOAD_ANALYSIS_SETTING, async (event): Promise<string> => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load analysis setting");
-  return JSON.stringify(await loadAnalysisSetting());
-});
-
-ipcMain.handle(Background.SAVE_ANALYSIS_SETTING, async (event, json: string): Promise<void> => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save analysis setting");
-  await saveAnalysisSetting(JSON.parse(json));
-});
-
-ipcMain.handle(Background.LOAD_GAME_SETTING, async (event): Promise<string> => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load game setting");
-  return JSON.stringify(await loadGameSetting());
-});
-
-ipcMain.handle(Background.SAVE_GAME_SETTING, async (event, json: string): Promise<void> => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save game setting");
-  await saveGameSetting(JSON.parse(json));
-});
-
-ipcMain.handle(Background.LOAD_CSA_GAME_SETTING_HISTORY, async (event): Promise<string> => {
-  validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load CSA game setting history");
-  return JSON.stringify(await loadCSAGameSettingHistory());
+  getAppLogger().debug("load batch conversion settings");
+  return JSON.stringify(await loadBatchConversionSettings());
 });
 
 ipcMain.handle(
-  Background.SAVE_CSA_GAME_SETTING_HISTORY,
+  Background.SAVE_BATCH_CONVERSION_SETTINGS,
   async (event, json: string): Promise<void> => {
     validateIPCSender(event.senderFrame);
-    getAppLogger().debug("save CSA game setting history");
-    await saveCSAGameSettingHistory(JSON.parse(json));
+    getAppLogger().debug("save batch conversion settings");
+    await saveBatchConversionSettings(JSON.parse(json));
   },
 );
 
-ipcMain.handle(Background.LOAD_MATE_SEARCH_SETTING, async (event): Promise<string> => {
+ipcMain.handle(Background.LOAD_RESEARCH_SETTINGS, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load mate search setting");
-  return JSON.stringify(await loadMateSearchSetting());
+  getAppLogger().debug("load research settings");
+  return JSON.stringify(await loadResearchSettings());
 });
 
-ipcMain.handle(Background.SAVE_MATE_SEARCH_SETTING, async (event, json: string): Promise<void> => {
+ipcMain.handle(Background.SAVE_RESEARCH_SETTINGS, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save mate search setting");
-  await saveMateSearchSetting(JSON.parse(json));
+  getAppLogger().debug("save research settings");
+  await saveResearchSettings(JSON.parse(json));
+});
+
+ipcMain.handle(Background.LOAD_ANALYSIS_SETTINGS, async (event): Promise<string> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load analysis settings");
+  return JSON.stringify(await loadAnalysisSettings());
+});
+
+ipcMain.handle(Background.SAVE_ANALYSIS_SETTINGS, async (event, json: string): Promise<void> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("save analysis settings");
+  await saveAnalysisSettings(JSON.parse(json));
+});
+
+ipcMain.handle(Background.LOAD_GAME_SETTINGS, async (event): Promise<string> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load game settings");
+  return JSON.stringify(await loadGameSettings());
+});
+
+ipcMain.handle(Background.SAVE_GAME_SETTINGS, async (event, json: string): Promise<void> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("save game settings");
+  await saveGameSettings(JSON.parse(json));
+});
+
+ipcMain.handle(Background.LOAD_CSA_GAME_SETTINGS_HISTORY, async (event): Promise<string> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load CSA game settings history");
+  return JSON.stringify(await loadCSAGameSettingsHistory());
+});
+
+ipcMain.handle(
+  Background.SAVE_CSA_GAME_SETTINGS_HISTORY,
+  async (event, json: string): Promise<void> => {
+    validateIPCSender(event.senderFrame);
+    getAppLogger().debug("save CSA game settings history");
+    await saveCSAGameSettingsHistory(JSON.parse(json));
+  },
+);
+
+ipcMain.handle(Background.LOAD_MATE_SEARCH_SETTINGS, async (event): Promise<string> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("load mate search settings");
+  return JSON.stringify(await loadMateSearchSettings());
+});
+
+ipcMain.handle(Background.SAVE_MATE_SEARCH_SETTINGS, async (event, json: string): Promise<void> => {
+  validateIPCSender(event.senderFrame);
+  getAppLogger().debug("save mate search settings");
+  await saveMateSearchSettings(JSON.parse(json));
 });
 
 ipcMain.handle(Background.LOAD_RECORD_FILE_HISTORY, async (event): Promise<string> => {
@@ -507,16 +507,16 @@ ipcMain.on(Background.UPDATE_LAYOUT_PROFILE_LIST, (event, uri: string, json: str
   });
 });
 
-ipcMain.handle(Background.LOAD_USI_ENGINE_SETTING, async (event): Promise<string> => {
+ipcMain.handle(Background.LOAD_USI_ENGINES, async (event): Promise<string> => {
   validateIPCSender(event.senderFrame);
-  getAppLogger().debug("load USI engine setting");
-  return (await loadUSIEngineSetting()).json;
+  getAppLogger().debug("load USI engines");
+  return (await loadUSIEngines()).json;
 });
 
-ipcMain.handle(Background.SAVE_USI_ENGINE_SETTING, async (event, json: string): Promise<void> => {
+ipcMain.handle(Background.SAVE_USI_ENGINES, async (event, json: string): Promise<void> => {
   validateIPCSender(event.senderFrame);
-  getAppLogger().debug("save USI engine setting");
-  await saveUSIEngineSetting(new USIEngineSettings(json));
+  getAppLogger().debug("save USI engines");
+  await saveUSIEngines(new USIEngines(json));
 });
 
 ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, async (event): Promise<string> => {
@@ -525,18 +525,18 @@ ipcMain.handle(Background.SHOW_SELECT_USI_ENGINE_DIALOG, async (event): Promise<
   if (!win) {
     throw new Error("failed to open dialog by unexpected error.");
   }
-  const appSetting = await loadAppSetting();
+  const appSettings = await loadAppSettings();
   getAppLogger().debug("show select-USI-engine dialog");
   const ret = await showOpenDialog(
     ["openFile", "noResolveAliases"],
-    appSetting.lastUSIEngineFilePath,
+    appSettings.lastUSIEngineFilePath,
     isWindows ? [{ name: t.executableFile, extensions: ["exe", "cmd", "bat"] }] : undefined,
   );
   if (ret === "") {
     return "";
   }
   const enginePath = getRelativeEnginePath(ret);
-  updateAppSetting({
+  updateAppSettings({
     lastUSIEngineFilePath: enginePath,
   });
   return enginePath;
@@ -560,8 +560,8 @@ ipcMain.handle(
 
 ipcMain.handle(Background.LAUNCH_USI, async (event, json: string, timeoutSeconds: number) => {
   validateIPCSender(event.senderFrame);
-  const setting = JSON.parse(json) as USIEngineSetting;
-  return await usiSetupPlayer(setting, timeoutSeconds);
+  const engine = JSON.parse(json) as USIEngine;
+  return await usiSetupPlayer(engine, timeoutSeconds);
 });
 
 ipcMain.handle(Background.USI_READY, async (event, sessionID: number) => {
@@ -617,8 +617,8 @@ ipcMain.handle(Background.USI_QUIT, (event, sessionID: number) => {
 
 ipcMain.handle(Background.CSA_LOGIN, (event, json: string): number => {
   validateIPCSender(event.senderFrame);
-  const setting: CSAServerSetting = JSON.parse(json);
-  return csaLogin(setting);
+  const settings: CSAServerSettings = JSON.parse(json);
+  return csaLogin(settings);
 });
 
 ipcMain.handle(Background.CSA_LOGOUT, (event, sessionID: number): void => {
@@ -806,8 +806,8 @@ export function onMenuEvent(event: MenuEvent, ...args: any[]): void {
 }
 
 // FIXME: do not export
-export function updateAppSetting(setting: AppSettingUpdate): void {
-  mainWindow.webContents.send(Renderer.UPDATE_APP_SETTING, JSON.stringify(setting));
+export function updateAppSettings(settings: AppSettingsUpdate): void {
+  mainWindow.webContents.send(Renderer.UPDATE_APP_SETTINGS, JSON.stringify(settings));
 }
 
 export function openRecord(path: string): void {

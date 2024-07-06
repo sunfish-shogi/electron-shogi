@@ -1,7 +1,7 @@
 "use strict";
 
 import { app, BrowserWindow, session, Menu } from "electron";
-import { loadAppSettingOnce } from "@/background/settings";
+import { loadAppSettingsOnce } from "@/background/settings";
 import {
   getAppLogger,
   LogDestination,
@@ -19,14 +19,14 @@ import { isLogEnabled } from "@/common/settings/app";
 import { createWindow } from "./window/main";
 import { spawn } from "child_process";
 
-const appSetting = loadAppSettingOnce();
+const appSettings = loadAppSettingsOnce();
 for (const type of Object.values(LogType)) {
-  const destinations: LogDestination[] = isLogEnabled(type, appSetting)
+  const destinations: LogDestination[] = isLogEnabled(type, appSettings)
     ? ["file"]
     : !isTest()
       ? ["stdout"]
       : ["recording"];
-  setLogDestinations(type, destinations, appSetting.logLevel);
+  setLogDestinations(type, destinations, appSettings.logLevel);
 }
 
 getAppLogger().info(
@@ -41,7 +41,7 @@ if (isPortable()) {
   getAppLogger().info("portable mode: %s", getPortableExeDir());
 }
 
-setLanguage(appSetting.language);
+setLanguage(appSettings.language);
 
 contextMenu({
   showCopyImage: false,

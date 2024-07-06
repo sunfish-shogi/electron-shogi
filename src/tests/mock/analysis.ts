@@ -1,7 +1,7 @@
-import { AnalysisSetting, CommentBehavior } from "@/common/settings/analysis";
-import { USIEngineSetting } from "@/common/settings/usi";
+import { AnalysisSettings, CommentBehavior } from "@/common/settings/analysis";
+import { USIEngine } from "@/common/settings/usi";
 
-const engine: USIEngineSetting = {
+const engine: USIEngine = {
   uri: "es://usi/test-engine",
   name: "my usi engine",
   defaultName: "engine",
@@ -12,7 +12,7 @@ const engine: USIEngineSetting = {
   enableEarlyPonder: false,
 };
 
-export const analysisSetting: AnalysisSetting = {
+export const analysisSettings: AnalysisSettings = {
   usi: engine,
   startCriteria: {
     enableNumber: false,

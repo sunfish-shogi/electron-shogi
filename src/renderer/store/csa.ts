@@ -8,7 +8,7 @@ import {
 } from "@/common/game/csa";
 import { defaultPlayerBuilder, PlayerBuilder } from "@/renderer/players/builder";
 import { Player, SearchInfo } from "@/renderer/players/player";
-import { CSAGameSetting, CSAProtocolVersion, defaultCSAGameSetting } from "@/common/settings/csa";
+import { CSAGameSettings, CSAProtocolVersion, defaultCSAGameSettings } from "@/common/settings/csa";
 import {
   Color,
   RecordFormatType,
@@ -57,7 +57,7 @@ enum ReloginBehavior {
 
 export class CSAGameManager {
   private _state = CSAGameState.OFFLINE;
-  private _setting = defaultCSAGameSetting();
+  private _settings = defaultCSAGameSettings();
   private _sessionID = 0;
   private stopRequested = false;
   private repeat = 0;
@@ -138,8 +138,8 @@ export class CSAGameManager {
     return this._state;
   }
 
-  get setting(): CSAGameSetting {
-    return this._setting;
+  get settings(): CSAGameSettings {
+    return this._settings;
   }
 
   get sessionID(): number {
@@ -158,7 +158,7 @@ export class CSAGameManager {
   /**
    * CSA サーバーにログインする。
    */
-  async login(setting: CSAGameSetting, playerBuilder: PlayerBuilder): Promise<void> {
+  async login(settings: CSAGameSettings, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.sessionID) {
       throw new Error("CSAGameManager#login: session already exists");
     }
@@ -166,11 +166,11 @@ export class CSAGameManager {
       throw new Error("CSAGameManager#login: unexpected state");
     }
     this._state = CSAGameState.PLAYER_SETUP;
-    this._setting = setting;
+    this._settings = settings;
     this.playerBuilder = playerBuilder;
     this.repeat = 0;
     // プレイヤーを初期化する。
-    this.player = await this.playerBuilder.build(this._setting.player, (info) =>
+    this.player = await this.playerBuilder.build(this._settings.player, (info) =>
       this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
     );
     // サーバーへのログインと対局開始を試みる。
@@ -180,13 +180,13 @@ export class CSAGameManager {
 
   private async relogin(): Promise<void> {
     // 1局ごとにエンジンを再起動するオプションが選択されている場合は一度エンジンを停止してからスタートしなおす。
-    if (this.setting.restartPlayerEveryGame) {
+    if (this.settings.restartPlayerEveryGame) {
       this._state = CSAGameState.PLAYER_SETUP;
       if (this.player) {
         await this.player.close();
         this.player = undefined;
       }
-      this.player = await this.playerBuilder.build(this._setting.player, (info) =>
+      this.player = await this.playerBuilder.build(this._settings.player, (info) =>
         this.recordManager.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
     }
@@ -203,7 +203,7 @@ export class CSAGameManager {
       await this.player.readyNewGame();
       // CSA サーバーにログインする。
       this._state = CSAGameState.WAITING_LOGIN;
-      const sessionID = await api.csaLogin(this._setting.server);
+      const sessionID = await api.csaLogin(this._settings.server);
       // セッション ID を記憶する。
       this._sessionID = sessionID;
       // ステータスを更新する。
@@ -241,7 +241,7 @@ export class CSAGameManager {
     }
 
     // 自動保存が有効な場合は棋譜を保存する。
-    if (this._state === CSAGameState.GAME && this.setting.enableAutoSave) {
+    if (this._state === CSAGameState.GAME && this.settings.enableAutoSave) {
       this.onSaveRecord();
     }
 
@@ -276,7 +276,7 @@ export class CSAGameManager {
     }
 
     // 連続対局の条件を満たしていない場合はプレイヤーセッションを閉じ、ハンドラーを呼び出して終了する。
-    if (reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN || this.repeat >= this.setting.repeat) {
+    if (reloginBehavior === ReloginBehavior.DO_NOT_RELOGIN || this.repeat >= this.settings.repeat) {
       if (this.player) {
         this.player.close().catch((e) => {
           this.onError(new Error(`CSAGameManager#close: ${t.failedToShutdownEngines}: ${e}`));
@@ -347,7 +347,7 @@ export class CSAGameManager {
     });
 
     // 将棋盤の向きを調整する。
-    if (this.setting.autoFlip && this.onFlipBoard) {
+    if (this.settings.autoFlip && this.onFlipBoard) {
       this.onFlipBoard(this.gameSummary.myColor === Color.WHITE);
     }
 
@@ -381,7 +381,7 @@ export class CSAGameManager {
     }
 
     // コメントを記録する。
-    if (isMyMove && this.searchInfo && this.setting.enableComment) {
+    if (isMyMove && this.searchInfo && this.settings.enableComment) {
       this.recordManager.appendSearchComment(
         SearchInfoSenderType.PLAYER,
         this.searchInfo,
@@ -466,7 +466,7 @@ export class CSAGameManager {
 
   onClose(): void {
     this.close(
-      this.setting.autoRelogin
+      this.settings.autoRelogin
         ? ReloginBehavior.RELOGIN_WITH_INTERVAL
         : ReloginBehavior.DO_NOT_RELOGIN,
     );
@@ -487,20 +487,20 @@ export class CSAGameManager {
   }
 
   private syncClock(playerStates: CSAPlayerStates): void {
-    const clockSetting = {
+    const clockSettings = {
       onBeepShort: () => this.onBeepShort(),
       onBeepUnlimited: () => this.onBeepUnlimited(),
       onStopBeep: () => this.onStopBeep(),
     };
     const blackTimeConfig = this.gameSummary.players.black.time;
     this.blackClock.setup({
-      ...clockSetting,
+      ...clockSettings,
       timeMs: playerStates.black.time * blackTimeConfig.timeUnitMs,
       byoyomi: (blackTimeConfig.byoyomi * blackTimeConfig.timeUnitMs) / 1e3,
     });
     const whiteTimeConfig = this.gameSummary.players.white.time;
     this.whiteClock.setup({
-      ...clockSetting,
+      ...clockSettings,
       timeMs: playerStates.white.time * whiteTimeConfig.timeUnitMs,
       byoyomi: (whiteTimeConfig.byoyomi * whiteTimeConfig.timeUnitMs) / 1e3,
     });
@@ -594,7 +594,7 @@ export class CSAGameManager {
 
     let score: number | undefined = undefined;
     let pv: string | undefined = undefined;
-    switch (this._setting.server.protocolVersion) {
+    switch (this._settings.server.protocolVersion) {
       case CSAProtocolVersion.V121:
         // 通常の CSA プロトコルでは次の指し手のみを送信する。
         break;
@@ -612,7 +612,7 @@ export class CSAGameManager {
     api.csaMove(this.sessionID, formatCSAMove(move), score, pv);
 
     // やねうら王拡張モードではサーバーからの応答を待たずに非同期で Ponder を開始する。
-    if (this.setting.player.usi?.enableEarlyPonder) {
+    if (this.settings.player.usi?.enableEarlyPonder) {
       this.startEarlyPonder(move);
     }
   }

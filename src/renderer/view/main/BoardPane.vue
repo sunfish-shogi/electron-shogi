@@ -1,19 +1,19 @@
 <template>
   <div>
     <BoardView
-      :board-image-type="appSetting.boardImage"
-      :piece-stand-image-type="appSetting.pieceStandImage"
-      :board-label-type="appSetting.boardLabelType"
-      :piece-image-url-template="getPieceImageURLTemplate(appSetting)"
-      :king-piece-type="appSetting.kingPieceType"
-      :custom-board-image-url="appSetting.boardImageFileURL"
-      :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
-      :board-image-opacity="appSetting.enableTransparent ? appSetting.boardOpacity : 1"
-      :piece-stand-image-opacity="appSetting.enableTransparent ? appSetting.pieceStandOpacity : 1"
+      :board-image-type="appSettings.boardImage"
+      :piece-stand-image-type="appSettings.pieceStandImage"
+      :board-label-type="appSettings.boardLabelType"
+      :piece-image-url-template="getPieceImageURLTemplate(appSettings)"
+      :king-piece-type="appSettings.kingPieceType"
+      :custom-board-image-url="appSettings.boardImageFileURL"
+      :custom-piece-stand-image-url="appSettings.pieceStandImageFileURL"
+      :board-image-opacity="appSettings.enableTransparent ? appSettings.boardOpacity : 1"
+      :piece-stand-image-opacity="appSettings.enableTransparent ? appSettings.pieceStandOpacity : 1"
       :max-size="maxSize"
       :position="store.record.position"
       :last-move="lastMove"
-      :flip="appSetting.boardFlipping"
+      :flip="appSettings.boardFlipping"
       :hide-clock="store.appState !== AppState.GAME && store.appState !== AppState.CSA_GAME"
       :allow-move="store.isMovableByUser"
       :allow-edit="store.appState === AppState.POSITION_EDITING"
@@ -55,7 +55,7 @@ import ControlPane, { ControlGroup } from "@/renderer/view/main/ControlPane.vue"
 import { AppState } from "@/common/control/state.js";
 import { humanPlayer } from "@/renderer/players/human";
 import { CSAGameState } from "@/renderer/store/csa";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import {
   RightSideControlType,
   LeftSideControlType,
@@ -84,7 +84,7 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 
 const onResize = (size: RectSize) => {
   emit("resize", size);

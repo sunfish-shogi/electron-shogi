@@ -12,7 +12,7 @@ export enum AppState {
   ANALYSIS_DIALOG = "analysisDialog",
   MATE_SEARCH = "mateSearch",
   MATE_SEARCH_DIALOG = "mateSearchDialog",
-  USI_ENGINE_SETTING_DIALOG = "usiEngineSettingDialog",
+  USI_ENGINES_DIALOG = "usiEnginesDialog",
   RECORD_FILE_HISTORY_DIALOG = "recordFileHistoryDialog",
   BATCH_CONVERSION_DIALOG = "batchConversionDialog",
   LAUNCH_USI_ENGINE_DIALOG = "launchUsiEngineDialog",

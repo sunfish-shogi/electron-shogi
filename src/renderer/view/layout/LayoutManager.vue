@@ -1,5 +1,5 @@
 <template>
-  <div class="root full" :class="appSetting.thema">
+  <div class="root full" :class="appSettings.thema">
     <div class="main full column">
       <div class="header column">
         <select :value="store.currentProfileURI" @change="selectProfile">
@@ -280,7 +280,7 @@
 <script setup lang="ts">
 import * as uri from "@/common/uri";
 import { useStore } from "@/renderer/layout/store";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { computed, ref } from "vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
@@ -298,7 +298,7 @@ import InfoMessage from "@/renderer/view/dialog/InfoMessage.vue";
 import ErrorMessage from "@/renderer/view/dialog/ErrorMessage.vue";
 import ConfirmDialog from "@/renderer/view/dialog/ConfirmDialog.vue";
 
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const messageStore = useMessageStore();
 const errorStore = useErrorStore();
 const confirmation = useConfirmationStore();

@@ -1,13 +1,13 @@
 import { t } from "@/common/i18n";
 import { Notification } from "electron";
-import { loadAppSetting } from "@/background/settings";
+import { loadAppSettings } from "@/background/settings";
 import { cropPieceImage } from "@/background/image/cropper";
-import { AppSettingUpdate, PieceImageType } from "@/common/settings/app";
+import { AppSettingsUpdate, PieceImageType } from "@/common/settings/app";
 
 export async function refreshCustomPieceImages(
-  onUpdateAppSetting: (update: AppSettingUpdate) => void,
+  onUpdateAppSettings: (update: AppSettingsUpdate) => void,
 ) {
-  const appSettings = await loadAppSetting();
+  const appSettings = await loadAppSettings();
   if (appSettings.pieceImage !== PieceImageType.CUSTOM_IMAGE || !appSettings.pieceImageFileURL) {
     throw new Error("No custom piece image is in use.");
   }
@@ -15,7 +15,7 @@ export async function refreshCustomPieceImages(
     deleteMargin: appSettings.deletePieceImageMargin,
     overwrite: true,
   });
-  onUpdateAppSetting({
+  onUpdateAppSettings({
     croppedPieceImageQuery: `updated=${Date.now()}`,
   });
 }

@@ -14,7 +14,7 @@ import {
   onMenuEvent,
   onUpdateAppState,
   sendError,
-  updateAppSetting,
+  updateAppSettings,
 } from "@/background/window/ipc";
 import { MenuEvent } from "@/common/control/menu";
 import { AppState, ResearchState } from "@/common/control/state";
@@ -357,13 +357,8 @@ function createMenuTemplate(window: BrowserWindow) {
     {
       label: t.settings,
       submenu: [
-        menuItem(t.appSettings, MenuEvent.APP_SETTING_DIALOG, null, "CmdOrCtrl+,"),
-        menuItem(
-          t.engineSettings,
-          MenuEvent.USI_ENGINE_SETTING_DIALOG,
-          [AppState.NORMAL],
-          "CmdOrCtrl+.",
-        ),
+        menuItem(t.appSettings, MenuEvent.APP_SETTINGS_DIALOG, null, "CmdOrCtrl+,"),
+        menuItem(t.manageEngines, MenuEvent.USI_ENGINES_DIALOG, [AppState.NORMAL], "CmdOrCtrl+."),
       ],
     },
     {
@@ -487,7 +482,7 @@ function createMenuTemplate(window: BrowserWindow) {
         {
           label: t.reloadCustomPieceImage,
           click: () => {
-            refreshCustomPieceImages(updateAppSetting).catch(sendError);
+            refreshCustomPieceImages(updateAppSettings).catch(sendError);
           },
         },
         {

@@ -10,7 +10,7 @@ import { setup as setupIPC } from "@/renderer/ipc/setup";
 import { useStore } from "@/renderer/store";
 import { Chart, registerables } from "chart.js";
 import { LogLevel } from "@/common/log";
-import { useAppSetting } from "./store/setting";
+import { useAppSettings } from "./store/settings";
 import { setLanguage, t } from "@/common/i18n";
 import { default as dayjs } from "dayjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -54,8 +54,8 @@ watch([() => store.recordFilePath, () => store.isRecordFileUnsaved], ([path, uns
 });
 
 Promise.allSettled([
-  useAppSetting()
-    .loadAppSetting()
+  useAppSettings()
+    .loadAppSettings()
     .catch((e) => {
       useErrorStore().add(new Error("アプリ設定の読み込み中にエラーが発生しました: " + e));
     }),
@@ -72,7 +72,7 @@ Promise.allSettled([
       useErrorStore().add(new Error("起動パラメーターの取得に失敗しました: " + e));
     }),
 ]).finally(() => {
-  const language = useAppSetting().language;
+  const language = useAppSettings().language;
   api.log(LogLevel.INFO, `set language: ${language}`);
   setLanguage(language);
   updateTitle(store.recordFilePath, store.isRecordFileUnsaved);

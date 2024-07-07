@@ -12,7 +12,7 @@
           />
         </div>
         <div class="column engine-list">
-          <div v-if="setting.engineList.length === 0" class="engine">
+          <div v-if="usiEngines.engineList.length === 0" class="engine">
             {{ t.noEngineRegistered }}
           </div>
           <div
@@ -68,9 +68,9 @@
       </div>
     </dialog>
   </div>
-  <USIEngineOptionDialog
+  <USIEngineOptionsDialog
     v-if="optionDialog"
-    :latest-engine-setting="optionDialog"
+    :latest="optionDialog"
     @ok="optionOk"
     @cancel="optionCancel"
   />
@@ -80,27 +80,22 @@
 import { t } from "@/common/i18n";
 import { filter as filterString } from "@/common/helpers/string";
 import api from "@/renderer/ipc/api";
-import {
-  duplicateEngineSetting,
-  USIEngineSetting,
-  USIEngineSettings,
-  USIEngineLabel,
-} from "@/common/settings/usi";
+import { duplicateEngine, USIEngine, USIEngines, USIEngineLabel } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { ref, onMounted, onBeforeUnmount, computed, onUpdated } from "vue";
-import USIEngineOptionDialog from "@/renderer/view/dialog/USIEngineOptionDialog.vue";
+import USIEngineOptionsDialog from "@/renderer/view/dialog/USIEngineOptionsDialog.vue";
 import CheckBox from "@/renderer/view/primitive/CheckBox.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
 const busyState = useBusyState();
 const dialog = ref();
-const optionDialog = ref(null as USIEngineSetting | null);
-const setting = ref(new USIEngineSettings());
+const optionDialog = ref(null as USIEngine | null);
+const usiEngines = ref(new USIEngines());
 const filter = ref();
 const filterWords = ref([] as string[]);
 const lastAdded = ref("");
@@ -112,7 +107,7 @@ onMounted(async () => {
   showModalDialog(dialog.value, cancel);
   installHotKeyForDialog(dialog.value);
   try {
-    setting.value = await api.loadUSIEngineSetting();
+    usiEngines.value = await api.loadUSIEngines();
   } catch (e) {
     useErrorStore().add(e);
     store.destroyModalDialog();
@@ -134,7 +129,7 @@ onUpdated(() => {
 });
 
 const engines = computed(() =>
-  setting.value.engineList.map((engine) => {
+  usiEngines.value.engineList.map((engine) => {
     return {
       uri: engine.uri,
       name: engine.name,
@@ -161,10 +156,10 @@ const add = async () => {
     if (!path) {
       return;
     }
-    const appSetting = useAppSetting();
-    const timeoutSeconds = appSetting.engineTimeoutSeconds;
+    const appSettings = useAppSettings();
+    const timeoutSeconds = appSettings.engineTimeoutSeconds;
     const engine = await api.getUSIEngineInfo(path, timeoutSeconds);
-    setting.value.addEngine(engine);
+    usiEngines.value.addEngine(engine);
     lastAdded.value = scrollTo = engine.uri;
   } catch (e) {
     useErrorStore().add(e);
@@ -174,11 +169,11 @@ const add = async () => {
 };
 
 const remove = (uri: string) => {
-  setting.value.removeEngine(uri);
+  usiEngines.value.removeEngine(uri);
 };
 
 const changeLabel = (uri: string, label: USIEngineLabel, value: boolean) => {
-  const engine = setting.value.getEngine(uri) as USIEngineSetting;
+  const engine = usiEngines.value.getEngine(uri) as USIEngine;
   engine.labels = {
     ...engine.labels,
     [label]: value,
@@ -186,20 +181,20 @@ const changeLabel = (uri: string, label: USIEngineLabel, value: boolean) => {
 };
 
 const openOptions = (uri: string) => {
-  optionDialog.value = setting.value.getEngine(uri) as USIEngineSetting;
+  optionDialog.value = usiEngines.value.getEngine(uri) as USIEngine;
 };
 
 const duplicate = (uri: string) => {
-  const src = setting.value.getEngine(uri) as USIEngineSetting;
-  const engine = duplicateEngineSetting(src);
-  setting.value.addEngine(engine);
+  const src = usiEngines.value.getEngine(uri) as USIEngine;
+  const engine = duplicateEngine(src);
+  usiEngines.value.addEngine(engine);
   lastAdded.value = scrollTo = engine.uri;
 };
 
 const saveAndClose = async () => {
   try {
     busyState.retain();
-    await api.saveUSIEngineSetting(setting.value as USIEngineSettings);
+    await api.saveUSIEngines(usiEngines.value as USIEngines);
     store.destroyModalDialog();
   } catch (e) {
     useErrorStore().add(e);
@@ -212,8 +207,8 @@ const cancel = () => {
   store.closeModalDialog();
 };
 
-const optionOk = (engine: USIEngineSetting) => {
-  setting.value.updateEngine(engine);
+const optionOk = (engine: USIEngine) => {
+  usiEngines.value.updateEngine(engine);
   optionDialog.value = null;
 };
 

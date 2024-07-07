@@ -15,23 +15,23 @@ export interface Bridge {
   onMenuEvent(callback: (event: MenuEvent) => void): void;
 
   // Settings
-  loadAppSetting(): Promise<string>;
-  saveAppSetting(setting: string): Promise<void>;
-  loadBatchConversionSetting(): Promise<string>;
-  saveBatchConversionSetting(setting: string): Promise<void>;
-  loadResearchSetting(): Promise<string>;
-  saveResearchSetting(setting: string): Promise<void>;
-  loadAnalysisSetting(): Promise<string>;
-  saveAnalysisSetting(setting: string): Promise<void>;
-  loadGameSetting(): Promise<string>;
-  saveGameSetting(setting: string): Promise<void>;
-  loadCSAGameSettingHistory(): Promise<string>;
-  saveCSAGameSettingHistory(setting: string): Promise<void>;
-  loadMateSearchSetting(): Promise<string>;
-  saveMateSearchSetting(setting: string): Promise<void>;
-  loadUSIEngineSetting(): Promise<string>;
-  saveUSIEngineSetting(setting: string): Promise<void>;
-  onUpdateAppSetting(callback: (json: string) => void): void;
+  loadAppSettings(): Promise<string>;
+  saveAppSettings(settings: string): Promise<void>;
+  loadBatchConversionSettings(): Promise<string>;
+  saveBatchConversionSettings(settings: string): Promise<void>;
+  loadResearchSettings(): Promise<string>;
+  saveResearchSettings(settings: string): Promise<void>;
+  loadAnalysisSettings(): Promise<string>;
+  saveAnalysisSettings(settings: string): Promise<void>;
+  loadGameSettings(): Promise<string>;
+  saveGameSettings(settings: string): Promise<void>;
+  loadCSAGameSettingsHistory(): Promise<string>;
+  saveCSAGameSettingsHistory(settings: string): Promise<void>;
+  loadMateSearchSettings(): Promise<string>;
+  saveMateSearchSettings(settings: string): Promise<void>;
+  loadUSIEngines(): Promise<string>;
+  saveUSIEngines(egneins: string): Promise<void>;
+  onUpdateAppSettings(callback: (json: string) => void): void;
 
   // Record File
   fetchInitialRecordFileRequest(): Promise<string>;

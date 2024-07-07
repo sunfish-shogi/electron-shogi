@@ -1,51 +1,51 @@
 import {
-  normalizeAppSetting,
+  normalizeAppSettings,
   getPieceImageURLTemplate,
-  defaultAppSetting,
+  defaultAppSettings,
   PieceImageType,
 } from "@/common/settings/app";
 
 describe("settings/csa", () => {
   it("normalize", () => {
-    const result = normalizeAppSetting(defaultAppSetting(), {
+    const result = normalizeAppSettings(defaultAppSettings(), {
       returnCode: "\r\n",
       autoSaveDirectory: "/tmp",
     });
-    expect(result).toStrictEqual(defaultAppSetting());
+    expect(result).toStrictEqual(defaultAppSettings());
   });
 
   it("pieceImageBaseURL", () => {
     expect(
       getPieceImageURLTemplate({
-        ...defaultAppSetting(),
+        ...defaultAppSettings(),
         pieceImage: PieceImageType.HITOMOJI,
       }),
     ).toBe("./piece/hitomoji/${piece}.png");
 
     expect(
       getPieceImageURLTemplate({
-        ...defaultAppSetting(),
+        ...defaultAppSettings(),
         pieceImage: PieceImageType.HITOMOJI_GOTHIC,
       }),
     ).toBe("./piece/hitomoji_gothic/${piece}.png");
 
     expect(
       getPieceImageURLTemplate({
-        ...defaultAppSetting(),
+        ...defaultAppSettings(),
         pieceImage: PieceImageType.HITOMOJI_DARK,
       }),
     ).toBe("./piece/hitomoji_dark/${piece}.png");
 
     expect(
       getPieceImageURLTemplate({
-        ...defaultAppSetting(),
+        ...defaultAppSettings(),
         pieceImage: PieceImageType.HITOMOJI_GOTHIC_DARK,
       }),
     ).toBe("./piece/hitomoji_gothic_dark/${piece}.png");
 
     expect(
       getPieceImageURLTemplate({
-        ...defaultAppSetting(),
+        ...defaultAppSettings(),
         pieceImage: PieceImageType.CUSTOM_IMAGE,
         pieceImageFileURL: "/home/user/pictures/piece.png",
         croppedPieceImageBaseURL: "file:///home/user/.cache/piece",
@@ -54,7 +54,7 @@ describe("settings/csa", () => {
 
     expect(
       getPieceImageURLTemplate({
-        ...defaultAppSetting(),
+        ...defaultAppSettings(),
         pieceImage: PieceImageType.CUSTOM_IMAGE,
         pieceImageFileURL: "/home/user/pictures/piece.png",
         croppedPieceImageBaseURL: "file:///home/user/.cache/piece",

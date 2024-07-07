@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { Rect } from "@/common/assets/geometry";
 import { getAppLogger } from "@/background/log";
-import { loadAppSetting } from "@/background/settings";
+import { loadAppSettings } from "@/background/settings";
 import { requireElectron } from "@/background/helpers/portability";
 import { WebContents } from "electron";
 
@@ -33,9 +33,9 @@ async function exportCaptureImage(
   if (!win) {
     throw new Error("Failed to open dialog by unexpected error.");
   }
-  const appSetting = await loadAppSetting();
+  const appSettings = await loadAppSettings();
   const ret = await requireElectron().dialog.showSaveDialog(win, {
-    defaultPath: path.dirname(appSetting.lastImageExportFilePath),
+    defaultPath: path.dirname(appSettings.lastImageExportFilePath),
     properties: ["createDirectory", "showOverwriteConfirmation"],
     filters: [{ name: ext.toUpperCase(), extensions: [ext] }],
   });

@@ -1,4 +1,4 @@
-export type ClockSetting = {
+export type ClockSettings = {
   timeMs?: number;
   byoyomi?: number;
   increment?: number;
@@ -9,7 +9,7 @@ export type ClockSetting = {
 };
 
 export class Clock {
-  private _setting: ClockSetting = {
+  private _settings: ClockSettings = {
     timeMs: 0,
     byoyomi: 0,
     increment: 0,
@@ -21,15 +21,15 @@ export class Clock {
   private timerStart = 0;
   private lastTimeMs = 0;
 
-  setup(setting: ClockSetting): void {
-    this._setting = setting;
-    this._timeMs = setting.timeMs || 0;
-    this._byoyomi = setting.byoyomi || 0;
+  setup(settings: ClockSettings): void {
+    this._settings = settings;
+    this._timeMs = settings.timeMs || 0;
+    this._byoyomi = settings.byoyomi || 0;
     this._elapsedMs = 0;
   }
 
-  get setting(): ClockSetting {
-    return this._setting;
+  get settings(): ClockSettings {
+    return this._settings;
   }
 
   get time(): number {
@@ -52,7 +52,7 @@ export class Clock {
     this.clearTimer();
     this.timerStart = Date.now();
     this.lastTimeMs = this._timeMs;
-    this._byoyomi = this.setting.byoyomi || 0;
+    this._byoyomi = this.settings.byoyomi || 0;
     this._elapsedMs = 0;
     this.timerHandle = window.setInterval(() => {
       const lastTimeMs = this.timeMs;
@@ -63,7 +63,7 @@ export class Clock {
         this._timeMs = timeMs;
       } else {
         this._timeMs = 0;
-        this._byoyomi = Math.max(Math.ceil((this.setting.byoyomi || 0) + timeMs / 1e3), 0);
+        this._byoyomi = Math.max(Math.ceil((this.settings.byoyomi || 0) + timeMs / 1e3), 0);
       }
       if (this.timeMs === 0 && this.byoyomi === 0) {
         this.timeout();
@@ -83,8 +83,8 @@ export class Clock {
     }
     // 持ち時間がなくなった瞬間に短いビープを鳴らす。
     if (time === 0 && lastTime !== 0) {
-      if (this.setting.onBeepShort) {
-        this.setting.onBeepShort();
+      if (this.settings.onBeepShort) {
+        this.settings.onBeepShort();
       }
       return;
     }
@@ -99,12 +99,12 @@ export class Clock {
     }
     // 残り 5 秒で長音, 10 秒以下, 20, 30, 60 秒で単音を鳴らす。
     if (time <= 5) {
-      if (this.setting.onBeepUnlimited) {
-        this.setting.onBeepUnlimited();
+      if (this.settings.onBeepUnlimited) {
+        this.settings.onBeepUnlimited();
       }
     } else if (time <= 10 || time === 20 || time === 30 || time === 60) {
-      if (this.setting.onBeepShort) {
-        this.setting.onBeepShort();
+      if (this.settings.onBeepShort) {
+        this.settings.onBeepShort();
       }
     }
   }
@@ -120,7 +120,7 @@ export class Clock {
 
   private timeout(): void {
     this.clearTimer();
-    this.setting.onTimeout?.();
+    this.settings.onTimeout?.();
   }
 
   private clearTimer(): void {
@@ -128,10 +128,10 @@ export class Clock {
       window.clearInterval(this.timerHandle);
       this.timerHandle = 0;
     }
-    this.setting.onStopBeep?.();
+    this.settings.onStopBeep?.();
   }
 
   private incrementTime(): void {
-    this._timeMs += (this.setting.increment || 0) * 1e3;
+    this._timeMs += (this.settings.increment || 0) * 1e3;
   }
 }

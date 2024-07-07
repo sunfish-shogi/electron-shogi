@@ -1,16 +1,16 @@
-import { USIEngineSetting } from "./usi";
+import { USIEngine } from "./usi";
 
-export type MateSearchSetting = {
-  usi?: USIEngineSetting;
+export type MateSearchSettings = {
+  usi?: USIEngine;
 };
 
-export function defaultMateSearchSetting(): MateSearchSetting {
+export function defaultMateSearchSettings(): MateSearchSettings {
   return {};
 }
 
-export function normalizeMateSearchSetting(setting: MateSearchSetting): MateSearchSetting {
+export function normalizeMateSearchSettings(settings: MateSearchSettings): MateSearchSettings {
   return {
-    ...defaultMateSearchSetting(),
-    ...setting,
+    ...defaultMateSearchSettings(),
+    ...settings,
   };
 }

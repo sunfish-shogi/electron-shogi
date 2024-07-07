@@ -1,7 +1,7 @@
 import { LogLevel } from "@/common/log";
 import api from "@/renderer/ipc/api";
 import { Player, SearchInfo } from "@/renderer/players/player";
-import { defaultGameSetting, GameSetting, JishogiRule } from "@/common/settings/game";
+import { defaultGameSettings, GameSettings, JishogiRule } from "@/common/settings/game";
 import {
   Color,
   formatMove,
@@ -118,7 +118,7 @@ function newGameResults(name1: string, name2: string): GameResults {
 
 export class GameManager {
   private state: GameState;
-  private _setting: GameSetting;
+  private _settings: GameSettings;
   private startPly = 0;
   private repeat = 0;
   private blackPlayer?: Player;
@@ -160,7 +160,7 @@ export class GameManager {
     private whiteClock: Clock,
   ) {
     this.state = GameState.IDLE;
-    this._setting = defaultGameSetting();
+    this._settings = defaultGameSettings();
     this.lastEventID = 0;
   }
 
@@ -206,35 +206,35 @@ export class GameManager {
     return this;
   }
 
-  get setting(): GameSetting {
-    return this._setting;
+  get settings(): GameSettings {
+    return this._settings;
   }
 
   get results(): GameResults {
     return this._results;
   }
 
-  async start(setting: GameSetting, playerBuilder: PlayerBuilder): Promise<void> {
+  async start(settings: GameSettings, playerBuilder: PlayerBuilder): Promise<void> {
     if (this.state !== GameState.IDLE) {
       throw Error(
         "GameManager#start: 前回の対局が正常に終了できていません。アプリを再起動してください。",
       );
     }
     this.state = GameState.STARTING;
-    this._setting = setting;
+    this._settings = settings;
     this.playerBuilder = playerBuilder;
     this.repeat = 0;
-    if (!setting.startPosition) {
+    if (!settings.startPosition) {
       // 連続対局用に何手目から開始するかを記憶する。
       this.startPly = this.recordManager.record.current.ply;
     }
-    this._results = newGameResults(setting.black.name, setting.white.name);
+    this._results = newGameResults(settings.black.name, settings.white.name);
     // プレイヤーを初期化する。
     try {
-      this.blackPlayer = await this.playerBuilder.build(this.setting.black, (info) =>
+      this.blackPlayer = await this.playerBuilder.build(this.settings.black, (info) =>
         this.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
-      this.whitePlayer = await this.playerBuilder.build(this.setting.white, (info) =>
+      this.whitePlayer = await this.playerBuilder.build(this.settings.white, (info) =>
         this.updateSearchInfo(SearchInfoSenderType.OPPONENT, info),
       );
       await this.goNextGame();
@@ -257,8 +257,8 @@ export class GameManager {
     // 連続対局の回数をカウントアップする。
     this.repeat++;
     // 初期局面を設定する。
-    if (this.setting.startPosition) {
-      this.recordManager.resetByInitialPositionType(this.setting.startPosition);
+    if (this.settings.startPosition) {
+      this.recordManager.resetByInitialPositionType(this.settings.startPosition);
     } else if (this.recordManager.record.current.ply !== this.startPly) {
       this.recordManager.changePly(this.startPly);
       this.recordManager.removeNextMove();
@@ -266,15 +266,15 @@ export class GameManager {
     // 対局のメタデータを設定する。
     this.recordManager.setGameStartMetadata({
       gameTitle:
-        this.setting.repeat >= 2 ? `連続対局 ${this.repeat}/${this.setting.repeat}` : undefined,
-      blackName: this.setting.black.name,
-      whiteName: this.setting.white.name,
-      blackTimeLimit: this.setting.timeLimit,
-      whiteTimeLimit: this.setting.whiteTimeLimit || this.setting.timeLimit,
+        this.settings.repeat >= 2 ? `連続対局 ${this.repeat}/${this.settings.repeat}` : undefined,
+      blackName: this.settings.black.name,
+      whiteName: this.settings.white.name,
+      blackTimeLimit: this.settings.timeLimit,
+      whiteTimeLimit: this.settings.whiteTimeLimit || this.settings.timeLimit,
     });
     // 対局時計を設定する。
-    this.blackClock.setup(this.getBlackClockSetting());
-    this.whiteClock.setup(this.getWhiteClockSetting());
+    this.blackClock.setup(this.getBlackClockSettings());
+    this.whiteClock.setup(this.getWhiteClockSettings());
     // プレイヤーに対局開始を通知する。
     await Promise.all([this.blackPlayer.readyNewGame(), this.whitePlayer.readyNewGame()]);
     // State を更新する。
@@ -287,46 +287,46 @@ export class GameManager {
     setTimeout(() => this.nextMove());
   }
 
-  private getCommonClockSetting() {
+  private getCommonClockSettings() {
     return {
-      timeMs: this.setting.timeLimit.timeSeconds * 1e3,
-      byoyomi: this.setting.timeLimit.byoyomi,
-      increment: this.setting.timeLimit.increment,
+      timeMs: this.settings.timeLimit.timeSeconds * 1e3,
+      byoyomi: this.settings.timeLimit.byoyomi,
+      increment: this.settings.timeLimit.increment,
       onBeepShort: () => this.onBeepShort(),
       onBeepUnlimited: () => this.onBeepUnlimited(),
       onStopBeep: () => this.onStopBeep(),
     };
   }
 
-  private getBlackClockSetting() {
+  private getBlackClockSettings() {
     return {
-      ...this.getCommonClockSetting(),
+      ...this.getCommonClockSettings(),
       onTimeout: () => {
         this.timeout(Color.BLACK);
       },
     };
   }
 
-  private getWhiteClockSetting() {
-    const setting = {
-      ...this.getCommonClockSetting(),
+  private getWhiteClockSettings() {
+    const settings = {
+      ...this.getCommonClockSettings(),
       onTimeout: () => {
         this.timeout(Color.WHITE);
       },
     };
-    if (!this.setting.whiteTimeLimit) {
-      return setting;
+    if (!this.settings.whiteTimeLimit) {
+      return settings;
     }
     return {
-      ...setting,
-      timeMs: this.setting.whiteTimeLimit.timeSeconds * 1e3,
-      byoyomi: this.setting.whiteTimeLimit.byoyomi,
-      increment: this.setting.whiteTimeLimit.increment,
+      ...settings,
+      timeMs: this.settings.whiteTimeLimit.timeSeconds * 1e3,
+      byoyomi: this.settings.whiteTimeLimit.byoyomi,
+      increment: this.settings.whiteTimeLimit.increment,
     };
   }
 
   private adjustBoardOrientation(): void {
-    if (this.setting.humanIsFront) {
+    if (this.settings.humanIsFront) {
       if (!this.blackPlayer?.isEngine() && this.whitePlayer?.isEngine()) {
         this.onFlipBoard(false);
       } else if (this.blackPlayer?.isEngine() && !this.whitePlayer?.isEngine()) {
@@ -340,7 +340,10 @@ export class GameManager {
       return;
     }
     // 最大手数に到達したら終了する。
-    if (this._setting.maxMoves && this.recordManager.record.current.ply >= this._setting.maxMoves) {
+    if (
+      this._settings.maxMoves &&
+      this.recordManager.record.current.ply >= this._settings.maxMoves
+    ) {
       this.end(SpecialMoveType.IMPASS);
       return;
     }
@@ -360,13 +363,13 @@ export class GameManager {
     const timeStates: TimeStates = {
       black: {
         timeMs: this.blackClock.timeMs,
-        byoyomi: this.blackClock.setting.byoyomi || 0,
-        increment: this.blackClock.setting.increment || 0,
+        byoyomi: this.blackClock.settings.byoyomi || 0,
+        increment: this.blackClock.settings.increment || 0,
       },
       white: {
         timeMs: this.whiteClock.timeMs,
-        byoyomi: this.whiteClock.setting.byoyomi || 0,
-        increment: this.whiteClock.setting.increment || 0,
+        byoyomi: this.whiteClock.settings.byoyomi || 0,
+        increment: this.whiteClock.settings.increment || 0,
       },
     };
     // 手番側のプレイヤーの思考を開始する。
@@ -416,7 +419,7 @@ export class GameManager {
       this.updateSearchInfo(SearchInfoSenderType.PLAYER, info);
     }
     // コメントを追加する。
-    if (info && this.setting.enableComment) {
+    if (info && this.settings.enableComment) {
       this.recordManager.appendSearchComment(
         SearchInfoSenderType.PLAYER,
         info,
@@ -443,7 +446,7 @@ export class GameManager {
     }
     // トライルールのチェックを行う。
     if (
-      this.setting.jishogiRule == JishogiRule.TRY &&
+      this.settings.jishogiRule == JishogiRule.TRY &&
       move.pieceType === PieceType.KING &&
       ((move.color === Color.BLACK && move.to.equals(new Square(5, 1))) ||
         (move.color === Color.WHITE && move.to.equals(new Square(5, 9))))
@@ -478,14 +481,14 @@ export class GameManager {
     }
     const position = this.recordManager.record.position;
     if (
-      this.setting.jishogiRule == JishogiRule.NONE ||
-      this.setting.jishogiRule == JishogiRule.TRY
+      this.settings.jishogiRule == JishogiRule.NONE ||
+      this.settings.jishogiRule == JishogiRule.TRY
     ) {
       this.end(SpecialMoveType.FOUL_LOSE);
       return;
     }
     const rule =
-      this.setting.jishogiRule == JishogiRule.GENERAL24
+      this.settings.jishogiRule == JishogiRule.GENERAL24
         ? JishogiDeclarationRule.GENERAL24
         : JishogiDeclarationRule.GENERAL27;
     switch (judgeJishogiDeclaration(rule, position, position.color)) {
@@ -506,7 +509,7 @@ export class GameManager {
     this.onStopBeep();
     // エンジンの時間切れが無効の場合は通知を送って対局を継続する。
     const player = this.getPlayer(color);
-    if (player?.isEngine() && !this.setting.enableEngineTimeout) {
+    if (player?.isEngine() && !this.settings.enableEngineTimeout) {
       player.stop().catch((e) => {
         this.onError(new Error(`GameManager#timeout: ${t.failedToSendStopCommand}: ${e}`));
       });
@@ -543,12 +546,12 @@ export class GameManager {
         // 連続対局の記録に追加する。
         this.addGameResults(color, specialMoveType);
         // 自動保存が有効な場合は棋譜を保存する。
-        if (this._setting.enableAutoSave) {
+        if (this._settings.enableAutoSave) {
           this.onSaveRecord();
         }
         // 連続対局の終了条件を満たしているか中断が要求されていれば終了する。
         const complete =
-          specialMoveType === SpecialMoveType.INTERRUPT || this.repeat >= this.setting.repeat;
+          specialMoveType === SpecialMoveType.INTERRUPT || this.repeat >= this.settings.repeat;
         if (complete) {
           // プレイヤーを解放する。
           this.closePlayers()
@@ -562,7 +565,7 @@ export class GameManager {
           return;
         }
         // 連続対局時の手番入れ替えが有効ならプレイヤーを入れ替える。
-        if (this.setting.swapPlayers) {
+        if (this.settings.swapPlayers) {
           this.swapPlayers();
         }
         // 次の対局を開始する。
@@ -604,16 +607,16 @@ export class GameManager {
   }
 
   private swapPlayers(): void {
-    this._setting = {
-      ...this.setting,
-      black: this.setting.white,
-      white: this.setting.black,
+    this._settings = {
+      ...this.settings,
+      black: this.settings.white,
+      white: this.settings.black,
     };
-    if (this._setting.whiteTimeLimit) {
-      this._setting = {
-        ...this.setting,
-        timeLimit: this._setting.whiteTimeLimit,
-        whiteTimeLimit: this._setting.timeLimit,
+    if (this._settings.whiteTimeLimit) {
+      this._settings = {
+        ...this.settings,
+        timeLimit: this._settings.whiteTimeLimit,
+        whiteTimeLimit: this._settings.timeLimit,
       };
     }
     [this.blackPlayer, this.whitePlayer] = [this.whitePlayer, this.blackPlayer];

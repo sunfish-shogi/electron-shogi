@@ -1,7 +1,7 @@
 <template>
   <div>
     <dialog ref="dialog">
-      <div class="title">{{ t.engineSettings }}</div>
+      <div class="title">{{ t.manageEngines }}</div>
       <div class="form-group">
         <div class="option-filter">
           <input
@@ -208,21 +208,21 @@ import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import api from "@/renderer/ipc/api";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import {
-  emptyUSIEngineSetting,
+  emptyUSIEngine,
   getUSIEngineOptionCurrentValue,
-  mergeUSIEngineSetting,
-  USIEngineSetting,
+  mergeUSIEngine,
+  USIEngine,
 } from "@/common/settings/usi";
 import { computed, onBeforeUnmount, onMounted, onUpdated, PropType, ref } from "vue";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
 
 const props = defineProps({
-  latestEngineSetting: {
-    type: Object as PropType<USIEngineSetting>,
+  latest: {
+    type: Object as PropType<USIEngine>,
     required: true,
   },
   okButtonText: {
@@ -232,12 +232,12 @@ const props = defineProps({
   },
 });
 const emit = defineEmits<{
-  ok: [setting: USIEngineSetting];
+  ok: [engine: USIEngine];
   cancel: [];
 }>();
 
 const busyState = useBusyState();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const dialog = ref();
 const engineNameInput = ref();
 const enableEarlyPonder = ref(false);
@@ -245,7 +245,7 @@ const filter = ref();
 const filterWords = ref([] as string[]);
 const inputs = ref({} as { [key: string]: HTMLInputElement | HTMLSelectElement });
 const selectors = ref({} as { [key: string]: InstanceType<typeof HorizontalSelector> });
-const engine = ref(emptyUSIEngineSetting());
+const engine = ref(emptyUSIEngine());
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
 busyState.retain();
@@ -253,9 +253,9 @@ onMounted(async () => {
   showModalDialog(dialog.value, cancel);
   installHotKeyForDialog(dialog.value);
   try {
-    const timeoutSeconds = appSetting.engineTimeoutSeconds;
-    engine.value = await api.getUSIEngineInfo(props.latestEngineSetting.path, timeoutSeconds);
-    mergeUSIEngineSetting(engine.value, props.latestEngineSetting);
+    const timeoutSeconds = appSettings.engineTimeoutSeconds;
+    engine.value = await api.getUSIEngineInfo(props.latest.path, timeoutSeconds);
+    mergeUSIEngine(engine.value, props.latest);
     engineNameInput.value.value = engine.value.name;
     enableEarlyPonder.value = engine.value.enableEarlyPonder;
     defaultValueLoaded = true;
@@ -276,7 +276,7 @@ const options = computed(() =>
         value: getUSIEngineOptionCurrentValue(option),
         visible: true,
       };
-      if (appSetting.translateEngineOptionName) {
+      if (appSettings.translateEngineOptionName) {
         ret.displayName = usiOptionNameMap[option.name];
       }
       if (filterWords.value.length > 0) {
@@ -332,7 +332,7 @@ const selectFile = async (name: string) => {
 const sendOption = async (name: string) => {
   busyState.retain();
   try {
-    const timeoutSeconds = appSetting.engineTimeoutSeconds;
+    const timeoutSeconds = appSettings.engineTimeoutSeconds;
     await api.sendUSISetOption(engine.value.path, name, timeoutSeconds);
   } catch (e) {
     useErrorStore().add(e);

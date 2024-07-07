@@ -13,14 +13,14 @@
             <BoardPane
               :style="boardPaneStyle"
               :max-size="boardPaneMaxSize"
-              :left-control-type="appSetting.leftSideControlType"
-              :right-control-type="appSetting.rightSideControlType"
+              :left-control-type="appSettings.leftSideControlType"
+              :right-control-type="appSettings.rightSideControlType"
               @resize="onBoardPaneResize"
             />
             <RecordPane
               :style="recordPaneStyle"
-              :show-comment="appSetting.showCommentInRecordView"
-              :show-elapsed-time="appSetting.showElapsedTimeInRecordView"
+              :show-comment="appSettings.showCommentInRecordView"
+              :show-elapsed-time="appSettings.showElapsedTimeInRecordView"
             />
           </div>
           <button
@@ -35,7 +35,7 @@
       </Pane>
       <Pane :size="bottomPaneHeightPercentage">
         <TabPane
-          v-if="appSetting.tabPaneType === TabPaneType.SINGLE"
+          v-if="appSettings.tabPaneType === TabPaneType.SINGLE"
           class="full"
           :size="tabPaneSize"
           :visible-tabs="[
@@ -47,7 +47,7 @@
             Tab.PERCENTAGE_CHART,
             Tab.MONITOR,
           ]"
-          :active-tab="appSetting.tab"
+          :active-tab="appSettings.tab"
           :display-minimize-toggle="true"
           @on-change-tab="onChangeTab"
           @on-minimize="onMinimizeTab"
@@ -65,7 +65,7 @@
               class="full"
               :size="tabPaneSize"
               :visible-tabs="[Tab.RECORD_INFO, Tab.SEARCH, Tab.PV, Tab.MONITOR]"
-              :active-tab="appSetting.tab"
+              :active-tab="appSettings.tab"
               @on-change-tab="onChangeTab"
             />
           </Pane>
@@ -74,7 +74,7 @@
               class="full"
               :size="tabPaneSize2"
               :visible-tabs="[Tab.COMMENT, Tab.CHART, Tab.PERCENTAGE_CHART]"
-              :active-tab="appSetting.tab2"
+              :active-tab="appSettings.tab2"
               :display-minimize-toggle="true"
               @on-change-tab="onChangeTab2"
               @on-minimize="onMinimizeTab"
@@ -93,7 +93,7 @@ import BoardPane from "./BoardPane.vue";
 import RecordPane, { minWidth as minRecordWidth } from "./RecordPane.vue";
 import TabPane, { headerHeight as tabHeaderHeight } from "./TabPane.vue";
 import { RectSize } from "@/common/assets/geometry";
-import { AppSettingUpdate, Tab, TabPaneType } from "@/common/settings/app";
+import { AppSettingsUpdate, Tab, TabPaneType } from "@/common/settings/app";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
 import { toString } from "@/common/helpers/string";
@@ -102,16 +102,16 @@ import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 
 const splitterWidth = 8;
 const margin = 10;
 const lazyUpdateDelay = 100;
 
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const windowSize = reactive(new RectSize(window.innerWidth, window.innerHeight));
-const topPaneHeightPercentage = ref(appSetting.topPaneHeightPercentage);
-const bottomLeftPaneWidthPercentage = ref(appSetting.bottomLeftPaneWidthPercentage);
+const topPaneHeightPercentage = ref(appSettings.topPaneHeightPercentage);
+const bottomLeftPaneWidthPercentage = ref(appSettings.bottomLeftPaneWidthPercentage);
 const boardPaneSize = reactive(new RectSize(0, 0));
 
 const windowLazyUpdate = new Lazy();
@@ -135,31 +135,31 @@ const onBoardPaneResize = (size: RectSize) => {
   boardPaneSize.height = size.height;
 };
 
-const updateAppSetting = (update: AppSettingUpdate) => {
-  appSetting.updateAppSetting(update).catch((e) => {
-    api.log(LogLevel.WARN, "StandardLayout: failed to update app setting: " + toString(e));
+const updateAppSettings = (update: AppSettingsUpdate) => {
+  appSettings.updateAppSettings(update).catch((e) => {
+    api.log(LogLevel.WARN, "StandardLayout: failed to update app settings: " + toString(e));
   });
 };
 
 const onChangeTab = (tab: Tab) => {
-  updateAppSetting({ tab });
+  updateAppSettings({ tab });
 };
 const onChangeTab2 = (tab2: Tab) => {
-  updateAppSetting({ tab2 });
+  updateAppSettings({ tab2 });
 };
 
 const onMinimizeTab = () => {
   topPaneHeightPercentage.value = 100;
-  updateAppSetting({ topPaneHeightPercentage: 100 });
+  updateAppSettings({ topPaneHeightPercentage: 100 });
 };
 
 const onUnhideTabView = () => {
   const newValue = Math.min(
-    appSetting.topPanePreviousHeightPercentage,
+    appSettings.topPanePreviousHeightPercentage,
     ((windowSize.height - tabHeaderHeight * 2 - splitterWidth) / windowSize.height) * 100,
   );
   topPaneHeightPercentage.value = newValue;
-  updateAppSetting({ topPaneHeightPercentage: newValue });
+  updateAppSettings({ topPaneHeightPercentage: newValue });
 };
 
 const mainLazyUpdate = new Lazy();
@@ -173,7 +173,7 @@ const onResizedMain = (panes: { size: number }[]) => {
   mainLazyUpdate.clear();
   const newValue = panes[0].size;
   topPaneHeightPercentage.value = newValue;
-  updateAppSetting({ topPaneHeightPercentage: newValue });
+  updateAppSettings({ topPaneHeightPercentage: newValue });
 };
 
 const bottomLazyUpdate = new Lazy();
@@ -187,7 +187,7 @@ const onResizedBottom = (panes: { size: number }[]) => {
   bottomLazyUpdate.clear();
   const newValue = panes[0].size;
   bottomLeftPaneWidthPercentage.value = newValue;
-  updateAppSetting({ bottomLeftPaneWidthPercentage: newValue });
+  updateAppSettings({ bottomLeftPaneWidthPercentage: newValue });
 };
 
 const isBottomPaneVisible = computed(() => {
@@ -228,7 +228,7 @@ const bottomPaneHeightPercentage = computed(() => {
 
 const tabPaneSize = computed(() => {
   return new RectSize(
-    appSetting.tabPaneType === TabPaneType.SINGLE
+    appSettings.tabPaneType === TabPaneType.SINGLE
       ? windowSize.width
       : (windowSize.width - splitterWidth) * (bottomLeftPaneWidthPercentage.value / 100),
     (windowSize.height - splitterWidth) * (bottomPaneHeightPercentage.value / 100),

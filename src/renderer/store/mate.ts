@@ -1,6 +1,6 @@
-import { MateSearchSetting } from "@/common/settings/mate";
+import { MateSearchSettings } from "@/common/settings/mate";
 import { USIPlayer } from "@/renderer/players/usi";
-import { useAppSetting } from "./setting";
+import { useAppSettings } from "./settings";
 import { ImmutableRecord, Move } from "tsshogi";
 
 type CheckmateCallback = (moves: Move[]) => void;
@@ -53,14 +53,14 @@ export class MateSearchManager {
     return this;
   }
 
-  async start(setting: MateSearchSetting, record: ImmutableRecord) {
+  async start(settings: MateSearchSettings, record: ImmutableRecord) {
     // Validation
-    if (setting.usi === undefined) {
+    if (settings.usi === undefined) {
       throw new Error("MateSearchManager#start: USIエンジンの設定は必須です。");
     }
     // エンジンを起動する。
-    const appSetting = useAppSetting();
-    this.engine = new USIPlayer(setting.usi, appSetting.engineTimeoutSeconds);
+    const appSettings = useAppSettings();
+    this.engine = new USIPlayer(settings.usi, appSettings.engineTimeoutSeconds);
     try {
       await this.engine.launch();
       await this.engine.readyNewGame();

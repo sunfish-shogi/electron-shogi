@@ -42,7 +42,7 @@
           store.isMovableByUser &&
           (store.appState === AppState.CSA_GAME ||
             (store.appState === AppState.GAME &&
-              DeclarableJishogiRules.includes(store.gameSetting.jishogiRule)))
+              DeclarableJishogiRules.includes(store.gameSettings.jishogiRule)))
         "
         class="control-item close"
         @click="onWin"
@@ -73,7 +73,7 @@
       </button>
       <!-- 戦績確認 -->
       <button
-        v-show="store.appState === AppState.GAME && store.gameSetting.repeat >= 2"
+        v-show="store.appState === AppState.GAME && store.gameSettings.repeat >= 2"
         class="control-item"
         @click="onShowGameResults"
       >
@@ -191,10 +191,10 @@
         class="control-item"
         data-hotkey="Mod+."
         :disabled="store.appState !== AppState.NORMAL"
-        @click="onOpenEngineSettings"
+        @click="onOpenEngines"
       >
         <Icon :icon="IconType.ENGINE_SETTINGS" />
-        <span>{{ t.engineSettings }}</span>
+        <span>{{ t.manageEngines }}</span>
       </button>
       <!-- アプリ設定 -->
       <button class="control-item" data-hotkey="Mod+," @click="onOpenAppSettings">
@@ -230,7 +230,7 @@ import FileMenu from "@/renderer/view/menu/FileMenu.vue";
 import { DeclarableJishogiRules } from "@/common/settings/game";
 import InitialPositionMenu from "@/renderer/view/menu/InitialPositionMenu.vue";
 import { humanPlayer } from "@/renderer/players/human";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import {
   installHotKeyForMainWindow,
   uninstallHotKeyForMainWindow,
@@ -245,7 +245,7 @@ defineProps({
 });
 
 const store = useStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const root = ref();
 const isGameMenuVisible = ref(false);
 const isFileMenuVisible = ref(false);
@@ -338,15 +338,15 @@ const onPieceSetChange = () => {
 };
 
 const onOpenAppSettings = () => {
-  store.showAppSettingDialog();
+  store.showAppSettingsDialog();
 };
 
-const onOpenEngineSettings = () => {
+const onOpenEngines = () => {
   store.showUsiEngineManagementDialog();
 };
 
 const onFlip = () => {
-  appSetting.flipBoard();
+  appSettings.flipBoard();
 };
 
 const onFileAction = () => {

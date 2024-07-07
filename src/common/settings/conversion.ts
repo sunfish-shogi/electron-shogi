@@ -12,7 +12,7 @@ export enum FileNameConflictAction {
   SKIP = "skip",
 }
 
-export type BatchConversionSetting = {
+export type BatchConversionSettings = {
   source: string;
   sourceFormats: RecordFileFormat[];
   subdirectories: boolean;
@@ -24,7 +24,7 @@ export type BatchConversionSetting = {
   singleFileDestination: string;
 };
 
-export function defaultBatchConversionSetting(): BatchConversionSetting {
+export function defaultBatchConversionSettings(): BatchConversionSettings {
   return {
     source: "",
     sourceFormats: [
@@ -45,30 +45,32 @@ export function defaultBatchConversionSetting(): BatchConversionSetting {
   };
 }
 
-export function normalizeBatchConversionSetting(
-  setting: BatchConversionSetting,
-): BatchConversionSetting {
+export function normalizeBatchConversionSettings(
+  settings: BatchConversionSettings,
+): BatchConversionSettings {
   return {
-    ...defaultBatchConversionSetting(),
-    ...setting,
+    ...defaultBatchConversionSettings(),
+    ...settings,
   };
 }
 
-export function validateBatchConversionSetting(setting: BatchConversionSetting): Error | undefined {
-  if (!setting.source) {
+export function validateBatchConversionSettings(
+  settings: BatchConversionSettings,
+): Error | undefined {
+  if (!settings.source) {
     return new Error(t.sourceDirectoryNotSpecified);
   }
-  if (setting.sourceFormats.length === 0) {
+  if (settings.sourceFormats.length === 0) {
     return new Error(t.sourceFormatsNotSpecified);
   }
-  switch (setting.destinationType) {
+  switch (settings.destinationType) {
     case DestinationType.DIRECTORY:
-      if (!setting.destination) {
+      if (!settings.destination) {
         return new Error(t.destinationDirectoryNotSpecified);
       }
       break;
     case DestinationType.SINGLE_FILE:
-      if (!setting.singleFileDestination) {
+      if (!settings.singleFileDestination) {
         return new Error(t.destinationFileNotSpecified);
       }
       break;

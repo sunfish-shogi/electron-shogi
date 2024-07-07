@@ -5,7 +5,7 @@ import "@/renderer/css/control.css";
 import { setupPrompt as setupIPC } from "@/renderer/ipc/setup";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { setLanguage } from "@/common/i18n";
 import { createApp } from "vue";
 import PromptMain from "@/renderer/view/prompt/PromptMain.vue";
@@ -21,13 +21,13 @@ document.title = `ShogiHome Prompt - ${store.target} [${store.sessionID}] ${stor
 
 Promise.allSettled([
   store.setup(),
-  useAppSetting()
-    .loadAppSetting()
+  useAppSettings()
+    .loadAppSettings()
     .catch((e) => {
       store.onError(new Error("アプリ設定の読み込み中にエラーが発生しました: " + e));
     }),
 ]).finally(() => {
-  const language = useAppSetting().language;
+  const language = useAppSettings().language;
   setLanguage(language);
   api.log(LogLevel.INFO, "mount app (prompt)");
   createApp(PromptMain).mount("#app");

@@ -2,9 +2,9 @@ import { InitialPositionType, Move, RecordMetadataKey, SpecialMoveType } from "t
 import { Clock } from "@/renderer/store/clock";
 import { calculateGameStatistics, GameManager, GameResults } from "@/renderer/store/game";
 import { RecordManager } from "@/renderer/store/record";
-import { playerURI01, playerURI02, gameSetting10m30s } from "@/tests/mock/game";
+import { playerURI01, playerURI02, gameSettings10m30s } from "@/tests/mock/game";
 import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
-import { GameSetting, JishogiRule } from "@/common/settings/game";
+import { GameSettings, JishogiRule } from "@/common/settings/game";
 import { PlayerBuilder } from "@/renderer/players/builder";
 
 export interface MockGameHandlers {
@@ -32,7 +32,7 @@ function createMockHandlers() {
 function invoke(
   recordManager: RecordManager,
   handlers: MockGameHandlers,
-  gameSetting: GameSetting,
+  gameSettings: GameSettings,
   playerBuilder: PlayerBuilder,
   assert: (gameResults: GameResults, specialMoveType: SpecialMoveType) => void,
   interrupt?: (manager: GameManager) => void,
@@ -55,7 +55,7 @@ function invoke(
       .on("beepUnlimited", handlers.onBeepUnlimited)
       .on("stopBeep", handlers.onStopBeep);
     manager
-      .start(gameSetting, playerBuilder)
+      .start(gameSettings, playerBuilder)
       .then(() => {
         if (interrupt) {
           interrupt(manager);
@@ -160,7 +160,7 @@ describe("store/game", () => {
     return invoke(
       recordManager,
       mockHandlers,
-      gameSetting10m30s,
+      gameSettings10m30s,
       mockPlayerBuilder,
       (gameResults, specialMoveType) => {
         expect(gameResults).toStrictEqual({
@@ -229,7 +229,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: InitialPositionType.HANDICAP_BISHOP,
       },
       mockPlayerBuilder,
@@ -282,7 +282,7 @@ describe("store/game", () => {
     return invoke(
       recordManager,
       mockHandlers,
-      gameSetting10m30s,
+      gameSettings10m30s,
       mockPlayerBuilder,
       (gameResults, specialMoveType) => {
         expect(gameResults).toStrictEqual({
@@ -356,7 +356,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         repeat: 2,
       },
       mockPlayerBuilder,
@@ -419,7 +419,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: undefined,
         repeat: 2,
         swapPlayers: false,
@@ -482,7 +482,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         maxMoves: 4,
       },
       mockPlayerBuilder,
@@ -536,7 +536,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: undefined,
         jishogiRule: JishogiRule.GENERAL24,
       },
@@ -578,7 +578,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: undefined,
         jishogiRule: JishogiRule.GENERAL24,
       },
@@ -620,7 +620,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: undefined,
         jishogiRule: JishogiRule.GENERAL24,
       },
@@ -661,7 +661,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: undefined,
         jishogiRule: JishogiRule.TRY,
       },
@@ -702,7 +702,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: undefined,
         jishogiRule: JishogiRule.TRY,
       },
@@ -740,7 +740,7 @@ describe("store/game", () => {
       recordManager,
       mockHandlers,
       {
-        ...gameSetting10m30s,
+        ...gameSettings10m30s,
         startPosition: undefined,
         jishogiRule: JishogiRule.TRY,
       },

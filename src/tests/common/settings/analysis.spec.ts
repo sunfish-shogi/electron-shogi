@@ -1,13 +1,13 @@
 import {
-  AnalysisSetting,
+  AnalysisSettings,
   CommentBehavior,
-  normalizeAnalysisSetting,
+  normalizeAnalysisSettings,
 } from "@/common/settings/analysis";
 import * as uri from "@/common/uri";
 
 describe("settings/analysis", () => {
   it("normalize", () => {
-    const setting: AnalysisSetting = {
+    const settings: AnalysisSettings = {
       usi: {
         uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
@@ -33,7 +33,7 @@ describe("settings/analysis", () => {
       },
       commentBehavior: CommentBehavior.APPEND,
     };
-    const result = normalizeAnalysisSetting(setting);
-    expect(result).toEqual(setting);
+    const result = normalizeAnalysisSettings(settings);
+    expect(result).toEqual(settings);
   });
 });

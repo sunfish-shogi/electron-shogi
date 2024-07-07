@@ -15,12 +15,12 @@
           <PlayerSelector
             :player-uri="playerURI"
             :contains-human="true"
-            :engine-settings="engineSettings"
+            :engines="engines"
             :filter-label="USIEngineLabel.GAME"
             :display-ponder-state="true"
             :display-thread-state="true"
             :display-multi-pv-state="true"
-            @update-engine-setting="onUpdatePlayerSetting"
+            @update-engines="onUpdatePlayerSettings"
             @select-player="onSelectPlayer"
           />
           <hr v-if="uri.isUSIEngine(playerURI)" />
@@ -264,26 +264,26 @@
 <script setup lang="ts">
 import YAML from "yaml";
 import { t } from "@/common/i18n";
-import { USIEngineLabel, USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineLabel, USIEngine, USIEngines } from "@/common/settings/usi";
 import { ref, onMounted, computed, onUpdated, onBeforeUnmount } from "vue";
 import api from "@/renderer/ipc/api";
 import { useStore } from "@/renderer/store";
 import {
   CSAProtocolVersion,
-  CSAGameSetting,
-  validateCSAGameSetting,
-  buildCSAGameSettingByHistory,
-  defaultCSAGameSettingHistory,
-  exportCSAGameSettingForCLI,
-  compressCSAGameSettingForCLI,
+  CSAGameSettings,
+  validateCSAGameSettings,
+  buildCSAGameSettingsByHistory,
+  defaultCSAGameSettingsHistory,
+  exportCSAGameSettingsForCLI,
+  compressCSAGameSettingsForCLI,
 } from "@/common/settings/csa";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
-import { PlayerSetting } from "@/common/settings/player";
+import { PlayerSettings } from "@/common/settings/player";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
@@ -294,7 +294,7 @@ import { useMessageStore } from "@/renderer/store/message";
 const store = useStore();
 const busyState = useBusyState();
 const messageStore = useMessageStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const dialog = ref();
 const protocolVersion = ref();
 const selectedProtocolVersion = ref(CSAProtocolVersion.V121);
@@ -314,8 +314,8 @@ const enableComment = ref(false);
 const enableAutoSave = ref(false);
 const autoFlip = ref(false);
 const isEncryptionAvailable = ref(false);
-const history = ref(defaultCSAGameSettingHistory());
-const engineSettings = ref(new USIEngineSettings());
+const history = ref(defaultCSAGameSettingsHistory());
+const engines = ref(new USIEngines());
 const playerURI = ref("");
 
 let defaultValueLoaded = false;
@@ -325,8 +325,8 @@ busyState.retain();
 onMounted(async () => {
   try {
     isEncryptionAvailable.value = await api.isEncryptionAvailable();
-    history.value = await api.loadCSAGameSettingHistory();
-    engineSettings.value = await api.loadUSIEngineSetting();
+    history.value = await api.loadCSAGameSettingsHistory();
+    engines.value = await api.loadUSIEngines();
     showModalDialog(dialog.value, onCancel);
     installHotKeyForDialog(dialog.value);
     defaultValueLoaded = true;
@@ -346,30 +346,30 @@ onUpdated(() => {
   if (!defaultValueLoaded || defaultValueApplied) {
     return;
   }
-  const defaultSetting = buildCSAGameSettingByHistory(history.value, 0);
+  const defaultSettings = buildCSAGameSettingsByHistory(history.value, 0);
   protocolVersion.value.value = selectedProtocolVersion.value =
-    defaultSetting.server.protocolVersion;
-  host.value.value = defaultSetting.server.host;
-  port.value.value = defaultSetting.server.port;
-  id.value.value = defaultSetting.server.id;
-  password.value.value = defaultSetting.server.password;
-  keepaliveInitialDelay.value.value = defaultSetting.server.tcpKeepalive.initialDelay;
-  blankLinePing.value = !!defaultSetting.server.blankLinePing;
-  blankLineInitialDelay.value.value = defaultSetting.server.blankLinePing?.initialDelay || 40;
-  blankLineInterval.value.value = defaultSetting.server.blankLinePing?.interval || 40;
-  repeat.value.value = defaultSetting.repeat;
-  autoRelogin.value = defaultSetting.autoRelogin;
-  restartPlayerEveryGame.value = defaultSetting.restartPlayerEveryGame;
-  enableComment.value = defaultSetting.enableComment;
-  enableAutoSave.value = defaultSetting.enableAutoSave;
-  autoFlip.value = defaultSetting.autoFlip;
-  playerURI.value = defaultSetting.player.uri;
+    defaultSettings.server.protocolVersion;
+  host.value.value = defaultSettings.server.host;
+  port.value.value = defaultSettings.server.port;
+  id.value.value = defaultSettings.server.id;
+  password.value.value = defaultSettings.server.password;
+  keepaliveInitialDelay.value.value = defaultSettings.server.tcpKeepalive.initialDelay;
+  blankLinePing.value = !!defaultSettings.server.blankLinePing;
+  blankLineInitialDelay.value.value = defaultSettings.server.blankLinePing?.initialDelay || 40;
+  blankLineInterval.value.value = defaultSettings.server.blankLinePing?.interval || 40;
+  repeat.value.value = defaultSettings.repeat;
+  autoRelogin.value = defaultSettings.autoRelogin;
+  restartPlayerEveryGame.value = defaultSettings.restartPlayerEveryGame;
+  enableComment.value = defaultSettings.enableComment;
+  enableAutoSave.value = defaultSettings.enableAutoSave;
+  autoFlip.value = defaultSettings.autoFlip;
+  playerURI.value = defaultSettings.player.uri;
   defaultValueApplied = true;
 });
 
-const buildPlayerSetting = (playerURI: string): PlayerSetting => {
-  if (uri.isUSIEngine(playerURI) && engineSettings.value.hasEngine(playerURI)) {
-    const engine = engineSettings.value.getEngine(playerURI) as USIEngineSetting;
+const buildPlayerSettings = (playerURI: string): PlayerSettings => {
+  if (uri.isUSIEngine(playerURI) && engines.value.hasEngine(playerURI)) {
+    const engine = engines.value.getEngine(playerURI) as USIEngine;
     return {
       name: engine.name,
       uri: playerURI,
@@ -382,9 +382,9 @@ const buildPlayerSetting = (playerURI: string): PlayerSetting => {
   };
 };
 
-const buildConfig = (): CSAGameSetting => {
+const buildConfig = (): CSAGameSettings => {
   return {
-    player: buildPlayerSetting(playerURI.value),
+    player: buildPlayerSettings(playerURI.value),
     server: {
       protocolVersion: protocolVersion.value.value,
       host: String(host.value.value || "").trim(),
@@ -411,36 +411,36 @@ const buildConfig = (): CSAGameSetting => {
 };
 
 const onExportYAML = () => {
-  const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
-  if (setting instanceof Error) {
-    useErrorStore().add(setting);
+  const settings = exportCSAGameSettingsForCLI(buildConfig(), appSettings);
+  if (settings instanceof Error) {
+    useErrorStore().add(settings);
     return;
   }
-  navigator.clipboard.writeText(YAML.stringify(setting));
+  navigator.clipboard.writeText(YAML.stringify(settings));
   messageStore.enqueue({
-    text: t.yamlFormatSettingCopiedToClipboard,
+    text: t.yamlFormatSettingsCopiedToClipboard,
   });
 };
 
 const onExportJSON = () => {
-  const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
-  if (setting instanceof Error) {
-    useErrorStore().add(setting);
+  const settings = exportCSAGameSettingsForCLI(buildConfig(), appSettings);
+  if (settings instanceof Error) {
+    useErrorStore().add(settings);
     return;
   }
-  navigator.clipboard.writeText(JSON.stringify(setting, null, 2));
+  navigator.clipboard.writeText(JSON.stringify(settings, null, 2));
   messageStore.enqueue({
-    text: t.jsonFormatSettingCopiedToClipboard,
+    text: t.jsonFormatSettingsCopiedToClipboard,
   });
 };
 
 const onExportCommand = () => {
-  const setting = exportCSAGameSettingForCLI(buildConfig(), appSetting);
-  if (setting instanceof Error) {
-    useErrorStore().add(setting);
+  const settings = exportCSAGameSettingsForCLI(buildConfig(), appSettings);
+  if (settings instanceof Error) {
+    useErrorStore().add(settings);
     return;
   }
-  compressCSAGameSettingForCLI(setting).then((compressed) => {
+  compressCSAGameSettingsForCLI(settings).then((compressed) => {
     navigator.clipboard.writeText(`npx usi-csa-bridge --base64 ${compressed}`);
     messageStore.enqueue({
       text: t.usiCsaBridgeCommandCopiedToClipboard,
@@ -449,12 +449,12 @@ const onExportCommand = () => {
 };
 
 const onStart = () => {
-  const csaGameSetting = buildConfig();
-  const error = validateCSAGameSetting(csaGameSetting);
+  const csaGameSettings = buildConfig();
+  const error = validateCSAGameSettings(csaGameSettings);
   if (error) {
     useErrorStore().add(error);
   } else {
-    store.loginCSAGame(csaGameSetting, {
+    store.loginCSAGame(csaGameSettings, {
       saveHistory: saveHistory.value,
     });
   }
@@ -464,8 +464,8 @@ const onCancel = () => {
   store.closeModalDialog();
 };
 
-const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
-  engineSettings.value = settings;
+const onUpdatePlayerSettings = async (val: USIEngines) => {
+  engines.value = val;
 };
 
 const onSelectPlayer = (uri: string) => {
@@ -499,8 +499,8 @@ const onChangeProtocolVersion = () => {
 };
 
 const logEnabled = computed(() => {
-  const appSetting = useAppSetting();
-  return appSetting.enableCSALog && appSetting.enableAppLog && appSetting.enableUSILog;
+  const appSettings = useAppSettings();
+  return appSettings.enableCSALog && appSettings.enableAppLog && appSettings.enableUSILog;
 });
 </script>
 

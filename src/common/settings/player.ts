@@ -1,31 +1,31 @@
-import { USIEngineSetting, validateUSIEngineSetting } from "./usi";
+import { USIEngine, validateUSIEngine } from "./usi";
 import * as uri from "@/common/uri";
 
-export type PlayerSetting = {
+export type PlayerSettings = {
   name: string;
   uri: string;
-  usi?: USIEngineSetting;
+  usi?: USIEngine;
 };
 
-export function defaultPlayerSetting(): PlayerSetting {
+export function defaultPlayerSettings(): PlayerSettings {
   return {
     name: "人",
     uri: uri.ES_HUMAN,
   };
 }
 
-export function validatePlayerSetting(setting: PlayerSetting): Error | undefined {
-  if (!setting.name) {
+export function validatePlayerSettings(settings: PlayerSettings): Error | undefined {
+  if (!settings.name) {
     return new Error("player name is required");
   }
-  if (!setting.uri) {
+  if (!settings.uri) {
     return new Error("player URI is required");
   }
-  if (uri.isUSIEngine(setting.uri)) {
-    if (!setting.usi) {
+  if (uri.isUSIEngine(settings.uri)) {
+    if (!settings.usi) {
       return new Error("USI is required");
     }
-    const usiError = validateUSIEngineSetting(setting.usi);
+    const usiError = validateUSIEngine(settings.usi);
     if (usiError) {
       return usiError;
     }

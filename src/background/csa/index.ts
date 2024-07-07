@@ -1,4 +1,4 @@
-import { CSAServerSetting } from "@/common/settings/csa";
+import { CSAServerSettings } from "@/common/settings/csa";
 import { getCSALogger } from "@/background/log";
 import { Client, State } from "@/background/csa/client";
 import { CSASessionState } from "@/common/advanced/monitor";
@@ -34,9 +34,9 @@ function issueSessionID(): number {
 
 const clients = new Map<number, Client>();
 
-export function login(setting: CSAServerSetting): number {
+export function login(settings: CSAServerSettings): number {
   const sessionID = issueSessionID();
-  const client = new Client(sessionID, setting, getCSALogger())
+  const client = new Client(sessionID, settings, getCSALogger())
     .on("gameSummary", (gameSummary) => h.onCSAGameSummary(sessionID, gameSummary))
     .on("reject", () => h.onCSAReject(sessionID))
     .on("start", (playerStates) => h.onCSAStart(sessionID, playerStates))
@@ -87,10 +87,10 @@ export function collectSessionStates(): CSASessionState[] {
   return Array.from(clients.entries())
     .map(([id, client]) => ({
       sessionID: id,
-      host: client.setting.host,
-      port: client.setting.port,
-      loginID: client.setting.id,
-      protocolVersion: client.setting.protocolVersion,
+      host: client.settings.host,
+      port: client.settings.port,
+      loginID: client.settings.id,
+      protocolVersion: client.settings.protocolVersion,
       stateCode: client.state,
       lastReceived: client.lastReceived,
       lastSent: client.lastSent,

@@ -31,56 +31,56 @@ const api: Bridge = {
   },
 
   // Settings
-  async loadAppSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_APP_SETTING);
+  async loadAppSettings(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_APP_SETTINGS);
   },
-  async saveAppSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_APP_SETTING, json);
+  async saveAppSettings(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_APP_SETTINGS, json);
   },
-  async loadBatchConversionSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_BATCH_CONVERSION_SETTING);
+  async loadBatchConversionSettings(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_BATCH_CONVERSION_SETTINGS);
   },
-  async saveBatchConversionSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_BATCH_CONVERSION_SETTING, json);
+  async saveBatchConversionSettings(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_BATCH_CONVERSION_SETTINGS, json);
   },
-  async loadResearchSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_RESEARCH_SETTING);
+  async loadResearchSettings(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_RESEARCH_SETTINGS);
   },
-  async saveResearchSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_RESEARCH_SETTING, json);
+  async saveResearchSettings(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_RESEARCH_SETTINGS, json);
   },
-  async loadAnalysisSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_ANALYSIS_SETTING);
+  async loadAnalysisSettings(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_ANALYSIS_SETTINGS);
   },
-  async saveAnalysisSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_ANALYSIS_SETTING, json);
+  async saveAnalysisSettings(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_ANALYSIS_SETTINGS, json);
   },
-  async loadGameSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_GAME_SETTING);
+  async loadGameSettings(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_GAME_SETTINGS);
   },
-  async saveGameSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_GAME_SETTING, json);
+  async saveGameSettings(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_GAME_SETTINGS, json);
   },
-  async loadCSAGameSettingHistory(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_CSA_GAME_SETTING_HISTORY);
+  async loadCSAGameSettingsHistory(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_CSA_GAME_SETTINGS_HISTORY);
   },
-  async saveCSAGameSettingHistory(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_CSA_GAME_SETTING_HISTORY, json);
+  async saveCSAGameSettingsHistory(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_CSA_GAME_SETTINGS_HISTORY, json);
   },
-  async loadMateSearchSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_MATE_SEARCH_SETTING);
+  async loadMateSearchSettings(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_MATE_SEARCH_SETTINGS);
   },
-  async saveMateSearchSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_MATE_SEARCH_SETTING, json);
+  async saveMateSearchSettings(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_MATE_SEARCH_SETTINGS, json);
   },
-  async loadUSIEngineSetting(): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_USI_ENGINE_SETTING);
+  async loadUSIEngines(): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_USI_ENGINES);
   },
-  async saveUSIEngineSetting(json: string): Promise<void> {
-    await ipcRenderer.invoke(Background.SAVE_USI_ENGINE_SETTING, json);
+  async saveUSIEngines(json: string): Promise<void> {
+    await ipcRenderer.invoke(Background.SAVE_USI_ENGINES, json);
   },
-  onUpdateAppSetting(callback: (json: string) => void): void {
-    ipcRenderer.on(Renderer.UPDATE_APP_SETTING, (_, json) => callback(json));
+  onUpdateAppSettings(callback: (json: string) => void): void {
+    ipcRenderer.on(Renderer.UPDATE_APP_SETTINGS, (_, json) => callback(json));
   },
 
   // Record File

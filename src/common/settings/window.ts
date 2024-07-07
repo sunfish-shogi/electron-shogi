@@ -1,11 +1,11 @@
-export type WindowSetting = {
+export type WindowSettings = {
   width: number;
   height: number;
   maximized: boolean;
   fullscreen: boolean;
 };
 
-export function defaultWindowSetting(): WindowSetting {
+export function defaultWindowSettings(): WindowSettings {
   return {
     width: 1000,
     height: 800,
@@ -14,10 +14,10 @@ export function defaultWindowSetting(): WindowSetting {
   };
 }
 
-export function normalizeWindowSetting(setting: WindowSetting): WindowSetting {
+export function normalizeWindowSettings(settings: WindowSettings): WindowSettings {
   return {
-    ...defaultWindowSetting(),
-    ...setting,
+    ...defaultWindowSettings(),
+    ...settings,
   };
 }
 
@@ -30,7 +30,7 @@ interface Window {
   };
 }
 
-export function buildWindowSetting(latest: WindowSetting, win: Window): WindowSetting {
+export function buildWindowSettings(latest: WindowSettings, win: Window): WindowSettings {
   const normal = !win.isMaximized() && !win.isFullScreen();
   return {
     height: normal ? win.getBounds().height : latest.height,

@@ -1,15 +1,15 @@
-import { buildWindowSetting, normalizeWindowSetting } from "@/common/settings/window";
+import { buildWindowSettings, normalizeWindowSettings } from "@/common/settings/window";
 
 describe("settings/window", () => {
-  it("buildWindowSetting", () => {
-    const baseSetting = {
+  it("buildWindowSettings", () => {
+    const baseSettings = {
       width: 1000,
       height: 800,
       maximized: true,
       fullscreen: false,
     };
     expect(
-      buildWindowSetting(baseSetting, {
+      buildWindowSettings(baseSettings, {
         isMaximized: () => false,
         isFullScreen: () => false,
         getBounds() {
@@ -26,7 +26,7 @@ describe("settings/window", () => {
       fullscreen: false,
     });
     expect(
-      buildWindowSetting(baseSetting, {
+      buildWindowSettings(baseSettings, {
         isMaximized: () => true,
         isFullScreen: () => false,
         getBounds() {
@@ -43,7 +43,7 @@ describe("settings/window", () => {
       fullscreen: false,
     });
     expect(
-      buildWindowSetting(baseSetting, {
+      buildWindowSettings(baseSettings, {
         isMaximized: () => false,
         isFullScreen: () => true,
         getBounds() {
@@ -62,13 +62,13 @@ describe("settings/window", () => {
   });
 
   it("normalize", () => {
-    const setting = {
+    const settings = {
       width: 2000,
       height: 1500,
       maximized: true,
       fullscreen: true,
     };
-    const result = normalizeWindowSetting(setting);
-    expect(result).toStrictEqual(setting);
+    const result = normalizeWindowSettings(settings);
+    expect(result).toStrictEqual(settings);
   });
 });

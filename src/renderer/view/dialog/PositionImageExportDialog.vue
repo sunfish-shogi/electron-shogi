@@ -2,39 +2,39 @@
   <div>
     <dialog ref="dialog">
       <div class="row">
-        <div ref="board" class="board" :class="appSetting.positionImageStyle">
-          <div v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK" class="book">
+        <div ref="board" class="board" :class="appSettings.positionImageStyle">
+          <div v-if="appSettings.positionImageStyle === PositionImageStyle.BOOK" class="book">
             <SimpleBoardView
               :max-size="maxSize"
               :position="store.record.position"
               :black-name="blackName"
               :white-name="whiteName"
               :hide-white-hand="
-                appSetting.positionImageHandLabelType === PositionImageHandLabelType.TSUME_SHOGI
+                appSettings.positionImageHandLabelType === PositionImageHandLabelType.TSUME_SHOGI
               "
               :header="header"
               :footer="store.record.current.comment"
               :last-move="lastMove"
-              :typeface="appSetting.positionImageTypeface"
+              :typeface="appSettings.positionImageTypeface"
               :font-weight="fontWeight"
               :text-shadow="textShadow"
-              :character-y="appSetting.positionImageCharacterY"
-              :font-scale="appSetting.positionImageFontScale"
+              :character-y="appSettings.positionImageCharacterY"
+              :font-scale="appSettings.positionImageFontScale"
             />
           </div>
           <div v-else class="game">
             <BoardView
-              :board-image-type="appSetting.boardImage"
-              :piece-stand-image-type="appSetting.pieceStandImage"
-              :board-label-type="appSetting.boardLabelType"
-              :piece-image-url-template="getPieceImageURLTemplate(appSetting)"
-              :king-piece-type="appSetting.kingPieceType"
-              :custom-board-image-url="appSetting.boardImageFileURL"
-              :custom-piece-stand-image-url="appSetting.pieceStandImageFileURL"
+              :board-image-type="appSettings.boardImage"
+              :piece-stand-image-type="appSettings.pieceStandImage"
+              :board-label-type="appSettings.boardLabelType"
+              :piece-image-url-template="getPieceImageURLTemplate(appSettings)"
+              :king-piece-type="appSettings.kingPieceType"
+              :custom-board-image-url="appSettings.boardImageFileURL"
+              :custom-piece-stand-image-url="appSettings.pieceStandImageFileURL"
               :max-size="maxSize"
               :position="store.record.position"
               :last-move="lastMove"
-              :flip="appSetting.boardFlipping"
+              :flip="appSettings.boardFlipping"
               :hide-clock="true"
               :black-player-name="blackPlayerName"
               :white-player-name="whitePlayerName"
@@ -42,14 +42,14 @@
           </div>
         </div>
         <div
-          v-if="appSetting.positionImageStyle === PositionImageStyle.BOOK"
+          v-if="appSettings.positionImageStyle === PositionImageStyle.BOOK"
           class="side-controls column"
         >
           <div class="form-item">
             <div>
               {{ t.typeface }}
               <HorizontalSelector
-                :value="appSetting.positionImageTypeface"
+                :value="appSettings.positionImageTypeface"
                 :items="[
                   { value: PositionImageTypeface.GOTHIC, label: t.gothic },
                   { value: PositionImageTypeface.MINCHO, label: t.mincho },
@@ -64,7 +64,7 @@
                 type="number"
                 min="-100"
                 max="100"
-                :value="appSetting.positionImageCharacterY"
+                :value="appSettings.positionImageCharacterY"
                 @change="changeCharacterY"
               />
             </div>
@@ -75,7 +75,7 @@
                 type="number"
                 min="0"
                 max="200"
-                :value="Math.round(appSetting.positionImageFontScale * 100)"
+                :value="Math.round(appSettings.positionImageFontScale * 100)"
                 @change="changeFontScale"
               />
               <span class="form-item-small-label">%</span>
@@ -83,7 +83,7 @@
             <div>
               {{ t.weight }}
               <HorizontalSelector
-                :value="String(appSetting.positionImageFontWeight)"
+                :value="String(appSettings.positionImageFontWeight)"
                 :items="[
                   { value: PositionImageFontWeight.W400, label: t.thin },
                   { value: PositionImageFontWeight.W400X, label: t.bold },
@@ -96,7 +96,7 @@
           <div class="form-item">
             {{ t.handLabel }}
             <HorizontalSelector
-              :value="appSetting.positionImageHandLabelType"
+              :value="appSettings.positionImageHandLabelType"
               :items="[
                 { value: PositionImageHandLabelType.PLAYER_NAME, label: t.playerName },
                 { value: PositionImageHandLabelType.SENTE_GOTE, label: '「先手｜後手」' },
@@ -111,12 +111,12 @@
             {{ t.header }}
             <input
               class="header"
-              :value="appSetting.positionImageHeader"
+              :value="appSettings.positionImageHeader"
               :placeholder="t.typeCustomTitleHere"
               @input="changeHeaderText"
             />
             <ToggleButton
-              :value="appSetting.useBookmarkAsPositionImageHeader"
+              :value="appSettings.useBookmarkAsPositionImageHeader"
               :label="t.useBookmarkAsHeader"
               @change="changeWhetherToUseBookmark"
             />
@@ -126,7 +126,7 @@
       <div>
         <div class="form-item center">
           <HorizontalSelector
-            :value="appSetting.positionImageStyle"
+            :value="appSettings.positionImageStyle"
             :items="[
               { value: PositionImageStyle.BOOK, label: t.bookStyle },
               { value: PositionImageStyle.GAME, label: t.gameStyle },
@@ -138,7 +138,7 @@
             type="number"
             min="400"
             max="2000"
-            :value="appSetting.positionImageSize"
+            :value="appSettings.positionImageSize"
             @input="changeSize"
           />
           <span class="form-item-small-label">px</span>
@@ -170,7 +170,7 @@ import SimpleBoardView from "@/renderer/view/primitive/SimpleBoardView.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { showModalDialog } from "@/renderer/helpers/dialog";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { Rect, RectSize } from "@/common/assets/geometry";
 import {
   Color,
@@ -203,7 +203,7 @@ const marginVer = 200;
 const aspectRatio = 16 / 9;
 
 const store = useStore();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const blackPlayerName = computed(() => getBlackPlayerName(store.record.metadata) || t.sente);
 const whitePlayerName = computed(() => getWhitePlayerName(store.record.metadata) || t.gote);
 const lastMove = computed(() => {
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
 });
 
 const fontWeight = computed(() => {
-  switch (appSetting.positionImageFontWeight) {
+  switch (appSettings.positionImageFontWeight) {
     default:
       return 400;
     case PositionImageFontWeight.W700X:
@@ -245,7 +245,7 @@ const fontWeight = computed(() => {
 });
 
 const textShadow = computed(() => {
-  switch (appSetting.positionImageFontWeight) {
+  switch (appSettings.positionImageFontWeight) {
     default:
       return false;
     case PositionImageFontWeight.W400X:
@@ -255,7 +255,7 @@ const textShadow = computed(() => {
 });
 
 const maxSize = computed(() => {
-  const height = appSetting.positionImageSize / zoom.value;
+  const height = appSettings.positionImageSize / zoom.value;
   const width = height * aspectRatio;
   const maxWidth = windowSize.width - marginHor;
   const maxHeight = windowSize.height - marginVer;
@@ -265,8 +265,8 @@ const maxSize = computed(() => {
 const header = computed(() => {
   const record = store.record;
   return (
-    (appSetting.useBookmarkAsPositionImageHeader && record.current.bookmark) ||
-    appSetting.positionImageHeader ||
+    (appSettings.useBookmarkAsPositionImageHeader && record.current.bookmark) ||
+    appSettings.positionImageHeader ||
     (lastMove.value
       ? `${record.current.ply}手目 ${formatMove(record.position, lastMove.value)}まで`
       : record.current.nextColor === Color.BLACK
@@ -277,7 +277,7 @@ const header = computed(() => {
 
 const blackName = computed(() => {
   const record = store.record;
-  switch (appSetting.positionImageHandLabelType) {
+  switch (appSettings.positionImageHandLabelType) {
     case PositionImageHandLabelType.PLAYER_NAME:
       return getBlackPlayerNamePreferShort(record.metadata) || "先手";
     case PositionImageHandLabelType.SENTE_GOTE:
@@ -292,7 +292,7 @@ const blackName = computed(() => {
 
 const whiteName = computed(() => {
   const record = store.record;
-  switch (appSetting.positionImageHandLabelType) {
+  switch (appSettings.positionImageHandLabelType) {
     case PositionImageHandLabelType.PLAYER_NAME:
       return getWhitePlayerNamePreferShort(record.metadata) || "後手";
     case PositionImageHandLabelType.SENTE_GOTE:
@@ -306,52 +306,54 @@ const whiteName = computed(() => {
 
 const changeSize = (e: Event) => {
   const elem = e.target as HTMLInputElement;
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     positionImageSize: parseInt(elem.value) || 400,
   });
 };
 
 const changeTypeface = (value: string) => {
-  appSetting.updateAppSetting({ positionImageTypeface: value as PositionImageTypeface });
+  appSettings.updateAppSettings({ positionImageTypeface: value as PositionImageTypeface });
 };
 
 const changeHandLabel = (value: string) => {
-  appSetting.updateAppSetting({ positionImageHandLabelType: value as PositionImageHandLabelType });
+  appSettings.updateAppSettings({
+    positionImageHandLabelType: value as PositionImageHandLabelType,
+  });
 };
 
 const changeHeaderText = (e: Event) => {
   const elem = e.target as HTMLInputElement;
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     positionImageHeader: elem.value,
   });
 };
 
 const changeWhetherToUseBookmark = (value: boolean) => {
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     useBookmarkAsPositionImageHeader: value,
   });
 };
 
 const changeCharacterY = (e: Event) => {
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     positionImageCharacterY: readInputAsNumber(e.target as HTMLInputElement),
   });
 };
 
 const changeFontScale = (e: Event) => {
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     positionImageFontScale: readInputAsNumber(e.target as HTMLInputElement) / 100,
   });
 };
 
 const changeFontWeight = (value: PositionImageFontWeight) => {
-  appSetting.updateAppSetting({
+  appSettings.updateAppSettings({
     positionImageFontWeight: value,
   });
 };
 
 const changeType = (value: string) => {
-  appSetting.updateAppSetting({ positionImageStyle: value as PositionImageStyle });
+  appSettings.updateAppSettings({ positionImageStyle: value as PositionImageStyle });
 };
 
 const getRect = () => {

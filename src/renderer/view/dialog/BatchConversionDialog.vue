@@ -181,7 +181,7 @@
         {{ t.convert }}
       </button>
       <button
-        v-if="appSetting.enableAppLog && appSetting.logLevel === LogLevel.DEBUG"
+        v-if="appSettings.enableAppLog && appSettings.logLevel === LogLevel.DEBUG"
         class="wide"
         @click="openLogFile"
       >
@@ -202,8 +202,8 @@
 <script setup lang="ts">
 import { RecordFileFormat } from "@/common/file/record";
 import {
-  BatchConversionSetting,
-  validateBatchConversionSetting,
+  BatchConversionSettings,
+  validateBatchConversionSettings,
   DestinationType,
   FileNameConflictAction,
 } from "@/common/settings/conversion";
@@ -217,7 +217,7 @@ import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue
 import { t } from "@/common/i18n";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { LogType, LogLevel } from "@/common/log";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
@@ -225,7 +225,7 @@ import { useMessageStore } from "@/renderer/store/message";
 
 const store = useStore();
 const busyState = useBusyState();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const dialog = ref();
 const source = ref();
 const sourceFormats = ref({
@@ -248,25 +248,25 @@ busyState.retain();
 
 onMounted(async () => {
   try {
-    const batchConversionSetting = await api.loadBatchConversionSetting();
+    const batchConversionSettings = await api.loadBatchConversionSettings();
     showModalDialog(dialog.value, onClose);
     installHotKeyForDialog(dialog.value);
-    source.value.value = batchConversionSetting.source;
+    source.value.value = batchConversionSettings.source;
     sourceFormats.value = {
-      kif: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KIF),
-      kifu: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KIFU),
-      ki2: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KI2),
-      ki2u: batchConversionSetting.sourceFormats.includes(RecordFileFormat.KI2U),
-      csa: batchConversionSetting.sourceFormats.includes(RecordFileFormat.CSA),
-      jkf: batchConversionSetting.sourceFormats.includes(RecordFileFormat.JKF),
+      kif: batchConversionSettings.sourceFormats.includes(RecordFileFormat.KIF),
+      kifu: batchConversionSettings.sourceFormats.includes(RecordFileFormat.KIFU),
+      ki2: batchConversionSettings.sourceFormats.includes(RecordFileFormat.KI2),
+      ki2u: batchConversionSettings.sourceFormats.includes(RecordFileFormat.KI2U),
+      csa: batchConversionSettings.sourceFormats.includes(RecordFileFormat.CSA),
+      jkf: batchConversionSettings.sourceFormats.includes(RecordFileFormat.JKF),
     };
-    subdirectories.value = batchConversionSetting.subdirectories;
-    destinationType.value = batchConversionSetting.destinationType;
-    destination.value.value = batchConversionSetting.destination;
-    destinationFormat.value = batchConversionSetting.destinationFormat;
-    createSubdirectories.value = batchConversionSetting.createSubdirectories;
-    fileNameConflictAction.value = batchConversionSetting.fileNameConflictAction;
-    singleFileDestination.value.value = batchConversionSetting.singleFileDestination;
+    subdirectories.value = batchConversionSettings.subdirectories;
+    destinationType.value = batchConversionSettings.destinationType;
+    destination.value.value = batchConversionSettings.destination;
+    destinationFormat.value = batchConversionSettings.destinationFormat;
+    createSubdirectories.value = batchConversionSettings.createSubdirectories;
+    fileNameConflictAction.value = batchConversionSettings.fileNameConflictAction;
+    singleFileDestination.value.value = batchConversionSettings.singleFileDestination;
   } catch (e) {
     useErrorStore().add(e);
     store.destroyModalDialog();
@@ -312,7 +312,7 @@ const openDirectory = (elem: HTMLInputElement) => {
 };
 
 const convert = async () => {
-  const batchConversionSetting: BatchConversionSetting = {
+  const batchConversionSettings: BatchConversionSettings = {
     source: source.value.value,
     sourceFormats: Object.entries({
       [RecordFileFormat.KIF]: sourceFormats.value.kif,
@@ -332,15 +332,15 @@ const convert = async () => {
     fileNameConflictAction: fileNameConflictAction.value,
     singleFileDestination: singleFileDestination.value.value,
   };
-  const error = validateBatchConversionSetting(batchConversionSetting);
+  const error = validateBatchConversionSettings(batchConversionSettings);
   if (error) {
     useErrorStore().add(error);
     return;
   }
   busyState.retain();
   try {
-    await api.saveBatchConversionSetting(batchConversionSetting);
-    const result = await api.convertRecordFiles(batchConversionSetting);
+    await api.saveBatchConversionSettings(batchConversionSettings);
+    const result = await api.convertRecordFiles(batchConversionSettings);
     useMessageStore().enqueue({
       text: t.conversionCompleted,
       attachments: [

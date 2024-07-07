@@ -3,7 +3,7 @@ import { Socket } from "@/background/csa/socket";
 import { CSAGameResult, CSASpecialMove } from "@/common/game/csa";
 import { Color } from "tsshogi";
 import * as log4js from "log4js";
-import { csaServerSetting } from "@/tests/mock/csa";
+import { csaServerSettings } from "@/tests/mock/csa";
 import { MockedClass } from "vitest";
 
 vi.mock("@/background/csa/socket");
@@ -284,7 +284,7 @@ describe("background/csa/client", () => {
   });
 
   it("singleGame/winByResign", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     expect(mockSocket).toBeCalledTimes(0);
     client.login();
@@ -367,7 +367,7 @@ describe("background/csa/client", () => {
   });
 
   it("singleGame/loseByResign", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -402,7 +402,7 @@ describe("background/csa/client", () => {
   });
 
   it("singleGame/floodgateComment", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     expect(mockSocket).toBeCalledTimes(0);
     client.login();
@@ -506,7 +506,7 @@ describe("background/csa/client", () => {
   });
 
   it("reject", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -532,7 +532,7 @@ describe("background/csa/client", () => {
   });
 
   it("rejectByAnotherPlayer", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -556,7 +556,7 @@ describe("background/csa/client", () => {
   });
 
   it("stop", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -589,7 +589,7 @@ describe("background/csa/client", () => {
   });
 
   it("loginIncorrect", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -610,7 +610,7 @@ describe("background/csa/client", () => {
   });
 
   it("failedToConnect", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -625,7 +625,7 @@ describe("background/csa/client", () => {
   });
 
   it("increment", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -678,7 +678,7 @@ describe("background/csa/client", () => {
   });
 
   it("beginPositionWithMoves", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -747,7 +747,7 @@ describe("background/csa/client", () => {
   });
 
   it("timeUnit1msec", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -828,7 +828,7 @@ describe("background/csa/client", () => {
   });
 
   it("timeUnit1min", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -881,7 +881,7 @@ describe("background/csa/client", () => {
   });
 
   it("errorOfStartPosition", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     expect(mockSocket).toBeCalledTimes(0);
     client.login();
@@ -905,7 +905,7 @@ describe("background/csa/client", () => {
   });
 
   it("unequal_time_settings", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];
@@ -934,7 +934,7 @@ describe("background/csa/client", () => {
   });
 
   it("unequal_time_settings_with_increment", async () => {
-    const client = new Client(123, csaServerSetting, log4js.getLogger());
+    const client = new Client(123, csaServerSettings, log4js.getLogger());
     const clientHandlers = bindHandlers(client);
     client.login();
     const socketHandlers = mockSocket.mock.calls[0][2];

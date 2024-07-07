@@ -107,7 +107,7 @@ import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { EvaluationViewFrom } from "@/common/settings/app";
 import { Color, Move, Position } from "tsshogi";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { useStore } from "@/renderer/store";
 
 const props = defineProps({
@@ -138,7 +138,7 @@ const enableHighlight = computed(() => {
 });
 
 const evaluationViewFrom = computed(() => {
-  return useAppSetting().evaluationViewFrom;
+  return useAppSettings().evaluationViewFrom;
 });
 const getDisplayScore = (score: number, color: Color, evaluationViewFrom: EvaluationViewFrom) => {
   return evaluationViewFrom === EvaluationViewFrom.EACH || color == Color.BLACK ? score : -score;

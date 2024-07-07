@@ -24,7 +24,7 @@ import {
   onCSAReject,
   onCSAStart,
 } from "@/renderer/store/csa";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { t } from "@/common/i18n";
 import { LogLevel } from "@/common/log";
 import { useErrorStore } from "@/renderer/store/error";
@@ -33,7 +33,7 @@ import { useConfirmationStore } from "@/renderer/store/confirm";
 
 export function setup(): void {
   const store = useStore();
-  const appSetting = useAppSetting();
+  const appSettings = useAppSettings();
   const busyState = useBusyState();
 
   // Core
@@ -220,12 +220,12 @@ export function setup(): void {
         store.stopAnalysis();
         break;
       case MenuEvent.FLIP_BOARD:
-        useAppSetting().flipBoard();
+        useAppSettings().flipBoard();
         break;
-      case MenuEvent.APP_SETTING_DIALOG:
-        store.showAppSettingDialog();
+      case MenuEvent.APP_SETTINGS_DIALOG:
+        store.showAppSettingsDialog();
         break;
-      case MenuEvent.USI_ENGINE_SETTING_DIALOG:
+      case MenuEvent.USI_ENGINES_DIALOG:
         store.showUsiEngineManagementDialog();
         break;
       case MenuEvent.LAUNCH_USI_ENGINE:
@@ -238,8 +238,8 @@ export function setup(): void {
   });
 
   // Settings
-  bridge.onUpdateAppSetting((json: string) => {
-    appSetting.updateAppSetting(JSON.parse(json));
+  bridge.onUpdateAppSettings((json: string) => {
+    appSettings.updateAppSettings(JSON.parse(json));
   });
 
   // Record File

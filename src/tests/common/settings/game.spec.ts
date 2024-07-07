@@ -1,10 +1,10 @@
-import { GameSetting, JishogiRule, normalizeGameSetting } from "@/common/settings/game";
+import { GameSettings, JishogiRule, normalizeGameSettings } from "@/common/settings/game";
 import { InitialPositionType } from "tsshogi";
 import * as uri from "@/common/uri";
 
 describe("settings/game", () => {
   it("normalize", () => {
-    const setting: GameSetting = {
+    const settings: GameSettings = {
       black: {
         name: "先手番",
         uri: uri.ES_HUMAN,
@@ -40,7 +40,7 @@ describe("settings/game", () => {
       maxMoves: 80,
       jishogiRule: JishogiRule.NONE,
     };
-    const result = normalizeGameSetting(setting);
-    expect(result).toStrictEqual(setting);
+    const result = normalizeGameSettings(settings);
+    expect(result).toStrictEqual(settings);
   });
 });

@@ -20,7 +20,7 @@ import {
 } from "@/renderer/store/csa";
 import { RecordManager } from "@/renderer/store/record";
 import {
-  csaGameSetting,
+  csaGameSettings,
   csaGameSummary,
   csaGameSummaryInvalidPosition,
   csaGameSummaryWithUnequalTimeConfig,
@@ -28,7 +28,7 @@ import {
 } from "@/tests/mock/csa";
 import { createMockPlayer, createMockPlayerBuilder } from "@/tests/mock/player";
 import { Mocked } from "vitest";
-import { USIEngineSetting } from "@/common/settings/usi";
+import { USIEngine } from "@/common/settings/usi";
 
 vi.mock("@/renderer/ipc/api");
 
@@ -94,12 +94,12 @@ describe("store/csa", () => {
     const recordManager = new RecordManager();
     const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
     const mockHandlers = applyMockHandlers(manager);
-    await manager.login(csaGameSetting, mockPlayerBuilder);
+    await manager.login(csaGameSettings, mockPlayerBuilder);
     expect(mockPlayerBuilder.build).toBeCalledTimes(1);
     expect(mockPlayer.readyNewGame).toBeCalledTimes(1);
     await vi.runAllTimersAsync();
     expect(mockAPI.csaLogin).toBeCalledTimes(1);
-    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSettings.server);
     expect(mockAPI.csaAgree).toBeCalledTimes(0);
     onCSAGameSummary(sessionID, csaGameSummary);
     expect(mockAPI.csaAgree).toBeCalledTimes(1);
@@ -235,11 +235,11 @@ describe("store/csa", () => {
     const mockHandlers = applyMockHandlers(manager);
     await manager.login(
       {
-        ...csaGameSetting,
+        ...csaGameSettings,
         player: {
-          ...csaGameSetting.player,
+          ...csaGameSettings.player,
           usi: {
-            ...(csaGameSetting.player.usi as USIEngineSetting),
+            ...(csaGameSettings.player.usi as USIEngine),
             enableEarlyPonder: true,
           },
         },
@@ -250,7 +250,7 @@ describe("store/csa", () => {
     expect(mockPlayer.readyNewGame).toBeCalledTimes(1);
     await vi.runAllTimersAsync();
     expect(mockAPI.csaLogin).toBeCalledTimes(1);
-    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSettings.server);
     expect(mockAPI.csaAgree).toBeCalledTimes(0);
     onCSAGameSummary(sessionID, csaGameSummary);
     expect(mockAPI.csaAgree).toBeCalledTimes(1);
@@ -346,7 +346,7 @@ describe("store/csa", () => {
     const mockHandlers = applyMockHandlers(manager);
     await manager.login(
       {
-        ...csaGameSetting,
+        ...csaGameSettings,
         repeat: 2,
       },
       mockPlayerBuilder,
@@ -440,7 +440,7 @@ describe("store/csa", () => {
     const mockHandlers = applyMockHandlers(manager);
     await manager.login(
       {
-        ...csaGameSetting,
+        ...csaGameSettings,
         repeat: 2,
         restartPlayerEveryGame: true,
       },
@@ -536,12 +536,12 @@ describe("store/csa", () => {
     const recordManager = new RecordManager();
     const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
     const mockHandlers = applyMockHandlers(manager);
-    await manager.login(csaGameSetting, mockPlayerBuilder);
+    await manager.login(csaGameSettings, mockPlayerBuilder);
     expect(mockPlayerBuilder.build).toBeCalledTimes(1);
     expect(mockPlayer.readyNewGame).toBeCalledTimes(1);
     await vi.runAllTimersAsync();
     expect(mockAPI.csaLogin).toBeCalledTimes(1);
-    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSettings.server);
     expect(mockAPI.csaAgree).toBeCalledTimes(0);
     onCSAGameSummary(sessionID, csaGameSummaryWithUnequalTimeConfig);
     expect(mockAPI.csaAgree).toBeCalledTimes(1);
@@ -641,10 +641,10 @@ describe("store/csa", () => {
     const recordManager = new RecordManager();
     const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
     const mockHandlers = applyMockHandlers(manager);
-    await manager.login(csaGameSetting, mockPlayerBuilder);
+    await manager.login(csaGameSettings, mockPlayerBuilder);
     await vi.runAllTimersAsync();
     expect(mockAPI.csaLogin).toBeCalledTimes(1);
-    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSettings.server);
     expect(mockAPI.csaAgree).toBeCalledTimes(0);
     onCSAGameSummary(sessionID, csaGameSummaryInvalidPosition);
     expect(mockAPI.csaAgree).toBeCalledTimes(0);
@@ -671,10 +671,10 @@ describe("store/csa", () => {
     const recordManager = new RecordManager();
     const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
     const mockHandlers = applyMockHandlers(manager);
-    await manager.login(csaGameSetting, mockPlayerBuilder);
+    await manager.login(csaGameSettings, mockPlayerBuilder);
     await vi.runAllTimersAsync();
     expect(mockAPI.csaLogin).toBeCalledTimes(1);
-    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSetting.server);
+    expect(mockAPI.csaLogin.mock.calls[0][0]).toBe(csaGameSettings.server);
     expect(mockAPI.csaAgree).toBeCalledTimes(0);
     onCSAGameSummary(sessionID, {
       ...csaGameSummary,
@@ -788,7 +788,7 @@ P-
 
     it("standard", () => {
       const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
-      manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121;
+      manager["_settings"].server.protocolVersion = CSAProtocolVersion.V121;
       manager["onPlayerMove"](move, info);
       expect(mockAPI.csaMove).toBeCalledTimes(1);
       expect(mockAPI.csaMove).toBeCalledWith(0, "+7776FU", undefined, undefined);
@@ -796,7 +796,7 @@ P-
 
     it("floodgate", () => {
       const manager = new CSAGameManager(recordManager, new Clock(), new Clock());
-      manager["_setting"].server.protocolVersion = CSAProtocolVersion.V121_FLOODGATE;
+      manager["_settings"].server.protocolVersion = CSAProtocolVersion.V121_FLOODGATE;
       manager["onPlayerMove"](move, info);
       expect(mockAPI.csaMove).toBeCalledTimes(1);
       expect(mockAPI.csaMove).toBeCalledWith(0, "+7776FU", 159, "-3334FU +2726FU -2288UM");

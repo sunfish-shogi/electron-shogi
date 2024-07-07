@@ -1,16 +1,16 @@
 <template>
-  <div class="root full" :class="appSetting.thema">
+  <div class="root full" :class="appSettings.thema">
     <CommandHistory class="history" />
     <CommandInput class="input" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import CommandInput from "./CommandInput.vue";
 import CommandHistory from "./CommandHistory.vue";
 
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 </script>
 
 <style scoped>

@@ -1,10 +1,10 @@
-import { PlayerSetting, validatePlayerSetting } from "@/common/settings/player";
+import { PlayerSettings, validatePlayerSettings } from "@/common/settings/player";
 
 describe("settings/player", () => {
   describe("validate", () => {
     it("human/ok", () => {
       expect(
-        validatePlayerSetting({
+        validatePlayerSettings({
           name: "人",
           uri: "es://human",
         }),
@@ -13,7 +13,7 @@ describe("settings/player", () => {
 
     it("human/empty-name", () => {
       expect(
-        validatePlayerSetting({
+        validatePlayerSettings({
           name: "",
           uri: "es://human",
         }),
@@ -22,7 +22,7 @@ describe("settings/player", () => {
 
     it("human/empty-uri", () => {
       expect(
-        validatePlayerSetting({
+        validatePlayerSettings({
           name: "人",
           uri: "",
         }),
@@ -31,7 +31,7 @@ describe("settings/player", () => {
 
     it("usi/ok", () => {
       expect(
-        validatePlayerSetting({
+        validatePlayerSettings({
           name: "my engine",
           uri: "es://usi-engine/test",
           usi: {
@@ -57,7 +57,7 @@ describe("settings/player", () => {
 
     it("usi/invalid-option-value", () => {
       expect(
-        validatePlayerSetting({
+        validatePlayerSettings({
           name: "my engine",
           uri: "es://usi-engine/test",
           usi: {
@@ -77,7 +77,7 @@ describe("settings/player", () => {
             },
             enableEarlyPonder: false,
           },
-        } as unknown as PlayerSetting),
+        } as unknown as PlayerSettings),
       ).toBeInstanceOf(Error);
     });
   });

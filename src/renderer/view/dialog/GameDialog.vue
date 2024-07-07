@@ -9,12 +9,12 @@
             <PlayerSelector
               :player-uri="blackPlayerURI"
               :contains-human="true"
-              :engine-settings="engineSettings"
+              :engines="engines"
               :filter-label="USIEngineLabel.GAME"
               :display-ponder-state="true"
               :display-thread-state="true"
               :display-multi-pv-state="true"
-              @update-engine-setting="onUpdatePlayerSetting"
+              @update-engines="onUpdatePlayerSettings"
               @select-player="onSelectBlackPlayer"
             />
           </div>
@@ -24,12 +24,12 @@
               v-if="whitePlayerURI"
               :player-uri="whitePlayerURI"
               :contains-human="true"
-              :engine-settings="engineSettings"
+              :engines="engines"
               :filter-label="USIEngineLabel.GAME"
               :display-ponder-state="true"
               :display-thread-state="true"
               :display-multi-pv-state="true"
-              @update-engine-setting="onUpdatePlayerSetting"
+              @update-engines="onUpdatePlayerSettings"
               @select-player="onSelectWhitePlayer"
             />
           </div>
@@ -226,16 +226,16 @@
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
-import { USIEngineLabel, USIEngineSetting, USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineLabel, USIEngine, USIEngines } from "@/common/settings/usi";
 import { ref, onMounted, onUpdated, onBeforeUnmount } from "vue";
 import api, { isNative } from "@/renderer/ipc/api";
 import { useStore } from "@/renderer/store";
 import {
-  defaultGameSetting,
-  GameSetting,
+  defaultGameSettings,
+  GameSettings,
   JishogiRule,
-  validateGameSetting,
-  validateGameSettingForWeb,
+  validateGameSettings,
+  validateGameSettingsForWeb,
 } from "@/common/settings/game";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import * as uri from "@/common/uri.js";
@@ -243,7 +243,7 @@ import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
-import { PlayerSetting } from "@/common/settings/player";
+import { PlayerSettings } from "@/common/settings/player";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { InitialPositionType } from "tsshogi";
@@ -271,8 +271,8 @@ const swapPlayers = ref(false);
 const enableComment = ref(false);
 const enableAutoSave = ref(false);
 const humanIsFront = ref(false);
-const gameSetting = ref(defaultGameSetting());
-const engineSettings = ref(new USIEngineSettings());
+const gameSettings = ref(defaultGameSettings());
+const engines = ref(new USIEngines());
 const blackPlayerURI = ref("");
 const whitePlayerURI = ref("");
 
@@ -282,10 +282,10 @@ busyState.retain();
 
 onMounted(async () => {
   try {
-    gameSetting.value = await api.loadGameSetting();
-    engineSettings.value = await api.loadUSIEngineSetting();
-    blackPlayerURI.value = gameSetting.value.black.uri;
-    whitePlayerURI.value = gameSetting.value.white.uri;
+    gameSettings.value = await api.loadGameSettings();
+    engines.value = await api.loadUSIEngines();
+    blackPlayerURI.value = gameSettings.value.black.uri;
+    whitePlayerURI.value = gameSettings.value.white.uri;
     showModalDialog(dialog.value, onCancel);
     installHotKeyForDialog(dialog.value);
     defaultValueLoaded = true;
@@ -312,33 +312,33 @@ onUpdated(() => {
   if (!defaultValueLoaded || defaultValueApplied) {
     return;
   }
-  hours.value.value = Math.floor(gameSetting.value.timeLimit.timeSeconds / 3600);
-  minutes.value.value = Math.floor(gameSetting.value.timeLimit.timeSeconds / 60) % 60;
-  byoyomi.value.value = gameSetting.value.timeLimit.byoyomi;
-  increment.value.value = gameSetting.value.timeLimit.increment;
-  enableEngineTimeout.value = gameSetting.value.enableEngineTimeout;
-  const whiteTimeLimit = gameSetting.value.whiteTimeLimit || gameSetting.value.timeLimit;
+  hours.value.value = Math.floor(gameSettings.value.timeLimit.timeSeconds / 3600);
+  minutes.value.value = Math.floor(gameSettings.value.timeLimit.timeSeconds / 60) % 60;
+  byoyomi.value.value = gameSettings.value.timeLimit.byoyomi;
+  increment.value.value = gameSettings.value.timeLimit.increment;
+  enableEngineTimeout.value = gameSettings.value.enableEngineTimeout;
+  const whiteTimeLimit = gameSettings.value.whiteTimeLimit || gameSettings.value.timeLimit;
   whiteHours.value.value = Math.floor(whiteTimeLimit.timeSeconds / 3600);
   whiteMinutes.value.value = Math.floor(whiteTimeLimit.timeSeconds / 60) % 60;
   whiteByoyomi.value.value = whiteTimeLimit.byoyomi;
   whiteIncrement.value.value = whiteTimeLimit.increment;
-  setDifferentTime.value = !!gameSetting.value.whiteTimeLimit;
+  setDifferentTime.value = !!gameSettings.value.whiteTimeLimit;
   startPosition.value.value =
-    gameSetting.value.startPosition !== undefined ? gameSetting.value.startPosition : "current";
-  maxMoves.value.value = gameSetting.value.maxMoves;
-  repeat.value.value = gameSetting.value.repeat;
-  jishogiRule.value.value = gameSetting.value.jishogiRule;
-  swapPlayers.value = gameSetting.value.swapPlayers;
-  enableComment.value = gameSetting.value.enableComment;
-  enableAutoSave.value = gameSetting.value.enableAutoSave;
-  humanIsFront.value = gameSetting.value.humanIsFront;
+    gameSettings.value.startPosition !== undefined ? gameSettings.value.startPosition : "current";
+  maxMoves.value.value = gameSettings.value.maxMoves;
+  repeat.value.value = gameSettings.value.repeat;
+  jishogiRule.value.value = gameSettings.value.jishogiRule;
+  swapPlayers.value = gameSettings.value.swapPlayers;
+  enableComment.value = gameSettings.value.enableComment;
+  enableAutoSave.value = gameSettings.value.enableAutoSave;
+  humanIsFront.value = gameSettings.value.humanIsFront;
   defaultValueApplied = true;
   onUpdateSetDifferentTime();
 });
 
-const buildPlayerSetting = (playerURI: string): PlayerSetting => {
-  if (uri.isUSIEngine(playerURI) && engineSettings.value.hasEngine(playerURI)) {
-    const engine = engineSettings.value.getEngine(playerURI) as USIEngineSetting;
+const buildPlayerSettings = (playerURI: string): PlayerSettings => {
+  if (uri.isUSIEngine(playerURI) && engines.value.hasEngine(playerURI)) {
+    const engine = engines.value.getEngine(playerURI) as USIEngine;
     return {
       name: engine.name,
       uri: playerURI,
@@ -352,9 +352,9 @@ const buildPlayerSetting = (playerURI: string): PlayerSetting => {
 };
 
 const onStart = () => {
-  const gameSetting: GameSetting = {
-    black: buildPlayerSetting(blackPlayerURI.value),
-    white: buildPlayerSetting(whitePlayerURI.value),
+  const gameSettings: GameSettings = {
+    black: buildPlayerSettings(blackPlayerURI.value),
+    white: buildPlayerSettings(whitePlayerURI.value),
     timeLimit: {
       timeSeconds: (readInputAsNumber(hours.value) * 60 + readInputAsNumber(minutes.value)) * 60,
       byoyomi: readInputAsNumber(byoyomi.value),
@@ -371,7 +371,7 @@ const onStart = () => {
     humanIsFront: humanIsFront.value,
   };
   if (setDifferentTime.value) {
-    gameSetting.whiteTimeLimit = {
+    gameSettings.whiteTimeLimit = {
       timeSeconds:
         (readInputAsNumber(whiteHours.value) * 60 + readInputAsNumber(whiteMinutes.value)) * 60,
       byoyomi: readInputAsNumber(whiteByoyomi.value),
@@ -379,12 +379,12 @@ const onStart = () => {
     };
   }
   const error = isNative()
-    ? validateGameSetting(gameSetting)
-    : validateGameSettingForWeb(gameSetting);
+    ? validateGameSettings(gameSettings)
+    : validateGameSettingsForWeb(gameSettings);
   if (error) {
     useErrorStore().add(error);
   } else {
-    store.startGame(gameSetting);
+    store.startGame(gameSettings);
   }
 };
 
@@ -392,8 +392,8 @@ const onCancel = () => {
   store.closeModalDialog();
 };
 
-const onUpdatePlayerSetting = (settings: USIEngineSettings) => {
-  engineSettings.value = settings;
+const onUpdatePlayerSettings = (val: USIEngines) => {
+  engines.value = val;
 };
 
 const onSelectBlackPlayer = (uri: string) => {

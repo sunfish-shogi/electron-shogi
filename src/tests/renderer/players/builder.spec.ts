@@ -20,7 +20,7 @@ describe("builder", () => {
 
   it("usi", async () => {
     mockAPI.usiLaunch.mockResolvedValue(123);
-    const setting = {
+    const settings = {
       name: "USI Engine",
       uri: "es://usi-engine/test",
       usi: {
@@ -34,8 +34,8 @@ describe("builder", () => {
         enableEarlyPonder: false,
       },
     };
-    const player = await defaultPlayerBuilder().build(setting);
+    const player = await defaultPlayerBuilder().build(settings);
     expect(player).toBeInstanceOf(USIPlayer);
-    expect(mockAPI.usiLaunch).toBeCalledWith(setting.usi, 10);
+    expect(mockAPI.usiLaunch).toBeCalledWith(settings.usi, 10);
   });
 });

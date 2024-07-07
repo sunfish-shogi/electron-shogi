@@ -90,11 +90,11 @@ import fs from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 import {
-  CSAGameSettingForCLI,
+  CSAGameSettingsForCLI,
   CSAProtocolVersion,
-  decompressCSAGameSettingForCLI,
-  importCSAGameSettingForCLI,
-  validateCSAGameSetting,
+  decompressCSAGameSettingsForCLI,
+  importCSAGameSettingsForCLI,
+  validateCSAGameSettings,
 } from "@/common/settings/csa";
 import { Clock } from "@/renderer/store/clock";
 import { RecordManager } from "@/renderer/store/record";
@@ -113,10 +113,10 @@ import { exists } from "@/background/helpers/file";
 async function main() {
   // 設定ファイルを読み込みます。
   const configFilePath = argParser.args[0];
-  let cliSetting: CSAGameSettingForCLI;
+  let cliSettings: CSAGameSettingsForCLI;
   const base64Value = base64();
   if (base64Value) {
-    cliSetting = await decompressCSAGameSettingForCLI(base64Value);
+    cliSettings = await decompressCSAGameSettingsForCLI(base64Value);
   } else {
     if (!configFilePath) {
       getAppLogger().error("config file is not specified.");
@@ -124,35 +124,35 @@ async function main() {
       process.exit(1);
     }
     if (configFilePath.endsWith(".json")) {
-      cliSetting = JSON.parse(fs.readFileSync(configFilePath, "utf-8")) as CSAGameSettingForCLI;
+      cliSettings = JSON.parse(fs.readFileSync(configFilePath, "utf-8")) as CSAGameSettingsForCLI;
     } else {
-      cliSetting = YAML.parse(fs.readFileSync(configFilePath, "utf-8")) as CSAGameSettingForCLI;
+      cliSettings = YAML.parse(fs.readFileSync(configFilePath, "utf-8")) as CSAGameSettingsForCLI;
     }
   }
 
   // コマンドライン引数で指定された値で設定を上書きします。
-  cliSetting.server.protocolVersion = (protocolVersion() ||
-    cliSetting.server.protocolVersion) as CSAProtocolVersion;
-  cliSetting.server.host = host() || cliSetting.server.host;
-  cliSetting.server.port = port() || cliSetting.server.port;
-  cliSetting.server.id = id() || cliSetting.server.id;
-  cliSetting.server.password = password() || cliSetting.server.password;
-  cliSetting.saveRecordFile = saveRecordFile() || cliSetting.saveRecordFile;
-  cliSetting.repeat = repeat() || cliSetting.repeat;
+  cliSettings.server.protocolVersion = (protocolVersion() ||
+    cliSettings.server.protocolVersion) as CSAProtocolVersion;
+  cliSettings.server.host = host() || cliSettings.server.host;
+  cliSettings.server.port = port() || cliSettings.server.port;
+  cliSettings.server.id = id() || cliSettings.server.id;
+  cliSettings.server.password = password() || cliSettings.server.password;
+  cliSettings.saveRecordFile = saveRecordFile() || cliSettings.saveRecordFile;
+  cliSettings.repeat = repeat() || cliSettings.repeat;
 
   // USIエンジンが見つからない場合は、設定ファイルからの相対パスとみなして探します。
-  if (configFilePath && !(await exists(cliSetting.usi.path))) {
-    const relativePath = path.resolve(path.dirname(configFilePath), cliSetting.usi.path);
+  if (configFilePath && !(await exists(cliSettings.usi.path))) {
+    const relativePath = path.resolve(path.dirname(configFilePath), cliSettings.usi.path);
     if (!(await exists(relativePath))) {
-      getAppLogger().error(`usi engine is not found: ${cliSetting.usi.path}`);
+      getAppLogger().error(`usi engine is not found: ${cliSettings.usi.path}`);
       process.exit(1);
     }
-    cliSetting.usi.path = relativePath;
+    cliSettings.usi.path = relativePath;
   }
 
-  // CSAGameSetting に変換してバリデーションを実行します。
-  const setting = importCSAGameSettingForCLI(cliSetting);
-  const validationError = validateCSAGameSetting(setting);
+  // CSAGameSettings に変換してバリデーションを実行します。
+  const settings = importCSAGameSettingsForCLI(cliSettings);
+  const validationError = validateCSAGameSettings(settings);
   if (validationError) {
     getAppLogger().error(validationError);
     process.exit(1);
@@ -171,7 +171,7 @@ async function main() {
     .on("saveRecord", onSaveRecord)
     .on("loginRetry", onLoginRetry)
     .on("error", onError)
-    .login(setting, playerBuilder)
+    .login(settings, playerBuilder)
     .catch(onFatalError);
 
   function onGameNext() {
@@ -195,9 +195,9 @@ async function main() {
     const fileName = generateRecordFileName(
       recordManager.record.metadata,
       recordFileNameTemplate() ||
-        cliSetting.recordFileNameTemplate ||
+        cliSettings.recordFileNameTemplate ||
         defaultRecordFileNameTemplate,
-      recordFileFormat() || cliSetting.recordFileFormat || RecordFileFormat.KIF,
+      recordFileFormat() || cliSettings.recordFileFormat || RecordFileFormat.KIF,
     );
     const dir = recordDir();
     const filePath = path.join(dir, fileName);

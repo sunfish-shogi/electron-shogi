@@ -27,12 +27,12 @@
           <div class="form-group warning">
             <div class="note">
               {{ t.translationHelpNeeded }}
-              {{ appSetting.language != Language.EN ? "We'd like your help to translate." : "" }}
+              {{ appSettings.language != Language.EN ? "We'd like your help to translate." : "" }}
             </div>
             <div class="note">
               {{ t.restartRequiredAfterLocaleChange }}
               {{
-                appSetting.language != Language.EN
+                appSettings.language != Language.EN
                   ? "You should restart this app to change the language."
                   : ""
               }}
@@ -86,7 +86,7 @@
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
-              :default-url="appSetting.backgroundImageFileURL"
+              :default-url="appSettings.backgroundImageFileURL"
               @select="(url: string) => (backgroundImageFileURL = url)"
             />
           </div>
@@ -126,7 +126,7 @@
               <div class="form-item-label-wide"></div>
               <ImageSelector
                 class="image-selector"
-                :default-url="appSetting.pieceImageFileURL"
+                :default-url="appSettings.pieceImageFileURL"
                 @select="(url: string) => (pieceImageFileURL = url)"
               />
             </div>
@@ -177,7 +177,7 @@
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
-              :default-url="appSetting.boardImageFileURL"
+              :default-url="appSettings.boardImageFileURL"
               @select="(url: string) => (boardImageFileURL = url)"
             />
           </div>
@@ -218,7 +218,7 @@
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
-              :default-url="appSetting.pieceStandImageFileURL"
+              :default-url="appSettings.pieceStandImageFileURL"
               @select="(url: string) => (pieceStandImageFileURL = url)"
             />
           </div>
@@ -235,7 +235,7 @@
             <div class="form-item-label-wide">{{ t.boardOpacity }}</div>
             <input
               ref="boardOpacity"
-              :value="appSetting.boardOpacity * 100"
+              :value="appSettings.boardOpacity * 100"
               :readonly="!enableTransparent"
               type="number"
               max="100"
@@ -248,7 +248,7 @@
             <div class="form-item-label-wide">{{ t.pieceStandOpacity }}</div>
             <input
               ref="pieceStandOpacity"
-              :value="appSetting.pieceStandOpacity * 100"
+              :value="appSettings.pieceStandOpacity * 100"
               :readonly="!enableTransparent"
               type="number"
               max="100"
@@ -261,7 +261,7 @@
             <div class="form-item-label-wide">{{ t.recordOpacity }}</div>
             <input
               ref="recordOpacity"
-              :value="appSetting.recordOpacity * 100"
+              :value="appSettings.recordOpacity * 100"
               :readonly="!enableTransparent"
               type="number"
               max="100"
@@ -326,7 +326,7 @@
             <div class="form-item-label-wide">{{ t.pieceLoudness }}</div>
             <input
               ref="pieceVolume"
-              :value="appSetting.pieceVolume"
+              :value="appSettings.pieceVolume"
               type="number"
               max="100"
               min="0"
@@ -338,7 +338,7 @@
             <div class="form-item-label-wide">{{ t.clockLoudness }}</div>
             <input
               ref="clockVolume"
-              :value="appSetting.clockVolume"
+              :value="appSettings.clockVolume"
               type="number"
               max="100"
               min="0"
@@ -350,7 +350,7 @@
             <div class="form-item-label-wide">{{ t.clockPitch }}</div>
             <input
               ref="clockPitch"
-              :value="appSetting.clockPitch"
+              :value="appSettings.clockPitch"
               type="number"
               max="880"
               min="220"
@@ -451,7 +451,7 @@
             <input
               ref="autoSaveDirectory"
               class="file-path"
-              :value="appSetting.autoSaveDirectory"
+              :value="appSettings.autoSaveDirectory"
               type="text"
             />
             <button class="thin" @click="selectAutoSaveDirectory">
@@ -469,7 +469,7 @@
             <input
               ref="recordFileNameTemplate"
               class="file-path"
-              :value="appSetting.recordFileNameTemplate"
+              :value="appSettings.recordFileNameTemplate"
               type="text"
             />
             <button class="thin auxiliary" @click="howToWriteFileNameTemplate">
@@ -538,7 +538,7 @@
             </div>
             <input
               ref="engineTimeoutSeconds"
-              :value="appSetting.engineTimeoutSeconds"
+              :value="appSettings.engineTimeoutSeconds"
               type="number"
               max="300"
               min="1"
@@ -579,7 +579,7 @@
             </div>
             <input
               ref="coefficientInSigmoid"
-              :value="appSetting.coefficientInSigmoid"
+              :value="appSettings.coefficientInSigmoid"
               type="number"
               max="10000"
               min="1"
@@ -593,7 +593,7 @@
             <div class="form-item-label-wide">{{ t.inaccuracyThreshold }}</div>
             <input
               ref="badMoveLevelThreshold1"
-              :value="appSetting.badMoveLevelThreshold1"
+              :value="appSettings.badMoveLevelThreshold1"
               type="number"
               max="100"
               min="0"
@@ -605,7 +605,7 @@
             <div class="form-item-label-wide">{{ t.dubiousThreshold }}</div>
             <input
               ref="badMoveLevelThreshold2"
-              :value="appSetting.badMoveLevelThreshold2"
+              :value="appSettings.badMoveLevelThreshold2"
               type="number"
               max="100"
               min="0"
@@ -617,7 +617,7 @@
             <div class="form-item-label-wide">{{ t.mistakeThreshold }}</div>
             <input
               ref="badMoveLevelThreshold3"
-              :value="appSetting.badMoveLevelThreshold3"
+              :value="appSettings.badMoveLevelThreshold3"
               type="number"
               max="100"
               min="0"
@@ -629,7 +629,7 @@
             <div class="form-item-label-wide">{{ t.blunderThreshold }}</div>
             <input
               ref="badMoveLevelThreshold4"
-              :value="appSetting.badMoveLevelThreshold4"
+              :value="appSettings.badMoveLevelThreshold4"
               type="number"
               max="100"
               min="0"
@@ -751,12 +751,12 @@ import {
   RightSideControlType,
   TabPaneType,
   EvaluationViewFrom,
-  AppSettingUpdate,
+  AppSettingsUpdate,
   Thema,
   BackgroundImageType,
   TextDecodingRule,
   ClockSoundTarget,
-  AppSetting,
+  AppSettings,
   KingPieceType,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
@@ -767,7 +767,7 @@ import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api, { appInfo, isNative } from "@/renderer/ipc/api";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { LogLevel } from "@/common/log";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import { RecordFileFormat } from "@/common/file/record";
@@ -786,8 +786,8 @@ enum PieceImage {
   CUSTOM_IMAGE = "custom-image",
 }
 
-function toPieceImage(setting: AppSetting): PieceImage {
-  switch (setting.pieceImage) {
+function toPieceImage(settings: AppSettings): PieceImage {
+  switch (settings.pieceImage) {
     case PieceImageType.HITOMOJI:
       return PieceImage.HITOMOJI;
     case PieceImageType.HITOMOJI_DARK:
@@ -801,7 +801,7 @@ function toPieceImage(setting: AppSetting): PieceImage {
   }
 }
 
-function pieceImageToSetting(pieceImage: PieceImage) {
+function pieceImageToSettings(pieceImage: PieceImage) {
   switch (pieceImage) {
     case PieceImage.HITOMOJI:
       return {
@@ -845,55 +845,55 @@ const nameToReturnCode: { [name: string]: string } = {
 
 const store = useStore();
 const busyState = useBusyState();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const dialog = ref();
-const language = ref(appSetting.language);
-const thema = ref(appSetting.thema);
-const backgroundImageType = ref(appSetting.backgroundImageType);
+const language = ref(appSettings.language);
+const thema = ref(appSettings.thema);
+const backgroundImageType = ref(appSettings.backgroundImageType);
 const backgroundImageSelector = ref();
-const pieceImage = ref(toPieceImage(appSetting));
-const deletePieceImageMargin = ref(appSetting.deletePieceImageMargin);
-const boardImage = ref(appSetting.boardImage);
+const pieceImage = ref(toPieceImage(appSettings));
+const deletePieceImageMargin = ref(appSettings.deletePieceImageMargin);
+const boardImage = ref(appSettings.boardImage);
 const boardImageSelector = ref();
-const pieceStandImage = ref(appSetting.pieceStandImage);
+const pieceStandImage = ref(appSettings.pieceStandImage);
 const pieceStandImageSelector = ref();
-const enableTransparent = ref(appSetting.enableTransparent);
+const enableTransparent = ref(appSettings.enableTransparent);
 const boardOpacity = ref();
 const pieceStandOpacity = ref();
 const recordOpacity = ref();
-const displayBoardLabels = ref(appSetting.boardLabelType != BoardLabelType.NONE);
-const displayLeftSideControls = ref(appSetting.leftSideControlType != LeftSideControlType.NONE);
-const displayRightSideControls = ref(appSetting.rightSideControlType != RightSideControlType.NONE);
-const tabPaneType = ref(appSetting.tabPaneType);
+const displayBoardLabels = ref(appSettings.boardLabelType != BoardLabelType.NONE);
+const displayLeftSideControls = ref(appSettings.leftSideControlType != LeftSideControlType.NONE);
+const displayRightSideControls = ref(appSettings.rightSideControlType != RightSideControlType.NONE);
+const tabPaneType = ref(appSettings.tabPaneType);
 const pieceVolume = ref();
 const clockVolume = ref();
 const clockPitch = ref();
-const clockSoundTarget = ref(appSetting.clockSoundTarget);
-const defaultRecordFileFormat = ref(appSetting.defaultRecordFileFormat);
-const textDecodingRule = ref(appSetting.textDecodingRule);
-const returnCode = ref(returnCodeToName[appSetting.returnCode]);
+const clockSoundTarget = ref(appSettings.clockSoundTarget);
+const defaultRecordFileFormat = ref(appSettings.defaultRecordFileFormat);
+const textDecodingRule = ref(appSettings.textDecodingRule);
+const returnCode = ref(returnCodeToName[appSettings.returnCode]);
 const autoSaveDirectory = ref();
 const recordFileNameTemplate = ref();
-const useCSAV3 = ref(appSetting.useCSAV3);
-const enableUSIFileStartpos = ref(appSetting.enableUSIFileStartpos);
-const enableUSIFileResign = ref(appSetting.enableUSIFileResign);
-const translateEngineOptionName = ref(appSetting.translateEngineOptionName);
+const useCSAV3 = ref(appSettings.useCSAV3);
+const enableUSIFileStartpos = ref(appSettings.enableUSIFileStartpos);
+const enableUSIFileResign = ref(appSettings.enableUSIFileResign);
+const translateEngineOptionName = ref(appSettings.translateEngineOptionName);
 const engineTimeoutSeconds = ref();
-const evaluationViewFrom = ref(appSetting.evaluationViewFrom);
+const evaluationViewFrom = ref(appSettings.evaluationViewFrom);
 const coefficientInSigmoid = ref();
 const badMoveLevelThreshold1 = ref();
 const badMoveLevelThreshold2 = ref();
 const badMoveLevelThreshold3 = ref();
 const badMoveLevelThreshold4 = ref();
-const enableAppLog = ref(appSetting.enableAppLog);
-const enableUSILog = ref(appSetting.enableUSILog);
-const enableCSALog = ref(appSetting.enableCSALog);
-const logLevel = ref(appSetting.logLevel);
-const backgroundImageFileURL = ref(appSetting.backgroundImageFileURL);
-const croppedPieceImageBaseURL = ref(appSetting.croppedPieceImageBaseURL);
-const pieceImageFileURL = ref(appSetting.pieceImageFileURL);
-const boardImageFileURL = ref(appSetting.boardImageFileURL);
-const pieceStandImageFileURL = ref(appSetting.pieceStandImageFileURL);
+const enableAppLog = ref(appSettings.enableAppLog);
+const enableUSILog = ref(appSettings.enableUSILog);
+const enableCSALog = ref(appSettings.enableCSALog);
+const logLevel = ref(appSettings.logLevel);
+const backgroundImageFileURL = ref(appSettings.backgroundImageFileURL);
+const croppedPieceImageBaseURL = ref(appSettings.croppedPieceImageBaseURL);
+const pieceImageFileURL = ref(appSettings.pieceImageFileURL);
+const boardImageFileURL = ref(appSettings.boardImageFileURL);
+const pieceStandImageFileURL = ref(appSettings.pieceStandImageFileURL);
 const versionStatus = ref({} as VersionStatus);
 
 onMounted(() => {
@@ -911,11 +911,11 @@ onBeforeUnmount(() => {
 const saveAndClose = async () => {
   busyState.retain();
   try {
-    const update: AppSettingUpdate = {
+    const update: AppSettingsUpdate = {
       language: language.value,
       thema: thema.value,
       backgroundImageType: backgroundImageType.value,
-      ...pieceImageToSetting(pieceImage.value),
+      ...pieceImageToSettings(pieceImage.value),
       boardImage: boardImage.value,
       pieceImageFileURL: pieceImageFileURL.value,
       croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,
@@ -976,8 +976,8 @@ const saveAndClose = async () => {
       update.pieceStandImageFileURL = pieceStandImageFileURL.value;
     }
 
-    await useAppSetting().updateAppSetting(update);
-    store.closeAppSettingDialog();
+    await useAppSettings().updateAppSettings(update);
+    store.closeAppSettingsDialog();
   } catch (e) {
     useErrorStore().add(e);
   } finally {
@@ -1016,7 +1016,7 @@ const sendTestNotification = () => {
 };
 
 const cancel = () => {
-  store.closeAppSettingDialog();
+  store.closeAppSettingsDialog();
 };
 </script>
 

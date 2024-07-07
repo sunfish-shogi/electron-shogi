@@ -1,13 +1,13 @@
 import {
-  duplicateEngineSetting,
-  exportUSIEngineSettingForCLI,
+  duplicateEngine,
+  exportUSIEnginesForCLI,
   getUSIEngineOptionCurrentValue,
-  importUSIEngineSettingForCLI,
-  mergeUSIEngineSetting,
+  importUSIEnginesForCLI,
+  mergeUSIEngine,
   USIEngineOption,
-  USIEngineSetting,
-  USIEngineSettings,
-  validateUSIEngineSetting,
+  USIEngine,
+  USIEngines,
+  validateUSIEngine,
 } from "@/common/settings/usi";
 
 describe("settings/usi", () => {
@@ -76,8 +76,8 @@ describe("settings/usi", () => {
     expect(getUSIEngineOptionCurrentValue(null)).toBeUndefined();
   });
 
-  it("duplicateEngineSetting", () => {
-    const src: USIEngineSetting = {
+  it("duplicateEngine", () => {
+    const src: USIEngine = {
       uri: "dummy",
       name: "My Test Engine",
       defaultName: "Test Engine",
@@ -97,7 +97,7 @@ describe("settings/usi", () => {
       labels: {},
       enableEarlyPonder: false,
     };
-    const out = duplicateEngineSetting(src);
+    const out = duplicateEngine(src);
     expect(out.uri).toMatch(/^es:\/\/usi-engine\/.*$/);
     expect(out.name).toBe("My Test Engine のコピー");
     expect(out.defaultName).toBe("Test Engine");
@@ -117,8 +117,8 @@ describe("settings/usi", () => {
     expect(out.options !== src.options).toBeTruthy();
   });
 
-  it("mergeUSIEngineSetting", () => {
-    const lhs: USIEngineSetting = {
+  it("mergeUSIEngine", () => {
+    const lhs: USIEngine = {
       uri: "uri-a",
       name: "name-a",
       defaultName: "default-name-a",
@@ -138,7 +138,7 @@ describe("settings/usi", () => {
       labels: {},
       enableEarlyPonder: false,
     };
-    const rhs: USIEngineSetting = {
+    const rhs: USIEngine = {
       uri: "uri-b",
       name: "name-b",
       defaultName: "default-name-b",
@@ -161,7 +161,7 @@ describe("settings/usi", () => {
       },
       enableEarlyPonder: false,
     };
-    mergeUSIEngineSetting(lhs, rhs);
+    mergeUSIEngine(lhs, rhs);
     expect(lhs).toStrictEqual({
       uri: "uri-b",
       name: "name-b",
@@ -233,7 +233,7 @@ describe("settings/usi", () => {
 
     it("ok", () => {
       expect(
-        validateUSIEngineSetting({
+        validateUSIEngine({
           uri: "es://usi-engine/test",
           name: "my engine",
           defaultName: "test engine",
@@ -254,7 +254,7 @@ describe("settings/usi", () => {
 
     it("invalid-uri", () => {
       expect(
-        validateUSIEngineSetting({
+        validateUSIEngine({
           uri: "es://not-usi-engine/test",
           name: "my engine",
           defaultName: "test engine",
@@ -275,7 +275,7 @@ describe("settings/usi", () => {
 
     it("invalid-check-option", () => {
       expect(
-        validateUSIEngineSetting({
+        validateUSIEngine({
           uri: "es://usi-engine/test",
           name: "my engine",
           defaultName: "test engine",
@@ -296,13 +296,13 @@ describe("settings/usi", () => {
             MyButton: validButtonOption,
           },
           enableEarlyPonder: false,
-        } as unknown as USIEngineSetting),
+        } as unknown as USIEngine),
       ).toBeInstanceOf(Error);
     });
 
     it("invalid-spin-option", () => {
       expect(
-        validateUSIEngineSetting({
+        validateUSIEngine({
           uri: "es://usi-engine/test",
           name: "my engine",
           defaultName: "test engine",
@@ -324,13 +324,13 @@ describe("settings/usi", () => {
             MyButton: validButtonOption,
           },
           enableEarlyPonder: false,
-        } as unknown as USIEngineSetting),
+        } as unknown as USIEngine),
       ).toBeInstanceOf(Error);
     });
 
     it("invalid-string-option", () => {
       expect(
-        validateUSIEngineSetting({
+        validateUSIEngine({
           uri: "es://usi-engine/test",
           name: "my engine",
           defaultName: "test engine",
@@ -351,13 +351,13 @@ describe("settings/usi", () => {
             MyButton: validButtonOption,
           },
           enableEarlyPonder: false,
-        } as unknown as USIEngineSetting),
+        } as unknown as USIEngine),
       ).toBeInstanceOf(Error);
     });
   });
 
-  it("USIEngineSetting", () => {
-    const settings = new USIEngineSettings(
+  it("USIEngines", () => {
+    const engines = new USIEngines(
       JSON.stringify({
         engines: {
           "es://usi-engine/a": {
@@ -372,7 +372,7 @@ describe("settings/usi", () => {
         },
       }),
     );
-    settings.addEngine({
+    engines.addEngine({
       uri: "es://usi-engine/b",
       name: "Engine B",
       defaultName: "engine-b",
@@ -382,19 +382,19 @@ describe("settings/usi", () => {
       labels: {},
       enableEarlyPonder: false,
     });
-    expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();
-    expect(settings.hasEngine("es://usi-engine/b")).toBeTruthy();
-    expect(settings.hasEngine("es://usi-engine/c")).toBeFalsy();
-    expect((settings.getEngine("es://usi-engine/a") as USIEngineSetting).name).toBe("Engine A");
-    expect((settings.getEngine("es://usi-engine/b") as USIEngineSetting).name).toBe("Engine B");
-    expect(settings.engineList).toHaveLength(2);
-    expect(settings.engineList[0].name).toBe("Engine A");
-    expect(settings.engineList[1].name).toBe("Engine B");
-    expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe("Engine A");
-    expect(JSON.parse(settings.json).engines["es://usi-engine/a"].name).toBe("Engine A");
-    expect(JSON.parse(settings.json).engines["es://usi-engine/c"]).toBeUndefined();
-    expect(JSON.parse(settings.jsonWithIndent)).toStrictEqual(JSON.parse(settings.json));
-    settings.updateEngine({
+    expect(engines.hasEngine("es://usi-engine/a")).toBeTruthy();
+    expect(engines.hasEngine("es://usi-engine/b")).toBeTruthy();
+    expect(engines.hasEngine("es://usi-engine/c")).toBeFalsy();
+    expect((engines.getEngine("es://usi-engine/a") as USIEngine).name).toBe("Engine A");
+    expect((engines.getEngine("es://usi-engine/b") as USIEngine).name).toBe("Engine B");
+    expect(engines.engineList).toHaveLength(2);
+    expect(engines.engineList[0].name).toBe("Engine A");
+    expect(engines.engineList[1].name).toBe("Engine B");
+    expect(JSON.parse(engines.json).engines["es://usi-engine/a"].name).toBe("Engine A");
+    expect(JSON.parse(engines.json).engines["es://usi-engine/a"].name).toBe("Engine A");
+    expect(JSON.parse(engines.json).engines["es://usi-engine/c"]).toBeUndefined();
+    expect(JSON.parse(engines.jsonWithIndent)).toStrictEqual(JSON.parse(engines.json));
+    engines.updateEngine({
       uri: "es://usi-engine/a",
       name: "Engine A Updated",
       defaultName: "engine-a",
@@ -404,17 +404,15 @@ describe("settings/usi", () => {
       labels: {},
       enableEarlyPonder: false,
     });
-    expect((settings.getEngine("es://usi-engine/a") as USIEngineSetting).name).toBe(
-      "Engine A Updated",
-    );
-    expect((settings.getEngine("es://usi-engine/b") as USIEngineSetting).name).toBe("Engine B");
-    settings.removeEngine("es://usi-engine/b");
-    expect(settings.hasEngine("es://usi-engine/a")).toBeTruthy();
-    expect(settings.hasEngine("es://usi-engine/b")).toBeFalsy();
+    expect((engines.getEngine("es://usi-engine/a") as USIEngine).name).toBe("Engine A Updated");
+    expect((engines.getEngine("es://usi-engine/b") as USIEngine).name).toBe("Engine B");
+    engines.removeEngine("es://usi-engine/b");
+    expect(engines.hasEngine("es://usi-engine/a")).toBeTruthy();
+    expect(engines.hasEngine("es://usi-engine/b")).toBeFalsy();
   });
 
-  it("USIEngineSetting/labels", () => {
-    const settings = new USIEngineSettings(
+  it("USIEngines/labels", () => {
+    const engines = new USIEngines(
       JSON.stringify({
         engines: {
           "es://usi-engine/a": {
@@ -433,19 +431,19 @@ describe("settings/usi", () => {
         },
       }),
     );
-    const engineA = settings.getEngine("es://usi-engine/a") as USIEngineSetting;
+    const engineA = engines.getEngine("es://usi-engine/a") as USIEngine;
     expect(engineA.labels).toStrictEqual({
       game: true,
       research: false,
       mate: true,
     });
-    const engineB = settings.getEngine("es://usi-engine/b") as USIEngineSetting;
+    const engineB = engines.getEngine("es://usi-engine/b") as USIEngine;
     expect(engineB.labels).toStrictEqual({
       game: false,
       research: true,
       mate: true,
     });
-    const engineC = settings.getEngine("es://usi-engine/c") as USIEngineSetting;
+    const engineC = engines.getEngine("es://usi-engine/c") as USIEngine;
     expect(engineC.labels).toStrictEqual({
       game: true,
       research: true,
@@ -453,9 +451,9 @@ describe("settings/usi", () => {
     });
   });
 
-  it("USIEngineSetting/exportUSIEngineSettingForCLI", () => {
+  it("USIEngines/exportUSIEnginesForCLI", () => {
     expect(
-      exportUSIEngineSettingForCLI({
+      exportUSIEnginesForCLI({
         uri: "es://usi-engine/test-engine",
         name: "My Test Engine",
         defaultName: "Test Engine",
@@ -505,8 +503,8 @@ describe("settings/usi", () => {
     });
   });
 
-  it("USIEngineSetting/importUSIEngineSettingForCLI", () => {
-    const result = importUSIEngineSettingForCLI({
+  it("USIEngines/importUSIEnginesForCLI", () => {
+    const result = importUSIEnginesForCLI({
       name: "My Test Engine",
       path: "/path/to/engine",
       options: {

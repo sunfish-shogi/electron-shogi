@@ -41,16 +41,16 @@
           class="full tab-content"
           :size="contentSize"
           :type="EvaluationChartType.RAW"
-          :thema="appSetting.thema"
-          :coefficient-in-sigmoid="appSetting.coefficientInSigmoid"
+          :thema="appSettings.thema"
+          :coefficient-in-sigmoid="appSettings.coefficientInSigmoid"
         />
         <EvaluationChart
           v-if="activeTab === Tab.PERCENTAGE_CHART"
           class="full tab-content"
           :size="contentSize"
           :type="EvaluationChartType.WIN_RATE"
-          :thema="appSetting.thema"
-          :coefficient-in-sigmoid="appSetting.coefficientInSigmoid"
+          :thema="appSettings.thema"
+          :coefficient-in-sigmoid="appSettings.coefficientInSigmoid"
         />
         <MonitorView
           v-if="activeTab === Tab.MONITOR"
@@ -79,7 +79,7 @@ import { Tab } from "@/common/settings/app";
 import { EvaluationChartType } from "@/common/settings/layout";
 import { IconType } from "@/renderer/assets/icons";
 import { t } from "@/common/i18n";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 
 const props = defineProps({
   size: {
@@ -105,7 +105,7 @@ const emit = defineEmits<{
   onMinimize: [];
 }>();
 
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const changeSelect = (tab: Tab) => emit("onChangeTab", tab);
 const minimize = () => emit("onMinimize");
 const contentSize = computed(() => props.size.reduce(new RectSize(0, headerHeight)));

@@ -1,13 +1,13 @@
 import {
-  ResearchSetting,
-  normalizeResearchSetting,
-  validateResearchSetting,
+  ResearchSettings,
+  normalizeResearchSettings,
+  validateResearchSettings,
 } from "@/common/settings/research";
 import * as uri from "@/common/uri";
 
 describe("settings/research", () => {
   it("normalize", () => {
-    const setting: ResearchSetting = {
+    const settings: ResearchSettings = {
       usi: {
         uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
@@ -24,12 +24,12 @@ describe("settings/research", () => {
       enableMaxSeconds: false,
       maxSeconds: 10,
     };
-    const result = normalizeResearchSetting(setting);
-    expect(result).toStrictEqual(setting);
+    const result = normalizeResearchSettings(settings);
+    expect(result).toStrictEqual(settings);
   });
 
   it("validate/ok", () => {
-    const setting: ResearchSetting = {
+    const settings: ResearchSettings = {
       usi: {
         uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
@@ -46,20 +46,20 @@ describe("settings/research", () => {
       enableMaxSeconds: false,
       maxSeconds: 10,
     };
-    expect(validateResearchSetting(setting)).toBeUndefined();
+    expect(validateResearchSettings(settings)).toBeUndefined();
   });
 
   it("validate/invalidEngine", () => {
-    const setting: ResearchSetting = {
+    const settings: ResearchSettings = {
       secondaries: [],
       enableMaxSeconds: false,
       maxSeconds: 10,
     };
-    expect(validateResearchSetting(setting)).toBeInstanceOf(Error);
+    expect(validateResearchSettings(settings)).toBeInstanceOf(Error);
   });
 
   it("validate/invalidSecondaryEngine", () => {
-    const setting: ResearchSetting = {
+    const settings: ResearchSettings = {
       usi: {
         uri: uri.ES_USI_ENGINE_PREFIX + "test-engine",
         name: "Test Engine",
@@ -76,6 +76,6 @@ describe("settings/research", () => {
       enableMaxSeconds: false,
       maxSeconds: 10,
     };
-    expect(validateResearchSetting(setting)).toBeInstanceOf(Error);
+    expect(validateResearchSettings(settings)).toBeInstanceOf(Error);
   });
 });

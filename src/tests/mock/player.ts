@@ -1,6 +1,6 @@
 import { parseUSIPV } from "@/common/game/usi";
 import { Player, SearchHandler } from "@/renderer/players/player";
-import { PlayerSetting } from "@/common/settings/player";
+import { PlayerSettings } from "@/common/settings/player";
 import { ImmutablePosition, Move } from "tsshogi";
 import { TimeStates } from "@/common/game/time";
 
@@ -55,8 +55,8 @@ export function createMockPlayer(moves: { [usi: string]: MoveWithOption }) {
 
 export function createMockPlayerBuilder(playerMap: { [uri: string]: Player }) {
   return {
-    build: vi.fn().mockImplementation((playerSetting: PlayerSetting) => {
-      const player = playerMap[playerSetting.uri];
+    build: vi.fn().mockImplementation((playerSettings: PlayerSettings) => {
+      const player = playerMap[playerSettings.uri];
       if (!player) {
         throw new Error("unexpected player URI");
       }

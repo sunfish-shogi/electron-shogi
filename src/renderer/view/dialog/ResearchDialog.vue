@@ -5,11 +5,11 @@
       <div class="form-group">
         <PlayerSelector
           :player-uri="engineURI"
-          :engine-settings="engineSettings"
+          :engines="engines"
           :filter-label="USIEngineLabel.RESEARCH"
           :display-thread-state="true"
           :display-multi-pv-state="true"
-          @update-engine-setting="onUpdatePlayerSetting"
+          @update-engines="onUpdatePlayerSettings"
           @select-player="
             (uri: string) => {
               engineURI = uri;
@@ -20,11 +20,11 @@
       <div v-for="(uri, index) in secondaryEngineURIs" :key="index" class="form-group">
         <PlayerSelector
           :player-uri="uri"
-          :engine-settings="engineSettings"
+          :engines="engines"
           :filter-label="USIEngineLabel.RESEARCH"
           :display-thread-state="true"
           :display-multi-pv-state="true"
-          @update-engine-setting="onUpdatePlayerSetting"
+          @update-engines="onUpdatePlayerSettings"
           @select-player="
             (uri: string) => {
               secondaryEngineURIs[index] = uri;
@@ -52,7 +52,7 @@
           <div class="form-item-small-label">{{ t.toPrefix }}</div>
           <input
             ref="maxSeconds"
-            :value="researchSetting.maxSeconds"
+            :value="researchSettings.maxSeconds"
             class="number"
             type="number"
             min="1"
@@ -78,11 +78,11 @@ import { t } from "@/common/i18n";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api from "@/renderer/ipc/api";
 import {
-  defaultResearchSetting,
-  ResearchSetting,
-  validateResearchSetting,
+  defaultResearchSettings,
+  ResearchSettings,
+  validateResearchSettings,
 } from "@/common/settings/research";
-import { USIEngineLabel, USIEngineSettings } from "@/common/settings/usi";
+import { USIEngineLabel, USIEngines } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
@@ -97,8 +97,8 @@ import { useBusyState } from "@/renderer/store/busy";
 const store = useStore();
 const busyState = useBusyState();
 const dialog = ref();
-const researchSetting = ref(defaultResearchSetting());
-const engineSettings = ref(new USIEngineSettings());
+const researchSettings = ref(defaultResearchSettings());
+const engines = ref(new USIEngines());
 const engineURI = ref("");
 const secondaryEngineURIs = ref([] as string[]);
 const enableMaxSeconds = ref(false);
@@ -110,12 +110,12 @@ onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
   installHotKeyForDialog(dialog.value);
   try {
-    researchSetting.value = await api.loadResearchSetting();
-    engineSettings.value = await api.loadUSIEngineSetting();
-    engineURI.value = researchSetting.value.usi?.uri || "";
+    researchSettings.value = await api.loadResearchSettings();
+    engines.value = await api.loadUSIEngines();
+    engineURI.value = researchSettings.value.usi?.uri || "";
     secondaryEngineURIs.value =
-      researchSetting.value.secondaries?.map((setting) => setting.usi?.uri || "") || [];
-    enableMaxSeconds.value = researchSetting.value.enableMaxSeconds;
+      researchSettings.value.secondaries?.map((engine) => engine.usi?.uri || "") || [];
+    enableMaxSeconds.value = researchSettings.value.enableMaxSeconds;
   } catch (e) {
     useErrorStore().add(e);
     store.destroyModalDialog();
@@ -129,34 +129,34 @@ onBeforeUnmount(() => {
 });
 
 const onStart = () => {
-  const engineSetting = engineSettings.value.getEngine(engineURI.value);
+  const engine = engines.value.getEngine(engineURI.value);
   const secondaries = [];
   for (const uri of secondaryEngineURIs.value) {
-    const engineSetting = engineSettings.value.getEngine(uri);
+    const secondary = engines.value.getEngine(uri);
     secondaries.push({
-      usi: engineSetting,
+      usi: secondary,
     });
   }
-  const researchSetting: ResearchSetting = {
-    usi: engineSetting,
+  const researchSettings: ResearchSettings = {
+    usi: engine,
     secondaries: secondaries,
     enableMaxSeconds: enableMaxSeconds.value,
     maxSeconds: readInputAsNumber(maxSeconds.value),
   };
-  const e = validateResearchSetting(researchSetting);
+  const e = validateResearchSettings(researchSettings);
   if (e) {
     useErrorStore().add(e);
     return;
   }
-  store.startResearch(researchSetting);
+  store.startResearch(researchSettings);
 };
 
 const onCancel = () => {
   store.closeResearchDialog();
 };
 
-const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
-  engineSettings.value = settings;
+const onUpdatePlayerSettings = async (val: USIEngines) => {
+  engines.value = val;
 };
 </script>
 

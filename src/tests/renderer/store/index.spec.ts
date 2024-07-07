@@ -4,23 +4,23 @@ import { Move } from "tsshogi";
 import { createStore } from "@/renderer/store";
 import { RecordCustomData } from "@/renderer/store/record";
 import * as audio from "@/renderer/devices/audio";
-import { gameSetting10m30s } from "@/tests/mock/game";
+import { gameSettings10m30s } from "@/tests/mock/game";
 import { GameManager } from "@/renderer/store/game";
 import { AppState, ResearchState } from "@/common/control/state";
 import { AnalysisManager } from "@/renderer/store/analysis";
-import { analysisSetting } from "@/tests/mock/analysis";
+import { analysisSettings } from "@/tests/mock/analysis";
 import { USIPlayer } from "@/renderer/players/usi";
-import { researchSetting } from "@/tests/mock/research";
+import { researchSettings } from "@/tests/mock/research";
 import {
-  csaGameSetting,
-  emptyCSAGameSettingHistory,
-  singleCSAGameSettingHistory,
+  csaGameSettings,
+  emptyCSAGameSettingsHistory,
+  singleCSAGameSettingsHistory,
 } from "@/tests/mock/csa";
 import { CSAGameManager } from "@/renderer/store/csa";
 import { convert } from "encoding-japanese";
 import { Mocked, MockedClass } from "vitest";
-import { useAppSetting } from "@/renderer/store/setting";
-import { defaultAppSetting } from "@/common/settings/app";
+import { useAppSettings } from "@/renderer/store/settings";
+import { defaultAppSettings } from "@/common/settings/app";
 import { useMessageStore } from "@/renderer/store/message";
 import { useBusyState } from "@/renderer/store/busy";
 import { useErrorStore } from "@/renderer/store/error";
@@ -128,7 +128,7 @@ describe("store/index", () => {
       useMessageStore().dequeue();
     }
     useErrorStore().clear();
-    useAppSetting().updateAppSetting(defaultAppSetting());
+    useAppSettings().updateAppSettings(defaultAppSettings());
   });
 
   it("updateUSIInfo", () => {
@@ -190,85 +190,85 @@ describe("store/index", () => {
   });
 
   it("startGame/success", async () => {
-    mockAPI.saveGameSetting.mockResolvedValue();
+    mockAPI.saveGameSettings.mockResolvedValue();
     mockGameManager.prototype.start.mockResolvedValue();
     const store = createStore();
     store.showGameDialog();
-    store.startGame(gameSetting10m30s);
+    store.startGame(gameSettings10m30s);
     expect(useBusyState().isBusy).toBeTruthy();
     await new Promise((resolve) => setTimeout(resolve));
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.GAME);
-    expect(mockAPI.saveGameSetting).toBeCalledTimes(1);
-    expect(mockAPI.saveGameSetting.mock.calls[0][0]).toBe(gameSetting10m30s);
+    expect(mockAPI.saveGameSettings).toBeCalledTimes(1);
+    expect(mockAPI.saveGameSettings.mock.calls[0][0]).toBe(gameSettings10m30s);
     expect(mockGameManager.prototype.start).toBeCalledTimes(1);
-    expect(mockGameManager.prototype.start.mock.calls[0][0]).toBe(gameSetting10m30s);
+    expect(mockGameManager.prototype.start.mock.calls[0][0]).toBe(gameSettings10m30s);
   });
 
   it("startGame/invalidState", () => {
     const store = createStore();
-    store.startGame(gameSetting10m30s);
+    store.startGame(gameSettings10m30s);
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.NORMAL);
   });
 
   it("loginCSAGame/success", async () => {
-    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(emptyCSAGameSettingHistory);
-    mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
+    mockAPI.loadCSAGameSettingsHistory.mockResolvedValue(emptyCSAGameSettingsHistory);
+    mockAPI.saveCSAGameSettingsHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
     const store = createStore();
     store.showCSAGameDialog();
-    store.loginCSAGame(csaGameSetting, { saveHistory: true });
+    store.loginCSAGame(csaGameSettings, { saveHistory: true });
     expect(useBusyState().isBusy).toBeTruthy();
     await new Promise((resolve) => setTimeout(resolve));
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.CSA_GAME);
-    expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(1);
-    expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(1);
-    expect(mockAPI.saveCSAGameSettingHistory.mock.calls[0][0]).toStrictEqual(
-      singleCSAGameSettingHistory,
+    expect(mockAPI.loadCSAGameSettingsHistory).toBeCalledTimes(1);
+    expect(mockAPI.saveCSAGameSettingsHistory).toBeCalledTimes(1);
+    expect(mockAPI.saveCSAGameSettingsHistory.mock.calls[0][0]).toStrictEqual(
+      singleCSAGameSettingsHistory,
     );
     expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
-    expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(csaGameSetting);
+    expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(csaGameSettings);
   });
 
   it("loginCSAGame/doNotSaveHistory", async () => {
-    mockAPI.loadCSAGameSettingHistory.mockResolvedValue(emptyCSAGameSettingHistory);
-    mockAPI.saveCSAGameSettingHistory.mockResolvedValue();
+    mockAPI.loadCSAGameSettingsHistory.mockResolvedValue(emptyCSAGameSettingsHistory);
+    mockAPI.saveCSAGameSettingsHistory.mockResolvedValue();
     mockCSAGameManager.prototype.login.mockResolvedValue();
     const store = createStore();
     store.showCSAGameDialog();
-    store.loginCSAGame(csaGameSetting, { saveHistory: false });
+    store.loginCSAGame(csaGameSettings, { saveHistory: false });
     expect(useBusyState().isBusy).toBeTruthy();
     await new Promise((resolve) => setTimeout(resolve));
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.CSA_GAME);
-    expect(mockAPI.loadCSAGameSettingHistory).toBeCalledTimes(0);
-    expect(mockAPI.saveCSAGameSettingHistory).toBeCalledTimes(0);
+    expect(mockAPI.loadCSAGameSettingsHistory).toBeCalledTimes(0);
+    expect(mockAPI.saveCSAGameSettingsHistory).toBeCalledTimes(0);
     expect(mockCSAGameManager.prototype.login).toBeCalledTimes(1);
-    expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(csaGameSetting);
+    expect(mockCSAGameManager.prototype.login.mock.calls[0][0]).toBe(csaGameSettings);
   });
 
   it("loginCSAGame/invalidState", () => {
     const store = createStore();
-    store.loginCSAGame(csaGameSetting, { saveHistory: true });
+    store.loginCSAGame(csaGameSettings, { saveHistory: true });
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.NORMAL);
   });
 
   it("startResearch/success", async () => {
-    mockAPI.saveResearchSetting.mockResolvedValue();
+    mockAPI.saveResearchSettings.mockResolvedValue();
     mockUSIPlayer.prototype.launch.mockResolvedValue();
     mockUSIPlayer.prototype.startResearch.mockResolvedValue();
     const store = createStore();
     store.showResearchDialog();
-    store.startResearch(researchSetting);
+    store.startResearch(researchSettings);
     await new Promise((resolve) => setTimeout(resolve));
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.researchState).toBe(ResearchState.RUNNING);
-    expect(mockAPI.saveResearchSetting).toBeCalledTimes(1);
+    expect(mockAPI.saveResearchSettings).toBeCalledTimes(1);
     expect(mockUSIPlayer).toBeCalledTimes(1);
-    expect(mockUSIPlayer.mock.calls[0][0]).toBe(researchSetting.usi);
+    expect(mockUSIPlayer.mock.calls[0][0]).toBe(researchSettings.usi);
     expect(mockUSIPlayer.prototype.launch).toBeCalledTimes(1);
     // FIXME: 遅延実行の導入によってすぐに呼ばれなくなった。
     //expect(mockUSIPlayer.prototype.startResearch).toBeCalledTimes(1);
@@ -281,30 +281,30 @@ describe("store/index", () => {
 
   it("startResearch/invalidState", () => {
     const store = createStore();
-    store.startResearch(researchSetting);
+    store.startResearch(researchSettings);
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.NORMAL);
   });
 
   it("startAnalysis/success", async () => {
-    mockAPI.saveAnalysisSetting.mockResolvedValue();
+    mockAPI.saveAnalysisSettings.mockResolvedValue();
     mockAnalysisManager.prototype.start.mockResolvedValue();
     const store = createStore();
     store.showAnalysisDialog();
-    store.startAnalysis(analysisSetting);
+    store.startAnalysis(analysisSettings);
     await new Promise((resolve) => setTimeout(resolve));
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.ANALYSIS);
-    expect(mockAPI.saveAnalysisSetting).toBeCalledTimes(1);
-    expect(mockAPI.saveAnalysisSetting.mock.calls[0][0]).toBe(analysisSetting);
+    expect(mockAPI.saveAnalysisSettings).toBeCalledTimes(1);
+    expect(mockAPI.saveAnalysisSettings.mock.calls[0][0]).toBe(analysisSettings);
     expect(mockAnalysisManager).toBeCalledTimes(1);
     expect(mockAnalysisManager.prototype.start).toBeCalledTimes(1);
-    expect(mockAnalysisManager.prototype.start.mock.calls[0][0]).toBe(analysisSetting);
+    expect(mockAnalysisManager.prototype.start.mock.calls[0][0]).toBe(analysisSettings);
   });
 
   it("startAnalysis/invalidState", () => {
     const store = createStore();
-    store.startAnalysis(analysisSetting);
+    store.startAnalysis(analysisSettings);
     expect(useBusyState().isBusy).toBeFalsy();
     expect(store.appState).toBe(AppState.NORMAL);
   });
@@ -403,7 +403,7 @@ describe("store/index", () => {
         },
       }),
     );
-    await useAppSetting().updateAppSetting({ useCSAV3: true });
+    await useAppSettings().updateAppSettings({ useCSAV3: true });
     const store = createStore();
     store.copyRecordCSA();
     expect(writeText).toBeCalledTimes(1);

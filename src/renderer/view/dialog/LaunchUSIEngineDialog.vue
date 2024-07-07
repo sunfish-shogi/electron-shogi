@@ -6,10 +6,10 @@
         <div>{{ t.searchEngine }}</div>
         <PlayerSelector
           :player-uri="engineURI"
-          :engine-settings="engineSettings"
+          :engines="engines"
           :display-thread-state="true"
           :display-multi-pv-state="true"
-          @update-engine-setting="onUpdatePlayerSetting"
+          @update-engines="onUpdatePlayerSettings"
           @select-player="onSelectPlayer"
         />
       </div>
@@ -40,9 +40,9 @@ import { showModalDialog } from "@/renderer/helpers/dialog";
 import { useStore } from "@/renderer/store";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PlayerSelector from "./PlayerSelector.vue";
-import { USIEngineSettings } from "@/common/settings/usi";
+import { USIEngines } from "@/common/settings/usi";
 import api from "@/renderer/ipc/api";
-import { useAppSetting } from "@/renderer/store/setting";
+import { useAppSettings } from "@/renderer/store/settings";
 import { PromptTarget } from "@/common/advanced/prompt";
 import { Tab } from "@/common/settings/app";
 import { useErrorStore } from "@/renderer/store/error";
@@ -50,9 +50,9 @@ import { useBusyState } from "@/renderer/store/busy";
 
 const store = useStore();
 const busyState = useBusyState();
-const appSetting = useAppSetting();
+const appSettings = useAppSettings();
 const dialog = ref();
-const engineSettings = ref(new USIEngineSettings());
+const engines = ref(new USIEngines());
 const engineURI = ref("");
 
 busyState.retain();
@@ -61,7 +61,7 @@ onMounted(async () => {
   showModalDialog(dialog.value, onCancel);
   installHotKeyForDialog(dialog.value);
   try {
-    engineSettings.value = await api.loadUSIEngineSetting();
+    engines.value = await api.loadUSIEngines();
   } catch (e) {
     useErrorStore().add(e);
     store.destroyModalDialog();
@@ -75,14 +75,14 @@ onBeforeUnmount(() => {
 });
 
 const onStart = async () => {
-  const setting = engineSettings.value.getEngine(engineURI.value);
-  if (!setting) {
+  const settings = engines.value.getEngine(engineURI.value);
+  if (!settings) {
     useErrorStore().add(t.engineNotSelected);
     return;
   }
-  const sessionID = await api.usiLaunch(setting, appSetting.engineTimeoutSeconds);
-  api.openPrompt(PromptTarget.USI, sessionID, setting.name);
-  useAppSetting().updateAppSetting({ tab: Tab.MONITOR });
+  const sessionID = await api.usiLaunch(settings, appSettings.engineTimeoutSeconds);
+  api.openPrompt(PromptTarget.USI, sessionID, settings.name);
+  useAppSettings().updateAppSettings({ tab: Tab.MONITOR });
   store.closeModalDialog();
 };
 
@@ -90,8 +90,8 @@ const onCancel = () => {
   store.closeModalDialog();
 };
 
-const onUpdatePlayerSetting = async (settings: USIEngineSettings) => {
-  engineSettings.value = settings;
+const onUpdatePlayerSettings = async (val: USIEngines) => {
+  engines.value = val;
 };
 
 const onSelectPlayer = (uri: string) => {

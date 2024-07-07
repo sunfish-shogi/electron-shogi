@@ -7,7 +7,7 @@ import {
   CSAGameResult,
   CSASpecialMove,
 } from "@/common/game/csa";
-import { CSAProtocolVersion, CSAServerSetting } from "@/common/settings/csa";
+import { CSAProtocolVersion, CSAServerSettings } from "@/common/settings/csa";
 import { Socket } from "./socket";
 import { Logger } from "log4js";
 import { t } from "@/common/i18n";
@@ -73,12 +73,12 @@ export class Client {
 
   constructor(
     private sessionID: number,
-    private _setting: CSAServerSetting,
+    private _settings: CSAServerSettings,
     private logger: Logger,
   ) {}
 
-  get setting(): CSAServerSetting {
-    return this._setting;
+  get settings(): CSAServerSettings {
+    return this._settings;
   }
 
   get state(): State {
@@ -147,13 +147,13 @@ export class Client {
     this.logger.info(
       "sid=%d: connecting to %s:%d",
       this.sessionID,
-      this.setting.host,
-      this.setting.port,
+      this.settings.host,
+      this.settings.port,
     );
     this._state = State.CONNECTING;
     this.socket = new Socket(
-      this.setting.host,
-      this.setting.port,
+      this.settings.host,
+      this.settings.port,
       {
         onConnect: this.onConnect.bind(this),
         onError: this.onConnectionError.bind(this),
@@ -162,13 +162,13 @@ export class Client {
         onRead: this.onRead.bind(this),
       },
       {
-        keepaliveInitialDelay: this.setting.tcpKeepalive.initialDelay,
+        keepaliveInitialDelay: this.settings.tcpKeepalive.initialDelay,
       },
     );
   }
 
   logout(): void {
-    switch (this.setting.protocolVersion) {
+    switch (this.settings.protocolVersion) {
       case CSAProtocolVersion.V121_FLOODGATE:
         // Floodgate では LOGOUT コマンドを使用しない。
         if (this.socket) {
@@ -269,8 +269,8 @@ export class Client {
   }
 
   private hideSecureValues(command: string): string {
-    if (this.setting.password) {
-      command = command.replaceAll(this.setting.password, "*****");
+    if (this.settings.password) {
+      command = command.replaceAll(this.settings.password, "*****");
     }
     return command;
   }
@@ -279,10 +279,10 @@ export class Client {
     this.logger.info("sid=%d: connected", this.sessionID);
     this._state = State.CONNECTED;
     let suffix = "";
-    if (this.setting.protocolVersion === CSAProtocolVersion.V121_X1) {
+    if (this.settings.protocolVersion === CSAProtocolVersion.V121_X1) {
       suffix = " x1";
     }
-    this.send(`LOGIN ${this.setting.id} ${this.setting.password}${suffix}`);
+    this.send(`LOGIN ${this.settings.id} ${this.settings.password}${suffix}`);
   }
 
   private onConnectionError(e: Error): void {
@@ -654,7 +654,7 @@ export class Client {
   }
 
   private setBlankLinePing(lastSent?: string): void {
-    if (!this.setting.blankLinePing) {
+    if (!this.settings.blankLinePing) {
       return;
     }
     this.clearBlankLinePing();
@@ -663,8 +663,8 @@ export class Client {
         this.send("");
       },
       (lastSent === ""
-        ? this.setting.blankLinePing.interval
-        : this.setting.blankLinePing.initialDelay) * 1e3,
+        ? this.settings.blankLinePing.interval
+        : this.settings.blankLinePing.initialDelay) * 1e3,
     );
   }
 

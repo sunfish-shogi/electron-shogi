@@ -340,9 +340,12 @@ export class GameManager {
       return;
     }
     // 最大手数に到達したら終了する。
+    // ただし、最後の2手のどちらかが王手なら対局を延長する。
     if (
       this._settings.maxMoves &&
-      this.recordManager.record.current.ply >= this._settings.maxMoves
+      this.recordManager.record.current.ply >= this._settings.maxMoves &&
+      !this.recordManager.record.current.isCheck &&
+      !this.recordManager.record.current.prev?.isCheck
     ) {
       this.end(SpecialMoveType.IMPASS);
       return;

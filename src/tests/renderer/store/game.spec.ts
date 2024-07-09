@@ -457,19 +457,14 @@ describe("store/game", () => {
   });
 
   it("GameManager/maxMoves", () => {
+    // 4手で maxMoves に到達して引き分け
     const mockBlackPlayer = createMockPlayer({
-      "position startpos": {
-        usi: "7g7f",
-      },
+      "position startpos": { usi: "7g7f" },
       "position startpos moves 7g7f 3c3d": { usi: "2g2f" },
     });
     const mockWhitePlayer = createMockPlayer({
-      "position startpos moves 7g7f": {
-        usi: "3c3d",
-      },
-      "position startpos moves 7g7f 3c3d 2g2f": {
-        usi: "8c8d",
-      },
+      "position startpos moves 7g7f": { usi: "3c3d" },
+      "position startpos moves 7g7f 3c3d 2g2f": { usi: "8c8d" },
     });
     const mockPlayerBuilder = createMockPlayerBuilder({
       [playerURI01]: mockBlackPlayer,
@@ -509,6 +504,65 @@ describe("store/game", () => {
         expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
         expect(mockHandlers.onStopBeep).toBeCalledTimes(9);
         expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f 8c8d");
+        expect(mockHandlers.onError).not.toBeCalled();
+      },
+    );
+  });
+
+  it("GameManager/maxMoves/extending", () => {
+    // 4手で maxMoves に到達するが王手がかかっているため延長する。
+    const mockBlackPlayer = createMockPlayer({
+      "position startpos": { usi: "7g7f" },
+      "position startpos moves 7g7f 3c3d": { usi: "2g2f" },
+      "position startpos moves 7g7f 3c3d 2g2f 2b7g+": { usi: "5i5h" },
+      "position startpos moves 7g7f 3c3d 2g2f 2b7g+ 5i5h 7g6g": { usi: "5h5i" },
+    });
+    const mockWhitePlayer = createMockPlayer({
+      "position startpos moves 7g7f": { usi: "3c3d" },
+      "position startpos moves 7g7f 3c3d 2g2f": { usi: "2b7g+" }, // 王手
+      "position startpos moves 7g7f 3c3d 2g2f 2b7g+ 5i5h": { usi: "7g6g" }, // 王手
+      "position startpos moves 7g7f 3c3d 2g2f 2b7g+ 5i5h 7g6g 5h5i": { usi: "6g8i" },
+    });
+    const mockPlayerBuilder = createMockPlayerBuilder({
+      [playerURI01]: mockBlackPlayer,
+      [playerURI02]: mockWhitePlayer,
+    });
+    const mockHandlers = createMockHandlers();
+    const recordManager = new RecordManager();
+
+    return invoke(
+      recordManager,
+      mockHandlers,
+      {
+        ...gameSettings10m30s,
+        maxMoves: 4,
+      },
+      mockPlayerBuilder,
+      (gameResults, specialMoveType) => {
+        expect(gameResults).toStrictEqual({
+          player1: { name: "USI Engine 01", win: 0 },
+          player2: { name: "USI Engine 02", win: 0 },
+          draw: 1,
+          invalid: 0,
+          total: 1,
+        });
+        expect(specialMoveType).toBe(SpecialMoveType.IMPASS);
+        expect(mockBlackPlayer.startSearch).toBeCalledTimes(4);
+        expect(mockBlackPlayer.startPonder).toBeCalledTimes(4);
+        expect(mockBlackPlayer.gameover).toBeCalledTimes(1);
+        expect(mockBlackPlayer.stop).toBeCalledTimes(0);
+        expect(mockBlackPlayer.close).toBeCalledTimes(1);
+        expect(mockWhitePlayer.startSearch).toBeCalledTimes(4);
+        expect(mockWhitePlayer.startPonder).toBeCalledTimes(4);
+        expect(mockWhitePlayer.gameover).toBeCalledTimes(1);
+        expect(mockWhitePlayer.stop).toBeCalledTimes(0);
+        expect(mockWhitePlayer.close).toBeCalledTimes(1);
+        expect(mockHandlers.onBeepShort).toBeCalledTimes(0);
+        expect(mockHandlers.onBeepUnlimited).toBeCalledTimes(0);
+        expect(mockHandlers.onStopBeep).toBeCalledTimes(17);
+        expect(recordManager.record.usi).toBe(
+          "position startpos moves 7g7f 3c3d 2g2f 2b7g+ 5i5h 7g6g 5h5i 6g8i",
+        );
         expect(mockHandlers.onError).not.toBeCalled();
       },
     );

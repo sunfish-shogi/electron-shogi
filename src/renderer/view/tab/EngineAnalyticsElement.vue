@@ -39,61 +39,63 @@
           <span>{{ info.hashfull ? (info.hashfull * 100).toFixed(1) : "---" }} %</span>
         </div>
       </div>
-      <div class="row list-header">
-        <div v-if="showTimeColumn" class="list-column time">{{ t.elapsed }}</div>
-        <div v-if="showMultiPvColumn" class="list-column multipv-index">{{ t.rank }}</div>
-        <div v-if="showDepthColumn" class="list-column depth">{{ t.depth }}</div>
-        <div v-if="showNodesColumn" class="list-column nodes">{{ t.nodes }}</div>
-        <div v-if="showScoreColumn" class="list-column score">{{ t.eval }}</div>
-        <div v-if="showScoreColumn" class="list-column score-flag"></div>
-        <div class="list-column text">{{ t.pv }}</div>
-      </div>
-      <div class="list" :style="{ height: `${height - (showHeader ? 37 : 15)}px` }">
-        <div
-          v-for="iteration in historyMode ? info.iterations : info.latestIteration"
-          :key="iteration.id"
-          v-memo="[]"
-          class="row list-item"
-          :class="{ highlight: enableHighlight && iteration.multiPV === 1 }"
-        >
-          <div v-if="showTimeColumn" class="list-column time">
-            {{ iteration.timeMs ? (iteration.timeMs / 1e3).toFixed(1) + "s" : "" }}
-          </div>
-          <div v-if="showMultiPvColumn" class="list-column multipv-index">
-            {{ iteration.multiPV || "" }}
-          </div>
-          <div v-if="showDepthColumn" class="list-column depth">
-            {{ iteration.depth }}{{ iteration.selectiveDepth && iteration.depth ? "/" : ""
-            }}{{ iteration.selectiveDepth }}
-          </div>
-          <div v-if="showNodesColumn" class="list-column nodes">
-            {{ iteration.nodes }}
-          </div>
-          <div v-if="showScoreColumn" class="list-column score">
-            {{
-              iteration.scoreMate !== undefined
-                ? getDisplayScore(iteration.scoreMate, iteration.color, evaluationViewFrom)
-                : iteration.score !== undefined
-                  ? getDisplayScore(iteration.score, iteration.color, evaluationViewFrom)
-                  : ""
-            }}
-          </div>
-          <div v-if="showScoreColumn" class="list-column score-flag">
-            {{ iteration.lowerBound ? "++" : "" }}
-            {{ iteration.upperBound ? "--" : "" }}
-            {{ iteration.scoreMate ? t.mateShort : "" }}
-          </div>
-          <div class="grow list-column text">
-            <button
-              v-if="showPlayButton && iteration.pv && iteration.pv.length !== 0 && iteration.text"
-              @click="showPreview(iteration)"
-            >
-              <Icon :icon="IconType.PLAY" />
-              <span>{{ t.displayPVShort }}</span>
-            </button>
-            {{ iteration.text }}
-          </div>
-        </div>
+      <div class="list-area" :style="{ height: `${height - (showHeader ? 22 : 0)}px` }">
+        <table class="list">
+          <tr class="list-header">
+            <td v-if="showTimeColumn" class="time">{{ t.elapsed }}</td>
+            <td v-if="showMultiPvColumn" class="multipv-index">{{ t.rank }}</td>
+            <td v-if="showDepthColumn" class="depth">{{ t.depth }}</td>
+            <td v-if="showNodesColumn" class="nodes">{{ t.nodes }}</td>
+            <td v-if="showScoreColumn" class="score">{{ t.eval }}</td>
+            <td v-if="showScoreColumn" class="score-flag"></td>
+            <td class="text">{{ t.pv }}</td>
+          </tr>
+          <tr
+            v-for="iteration in historyMode ? info.iterations : info.latestIteration"
+            :key="iteration.id"
+            v-memo="[]"
+            class="list-item"
+            :class="{ highlight: enableHighlight && iteration.multiPV === 1 }"
+          >
+            <td v-if="showTimeColumn" class="time">
+              {{ iteration.timeMs ? (iteration.timeMs / 1e3).toFixed(1) + "s" : "" }}
+            </td>
+            <td v-if="showMultiPvColumn" class="multipv-index">
+              {{ iteration.multiPV || "" }}
+            </td>
+            <td v-if="showDepthColumn" class="depth">
+              {{ iteration.depth }}{{ iteration.selectiveDepth && iteration.depth ? "/" : ""
+              }}{{ iteration.selectiveDepth }}
+            </td>
+            <td v-if="showNodesColumn" class="nodes">
+              {{ iteration.nodes }}
+            </td>
+            <td v-if="showScoreColumn" class="score">
+              {{
+                iteration.scoreMate !== undefined
+                  ? getDisplayScore(iteration.scoreMate, iteration.color, evaluationViewFrom)
+                  : iteration.score !== undefined
+                    ? getDisplayScore(iteration.score, iteration.color, evaluationViewFrom)
+                    : ""
+              }}
+            </td>
+            <td v-if="showScoreColumn" class="score-flag">
+              {{ iteration.lowerBound ? "++" : "" }}
+              {{ iteration.upperBound ? "--" : "" }}
+              {{ iteration.scoreMate ? t.mateShort : "" }}
+            </td>
+            <td class="text">
+              <button
+                v-if="showPlayButton && iteration.pv && iteration.pv.length !== 0 && iteration.text"
+                @click="showPreview(iteration)"
+              >
+                <Icon :icon="IconType.PLAY" />
+                <span>{{ t.displayPVShort }}</span>
+              </button>
+              {{ iteration.text }}
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
   </div>
@@ -208,64 +210,78 @@ const onUnpause = () => {
   font-size: 12px;
   white-space: nowrap;
 }
-.list-header {
-  height: 16px;
-  width: 100%;
-  font-size: 12px;
-  background-color: var(--text-bg-color);
-}
-.paused .list-header {
-  background-color: var(--text-bg-color-disabled);
-}
-.list {
+.list-area {
   width: 100%;
   overflow-y: scroll;
   background-color: var(--text-bg-color);
 }
-.paused .list {
+.paused .list-area {
   background-color: var(--text-bg-color-disabled);
 }
-.list-item {
+table.list {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+}
+tr.list-header > td {
+  height: 16px;
+  width: 100%;
+  font-size: 12px;
+  background-color: var(--text-bg-color);
+  position: sticky;
+  top: 0;
+  left: 0;
+}
+.paused tr.list-header > td {
+  background-color: var(--text-bg-color-disabled);
+}
+tr.list-item > td {
   height: 24px;
   font-size: 12px;
 }
-.list-item.highlight {
+tr.list-item.highlight > td {
   background: var(--text-bg-color-warning);
   border-bottom: dashed var(--text-separator-color) 1px;
 }
-.list-column {
+table.list td {
+  border: 0;
+  padding: 0;
   height: 100%;
   white-space: nowrap;
   overflow: hidden;
-  line-height: 22px;
 }
-.list-column.multipv-index {
-  width: 30px;
+table.list td:not(:first-child) {
+  padding-left: 4px;
+}
+table.list td.time {
+  width: 0;
   text-align: right;
 }
-.list-column.depth {
-  width: 44px;
+table.list td.multipv-index {
+  width: 0;
   text-align: right;
 }
-.list-column.nodes {
-  width: 82px;
+table.list td.depth {
+  width: 0;
   text-align: right;
 }
-.list-column.time {
-  width: 52px;
+table.list td.nodes {
+  width: 0;
   text-align: right;
 }
-.list-column.score {
-  width: 52px;
+table.list td.score {
+  width: 0;
   text-align: right;
 }
-.list-column.score-flag {
-  width: 20px;
+table.list td.score-flag {
+  width: 0;
   text-align: left;
 }
-.list-column.text {
+table.list td.text {
+  max-width: 0;
   text-align: left;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 button {
   margin: 0px 0px 1px 0px;

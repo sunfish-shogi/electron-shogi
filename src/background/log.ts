@@ -62,9 +62,16 @@ export function setLogDestinations(
   levels[type] = level;
 }
 
-const loggers: { [key: string]: log4js.Logger } = {};
+export interface Logger {
+  debug(message: unknown, ...args: unknown[]): void;
+  info(message: unknown, ...args: unknown[]): void;
+  warn(message: unknown, ...args: unknown[]): void;
+  error(message: unknown, ...args: unknown[]): void;
+}
 
-function getLogger(type: LogType): log4js.Logger {
+const loggers: { [key: string]: Logger } = {};
+
+function getLogger(type: LogType): Logger {
   if (loggers[type]) {
     return loggers[type];
   }
@@ -80,15 +87,15 @@ function getLogger(type: LogType): log4js.Logger {
   return logger;
 }
 
-export function getAppLogger(): log4js.Logger {
+export function getAppLogger(): Logger {
   return getLogger(LogType.APP);
 }
 
-export function getUSILogger(): log4js.Logger {
+export function getUSILogger(): Logger {
   return getLogger(LogType.USI);
 }
 
-export function getCSALogger(): log4js.Logger {
+export function getCSALogger(): Logger {
   return getLogger(LogType.CSA);
 }
 

@@ -20,7 +20,19 @@ const statusFilePath = path.join(userDir, "version.json");
 
 const baseURL =
   isDevelopment() || isTest() ? "http://localhost:6173" : `https://${ghioDomain}/${ghRepository}/`;
-const releaseURL = url.resolve(baseURL, "release.json");
+
+function getReleaseURL() {
+  switch (process.platform) {
+    case "win32":
+      return url.resolve(baseURL, "release-win.json");
+    case "darwin":
+      return url.resolve(baseURL, "release-mac.json");
+    case "linux":
+      return url.resolve(baseURL, "release-linux.json");
+    default:
+      return url.resolve(baseURL, "release.json");
+  }
+}
 
 export async function readStatus(): Promise<VersionStatus> {
   if (await exists(statusFilePath)) {
@@ -88,7 +100,7 @@ export async function checkUpdates() {
     Date.now() - last.knownReleases.downloadedMs >= minimumCheckIntervalMs
   ) {
     getAppLogger().debug(`check new release`);
-    const releases = JSON.parse(await fetch(releaseURL)) as Releases;
+    const releases = JSON.parse(await fetch(getReleaseURL())) as Releases;
     getAppLogger().debug(`release info fetched: ${JSON.stringify(releases)}}`);
     suggestUpdate(releases, last);
     last.knownReleases = {

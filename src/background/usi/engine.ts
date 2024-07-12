@@ -6,7 +6,7 @@ import {
   USIHash,
   USIPonder,
 } from "@/common/settings/usi";
-import { Logger } from "log4js";
+import { Logger } from "@/background/log";
 import { SCORE_MATE_INFINITE, USIInfoCommand } from "@/common/game/usi";
 import { ChildProcess } from "./process";
 import {

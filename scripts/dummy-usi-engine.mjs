@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { createInterface } from "readline";
+import { createInterface } from "node:readline";
 
 start();
 

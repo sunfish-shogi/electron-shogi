@@ -4,7 +4,14 @@ import path from "node:path";
 import fs from "node:fs";
 import { Releases, VersionStatus } from "@/background/version/types";
 import { getAppPath } from "@/background/proc/env";
+import * as log from "@/background/log";
 import * as electron from "@/background/helpers/electron";
+import { Mocked } from "vitest";
+import { getNopLogger } from "@/tests/mock/log";
+
+vi.mock("@/background/log");
+
+const mockLog = log as Mocked<typeof log>;
 
 const statusFilePath = path.join(getAppPath("userData"), "version.json");
 
@@ -17,6 +24,7 @@ type MockParam = {
   knownLatest?: string;
   stable: string;
   latest: string;
+  remoteFileName: string;
 };
 
 const server = {
@@ -65,7 +73,7 @@ function setupServer() {
         link: "https://link/to/latest",
       },
     };
-    if (req.url === "/release.json") {
+    if (req.url === "/" + server.param.remoteFileName) {
       server.accessCount++;
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(releases));
@@ -91,10 +99,12 @@ describe("version", () => {
   });
 
   beforeEach(() => {
+    mockLog.getAppLogger.mockReturnValue(getNopLogger());
     vi.useFakeTimers();
   });
 
   afterEach(() => {
+    vi.clearAllMocks();
     vi.useRealTimers();
     fs.unlinkSync(statusFilePath);
   });
@@ -103,7 +113,9 @@ describe("version", () => {
     reset({
       stable: "1.0.4",
       latest: "1.1.1",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.0.1");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -126,7 +138,9 @@ describe("version", () => {
       knownLatest: "1.1.0",
       stable: "1.0.4",
       latest: "1.1.1",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.1.0");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -149,7 +163,9 @@ describe("version", () => {
       knownLatest: "1.1.1",
       stable: "1.0.4",
       latest: "1.1.1",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.0.1");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -170,7 +186,9 @@ describe("version", () => {
       knownLatest: "1.1.0",
       stable: "1.0.4",
       latest: "1.1.1",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.2.0-alpha.1");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -191,7 +209,9 @@ describe("version", () => {
       knownLatest: "1.1.0",
       stable: "1.0.4",
       latest: "1.1.1",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time23HoursAfter);
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
     await checkUpdates();
@@ -212,7 +232,9 @@ describe("version", () => {
       knownLatest: "1.1.1",
       stable: "1.0.4",
       latest: "1.1.1",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.1.1");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -234,7 +256,9 @@ describe("version", () => {
       knownLatest: "1.1.1",
       stable: "1.0.3",
       latest: "1.1.2",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.0.2");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -255,7 +279,9 @@ describe("version", () => {
       knownLatest: "1.1.1",
       stable: "1.1.1",
       latest: "1.2.0",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.0.4");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -278,7 +304,9 @@ describe("version", () => {
       knownLatest: "1.1.1",
       stable: "1.1.1",
       latest: "1.2.0",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.1.1");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -301,7 +329,9 @@ describe("version", () => {
       knownLatest: "1.1.1",
       stable: "1.1.1",
       latest: "1.2.0",
+      remoteFileName: "release-win.json",
     });
+    vi.stubGlobal("process", { platform: "win32" });
     vi.setSystemTime(time25HoursAfter);
     vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.2.0-alpha.1");
     const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
@@ -316,5 +346,62 @@ describe("version", () => {
     expect(status.knownReleases?.latest.version).toBe("1.2.0");
     expect(status.knownReleases?.downloadedMs).toBe(time25HoursAfter);
     expect(status.updatedMs).toBe(time25HoursAfter);
+  });
+
+  it("mac", async () => {
+    reset({
+      knownStable: "1.0.3",
+      knownLatest: "1.1.0",
+      stable: "1.0.4",
+      latest: "1.1.1",
+      remoteFileName: "release-mac.json",
+    });
+    vi.stubGlobal("process", { platform: "darwin" });
+    vi.setSystemTime(time25HoursAfter);
+    vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.1.0");
+    const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
+    await checkUpdates();
+    expect(spy.mock.calls).toHaveLength(1);
+    expect(spy.mock.calls[0][1]).toBe("最新版 v1.1.1 がリリースされました！");
+    expect(server.accessCount).toBe(1);
+    expect(server.invalidCount).toBe(0);
+  });
+
+  it("linux", async () => {
+    reset({
+      knownStable: "1.0.3",
+      knownLatest: "1.1.0",
+      stable: "1.0.4",
+      latest: "1.1.1",
+      remoteFileName: "release-linux.json",
+    });
+    vi.stubGlobal("process", { platform: "linux" });
+    vi.setSystemTime(time25HoursAfter);
+    vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.1.0");
+    const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
+    await checkUpdates();
+    expect(spy.mock.calls).toHaveLength(1);
+    expect(spy.mock.calls[0][1]).toBe("最新版 v1.1.1 がリリースされました！");
+    expect(server.accessCount).toBe(1);
+    expect(server.invalidCount).toBe(0);
+  });
+
+  it("fallback", async () => {
+    reset({
+      knownStable: "1.0.3",
+      knownLatest: "1.1.0",
+      stable: "1.0.4",
+      latest: "1.1.1",
+      remoteFileName: "release.json", // fallback to old release.json
+    });
+    vi.stubGlobal("process", { platform: "xxx" }); // unknown platform
+    vi.setSystemTime(time25HoursAfter);
+    vi.spyOn(electron, "getAppVersion").mockReturnValue("v1.1.0");
+    const spy = vi.spyOn(electron, "showNotification").mockImplementation(() => {});
+    await checkUpdates();
+    expect(spy.mock.calls).toHaveLength(1);
+    expect(spy.mock.calls[0][1]).toBe("最新版 v1.1.1 がリリースされました！");
+    expect(server.accessCount).toBe(1);
+    expect(server.invalidCount).toBe(0);
   });
 });

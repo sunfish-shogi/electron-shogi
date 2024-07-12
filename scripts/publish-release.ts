@@ -1,10 +1,51 @@
 /* eslint-disable no-console,no-restricted-imports */
 import fs from "node:fs";
+import { createInterface } from "node:readline/promises";
 import { Releases } from "../src/background/version/types";
 import * as semver from "semver";
 
-async function updateReleaseJSON(target: string) {
-  const releases = JSON.parse(fs.readFileSync("docs/release.json", "utf-8")) as Releases;
+const releaseJSON = "docs/release.json";
+const releaseWinJSON = "docs/release-win.json";
+const releaseMacJSON = "docs/release-mac.json";
+const releaseLinuxJSON = "docs/release-linux.json";
+
+const stdio = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+type Target = "stable" | "latest";
+
+async function getTarget(): Promise<Target> {
+  const value = process.argv[2];
+  switch (value) {
+    case "":
+    case undefined:
+      return "latest";
+    case "stable":
+    case "latest":
+      return value as Target;
+    default:
+      throw new Error("Invalid target");
+  }
+}
+
+async function inputPlatforms(): Promise<string[]> {
+  const paths = [] as string[];
+  if (!(await stdio.question(`Do you want to update ${releaseWinJSON}? [Y/n]:`)).match(/^n/i)) {
+    paths.push(releaseWinJSON);
+  }
+  if (!(await stdio.question(`Do you want to update ${releaseMacJSON}? [Y/n]:`)).match(/^n/i)) {
+    paths.push(releaseMacJSON);
+  }
+  if (!(await stdio.question(`Do you want to update ${releaseLinuxJSON}? [Y/n]:`)).match(/^n/i)) {
+    paths.push(releaseLinuxJSON);
+  }
+  return paths;
+}
+
+async function updateReleaseJSON(target: Target) {
+  const releases = JSON.parse(fs.readFileSync(releaseJSON, "utf-8")) as Releases;
 
   console.log(`Current latest version: ${releases.latest.version}`);
   console.log(`Current stable version: ${releases.stable.version}`);
@@ -43,15 +84,25 @@ async function updateReleaseJSON(target: string) {
     tag: `v${latest}`,
     link: `https://github.com/sunfish-shogi/electron-shogi/releases/tag/v${latest}`,
   };
-  fs.writeFileSync("docs/release.json", JSON.stringify(releases, null, 1));
+  const json = JSON.stringify(releases, null, 1);
+  fs.writeFileSync(releaseJSON, json);
 }
 
-const target = process.argv[2];
-updateReleaseJSON(target)
-  .then(() => {
-    console.log("Updated release.json");
-  })
+async function main() {
+  const target = await getTarget();
+  const paths = await inputPlatforms();
+  await updateReleaseJSON(target);
+  for (const path of paths) {
+    fs.copyFileSync(releaseJSON, path);
+  }
+  console.log("updated.");
+}
+
+main()
   .catch((err) => {
     console.error(err);
     process.exit(1);
+  })
+  .finally(() => {
+    stdio.close();
   });

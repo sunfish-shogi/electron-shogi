@@ -8,9 +8,9 @@ export type Release = {
 };
 
 export type Releases = {
-  /** strict semver */
+  /** stable version */
   stable: Release;
-  /** strict semver */
+  /** latest version */
   latest: Release;
   /** UnixTime(ms) of last download */
   downloadedMs?: number;

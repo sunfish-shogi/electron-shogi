@@ -423,6 +423,7 @@ export const ja: Texts = {
   stable: "安定版",
   latest: "最新版",
   backgroundColor: "背景色",
+  dialogBackdrop: "ダイアログ表示中の暗転",
   record: "棋譜",
   chart: "グラフ",
   analytics: "解析",

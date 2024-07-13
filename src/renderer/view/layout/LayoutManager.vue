@@ -52,6 +52,12 @@
             :value="customProfile.backgroundColor"
             @input="(e) => updateCustomProfileProp('backgroundColor', inputEventToString(e))"
           />
+          <ToggleButton
+            class="backdrop-toggle"
+            :value="!!customProfile.dialogBackdrop"
+            :label="t.dialogBackdrop"
+            @change="(value) => updateCustomProfileProp('dialogBackdrop', value)"
+          />
         </div>
         <div class="row">
           <select ref="newComponentType" size="1">
@@ -567,5 +573,8 @@ button {
 .color-selector {
   display: inline-block;
   height: 24px;
+}
+.backdrop-toggle {
+  display: inline-block;
 }
 </style>

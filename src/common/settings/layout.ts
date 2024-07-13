@@ -69,6 +69,7 @@ export type LayoutProfile = {
   uri: string;
   name: string;
   backgroundColor?: string;
+  dialogBackdrop?: boolean;
   components: UIComponent[];
 };
 
@@ -87,6 +88,7 @@ export function appendCustomLayoutProfile(
   profile = profile || {
     uri: uri.issueCustomLayoutProfileURI(),
     name: t.newCustomProfile,
+    dialogBackdrop: true,
     components: [
       {
         type: "Record",

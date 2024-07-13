@@ -1,5 +1,5 @@
 <template>
-  <div class="root full" :class="appSettings.thema" :style="style">
+  <div class="root full" :class="[appSettings.thema, dialogStyle]" :style="style">
     <!-- Main Contents -->
     <CustomLayout v-if="store.customLayout" :profile="store.customLayout" />
     <StandardLayout v-else class="full" />
@@ -111,6 +111,12 @@ onMounted(() => {
     event.preventDefault();
   });
 });
+
+const dialogStyle = computed(() =>
+  !store.customLayout || store.customLayout.dialogBackdrop
+    ? "dialog-backdrop"
+    : "dialog-no-backdrop",
+);
 
 const style = computed(() => {
   const style: { [key: string]: string } = {};

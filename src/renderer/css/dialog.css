@@ -9,7 +9,7 @@ dialog {
   font-size: 1rem;
 }
 
-dialog::backdrop {
+.dialog-backdrop dialog::backdrop {
   background: rgba(0, 0, 0, 0.5);
 }
 

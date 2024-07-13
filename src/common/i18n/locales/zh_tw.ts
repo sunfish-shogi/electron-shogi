@@ -420,6 +420,7 @@ export const zh_tw: Texts = {
   stable: "安定版",
   latest: "最新版",
   backgroundColor: "背景顏色",
+  dialogBackdrop: "ダイアログ表示中の暗転", // TODO: translate
   record: "棋譜",
   chart: "圖表",
   analytics: "解析",

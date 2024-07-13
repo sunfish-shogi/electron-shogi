@@ -423,6 +423,7 @@ export const en: Texts = {
   stable: "Stable",
   latest: "Latest",
   backgroundColor: "Background Color",
+  dialogBackdrop: "Dialog Backdrop",
   record: "Record",
   chart: "Chart",
   analytics: "Analytics",

@@ -12,7 +12,7 @@
             {{ profile.name }}
           </option>
         </select>
-        <div class="left">
+        <div class="row wrap buttons">
           <button class="thin" @click="addNewProfile">{{ t.addCustomLayoutProfile }}</button>
           <button v-if="customProfile" class="thin" @click="duplicateProfile">
             {{ t.duplicateCurrentProfile }}
@@ -51,6 +51,12 @@
             type="color"
             :value="customProfile.backgroundColor"
             @input="(e) => updateCustomProfileProp('backgroundColor', inputEventToString(e))"
+          />
+          <ToggleButton
+            class="backdrop-toggle"
+            :value="!!customProfile.dialogBackdrop"
+            :label="t.dialogBackdrop"
+            @change="(value) => updateCustomProfileProp('dialogBackdrop', value)"
           />
         </div>
         <div class="row">
@@ -515,6 +521,13 @@ button {
 .header > *:not(:last-child) {
   margin-bottom: 10px;
 }
+.buttons {
+  row-gap: 5px;
+}
+.buttons > * {
+  display: inline-block;
+  white-space: nowrap;
+}
 .custom-profile {
   border: 1px dashed var(--dialog-border-color);
   border-radius: 10px;
@@ -560,5 +573,8 @@ button {
 .color-selector {
   display: inline-block;
   height: 24px;
+}
+.backdrop-toggle {
+  display: inline-block;
 }
 </style>

@@ -418,6 +418,7 @@ export type Texts = {
   stable: string;
   latest: string;
   backgroundColor: string;
+  dialogBackdrop: string;
   record: string;
   chart: string;
   analytics: string;

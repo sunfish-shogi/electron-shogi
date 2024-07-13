@@ -118,14 +118,14 @@ const layoutTemplate = {
       y: 547,
       width: 288,
       height: 412,
-      fontSize: 26,
+      fontSize: 32,
     },
     right: {
       x: 1184,
       y: 0,
       width: 288,
       height: 412,
-      fontSize: 26,
+      fontSize: 32,
     },
   },
 };

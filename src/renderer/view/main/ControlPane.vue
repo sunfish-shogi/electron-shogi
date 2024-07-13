@@ -362,7 +362,7 @@ const onRemoveCurrentMove = () => {
 .control-item {
   width: 100%;
   height: 20%;
-  font-size: 100%;
+  font-size: 80%;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;

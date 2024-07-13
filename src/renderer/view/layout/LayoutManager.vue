@@ -12,7 +12,7 @@
             {{ profile.name }}
           </option>
         </select>
-        <div class="left">
+        <div class="row wrap buttons">
           <button class="thin" @click="addNewProfile">{{ t.addCustomLayoutProfile }}</button>
           <button v-if="customProfile" class="thin" @click="duplicateProfile">
             {{ t.duplicateCurrentProfile }}
@@ -514,6 +514,13 @@ button {
 }
 .header > *:not(:last-child) {
   margin-bottom: 10px;
+}
+.buttons {
+  row-gap: 5px;
+}
+.buttons > * {
+  display: inline-block;
+  white-space: nowrap;
 }
 .custom-profile {
   border: 1px dashed var(--dialog-border-color);

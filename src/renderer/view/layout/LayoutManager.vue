@@ -573,6 +573,7 @@ button {
 .color-selector {
   display: inline-block;
   height: 24px;
+  margin-right: 20px;
 }
 .backdrop-toggle {
   display: inline-block;

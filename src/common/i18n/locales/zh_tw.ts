@@ -446,8 +446,8 @@ export const zh_tw: Texts = {
   headers: "解析表頭",
   playButton: "再現按鈕",
   insert: "插入",
-  up: "向上移動",
-  down: "向下移動",
+  bringForward: "前面へ", // TODO: translate
+  sendBackward: "背面へ", // TODO: translate
   updatedAt: "更新時間",
   createdAt: "建立時間",
   lastSent: "最後送出",

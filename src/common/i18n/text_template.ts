@@ -444,8 +444,8 @@ export type Texts = {
   headers: string;
   playButton: string;
   insert: string;
-  up: string;
-  down: string;
+  bringForward: string;
+  sendBackward: string;
   updatedAt: string;
   createdAt: string;
   lastSent: string;

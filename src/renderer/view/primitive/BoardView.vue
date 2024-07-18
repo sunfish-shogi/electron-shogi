@@ -266,9 +266,12 @@ const resetState = () => {
   state.reservedMove = null;
 };
 
-watch([() => props.position, () => props.allowEdit, () => props.allowMove], () => {
-  resetState();
-});
+watch(
+  [() => props.position, () => props.position.sfen, () => props.allowEdit, () => props.allowMove],
+  () => {
+    resetState();
+  },
+);
 
 const clickFrame = () => {
   resetState();

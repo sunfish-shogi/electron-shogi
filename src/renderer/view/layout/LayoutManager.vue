@@ -261,14 +261,14 @@
               class="thin"
               @click="() => moveCustomProfileComponentUp(index)"
             >
-              {{ t.up }}
+              ↑ {{ t.bringForward }}
             </button>
             <button
               v-if="index !== customProfile.components.length - 1"
               class="thin"
               @click="() => moveCustomProfileComponentDown(index)"
             >
-              {{ t.down }}
+              ↓ {{ t.sendBackward }}
             </button>
             <button class="thin" @click="() => removeCustomProfileComponent(index)">
               {{ t.remove }}

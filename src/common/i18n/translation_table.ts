@@ -2,6 +2,7 @@ import { Language } from "./languages";
 import { en } from "./locales/en";
 import { ja } from "./locales/ja";
 import { zh_tw } from "./locales/zh_tw";
+import { vi } from "./locales/vi";
 import { Texts } from "./text_template";
 
 export const t = ja;
@@ -14,6 +15,8 @@ function getTranslationTable(language: Language): Texts {
       return en;
     case Language.ZH_TW:
       return zh_tw;
+    case Language.VI:
+      return vi;
     default:
       return ja;
   }

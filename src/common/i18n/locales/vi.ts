@@ -1,6 +1,6 @@
 import { Texts } from "@/common/i18n/text_template";
 
-export const en: Texts = {
+export const vi: Texts = {
   shogiHome: "ShogiHome",
   clear: "Ván mới",
   open: "Mở",
@@ -66,7 +66,8 @@ export const en: Texts = {
     "Trong chế độ nâng cao, bạn phải tự nhập lệnh tại ô nhắc lệnh.",
   setoptionAndPrecedingCommandsWillBeSentAutomatically:
     '"setoption" và các lệnh trước đó sẽ được gửi tự động',
-  serverMustSupportShogiServerX1ModeLogIn: "Máy chủ phải hỗ trợ phương thức đăng nhập x1-mode của shogi-server.",
+  serverMustSupportShogiServerX1ModeLogIn:
+    "Máy chủ phải hỗ trợ phương thức đăng nhập x1-mode của shogi-server.",
   folders: "Thư mục",
   notification: "Thông báo",
   notificationTest: "Thử thông báo",
@@ -491,8 +492,7 @@ export const en: Texts = {
   pleasePasteRecordIntoTextArea: "*Dán dữ liệu kỳ phổ vào vùng nhập chữ.",
   pleaseSpecifyPlainTextURL: "*Vui lòng nhập URL thô.",
   redirectNotSupported: "*Không hỗ trợ chuyển hướng.",
-  desktopVersionPastesAutomatically:
-    "*Bản máy tính sẽ tự động dán.",
+  desktopVersionPastesAutomatically: "*Bản máy tính sẽ tự động dán.",
   earlyPonderFeatureSendsPonderhitCommandWithYaneuraOusNonStandardOptions:
     'Tính năng tính nhanh gửi lệnh "ponderhit" với các tùy chọn riêng củaYaneuraOu.',
   ifYourEngineNotSupportTheOptionsItMayCauseUnexpectedBehavior:
@@ -517,8 +517,7 @@ export const en: Texts = {
   areYouSureWantToResign: "Bạn có thật sự muốn đầu hàng không?",
   areYouSureWantToDoDeclaration: "Bạn có thật sự muốn tuyên bố không?",
   areYouSureWantToQuitGames: "Bạn có thật sự muốn bỏ ván không?",
-  areYouSureWantToRequestQuit:
-    "Bạn có thể bị xử thua. Bạn có thật sự muốn yêu cầu rời ván không?",
+  areYouSureWantToRequestQuit: "Bạn có thể bị xử thua. Bạn có thật sự muốn yêu cầu rời ván không?",
   areYouSureWantToClearRecord: "Bạn có thật sự muốn xóa kỳ phổ không?",
   areYouSureWantToDiscardPosition: "Bạn có thật sự muốn xóa thế cờ không?",
   areYouSureWantToOpenFileInsteadOfCurrentRecord:
@@ -530,8 +529,7 @@ export const en: Texts = {
   usiCsaBridgeCommandCopiedToClipboard: "Lệnh usi-csa-bridge đã được sao chép.",
   youCanNotCloseAppWhileCSAOnlineGame: "Bạn không thể đóng ứng dụng trong khi đang có ván CSA.",
   fileExtensionNotSupported: "Không hỗ trợ định dạng này.",
-  errorOccuredWhileDisconnectingFromCSAServer:
-    "Đã có lỗi trong khi ngắt kết nối khỏi máy chủ CSA.",
+  errorOccuredWhileDisconnectingFromCSAServer: "Đã có lỗi trong khi ngắt kết nối khỏi máy chủ CSA.",
   failedToConnectToCSAServer: "Kết nối với máy chủ CSA thất bại.",
   errorOccuredWhileLogoutFromCSAServer: "Đã có lỗi trong khi đăng xuất khỏi máy chủ CSA.",
   disconnectedFromCSAServer: "Đã ngắt kết nối khỏi máy chủ CSA.",
@@ -584,11 +582,11 @@ export const en: Texts = {
   mistakeThresholdMustBeLessThanBlunderThreshold:
     "Ngưỡng sai lầm phải nhỏ hơn ngưỡng sai lầm ngớ ngẩn.",
   thisEngineNotSupportsMateSearch: "Phần mềm này không hỗ trợ đọc chiếu hết.",
-  pleaseEndActiveFeaturesBeforeOpenRecord: "Vui lòng đóng các tính năng đang chạy trước khi mở kỳ phổ.",
+  pleaseEndActiveFeaturesBeforeOpenRecord:
+    "Vui lòng đóng các tính năng đang chạy trước khi mở kỳ phổ.",
   bothTimeLimitAndByoyomiAreNotSet: "Thời gian và byoyomi chưa được đặt.",
   canNotUseByoyomiWithFischer: "Bạn không thể dùng byoyomi với chế độ Fischer.",
-  repeatsMustBeOneIfHumanPlayerIncluded:
-    "Nếu có người chơi, số lần lặp lại phải là 1.",
+  repeatsMustBeOneIfHumanPlayerIncluded: "Nếu có người chơi, số lần lặp lại phải là 1.",
   protocolVersionNotSelected: "Chưa chọn phiên bản phương thức.",
   hostNameIsEmpty: "Tên máy chủ trống.",
   invalidPortNumber: "Cổng không hợp lệ.",
@@ -618,8 +616,7 @@ export const en: Texts = {
   keepLatest: (n) => `${n} bản mới nhất`,
   followingDataNotSavedBecauseNotSupporetedBy: (fileFormat: string) =>
     `Dữ liệu sau không được lưu vì không được định dạng "${fileFormat}" hỗ trợ.`,
-  areYouSureWantToDeleteFollowingMove: (n) =>
-    `Bạn có muốn xóa nước thứ ${n} trở đi không?`,
+  areYouSureWantToDeleteFollowingMove: (n) => `Bạn có muốn xóa nước thứ ${n} trở đi không?`,
   failedToOpenDirectory: (path: string) => `Mở tệp: ${path} thất bại`,
   unexpectedEventSenderPleaseReport(sender) {
     return `Nguồn sự kiện ngoài dự tính. Vui lòng báo cáo lỗi này cho nhà phát triển. [${sender}]`;

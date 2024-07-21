@@ -3,4 +3,5 @@ export enum Language {
   JA = "ja",
   EN = "en",
   ZH_TW = "zh_tw",
+  VI = "vi",
 }

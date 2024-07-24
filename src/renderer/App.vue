@@ -1,7 +1,8 @@
 <template>
   <div class="root full" :class="[appSettings.thema, dialogStyle]" :style="style">
     <!-- Main Contents -->
-    <CustomLayout v-if="store.customLayout" :profile="store.customLayout" />
+    <MobileLayout v-if="isMobile" />
+    <CustomLayout v-else-if="store.customLayout" :profile="store.customLayout" />
     <StandardLayout v-else class="full" />
 
     <!-- Dialogs -->
@@ -82,6 +83,10 @@ import { useMessageStore } from "./store/message";
 import { useErrorStore } from "./store/error";
 import { useConfirmationStore } from "./store/confirm";
 import CustomLayout from "./view/main/CustomLayout.vue";
+import MobileLayout from "./view/main/MobileLayout.vue";
+
+const urlParams = new URL(window.location.toString()).searchParams;
+const isMobile = urlParams.has("mobile");
 
 const appSettings = useAppSettings();
 const store = useStore();

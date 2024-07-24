@@ -1,5 +1,5 @@
 <template>
-  <div class="full column record-view">
+  <div class="full column record-view" :class="{ limited: showTopControl }">
     <div v-show="showTopControl" class="row control">
       <button :disabled="!operational" data-hotkey="ArrowLeft" @click="goBegin">
         <Icon :icon="IconType.FIRST" />
@@ -65,14 +65,14 @@
       </div>
     </div>
     <div v-if="showBottomControl" class="row wrap options">
-      <div class="option">
+      <div v-if="elapsedTimeToggleLabel" class="option">
         <ToggleButton
           :label="elapsedTimeToggleLabel"
           :value="showElapsedTime"
           @change="(enabled: boolean) => emit('toggleShowElapsedTime', enabled)"
         />
       </div>
-      <div class="option">
+      <div v-if="commentToggleLabel" class="option">
         <ToggleButton
           :label="commentToggleLabel"
           :value="showComment"
@@ -109,11 +109,13 @@ const props = defineProps({
   },
   elapsedTimeToggleLabel: {
     type: String,
-    required: true,
+    required: false,
+    default: undefined,
   },
   commentToggleLabel: {
     type: String,
-    required: true,
+    required: false,
+    default: undefined,
   },
   opacity: {
     type: Number,
@@ -231,8 +233,10 @@ onUpdated(() => {
 
 <style scoped>
 .record-view {
-  max-width: 600px;
   user-select: none;
+}
+.record-view.limited {
+  max-width: 600px;
 }
 .control {
   width: 100%;

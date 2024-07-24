@@ -12,14 +12,14 @@
         :show-top-control="showTopControl"
         :show-bottom-control="showBottomControl"
         :show-branches="showBranches"
-        @go-begin="goBegin"
-        @go-back="goBack"
-        @go-forward="goForward"
-        @go-end="goEnd"
-        @select-move="selectMove"
-        @select-branch="selectBranch"
-        @swap-with-previous-branch="swapWithPreviousBranch"
-        @swap-with-next-branch="swapWithNextBranch"
+        @go-begin="store.changePly(0)"
+        @go-back="store.goBack()"
+        @go-forward="store.goForward()"
+        @go-end="store.changePly(Number.MAX_SAFE_INTEGER)"
+        @select-move="(ply) => store.changePly(ply)"
+        @select-branch="(index) => store.changeBranch(index)"
+        @swap-with-previous-branch="store.swapWithPreviousBranch()"
+        @swap-with-next-branch="store.swapWithNextBranch()"
         @toggle-show-elapsed-time="onToggleElapsedTime"
         @toggle-show-comment="onToggleComment"
       />
@@ -83,42 +83,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   uninstallHotKeyForMainWindow(root.value);
 });
-
-const goto = (ply: number) => {
-  store.changePly(ply);
-};
-
-const goBegin = () => {
-  goto(0);
-};
-
-const goBack = () => {
-  goto(store.record.current.ply - 1);
-};
-
-const goForward = () => {
-  goto(store.record.current.ply + 1);
-};
-
-const goEnd = () => {
-  goto(Number.MAX_SAFE_INTEGER);
-};
-
-const selectMove = (ply: number) => {
-  goto(ply);
-};
-
-const selectBranch = (index: number) => {
-  store.changeBranch(index);
-};
-
-const swapWithPreviousBranch = () => {
-  store.swapWithPreviousBranch();
-};
-
-const swapWithNextBranch = () => {
-  store.swapWithNextBranch();
-};
 
 const onToggleElapsedTime = (enabled: boolean) => {
   appSettings.updateAppSettings({

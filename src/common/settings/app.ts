@@ -2,6 +2,7 @@ import { Language, t } from "@/common/i18n";
 import { LogLevel, LogType } from "@/common/log";
 import { RecordFileFormat } from "@/common/file/record";
 import { defaultRecordFileNameTemplate } from "@/renderer/helpers/path";
+import { BoardLayoutType } from "./layout";
 
 export enum Thema {
   STANDARD = "standard",
@@ -133,6 +134,7 @@ export type AppSettings = {
   thema: Thema;
   backgroundImageType: BackgroundImageType;
   backgroundImageFileURL?: string;
+  boardLayoutType: BoardLayoutType;
   pieceImage: PieceImageType;
   kingPieceType: KingPieceType;
   pieceImageFileURL?: string;
@@ -215,6 +217,7 @@ export type AppSettingsUpdate = {
   thema?: Thema;
   backgroundImageType?: BackgroundImageType;
   backgroundImageFileURL?: string;
+  boardLayoutType?: BoardLayoutType;
   pieceImage?: PieceImageType;
   kingPieceType?: KingPieceType;
   pieceImageFileURL?: string;
@@ -322,6 +325,7 @@ export function defaultAppSettings(opt?: {
     language: Language.JA,
     thema: Thema.STANDARD,
     backgroundImageType: BackgroundImageType.NONE,
+    boardLayoutType: BoardLayoutType.STANDARD,
     pieceImage: PieceImageType.HITOMOJI,
     kingPieceType: KingPieceType.GYOKU_AND_OSHO,
     deletePieceImageMargin: false,

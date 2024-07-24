@@ -15,6 +15,7 @@
         :right-control-type="
           c.rightControlBox ? RightSideControlType.STANDARD : RightSideControlType.NONE
         "
+        :layout-type="c.layoutType"
       />
       <RecordPane
         v-else-if="c.type === 'Record'"

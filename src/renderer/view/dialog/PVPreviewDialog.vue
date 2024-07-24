@@ -2,7 +2,7 @@
   <div>
     <dialog ref="dialog">
       <BoardView
-        class="board"
+        class="board-view"
         :board-image-type="appSettings.boardImage"
         :piece-stand-image-type="appSettings.pieceStandImage"
         :piece-image-url-template="getPieceImageURLTemplate(appSettings)"
@@ -284,7 +284,7 @@ const insertToComment = () => {
 </script>
 
 <style scoped>
-.board {
+.board-view {
   margin-left: auto;
   margin-right: auto;
 }

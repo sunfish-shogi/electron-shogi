@@ -570,6 +570,14 @@ export class RecordManager {
     this.applyPosition(position);
   }
 
+  goForward(): void {
+    this._record.goForward();
+  }
+
+  goBack(): void {
+    this._record.goBack();
+  }
+
   changePly(ply: number): void {
     this._record.goto(ply);
   }

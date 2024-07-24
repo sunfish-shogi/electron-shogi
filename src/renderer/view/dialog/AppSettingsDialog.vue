@@ -91,6 +91,24 @@
               @select="(url: string) => (backgroundImageFileURL = url)"
             />
           </div>
+          <!-- 盤レイアウト -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.boardLayout }}</div>
+            <HorizontalSelector
+              class="selector"
+              :value="boardLayoutType"
+              :items="[
+                { label: t.standard, value: BoardLayoutType.STANDARD },
+                { label: t.compact, value: BoardLayoutType.COMPACT },
+                { label: t.portrait, value: BoardLayoutType.PORTRAIT },
+              ]"
+              @change="
+                (value: string) => {
+                  boardLayoutType = value as BoardLayoutType;
+                }
+              "
+            />
+          </div>
           <!-- 駒画像 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.piece }}</div>
@@ -778,6 +796,7 @@ import { VersionStatus } from "@/background/version/types";
 import { fileNameTemplateWikiPageURL } from "@/common/links/github";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
+import { BoardLayoutType } from "@/common/settings/layout";
 
 enum PieceImage {
   HITOMOJI = "hitomoji",
@@ -852,6 +871,7 @@ const language = ref(appSettings.language);
 const thema = ref(appSettings.thema);
 const backgroundImageType = ref(appSettings.backgroundImageType);
 const backgroundImageSelector = ref();
+const boardLayoutType = ref(appSettings.boardLayoutType);
 const pieceImage = ref(toPieceImage(appSettings));
 const deletePieceImageMargin = ref(appSettings.deletePieceImageMargin);
 const boardImage = ref(appSettings.boardImage);
@@ -917,6 +937,7 @@ const saveAndClose = async () => {
       thema: thema.value,
       backgroundImageType: backgroundImageType.value,
       ...pieceImageToSettings(pieceImage.value),
+      boardLayoutType: boardLayoutType.value,
       boardImage: boardImage.value,
       pieceImageFileURL: pieceImageFileURL.value,
       croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,

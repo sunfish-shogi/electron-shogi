@@ -74,13 +74,15 @@ const onCancel = () => {
 </script>
 
 <style scoped>
+.form-group > * {
+  width: 80vw;
+  max-width: 460px;
+}
 .message {
-  width: 460px;
   text-align: left;
   font-size: 0.8em;
 }
 textarea {
-  width: 460px;
   height: 60vh;
   min-height: 100px;
   resize: none;

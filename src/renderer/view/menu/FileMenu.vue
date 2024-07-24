@@ -13,28 +13,28 @@
             <Icon :icon="IconType.FILE" />
             <div class="label">{{ t.clear }}</div>
           </button>
-          <button :disabled="!states.open" @click="onOpen">
+          <button v-if="isNative()" :disabled="!states.open" @click="onOpen">
             <Icon :icon="IconType.OPEN" />
             <div class="label">{{ t.open }}</div>
           </button>
-          <button :disabled="!states.save" @click="onSave">
+          <button v-if="isNative()" :disabled="!states.save" @click="onSave">
             <Icon :icon="IconType.SAVE" />
             <div class="label">{{ t.saveOverwrite }}</div>
           </button>
-          <button :disabled="!states.saveAs" @click="onSaveAs">
+          <button v-if="isNative()" :disabled="!states.saveAs" @click="onSaveAs">
             <Icon :icon="IconType.SAVE_AS" />
             <div class="label">{{ t.saveAs }}</div>
           </button>
-          <button :disabled="!states.history" @click="onHistory">
+          <button v-if="isNative()" :disabled="!states.history" @click="onHistory">
             <Icon :icon="IconType.HISTORY" />
             <div class="label">{{ t.history }}</div>
           </button>
-          <button :disabled="!states.loadRemoteFile" @click="onLoadRemoteFile">
+          <button v-if="isNative()" :disabled="!states.loadRemoteFile" @click="onLoadRemoteFile">
             <Icon :icon="IconType.INTERNET" />
             <div class="label">{{ t.loadRecordFromWeb }}</div>
           </button>
         </div>
-        <div class="group">
+        <div v-if="isNative()" class="group">
           <button :disabled="!states.batchConversion" @click="onBatchConversion">
             <Icon :icon="IconType.BATCH" />
             <div class="label">{{ t.batchConversion }}</div>
@@ -91,7 +91,7 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
-import api from "@/renderer/ipc/api";
+import api, { isNative } from "@/renderer/ipc/api";
 import { useAppSettings } from "@/renderer/store/settings";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 

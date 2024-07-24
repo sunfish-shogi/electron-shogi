@@ -178,6 +178,9 @@ export const vi: Texts = {
   snow: "Tuyết rơi",
   darkGreen: "Xanh lá đậm",
   dark: "Tối",
+  boardLayout: "盤レイアウト", // TODO: translate
+  compact: "コンパクト", // TODO: translate
+  portrait: "ポートレイト", // TODO: translate
   piece: "Quân",
   singleKanjiPiece: "Nhất tự",
   singleKanjiGothicPiece: "Nhất tự (Gothic)",

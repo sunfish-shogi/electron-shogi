@@ -1,6 +1,7 @@
 <template>
   <div>
     <BoardView
+      :layout-type="layoutType || appSettings.boardLayoutType"
       :board-image-type="appSettings.boardImage"
       :piece-stand-image-type="appSettings.pieceStandImage"
       :board-label-type="appSettings.boardLabelType"
@@ -61,11 +62,17 @@ import {
   LeftSideControlType,
   getPieceImageURLTemplate,
 } from "@/common/settings/app";
+import { BoardLayoutType } from "@/common/settings/layout";
 
 defineProps({
   maxSize: {
     type: RectSize,
     required: true,
+  },
+  layoutType: {
+    type: String as PropType<BoardLayoutType>,
+    required: false,
+    default: undefined,
   },
   leftControlType: {
     type: String as PropType<LeftSideControlType>,

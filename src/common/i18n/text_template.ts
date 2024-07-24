@@ -173,6 +173,9 @@ export type Texts = {
   snow: string;
   darkGreen: string;
   dark: string;
+  boardLayout: string;
+  compact: string;
+  portrait: string;
   piece: string;
   singleKanjiPiece: string;
   singleKanjiGothicPiece: string;

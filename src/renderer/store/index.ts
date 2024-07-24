@@ -956,6 +956,18 @@ class Store {
     }
   }
 
+  goForward(): void {
+    if (this.appState === AppState.NORMAL) {
+      this.recordManager.goForward();
+    }
+  }
+
+  goBack(): void {
+    if (this.appState === AppState.NORMAL) {
+      this.recordManager.goBack();
+    }
+  }
+
   changePly(ply: number): void {
     if (this.appState === AppState.NORMAL) {
       this.recordManager.changePly(ply);

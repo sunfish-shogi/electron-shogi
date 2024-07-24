@@ -249,8 +249,6 @@ table.list td {
   height: 100%;
   white-space: nowrap;
   overflow: hidden;
-}
-table.list td:not(:first-child) {
   padding-left: 4px;
 }
 table.list td.time {

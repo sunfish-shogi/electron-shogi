@@ -95,7 +95,7 @@
         <div class="form-item center">
           <HorizontalSelector
             :items="[
-              { label: t.separately, value: DestinationType.DIRECTORY },
+              { label: t.separate, value: DestinationType.DIRECTORY },
               { label: t.merge, value: DestinationType.SINGLE_FILE },
             ]"
             :value="destinationType"
@@ -348,10 +348,10 @@ const convert = async () => {
           type: "list",
           items: [
             {
-              text: t.succeeded,
+              text: t.success,
               children: [
-                t.totalNumber(result.succeededTotal),
-                ...Object.entries(result.succeeded).map(
+                t.totalNumber(result.successTotal),
+                ...Object.entries(result.success).map(
                   ([key, value]) => `${key}: ${t.number(value)}`,
                 ),
               ],

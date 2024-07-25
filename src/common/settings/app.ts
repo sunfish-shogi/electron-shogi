@@ -456,13 +456,13 @@ export function validateAppSettings(settings: AppSettings): Error | undefined {
     return new Error(t.pieceStandImageFileNotSelected);
   }
   if (settings.pieceVolume < 0 || settings.pieceVolume > 100) {
-    return new Error(t.pieceVolumeMustBe0To100Percent);
+    return new Error(t.pieceSoundVolumeMustBe0To100Percent);
   }
   if (settings.clockVolume < 0 || settings.clockVolume > 100) {
-    return new Error(t.clockVolumeMustBe0To100Percent);
+    return new Error(t.clockSoundVolumeMustBe0To100Percent);
   }
   if (settings.clockPitch < 220 || settings.clockPitch > 880) {
-    return new Error(t.clockPitchMustBe220To880Hz);
+    return new Error(t.clockSoundPitchMustBe220To880Hz);
   }
   if (settings.engineTimeoutSeconds < 1 || settings.engineTimeoutSeconds > 300) {
     return new Error(t.engineTimeoutMustBe1To300Seconds);

@@ -15,10 +15,10 @@
       </div>
       <div class="form-group warning">
         <div class="note">
-          {{ t.inAdminModeYouShouldInvokeCommandsManuallyAtPrompt }}
+          {{ t.inAdminModeManuallyInvokeCommandsAtPrompt }}
         </div>
         <div class="note">
-          {{ t.setoptionAndPrecedingCommandsWillBeSentAutomatically }}
+          {{ t.setoptionAndPrecedingCommandsAreSentAutomatically }}
         </div>
       </div>
       <div class="main-buttons">

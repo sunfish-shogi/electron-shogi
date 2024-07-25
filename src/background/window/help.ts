@@ -7,7 +7,7 @@ import {
   websiteURL,
 } from "@/common/links/github";
 
-export function openWebSite(): void {
+export function openWebsite(): void {
   shell.openExternal(websiteURL);
 }
 

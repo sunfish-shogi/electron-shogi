@@ -4,7 +4,7 @@
       <div class="title">{{ t.connectToCSAServer }}({{ t.adminMode }})</div>
       <div class="form-group">
         <div class="form-item">
-          <div class="form-item-label-wide">{{ t.hostToConnect }}</div>
+          <div class="form-item-label-wide">{{ t.host }}</div>
           <input ref="host" class="long-text" list="csa-server-host" type="text" />
           <datalist id="csa-server-host">
             <option value="gserver.computer-shogi.org"></option>
@@ -37,7 +37,7 @@
         <div class="form-item">
           <div class="form-item-label-wide"></div>
           <ToggleButton
-            :label="t.showPassword"
+            :label="t.revealPassword"
             :value="false"
             @change="onTogglePasswordVisibility"
           />
@@ -45,7 +45,7 @@
       </div>
       <div class="form-group warning">
         <div class="note">
-          {{ t.inAdminModeYouShouldInvokeCommandsManuallyAtPrompt }}
+          {{ t.inAdminModeManuallyInvokeCommandsAtPrompt }}
         </div>
         <div class="note">
           {{ t.serverMustSupportShogiServerX1ModeLogIn }}

@@ -45,8 +45,8 @@ export async function convertRecordFiles(
 ): Promise<BatchConversionResult> {
   const appSettings = await loadAppSettings();
   const result: BatchConversionResult = {
-    succeeded: {},
-    succeededTotal: 0,
+    success: {},
+    successTotal: 0,
     failed: {},
     failedTotal: 0,
     skipped: {},
@@ -77,8 +77,8 @@ export async function convertRecordFiles(
         throw record;
       }
       if (await writer.write(record, source)) {
-        result.succeededTotal++;
-        result.succeeded[sourceFormat] = (result.succeeded[sourceFormat] || 0) + 1;
+        result.successTotal++;
+        result.success[sourceFormat] = (result.success[sourceFormat] || 0) + 1;
       } else {
         result.skippedTotal++;
         result.skipped[sourceFormat] = (result.skipped[sourceFormat] || 0) + 1;
@@ -136,7 +136,7 @@ class DirectoryWriter {
       csa: { v3: this.appSettings.useCSAV3 },
     });
     await fs.writeFile(destination, exportResult.data);
-    getAppLogger().debug(`batch conversion: succeeded: ${source} -> ${destination}`);
+    getAppLogger().debug(`batch conversion: success: ${source} -> ${destination}`);
     return true;
   }
 
@@ -158,7 +158,7 @@ class SingleFileWriter {
 
   async write(record: ImmutableRecord, source: string): Promise<boolean> {
     await this.writeUSI(record);
-    getAppLogger().debug(`batch conversion: succeeded: ${source}`);
+    getAppLogger().debug(`batch conversion: success: ${source}`);
     return true;
   }
 

@@ -15,7 +15,7 @@ import { getTempPathForTesting } from "@/background/proc/env";
 const tmpdir = path.join(getTempPathForTesting(), "conversion");
 
 describe("conversion", () => {
-  it("separately", async () => {
+  it("separate", async () => {
     const testCases = [
       {
         sourceFormats: [
@@ -31,8 +31,8 @@ describe("conversion", () => {
         createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         expectedReport: {
-          succeededTotal: 8,
-          succeeded: {
+          successTotal: 8,
+          success: {
             ".kif": 4,
             ".kifu": 1,
             ".ki2": 1,
@@ -69,8 +69,8 @@ describe("conversion", () => {
         createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         expectedReport: {
-          succeededTotal: 5,
-          succeeded: {
+          successTotal: 5,
+          success: {
             ".kif": 1,
             ".kifu": 1,
             ".ki2": 1,
@@ -104,8 +104,8 @@ describe("conversion", () => {
         createSubdirectories: false,
         fileNameConflictAction: FileNameConflictAction.NUMBER_SUFFIX,
         expectedReport: {
-          succeededTotal: 8,
-          succeeded: {
+          successTotal: 8,
+          success: {
             ".kif": 4,
             ".kifu": 1,
             ".ki2": 1,
@@ -143,8 +143,8 @@ describe("conversion", () => {
         createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         expectedReport: {
-          succeededTotal: 5,
-          succeeded: {
+          successTotal: 5,
+          success: {
             ".kif": 1,
             ".kifu": 1,
             ".ki2": 1,
@@ -172,8 +172,8 @@ describe("conversion", () => {
         createSubdirectories: true,
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         expectedReport: {
-          succeededTotal: 1,
-          succeeded: { ".csa": 1 },
+          successTotal: 1,
+          success: { ".csa": 1 },
           failedTotal: 0,
           failed: {},
           skippedTotal: 0,
@@ -190,8 +190,8 @@ describe("conversion", () => {
         fileNameConflictAction: FileNameConflictAction.OVERWRITE,
         repeat: 2,
         expectedReport: {
-          succeededTotal: 1,
-          succeeded: { ".ki2u": 1 },
+          successTotal: 1,
+          success: { ".ki2u": 1 },
           failedTotal: 0,
           failed: {},
           skippedTotal: 0,
@@ -208,8 +208,8 @@ describe("conversion", () => {
         fileNameConflictAction: FileNameConflictAction.NUMBER_SUFFIX,
         repeat: 2,
         expectedReport: {
-          succeededTotal: 1,
-          succeeded: { ".ki2u": 1 },
+          successTotal: 1,
+          success: { ".ki2u": 1 },
           failedTotal: 0,
           failed: {},
           skippedTotal: 0,
@@ -227,16 +227,16 @@ describe("conversion", () => {
         repeat: 1,
         expectedReport: [
           {
-            succeededTotal: 1,
-            succeeded: { ".ki2u": 1 },
+            successTotal: 1,
+            success: { ".ki2u": 1 },
             failedTotal: 0,
             failed: {},
             skippedTotal: 0,
             skipped: {},
           },
           {
-            succeededTotal: 0,
-            succeeded: {},
+            successTotal: 0,
+            success: {},
             failedTotal: 0,
             failed: {},
             skippedTotal: 1,
@@ -356,8 +356,8 @@ describe("conversion", () => {
         singleFileDestination: destinationFullPath,
       });
       expect(result).toStrictEqual({
-        succeededTotal: 8,
-        succeeded: {
+        successTotal: 8,
+        success: {
           ".kif": 4,
           ".kifu": 1,
           ".ki2": 1,

@@ -45,7 +45,7 @@
           </button>
           <button @click="onOpenAutoSaveDirectory">
             <Icon :icon="IconType.OPEN_FOLDER" />
-            <div class="label">{{ t.openAutoSavingDirectory }}</div>
+            <div class="label">{{ t.openAutoSaveDirectory }}</div>
           </button>
         </div>
         <div class="group">

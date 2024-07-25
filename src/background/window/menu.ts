@@ -18,7 +18,7 @@ import {
 } from "@/background/window/ipc";
 import { MenuEvent } from "@/common/control/menu";
 import { AppState, ResearchState } from "@/common/control/state";
-import { openHowToUse, openLatestReleasePage, openStableReleasePage, openWebSite } from "./help";
+import { openHowToUse, openLatestReleasePage, openStableReleasePage, openWebsite } from "./help";
 import { t } from "@/common/i18n";
 import { InitialPositionSFEN } from "tsshogi";
 import { getAppPath } from "@/background/proc/env";
@@ -85,14 +85,14 @@ function createMenuTemplate(window: BrowserWindow) {
         { type: "separator" },
         menuItem(t.batchConversion, MenuEvent.BATCH_CONVERSION, [AppState.NORMAL]),
         menuItem(
-          t.exportPositionImage,
+          t.exportPositionDiagram,
           MenuEvent.EXPORT_POSITION_IMAGE,
           [AppState.NORMAL],
           "CmdOrCtrl+Shift+E",
         ),
         { type: "separator" },
         {
-          label: t.openAutoSavingDirectory,
+          label: t.openAutoSaveDirectory,
           click: openAutoSaveDirectory,
         },
         { type: "separator" },
@@ -122,7 +122,7 @@ function createMenuTemplate(window: BrowserWindow) {
         ),
         { type: "separator" },
         {
-          label: t.appendSpecialMove,
+          label: t.addSpecialMove,
           submenu: [
             menuItem(t.interrupt, MenuEvent.INSERT_INTERRUPT, [AppState.NORMAL]),
             menuItem(t.resign, MenuEvent.INSERT_RESIGN, [AppState.NORMAL]),
@@ -331,7 +331,7 @@ function createMenuTemplate(window: BrowserWindow) {
           accelerator: "CmdOrCtrl+0",
         },
         {
-          label: t.largerFontSize,
+          label: t.increaseFontSize,
           click: () => {
             const level = window.webContents.getZoomLevel() + 1;
             window.webContents.setZoomLevel(level);
@@ -342,7 +342,7 @@ function createMenuTemplate(window: BrowserWindow) {
           accelerator: "CmdOrCtrl+Plus",
         },
         {
-          label: t.smallerFontSize,
+          label: t.decreaseFontSize,
           click: () => {
             const level = window.webContents.getZoomLevel() - 1;
             window.webContents.setZoomLevel(level);
@@ -495,11 +495,11 @@ function createMenuTemplate(window: BrowserWindow) {
       label: t.help,
       submenu: [
         {
-          label: t.openWebSite,
-          click: openWebSite,
+          label: t.openWebsite,
+          click: openWebsite,
         },
         {
-          label: t.howToUse,
+          label: t.openUserGuide,
           click: openHowToUse,
         },
         {

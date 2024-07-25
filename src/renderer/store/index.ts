@@ -101,7 +101,7 @@ function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] 
           ],
         },
         {
-          text: `${t.eloRatingDiff} (${t.drawsAreHalfWin})`,
+          text: `${t.eloRatingDiff} (${t.drawCountAsHalfWins})`,
           children: [
             `${statistics.ratingWithDraw.toFixed(2)}`,
             `95% CI: [${statistics.ratingWithDrawLower.toFixed(1)}, ${statistics.ratingWithDrawUpper.toFixed(1)}]`,

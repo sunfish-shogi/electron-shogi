@@ -48,7 +48,7 @@
         @click="onWin"
       >
         <Icon :icon="IconType.CALL" />
-        <span>{{ t.declareWinning }}</span>
+        <span>{{ t.declareWin }}</span>
       </button>
       <!-- 投了 -->
       <button

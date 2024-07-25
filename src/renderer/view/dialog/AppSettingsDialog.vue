@@ -134,7 +134,7 @@
             <div v-show="pieceImage === PieceImage.CUSTOM_IMAGE" class="form-item">
               <div class="form-item-label-wide"></div>
               <ToggleButton
-                :label="t.imageHasMarginsRemoveToDisplayLarger"
+                :label="t.imageHasMarginsRemoveForLargerDisplay"
                 :value="deletePieceImageMargin"
                 @change="(checked: boolean) => (deletePieceImageMargin = checked)"
               />
@@ -273,7 +273,7 @@
           <!-- 段・筋の表示 -->
           <div class="form-item">
             <div class="form-item-label-wide">
-              {{ t.displayFileAndRank }}
+              {{ t.showFileAndRank }}
             </div>
             <ToggleButton
               :value="displayBoardLabels"
@@ -283,7 +283,7 @@
           <!-- 左コントロールの表示 -->
           <div v-show="isNative()" class="form-item">
             <div class="form-item-label-wide">
-              {{ t.displayLeftControls }}
+              {{ t.showLeftControls }}
             </div>
             <ToggleButton
               :value="displayLeftSideControls"
@@ -293,7 +293,7 @@
           <!-- 右コントロールの表示 -->
           <div v-show="isNative()" class="form-item">
             <div class="form-item-label-wide">
-              {{ t.displayRightControls }}
+              {{ t.showRightControls }}
             </div>
             <ToggleButton
               :value="displayRightSideControls"
@@ -324,7 +324,7 @@
           <div class="section-title">{{ t.sounds }}</div>
           <!-- 駒音の大きさ -->
           <div class="form-item">
-            <div class="form-item-label-wide">{{ t.pieceLoudness }}</div>
+            <div class="form-item-label-wide">{{ t.pieceSoundVolume }}</div>
             <input
               ref="pieceVolume"
               :value="appSettings.pieceVolume"
@@ -336,7 +336,7 @@
           </div>
           <!-- 時計音の大きさ -->
           <div class="form-item">
-            <div class="form-item-label-wide">{{ t.clockLoudness }}</div>
+            <div class="form-item-label-wide">{{ t.clockSoundVolume }}</div>
             <input
               ref="clockVolume"
               :value="appSettings.clockVolume"
@@ -348,7 +348,7 @@
           </div>
           <!-- 時計音の高さ -->
           <div class="form-item">
-            <div class="form-item-label-wide">{{ t.clockPitch }}</div>
+            <div class="form-item-label-wide">{{ t.clockSoundPitch }}</div>
             <input
               ref="clockPitch"
               :value="appSettings.clockPitch"

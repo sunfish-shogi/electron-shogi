@@ -60,7 +60,7 @@
     "splitpanes": "^3.1.5",
     "tsshogi": "^1.0.0",
     "vue": "^3.4.34",
-    "yaml": "^2.3.4"
+    "yaml": "^2.5.0"
   },
   "devDependencies": {
     "@types/async-lock": "^1.4.0",

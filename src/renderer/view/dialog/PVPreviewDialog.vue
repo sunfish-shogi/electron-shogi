@@ -314,7 +314,7 @@ const insertToComment = () => {
   width: 100%;
   height: 19%;
   margin: 0px;
-  font-size: 100%;
+  font-size: 90%;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;

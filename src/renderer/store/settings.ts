@@ -26,6 +26,7 @@ import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
 import { Language } from "@/common/i18n";
 import { RecordFileFormat } from "@/common/file/record";
+import { BoardLayoutType } from "@/common/settings/layout";
 
 class AppSettingsStore {
   private settings = defaultAppSettings();
@@ -47,6 +48,9 @@ class AppSettingsStore {
   }
   get backgroundImageFileURL(): string | undefined {
     return this.settings.backgroundImageFileURL;
+  }
+  get boardLayoutType(): BoardLayoutType {
+    return this.settings.boardLayoutType;
   }
   get boardImage(): BoardImageType {
     return this.settings.boardImage;

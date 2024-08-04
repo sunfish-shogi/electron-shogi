@@ -1,115 +1,132 @@
 <template>
   <div>
-    <div class="frame" :style="layout.frame.style" @click="clickFrame()">
-      <div v-if="layout.board.textureImagePath" :style="layout.board.style">
-        <img class="full" :src="layout.board.textureImagePath" />
-      </div>
-      <div :style="layout.board.style">
-        <img class="full" :src="layout.board.gridImagePath" />
-      </div>
-      <div
-        class="player-name"
-        :class="{ active: position.color == 'black' }"
-        :style="layout.blackPlayerName.style"
-      >
-        <span class="player-name-text">☗{{ blackPlayerName }}</span>
-      </div>
-      <div
-        v-if="layout.blackClock"
-        class="clock"
-        :class="blackPlayerTimeSeverity"
-        :style="layout.blackClock.style"
-      >
-        <span class="clock-text">{{ blackPlayerTimeText }}</span>
-      </div>
-      <div
-        class="player-name"
-        :class="{ active: position.color == 'white' }"
-        :style="layout.whitePlayerName.style"
-      >
-        <span class="player-name-text">☖{{ whitePlayerName }}</span>
-      </div>
-      <div
-        v-if="layout.whiteClock"
-        class="clock"
-        :class="whitePlayerTimeSeverity"
-        :style="layout.whiteClock.style"
-      >
-        <span class="clock-text">{{ whitePlayerTimeText }}</span>
-      </div>
-      <div v-for="square in layout.square" :key="square.id" :style="square.backgroundStyle"></div>
-      <div v-for="piece in layout.piece" :key="piece.id" :style="piece.style">
-        <img class="piece-image" :src="piece.imagePath" />
-      </div>
-      <div v-for="label in layout.labels" :key="label.id" :style="label.style">
-        {{ label.character }}
-      </div>
-      <div
-        v-for="square in layout.square"
-        :key="square.id"
-        :style="square.style"
-        @click.stop.prevent="clickSquare(square.file, square.rank)"
-        @contextmenu.stop.prevent="clickSquareR(square.file, square.rank)"
-      ></div>
-      <div :style="layout.blackHand.backgroundStyle">
-        <img
-          v-if="layout.blackHand.textureImagePath"
-          class="full"
-          :src="layout.blackHand.textureImagePath"
-        />
-      </div>
-      <div class="hand" :style="layout.blackHand.style">
+    <div class="frame" :style="main.frame.style" @click="clickFrame()">
+      <!-- 盤面 -->
+      <div class="board" :style="main.boardStyle">
+        <div v-if="board.background.textureImagePath" :style="board.background.style">
+          <img class="full" :src="board.background.textureImagePath" />
+        </div>
+        <div :style="board.background.style">
+          <img class="full" :src="board.background.gridImagePath" />
+        </div>
+        <div v-for="square in board.squares" :key="square.id" :style="square.backgroundStyle"></div>
+        <div v-for="piece in board.pieces" :key="piece.id" :style="piece.style">
+          <img class="piece-image" :src="piece.imagePath" />
+        </div>
+        <div v-for="label in board.labels" :key="label.id" :style="label.style">
+          {{ label.character }}
+        </div>
         <div
-          v-for="pointer in layout.blackHand.pointers"
+          v-for="square in board.squares"
+          :key="square.id"
+          :style="square.style"
+          @click.stop.prevent="clickSquare(square.file, square.rank)"
+          @contextmenu.stop.prevent="clickSquareR(square.file, square.rank)"
+        ></div>
+        <div v-if="board.promotion" class="promotion-selector" :style="board.promotion.style">
+          <div class="select-button promote" @click.stop.prevent="clickPromote()">
+            <img class="piece-image" :src="board.promotion.promoteImagePath" draggable="false" />
+          </div>
+          <div class="select-button not-promote" @click.stop.prevent="clickNotPromote()">
+            <img class="piece-image" :src="board.promotion.notPromoteImagePath" draggable="false" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 先手の駒台 -->
+      <div class="hand" :style="main.blackHandStyle">
+        <div :style="blackHand.backgroundStyle">
+          <img v-if="blackHand.textureImagePath" class="full" :src="blackHand.textureImagePath" />
+        </div>
+        <div
+          v-for="pointer in blackHand.pointers"
           :key="pointer.id"
           :style="pointer.backgroundStyle"
         ></div>
-        <div v-for="piece in layout.blackHand.pieces" :key="piece.id" :style="piece.style">
+        <div v-for="piece in blackHand.pieces" :key="piece.id" :style="piece.style">
           <img class="piece-image" :src="piece.imagePath" />
         </div>
+        <div v-for="number in blackHand.numbers" :key="number.id" :style="number.style">
+          {{ number.character }}
+        </div>
         <div
-          v-for="pointer in layout.blackHand.pointers"
+          v-for="pointer in blackHand.pointers"
           :key="pointer.id"
           :style="pointer.style"
           @click.stop.prevent="clickHand(Color.BLACK, pointer.type)"
         ></div>
       </div>
-      <div :style="layout.whiteHand.backgroundStyle">
-        <img
-          v-if="layout.whiteHand.textureImagePath"
-          class="full"
-          :src="layout.whiteHand.textureImagePath"
-        />
-      </div>
-      <div class="hand" :style="layout.whiteHand.style">
+
+      <!-- 後手の駒台 -->
+      <div class="hand" :style="main.whiteHandStyle">
+        <div :style="whiteHand.backgroundStyle">
+          <img v-if="whiteHand.textureImagePath" class="full" :src="whiteHand.textureImagePath" />
+        </div>
         <div
-          v-for="pointer in layout.whiteHand.pointers"
+          v-for="pointer in whiteHand.pointers"
           :key="pointer.id"
           :style="pointer.backgroundStyle"
         ></div>
-        <div v-for="piece in layout.whiteHand.pieces" :key="piece.id" :style="piece.style">
+        <div v-for="piece in whiteHand.pieces" :key="piece.id" :style="piece.style">
           <img class="piece-image" :src="piece.imagePath" />
         </div>
+        <div v-for="number in whiteHand.numbers" :key="number.id" :style="number.style">
+          {{ number.character }}
+        </div>
         <div
-          v-for="pointer in layout.whiteHand.pointers"
+          v-for="pointer in whiteHand.pointers"
           :key="pointer.id"
           :style="pointer.style"
           @click.stop.prevent="clickHand(Color.WHITE, pointer.type)"
         ></div>
       </div>
-      <div v-if="layout.promotion" class="promotion-selector" :style="layout.promotion.style">
-        <div class="select-button promote" @click.stop.prevent="clickPromote()">
-          <img class="piece-image" :src="layout.promotion.promoteImagePath" draggable="false" />
-        </div>
-        <div class="select-button not-promote" @click.stop.prevent="clickNotPromote()">
-          <img class="piece-image" :src="layout.promotion.notPromoteImagePath" draggable="false" />
-        </div>
+
+      <!-- 先手の対局者名 -->
+      <div
+        class="player-name"
+        :class="{ active: position.color == 'black' }"
+        :style="main.blackPlayerName.style"
+      >
+        <span class="player-name-text">☗{{ blackPlayerName }}</span>
       </div>
-      <div class="turn" :style="layout.turn.style">{{ nextMoveLabel }}</div>
-      <div :style="layout.control.left.style">
+
+      <!-- 先手の持ち時間 -->
+      <div
+        v-if="main.blackClock"
+        class="clock"
+        :class="blackPlayerTimeSeverity"
+        :style="main.blackClock.style"
+      >
+        <span class="clock-text">{{ blackPlayerTimeText }}</span>
+      </div>
+
+      <!-- 後手の対局者名 -->
+      <div
+        class="player-name"
+        :class="{ active: position.color == 'white' }"
+        :style="main.whitePlayerName.style"
+      >
+        <span class="player-name-text">☖{{ whitePlayerName }}</span>
+      </div>
+
+      <!-- 後手の持ち時間 -->
+      <div
+        v-if="main.whiteClock"
+        class="clock"
+        :class="whitePlayerTimeSeverity"
+        :style="main.whiteClock.style"
+      >
+        <span class="clock-text">{{ whitePlayerTimeText }}</span>
+      </div>
+
+      <!-- 手番 -->
+      <div class="turn" :style="main.turn.style">{{ nextMoveLabel }}</div>
+
+      <!-- コントロールパネル -->
+      <div v-if="main.control" :style="main.control.left.style">
         <slot name="left-control"></slot>
       </div>
-      <div :style="layout.control.right.style">
+      <div v-if="main.control" :style="main.control.right.style">
         <slot name="right-control"></slot>
       </div>
     </div>
@@ -135,7 +152,17 @@ import {
   PieceStandImageType,
 } from "@/common/settings/app";
 import { RectSize } from "@/common/assets/geometry";
-import LayoutBuilder from "./BoardLayout";
+import { newConfig } from "./board/config";
+import { StandardLayoutBuilder } from "./board/standard";
+import { PortraitLayoutBuilder } from "./board/portrait";
+import { BoardLayoutBuilder } from "./board/board";
+import {
+  CompactHandLayoutBuilder,
+  HandLayoutBuilder,
+  PortraitHandLayoutBuilder,
+} from "./board/hand";
+import { BoardLayoutType } from "@/common/settings/layout";
+import { CompactLayoutBuilder } from "./board/compact";
 
 type State = {
   pointer: Square | Piece | null;
@@ -143,6 +170,11 @@ type State = {
 };
 
 const props = defineProps({
+  layoutType: {
+    type: String as PropType<BoardLayoutType>,
+    required: false,
+    default: BoardLayoutType.STANDARD,
+  },
   boardImageType: {
     type: String as PropType<BoardImageType>,
     required: true,
@@ -374,36 +406,78 @@ const clickNotPromote = () => {
   }
 };
 
-const layoutBuilder = computed(() => {
-  const builder = new LayoutBuilder({
+const config = computed(() => {
+  return newConfig({
     boardImageType: props.boardImageType,
     customBoardImageURL: props.customBoardImageUrl,
     pieceStandImageType: props.pieceStandImageType,
     customPieceStandImageURL: props.customPieceStandImageUrl,
     pieceImageURLTemplate: props.pieceImageUrlTemplate,
     kingPieceType: props.kingPieceType,
+    boardImageOpacity: props.boardImageOpacity,
+    pieceStandImageOpacity: props.pieceStandImageOpacity,
+    boardLabelType: props.boardLabelType,
+    upperSizeLimit: props.maxSize,
+    flip: props.flip,
+    hideClock: props.hideClock,
   });
-  builder.preload();
-  return builder;
 });
 
-const layout = computed(() => {
-  const layout = layoutBuilder.value.build(
-    {
-      boardImageOpacity: props.boardImageOpacity,
-      pieceStandImageOpacity: props.pieceStandImageOpacity,
-      boardLabelType: props.boardLabelType,
-      upperSizeLimit: props.maxSize,
-      flip: props.flip,
-      hideClock: props.hideClock,
-    },
-    props.position,
+const layoutBuilder = computed(() => {
+  switch (props.layoutType) {
+    default:
+      return new StandardLayoutBuilder(config.value);
+    case BoardLayoutType.COMPACT:
+      return new CompactLayoutBuilder(config.value);
+    case BoardLayoutType.PORTRAIT:
+      return new PortraitLayoutBuilder(config.value);
+  }
+});
+
+let lastFrameSize: RectSize | null = null;
+const main = computed(() => {
+  const main = layoutBuilder.value.build(props.position);
+  if (!lastFrameSize || !lastFrameSize.equals(main.frame.size)) {
+    emit("resize", main.frame.size);
+    lastFrameSize = main.frame.size;
+  }
+  return main;
+});
+
+const board = computed(() => {
+  return new BoardLayoutBuilder(config.value, main.value.ratio).build(
+    props.position.board,
     props.lastMove,
     state.pointer,
     state.reservedMove,
   );
-  emit("resize", layout.frame.size);
-  return layout;
+});
+
+const handLayoutBuilder = computed(() => {
+  switch (props.layoutType) {
+    default:
+      return new HandLayoutBuilder(config.value, main.value.ratio);
+    case BoardLayoutType.COMPACT:
+      return new CompactHandLayoutBuilder(config.value, main.value.ratio);
+    case BoardLayoutType.PORTRAIT:
+      return new PortraitHandLayoutBuilder(config.value, main.value.ratio);
+  }
+});
+
+const blackHand = computed(() => {
+  return handLayoutBuilder.value.build(
+    props.position.hand(Color.BLACK),
+    Color.BLACK,
+    state.pointer,
+  );
+});
+
+const whiteHand = computed(() => {
+  return handLayoutBuilder.value.build(
+    props.position.hand(Color.WHITE),
+    Color.WHITE,
+    state.pointer,
+  );
 });
 
 const formatTime = (time?: number, byoyomi?: number): string => {
@@ -452,6 +526,9 @@ const whitePlayerTimeSeverity = computed(() => {
   position: relative;
 }
 .frame > * {
+  position: absolute;
+}
+.board > * {
   position: absolute;
 }
 .hand > * {

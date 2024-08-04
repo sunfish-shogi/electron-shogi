@@ -93,6 +93,8 @@ npm run electron:serve
 
 # Web App
 npm run serve
+# Standard: http://localhost:5173
+# Mobile  : http://localhost:5173/?mobile
 ```
 
 ### Release Build

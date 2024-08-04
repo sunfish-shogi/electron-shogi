@@ -175,6 +175,9 @@ export const zh_tw: Texts = {
   snow: "雪",
   darkGreen: "深綠",
   dark: "深色主題",
+  boardLayout: "盤レイアウト", // TODO: translate
+  compact: "コンパクト", // TODO: translate
+  portrait: "ポートレイト", // TODO: translate
   piece: "棋駒",
   singleKanjiPiece: "一文字駒",
   singleKanjiGothicPiece: "一文字駒（黑體）",

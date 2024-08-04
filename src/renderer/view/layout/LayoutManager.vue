@@ -136,6 +136,17 @@
                 @change="(value) => updateCustomProfileComponent(index, 'leftControlBox', value)"
               />
             </span>
+            <span>
+              <HorizontalSelector
+                :value="component.layoutType || BoardLayoutType.STANDARD"
+                :items="[
+                  { label: t.standard, value: BoardLayoutType.STANDARD },
+                  { label: t.compact, value: BoardLayoutType.COMPACT },
+                  { label: t.portrait, value: BoardLayoutType.PORTRAIT },
+                ]"
+                @change="(value) => updateCustomProfileComponent(index, 'layoutType', value)"
+              />
+            </span>
           </div>
           <div v-if="component.type === 'Record'">
             <span class="property">
@@ -292,6 +303,7 @@ import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import { inputEventToString, inputEventToNumber } from "@/renderer/helpers/form";
 import {
+  BoardLayoutType,
   deserializeLayoutProfile,
   EvaluationChartType,
   serializeLayoutProfile,

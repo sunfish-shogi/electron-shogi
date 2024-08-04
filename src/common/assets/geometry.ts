@@ -9,6 +9,9 @@ export class RectSize {
   reduce(size: RectSize): RectSize {
     return new RectSize(this.width - size.width, this.height - size.height);
   }
+  equals(size: RectSize): boolean {
+    return this.width === size.width && this.height === size.height;
+  }
 }
 
 export class Rect {

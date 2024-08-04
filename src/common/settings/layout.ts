@@ -8,10 +8,17 @@ type UIComponentCommon = {
   height: number;
 };
 
+export enum BoardLayoutType {
+  STANDARD = "standard",
+  COMPACT = "compact",
+  PORTRAIT = "portrait",
+}
+
 type Board = {
   type: "Board";
   rightControlBox?: boolean;
   leftControlBox?: boolean;
+  layoutType?: BoardLayoutType;
 };
 
 type Record = {

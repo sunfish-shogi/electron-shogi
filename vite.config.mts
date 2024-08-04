@@ -39,12 +39,14 @@ export default defineConfig({
         "docs",
         "plugins",
         "scripts",
+        "dist",
 
         // テストコード
         "src/tests",
 
         // 設定ファイル
-        "vite.config.ts",
+        "vite.config.mts",
+        "webpack.config.cjs",
         ".*.*",
         "**/*.d.ts",
         "**/*.vue",
@@ -56,6 +58,7 @@ export default defineConfig({
         "src/command/common/preload.ts",
 
         // IPC
+        "src/renderer/ipc/api.ts",
         "src/renderer/ipc/bridge.ts",
         "src/renderer/ipc/preload.ts",
         "src/renderer/ipc/web.ts",
@@ -64,6 +67,7 @@ export default defineConfig({
         // UI/Window
         "src/background/index.ts",
         "src/background/window/ipc.ts",
+        "src/background/window/main.ts",
         "src/background/window/menu.ts",
         "src/background/window/prompt.ts",
         "src/background/window/layout.ts",

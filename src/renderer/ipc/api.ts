@@ -260,3 +260,11 @@ export default api;
 export function isNative(): boolean {
   return !!getWindowObject().electronShogiAPI;
 }
+
+export function isMobileWebApp(): boolean {
+  if (isNative()) {
+    return false;
+  }
+  const urlParams = new URL(window.location.toString()).searchParams;
+  return urlParams.has("mobile");
+}

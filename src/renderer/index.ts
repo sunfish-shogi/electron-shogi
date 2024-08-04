@@ -5,7 +5,7 @@ import "./css/control.css";
 import "./css/dialog.css";
 import { createApp, watch } from "vue";
 import App from "@/renderer/App.vue";
-import api, { appInfo } from "@/renderer/ipc/api";
+import api, { appInfo, isMobileWebApp } from "@/renderer/ipc/api";
 import { setup as setupIPC } from "@/renderer/ipc/setup";
 import { useStore } from "@/renderer/store";
 import { Chart, registerables } from "chart.js";
@@ -21,6 +21,7 @@ import * as _ja from "dayjs/locale/ja";
 import * as _zh_tw from "dayjs/locale/zh-tw";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useErrorStore } from "@/renderer/store/error";
+import { exportKIF } from "tsshogi";
 
 api.log(LogLevel.INFO, `start renderer process: APP_VERSION=${appInfo.appVersion}`);
 
@@ -52,6 +53,27 @@ const store = useStore();
 watch([() => store.recordFilePath, () => store.isRecordFileUnsaved], ([path, unsaved]) => {
   updateTitle(path, unsaved);
 });
+
+if (isMobileWebApp()) {
+  // Web アプリの場合は Local Storage に棋譜を保存する。
+  const storageKey = "mobile:record";
+  const data = localStorage.getItem(storageKey);
+  if (data) {
+    store.pasteRecord(data);
+    store.changePly(Number.MAX_SAFE_INTEGER);
+  }
+  const saveRecord = () => {
+    const data = exportKIF(store.record);
+    if (data) {
+      localStorage.setItem(storageKey, data);
+    }
+  };
+  store.addEventListener("resetRecord", saveRecord);
+  store.addEventListener("changePosition", saveRecord);
+  store.addEventListener("updateCustomData", saveRecord);
+  store.addEventListener("updateFollowingMoves", saveRecord);
+  store.addEventListener("updateRecordTree", saveRecord);
+}
 
 Promise.allSettled([
   useAppSettings()

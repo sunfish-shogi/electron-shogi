@@ -1,7 +1,7 @@
 <template>
   <div class="root full" :class="[appSettings.thema, dialogStyle]" :style="style">
     <!-- Main Contents -->
-    <MobileLayout v-if="isMobile" />
+    <MobileLayout v-if="isMobileWebApp()" />
     <CustomLayout v-else-if="store.customLayout" :profile="store.customLayout" />
     <StandardLayout v-else class="full" />
 
@@ -84,9 +84,7 @@ import { useErrorStore } from "./store/error";
 import { useConfirmationStore } from "./store/confirm";
 import CustomLayout from "./view/main/CustomLayout.vue";
 import MobileLayout from "./view/main/MobileLayout.vue";
-
-const urlParams = new URL(window.location.toString()).searchParams;
-const isMobile = urlParams.has("mobile");
+import { isMobileWebApp } from "./ipc/api";
 
 const appSettings = useAppSettings();
 const store = useStore();

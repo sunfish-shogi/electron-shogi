@@ -34,7 +34,7 @@
     "electron:portable": "npm run electron:pack && node scripts/build.mjs portable",
     "electron:preview": "npm run electron:compile-all && electron .",
     "license": "node scripts/report-license.mjs",
-    "license:commit": "npm run license && git add . && git commit -m \"license\"",
+    "license:commit": "npm run license && git add . && git commit -m \"license\" || git diff",
     "docs": "ts-node scripts/build-docs-templates.ts",
     "release": "ts-node scripts/publish-release.ts && npm run docs && npm run build && npm run build:dev && git add . && git commit -m \"release\"",
     "release:patch": "npm run license:commit && npm version patch && npm run release",

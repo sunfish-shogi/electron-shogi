@@ -34,12 +34,19 @@ Chart.register(...registerables);
 
 setupIPC();
 
+const store = useStore();
+
+// ファイル名の変更を監視してタイトルを更新する。
 function updateTitle(path: string | undefined, unsaved: boolean) {
   if (!document) {
     return;
   }
   const appName = t.shogiHome;
   const appVersion = appInfo.appVersion;
+  if (isMobileWebApp()) {
+    document.title = `${appName} Version ${appVersion} for Mobile Web Browser`;
+    return;
+  }
   if (path || unsaved) {
     const unsavedMaker = unsaved ? `${t.unsaved}: ` : "";
     const name = path ? path : t.newRecord;
@@ -48,16 +55,14 @@ function updateTitle(path: string | undefined, unsaved: boolean) {
     document.title = `${appName} Version ${appVersion}`;
   }
 }
-
-const store = useStore();
 watch([() => store.recordFilePath, () => store.isRecordFileUnsaved], ([path, unsaved]) => {
   updateTitle(path, unsaved);
 });
 
+// Web アプリの場合は Local Storage に棋譜を保存する。
 if (isMobileWebApp()) {
-  // Web アプリの場合は Local Storage に棋譜を保存する。
-  const storageKey = "mobile:record";
-  const data = localStorage.getItem(storageKey);
+  const mobileRecordStorageKey = "mobile:record";
+  const data = localStorage.getItem(mobileRecordStorageKey);
   if (data) {
     store.pasteRecord(data);
     store.changePly(Number.MAX_SAFE_INTEGER);
@@ -65,7 +70,7 @@ if (isMobileWebApp()) {
   const saveRecord = () => {
     const data = exportKIF(store.record);
     if (data) {
-      localStorage.setItem(storageKey, data);
+      localStorage.setItem(mobileRecordStorageKey, data);
     }
   };
   store.addEventListener("resetRecord", saveRecord);
@@ -76,11 +81,13 @@ if (isMobileWebApp()) {
 }
 
 Promise.allSettled([
+  // アプリ設定の読み込み
   useAppSettings()
     .loadAppSettings()
     .catch((e) => {
       useErrorStore().add(new Error("アプリ設定の読み込み中にエラーが発生しました: " + e));
     }),
+  // 起動時パラメータで指定された棋譜の読み込み
   api
     .fetchInitialRecordFileRequest()
     .then((request) => {
@@ -94,10 +101,14 @@ Promise.allSettled([
       useErrorStore().add(new Error("起動パラメーターの取得に失敗しました: " + e));
     }),
 ]).finally(() => {
+  // 言語設定の反映
   const language = useAppSettings().language;
   api.log(LogLevel.INFO, `set language: ${language}`);
   setLanguage(language);
+
+  // タイトルの更新
   updateTitle(store.recordFilePath, store.isRecordFileUnsaved);
+
   api.log(LogLevel.INFO, "mount app");
   createApp(App).mount("#app");
 });

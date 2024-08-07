@@ -58,3 +58,28 @@ export class Rect {
     return new Rect(this.x * m, this.y * m, this.width * m, this.height * m);
   }
 }
+
+export class Point {
+  constructor(
+    public x: number,
+    public y: number,
+  ) {}
+  add(point: Point): Point {
+    return new Point(this.x + point.x, this.y + point.y);
+  }
+  reduce(point: Point): Point {
+    return new Point(this.x - point.x, this.y - point.y);
+  }
+  distanceTo(point: Point): number {
+    return Math.sqrt((this.x - point.x) ** 2 + (this.y - point.y) ** 2);
+  }
+  angleTo(point: Point): number {
+    return Math.atan2(point.y - this.y, point.x - this.x);
+  }
+  multiply(m: number): Point {
+    return new Point(this.x * m, this.y * m);
+  }
+  equals(point: Point): boolean {
+    return this.x === point.x && this.y === point.y;
+  }
+}

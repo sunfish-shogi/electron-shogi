@@ -260,6 +260,7 @@ export const en: Texts = {
   swapEachTurnChange: "Swap Each Turn Change",
   alwaysSenteIsPositive: "Always Sente is Positive",
   signOfEvaluation: "Sign of Evaluation",
+  maxArrows: "Max Arrows",
   winRateCoefficient: "Win Rate Coefficient",
   monitor: "Monitor",
   hideTabView: "Hide",

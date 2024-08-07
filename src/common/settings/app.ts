@@ -130,7 +130,10 @@ export enum PositionImageFontWeight {
 }
 
 export type AppSettings = {
+  // Language
   language: Language;
+
+  // Appearance
   thema: Thema;
   backgroundImageType: BackgroundImageType;
   backgroundImageFileURL?: string;
@@ -152,17 +155,25 @@ export type AppSettings = {
   boardLabelType: BoardLabelType;
   leftSideControlType: LeftSideControlType;
   rightSideControlType: RightSideControlType;
+
+  // Sound
   pieceVolume: number;
   clockVolume: number;
   clockPitch: number;
   clockSoundTarget: ClockSoundTarget;
+
+  // Board View
   boardFlipping: boolean;
+
+  // Tab View
   tabPaneType: TabPaneType;
   tab: Tab;
   tab2: Tab;
   topPaneHeightPercentage: number;
   topPanePreviousHeightPercentage: number;
   bottomLeftPaneWidthPercentage: number;
+
+  // Record File
   defaultRecordFileFormat: RecordFileFormat;
   textDecodingRule: TextDecodingRule;
   returnCode: string;
@@ -171,20 +182,31 @@ export type AppSettings = {
   useCSAV3: boolean;
   enableUSIFileStartpos: boolean;
   enableUSIFileResign: boolean;
+
+  // Engine
   translateEngineOptionName: boolean;
   engineTimeoutSeconds: number;
+
+  // Evaluation
   evaluationViewFrom: EvaluationViewFrom;
+  maxArrowsPerEngine: number;
   coefficientInSigmoid: number;
   badMoveLevelThreshold1: number;
   badMoveLevelThreshold2: number;
   badMoveLevelThreshold3: number;
   badMoveLevelThreshold4: number;
+
+  // Record View
   showElapsedTimeInRecordView: boolean;
   showCommentInRecordView: boolean;
+
+  // Logging
   enableAppLog: boolean;
   enableUSILog: boolean;
   enableCSALog: boolean;
   logLevel: LogLevel;
+
+  // Position Image
   positionImageStyle: PositionImageStyle;
   positionImageSize: number;
   positionImageTypeface: PositionImageTypeface;
@@ -194,10 +216,14 @@ export type AppSettings = {
   positionImageCharacterY: number;
   positionImageFontScale: number;
   positionImageFontWeight: PositionImageFontWeight;
+
+  // File Path
   lastRecordFilePath: string;
   lastUSIEngineFilePath: string;
   lastImageExportFilePath: string;
   lastOtherFilePath: string;
+
+  // Record Info View
   emptyRecordInfoVisibility: boolean;
 };
 
@@ -257,6 +283,7 @@ export type AppSettingsUpdate = {
   translateEngineOptionName?: boolean;
   engineTimeoutSeconds?: number;
   evaluationViewFrom?: EvaluationViewFrom;
+  maxArrowsPerEngine?: number;
   coefficientInSigmoid?: number;
   badMoveLevelThreshold1?: number;
   badMoveLevelThreshold2?: number;
@@ -360,6 +387,7 @@ export function defaultAppSettings(opt?: {
     translateEngineOptionName: true,
     engineTimeoutSeconds: 10,
     evaluationViewFrom: EvaluationViewFrom.EACH,
+    maxArrowsPerEngine: 3,
     coefficientInSigmoid: 600,
     badMoveLevelThreshold1: 5,
     badMoveLevelThreshold2: 10,

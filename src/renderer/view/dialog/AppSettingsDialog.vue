@@ -591,6 +591,20 @@
               "
             />
           </div>
+          <!-- 矢印の表示本数 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">
+              {{ t.maxArrows }}
+            </div>
+            <input
+              ref="maxArrowsPerEngine"
+              :value="appSettings.maxArrowsPerEngine"
+              type="number"
+              max="10"
+              min="0"
+            />
+            <div class="form-item-small-label">({{ t.between(0, 10) }})</div>
+          </div>
           <!-- 勝率換算係数 -->
           <div class="form-item">
             <div class="form-item-label-wide">
@@ -901,6 +915,7 @@ const enableUSIFileResign = ref(appSettings.enableUSIFileResign);
 const translateEngineOptionName = ref(appSettings.translateEngineOptionName);
 const engineTimeoutSeconds = ref();
 const evaluationViewFrom = ref(appSettings.evaluationViewFrom);
+const maxArrowsPerEngine = ref();
 const coefficientInSigmoid = ref();
 const badMoveLevelThreshold1 = ref();
 const badMoveLevelThreshold2 = ref();
@@ -970,6 +985,7 @@ const saveAndClose = async () => {
       translateEngineOptionName: translateEngineOptionName.value,
       engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
       evaluationViewFrom: evaluationViewFrom.value,
+      maxArrowsPerEngine: readInputAsNumber(maxArrowsPerEngine.value),
       coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
       badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
       badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),

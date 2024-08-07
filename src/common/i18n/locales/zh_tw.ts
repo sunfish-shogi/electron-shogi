@@ -257,6 +257,7 @@ export const zh_tw: Texts = {
   swapEachTurnChange: "手番側有利時為正值",
   alwaysSenteIsPositive: "先手有利時為正值",
   signOfEvaluation: "評價值符號",
+  maxArrows: "矢印の表示数", // TODO: translate
   winRateCoefficient: "勝率換算係數",
   monitor: "引擎監視",
   hideTabView: "最小化",

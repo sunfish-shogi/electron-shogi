@@ -260,6 +260,7 @@ export const vi: Texts = {
   swapEachTurnChange: "Đổi mỗi lượt",
   alwaysSenteIsPositive: "Tiên luôn dương",
   signOfEvaluation: "Dấu giá trị đánh giá",
+  maxArrows: "矢印の表示数", // TODO: translate
   winRateCoefficient: "Hệ số tỷ lệ thắng",
   monitor: "Theo dõi",
   hideTabView: "Ẩn",

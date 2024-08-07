@@ -19,6 +19,7 @@ import {
   judgeJishogiDeclaration,
   JishogiDeclarationRule,
   countJishogiPoint,
+  Position,
 } from "tsshogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSettings } from "@/common/settings/game";
@@ -444,6 +445,54 @@ class Store {
 
   get usiMonitors(): USIPlayerMonitor[] {
     return this.usiMonitor.sessions;
+  }
+
+  get candidates(): Move[] {
+    const appSettings = useAppSettings();
+    const maxScoreDiff = 100;
+    const sfen = this.recordManager.record.position.sfen;
+    const candidates: Move[] = [];
+    const usiSet = new Set<string>();
+    for (const session of this.usiMonitor.sessions) {
+      let entryCount = 0;
+      let maxScore = -Infinity;
+      for (const iteration of session.latestIteration) {
+        if (entryCount >= appSettings.maxArrowsPerEngine) {
+          break;
+        }
+        if (iteration.multiPV && iteration.multiPV > appSettings.maxArrowsPerEngine) {
+          break;
+        }
+        if (!iteration.pv?.length) {
+          continue;
+        }
+        if (iteration.score && iteration.score < maxScore - maxScoreDiff) {
+          continue;
+        }
+        const usi = iteration.pv[0];
+        if (usiSet.has(usi)) {
+          continue;
+        }
+        if (iteration.position !== sfen) {
+          continue;
+        }
+        const pos = Position.newBySFEN(iteration.position);
+        if (!pos) {
+          continue;
+        }
+        const move = pos.createMoveByUSI(usi);
+        if (!move || !pos.doMove(move)) {
+          continue;
+        }
+        candidates.push(move);
+        usiSet.add(usi);
+        entryCount++;
+        if (iteration.score && iteration.score > maxScore) {
+          maxScore = iteration.score;
+        }
+      }
+    }
+    return candidates;
   }
 
   isPausedResearchEngine(sessionID: number): boolean {

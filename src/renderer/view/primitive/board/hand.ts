@@ -1,8 +1,17 @@
-import { Color, handPieceTypes, ImmutableHand, Piece, reverseColor, Square } from "tsshogi";
+import {
+  Color,
+  handPieceTypes,
+  ImmutableHand,
+  Piece,
+  PieceType,
+  reverseColor,
+  Square,
+} from "tsshogi";
 import { Config } from "./config";
 import { PieceStandImageType } from "@/common/settings/app";
 import { commonParams, compactHandParams, handParams, portraitHandParams } from "./params";
 import { Hand, HandNumber, HandPiece, HandPointer } from "./layout";
+import { Point } from "@/common/assets/geometry";
 
 const pieceStandBackgroundColorMap = {
   [PieceStandImageType.STANDARD]: "#8b4513",
@@ -20,6 +29,14 @@ export class HandLayoutBuilder {
     private config: Config,
     private ratio: number,
   ) {}
+
+  centerOfPieceType(_: ImmutableHand, color: Color, type: PieceType): Point {
+    const displayColor = this.config.flip ? reverseColor(color) : color;
+    const rule = handParams[displayColor][type];
+    const x = (rule.column + 0.5) * rule.width * (handParams.width / 2);
+    const y = (rule.row + 0.5) * (handParams.height / 4);
+    return new Point(x, y).multiply(this.ratio);
+  }
 
   build(hand: ImmutableHand, color: Color, pointer?: Square | Piece | null): Hand {
     const displayColor = this.config.flip ? reverseColor(color) : color;
@@ -99,6 +116,24 @@ export class CompactHandLayoutBuilder {
     private ratio: number,
   ) {}
 
+  centerOfPieceType(hand: ImmutableHand, color: Color, type: PieceType): Point {
+    const displayColor = this.config.flip ? reverseColor(color) : color;
+    let count = 0;
+    for (let i = handPieceTypes.length - 1; i >= 0; i -= 1) {
+      if (handPieceTypes[i] !== type) {
+        if (hand.count(handPieceTypes[i]) > 0) {
+          count++;
+        }
+        continue;
+      }
+      const index = displayColor === Color.BLACK ? count : handPieceTypes.length - count - 1;
+      const x = compactHandParams.squareWidth * 0.5;
+      const y = compactHandParams.squareHeight * (index + 0.5);
+      return new Point(x, y).multiply(this.ratio);
+    }
+    return new Point(0, 0);
+  }
+
   build(hand: ImmutableHand, color: Color, pointer?: Square | Piece | null): Hand {
     const displayColor = this.config.flip ? reverseColor(color) : color;
     const bgColor = pieceStandBackgroundColorMap[this.config.pieceStandImageType];
@@ -121,7 +156,7 @@ export class CompactHandLayoutBuilder {
         continue;
       }
       const index =
-        color === Color.BLACK ? pieces.length : handPieceTypes.length - pieces.length - 1;
+        displayColor === Color.BLACK ? pieces.length : handPieceTypes.length - pieces.length - 1;
       const id = type;
       const imagePath = this.config.pieceImages[displayColor][type];
       const top = compactHandParams.squareHeight * index * this.ratio;
@@ -187,6 +222,24 @@ export class PortraitHandLayoutBuilder {
     private ratio: number,
   ) {}
 
+  centerOfPieceType(hand: ImmutableHand, color: Color, type: PieceType): Point {
+    const displayColor = this.config.flip ? reverseColor(color) : color;
+    let count = 0;
+    for (let i = 0; i < handPieceTypes.length; i++) {
+      if (handPieceTypes[i] !== type) {
+        if (hand.count(handPieceTypes[i]) > 0) {
+          count++;
+        }
+        continue;
+      }
+      const index = displayColor === Color.BLACK ? count : handPieceTypes.length - count - 1;
+      const x = portraitHandParams.squareWidth * (index + 0.5);
+      const y = portraitHandParams.squareHeight * 0.5;
+      return new Point(x, y).multiply(this.ratio);
+    }
+    return new Point(0, 0);
+  }
+
   build(hand: ImmutableHand, color: Color, pointer?: Square | Piece | null): Hand {
     const displayColor = this.config.flip ? reverseColor(color) : color;
     const bgColor = pieceStandBackgroundColorMap[this.config.pieceStandImageType];
@@ -208,7 +261,7 @@ export class PortraitHandLayoutBuilder {
         return;
       }
       const index =
-        color === Color.BLACK ? pieces.length : handPieceTypes.length - pieces.length - 1;
+        displayColor === Color.BLACK ? pieces.length : handPieceTypes.length - pieces.length - 1;
       const id = type;
       const imagePath = this.config.pieceImages[displayColor][type];
       const left = portraitHandParams.squareWidth * index * this.ratio;

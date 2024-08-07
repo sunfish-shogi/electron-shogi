@@ -16,21 +16,6 @@
         <div v-for="label in board.labels" :key="label.id" :style="label.style">
           {{ label.character }}
         </div>
-        <div
-          v-for="square in board.squares"
-          :key="square.id"
-          :style="square.style"
-          @click.stop.prevent="clickSquare(square.file, square.rank)"
-          @contextmenu.stop.prevent="clickSquareR(square.file, square.rank)"
-        ></div>
-        <div v-if="board.promotion" class="promotion-selector" :style="board.promotion.style">
-          <div class="select-button promote" @click.stop.prevent="clickPromote()">
-            <img class="piece-image" :src="board.promotion.promoteImagePath" draggable="false" />
-          </div>
-          <div class="select-button not-promote" @click.stop.prevent="clickNotPromote()">
-            <img class="piece-image" :src="board.promotion.notPromoteImagePath" draggable="false" />
-          </div>
-        </div>
       </div>
 
       <!-- 先手の駒台 -->
@@ -49,12 +34,6 @@
         <div v-for="number in blackHand.numbers" :key="number.id" :style="number.style">
           {{ number.character }}
         </div>
-        <div
-          v-for="pointer in blackHand.pointers"
-          :key="pointer.id"
-          :style="pointer.style"
-          @click.stop.prevent="clickHand(Color.BLACK, pointer.type)"
-        ></div>
       </div>
 
       <!-- 後手の駒台 -->
@@ -73,6 +52,43 @@
         <div v-for="number in whiteHand.numbers" :key="number.id" :style="number.style">
           {{ number.character }}
         </div>
+      </div>
+
+      <img
+        v-for="arrow in arrows"
+        :key="arrow.id"
+        src="/arrow/arrow.svg"
+        :style="arrow.style"
+        style="object-fit: cover; object-position: left top"
+      />
+
+      <!-- 操作用レイヤー -->
+      <div class="board" :style="main.boardStyle">
+        <div
+          v-for="square in board.squares"
+          :key="square.id"
+          :style="square.style"
+          @click.stop.prevent="clickSquare(square.file, square.rank)"
+          @contextmenu.stop.prevent="clickSquareR(square.file, square.rank)"
+        ></div>
+        <div v-if="board.promotion" class="promotion-selector" :style="board.promotion.style">
+          <div class="select-button promote" @click.stop.prevent="clickPromote()">
+            <img class="piece-image" :src="board.promotion.promoteImagePath" draggable="false" />
+          </div>
+          <div class="select-button not-promote" @click.stop.prevent="clickNotPromote()">
+            <img class="piece-image" :src="board.promotion.notPromoteImagePath" draggable="false" />
+          </div>
+        </div>
+      </div>
+      <div class="hand" :style="main.blackHandStyle">
+        <div
+          v-for="pointer in blackHand.pointers"
+          :key="pointer.id"
+          :style="pointer.style"
+          @click.stop.prevent="clickHand(Color.BLACK, pointer.type)"
+        ></div>
+      </div>
+      <div class="hand" :style="main.whiteHandStyle">
         <div
           v-for="pointer in whiteHand.pointers"
           :key="pointer.id"
@@ -227,6 +243,11 @@ const props = defineProps({
     type: Object as PropType<Move | null>,
     required: false,
     default: null,
+  },
+  candidates: {
+    type: Array as PropType<Move[]>,
+    required: false,
+    default: () => [],
   },
   flip: {
     type: Boolean,
@@ -444,8 +465,12 @@ const main = computed(() => {
   return main;
 });
 
+const boardLayoutBuilder = computed(() => {
+  return new BoardLayoutBuilder(config.value, main.value.ratio);
+});
+
 const board = computed(() => {
-  return new BoardLayoutBuilder(config.value, main.value.ratio).build(
+  return boardLayoutBuilder.value.build(
     props.position.board,
     props.lastMove,
     state.pointer,
@@ -478,6 +503,49 @@ const whiteHand = computed(() => {
     Color.WHITE,
     state.pointer,
   );
+});
+
+const arrows = computed(() => {
+  const arrowWidth = 30 * main.value.ratio;
+  return props.candidates.map((candidate) => {
+    const boardBase = layoutBuilder.value.boardBasePoint;
+    const blackHandBase = layoutBuilder.value.blackHandBasePoint;
+    const whiteHandBase = layoutBuilder.value.whiteHandBasePoint;
+    const start =
+      candidate.from instanceof Square
+        ? boardBase.add(boardLayoutBuilder.value.centerOfSquare(candidate.from))
+        : candidate.color === Color.BLACK
+          ? blackHandBase.add(
+              handLayoutBuilder.value.centerOfPieceType(
+                props.position.hand(Color.BLACK),
+                Color.BLACK,
+                candidate.from,
+              ),
+            )
+          : whiteHandBase.add(
+              handLayoutBuilder.value.centerOfPieceType(
+                props.position.hand(Color.WHITE),
+                Color.WHITE,
+                candidate.from,
+              ),
+            );
+    const end = boardBase.add(boardLayoutBuilder.value.centerOfSquare(candidate.to));
+    const middle = start.add(end).multiply(0.5);
+    const distance = start.distanceTo(end);
+    const angle = start.angleTo(end) - Math.PI;
+    const x = middle.x - distance / 2;
+    const y = middle.y - arrowWidth / 2;
+    return {
+      id: candidate.usi,
+      style: {
+        left: x + "px",
+        top: y + "px",
+        width: distance + "px",
+        height: arrowWidth + "px",
+        transform: `rotate(${angle}rad)`,
+      },
+    };
+  });
 });
 
 const formatTime = (time?: number, byoyomi?: number): string => {

@@ -255,6 +255,7 @@ export type Texts = {
   swapEachTurnChange: string;
   alwaysSenteIsPositive: string;
   signOfEvaluation: string;
+  maxArrows: string;
   winRateCoefficient: string;
   monitor: string;
   hideTabView: string;

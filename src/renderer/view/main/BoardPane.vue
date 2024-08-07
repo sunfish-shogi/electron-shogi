@@ -14,6 +14,7 @@
       :max-size="maxSize"
       :position="store.record.position"
       :last-move="lastMove"
+      :candidates="store.candidates"
       :flip="appSettings.boardFlipping"
       :hide-clock="store.appState !== AppState.GAME && store.appState !== AppState.CSA_GAME"
       :allow-move="store.isMovableByUser"

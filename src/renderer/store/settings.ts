@@ -163,6 +163,9 @@ class AppSettingsStore {
   get evaluationViewFrom(): EvaluationViewFrom {
     return this.settings.evaluationViewFrom;
   }
+  get maxArrowsPerEngine(): number {
+    return this.settings.maxArrowsPerEngine;
+  }
   get coefficientInSigmoid(): number {
     return this.settings.coefficientInSigmoid;
   }

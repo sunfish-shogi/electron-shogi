@@ -3,6 +3,7 @@ import { Config } from "./config";
 import { boardParams, commonParams } from "./params";
 import { Color, ImmutableBoard, Move, Piece, PieceType, reverseColor, Square } from "tsshogi";
 import { Board, BoardBackground, BoardLabel, BoardPiece, BoardSquare, Promotion } from "./layout";
+import { Point } from "@/common/assets/geometry";
 
 const boardBackgroundColorMap = {
   [BoardImageType.LIGHT]: "rgba(0, 0, 0, 0)",
@@ -36,6 +37,18 @@ export class BoardLayoutBuilder {
     private config: Config,
     private ratio: number,
   ) {}
+
+  centerOfSquare(square: Square): Point {
+    const x =
+      (boardParams.leftSquarePadding +
+        boardParams.squareWidth * ((this.config.flip ? square.opposite : square).x + 0.5)) *
+      this.ratio;
+    const y =
+      (boardParams.topSquarePadding +
+        boardParams.squareHeight * ((this.config.flip ? square.opposite : square).y + 0.5)) *
+      this.ratio;
+    return new Point(x, y);
+  }
 
   private get background(): BoardBackground {
     const bgColor = boardBackgroundColorMap[this.config.boardImageType];

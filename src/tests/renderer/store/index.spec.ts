@@ -161,12 +161,53 @@ describe("store/index", () => {
     });
     vi.runOnlyPendingTimers();
     expect(store.usiMonitors).toHaveLength(2);
-    expect(store.usiMonitors[0].iterations.length).toBe(2);
+    expect(store.usiMonitors[0].iterations).toHaveLength(2);
     expect(store.usiMonitors[0].iterations[0].depth).toBe(10);
     expect(store.usiMonitors[0].iterations[0].score).toBe(213);
-    expect(store.usiMonitors[1].iterations.length).toBe(1);
+    expect(store.usiMonitors[0].latestIteration).toHaveLength(1);
+    expect(store.usiMonitors[0].latestIteration[0].score).toBe(213);
+    expect(store.usiMonitors[1].iterations).toHaveLength(1);
     expect(store.usiMonitors[1].iterations[0].depth).toBe(9);
     expect(store.usiMonitors[1].iterations[0].score).toBe(-89);
+    expect(store.usiMonitors[1].latestIteration).toHaveLength(1);
+    expect(store.usiMonitors[1].latestIteration[0].score).toBe(-89);
+  });
+
+  it("candidates", async () => {
+    vi.useFakeTimers();
+    await useAppSettings().updateAppSettings({ maxArrowsPerEngine: 3 });
+    const usi = "position startpos moves 7g7f";
+    const store = createStore();
+    store.pasteRecord(usi);
+    expect(store.candidates).toHaveLength(0);
+
+    store.updateUSIInfo(101, usi, "Engine A", {
+      multipv: 1,
+      scoreCP: 83,
+      pv: ["8c8d", "2g2f"],
+    });
+    store.updateUSIInfo(101, usi, "Engine A", {
+      multipv: 2,
+      scoreCP: -5,
+      pv: ["3c3d", "2g2f"],
+    });
+    store.updateUSIInfo(101, usi, "Engine A", {
+      multipv: 3,
+      scoreCP: -21,
+      pv: ["5c5d", "2g2f"],
+    });
+    store.updateUSIInfo(102, usi, "Engine B", {
+      scoreCP: -5,
+      pv: ["9c9d", "9g9f"],
+    });
+    vi.runOnlyPendingTimers();
+    expect(store.candidates).toHaveLength(3);
+
+    await useAppSettings().updateAppSettings({ maxArrowsPerEngine: 1 });
+    expect(store.candidates).toHaveLength(2);
+
+    await useAppSettings().updateAppSettings({ maxArrowsPerEngine: 0 });
+    expect(store.candidates).toHaveLength(0);
   });
 
   it("updateUSIPonderInfo", () => {

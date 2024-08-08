@@ -2,16 +2,35 @@ import { Config } from "./config";
 import { Color, ImmutablePosition, reverseColor } from "tsshogi";
 import { Frame, Layout, PlayerName, Turn } from "./layout";
 import { portraitViewParams } from "./params";
-import { RectSize } from "@/common/assets/geometry";
+import { Point, RectSize } from "@/common/assets/geometry";
 
 export class PortraitLayoutBuilder {
   constructor(private config: Config) {}
 
-  build(position: ImmutablePosition): Layout {
+  get ratio(): number {
     let ratio = this.config.upperSizeLimit.width / portraitViewParams.frame.width;
     if (portraitViewParams.frame.height * ratio > this.config.upperSizeLimit.height) {
       ratio = this.config.upperSizeLimit.height / portraitViewParams.frame.height;
     }
+    return ratio;
+  }
+
+  get boardBasePoint(): Point {
+    return new Point(portraitViewParams.board.x, portraitViewParams.board.y).multiply(this.ratio);
+  }
+
+  get blackHandBasePoint(): Point {
+    const params = this.config.flip ? portraitViewParams.hand.white : portraitViewParams.hand.black;
+    return new Point(params.x, params.y).multiply(this.ratio);
+  }
+
+  get whiteHandBasePoint(): Point {
+    const params = this.config.flip ? portraitViewParams.hand.black : portraitViewParams.hand.white;
+    return new Point(params.x, params.y).multiply(this.ratio);
+  }
+
+  build(position: ImmutablePosition): Layout {
+    const ratio = this.ratio;
 
     const buildFrameLayout = (): Frame => {
       const height = portraitViewParams.frame.height * ratio;
@@ -58,20 +77,24 @@ export class PortraitLayoutBuilder {
       };
     };
 
+    const boardBasePoint = this.boardBasePoint;
+    const blackHandBasePoint = this.blackHandBasePoint;
+    const whiteHandBasePoint = this.whiteHandBasePoint;
+
     return {
       ratio,
       frame: buildFrameLayout(),
       boardStyle: {
-        left: portraitViewParams.board.x * ratio + "px",
-        top: portraitViewParams.board.y * ratio + "px",
+        left: boardBasePoint.x + "px",
+        top: boardBasePoint.y + "px",
       },
       blackHandStyle: {
-        left: portraitViewParams.hand.black.x * ratio + "px",
-        top: portraitViewParams.hand.black.y * ratio + "px",
+        left: blackHandBasePoint.x + "px",
+        top: blackHandBasePoint.y + "px",
       },
       whiteHandStyle: {
-        left: portraitViewParams.hand.white.x * ratio + "px",
-        top: portraitViewParams.hand.white.y * ratio + "px",
+        left: whiteHandBasePoint.x + "px",
+        top: whiteHandBasePoint.y + "px",
       },
       turn: buildTurnLayout(),
       blackPlayerName: buildPlayerNameLayout(Color.BLACK),

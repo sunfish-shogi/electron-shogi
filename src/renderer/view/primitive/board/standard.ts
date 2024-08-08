@@ -1,5 +1,5 @@
 import { Color, ImmutablePosition, reverseColor } from "tsshogi";
-import { RectSize } from "@/common/assets/geometry";
+import { Point, RectSize } from "@/common/assets/geometry";
 import { standardViewParams } from "./params";
 import { Config } from "./config";
 import { Clock, Control, Frame, Layout, PlayerName, Turn } from "./layout";
@@ -7,11 +7,30 @@ import { Clock, Control, Frame, Layout, PlayerName, Turn } from "./layout";
 export class StandardLayoutBuilder {
   constructor(private config: Config) {}
 
-  build(position: ImmutablePosition): Layout {
+  get ratio(): number {
     let ratio = this.config.upperSizeLimit.width / standardViewParams.frame.width;
     if (standardViewParams.frame.height * ratio > this.config.upperSizeLimit.height) {
       ratio = this.config.upperSizeLimit.height / standardViewParams.frame.height;
     }
+    return ratio;
+  }
+
+  get boardBasePoint(): Point {
+    return new Point(standardViewParams.board.x, standardViewParams.board.y).multiply(this.ratio);
+  }
+
+  get blackHandBasePoint(): Point {
+    const params = this.config.flip ? standardViewParams.hand.white : standardViewParams.hand.black;
+    return new Point(params.x, params.y).multiply(this.ratio);
+  }
+
+  get whiteHandBasePoint(): Point {
+    const params = this.config.flip ? standardViewParams.hand.black : standardViewParams.hand.white;
+    return new Point(params.x, params.y).multiply(this.ratio);
+  }
+
+  build(position: ImmutablePosition): Layout {
+    const ratio = this.ratio;
 
     const buildFrameLayout = (): Frame => {
       const height = standardViewParams.frame.height * ratio;
@@ -98,20 +117,24 @@ export class StandardLayoutBuilder {
       };
     };
 
+    const boardBasePoint = this.boardBasePoint;
+    const blackHandBasePoint = this.blackHandBasePoint;
+    const whiteHandBasePoint = this.whiteHandBasePoint;
+
     return {
       ratio,
       frame: buildFrameLayout(),
       boardStyle: {
-        left: standardViewParams.board.x * ratio + "px",
-        top: standardViewParams.board.y * ratio + "px",
+        left: boardBasePoint.x + "px",
+        top: boardBasePoint.y + "px",
       },
       blackHandStyle: {
-        left: standardViewParams.hand.black.x * ratio + "px",
-        top: standardViewParams.hand.black.y * ratio + "px",
+        left: blackHandBasePoint.x + "px",
+        top: blackHandBasePoint.y + "px",
       },
       whiteHandStyle: {
-        left: standardViewParams.hand.white.x * ratio + "px",
-        top: standardViewParams.hand.white.y * ratio + "px",
+        left: whiteHandBasePoint.x + "px",
+        top: whiteHandBasePoint.y + "px",
       },
       turn: buildTurnLayout(),
       blackPlayerName: buildPlayerNameLayout(Color.BLACK),

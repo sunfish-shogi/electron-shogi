@@ -10,6 +10,12 @@
       <Pane :size="topPaneHeightPercentage">
         <div class="full column">
           <div class="row">
+            <ControlPane
+              v-if="appSettings.boardLayoutType !== BoardLayoutType.STANDARD"
+              class="compact-control"
+              :group="ControlGroup.All"
+              :compact="true"
+            />
             <BoardPane
               :style="boardPaneStyle"
               :max-size="boardPaneMaxSize"
@@ -92,8 +98,10 @@ import { reactive, onMounted, onUnmounted, computed, ref } from "vue";
 import BoardPane from "./BoardPane.vue";
 import RecordPane, { minWidth as minRecordWidth } from "./RecordPane.vue";
 import TabPane, { headerHeight as tabHeaderHeight } from "./TabPane.vue";
+import ControlPane, { ControlGroup } from "./ControlPane.vue";
 import { RectSize } from "@/common/assets/geometry";
 import { AppSettingsUpdate, Tab, TabPaneType } from "@/common/settings/app";
+import { BoardLayoutType } from "@/common/settings/layout";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
 import { toString } from "@/common/helpers/string";
@@ -264,6 +272,10 @@ const tabPaneSize2 = computed(() => {
 </style>
 
 <style scoped>
+.compact-control {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 .unhide-tabview-button {
   width: 100%;
   height: 30px;

@@ -52,8 +52,16 @@
         :show-bookmark="!!c.showBookmark"
       />
       <RecordInfo v-else-if="c.type === 'RecordInfo'" class="full" :size="c.rect.size" />
-      <ControlPane v-else-if="c.type === 'ControlGroup1'" :group="ControlGroup.Group1" />
-      <ControlPane v-else-if="c.type === 'ControlGroup2'" :group="ControlGroup.Group2" />
+      <ControlPane
+        v-else-if="c.type === 'ControlGroup1'"
+        class="full"
+        :group="ControlGroup.Group1"
+      />
+      <ControlPane
+        v-else-if="c.type === 'ControlGroup2'"
+        class="full"
+        :group="ControlGroup.Group2"
+      />
     </div>
   </div>
 </template>

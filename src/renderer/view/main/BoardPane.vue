@@ -33,12 +33,14 @@
       <template #right-control>
         <ControlPane
           v-show="rightControlType !== RightSideControlType.NONE"
+          class="full"
           :group="ControlGroup.Group1"
         />
       </template>
       <template #left-control>
         <ControlPane
           v-show="leftControlType !== LeftSideControlType.NONE"
+          class="full"
           :group="ControlGroup.Group2"
         />
       </template>

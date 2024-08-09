@@ -15,7 +15,7 @@
         :right-control-type="
           c.rightControlBox ? RightSideControlType.STANDARD : RightSideControlType.NONE
         "
-        :layout-type="c.layoutType"
+        :layout-type="c.layoutType || BoardLayoutType.STANDARD"
       />
       <RecordPane
         v-else-if="c.type === 'Record'"
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutProfile } from "@/common/settings/layout";
+import { LayoutProfile, BoardLayoutType } from "@/common/settings/layout";
 import { computed } from "vue";
 import { Rect } from "@/common/assets/geometry";
 import { LeftSideControlType, RightSideControlType } from "@/common/settings/app";

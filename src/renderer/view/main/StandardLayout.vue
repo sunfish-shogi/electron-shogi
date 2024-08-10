@@ -221,7 +221,11 @@ const boardPaneStyle = computed(() => {
 });
 
 const recordPaneStyle = computed(() => {
-  const width = windowSize.width - boardPaneSize.width - margin * 3;
+  const width =
+    windowSize.width -
+    boardPaneSize.width -
+    margin * 3 -
+    (appSettings.boardLayoutType === BoardLayoutType.STANDARD ? 0 : boardPaneSize.height * 0.1);
   const height = boardPaneSize.height;
   return {
     margin: `${margin}px ${margin}px ${margin}px 0`,

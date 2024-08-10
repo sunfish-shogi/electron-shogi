@@ -63,12 +63,14 @@
     "yaml": "^2.5.0"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.2",
     "@types/async-lock": "^1.4.0",
     "@types/encoding-japanese": "^2.0.1",
+    "@types/license-checker": "^25.0.6",
     "@types/semver": "^7.5.8",
     "@types/splitpanes": "^2.2.1",
-    "@typescript-eslint/eslint-plugin": "^7.7.1",
-    "@typescript-eslint/parser": "^7.16.1",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-vue": "^5.0.3",
     "@vitest/coverage-v8": "^2.0.4",
     "@vitest/ui": "^2.0.2",

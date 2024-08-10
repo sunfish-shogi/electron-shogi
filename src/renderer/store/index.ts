@@ -466,8 +466,12 @@ class Store {
         if (!iteration.pv?.length) {
           continue;
         }
-        if (iteration.score && iteration.score < maxScore - maxScoreDiff) {
-          continue;
+        if (iteration.score) {
+          if (iteration.score < maxScore - maxScoreDiff) {
+            continue;
+          } else if (iteration.score > maxScore) {
+            maxScore = iteration.score;
+          }
         }
         const usi = iteration.pv[0];
         if (usiSet.has(usi)) {
@@ -487,9 +491,6 @@ class Store {
         candidates.push(move);
         usiSet.add(usi);
         entryCount++;
-        if (iteration.score && iteration.score > maxScore) {
-          maxScore = iteration.score;
-        }
       }
     }
     return candidates;

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import checker from "license-checker";
+import { init } from "license-checker";
 
 const rootDir = "./docs";
 const licenseFileDir = "third-party-licenses";
@@ -45,7 +45,7 @@ function writeFooter(stream) {
   stream.end();
 }
 
-checker.init(
+init(
   {
     start: "./",
     production: true,

@@ -204,7 +204,11 @@ const isBottomPaneVisible = computed(() => {
 
 const boardPaneMaxSize = computed(() => {
   return new RectSize(
-    Math.max(windowSize.width - minRecordWidth - margin * 2, 0),
+    Math.max(
+      (windowSize.width - minRecordWidth - margin * 2) *
+        (appSettings.boardLayoutType === BoardLayoutType.STANDARD ? 1.0 : 0.9),
+      0,
+    ),
     Math.max(
       (windowSize.height - splitterWidth) * (topPaneHeightPercentage.value / 100) -
         margin * 2 -

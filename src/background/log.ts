@@ -2,7 +2,7 @@ import path from "node:path";
 import child_process from "node:child_process";
 import * as log4js from "log4js";
 import { getDateTimeString } from "@/common/helpers/datetime";
-import { getAppPath } from "./proc/env";
+import { getAppPath, isTest } from "./proc/env";
 import { LogLevel, LogType } from "@/common/log";
 import { requireElectron } from "./helpers/portability";
 
@@ -39,10 +39,12 @@ function getFilePath(type: LogType): string {
   }
 }
 
+const defaultAppender = isTest() ? "recording" : "stdout";
+
 const appenders = {
-  [LogType.APP]: ["stdout"] as string[],
-  [LogType.USI]: ["stdout"] as string[],
-  [LogType.CSA]: ["stdout"] as string[],
+  [LogType.APP]: [defaultAppender] as string[],
+  [LogType.USI]: [defaultAppender] as string[],
+  [LogType.CSA]: [defaultAppender] as string[],
 };
 
 const levels = {

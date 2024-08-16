@@ -477,6 +477,7 @@ export type Texts = {
   collapseSequentialSpaces: string;
   typeCustomTitleHere: string;
   displayEmptyElements: string;
+  share: string;
   waitingForNewGame: string;
   waitingForPlayerSetup: string;
   insertedComment: string;

@@ -482,6 +482,7 @@ export const ja: Texts = {
   collapseSequentialSpaces: "連続する空白をまとめる",
   typeCustomTitleHere: "ここに見出しを入力",
   displayEmptyElements: "未入力の項目を表示",
+  share: "シェア",
   waitingForNewGame: "対局開始を待っています。",
   waitingForPlayerSetup: "対局者の準備を待っています。",
   insertedComment: "コメントを挿入しました。",

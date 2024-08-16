@@ -482,6 +482,7 @@ export const en: Texts = {
   collapseSequentialSpaces: "Collapse Sequential Spaces",
   typeCustomTitleHere: "Type custom title here",
   displayEmptyElements: "Display Empty Elements",
+  share: "Share",
   waitingForNewGame: "Waiting for new game.",
   waitingForPlayerSetup: "Waiting for player setup.",
   insertedComment: "Inserted comment.",

@@ -482,6 +482,7 @@ export const vi: Texts = {
   collapseSequentialSpaces: "Gộp dấu cách liền nhau",
   typeCustomTitleHere: "Nhập tiêu đề",
   displayEmptyElements: "Hiện các mục trống",
+  share: "Share", // TODO: translate
   waitingForNewGame: "Đang chờ ván mới.",
   waitingForPlayerSetup: "Đang chờ người chơi chuẩn bị.",
   insertedComment: "Đã chèn bình luận.",

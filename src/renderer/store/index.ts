@@ -446,6 +446,12 @@ class Store {
     }
   }
 
+  showShareDialog(): void {
+    if (this.appState === AppState.NORMAL) {
+      this._appState = AppState.SHARE_DIALOG;
+    }
+  }
+
   destroyModalDialog(): void {
     if (
       this.appState === AppState.PASTE_DIALOG ||
@@ -459,7 +465,8 @@ class Store {
       this.appState === AppState.BATCH_CONVERSION_DIALOG ||
       this.appState === AppState.LAUNCH_USI_ENGINE_DIALOG ||
       this.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG ||
-      this.appState === AppState.LOAD_REMOTE_FILE_DIALOG
+      this.appState === AppState.LOAD_REMOTE_FILE_DIALOG ||
+      this.appState === AppState.SHARE_DIALOG
     ) {
       this._appState = AppState.NORMAL;
     }

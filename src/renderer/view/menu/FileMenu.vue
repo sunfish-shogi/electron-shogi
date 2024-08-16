@@ -1,93 +1,93 @@
 <template>
   <div>
     <dialog ref="dialog" class="menu">
-      <div class="groups">
-        <div class="group">
-          <button data-hotkey="Escape" class="close" @click="onClose">
-            <Icon :icon="IconType.CLOSE" />
-            <div class="label">{{ t.back }}</div>
-          </button>
-        </div>
-        <div class="group">
-          <button :disabled="!states.newFile" @click="onNewFile">
-            <Icon :icon="IconType.FILE" />
-            <div class="label">{{ t.clear }}</div>
-          </button>
-          <button v-if="isNative()" :disabled="!states.open" @click="onOpen">
-            <Icon :icon="IconType.OPEN" />
-            <div class="label">{{ t.open }}</div>
-          </button>
-          <button v-if="isNative()" :disabled="!states.save" @click="onSave">
-            <Icon :icon="IconType.SAVE" />
-            <div class="label">{{ t.saveOverwrite }}</div>
-          </button>
-          <button v-if="isNative()" :disabled="!states.saveAs" @click="onSaveAs">
-            <Icon :icon="IconType.SAVE_AS" />
-            <div class="label">{{ t.saveAs }}</div>
-          </button>
-          <button v-if="isNative()" :disabled="!states.history" @click="onHistory">
-            <Icon :icon="IconType.HISTORY" />
-            <div class="label">{{ t.history }}</div>
-          </button>
-          <button v-if="isNative()" :disabled="!states.loadRemoteFile" @click="onLoadRemoteFile">
-            <Icon :icon="IconType.INTERNET" />
-            <div class="label">{{ t.loadRecordFromWeb }}</div>
-          </button>
-        </div>
-        <div v-if="isNative()" class="group">
-          <button :disabled="!states.batchConversion" @click="onBatchConversion">
-            <Icon :icon="IconType.BATCH" />
-            <div class="label">{{ t.batchConversion }}</div>
-          </button>
-          <button :disabled="!states.exportImage" @click="onExportImage">
-            <Icon :icon="IconType.GRID" />
-            <div class="label">{{ t.positionImage }}</div>
-          </button>
-          <button @click="onOpenAutoSaveDirectory">
-            <Icon :icon="IconType.OPEN_FOLDER" />
-            <div class="label">{{ t.openAutoSaveDirectory }}</div>
-          </button>
-        </div>
-        <div class="group">
-          <button @click="onCopyKIF">
-            <Icon :icon="IconType.COPY" />
-            <div class="label">{{ t.copyAsKIF }}</div>
-          </button>
-          <button @click="onCopyKI2">
-            <Icon :icon="IconType.COPY" />
-            <div class="label">{{ t.copyAsKI2 }}</div>
-          </button>
-          <button @click="onCopyCSA">
-            <Icon :icon="IconType.COPY" />
-            <div class="label">{{ t.copyAsCSA }}</div>
-          </button>
-          <button @click="onCopyUSI">
-            <Icon :icon="IconType.COPY" />
-            <div class="label">{{ t.copyAsUSI }}</div>
-          </button>
-          <button @click="onCopySFEN">
-            <Icon :icon="IconType.COPY" />
-            <div class="label">{{ t.copyAsSFEN }}</div>
-          </button>
-          <button @click="onCopyJKF">
-            <Icon :icon="IconType.COPY" />
-            <div class="label">{{ t.copyAsJKF }}</div>
-          </button>
-          <button @click="onCopyUSEN">
-            <Icon :icon="IconType.COPY" />
-            <div class="label">{{ t.copyAsUSEN }}</div>
-          </button>
-          <button :disabled="!states.paste" @click="onPaste">
-            <Icon :icon="IconType.PASTE" />
-            <div class="label">{{ t.paste }}</div>
-          </button>
-        </div>
-        <div v-if="isMobileWebApp()" class="group">
-          <button @click="openCopyright">
-            <Icon :icon="IconType.LICENSE" />
-            <div class="label">{{ t.license }}</div>
-          </button>
-        </div>
+      <div class="group">
+        <button data-hotkey="Escape" class="close" @click="onClose">
+          <Icon :icon="IconType.CLOSE" />
+          <div class="label">{{ t.back }}</div>
+        </button>
+      </div>
+      <div class="group">
+        <button :disabled="!states.newFile" @click="onNewFile">
+          <Icon :icon="IconType.FILE" />
+          <div class="label">{{ t.clear }}</div>
+        </button>
+        <button v-if="isNative()" :disabled="!states.open" @click="onOpen">
+          <Icon :icon="IconType.OPEN" />
+          <div class="label">{{ t.open }}</div>
+        </button>
+        <button v-if="isNative()" :disabled="!states.save" @click="onSave">
+          <Icon :icon="IconType.SAVE" />
+          <div class="label">{{ t.saveOverwrite }}</div>
+        </button>
+        <button v-if="isNative()" :disabled="!states.saveAs" @click="onSaveAs">
+          <Icon :icon="IconType.SAVE_AS" />
+          <div class="label">{{ t.saveAs }}</div>
+        </button>
+        <button v-if="isNative()" :disabled="!states.history" @click="onHistory">
+          <Icon :icon="IconType.HISTORY" />
+          <div class="label">{{ t.history }}</div>
+        </button>
+        <button v-if="isNative()" :disabled="!states.loadRemoteFile" @click="onLoadRemoteFile">
+          <Icon :icon="IconType.INTERNET" />
+          <div class="label">{{ t.loadRecordFromWeb }}</div>
+        </button>
+        <button :disabled="!states.share" @click="onShare">
+          <Icon :icon="IconType.SHARE" />
+          <div class="label">{{ t.share }}</div>
+        </button>
+        <button v-if="!isMobileWebApp()" :disabled="!states.exportImage" @click="onExportImage">
+          <Icon :icon="IconType.GRID" />
+          <div class="label">{{ t.positionImage }}</div>
+        </button>
+        <button v-if="isNative()" :disabled="!states.batchConversion" @click="onBatchConversion">
+          <Icon :icon="IconType.BATCH" />
+          <div class="label">{{ t.batchConversion }}</div>
+        </button>
+        <button v-if="isNative()" @click="onOpenAutoSaveDirectory">
+          <Icon :icon="IconType.OPEN_FOLDER" />
+          <div class="label">{{ t.openAutoSaveDirectory }}</div>
+        </button>
+      </div>
+      <div class="group">
+        <button @click="onCopyKIF">
+          <Icon :icon="IconType.COPY" />
+          <div class="label">{{ t.copyAsKIF }}</div>
+        </button>
+        <button @click="onCopyKI2">
+          <Icon :icon="IconType.COPY" />
+          <div class="label">{{ t.copyAsKI2 }}</div>
+        </button>
+        <button @click="onCopyCSA">
+          <Icon :icon="IconType.COPY" />
+          <div class="label">{{ t.copyAsCSA }}</div>
+        </button>
+        <button @click="onCopyJKF">
+          <Icon :icon="IconType.COPY" />
+          <div class="label">{{ t.copyAsJKF }}</div>
+        </button>
+        <button @click="onCopyUSI">
+          <Icon :icon="IconType.COPY" />
+          <div class="label">{{ t.copyAsUSI }}</div>
+        </button>
+        <button @click="onCopySFEN">
+          <Icon :icon="IconType.COPY" />
+          <div class="label">{{ t.copyAsSFEN }}</div>
+        </button>
+        <button @click="onCopyUSEN">
+          <Icon :icon="IconType.COPY" />
+          <div class="label">{{ t.copyAsUSEN }}</div>
+        </button>
+        <button :disabled="!states.paste" @click="onPaste">
+          <Icon :icon="IconType.PASTE" />
+          <div class="label">{{ t.paste }}</div>
+        </button>
+      </div>
+      <div v-if="isMobileWebApp()" class="group">
+        <button @click="openCopyright">
+          <Icon :icon="IconType.LICENSE" />
+          <div class="label">{{ t.license }}</div>
+        </button>
       </div>
     </dialog>
   </div>
@@ -147,6 +147,10 @@ const onLoadRemoteFile = () => {
   store.showLoadRemoteFileDialog();
   emit("close");
 };
+const onShare = () => {
+  store.showShareDialog();
+  emit("close");
+};
 const onBatchConversion = () => {
   store.showBatchConversionDialog();
   emit("close");
@@ -199,6 +203,7 @@ const states = computed(() => {
     saveAs: store.appState === AppState.NORMAL,
     history: store.appState === AppState.NORMAL,
     loadRemoteFile: store.appState === AppState.NORMAL,
+    share: store.appState === AppState.NORMAL,
     batchConversion: store.appState === AppState.NORMAL,
     exportImage: store.appState === AppState.NORMAL,
     paste: store.appState === AppState.NORMAL,

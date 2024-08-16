@@ -78,6 +78,7 @@ export const zh_tw: Texts = {
   openUserGuide: "使用教學",
   openLatestReleasePage: "前往最新版發布頁面",
   openStableReleasePage: "前往安定版發布頁面",
+  license: "License", // TODO: translate
   inputs: "輸入目錄",
   outputs: "輸出目錄",
   format: "格式",

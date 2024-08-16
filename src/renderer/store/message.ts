@@ -10,7 +10,13 @@ export type List = {
   items: ListItem[];
 };
 
-export type Attachment = List;
+export type Link = {
+  type: "link";
+  text: string;
+  url: string;
+};
+
+export type Attachment = List | Link;
 
 export type Message = {
   text: string;

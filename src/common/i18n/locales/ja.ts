@@ -81,6 +81,7 @@ export const ja: Texts = {
   openUserGuide: "使い方を開く",
   openLatestReleasePage: "最新版リリースページを開く",
   openStableReleasePage: "安定版リリースページを開く",
+  license: "ライセンス",
   inputs: "入力",
   outputs: "出力",
   format: "フォーマット",

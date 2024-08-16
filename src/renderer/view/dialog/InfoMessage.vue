@@ -20,6 +20,9 @@
             </ul>
           </li>
         </ul>
+        <button v-if="attachment.type === 'link'" @click="api.openWebBrowser(attachment.url)">
+          {{ attachment.text }}
+        </button>
       </div>
       <div class="main-buttons">
         <button autofocus data-hotkey="Escape" @click="onClose()">
@@ -38,6 +41,7 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { useMessageStore } from "@/renderer/store/message";
+import api from "@/renderer/ipc/api";
 
 const store = useMessageStore();
 const dialog = ref();
@@ -63,6 +67,12 @@ dialog.info {
   border: 3px solid var(--info-dialog-border-color);
 }
 .attachment {
+  text-align: center;
+}
+.attachment:not(:first-child) {
+  margin-top: 5px;
+}
+.list {
   text-align: left;
 }
 </style>

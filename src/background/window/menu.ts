@@ -27,6 +27,8 @@ import { openCacheDirectory } from "@/background/image/cache";
 import { refreshCustomPieceImages, sendTestNotification } from "./debug";
 import { LogType } from "@/common/log";
 import { createLayoutManagerWindow } from "./layout";
+import { licenseURL, thirdPartyLicenseURL } from "@/common/links/github";
+import { materialIconsGuideURL } from "@/common/links/google";
 
 const isWin = process.platform === "win32";
 const isMac = process.platform === "darwin";
@@ -511,6 +513,43 @@ function createMenuTemplate(window: BrowserWindow) {
           click: () => {
             openStableReleasePage().catch(sendError);
           },
+        },
+        {
+          label: t.license,
+          submenu: [
+            {
+              label: t.shogiHome,
+              click: () => {
+                shell.openExternal(licenseURL);
+              },
+            },
+            {
+              label: "Third Party Libraries",
+              click: () => {
+                shell.openExternal(thirdPartyLicenseURL);
+              },
+            },
+            {
+              label: "Material Icons",
+              click: () => {
+                shell.openExternal(materialIconsGuideURL);
+              },
+            },
+            {
+              label: "Electron",
+              click: () => {
+                shell.openPath(path.join(path.dirname(getAppPath("exe")), "LICENSE.electron.txt"));
+              },
+            },
+            {
+              label: "Chromium",
+              click: () => {
+                shell.openPath(
+                  path.join(path.dirname(getAppPath("exe")), "LICENSES.chromium.html"),
+                );
+              },
+            },
+          ],
         },
       ],
     },

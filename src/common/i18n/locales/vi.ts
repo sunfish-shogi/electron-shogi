@@ -81,6 +81,7 @@ export const vi: Texts = {
   openUserGuide: "Hướng dẫn sử dụng",
   openLatestReleasePage: "Mở trang của bản mới nhất",
   openStableReleasePage: "Mở trang của bản ổn định",
+  license: "License", // TODO: translate
   inputs: "Đầu vào",
   outputs: "Đầu ra",
   format: "Định dạng",

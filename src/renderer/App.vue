@@ -46,6 +46,7 @@
       :pv="store.pvPreview.pv"
       @close="store.closePVPreviewDialog()"
     />
+    <button v-if="!isNative()" class="copyright" @click="openCopyright">&copy;</button>
   </div>
 </template>
 
@@ -84,7 +85,8 @@ import { useErrorStore } from "./store/error";
 import { useConfirmationStore } from "./store/confirm";
 import CustomLayout from "./view/main/CustomLayout.vue";
 import MobileLayout from "./view/main/MobileLayout.vue";
-import { isMobileWebApp } from "./ipc/api";
+import { isMobileWebApp, isNative } from "./ipc/api";
+import { openCopyright } from "./helpers/copyright";
 
 const appSettings = useAppSettings();
 const store = useStore();
@@ -153,5 +155,15 @@ const style = computed(() => {
 .root {
   color: var(--main-color);
   background-color: var(--main-bg-color);
+}
+button.copyright {
+  display: inline-block;
+  position: absolute;
+  z-index: 1000;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  width: 30px;
+  font-size: 100%;
 }
 </style>

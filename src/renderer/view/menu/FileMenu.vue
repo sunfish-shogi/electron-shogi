@@ -78,6 +78,12 @@
             <div class="label">{{ t.paste }}</div>
           </button>
         </div>
+        <div v-if="isMobileWebApp()" class="group">
+          <button @click="openCopyright">
+            <Icon :icon="IconType.LICENSE" />
+            <div class="label">{{ t.license }}</div>
+          </button>
+        </div>
       </div>
     </dialog>
   </div>
@@ -91,9 +97,10 @@ import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
 import { AppState } from "@/common/control/state.js";
-import api, { isNative } from "@/renderer/ipc/api";
+import api, { isMobileWebApp, isNative } from "@/renderer/ipc/api";
 import { useAppSettings } from "@/renderer/store/settings";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
+import { openCopyright } from "@/renderer/helpers/copyright";
 
 const emit = defineEmits<{
   close: [];

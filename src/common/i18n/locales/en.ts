@@ -81,6 +81,7 @@ export const en: Texts = {
   openUserGuide: "Open User Guide",
   openLatestReleasePage: "Open Latest Release Page",
   openStableReleasePage: "Open Stable Release Page",
+  license: "License",
   inputs: "Inputs",
   outputs: "Outputs",
   format: "Format",

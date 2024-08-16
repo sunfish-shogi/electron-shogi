@@ -76,6 +76,7 @@ export type Texts = {
   openUserGuide: string;
   openLatestReleasePage: string;
   openStableReleasePage: string;
+  license: string;
   inputs: string;
   outputs: string;
   format: string;

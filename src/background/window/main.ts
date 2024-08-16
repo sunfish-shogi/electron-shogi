@@ -116,7 +116,7 @@ export function createWindow() {
     });
 
     checkUpdates().catch((e) => {
-      sendError(new Error(`${t.failedToCheckUpdates}: ${e}`));
+      getAppLogger().error(`${t.failedToCheckUpdates}: ${e}`);
     });
   });
 }

@@ -21,11 +21,7 @@ import { spawn } from "child_process";
 
 const appSettings = loadAppSettingsOnce();
 for (const type of Object.values(LogType)) {
-  const destinations: LogDestination[] = isLogEnabled(type, appSettings)
-    ? ["file"]
-    : !isTest()
-      ? ["stdout"]
-      : ["recording"];
+  const destinations: LogDestination[] = isLogEnabled(type, appSettings) ? ["file"] : ["stdout"];
   setLogDestinations(type, destinations, appSettings.logLevel);
 }
 

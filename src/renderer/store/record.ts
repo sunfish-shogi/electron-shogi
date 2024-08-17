@@ -406,6 +406,14 @@ export class RecordManager {
     return true;
   }
 
+  resetByUSEN(usen: string, branch?: number, ply?: number): Error | undefined {
+    const record = Record.newByUSEN(usen, branch, ply);
+    if (record instanceof Error) {
+      return record;
+    }
+    this.replaceRecord(record, { markAsSaved: true });
+  }
+
   resetByCurrentPosition(): void {
     this.clearRecord(this._record.position);
   }

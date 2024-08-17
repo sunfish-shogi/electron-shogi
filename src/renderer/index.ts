@@ -21,7 +21,6 @@ import * as _ja from "dayjs/locale/ja";
 import * as _zh_tw from "dayjs/locale/zh-tw";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useErrorStore } from "@/renderer/store/error";
-import { exportKIF } from "tsshogi";
 
 api.log(LogLevel.INFO, `start renderer process: APP_VERSION=${appInfo.appVersion}`);
 
@@ -58,27 +57,6 @@ function updateTitle(path: string | undefined, unsaved: boolean) {
 watch([() => store.recordFilePath, () => store.isRecordFileUnsaved], ([path, unsaved]) => {
   updateTitle(path, unsaved);
 });
-
-// Web アプリの場合は Local Storage に棋譜を保存する。
-if (isMobileWebApp()) {
-  const mobileRecordStorageKey = "mobile:record";
-  const data = localStorage.getItem(mobileRecordStorageKey);
-  if (data) {
-    store.pasteRecord(data);
-    store.changePly(Number.MAX_SAFE_INTEGER);
-  }
-  const saveRecord = () => {
-    const data = exportKIF(store.record);
-    if (data) {
-      localStorage.setItem(mobileRecordStorageKey, data);
-    }
-  };
-  store.addEventListener("resetRecord", saveRecord);
-  store.addEventListener("changePosition", saveRecord);
-  store.addEventListener("updateCustomData", saveRecord);
-  store.addEventListener("updateFollowingMoves", saveRecord);
-  store.addEventListener("updateRecordTree", saveRecord);
-}
 
 Promise.allSettled([
   // アプリ設定の読み込み

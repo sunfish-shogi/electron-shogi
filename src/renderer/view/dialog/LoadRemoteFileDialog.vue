@@ -6,7 +6,7 @@
         <div class="form-item">
           <input ref="input" class="url" type="text" placeholder="URL" />
         </div>
-        <div class="note">{{ t.supportsKIF_KI2_CSA_USI_SFEN_JKF }}</div>
+        <div class="note">{{ t.supportsKIF_KI2_CSA_USI_SFEN_JKF_USEN }}</div>
         <div class="note">{{ t.pleaseSpecifyPlainTextURL }}</div>
         <div class="note">{{ t.redirectNotSupported }}</div>
       </div>

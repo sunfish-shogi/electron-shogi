@@ -1155,6 +1155,11 @@ class Store {
     navigator.clipboard.writeText(str);
   }
 
+  copyRecordUSEN(): void {
+    const [usen] = this.recordManager.record.usen;
+    navigator.clipboard.writeText(usen);
+  }
+
   pasteRecord(data: string): void {
     if (this.appState !== AppState.NORMAL) {
       return;

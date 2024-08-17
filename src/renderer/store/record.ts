@@ -441,6 +441,9 @@ export class RecordManager {
       case RecordFormatType.JKF:
         recordOrError = importJKFString(data);
         break;
+      case RecordFormatType.USEN:
+        recordOrError = Record.newByUSEN(data);
+        break;
       default:
         recordOrError = new Error(t.failedToDetectRecordFormat);
         break;

@@ -451,6 +451,21 @@ describe("store/index", () => {
     expect(writeText.mock.calls[0][0]).toBe("'CSA encoding=UTF-8\r\nV3.0\r\nPI\r\n+\r\n");
   });
 
+  it("copyRecordUSEN", () => {
+    const writeText = vi.fn();
+    vi.spyOn(global, "navigator", "get").mockReturnValueOnce(
+      Object.assign(navigator, {
+        clipboard: {
+          writeText,
+        },
+      }),
+    );
+    const store = createStore();
+    store.copyRecordUSEN();
+    expect(writeText).toBeCalledTimes(1);
+    expect(writeText.mock.calls[0][0]).toBe("~0..");
+  });
+
   it("pasteRecord/kif/success", () => {
     const store = createStore();
     store.pasteRecord(sampleKIF);
@@ -480,6 +495,14 @@ describe("store/index", () => {
     expect(customData2.playerSearchInfo?.score).toBe(30010);
     expect(useErrorStore().hasError).toBeFalsy();
     expect(store.isRecordFileUnsaved).toBeTruthy();
+  });
+
+  it("pasteRecord/usen/success", () => {
+    const store = createStore();
+    store.pasteRecord("~0.6y236e7ku4be.r");
+    expect(store.record.getUSI({ allMoves: true })).toBe(
+      "position startpos moves 2g2f 8c8d 7g7f 8d8e",
+    );
   });
 
   it("pasteRecord/invalidState", () => {

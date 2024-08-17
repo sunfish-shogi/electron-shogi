@@ -13,6 +13,7 @@ export enum MenuEvent {
   COPY_RECORD_USI_BEFORE = "copyRecordUsiBefore",
   COPY_RECORD_USI_ALL = "copyRecordUsiAll",
   COPY_RECORD_JKF = "copyRecordJkf",
+  COPY_RECORD_USEN = "copyRecordUsen",
   COPY_BOARD_SFEN = "copyRecordSfen",
   PASTE_RECORD = "pasteRecord",
   INSERT_INTERRUPT = "insertInterrupt",

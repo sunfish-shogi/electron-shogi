@@ -104,6 +104,9 @@ export function setup(): void {
       case MenuEvent.COPY_RECORD_JKF:
         store.copyRecordJKF();
         break;
+      case MenuEvent.COPY_RECORD_USEN:
+        store.copyRecordUSEN();
+        break;
       case MenuEvent.COPY_BOARD_SFEN:
         store.copyBoardSFEN();
         break;

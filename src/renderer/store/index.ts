@@ -1,4 +1,4 @@
-import api from "@/renderer/ipc/api";
+import api, { isMobileWebApp, isNative } from "@/renderer/ipc/api";
 import {
   Color,
   exportCSA,
@@ -208,6 +208,46 @@ class Store {
     this._reactive = refs;
     setOnUpdateUSIInfoHandler(this.updateUSIInfo.bind(refs));
     setOnUpdateUSIPonderInfoHandler(this.updateUSIPonderInfo.bind(refs));
+
+    // Web 版の場合はクエリから棋譜を読み込む。
+    const loadedFromURLParams = !isNative() && this.initRecordByURLParams();
+    if (isMobileWebApp()) {
+      const mobileRecordStorageKey = "mobile:record";
+      if (!loadedFromURLParams) {
+        const data = localStorage.getItem(mobileRecordStorageKey);
+        if (data) {
+          this.pasteRecord(data);
+          this.changePly(Number.MAX_SAFE_INTEGER);
+        }
+      }
+      const saveRecord = () => {
+        const data = exportKIF(this.record);
+        if (data) {
+          localStorage.setItem(mobileRecordStorageKey, data);
+        }
+      };
+      this.onResetRecordHandlers.push(saveRecord);
+      this.onChangePositionHandlers.push(saveRecord);
+      this.onUpdateCustomDataHandlers.push(saveRecord);
+      this.onUpdateFollowingMovesHandlers.push(saveRecord);
+      this.onUpdateRecordTreeHandlers.push(saveRecord);
+    }
+  }
+
+  private initRecordByURLParams(): boolean {
+    const urlParams = new URL(window.location.toString()).searchParams;
+    const usen = urlParams.get("usen");
+    if (!usen) {
+      return false;
+    }
+    const branch = parseInt(urlParams.get("branch") || "0", 10);
+    const ply = parseInt(urlParams.get("ply") || "0", 10);
+    const err = this.recordManager.resetByUSEN(usen, branch, ply);
+    if (err) {
+      useErrorStore().add(`棋譜の読み込み中にエラーが発生しました。: ${err}`);
+      return false;
+    }
+    return true;
   }
 
   addEventListener(event: "resetRecord", handler: ResetRecordHandler): void;
@@ -1113,6 +1153,11 @@ class Store {
   copyRecordJKF(): void {
     const str = exportJKFString(this.recordManager.record);
     navigator.clipboard.writeText(str);
+  }
+
+  copyRecordUSEN(): void {
+    const [usen] = this.recordManager.record.usen;
+    navigator.clipboard.writeText(usen);
   }
 
   pasteRecord(data: string): void {

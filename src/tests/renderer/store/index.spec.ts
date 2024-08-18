@@ -365,7 +365,7 @@ describe("store/index", () => {
   it("resetRecord", async () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
-      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array,
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
     const store = createStore();
     store.openRecord();
@@ -518,7 +518,7 @@ describe("store/index", () => {
   it("openRecord/kif/success", async () => {
     mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
     mockAPI.openRecord.mockResolvedValueOnce(
-      convert(sampleKIF, { type: "arraybuffer", to: "SJIS" }) as Uint8Array,
+      new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
     const store = createStore();
     store.openRecord();

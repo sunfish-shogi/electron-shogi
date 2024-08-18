@@ -479,6 +479,7 @@ export const zh_tw: Texts = {
   collapseSequentialSpaces: "整理連續空白",
   typeCustomTitleHere: "輸入自定義標題",
   displayEmptyElements: "顯示未定義資料",
+  share: "Share", // TODO: translate
   waitingForNewGame: "正在等待下一場對局開始。",
   waitingForPlayerSetup: "正在等待對局者準備。",
   insertedComment: "已加入備註。",

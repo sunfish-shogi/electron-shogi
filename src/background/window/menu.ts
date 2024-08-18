@@ -86,6 +86,7 @@ function createMenuTemplate(window: BrowserWindow) {
         menuItem(t.loadRecordFromWeb, MenuEvent.LOAD_REMOTE_RECORD, [AppState.NORMAL]),
         { type: "separator" },
         menuItem(t.batchConversion, MenuEvent.BATCH_CONVERSION, [AppState.NORMAL]),
+        menuItem(t.share, MenuEvent.SHARE, [AppState.NORMAL]),
         menuItem(
           t.exportPositionDiagram,
           MenuEvent.EXPORT_POSITION_IMAGE,

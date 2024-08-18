@@ -1,23 +1,21 @@
 <template>
   <div>
     <dialog ref="dialog" class="menu">
-      <div class="groups">
-        <div class="group">
-          <button data-hotkey="Escape" class="close" @click="onClose">
-            <Icon :icon="IconType.CLOSE" />
-            <div class="label">{{ t.back }}</div>
-          </button>
-        </div>
-        <div class="group">
-          <button @click="onLocalGame">
-            <Icon :icon="IconType.GAME" />
-            <div class="label">{{ t.offlineGame }}</div>
-          </button>
-          <button @click="onCSAGame">
-            <Icon :icon="IconType.INTERNET" />
-            <div class="label">{{ t.csaOnlineGame }}</div>
-          </button>
-        </div>
+      <div class="group">
+        <button data-hotkey="Escape" class="close" @click="onClose">
+          <Icon :icon="IconType.CLOSE" />
+          <div class="label">{{ t.back }}</div>
+        </button>
+      </div>
+      <div class="group">
+        <button @click="onLocalGame">
+          <Icon :icon="IconType.GAME" />
+          <div class="label">{{ t.offlineGame }}</div>
+        </button>
+        <button @click="onCSAGame">
+          <Icon :icon="IconType.INTERNET" />
+          <div class="label">{{ t.csaOnlineGame }}</div>
+        </button>
       </div>
     </dialog>
   </div>

@@ -23,6 +23,7 @@
     <LaunchUSIEngineDialog v-if="store.appState === AppState.LAUNCH_USI_ENGINE_DIALOG" />
     <ConnectToCSAServerDialog v-if="store.appState === AppState.CONNECT_TO_CSA_SERVER_DIALOG" />
     <LoadRemoteFileDialog v-if="store.appState === AppState.LOAD_REMOTE_FILE_DIALOG" />
+    <ShareDialog v-if="store.appState === AppState.SHARE_DIALOG" />
     <PieceSetChangeDialog v-if="store.appState === AppState.PIECE_SET_CHANGE_DIALOG" />
     <ResearchDialog v-if="store.researchState === ResearchState.STARTUP_DIALOG" />
     <CSAGameReadyDialog
@@ -79,6 +80,7 @@ import LaunchUSIEngineDialog from "./view/dialog/LaunchUSIEngineDialog.vue";
 import ConnectToCSAServerDialog from "./view/dialog/ConnectToCSAServerDialog.vue";
 import PieceSetChangeDialog from "./view/dialog/PieceSetChangeDialog.vue";
 import LoadRemoteFileDialog from "./view/dialog/LoadRemoteFileDialog.vue";
+import ShareDialog from "./view/dialog/ShareDialog.vue";
 import { useBusyState } from "./store/busy";
 import { useMessageStore } from "./store/message";
 import { useErrorStore } from "./store/error";

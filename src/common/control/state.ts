@@ -18,6 +18,7 @@ export enum AppState {
   LAUNCH_USI_ENGINE_DIALOG = "launchUsiEngineDialog",
   CONNECT_TO_CSA_SERVER_DIALOG = "connectToCsaServerDialog",
   LOAD_REMOTE_FILE_DIALOG = "loadRemoteFileDialog",
+  SHARE_DIALOG = "shareDialog",
 }
 
 export enum ResearchState {

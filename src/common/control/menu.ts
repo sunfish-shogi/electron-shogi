@@ -6,6 +6,7 @@ export enum MenuEvent {
   HISTORY = "history",
   LOAD_REMOTE_RECORD = "loadRemoteRecord",
   BATCH_CONVERSION = "batchConversion",
+  SHARE = "share",
   EXPORT_POSITION_IMAGE = "exportPositionImage",
   COPY_RECORD = "copyRecord",
   COPY_RECORD_KI2 = "copyRecordKi2",

@@ -83,6 +83,9 @@ export function setup(): void {
       case MenuEvent.BATCH_CONVERSION:
         store.showBatchConversionDialog();
         break;
+      case MenuEvent.SHARE:
+        store.showShareDialog();
+        break;
       case MenuEvent.EXPORT_POSITION_IMAGE:
         store.showExportBoardImageDialog();
         break;

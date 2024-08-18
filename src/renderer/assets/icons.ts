@@ -56,6 +56,8 @@ export enum IconType {
   RESUME = "resume",
   HELP = "help",
   LICENSE = "license",
+  LINK = "link",
+  SHARE = "share",
 }
 
 export const iconSourceMap = {
@@ -114,6 +116,8 @@ export const iconSourceMap = {
   [IconType.RESUME]: "icon/play_circle_FILL0.svg",
   [IconType.HELP]: "icon/help_FILL0.svg",
   [IconType.LICENSE]: "icon/license_FILL0.svg",
+  [IconType.LINK]: "icon/open_in_new_FILL0.svg",
+  [IconType.SHARE]: "icon/share_FILL0.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

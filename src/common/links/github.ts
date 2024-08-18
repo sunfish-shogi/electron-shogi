@@ -1,3 +1,5 @@
+import { ImmutableRecord } from "tsshogi";
+
 export const ghAccount = "sunfish-shogi";
 export const ghRepository = "electron-shogi";
 export const ghDomain = "github.com";
@@ -16,3 +18,21 @@ export function stableReleaseURL(tag: string) {
   return `https://${ghDomain}/${ghAccount}/${ghRepository}/releases/tag/${tag}`;
 }
 export const licenseURL = `https://${ghDomain}/${ghAccount}/${ghRepository}/blob/main/LICENSE`;
+
+const webAppBaseURL = `https://${ghioDomain}/${ghRepository}/webapp/index.html`;
+
+export function webAppURL(record?: ImmutableRecord) {
+  if (!record) {
+    return webAppBaseURL;
+  }
+  const [usen, branch] = record.usen;
+  const ply = record.current.ply;
+  return `${webAppBaseURL}?usen=${usen}&branch=${branch || 0}&ply=${ply || 0}`;
+}
+
+export function mobileWebAppURL(record?: ImmutableRecord) {
+  if (!record) {
+    return webAppBaseURL + "?mobile";
+  }
+  return `${webAppURL(record)}&mobile`;
+}

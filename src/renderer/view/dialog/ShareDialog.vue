@@ -33,11 +33,9 @@ import { mobileWebAppURL } from "@/common/links/github";
 import api from "@/renderer/ipc/api";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
-import { shogiExtendSharedBoardURL } from "@/common/links/shogiextend";
 import { shogiPlaygroundURL } from "@/common/links/mogproject";
 import { useAppSettings } from "@/renderer/store/settings";
 import { piyoShogiURL } from "@/common/links/piyoshogi";
-import { kyokumenpediaURL } from "@/common/links/kyokumenpedia";
 
 const store = useStore();
 const appSettings = useAppSettings();
@@ -62,18 +60,20 @@ const list = computed(() => {
       label: "Shogi Playground",
       url: shogiPlaygroundURL(store.record, appSettings.boardFlipping),
     },
-    {
-      label: "SHOGI-EXTEND",
-      url: shogiExtendSharedBoardURL(store.record),
-    },
+    // NOTE: 公式な文書で仕様への言及がないので除外する。
+    //{
+    //  label: "SHOGI-EXTEND",
+    //  url: shogiExtendSharedBoardURL(store.record),
+    //},
     {
       label: "ぴよ将棋",
       url: piyoShogiURL(store.record),
     },
-    {
-      label: "局面ぺディア",
-      url: kyokumenpediaURL(store.record.position),
-    },
+    // NOTE: 公式な文書で仕様への言及がないので除外する。
+    //{
+    //  label: "局面ぺディア",
+    //  url: kyokumenpediaURL(store.record.position),
+    //},
   ];
 });
 

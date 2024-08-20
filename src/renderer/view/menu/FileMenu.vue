@@ -7,6 +7,12 @@
           <div class="label">{{ t.back }}</div>
         </button>
       </div>
+      <div v-if="isMobileWebApp()" class="group">
+        <button @click="onFlip">
+          <Icon :icon="IconType.FLIP" />
+          <div class="label">{{ t.flipBoard }}</div>
+        </button>
+      </div>
       <div class="group">
         <button :disabled="!states.newFile" @click="onNewFile">
           <Icon :icon="IconType.FILE" />
@@ -123,6 +129,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   uninstallHotKeyForDialog(dialog.value);
 });
+const onFlip = () => {
+  useAppSettings().flipBoard();
+  emit("close");
+};
 const onNewFile = () => {
   store.resetRecord();
   emit("close");

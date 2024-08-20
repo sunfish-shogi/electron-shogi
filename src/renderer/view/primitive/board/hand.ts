@@ -173,11 +173,12 @@ export class CompactHandLayoutBuilder {
       if (hand.count(type) > 1) {
         const shadow = 2 * this.ratio;
         const blur = 2 * this.ratio;
+        const x = hand.count(type) < 10 ? 0.6 : 0.3;
         numbers.push({
           id: type,
           character: hand.count(type).toString(),
           style: {
-            left: compactHandParams.squareWidth * 0.6 * this.ratio + "px",
+            left: compactHandParams.squareWidth * x * this.ratio + "px",
             top: top + compactHandParams.squareHeight * 0.5 * this.ratio + "px",
             "font-size": 40 * this.ratio + "px",
             "font-weight": "900",
@@ -278,11 +279,12 @@ export class PortraitHandLayoutBuilder {
       if (hand.count(type) > 1) {
         const shadow = 2 * this.ratio;
         const blur = 2 * this.ratio;
+        const x = hand.count(type) < 10 ? 0.6 : 0.3;
         numbers.push({
           id: type,
           character: hand.count(type).toString(),
           style: {
-            left: left + portraitHandParams.squareWidth * 0.6 * this.ratio + "px",
+            left: left + portraitHandParams.squareWidth * x * this.ratio + "px",
             top: portraitHandParams.squareHeight * 0.5 * this.ratio + "px",
             "font-size": 40 * this.ratio + "px",
             "font-weight": "900",

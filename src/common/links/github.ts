@@ -1,4 +1,8 @@
-import { ImmutableRecord } from "tsshogi";
+import {
+  getBlackPlayerNamePreferShort,
+  getWhitePlayerNamePreferShort,
+  ImmutableRecord,
+} from "tsshogi";
 
 export const ghAccount = "sunfish-shogi";
 export const ghRepository = "electron-shogi";
@@ -27,7 +31,9 @@ export function webAppURL(record?: ImmutableRecord) {
   }
   const [usen, branch] = record.usen;
   const ply = record.current.ply;
-  return `${webAppBaseURL}?usen=${usen}&branch=${branch || 0}&ply=${ply || 0}`;
+  const bname = encodeURIComponent(getBlackPlayerNamePreferShort(record.metadata) || "");
+  const wname = encodeURIComponent(getWhitePlayerNamePreferShort(record.metadata) || "");
+  return `${webAppBaseURL}?usen=${usen}&branch=${branch || 0}&ply=${ply || 0}&bname=${bname}&wname=${wname}`;
 }
 
 export function mobileWebAppURL(record?: ImmutableRecord) {

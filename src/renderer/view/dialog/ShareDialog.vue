@@ -3,15 +3,17 @@
     <dialog ref="dialog">
       <div class="title">{{ t.share }}</div>
       <div class="form-group scroll">
-        <div v-for="elem of list" :key="elem.label" class="form-item">
+        <div v-for="elem of list" :key="elem.label" class="form-item row wrap">
           <div class="form-item-label-wide">{{ elem.label }}</div>
-          <input class="url" type="text" readonly :value="elem.url" />
-          <button class="action" @click="copy(elem.url)">
-            <Icon :icon="IconType.COPY" />
-          </button>
-          <button class="action" @click="api.openWebBrowser(elem.url)">
-            <Icon :icon="IconType.LINK" />
-          </button>
+          <div class="row">
+            <input class="url" type="text" readonly :value="elem.url" />
+            <button class="action" @click="copy(elem.url)">
+              <Icon :icon="IconType.COPY" />
+            </button>
+            <button class="action" @click="api.openWebBrowser(elem.url)">
+              <Icon :icon="IconType.LINK" />
+            </button>
+          </div>
         </div>
       </div>
       <div class="main-buttons">

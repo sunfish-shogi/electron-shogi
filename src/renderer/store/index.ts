@@ -247,6 +247,10 @@ class Store {
       useErrorStore().add(`棋譜の読み込み中にエラーが発生しました。: ${err}`);
       return false;
     }
+    const bname = urlParams.get("bname") || "";
+    const wname = urlParams.get("wname") || "";
+    this.recordManager.updateStandardMetadata({ key: RecordMetadataKey.BLACK_NAME, value: bname });
+    this.recordManager.updateStandardMetadata({ key: RecordMetadataKey.WHITE_NAME, value: wname });
     return true;
   }
 

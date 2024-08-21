@@ -29,10 +29,8 @@ import {
   RecordManager,
   SearchInfoSenderType,
   SearchInfo as SearchInfoParam,
-  ResetRecordHandler,
   ChangePositionHandler,
   UpdateCustomDataHandler,
-  UpdateFollowingMovesHandler,
   PieceSet,
   UpdateTreeHandler,
 } from "./record";
@@ -139,18 +137,12 @@ class Store {
   private researchManager = new ResearchManager();
   private _reactive: UnwrapNestedRefs<Store>;
   private garbledNotified = false;
-  private onResetRecordHandlers: ResetRecordHandler[] = [];
   private onChangePositionHandlers: ChangePositionHandler[] = [];
   private onUpdateRecordTreeHandlers: UpdateTreeHandler[] = [];
   private onUpdateCustomDataHandlers: UpdateCustomDataHandler[] = [];
-  private onUpdateFollowingMovesHandlers: (() => void)[] = [];
 
   constructor() {
     this.recordManager
-      .on("resetRecord", () => {
-        this.updateResearchPosition();
-        this.onResetRecordHandlers.forEach((handler) => handler());
-      })
       .on("changePosition", () => {
         this.updateResearchPosition();
         this.onChangePositionHandlers.forEach((handler) => handler());
@@ -160,9 +152,6 @@ class Store {
       })
       .on("updateCustomData", () => {
         this.onUpdateCustomDataHandlers.forEach((handler) => handler());
-      })
-      .on("updateFollowingMoves", () => {
-        this.onUpdateFollowingMovesHandlers.forEach((handler) => handler());
       })
       .on("backup", () => {
         return {
@@ -226,10 +215,8 @@ class Store {
           localStorage.setItem(mobileRecordStorageKey, data);
         }
       };
-      this.onResetRecordHandlers.push(saveRecord);
       this.onChangePositionHandlers.push(saveRecord);
       this.onUpdateCustomDataHandlers.push(saveRecord);
-      this.onUpdateFollowingMovesHandlers.push(saveRecord);
       this.onUpdateRecordTreeHandlers.push(saveRecord);
     }
   }
@@ -254,16 +241,11 @@ class Store {
     return true;
   }
 
-  addEventListener(event: "resetRecord", handler: ResetRecordHandler): void;
   addEventListener(event: "changePosition", handler: ChangePositionHandler): void;
   addEventListener(event: "updateRecordTree", handler: UpdateTreeHandler): void;
   addEventListener(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
-  addEventListener(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
   addEventListener(event: string, handler: unknown): void {
     switch (event) {
-      case "resetRecord":
-        this.onResetRecordHandlers.push(handler as ResetRecordHandler);
-        break;
       case "changePosition":
         this.onChangePositionHandlers.push(handler as ChangePositionHandler);
         break;
@@ -273,22 +255,14 @@ class Store {
       case "updateCustomData":
         this.onUpdateCustomDataHandlers.push(handler as UpdateCustomDataHandler);
         break;
-      case "updateFollowingMoves":
-        this.onUpdateFollowingMovesHandlers.push(handler as UpdateFollowingMovesHandler);
-        break;
     }
   }
 
-  removeEventListener(event: "resetRecord", handler: ResetRecordHandler): void;
   removeEventListener(event: "changePosition", handler: ChangePositionHandler): void;
   removeEventListener(event: "updateRecordTree", handler: UpdateTreeHandler): void;
   removeEventListener(event: "updateCustomData", handler: UpdateCustomDataHandler): void;
-  removeEventListener(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): void;
   removeEventListener(event: string, handler: unknown): void {
     switch (event) {
-      case "resetRecord":
-        this.onResetRecordHandlers = this.onResetRecordHandlers.filter((h) => h !== handler);
-        break;
       case "changePosition":
         this.onChangePositionHandlers = this.onChangePositionHandlers.filter((h) => h !== handler);
         break;
@@ -299,11 +273,6 @@ class Store {
         break;
       case "updateCustomData":
         this.onUpdateCustomDataHandlers = this.onUpdateCustomDataHandlers.filter(
-          (h) => h !== handler,
-        );
-        break;
-      case "updateFollowingMoves":
-        this.onUpdateFollowingMovesHandlers = this.onUpdateFollowingMovesHandlers.filter(
           (h) => h !== handler,
         );
         break;

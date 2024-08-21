@@ -308,9 +308,6 @@ export class RecordManager {
   private _recordFilePath?: string;
   private _unsaved = false;
   private _sourceURL?: string;
-  private onResetRecord: ResetRecordHandler = () => {
-    /* noop */
-  };
   private onChangePosition: ChangePositionHandler = () => {
     /* noop */
   };
@@ -318,9 +315,6 @@ export class RecordManager {
     /* noop */
   };
   private onUpdateCustomData: UpdateCustomDataHandler = () => {
-    /* noop */
-  };
-  private onUpdateFollowingMoves: UpdateFollowingMovesHandler = () => {
     /* noop */
   };
   private onBackup: BackupHandler = () => {
@@ -375,7 +369,7 @@ export class RecordManager {
     this._unsaved = false;
     this._recordFilePath = undefined;
     this._sourceURL = undefined;
-    this.onResetRecord();
+    this.onChangePosition();
   }
 
   private replaceRecord(record: Record, option?: replaceRecordOption): void {
@@ -386,7 +380,7 @@ export class RecordManager {
     this._unsaved = !option?.markAsSaved;
     this._sourceURL = undefined;
     restoreCustomData(this._record);
-    this.onResetRecord();
+    this.onChangePosition();
   }
 
   reset(): void {
@@ -514,7 +508,7 @@ export class RecordManager {
     this._record.clear(position);
     this._unsaved = true;
     this._recordFilePath = undefined;
-    this.onResetRecord();
+    this.onChangePosition();
   }
 
   swapNextTurn(): void {
@@ -616,6 +610,7 @@ export class RecordManager {
   removeCurrentMove(): boolean {
     if (this._record.removeCurrentMove()) {
       this._unsaved = true;
+      this.onUpdateTree();
       return true;
     }
     return false;
@@ -624,6 +619,7 @@ export class RecordManager {
   removeNextMove(): boolean {
     if (this._record.removeNextMove()) {
       this._unsaved = true;
+      this.onUpdateTree();
       return true;
     }
     return false;
@@ -778,7 +774,7 @@ export class RecordManager {
       }
       this._record.goto(ply);
       this._unsaved = true;
-      this.onUpdateFollowingMoves();
+      this.onUpdateTree();
       return n;
     } finally {
       this.bindRecordHandlers();
@@ -797,17 +793,12 @@ export class RecordManager {
     this._unsaved = true;
   }
 
-  on(event: "resetRecord", handler: ResetRecordHandler): this;
   on(event: "changePosition", handler: ChangePositionHandler): this;
   on(event: "updateTree", handler: () => void): this;
   on(event: "updateCustomData", handler: UpdateCustomDataHandler): this;
-  on(event: "updateFollowingMoves", handler: UpdateFollowingMovesHandler): this;
   on(event: "backup", handler: BackupHandler): this;
   on(event: string, handler: unknown): this {
     switch (event) {
-      case "resetRecord":
-        this.onResetRecord = handler as ResetRecordHandler;
-        break;
       case "changePosition":
         this.onChangePosition = handler as ChangePositionHandler;
         this.bindRecordHandlers();
@@ -817,9 +808,6 @@ export class RecordManager {
         break;
       case "updateCustomData":
         this.onUpdateCustomData = handler as UpdateCustomDataHandler;
-        break;
-      case "updateFollowingMoves":
-        this.onUpdateFollowingMoves = handler as UpdateFollowingMovesHandler;
         break;
       case "backup":
         this.onBackup = handler as BackupHandler;

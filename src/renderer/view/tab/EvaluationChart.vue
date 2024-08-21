@@ -351,21 +351,17 @@ onMounted(() => {
     },
     { deep: true },
   );
-  store.addEventListener("resetRecord", updateChartLazy);
   store.addEventListener("changePosition", updateChartLazy);
   store.addEventListener("updateRecordTree", updateChartLazy);
   store.addEventListener("updateCustomData", updateChartLazy);
-  store.addEventListener("updateFollowingMoves", updateChartLazy);
 });
 
 onUnmounted(() => {
   chart.destroy();
   lazy.clear();
-  store.removeEventListener("resetRecord", updateChartLazy);
   store.removeEventListener("changePosition", updateChartLazy);
   store.removeEventListener("updateRecordTree", updateChartLazy);
   store.removeEventListener("updateCustomData", updateChartLazy);
-  store.removeEventListener("updateFollowingMoves", updateChartLazy);
 });
 
 const style = computed(() => {

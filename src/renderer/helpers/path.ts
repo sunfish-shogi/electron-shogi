@@ -6,6 +6,10 @@ import {
 } from "tsshogi";
 import { getDateString } from "@/common/helpers/datetime";
 
+export function basename(path: string): string {
+  return path.substring(Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")) + 1);
+}
+
 export function dirname(path: string): string {
   return path.substring(0, Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")));
 }

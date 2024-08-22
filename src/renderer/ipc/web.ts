@@ -15,6 +15,7 @@ import { VersionStatus } from "@/background/version/types";
 import { SessionStates } from "@/common/advanced/monitor";
 import { emptyLayoutProfileList } from "@/common/settings/layout";
 import * as uri from "@/common/uri";
+import { basename } from "@/renderer/helpers/path";
 
 enum STORAGE_KEY {
   APP_SETTINGS = "appSetting",
@@ -25,6 +26,8 @@ enum STORAGE_KEY {
   MATE_SEARCH_SETTINGS = "mateSearchSetting",
   CSA_GAME_SETTINGS_HISTORY = "csaGameSettingHistory",
 }
+
+const fileCache = new Map<string, ArrayBuffer>();
 
 // Electron を使わずにシンプルな Web アプリケーションとして実行した場合に使用します。
 export const webAPI: Bridge = {
@@ -152,19 +155,55 @@ export const webAPI: Bridge = {
     return "null";
   },
   async showOpenRecordDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", ".kif,.ki2,.kifu,.ki2u,.csa,.jkf");
+    return new Promise<string>((resolve, reject) => {
+      input.click();
+      input.onchange = () => {
+        const file = input.files?.[0];
+        if (file) {
+          file
+            .arrayBuffer()
+            .then((data) => {
+              const fileURI = uri.issueTempFileURI(file.name);
+              fileCache.clear();
+              fileCache.set(fileURI, data);
+              resolve(fileURI);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        } else {
+          reject(new Error("invalid file"));
+        }
+      };
+      input.oncancel = () => {
+        resolve("");
+      };
+    });
   },
-  async showSaveRecordDialog(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  async showSaveRecordDialog(defualtPath: string): Promise<string> {
+    return defualtPath;
   },
   async showSaveMergedRecordDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
-  async openRecord(): Promise<Uint8Array> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  async openRecord(uri: string): Promise<Uint8Array> {
+    const data = fileCache.get(uri);
+    if (data) {
+      return new Uint8Array(data);
+    }
+    return Promise.reject(new Error("invalid URI"));
   },
-  async saveRecord(): Promise<void> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  async saveRecord(path: string, data: Uint8Array): Promise<void> {
+    const blob = new Blob([data], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = basename(path);
+    a.click();
+    URL.revokeObjectURL(url);
   },
   async loadRecordFileHistory(): Promise<string> {
     return JSON.stringify(getEmptyHistory());

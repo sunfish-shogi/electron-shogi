@@ -25,6 +25,7 @@ import { useMessageStore } from "@/renderer/store/message";
 import { useBusyState } from "@/renderer/store/busy";
 import { useErrorStore } from "@/renderer/store/error";
 import { useConfirmationStore } from "@/renderer/store/confirm";
+import { RecordFileFormat } from "@/common/file/record";
 
 vi.mock("@/renderer/devices/audio");
 vi.mock("@/renderer/ipc/api");
@@ -516,8 +517,8 @@ describe("store/index", () => {
   });
 
   it("openRecord/kif/success", async () => {
-    mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
-    mockAPI.openRecord.mockResolvedValueOnce(
+    mockAPI.showOpenRecordDialog.mockResolvedValue("/test/sample.kif");
+    mockAPI.openRecord.mockResolvedValue(
       new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
     const store = createStore();
@@ -539,8 +540,8 @@ describe("store/index", () => {
   });
 
   it("openRecord/kif-utf8/success", async () => {
-    mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kif");
-    mockAPI.openRecord.mockResolvedValueOnce(
+    mockAPI.showOpenRecordDialog.mockResolvedValue("/test/sample.kif");
+    mockAPI.openRecord.mockResolvedValue(
       new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" })),
     );
     const store = createStore();
@@ -562,8 +563,8 @@ describe("store/index", () => {
   });
 
   it("openRecord/kifu/success", async () => {
-    mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.kifu");
-    mockAPI.openRecord.mockResolvedValueOnce(
+    mockAPI.showOpenRecordDialog.mockResolvedValue("/test/sample.kifu");
+    mockAPI.openRecord.mockResolvedValue(
       new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "UTF8" })),
     );
     const store = createStore();
@@ -585,8 +586,8 @@ describe("store/index", () => {
   });
 
   it("openRecord/csa/success", async () => {
-    mockAPI.showOpenRecordDialog.mockResolvedValueOnce("/test/sample.csa");
-    mockAPI.openRecord.mockResolvedValueOnce(new TextEncoder().encode(sampleCSA));
+    mockAPI.showOpenRecordDialog.mockResolvedValue("/test/sample.csa");
+    mockAPI.openRecord.mockResolvedValue(new TextEncoder().encode(sampleCSA));
     const store = createStore();
     store.openRecord();
     expect(useBusyState().isBusy).toBeTruthy();
@@ -614,7 +615,7 @@ describe("store/index", () => {
   });
 
   it("openRecord/cancel", async () => {
-    mockAPI.showOpenRecordDialog.mockResolvedValueOnce("");
+    mockAPI.showOpenRecordDialog.mockResolvedValue("");
     const store = createStore();
     store.openRecord();
     expect(useBusyState().isBusy).toBeTruthy();
@@ -625,8 +626,8 @@ describe("store/index", () => {
   });
 
   it("saveRecord/success", async () => {
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("/test/sample.csa");
-    mockAPI.saveRecord.mockResolvedValueOnce();
+    mockAPI.showSaveRecordDialog.mockResolvedValue("/test/sample.csa");
+    mockAPI.saveRecord.mockResolvedValue();
     const store = createStore();
     store.saveRecord();
     await new Promise((resolve) => setTimeout(resolve));
@@ -650,7 +651,7 @@ describe("store/index", () => {
   });
 
   it("saveRecord/cancel", async () => {
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("");
+    mockAPI.showSaveRecordDialog.mockResolvedValue("");
     const store = createStore();
     store.saveRecord();
     await new Promise((resolve) => setTimeout(resolve));
@@ -662,11 +663,11 @@ describe("store/index", () => {
   });
 
   it("saveRecord/noOverwrite", async () => {
-    mockAPI.openRecord.mockResolvedValueOnce(
+    mockAPI.openRecord.mockResolvedValue(
       new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("/test/sample2.csa");
-    mockAPI.saveRecord.mockResolvedValueOnce();
+    mockAPI.showSaveRecordDialog.mockResolvedValue("/test/sample2.csa");
+    mockAPI.saveRecord.mockResolvedValue();
     const store = createStore();
     store.openRecord("/test/sample1.csa");
     await new Promise((resolve) => setTimeout(resolve));
@@ -681,11 +682,11 @@ describe("store/index", () => {
   });
 
   it("saveRecord/overwrite", async () => {
-    mockAPI.openRecord.mockResolvedValueOnce(
+    mockAPI.openRecord.mockResolvedValue(
       new Uint8Array(convert(sampleKIF, { type: "arraybuffer", to: "SJIS" })),
     );
-    mockAPI.showSaveRecordDialog.mockResolvedValueOnce("/test/sample2.csa");
-    mockAPI.saveRecord.mockResolvedValueOnce();
+    mockAPI.showSaveRecordDialog.mockResolvedValue("/test/sample2.csa");
+    mockAPI.saveRecord.mockResolvedValue();
     const store = createStore();
     store.openRecord("/test/sample1.csa");
     await new Promise((resolve) => setTimeout(resolve));
@@ -697,6 +698,24 @@ describe("store/index", () => {
     expect(store.isRecordFileUnsaved).toBeFalsy();
     expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(0);
     expect(mockAPI.saveRecord).toBeCalledTimes(1);
+  });
+
+  it("saveRecord/specificFormat", async () => {
+    mockAPI.showSaveRecordDialog.mockResolvedValue("/test/sample.jkf");
+    mockAPI.saveRecord.mockResolvedValue();
+    const store = createStore();
+    store.saveRecord({ format: RecordFileFormat.JKF });
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(useBusyState().isBusy).toBeFalsy();
+    expect(store.recordFilePath).toBe("/test/sample.jkf");
+    expect(useErrorStore().hasError).toBeFalsy();
+    expect(mockAPI.showSaveRecordDialog).toBeCalledTimes(1);
+    expect(mockAPI.showSaveRecordDialog.mock.calls[0][0]).toMatch(/\.jkf$/);
+    expect(mockAPI.saveRecord).toBeCalledTimes(1);
+    expect(mockAPI.saveRecord.mock.calls[0][0]).toBe("/test/sample.jkf");
+    const data = new TextDecoder().decode(mockAPI.saveRecord.mock.calls[0][1]);
+    expect(data).toMatch(/^\{.*\}$/);
+    expect(store.isRecordFileUnsaved).toBeFalsy();
   });
 
   it("showJishogiPoints", () => {

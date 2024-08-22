@@ -1189,7 +1189,7 @@ class Store {
       });
   }
 
-  saveRecord(options?: { overwrite: boolean }): void {
+  saveRecord(options?: { overwrite?: boolean; format?: RecordFileFormat }): void {
     if (this.appState !== AppState.NORMAL || useBusyState().isBusy) {
       return;
     }
@@ -1202,11 +1202,11 @@ class Store {
         }
         const appSettings = useAppSettings();
         const defaultPath =
-          path ||
+          (!options?.format && path) ||
           generateRecordFileName(
             this.recordManager.record.metadata,
             appSettings.recordFileNameTemplate,
-            appSettings.defaultRecordFileFormat,
+            options?.format || appSettings.defaultRecordFileFormat,
           );
         return api.showSaveRecordDialog(defaultPath);
       })

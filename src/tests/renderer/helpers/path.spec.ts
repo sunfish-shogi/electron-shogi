@@ -1,39 +1,45 @@
-import { generateRecordFileName, dirname, join } from "@/renderer/helpers/path";
+import { generateRecordFileName, dirname, join, basename } from "@/renderer/helpers/path";
 import { RecordMetadata, RecordMetadataKey } from "tsshogi";
 
 describe("helpers/path", () => {
-  it("dirname", async () => {
+  it("basename", () => {
+    expect(basename("/home/user/foo/bar.baz")).toBe("bar.baz");
+    expect(basename("C:\\\\foo\\bar.baz")).toBe("bar.baz");
+    expect(basename("file:///home/user/foo/bar.baz")).toBe("bar.baz");
+  });
+
+  it("dirname", () => {
     expect(dirname("/home/user/foo/bar.baz")).toBe("/home/user/foo");
     expect(dirname("C:\\\\foo\\bar.baz")).toBe("C:\\\\foo");
     expect(dirname("file:///home/user/foo/bar.baz")).toBe("file:///home/user/foo");
   });
 
-  it("join", async () => {
+  it("join", () => {
     expect(join("/home/user/foo", "bar/baz.qux")).toBe("/home/user/foo/bar/baz.qux");
     expect(join("/home/user/foo/", "/bar/baz.qux")).toBe("/home/user/foo/bar/baz.qux");
     expect(join("./foo/", "/bar/baz.qux")).toBe("./foo/bar/baz.qux");
     expect(join("C:\\\\Users\\foo\\", "\\bar\\baz.qux")).toBe("C:\\\\Users\\foo\\bar\\baz.qux");
   });
 
-  it("generateRecordFileName/emptyMetadata", async () => {
+  it("generateRecordFileName/emptyMetadata", () => {
     const meta = new RecordMetadata();
     expect(generateRecordFileName(meta)).toMatch(/^[0-9]{8}\.kif$/);
   });
 
-  it("generateRecordFileName/withDate", async () => {
+  it("generateRecordFileName/withDate", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/09/30");
     expect(generateRecordFileName(meta)).toBe("20220930.kif");
   });
 
-  it("generateRecordFileName/withStartDateTime", async () => {
+  it("generateRecordFileName/withStartDateTime", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.START_DATETIME, "2022/01/02 11:30");
     expect(generateRecordFileName(meta)).toBe("20220102_1130.kif");
   });
 
-  it("generateRecordFileName/withTitle", async () => {
+  it("generateRecordFileName/withTitle", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.START_DATETIME, "2022/01/02 11:30");
@@ -41,7 +47,7 @@ describe("helpers/path", () => {
     expect(generateRecordFileName(meta)).toBe("20220102_1130_My New Game.kif");
   });
 
-  it("generateRecordFileName/withTournament", async () => {
+  it("generateRecordFileName/withTournament", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.START_DATETIME, "2022/01/02 11:30");
@@ -49,7 +55,7 @@ describe("helpers/path", () => {
     expect(generateRecordFileName(meta)).toBe("20220102_1130_My Tournament.kif");
   });
 
-  it("generateRecordFileName/withPlayerName", async () => {
+  it("generateRecordFileName/withPlayerName", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "先手の人");
@@ -57,7 +63,7 @@ describe("helpers/path", () => {
     expect(generateRecordFileName(meta)).toBe("20220101_先手の人_後手の人.kif");
   });
 
-  it("generateRecordFileName/withTitleAndPlayerName", async () => {
+  it("generateRecordFileName/withTitleAndPlayerName", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.TITLE, "My New Game");
@@ -66,7 +72,7 @@ describe("helpers/path", () => {
     expect(generateRecordFileName(meta)).toBe("20220101_My New Game_先手の人_後手の人.kif");
   });
 
-  it("generateRecordFileName/escape", async () => {
+  it("generateRecordFileName/escape", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.BLACK_NAME, "Foo:Bar<Baz");
@@ -74,7 +80,7 @@ describe("helpers/path", () => {
     expect(generateRecordFileName(meta)).toBe("20220101_Foo_Bar_Baz_Qux_Quux_Corge.kif");
   });
 
-  it("generateRecordFileName/customTemplate", async () => {
+  it("generateRecordFileName/customTemplate", () => {
     const meta = new RecordMetadata();
     meta.setStandardMetadata(RecordMetadataKey.DATE, "2022/01/01");
     meta.setStandardMetadata(RecordMetadataKey.TITLE, "My New Game");

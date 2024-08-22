@@ -987,15 +987,17 @@ class Store {
   }
 
   initializePositionBySFEN(sfen: string): void {
-    if (this.appState != AppState.POSITION_EDITING) {
-      return;
+    if (this.appState === AppState.NORMAL || this.appState === AppState.POSITION_EDITING) {
+      this.showConfirmation({
+        message:
+          this.appState === AppState.NORMAL
+            ? t.areYouSureWantToClearRecord
+            : t.areYouSureWantToDiscardPosition,
+        onOk: () => {
+          this.recordManager.resetBySFEN(sfen);
+        },
+      });
     }
-    this.showConfirmation({
-      message: t.areYouSureWantToDiscardPosition,
-      onOk: () => {
-        this.recordManager.resetBySFEN(sfen);
-      },
-    });
   }
 
   changeTurn(): void {

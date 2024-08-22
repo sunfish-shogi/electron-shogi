@@ -96,6 +96,7 @@
         </button>
       </div>
     </dialog>
+    <InitialPositionMenu v-if="isInitialPositionMenuVisible" @close="emit('close')" />
   </div>
 </template>
 
@@ -111,6 +112,7 @@ import api, { isMobileWebApp, isNative } from "@/renderer/ipc/api";
 import { useAppSettings } from "@/renderer/store/settings";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { openCopyright } from "@/renderer/helpers/copyright";
+import InitialPositionMenu from "@/renderer/view/menu/InitialPositionMenu.vue";
 
 const emit = defineEmits<{
   close: [];
@@ -119,6 +121,7 @@ const emit = defineEmits<{
 const store = useStore();
 const appSettings = useAppSettings();
 const dialog = ref();
+const isInitialPositionMenuVisible = ref(false);
 const onClose = () => {
   emit("close");
 };
@@ -134,8 +137,12 @@ const onFlip = () => {
   emit("close");
 };
 const onNewFile = () => {
-  store.resetRecord();
-  emit("close");
+  if (isMobileWebApp()) {
+    isInitialPositionMenuVisible.value = true;
+  } else {
+    store.resetRecord();
+    emit("close");
+  }
 };
 const onOpen = () => {
   store.openRecord();

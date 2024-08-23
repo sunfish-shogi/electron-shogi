@@ -18,7 +18,7 @@
           <Icon :icon="IconType.FILE" />
           <div class="label">{{ t.clear }}</div>
         </button>
-        <button v-if="isNative()" :disabled="!states.open" @click="onOpen">
+        <button :disabled="!states.open" @click="onOpen">
           <Icon :icon="IconType.OPEN" />
           <div class="label">{{ t.open }}</div>
         </button>
@@ -30,6 +30,22 @@
           <Icon :icon="IconType.SAVE_AS" />
           <div class="label">{{ t.saveAs }}</div>
         </button>
+        <div
+          v-for="format of [
+            RecordFileFormat.KIF,
+            RecordFileFormat.KIFU,
+            RecordFileFormat.KI2,
+            RecordFileFormat.KI2U,
+            RecordFileFormat.CSA,
+            RecordFileFormat.JKF,
+          ]"
+          :key="format"
+        >
+          <button v-if="!isNative()" :disabled="!states.saveAs" @click="onSaveForWeb(format)">
+            <Icon :icon="IconType.SAVE" />
+            <div class="label">{{ format }}</div>
+          </button>
+        </div>
         <button v-if="isNative()" :disabled="!states.history" @click="onHistory">
           <Icon :icon="IconType.HISTORY" />
           <div class="label">{{ t.history }}</div>
@@ -112,6 +128,7 @@ import api, { isMobileWebApp, isNative } from "@/renderer/ipc/api";
 import { useAppSettings } from "@/renderer/store/settings";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
 import { openCopyright } from "@/renderer/helpers/copyright";
+import { RecordFileFormat } from "@/common/file/record";
 import InitialPositionMenu from "@/renderer/view/menu/InitialPositionMenu.vue";
 
 const emit = defineEmits<{
@@ -154,6 +171,10 @@ const onSave = () => {
 };
 const onSaveAs = () => {
   store.saveRecord();
+  emit("close");
+};
+const onSaveForWeb = (format: RecordFileFormat) => {
+  store.saveRecord({ format });
   emit("close");
 };
 const onHistory = () => {

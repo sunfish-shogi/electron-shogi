@@ -33,7 +33,7 @@ export type Layout = {
   boardStyle: { [key: string]: string };
   blackHandStyle: { [key: string]: string };
   whiteHandStyle: { [key: string]: string };
-  turn: Turn;
+  turn?: Turn;
   blackPlayerName: PlayerName;
   whitePlayerName: PlayerName;
   blackClock?: Clock;

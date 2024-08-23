@@ -77,6 +77,20 @@ export class PortraitLayoutBuilder {
       };
     };
 
+    const buildClockLayout = (color: Color): PlayerName => {
+      const displayColor = this.config.flip ? reverseColor(color) : color;
+      const params = portraitViewParams.clock[displayColor];
+      return {
+        style: {
+          left: params.x * ratio + "px",
+          top: params.y * ratio + "px",
+          width: portraitViewParams.clock.width * ratio + "px",
+          height: portraitViewParams.clock.height * ratio + "px",
+          "font-size": portraitViewParams.clock.fontSize * ratio + "px",
+        },
+      };
+    };
+
     const boardBasePoint = this.boardBasePoint;
     const blackHandBasePoint = this.blackHandBasePoint;
     const whiteHandBasePoint = this.whiteHandBasePoint;
@@ -96,9 +110,11 @@ export class PortraitLayoutBuilder {
         left: whiteHandBasePoint.x + "px",
         top: whiteHandBasePoint.y + "px",
       },
-      turn: buildTurnLayout(),
+      turn: this.config.hideClock ? buildTurnLayout() : undefined,
       blackPlayerName: buildPlayerNameLayout(Color.BLACK),
       whitePlayerName: buildPlayerNameLayout(Color.WHITE),
+      blackClock: this.config.hideClock ? undefined : buildClockLayout(Color.BLACK),
+      whiteClock: this.config.hideClock ? undefined : buildClockLayout(Color.WHITE),
     };
   }
 }

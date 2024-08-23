@@ -181,7 +181,7 @@ export const compactViewParams = {
       y: 3,
     },
     white: {
-      x: 306,
+      x: 304,
       y: 3,
     },
     width: 214,
@@ -200,6 +200,19 @@ export const compactViewParams = {
     width: 300,
     height: 52,
     fontSize: 25,
+  },
+  clock: {
+    black: {
+      x: 575,
+      y: 0,
+    },
+    white: {
+      x: 300,
+      y: 0,
+    },
+    width: 214,
+    height: 52,
+    fontSize: 30,
   },
 };
 
@@ -259,5 +272,18 @@ export const portraitViewParams = {
     width: 214,
     height: 52,
     fontSize: 25,
+  },
+  clock: {
+    black: {
+      x: 664,
+      y: 1064,
+    },
+    white: {
+      x: 0,
+      y: 50,
+    },
+    width: 214,
+    height: 52,
+    fontSize: 30,
   },
 };

@@ -136,7 +136,7 @@
       </div>
 
       <!-- 手番 -->
-      <div class="turn" :style="main.turn.style">{{ nextMoveLabel }}</div>
+      <div v-if="main.turn" class="turn" :style="main.turn.style">{{ nextMoveLabel }}</div>
 
       <!-- コントロールパネル -->
       <div v-if="main.control" :style="main.control.left.style">

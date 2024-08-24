@@ -44,6 +44,7 @@ import { SCORE_MATE_INFINITE } from "@/common/game/usi";
 import api from "@/renderer/ipc/api";
 import { LogLevel } from "@/common/log";
 import { secondsToMMSS } from "@/common/helpers/time";
+import { clearURLParams, loadRecordForWebApp, saveRecordForWebApp } from "./webapp";
 
 export enum SearchInfoSenderType {
   PLAYER,
@@ -296,11 +297,9 @@ type BackupOptions = {
   returnCode?: string;
 };
 
-export type ResetRecordHandler = () => void;
 export type ChangePositionHandler = () => void;
 export type UpdateTreeHandler = () => void;
 export type UpdateCustomDataHandler = () => void;
-export type UpdateFollowingMovesHandler = () => void;
 export type BackupHandler = () => BackupOptions | null | void;
 
 export class RecordManager {
@@ -308,18 +307,20 @@ export class RecordManager {
   private _recordFilePath?: string;
   private _unsaved = false;
   private _sourceURL?: string;
-  private onChangePosition: ChangePositionHandler = () => {
-    /* noop */
-  };
-  private onUpdateTree: UpdateTreeHandler = () => {
-    /* noop */
-  };
-  private onUpdateCustomData: UpdateCustomDataHandler = () => {
-    /* noop */
-  };
-  private onBackup: BackupHandler = () => {
-    /* noop */
-  };
+  private changePositionHandler: ChangePositionHandler | null = null;
+  private updateTreeHandler: UpdateTreeHandler | null = null;
+  private updateCustomDataHandler: UpdateCustomDataHandler | null = null;
+  private backupHandler: BackupHandler | null = null;
+
+  constructor() {
+    // Web 版の場合はクエリまたはローカルストレージから棋譜を読み込む。
+    const record = loadRecordForWebApp();
+    if (record) {
+      this._record = record;
+    }
+
+    this.bindRecordHandlers();
+  }
 
   get record(): ImmutableRecord {
     return this._record;
@@ -385,6 +386,7 @@ export class RecordManager {
 
   reset(): void {
     this.clearRecord();
+    clearURLParams();
   }
 
   resetByInitialPositionType(startPosition: InitialPositionType): void {
@@ -397,6 +399,7 @@ export class RecordManager {
       return false;
     }
     this.clearRecord(position);
+    clearURLParams();
     return true;
   }
 
@@ -406,10 +409,12 @@ export class RecordManager {
       return record;
     }
     this.replaceRecord(record, { markAsSaved: true });
+    clearURLParams();
   }
 
   resetByCurrentPosition(): void {
     this.clearRecord(this._record.position);
+    clearURLParams();
   }
 
   private parseRecordData(data: string, type?: RecordFormatType): Record | Error {
@@ -454,6 +459,7 @@ export class RecordManager {
       return recordOrError;
     }
     this.replaceRecord(recordOrError, option);
+    clearURLParams();
     return;
   }
 
@@ -471,6 +477,7 @@ export class RecordManager {
       return localizeError(recordOrError);
     }
     this.replaceRecord(recordOrError, { path, markAsSaved: true });
+    clearURLParams();
     return;
   }
 
@@ -492,6 +499,7 @@ export class RecordManager {
       this.replaceRecord(recordOrError);
     }
     this._sourceURL = url;
+    clearURLParams();
   }
 
   exportRecordAsBuffer(path: string, opt: ExportOptions): ExportResult | Error {
@@ -800,24 +808,48 @@ export class RecordManager {
   on(event: string, handler: unknown): this {
     switch (event) {
       case "changePosition":
-        this.onChangePosition = handler as ChangePositionHandler;
-        this.bindRecordHandlers();
+        this.changePositionHandler = handler as ChangePositionHandler;
         break;
       case "updateTree":
-        this.onUpdateTree = handler as UpdateTreeHandler;
+        this.updateTreeHandler = handler as UpdateTreeHandler;
         break;
       case "updateCustomData":
-        this.onUpdateCustomData = handler as UpdateCustomDataHandler;
+        this.updateCustomDataHandler = handler as UpdateCustomDataHandler;
         break;
       case "backup":
-        this.onBackup = handler as BackupHandler;
+        this.backupHandler = handler as BackupHandler;
         break;
     }
     return this;
   }
 
+  private onChangePosition() {
+    saveRecordForWebApp(this.record);
+    if (this.changePositionHandler) {
+      this.changePositionHandler();
+    }
+  }
+
+  private onUpdateTree() {
+    saveRecordForWebApp(this.record);
+    if (this.updateTreeHandler) {
+      this.updateTreeHandler();
+    }
+  }
+
+  private onUpdateCustomData() {
+    saveRecordForWebApp(this.record);
+    if (this.updateCustomDataHandler) {
+      this.updateCustomDataHandler();
+    }
+  }
+
+  private onBackup(): BackupOptions | null | void {
+    return this.backupHandler ? this.backupHandler() : null;
+  }
+
   private bindRecordHandlers(): void {
-    this._record.on("changePosition", this.onChangePosition);
+    this._record.on("changePosition", this.onChangePosition.bind(this));
   }
 
   private unbindRecordHandlers(): void {

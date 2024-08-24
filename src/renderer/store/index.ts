@@ -1,4 +1,4 @@
-import api, { isMobileWebApp, isNative } from "@/renderer/ipc/api";
+import api from "@/renderer/ipc/api";
 import {
   Color,
   exportCSA,
@@ -142,9 +142,10 @@ class Store {
   private onUpdateCustomDataHandlers: UpdateCustomDataHandler[] = [];
 
   constructor() {
+    const refs = reactive(this);
+    this._reactive = refs;
     this.recordManager
       .on("changePosition", () => {
-        this.updateResearchPosition();
         this.onChangePositionHandlers.forEach((handler) => handler());
       })
       .on("updateTree", () => {
@@ -158,25 +159,25 @@ class Store {
           returnCode: useAppSettings().returnCode,
         };
       });
-    const refs = reactive(this);
+    this.onChangePositionHandlers.push(this.updateResearchPosition.bind(refs));
     this.gameManager
-      .on("saveRecord", refs.onSaveRecord.bind(refs))
-      .on("gameEnd", refs.onGameEnd.bind(refs))
-      .on("flipBoard", refs.onFlipBoard.bind(refs))
+      .on("saveRecord", this.onSaveRecord.bind(refs))
+      .on("gameEnd", this.onGameEnd.bind(refs))
+      .on("flipBoard", this.onFlipBoard.bind(refs))
       .on("pieceBeat", () => playPieceBeat(useAppSettings().pieceVolume))
-      .on("beepShort", this.onBeepShort.bind(this))
-      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("beepShort", this.onBeepShort.bind(refs))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(refs))
       .on("stopBeep", stopBeep)
       .on("error", (e) => {
         useErrorStore().add(e);
       });
     this.csaGameManager
-      .on("saveRecord", refs.onSaveRecord.bind(refs))
-      .on("gameEnd", refs.onCSAGameEnd.bind(refs))
-      .on("flipBoard", refs.onFlipBoard.bind(refs))
+      .on("saveRecord", this.onSaveRecord.bind(refs))
+      .on("gameEnd", this.onCSAGameEnd.bind(refs))
+      .on("flipBoard", this.onFlipBoard.bind(refs))
       .on("pieceBeat", () => playPieceBeat(useAppSettings().pieceVolume))
-      .on("beepShort", this.onBeepShort.bind(this))
-      .on("beepUnlimited", this.onBeepUnlimited.bind(this))
+      .on("beepShort", this.onBeepShort.bind(refs))
+      .on("beepUnlimited", this.onBeepUnlimited.bind(refs))
       .on("stopBeep", stopBeep)
       .on("error", (e) => {
         useErrorStore().add(e);
@@ -194,51 +195,8 @@ class Store {
       .on("notImplemented", this.onNotImplemented.bind(refs))
       .on("noMate", this.onNoMate.bind(refs))
       .on("error", this.onCheckmateError.bind(refs));
-    this._reactive = refs;
     setOnUpdateUSIInfoHandler(this.updateUSIInfo.bind(refs));
     setOnUpdateUSIPonderInfoHandler(this.updateUSIPonderInfo.bind(refs));
-
-    // Web 版の場合はクエリから棋譜を読み込む。
-    const loadedFromURLParams = !isNative() && this.initRecordByURLParams();
-    if (isMobileWebApp()) {
-      const mobileRecordStorageKey = "mobile:record";
-      if (!loadedFromURLParams) {
-        const data = localStorage.getItem(mobileRecordStorageKey);
-        if (data) {
-          this.pasteRecord(data);
-          this.changePly(Number.MAX_SAFE_INTEGER);
-        }
-      }
-      const saveRecord = () => {
-        const data = exportKIF(this.record);
-        if (data) {
-          localStorage.setItem(mobileRecordStorageKey, data);
-        }
-      };
-      this.onChangePositionHandlers.push(saveRecord);
-      this.onUpdateCustomDataHandlers.push(saveRecord);
-      this.onUpdateRecordTreeHandlers.push(saveRecord);
-    }
-  }
-
-  private initRecordByURLParams(): boolean {
-    const urlParams = new URL(window.location.toString()).searchParams;
-    const usen = urlParams.get("usen");
-    if (!usen) {
-      return false;
-    }
-    const branch = parseInt(urlParams.get("branch") || "0", 10);
-    const ply = parseInt(urlParams.get("ply") || "0", 10);
-    const err = this.recordManager.resetByUSEN(usen, branch, ply);
-    if (err) {
-      useErrorStore().add(`棋譜の読み込み中にエラーが発生しました。: ${err}`);
-      return false;
-    }
-    const bname = urlParams.get("bname") || "";
-    const wname = urlParams.get("wname") || "";
-    this.recordManager.updateStandardMetadata({ key: RecordMetadataKey.BLACK_NAME, value: bname });
-    this.recordManager.updateStandardMetadata({ key: RecordMetadataKey.WHITE_NAME, value: wname });
-    return true;
   }
 
   addEventListener(event: "changePosition", handler: ChangePositionHandler): void;
@@ -685,7 +643,7 @@ class Store {
     });
   }
 
-  onGameEnd(results: GameResults, specialMoveType: SpecialMoveType): void {
+  private onGameEnd(results: GameResults, specialMoveType: SpecialMoveType): void {
     if (this.appState !== AppState.GAME) {
       return;
     }
@@ -703,21 +661,21 @@ class Store {
     this._appState = AppState.NORMAL;
   }
 
-  onCSAGameEnd(): void {
+  private onCSAGameEnd(): void {
     if (this.appState !== AppState.CSA_GAME) {
       return;
     }
     this._appState = AppState.NORMAL;
   }
 
-  onFlipBoard(flip: boolean): void {
+  private onFlipBoard(flip: boolean): void {
     const appSettings = useAppSettings();
     if (appSettings.boardFlipping !== flip) {
       useAppSettings().flipBoard();
     }
   }
 
-  onSaveRecord(): void {
+  private onSaveRecord(): void {
     const appSettings = useAppSettings();
     const fname = generateRecordFileName(
       this.recordManager.record.metadata,
@@ -763,7 +721,7 @@ class Store {
     playPieceBeat(appSettings.pieceVolume);
   }
 
-  onFinish(): void {
+  private onFinish(): void {
     if (this.appState === AppState.ANALYSIS) {
       useMessageStore().enqueue({ text: "棋譜解析が終了しました。" });
       this._appState = AppState.NORMAL;
@@ -828,7 +786,7 @@ class Store {
     return this.researchManager.isSessionExists(sessionID);
   }
 
-  onUpdateSearchInfo(type: SearchInfoSenderType, info: SearchInfo): void {
+  private onUpdateSearchInfo(type: SearchInfoSenderType, info: SearchInfo): void {
     this.recordManager.updateSearchInfo(type, info);
   }
 
@@ -894,7 +852,7 @@ class Store {
     this._appState = AppState.NORMAL;
   }
 
-  onCheckmate(moves: Move[]): void {
+  private onCheckmate(moves: Move[]): void {
     if (this.appState !== AppState.MATE_SEARCH) {
       return;
     }
@@ -912,7 +870,7 @@ class Store {
     });
   }
 
-  onNotImplemented(): void {
+  private onNotImplemented(): void {
     if (this.appState !== AppState.MATE_SEARCH) {
       return;
     }
@@ -920,7 +878,7 @@ class Store {
     this._appState = AppState.NORMAL;
   }
 
-  onNoMate(): void {
+  private onNoMate(): void {
     if (this.appState !== AppState.MATE_SEARCH) {
       return;
     }
@@ -928,7 +886,7 @@ class Store {
     this._appState = AppState.NORMAL;
   }
 
-  onCheckmateError(e: unknown): void {
+  private onCheckmateError(e: unknown): void {
     if (this.appState !== AppState.MATE_SEARCH) {
       return;
     }
@@ -936,7 +894,7 @@ class Store {
     this._appState = AppState.NORMAL;
   }
 
-  updateResearchPosition(): void {
+  private updateResearchPosition(): void {
     this.researchManager?.updatePosition(this.recordManager.record);
   }
 

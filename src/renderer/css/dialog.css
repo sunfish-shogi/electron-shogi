@@ -149,7 +149,7 @@ dialog .message-box .icon {
 dialog.menu {
   border-style: none;
   background-color: transparent;
-  width: 80vw;
+  width: 95vw;
   max-width: 800px;
   display: flex;
   flex-direction: column;

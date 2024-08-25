@@ -23,6 +23,7 @@
     "build:dev": "vite build --outDir docs/webapp-dev",
     "preview": "vite preview",
     "test": "vitest run",
+    "bench": "vitest bench",
     "coverage": "npm test -- --coverage",
     "test:ui": "vitest --ui --coverage",
     "lint": "vue-tsc --noEmit && eslint --fix --max-warnings 0 . && prettier --write .",

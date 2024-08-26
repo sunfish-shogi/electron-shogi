@@ -58,6 +58,7 @@ export class BoardLayoutBuilder {
       top: "0px",
       height: boardParams.height * this.ratio + "px",
       width: boardParams.width * this.ratio + "px",
+      opacity: this.config.boardImageOpacity.toString(),
     };
     return {
       gridImagePath: this.config.boardGridImage,

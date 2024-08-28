@@ -345,9 +345,9 @@ onMounted(() => {
   updateChart(config.value);
 
   watch(
-    () => config,
+    config,
     (config) => {
-      updateChart(config.value);
+      updateChart(config);
     },
     { deep: true },
   );

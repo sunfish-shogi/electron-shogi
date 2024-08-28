@@ -11,7 +11,7 @@
             <div class="form-item-label-wide">{{ t.language }}</div>
             <HorizontalSelector
               class="selector"
-              :value="language"
+              :value="original.language"
               :items="[
                 { label: '日本語', value: Language.JA },
                 { label: 'English', value: Language.EN },
@@ -20,7 +20,7 @@
               ]"
               @change="
                 (value: string) => {
-                  language = value as Language;
+                  update.language = value as Language;
                 }
               "
             />
@@ -28,13 +28,15 @@
           <div class="form-group warning">
             <div class="note">
               {{ t.translationHelpNeeded }}
-              {{ appSettings.language != Language.EN ? "We'd like your help to translate." : "" }}
+              {{
+                t.translationHelpNeeded != en.translationHelpNeeded ? en.translationHelpNeeded : ""
+              }}
             </div>
             <div class="note">
               {{ t.restartRequiredAfterLocaleChange }}
               {{
-                appSettings.language != Language.EN
-                  ? "You should restart this app to change the language."
+                t.restartRequiredAfterLocaleChange != en.restartRequiredAfterLocaleChange
+                  ? en.restartRequiredAfterLocaleChange
                   : ""
               }}
             </div>
@@ -44,7 +46,7 @@
             <div class="form-item-label-wide">{{ t.theme }}</div>
             <HorizontalSelector
               class="selector"
-              :value="thema"
+              :value="original.thema"
               :items="[
                 { label: t.green, value: Thema.STANDARD },
                 { label: t.cherryBlossom, value: Thema.CHERRY_BLOSSOM },
@@ -55,7 +57,7 @@
               ]"
               @change="
                 (value: string) => {
-                  thema = value as Thema;
+                  update.thema = value as Thema;
                 }
               "
             />
@@ -65,7 +67,7 @@
             <div class="form-item-label-wide">{{ t.backgroundImage }}</div>
             <HorizontalSelector
               class="selector"
-              :value="backgroundImageType"
+              :value="original.backgroundImageType"
               :items="[
                 { label: t.none, value: BackgroundImageType.NONE },
                 { label: t.bgCover, value: BackgroundImageType.COVER },
@@ -74,21 +76,23 @@
               ]"
               @change="
                 (value: string) => {
-                  backgroundImageType = value as BackgroundImageType;
+                  update.backgroundImageType = value as BackgroundImageType;
                 }
               "
             />
           </div>
           <div
-            v-show="backgroundImageType !== BackgroundImageType.NONE"
-            ref="backgroundImageSelector"
+            v-show="
+              (update.backgroundImageType ?? original.backgroundImageType) !==
+              BackgroundImageType.NONE
+            "
             class="form-item"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
-              :default-url="appSettings.backgroundImageFileURL"
-              @select="(url: string) => (backgroundImageFileURL = url)"
+              :default-url="original.backgroundImageFileURL"
+              @select="(url: string) => (update.backgroundImageFileURL = url)"
             />
           </div>
           <!-- 盤レイアウト -->
@@ -96,7 +100,7 @@
             <div class="form-item-label-wide">{{ t.boardLayout }}</div>
             <HorizontalSelector
               class="selector"
-              :value="boardLayoutType"
+              :value="original.boardLayoutType"
               :items="[
                 { label: t.standard, value: BoardLayoutType.STANDARD },
                 { label: t.compact, value: BoardLayoutType.COMPACT },
@@ -104,7 +108,7 @@
               ]"
               @change="
                 (value: string) => {
-                  boardLayoutType = value as BoardLayoutType;
+                  update.boardLayoutType = value as BoardLayoutType;
                 }
               "
             />
@@ -114,47 +118,50 @@
             <div class="form-item-label-wide">{{ t.piece }}</div>
             <HorizontalSelector
               class="selector"
-              :value="pieceImage"
+              :value="original.pieceImage"
               :items="[
-                { label: t.singleKanjiPiece, value: PieceImage.HITOMOJI },
+                { label: t.singleKanjiPiece, value: PieceImageType.HITOMOJI },
                 {
                   label: t.singleKanjiGothicPiece,
-                  value: PieceImage.HITOMOJI_GOTHIC,
+                  value: PieceImageType.HITOMOJI_GOTHIC,
                 },
                 {
                   label: t.singleKanjiDarkPiece,
-                  value: PieceImage.HITOMOJI_DARK,
+                  value: PieceImageType.HITOMOJI_DARK,
                 },
                 {
                   label: t.singleKanjiGothicDarkPiece,
-                  value: PieceImage.HITOMOJI_GOTHIC_DARK,
+                  value: PieceImageType.HITOMOJI_GOTHIC_DARK,
                 },
-                { label: t.customImage, value: PieceImage.CUSTOM_IMAGE },
+                { label: t.customImage, value: PieceImageType.CUSTOM_IMAGE },
               ]"
               @change="
                 (value: string) => {
-                  pieceImage = value as PieceImage;
+                  update.pieceImage = value as PieceImageType;
                 }
               "
             />
             <div
-              v-show="pieceImage === PieceImage.CUSTOM_IMAGE"
+              v-show="(update.pieceImage ?? original.pieceImage) === PieceImageType.CUSTOM_IMAGE"
               ref="pieceImageSelector"
               class="form-item"
             >
               <div class="form-item-label-wide"></div>
               <ImageSelector
                 class="image-selector"
-                :default-url="appSettings.pieceImageFileURL"
-                @select="(url: string) => (pieceImageFileURL = url)"
+                :default-url="original.pieceImageFileURL"
+                @select="(url: string) => (update.pieceImageFileURL = url)"
               />
             </div>
-            <div v-show="pieceImage === PieceImage.CUSTOM_IMAGE" class="form-item">
+            <div
+              v-show="(update.pieceImage ?? original.pieceImage) === PieceImageType.CUSTOM_IMAGE"
+              class="form-item"
+            >
               <div class="form-item-label-wide"></div>
               <ToggleButton
                 :label="t.imageHasMarginsRemoveForLargerDisplay"
-                :value="deletePieceImageMargin"
-                @change="(checked: boolean) => (deletePieceImageMargin = checked)"
+                :value="original.deletePieceImageMargin"
+                @change="(checked: boolean) => (update.deletePieceImageMargin = checked)"
               />
             </div>
           </div>
@@ -163,7 +170,7 @@
             <div class="form-item-label-wide">{{ t.board }}</div>
             <HorizontalSelector
               class="selector"
-              :value="boardImage"
+              :value="original.boardImage"
               :items="[
                 { label: t.lightWoodyTexture, value: BoardImageType.LIGHT },
                 { label: t.warmWoodTexture, value: BoardImageType.WARM },
@@ -183,21 +190,20 @@
               ]"
               @change="
                 (value: string) => {
-                  boardImage = value as BoardImageType;
+                  update.boardImage = value as BoardImageType;
                 }
               "
             />
           </div>
           <div
-            v-show="boardImage === BoardImageType.CUSTOM_IMAGE"
-            ref="boardImageSelector"
+            v-show="(update.boardImage ?? original.boardImage) === BoardImageType.CUSTOM_IMAGE"
             class="form-item"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
-              :default-url="appSettings.boardImageFileURL"
-              @select="(url: string) => (boardImageFileURL = url)"
+              :default-url="original.boardImageFileURL"
+              @select="(url: string) => (update.boardImageFileURL = url)"
             />
           </div>
           <!-- 駒台画像 -->
@@ -205,7 +211,7 @@
             <div class="form-item-label-wide">{{ t.pieceStand }}</div>
             <HorizontalSelector
               class="selector"
-              :value="pieceStandImage"
+              :value="original.pieceStandImage"
               :items="[
                 { label: t.standard, value: PieceStandImageType.STANDARD },
                 { label: t.green, value: PieceStandImageType.GREEN },
@@ -224,41 +230,47 @@
               ]"
               @change="
                 (value: string) => {
-                  pieceStandImage = value as PieceStandImageType;
+                  update.pieceStandImage = value as PieceStandImageType;
                 }
               "
             />
           </div>
           <div
-            v-show="pieceStandImage === PieceStandImageType.CUSTOM_IMAGE"
-            ref="pieceStandImageSelector"
+            v-show="
+              (update.pieceStandImage ?? original.pieceStandImage) ===
+              PieceStandImageType.CUSTOM_IMAGE
+            "
             class="form-item"
           >
             <div class="form-item-label-wide"></div>
             <ImageSelector
               class="image-selector"
-              :default-url="appSettings.pieceStandImageFileURL"
-              @select="(url: string) => (pieceStandImageFileURL = url)"
+              :default-url="original.pieceStandImageFileURL"
+              @select="(url: string) => (update.pieceStandImageFileURL = url)"
             />
           </div>
           <!-- 透過表示 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.transparent }}</div>
             <ToggleButton
-              :value="enableTransparent"
-              @change="(checked: boolean) => (enableTransparent = checked)"
+              :value="original.enableTransparent"
+              @change="(checked: boolean) => (update.enableTransparent = checked)"
             />
           </div>
           <!-- 盤の不透明度 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.boardOpacity }}</div>
             <input
-              ref="boardOpacity"
-              :value="appSettings.boardOpacity * 100"
-              :readonly="!enableTransparent"
+              :value="original.boardOpacity * 100"
+              :readonly="!(update.enableTransparent ?? original.enableTransparent)"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.boardOpacity = readInputAsNumber(event.target as HTMLInputElement) / 100;
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -266,12 +278,17 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.pieceStandOpacity }}</div>
             <input
-              ref="pieceStandOpacity"
-              :value="appSettings.pieceStandOpacity * 100"
-              :readonly="!enableTransparent"
+              :value="original.pieceStandOpacity * 100"
+              :readonly="!(update.enableTransparent ?? original.enableTransparent)"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.pieceStandOpacity =
+                    readInputAsNumber(event.target as HTMLInputElement) / 100;
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -279,12 +296,16 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.recordOpacity }}</div>
             <input
-              ref="recordOpacity"
-              :value="appSettings.recordOpacity * 100"
-              :readonly="!enableTransparent"
+              :value="original.recordOpacity * 100"
+              :readonly="!(update.enableTransparent ?? original.enableTransparent)"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.recordOpacity = readInputAsNumber(event.target as HTMLInputElement) / 100;
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -294,8 +315,11 @@
               {{ t.showFileAndRank }}
             </div>
             <ToggleButton
-              :value="displayBoardLabels"
-              @change="(checked: boolean) => (displayBoardLabels = checked)"
+              :value="original.boardLabelType != BoardLabelType.NONE"
+              @change="
+                (checked: boolean) =>
+                  (update.boardLabelType = checked ? BoardLabelType.STANDARD : BoardLabelType.NONE)
+              "
             />
           </div>
           <!-- 左コントロールの表示 -->
@@ -304,8 +328,13 @@
               {{ t.showLeftControls }}
             </div>
             <ToggleButton
-              :value="displayLeftSideControls"
-              @change="(checked: boolean) => (displayLeftSideControls = checked)"
+              :value="original.leftSideControlType != LeftSideControlType.NONE"
+              @change="
+                (checked: boolean) =>
+                  (update.leftSideControlType = checked
+                    ? LeftSideControlType.STANDARD
+                    : LeftSideControlType.NONE)
+              "
             />
           </div>
           <!-- 右コントロールの表示 -->
@@ -314,8 +343,13 @@
               {{ t.showRightControls }}
             </div>
             <ToggleButton
-              :value="displayRightSideControls"
-              @change="(checked: boolean) => (displayRightSideControls = checked)"
+              :value="original.rightSideControlType != RightSideControlType.NONE"
+              @change="
+                (checked: boolean) =>
+                  (update.rightSideControlType = checked
+                    ? RightSideControlType.STANDARD
+                    : RightSideControlType.NONE)
+              "
             />
           </div>
           <!-- タブビューの形式 -->
@@ -323,14 +357,14 @@
             <div class="form-item-label-wide">{{ t.tabViewStyle }}</div>
             <HorizontalSelector
               class="selector"
-              :value="tabPaneType"
+              :value="original.tabPaneType"
               :items="[
                 { label: t.oneColumn, value: TabPaneType.SINGLE },
                 { label: t.twoColumns, value: TabPaneType.DOUBLE },
               ]"
               @change="
                 (value: string) => {
-                  tabPaneType = value as TabPaneType;
+                  update.tabPaneType = value as TabPaneType;
                 }
               "
             />
@@ -344,11 +378,15 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.pieceSoundVolume }}</div>
             <input
-              ref="pieceVolume"
-              :value="appSettings.pieceVolume"
+              :value="original.pieceVolume"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.pieceVolume = readInputAsNumber(event.target as HTMLInputElement);
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -356,11 +394,15 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.clockSoundVolume }}</div>
             <input
-              ref="clockVolume"
-              :value="appSettings.clockVolume"
+              :value="original.clockVolume"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.clockVolume = readInputAsNumber(event.target as HTMLInputElement);
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -368,11 +410,15 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.clockSoundPitch }}</div>
             <input
-              ref="clockPitch"
-              :value="appSettings.clockPitch"
+              :value="original.clockPitch"
               type="number"
               max="880"
               min="220"
+              @input="
+                (event) => {
+                  update.clockPitch = readInputAsNumber(event.target as HTMLInputElement);
+                }
+              "
             />
             <div class="form-item-small-label">Hz ({{ t.between(220, 880) }})</div>
           </div>
@@ -383,14 +429,14 @@
             </div>
             <HorizontalSelector
               class="selector"
-              :value="clockSoundTarget"
+              :value="original.clockSoundTarget"
               :items="[
                 { label: t.anyTurn, value: ClockSoundTarget.ALL },
                 { label: t.onlyHumanTurn, value: ClockSoundTarget.ONLY_USER },
               ]"
               @change="
                 (value: string) => {
-                  clockSoundTarget = value as ClockSoundTarget;
+                  update.clockSoundTarget = value as ClockSoundTarget;
                 }
               "
             />
@@ -407,7 +453,7 @@
             </div>
             <HorizontalSelector
               class="selector"
-              :value="defaultRecordFileFormat"
+              :value="original.defaultRecordFileFormat"
               :items="[
                 { label: '.kif (Shift_JIS)', value: RecordFileFormat.KIF },
                 { label: '.kifu (UTF-8)', value: RecordFileFormat.KIFU },
@@ -418,7 +464,7 @@
               ]"
               @change="
                 (value: string) => {
-                  defaultRecordFileFormat = value as RecordFileFormat;
+                  update.defaultRecordFileFormat = value as RecordFileFormat;
                 }
               "
             />
@@ -430,14 +476,14 @@
             </div>
             <HorizontalSelector
               class="selector"
-              :value="textDecodingRule"
+              :value="original.textDecodingRule"
               :items="[
                 { label: t.strict, value: TextDecodingRule.STRICT },
                 { label: t.autoDetect, value: TextDecodingRule.AUTO_DETECT },
               ]"
               @change="
                 (value: string) => {
-                  textDecodingRule = value as TextDecodingRule;
+                  update.textDecodingRule = value as TextDecodingRule;
                 }
               "
             />
@@ -449,7 +495,7 @@
             </div>
             <HorizontalSelector
               class="selector"
-              :value="returnCode"
+              :value="returnCodeToName[original.returnCode]"
               :items="[
                 { label: 'CRLF (Windows)', value: 'crlf' },
                 { label: 'LF (UNIX/Mac)', value: 'lf' },
@@ -457,7 +503,7 @@
               ]"
               @change="
                 (value: string) => {
-                  returnCode = value;
+                  update.returnCode = nameToReturnCode[value];
                 }
               "
             />
@@ -470,8 +516,13 @@
             <input
               ref="autoSaveDirectory"
               class="file-path"
-              :value="appSettings.autoSaveDirectory"
+              :value="original.autoSaveDirectory"
               type="text"
+              @input="
+                (event) => {
+                  update.autoSaveDirectory = (event.target as HTMLInputElement).value;
+                }
+              "
             />
             <button class="thin" @click="selectAutoSaveDirectory">
               {{ t.select }}
@@ -486,10 +537,14 @@
               {{ t.recordFileName }}
             </div>
             <input
-              ref="recordFileNameTemplate"
               class="file-path"
-              :value="appSettings.recordFileNameTemplate"
+              :value="original.recordFileNameTemplate"
               type="text"
+              @input="
+                (event) => {
+                  update.recordFileNameTemplate = (event.target as HTMLInputElement).value;
+                }
+              "
             />
             <button class="thin auxiliary" @click="howToWriteFileNameTemplate">
               <Icon :icon="IconType.HELP" />
@@ -498,21 +553,24 @@
           <!-- CSA V3 で出力 -->
           <div class="form-item">
             <div class="form-item-label-wide">CSA V3 で出力</div>
-            <ToggleButton :value="useCSAV3" @change="(checked: boolean) => (useCSAV3 = checked)" />
+            <ToggleButton
+              :value="original.useCSAV3"
+              @change="(checked: boolean) => (update.useCSAV3 = checked)"
+            />
           </div>
           <!-- USI の局面表記 -->
           <div class="form-item row">
             <div class="form-item-label-wide">{{ t.positionOfUSIOutput }}</div>
             <HorizontalSelector
               class="selector"
-              :value="String(enableUSIFileStartpos)"
+              :value="String(original.enableUSIFileStartpos)"
               :items="[
                 { label: t.onlySFEN, value: 'false' },
                 { label: 'startpos / SFEN', value: 'true' },
               ]"
               @change="
                 (value: string) => {
-                  enableUSIFileStartpos = value === 'true';
+                  update.enableUSIFileStartpos = value === 'true';
                 }
               "
             />
@@ -522,14 +580,14 @@
             <div class="form-item-label-wide">{{ t.movesOfUSIOutput }}</div>
             <HorizontalSelector
               class="selector"
-              :value="String(enableUSIFileResign)"
+              :value="String(original.enableUSIFileResign)"
               :items="[
                 { label: t.onlySFEN, value: 'false' },
                 { label: 'SFEN / resign', value: 'true' },
               ]"
               @change="
                 (value: string) => {
-                  enableUSIFileResign = value === 'true';
+                  update.enableUSIFileResign = value === 'true';
                 }
               "
             />
@@ -545,8 +603,8 @@
               {{ t.translateOptionName }}
             </div>
             <ToggleButton
-              :value="translateEngineOptionName"
-              @change="(checked: boolean) => (translateEngineOptionName = checked)"
+              :value="original.translateEngineOptionName"
+              @change="(checked: boolean) => (update.translateEngineOptionName = checked)"
             />
             <div class="form-item-small-label">({{ t.functionalOnJapaneseOnly }})</div>
           </div>
@@ -556,11 +614,15 @@
               {{ t.maxStartupTime }}
             </div>
             <input
-              ref="engineTimeoutSeconds"
-              :value="appSettings.engineTimeoutSeconds"
+              :value="original.engineTimeoutSeconds"
               type="number"
               max="300"
               min="1"
+              @input="
+                (event) => {
+                  update.engineTimeoutSeconds = readInputAsNumber(event.target as HTMLInputElement);
+                }
+              "
             />
             <div class="form-item-small-label">{{ t.secondsSuffix }} ({{ t.between(1, 300) }})</div>
           </div>
@@ -576,7 +638,7 @@
             </div>
             <HorizontalSelector
               class="selector"
-              :value="evaluationViewFrom"
+              :value="original.evaluationViewFrom"
               :items="[
                 { label: t.swapEachTurnChange, value: EvaluationViewFrom.EACH },
                 {
@@ -586,7 +648,7 @@
               ]"
               @change="
                 (value: string) => {
-                  evaluationViewFrom = value as EvaluationViewFrom;
+                  update.evaluationViewFrom = value as EvaluationViewFrom;
                 }
               "
             />
@@ -597,11 +659,15 @@
               {{ t.maxArrows }}
             </div>
             <input
-              ref="maxArrowsPerEngine"
-              :value="appSettings.maxArrowsPerEngine"
+              :value="original.maxArrowsPerEngine"
               type="number"
               max="10"
               min="0"
+              @input="
+                (event) => {
+                  update.maxArrowsPerEngine = readInputAsNumber(event.target as HTMLInputElement);
+                }
+              "
             />
             <div class="form-item-small-label">({{ t.between(0, 10) }})</div>
           </div>
@@ -611,11 +677,15 @@
               {{ t.winRateCoefficient }}
             </div>
             <input
-              ref="coefficientInSigmoid"
-              :value="appSettings.coefficientInSigmoid"
+              :value="original.coefficientInSigmoid"
               type="number"
               max="10000"
               min="1"
+              @input="
+                (event) => {
+                  update.coefficientInSigmoid = readInputAsNumber(event.target as HTMLInputElement);
+                }
+              "
             />
             <div class="form-item-small-label">
               ({{ t.recommended }}: {{ t.between(600, 1500) }})
@@ -625,11 +695,17 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.inaccuracyThreshold }}</div>
             <input
-              ref="badMoveLevelThreshold1"
-              :value="appSettings.badMoveLevelThreshold1"
+              :value="original.badMoveLevelThreshold1"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.badMoveLevelThreshold1 = readInputAsNumber(
+                    event.target as HTMLInputElement,
+                  );
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -637,11 +713,17 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.dubiousThreshold }}</div>
             <input
-              ref="badMoveLevelThreshold2"
-              :value="appSettings.badMoveLevelThreshold2"
+              :value="original.badMoveLevelThreshold2"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.badMoveLevelThreshold2 = readInputAsNumber(
+                    event.target as HTMLInputElement,
+                  );
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -649,11 +731,17 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.mistakeThreshold }}</div>
             <input
-              ref="badMoveLevelThreshold3"
-              :value="appSettings.badMoveLevelThreshold3"
+              :value="original.badMoveLevelThreshold3"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.badMoveLevelThreshold3 = readInputAsNumber(
+                    event.target as HTMLInputElement,
+                  );
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -661,11 +749,17 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.blunderThreshold }}</div>
             <input
-              ref="badMoveLevelThreshold4"
-              :value="appSettings.badMoveLevelThreshold4"
+              :value="original.badMoveLevelThreshold4"
               type="number"
               max="100"
               min="0"
+              @input="
+                (event) => {
+                  update.badMoveLevelThreshold4 = readInputAsNumber(
+                    event.target as HTMLInputElement,
+                  );
+                }
+              "
             />
             <div class="form-item-small-label">%</div>
           </div>
@@ -720,24 +814,24 @@
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.enableAppLog }}</div>
             <ToggleButton
-              :value="enableAppLog"
-              @change="(checked: boolean) => (enableAppLog = checked)"
+              :value="original.enableAppLog"
+              @change="(checked: boolean) => (update.enableAppLog = checked)"
             />
           </div>
           <!-- USI通信ログを出力 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.enableUSILog }}</div>
             <ToggleButton
-              :value="enableUSILog"
-              @change="(checked: boolean) => (enableUSILog = checked)"
+              :value="original.enableUSILog"
+              @change="(checked: boolean) => (update.enableUSILog = checked)"
             />
           </div>
           <!-- CSA通信ログを出力 -->
           <div class="form-item">
             <div class="form-item-label-wide">{{ t.enableCSALog }}</div>
             <ToggleButton
-              :value="enableCSALog"
-              @change="(checked: boolean) => (enableCSALog = checked)"
+              :value="original.enableCSALog"
+              @change="(checked: boolean) => (update.enableCSALog = checked)"
             />
           </div>
           <!-- ログレベル -->
@@ -745,7 +839,7 @@
             <div class="form-item-label-wide">{{ t.logLevel }}</div>
             <HorizontalSelector
               class="selector"
-              :value="logLevel"
+              :value="original.logLevel"
               :items="[
                 { label: 'DEBUG', value: LogLevel.DEBUG },
                 { label: 'INFO', value: LogLevel.INFO },
@@ -754,7 +848,7 @@
               ]"
               @change="
                 (value: string) => {
-                  logLevel = value as LogLevel;
+                  update.logLevel = value as LogLevel;
                 }
               "
             />
@@ -775,6 +869,7 @@
 
 <script setup lang="ts">
 import { t, Language } from "@/common/i18n";
+import { en } from "@/common/i18n/locales/en";
 import {
   PieceImageType,
   BoardImageType,
@@ -784,18 +879,16 @@ import {
   RightSideControlType,
   TabPaneType,
   EvaluationViewFrom,
-  AppSettingsUpdate,
   Thema,
   BackgroundImageType,
   TextDecodingRule,
   ClockSoundTarget,
-  AppSettings,
-  KingPieceType,
+  AppSettingsUpdate,
 } from "@/common/settings/app";
 import ImageSelector from "@/renderer/view/dialog/ImageSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import { useStore } from "@/renderer/store";
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { readInputAsNumber } from "@/renderer/helpers/form.js";
 import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api, { appInfo, isNative } from "@/renderer/ipc/api";
@@ -812,59 +905,6 @@ import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
 import { BoardLayoutType } from "@/common/settings/layout";
 
-enum PieceImage {
-  HITOMOJI = "hitomoji",
-  HITOMOJI_DARK = "hitomojiDark",
-  HITOMOJI_GOTHIC = "hitomojiGothic",
-  HITOMOJI_GOTHIC_DARK = "hitomojiGothicDark",
-  CUSTOM_IMAGE = "custom-image",
-}
-
-function toPieceImage(settings: AppSettings): PieceImage {
-  switch (settings.pieceImage) {
-    case PieceImageType.HITOMOJI:
-      return PieceImage.HITOMOJI;
-    case PieceImageType.HITOMOJI_DARK:
-      return PieceImage.HITOMOJI_DARK;
-    case PieceImageType.HITOMOJI_GOTHIC:
-      return PieceImage.HITOMOJI_GOTHIC;
-    case PieceImageType.HITOMOJI_GOTHIC_DARK:
-      return PieceImage.HITOMOJI_GOTHIC_DARK;
-    case PieceImageType.CUSTOM_IMAGE:
-      return PieceImage.CUSTOM_IMAGE;
-  }
-}
-
-function pieceImageToSettings(pieceImage: PieceImage) {
-  switch (pieceImage) {
-    case PieceImage.HITOMOJI:
-      return {
-        pieceImage: PieceImageType.HITOMOJI,
-        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
-      };
-    case PieceImage.HITOMOJI_DARK:
-      return {
-        pieceImage: PieceImageType.HITOMOJI_DARK,
-        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
-      };
-    case PieceImage.HITOMOJI_GOTHIC:
-      return {
-        pieceImage: PieceImageType.HITOMOJI_GOTHIC,
-        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
-      };
-    case PieceImage.HITOMOJI_GOTHIC_DARK:
-      return {
-        pieceImage: PieceImageType.HITOMOJI_GOTHIC_DARK,
-        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
-      };
-    case PieceImage.CUSTOM_IMAGE:
-      return {
-        pieceImage: PieceImageType.CUSTOM_IMAGE,
-        kingPieceType: KingPieceType.GYOKU_AND_OSHO,
-      };
-  }
-}
-
 const returnCodeToName: { [name: string]: string } = {
   "\r\n": "crlf",
   "\n": "lf",
@@ -879,57 +919,10 @@ const nameToReturnCode: { [name: string]: string } = {
 
 const store = useStore();
 const busyState = useBusyState();
-const appSettings = useAppSettings();
-const dialog = ref();
-const language = ref(appSettings.language);
-const thema = ref(appSettings.thema);
-const backgroundImageType = ref(appSettings.backgroundImageType);
-const backgroundImageSelector = ref();
-const boardLayoutType = ref(appSettings.boardLayoutType);
-const pieceImage = ref(toPieceImage(appSettings));
-const deletePieceImageMargin = ref(appSettings.deletePieceImageMargin);
-const boardImage = ref(appSettings.boardImage);
-const boardImageSelector = ref();
-const pieceStandImage = ref(appSettings.pieceStandImage);
-const pieceStandImageSelector = ref();
-const enableTransparent = ref(appSettings.enableTransparent);
-const boardOpacity = ref();
-const pieceStandOpacity = ref();
-const recordOpacity = ref();
-const displayBoardLabels = ref(appSettings.boardLabelType != BoardLabelType.NONE);
-const displayLeftSideControls = ref(appSettings.leftSideControlType != LeftSideControlType.NONE);
-const displayRightSideControls = ref(appSettings.rightSideControlType != RightSideControlType.NONE);
-const tabPaneType = ref(appSettings.tabPaneType);
-const pieceVolume = ref();
-const clockVolume = ref();
-const clockPitch = ref();
-const clockSoundTarget = ref(appSettings.clockSoundTarget);
-const defaultRecordFileFormat = ref(appSettings.defaultRecordFileFormat);
-const textDecodingRule = ref(appSettings.textDecodingRule);
-const returnCode = ref(returnCodeToName[appSettings.returnCode]);
+const original = useAppSettings().clone;
+const update = ref({} as AppSettingsUpdate);
 const autoSaveDirectory = ref();
-const recordFileNameTemplate = ref();
-const useCSAV3 = ref(appSettings.useCSAV3);
-const enableUSIFileStartpos = ref(appSettings.enableUSIFileStartpos);
-const enableUSIFileResign = ref(appSettings.enableUSIFileResign);
-const translateEngineOptionName = ref(appSettings.translateEngineOptionName);
-const engineTimeoutSeconds = ref();
-const evaluationViewFrom = ref(appSettings.evaluationViewFrom);
-const maxArrowsPerEngine = ref();
-const coefficientInSigmoid = ref();
-const badMoveLevelThreshold1 = ref();
-const badMoveLevelThreshold2 = ref();
-const badMoveLevelThreshold3 = ref();
-const badMoveLevelThreshold4 = ref();
-const enableAppLog = ref(appSettings.enableAppLog);
-const enableUSILog = ref(appSettings.enableUSILog);
-const enableCSALog = ref(appSettings.enableCSALog);
-const logLevel = ref(appSettings.logLevel);
-const backgroundImageFileURL = ref(appSettings.backgroundImageFileURL);
-const croppedPieceImageBaseURL = ref(appSettings.croppedPieceImageBaseURL);
-const pieceImageFileURL = ref(appSettings.pieceImageFileURL);
-const boardImageFileURL = ref(appSettings.boardImageFileURL);
-const pieceStandImageFileURL = ref(appSettings.pieceStandImageFileURL);
+const dialog = ref();
 const versionStatus = ref({} as VersionStatus);
 
 onMounted(() => {
@@ -938,83 +931,30 @@ onMounted(() => {
   api.getVersionStatus().then((status) => {
     versionStatus.value = status;
   });
+  watch(
+    update,
+    (value) => {
+      const ret = useAppSettings().setTemporaryUpdate(value);
+      if (ret instanceof Promise) {
+        busyState.retain();
+        ret.finally(() => {
+          busyState.release();
+        });
+      }
+    },
+    { deep: true },
+  );
 });
 
 onBeforeUnmount(() => {
   uninstallHotKeyForDialog(dialog.value);
+  useAppSettings().clearTemporaryUpdate();
 });
 
 const saveAndClose = async () => {
   busyState.retain();
   try {
-    const update: AppSettingsUpdate = {
-      language: language.value,
-      thema: thema.value,
-      backgroundImageType: backgroundImageType.value,
-      ...pieceImageToSettings(pieceImage.value),
-      boardLayoutType: boardLayoutType.value,
-      boardImage: boardImage.value,
-      pieceImageFileURL: pieceImageFileURL.value,
-      croppedPieceImageBaseURL: croppedPieceImageBaseURL.value,
-      deletePieceImageMargin: deletePieceImageMargin.value,
-      pieceStandImage: pieceStandImage.value,
-      enableTransparent: enableTransparent.value,
-      boardOpacity: readInputAsNumber(boardOpacity.value) / 100,
-      pieceStandOpacity: readInputAsNumber(pieceStandOpacity.value) / 100,
-      recordOpacity: readInputAsNumber(recordOpacity.value) / 100,
-      boardLabelType: displayBoardLabels.value ? BoardLabelType.STANDARD : BoardLabelType.NONE,
-      leftSideControlType: displayLeftSideControls.value
-        ? LeftSideControlType.STANDARD
-        : LeftSideControlType.NONE,
-      rightSideControlType: displayRightSideControls.value
-        ? RightSideControlType.STANDARD
-        : RightSideControlType.NONE,
-      tabPaneType: tabPaneType.value,
-      pieceVolume: readInputAsNumber(pieceVolume.value),
-      clockVolume: readInputAsNumber(clockVolume.value),
-      clockPitch: readInputAsNumber(clockPitch.value),
-      clockSoundTarget: clockSoundTarget.value,
-      defaultRecordFileFormat: defaultRecordFileFormat.value,
-      textDecodingRule: textDecodingRule.value,
-      returnCode: nameToReturnCode[returnCode.value],
-      autoSaveDirectory: autoSaveDirectory.value.value,
-      recordFileNameTemplate: recordFileNameTemplate.value.value,
-      useCSAV3: useCSAV3.value,
-      enableUSIFileStartpos: enableUSIFileStartpos.value,
-      enableUSIFileResign: enableUSIFileResign.value,
-      translateEngineOptionName: translateEngineOptionName.value,
-      engineTimeoutSeconds: readInputAsNumber(engineTimeoutSeconds.value),
-      evaluationViewFrom: evaluationViewFrom.value,
-      maxArrowsPerEngine: readInputAsNumber(maxArrowsPerEngine.value),
-      coefficientInSigmoid: readInputAsNumber(coefficientInSigmoid.value),
-      badMoveLevelThreshold1: readInputAsNumber(badMoveLevelThreshold1.value),
-      badMoveLevelThreshold2: readInputAsNumber(badMoveLevelThreshold2.value),
-      badMoveLevelThreshold3: readInputAsNumber(badMoveLevelThreshold3.value),
-      badMoveLevelThreshold4: readInputAsNumber(badMoveLevelThreshold4.value),
-      enableAppLog: enableAppLog.value,
-      enableUSILog: enableUSILog.value,
-      enableCSALog: enableCSALog.value,
-      logLevel: logLevel.value,
-    };
-    if (update.backgroundImageType !== BackgroundImageType.NONE) {
-      update.backgroundImageFileURL = backgroundImageFileURL.value;
-    }
-    if (update.pieceImage === PieceImageType.CUSTOM_IMAGE && pieceImageFileURL.value) {
-      update.croppedPieceImageBaseURL = await api.cropPieceImage(
-        pieceImageFileURL.value,
-        deletePieceImageMargin.value,
-      );
-      update.pieceImageFileURL = pieceImageFileURL.value;
-      update.deletePieceImageMargin = deletePieceImageMargin.value;
-    }
-    if (update.boardImage === BoardImageType.CUSTOM_IMAGE) {
-      update.boardImageFileURL = boardImageFileURL.value;
-    }
-    if (update.pieceStandImage === PieceStandImageType.CUSTOM_IMAGE) {
-      update.pieceStandImageFileURL = pieceStandImageFileURL.value;
-    }
-
-    await useAppSettings().updateAppSettings(update);
+    await useAppSettings().updateAppSettings(update.value);
     store.closeAppSettingsDialog();
   } catch (e) {
     useErrorStore().add(e);
@@ -1028,7 +968,7 @@ const selectAutoSaveDirectory = async () => {
   try {
     const path = await api.showSelectDirectoryDialog(autoSaveDirectory.value.value);
     if (path) {
-      autoSaveDirectory.value.value = path;
+      autoSaveDirectory.value.value = update.value.autoSaveDirectory = path;
     }
   } catch (e) {
     useErrorStore().add(e);

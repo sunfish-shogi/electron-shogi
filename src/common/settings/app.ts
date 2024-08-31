@@ -311,10 +311,7 @@ export type AppSettingsUpdate = {
   emptyRecordInfoVisibility?: boolean;
 };
 
-export function buildUpdatedAppSettings(
-  org: AppSettings,
-  update: AppSettingsUpdate,
-): AppSettings | Error {
+export function buildUpdatedAppSettings(org: AppSettings, update: AppSettingsUpdate): AppSettings {
   const updated = {
     ...org,
     ...update,
@@ -340,8 +337,7 @@ export function buildUpdatedAppSettings(
     updated.topPanePreviousHeightPercentage = org.topPaneHeightPercentage;
   }
 
-  const error = validateAppSettings(updated);
-  return error || updated;
+  return updated;
 }
 
 export function defaultAppSettings(opt?: {
@@ -472,10 +468,7 @@ export function validateAppSettings(settings: AppSettings): Error | undefined {
   ) {
     return new Error(t.backgroundImageFileNotSelected);
   }
-  if (
-    settings.pieceImage === PieceImageType.CUSTOM_IMAGE &&
-    (!settings.pieceImageFileURL || !settings.croppedPieceImageBaseURL)
-  ) {
+  if (settings.pieceImage === PieceImageType.CUSTOM_IMAGE && !settings.pieceImageFileURL) {
     return new Error(t.pieceImageFileNotSelected);
   }
   if (settings.boardImage === BoardImageType.CUSTOM_IMAGE && !settings.boardImageFileURL) {

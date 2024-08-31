@@ -1,5 +1,5 @@
 import api, { API } from "@/renderer/ipc/api";
-import { Tab, TabPaneType, Thema } from "@/common/settings/app";
+import { PieceImageType, Tab, TabPaneType, Thema } from "@/common/settings/app";
 import { createAppSettings } from "@/renderer/store/settings";
 import { Mocked } from "vitest";
 
@@ -46,6 +46,37 @@ describe("store/index", () => {
       }),
     ).rejects.toThrow();
     expect(store.pieceVolume).toBe(30);
+  });
+
+  it("setTemporaryUpdate", async () => {
+    mockAPI.cropPieceImage.mockResolvedValue("file:///cropped");
+
+    const store = createAppSettings();
+    expect(store.thema).toBe(Thema.STANDARD);
+    expect(store.pieceImage).toBe(PieceImageType.HITOMOJI);
+
+    const ret = store.setTemporaryUpdate({
+      thema: Thema.DARK,
+    });
+    expect(ret).toBeUndefined();
+    expect(store.thema).toBe(Thema.DARK);
+    expect(mockAPI.cropPieceImage).not.toBeCalled();
+
+    const ret2 = store.setTemporaryUpdate({
+      pieceImage: PieceImageType.CUSTOM_IMAGE,
+      pieceImageFileURL: "file:///test",
+    });
+    expect(ret2).toBeInstanceOf(Promise);
+    await ret2;
+    expect(store.pieceImage).toBe(PieceImageType.CUSTOM_IMAGE);
+    expect(store.pieceImageFileURL).toBe("file:///test");
+    expect(store.croppedPieceImageBaseURL).toBe("file:///cropped");
+    expect(mockAPI.cropPieceImage).toBeCalledWith("file:///test", false);
+
+    store.clearTemporaryUpdate();
+    expect(store.pieceImage).toBe(PieceImageType.HITOMOJI);
+    expect(store.pieceImageFileURL).toBeUndefined();
+    expect(store.croppedPieceImageBaseURL).toBeUndefined();
   });
 
   it("flipBoard", () => {

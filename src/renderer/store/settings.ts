@@ -1,4 +1,5 @@
 import {
+  AppSettings,
   AppSettingsUpdate,
   BackgroundImageType,
   BoardImageType,
@@ -20,6 +21,7 @@ import {
   Thema,
   buildUpdatedAppSettings,
   defaultAppSettings,
+  validateAppSettings,
 } from "@/common/settings/app";
 import { UnwrapNestedRefs, reactive } from "vue";
 import api from "@/renderer/ipc/api";
@@ -30,233 +32,282 @@ import { BoardLayoutType } from "@/common/settings/layout";
 
 class AppSettingsStore {
   private settings = defaultAppSettings();
+  private merged: AppSettings = this.settings;
+
+  get clone(): AppSettings {
+    return { ...this.merged };
+  }
 
   get language(): Language {
-    return this.settings.language;
+    return this.merged.language;
   }
   get thema(): Thema {
-    return this.settings.thema;
+    return this.merged.thema;
   }
   get pieceImage(): PieceImageType {
-    return this.settings.pieceImage;
+    return this.merged.pieceImage;
   }
   get kingPieceType(): KingPieceType {
-    return this.settings.kingPieceType;
+    return this.merged.kingPieceType;
   }
   get backgroundImageType(): BackgroundImageType {
-    return this.settings.backgroundImageType;
+    return this.merged.backgroundImageType;
   }
   get backgroundImageFileURL(): string | undefined {
-    return this.settings.backgroundImageFileURL;
+    return this.merged.backgroundImageFileURL;
   }
   get boardLayoutType(): BoardLayoutType {
-    return this.settings.boardLayoutType;
+    return this.merged.boardLayoutType;
   }
   get boardImage(): BoardImageType {
-    return this.settings.boardImage;
+    return this.merged.boardImage;
   }
   get croppedPieceImageBaseURL(): string | undefined {
-    return this.settings.croppedPieceImageBaseURL;
+    return this.merged.croppedPieceImageBaseURL;
   }
   get croppedPieceImageQuery(): string | undefined {
-    return this.settings.croppedPieceImageQuery;
+    return this.merged.croppedPieceImageQuery;
   }
   get pieceImageFileURL(): string | undefined {
-    return this.settings.pieceImageFileURL;
+    return this.merged.pieceImageFileURL;
   }
   get deletePieceImageMargin(): boolean {
-    return this.settings.deletePieceImageMargin;
+    return this.merged.deletePieceImageMargin;
   }
   get boardImageFileURL(): string | undefined {
-    return this.settings.boardImageFileURL;
+    return this.merged.boardImageFileURL;
   }
   get pieceStandImage(): PieceStandImageType {
-    return this.settings.pieceStandImage;
+    return this.merged.pieceStandImage;
   }
   get pieceStandImageFileURL(): string | undefined {
-    return this.settings.pieceStandImageFileURL;
+    return this.merged.pieceStandImageFileURL;
   }
   get enableTransparent(): boolean {
-    return this.settings.enableTransparent;
+    return this.merged.enableTransparent;
   }
   get boardOpacity(): number {
-    return this.settings.boardOpacity;
+    return this.merged.boardOpacity;
   }
   get pieceStandOpacity(): number {
-    return this.settings.pieceStandOpacity;
+    return this.merged.pieceStandOpacity;
   }
   get recordOpacity(): number {
-    return this.settings.recordOpacity;
+    return this.merged.recordOpacity;
   }
   get boardLabelType(): BoardLabelType {
-    return this.settings.boardLabelType;
+    return this.merged.boardLabelType;
   }
   get leftSideControlType(): LeftSideControlType {
-    return this.settings.leftSideControlType;
+    return this.merged.leftSideControlType;
   }
   get rightSideControlType(): RightSideControlType {
-    return this.settings.rightSideControlType;
+    return this.merged.rightSideControlType;
   }
   get pieceVolume(): number {
-    return this.settings.pieceVolume;
+    return this.merged.pieceVolume;
   }
   get clockVolume(): number {
-    return this.settings.clockVolume;
+    return this.merged.clockVolume;
   }
   get clockPitch(): number {
-    return this.settings.clockPitch;
+    return this.merged.clockPitch;
   }
   get clockSoundTarget(): ClockSoundTarget {
-    return this.settings.clockSoundTarget;
+    return this.merged.clockSoundTarget;
   }
   get boardFlipping(): boolean {
-    return this.settings.boardFlipping;
+    return this.merged.boardFlipping;
   }
   get tabPaneType(): TabPaneType {
-    return this.settings.tabPaneType;
+    return this.merged.tabPaneType;
   }
   get tab(): Tab {
-    return this.settings.tab;
+    return this.merged.tab;
   }
   get tab2(): Tab {
-    return this.settings.tab2;
+    return this.merged.tab2;
   }
   get topPaneHeightPercentage(): number {
-    return this.settings.topPaneHeightPercentage;
+    return this.merged.topPaneHeightPercentage;
   }
   get topPanePreviousHeightPercentage(): number {
-    return this.settings.topPanePreviousHeightPercentage;
+    return this.merged.topPanePreviousHeightPercentage;
   }
   get bottomLeftPaneWidthPercentage(): number {
-    return this.settings.bottomLeftPaneWidthPercentage;
+    return this.merged.bottomLeftPaneWidthPercentage;
   }
   get defaultRecordFileFormat(): RecordFileFormat {
-    return this.settings.defaultRecordFileFormat;
+    return this.merged.defaultRecordFileFormat;
   }
   get textDecodingRule(): TextDecodingRule {
-    return this.settings.textDecodingRule;
+    return this.merged.textDecodingRule;
   }
   get returnCode(): string {
-    return this.settings.returnCode;
+    return this.merged.returnCode;
   }
   get autoSaveDirectory(): string {
-    return this.settings.autoSaveDirectory;
+    return this.merged.autoSaveDirectory;
   }
   get recordFileNameTemplate(): string {
-    return this.settings.recordFileNameTemplate;
+    return this.merged.recordFileNameTemplate;
   }
   get useCSAV3(): boolean {
-    return this.settings.useCSAV3;
+    return this.merged.useCSAV3;
   }
   get enableUSIFileStartpos(): boolean {
-    return this.settings.enableUSIFileStartpos;
+    return this.merged.enableUSIFileStartpos;
   }
   get enableUSIFileResign(): boolean {
-    return this.settings.enableUSIFileResign;
+    return this.merged.enableUSIFileResign;
   }
   get translateEngineOptionName(): boolean {
-    return this.settings.translateEngineOptionName;
+    return this.merged.translateEngineOptionName;
   }
   get engineTimeoutSeconds(): number {
-    return this.settings.engineTimeoutSeconds;
+    return this.merged.engineTimeoutSeconds;
   }
   get evaluationViewFrom(): EvaluationViewFrom {
-    return this.settings.evaluationViewFrom;
+    return this.merged.evaluationViewFrom;
   }
   get maxArrowsPerEngine(): number {
-    return this.settings.maxArrowsPerEngine;
+    return this.merged.maxArrowsPerEngine;
   }
   get coefficientInSigmoid(): number {
-    return this.settings.coefficientInSigmoid;
+    return this.merged.coefficientInSigmoid;
   }
   get badMoveLevelThreshold1(): number {
-    return this.settings.badMoveLevelThreshold1;
+    return this.merged.badMoveLevelThreshold1;
   }
   get badMoveLevelThreshold2(): number {
-    return this.settings.badMoveLevelThreshold2;
+    return this.merged.badMoveLevelThreshold2;
   }
   get badMoveLevelThreshold3(): number {
-    return this.settings.badMoveLevelThreshold3;
+    return this.merged.badMoveLevelThreshold3;
   }
   get badMoveLevelThreshold4(): number {
-    return this.settings.badMoveLevelThreshold4;
+    return this.merged.badMoveLevelThreshold4;
   }
   get showElapsedTimeInRecordView(): boolean {
-    return this.settings.showElapsedTimeInRecordView;
+    return this.merged.showElapsedTimeInRecordView;
   }
   get showCommentInRecordView(): boolean {
-    return this.settings.showCommentInRecordView;
+    return this.merged.showCommentInRecordView;
   }
   get enableAppLog(): boolean {
-    return this.settings.enableAppLog;
+    return this.merged.enableAppLog;
   }
   get enableUSILog(): boolean {
-    return this.settings.enableUSILog;
+    return this.merged.enableUSILog;
   }
   get enableCSALog(): boolean {
-    return this.settings.enableCSALog;
+    return this.merged.enableCSALog;
   }
   get logLevel(): LogLevel {
-    return this.settings.logLevel;
+    return this.merged.logLevel;
   }
   get positionImageStyle(): PositionImageStyle {
-    return this.settings.positionImageStyle;
+    return this.merged.positionImageStyle;
   }
   get positionImageSize(): number {
-    return this.settings.positionImageSize;
+    return this.merged.positionImageSize;
   }
   get positionImageTypeface(): PositionImageTypeface {
-    return this.settings.positionImageTypeface;
+    return this.merged.positionImageTypeface;
   }
   get positionImageHandLabelType(): PositionImageHandLabelType {
-    return this.settings.positionImageHandLabelType;
+    return this.merged.positionImageHandLabelType;
   }
   get useBookmarkAsPositionImageHeader(): boolean {
-    return this.settings.useBookmarkAsPositionImageHeader;
+    return this.merged.useBookmarkAsPositionImageHeader;
   }
   get positionImageHeader(): string {
-    return this.settings.positionImageHeader;
+    return this.merged.positionImageHeader;
   }
   get positionImageCharacterY(): number {
-    return this.settings.positionImageCharacterY;
+    return this.merged.positionImageCharacterY;
   }
   get positionImageFontScale(): number {
-    return this.settings.positionImageFontScale;
+    return this.merged.positionImageFontScale;
   }
   get positionImageFontWeight(): PositionImageFontWeight {
-    return this.settings.positionImageFontWeight;
+    return this.merged.positionImageFontWeight;
   }
   get lastRecordFilePath(): string {
-    return this.settings.lastRecordFilePath;
+    return this.merged.lastRecordFilePath;
   }
   get lastUSIEngineFilePath(): string {
-    return this.settings.lastUSIEngineFilePath;
+    return this.merged.lastUSIEngineFilePath;
   }
   get lastImageExportFilePath(): string {
-    return this.settings.lastImageExportFilePath;
+    return this.merged.lastImageExportFilePath;
   }
   get lastOtherFilePath(): string {
-    return this.settings.lastOtherFilePath;
+    return this.merged.lastOtherFilePath;
   }
   get emptyRecordInfoVisibility(): boolean {
-    return this.settings.emptyRecordInfoVisibility;
+    return this.merged.emptyRecordInfoVisibility;
   }
 
   async loadAppSettings(): Promise<void> {
     this.settings = await api.loadAppSettings();
+    this.merged = this.settings;
   }
 
-  async updateAppSettings(update: AppSettingsUpdate): Promise<void> {
-    const updated = buildUpdatedAppSettings(this.settings, update);
-    if (updated instanceof Error) {
-      throw updated;
+  private applyCustomPieceImages(settings: AppSettings): AppSettings | Promise<AppSettings> {
+    if (
+      settings.pieceImage === PieceImageType.CUSTOM_IMAGE &&
+      settings.pieceImageFileURL &&
+      (settings.pieceImageFileURL !== this.pieceImageFileURL ||
+        settings.deletePieceImageMargin !== this.deletePieceImageMargin)
+    ) {
+      return api
+        .cropPieceImage(settings.pieceImageFileURL, !!settings.deletePieceImageMargin)
+        .then((result) => {
+          return {
+            ...settings,
+            croppedPieceImageBaseURL: result,
+          };
+        });
     }
+    return {
+      ...settings,
+      croppedPieceImageBaseURL: this.croppedPieceImageBaseURL,
+    };
+  }
+
+  async updateAppSettings(update: AppSettingsUpdate) {
+    const candidate = buildUpdatedAppSettings(this.settings, update);
+    const error = validateAppSettings(candidate);
+    if (error instanceof Error) {
+      throw error;
+    }
+    const updated = await this.applyCustomPieceImages(candidate);
     await api.saveAppSettings(updated);
-    this.settings = updated;
+    this.merged = this.settings = updated;
+  }
+
+  setTemporaryUpdate(update: AppSettingsUpdate): void | Error | Promise<void> {
+    const candidate = buildUpdatedAppSettings(this.merged, update);
+    const error = validateAppSettings(candidate);
+    if (error instanceof Error) {
+      return error;
+    }
+    const updated = this.applyCustomPieceImages(candidate);
+    if (updated instanceof Promise) {
+      return updated.then((updated) => {
+        this.merged = updated;
+      });
+    }
+    this.merged = updated;
+  }
+
+  clearTemporaryUpdate(): void {
+    this.merged = this.settings;
   }
 
   flipBoard(): void {
-    this.settings.boardFlipping = !this.settings.boardFlipping;
+    this.merged.boardFlipping = this.settings.boardFlipping = !this.settings.boardFlipping;
     api.saveAppSettings(this.settings);
   }
 }

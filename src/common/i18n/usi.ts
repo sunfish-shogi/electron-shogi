@@ -44,7 +44,7 @@ const ja: USIOptionNameMap = {
   EvalSaveDir: "評価関数保存フォルダ",
   EvalShare: "評価値共有",
   BookDir: "定跡ファイルのフォルダ",
-  Stochastic_Ponder: "相手番思考（確率的）",
+  Stochastic_Ponder: "確率的相手番思考",
   MinimumThinkingTime: "最小思考時間",
   Minimum_Thinking_Time: "最小思考時間",
   MinThinkingTime: "最小思考時間",
@@ -74,11 +74,15 @@ const ja: USIOptionNameMap = {
   GenerateAllLegalMoves: "全合法手を生成",
   DrawScore: "引き分けのスコア",
   DrawValue: "引き分けの値",
-  DrawValueBlack: "引き分けの値（先手）",
-  DrawValueWhite: "引き分けの値（後手）",
+  DrawValueBlack: "引き分けの値・先手",
+  DrawValueWhite: "引き分けの値・後手",
   LargePageEnable: "LargePageを使用",
   SkillLevel: "スキルレベル",
   Skill_Level: "スキルレベル",
+  BookOnTheFly: "定跡直接読み込み（大規模定跡）",
+  BookDepthLimit: "定跡深さ制限",
+  BookEvalBlackLimit: "定跡評価値制限・先手",
+  BookEvalWhiteLimit: "定跡評価値制限・後手",
 };
 
 export const usiOptionNameMap: USIOptionNameMap = {};

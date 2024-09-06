@@ -43,6 +43,12 @@ export class HandLayoutBuilder {
     const bgColor = pieceStandBackgroundColorMap[this.config.pieceStandImageType];
     const standWidth = handParams.width * this.ratio;
     const standHeight = handParams.height * this.ratio;
+    const touchAreaStyle = {
+      left: "0px",
+      top: "0px",
+      width: standWidth + "px",
+      height: standHeight + "px",
+    };
     const backgroundStyle = {
       left: "0px",
       top: "0px",
@@ -103,6 +109,7 @@ export class HandLayoutBuilder {
     });
     return {
       textureImagePath: this.config.pieceStandImage,
+      touchAreaStyle,
       backgroundStyle,
       pieces,
       pointers,
@@ -139,6 +146,12 @@ export class CompactHandLayoutBuilder {
     const bgColor = pieceStandBackgroundColorMap[this.config.pieceStandImageType];
     const standWidth = compactHandParams.width * this.ratio;
     const standHeight = compactHandParams.height * this.ratio;
+    const touchAreaStyle = {
+      left: "0px",
+      top: "0px",
+      width: standWidth + "px",
+      height: standHeight + "px",
+    };
     const backgroundStyle = {
       left: "0px",
       top: "0px",
@@ -208,6 +221,7 @@ export class CompactHandLayoutBuilder {
     }
     return {
       textureImagePath: this.config.pieceStandImage,
+      touchAreaStyle,
       backgroundStyle,
       pieces,
       numbers,
@@ -245,6 +259,12 @@ export class PortraitHandLayoutBuilder {
     const bgColor = pieceStandBackgroundColorMap[this.config.pieceStandImageType];
     const standWidth = portraitHandParams.width * this.ratio;
     const standHeight = portraitHandParams.height * this.ratio;
+    const touchAreaStyle = {
+      left: "0px",
+      top: "0px",
+      width: standWidth + "px",
+      height: standHeight + "px",
+    };
     const backgroundStyle = {
       left: "0px",
       top: "0px",
@@ -313,6 +333,7 @@ export class PortraitHandLayoutBuilder {
     });
     return {
       textureImagePath: this.config.pieceStandImage,
+      touchAreaStyle,
       backgroundStyle,
       pieces,
       numbers,

@@ -102,6 +102,7 @@ export type HandPointer = {
 
 export type Hand = {
   textureImagePath: string | null;
+  touchAreaStyle: { [key: string]: string };
   backgroundStyle: { [key: string]: string };
   pieces: HandPiece[];
   numbers?: HandNumber[];

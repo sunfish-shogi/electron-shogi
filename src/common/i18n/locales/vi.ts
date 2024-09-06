@@ -388,6 +388,7 @@ export const vi: Texts = {
   note: "Ghi chú",
   senteShortName: "Tiên thủ (ngắn)",
   goteShortName: "Hậu thủ (ngắn)",
+  scorekeeper: "記録係", // TODO: translate
   opusNo: "Số hiệu",
   opusName: "Tên tác phẩm",
   publishedBy: "Xuất bản bởi",

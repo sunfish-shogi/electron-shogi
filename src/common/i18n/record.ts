@@ -47,6 +47,8 @@ export function getRecordMetadataName(key: RecordMetadataKey): string {
       return t.senteShortName;
     case RecordMetadataKey.WHITE_SHORT_NAME:
       return t.goteShortName;
+    case RecordMetadataKey.SCOREKEEPER:
+      return t.scorekeeper;
     case RecordMetadataKey.OPUS_NO:
       return t.opusNo;
     case RecordMetadataKey.OPUS_NAME:

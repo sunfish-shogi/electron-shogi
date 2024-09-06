@@ -385,6 +385,7 @@ export const zh_tw: Texts = {
   note: "備註",
   senteShortName: "先手省略名",
   goteShortName: "後手省略名",
+  scorekeeper: "記録係", // TODO: translate
   opusNo: "作品編號",
   opusName: "作品名",
   publishedBy: "發表於",

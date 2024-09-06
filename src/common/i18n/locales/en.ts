@@ -388,6 +388,7 @@ export const en: Texts = {
   note: "Note",
   senteShortName: "Sente(short)",
   goteShortName: "Gote(short)",
+  scorekeeper: "Scorekeeper",
   opusNo: "Opus No.",
   opusName: "Opus Name",
   publishedBy: "Published By",

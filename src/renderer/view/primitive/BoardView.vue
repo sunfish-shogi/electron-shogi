@@ -82,6 +82,10 @@
       </div>
       <div class="hand" :style="main.blackHandStyle">
         <div
+          :style="blackHand.touchAreaStyle"
+          @click.stop.prevent="clickHandArea(Color.BLACK)"
+        ></div>
+        <div
           v-for="pointer in blackHand.pointers"
           :key="pointer.id"
           :style="pointer.style"
@@ -89,6 +93,10 @@
         ></div>
       </div>
       <div class="hand" :style="main.whiteHandStyle">
+        <div
+          :style="whiteHand.touchAreaStyle"
+          @click.stop.prevent="clickHandArea(Color.WHITE)"
+        ></div>
         <div
           v-for="pointer in whiteHand.pointers"
           :key="pointer.id"
@@ -396,6 +404,12 @@ const clickSquare = (file: number, rank: number) => {
   const piece = props.position.board.at(square);
   const empty = !piece;
   updatePointer(square, empty, piece?.color);
+};
+
+const clickHandArea = (color: Color) => {
+  // 局面編集の場合はどの持ち駒でもない領域をクリックしても移動先として認識する。
+  // empty = true なので移動先としてのみ利用され選択は残らない。
+  updatePointer(new Piece(color, PieceType.PAWN), true, color);
 };
 
 const clickHand = (color: Color, type: PieceType) => {

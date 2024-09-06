@@ -383,6 +383,7 @@ export type Texts = {
   note: string;
   senteShortName: string;
   goteShortName: string;
+  scorekeeper: string;
   opusNo: string;
   opusName: string;
   publishedBy: string;

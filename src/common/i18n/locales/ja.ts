@@ -388,6 +388,7 @@ export const ja: Texts = {
   note: "備考",
   senteShortName: "先手省略名",
   goteShortName: "後手省略名",
+  scorekeeper: "記録係",
   opusNo: "作品番号",
   opusName: "作品名",
   publishedBy: "発表誌",

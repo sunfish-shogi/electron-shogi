@@ -24,9 +24,14 @@ function getSenderTypeByIndex(index: number): SearchInfoSenderType | undefined {
 
 type UpdateSearchInfoCallback = (type: SearchInfoSenderType, info: SearchInfo) => void;
 
+type Engine = {
+  usi: USIPlayer;
+  timer?: NodeJS.Timeout;
+};
+
 export class ResearchManager {
   private settings = defaultResearchSettings();
-  private engines: USIPlayer[] = [];
+  private engines: Engine[] = [];
   private ready: boolean = false;
   private onUpdateSearchInfo: UpdateSearchInfoCallback = () => {
     /* noop */
@@ -37,7 +42,6 @@ export class ResearchManager {
   private pausedEngineMap: { [sessionID: number]: boolean } = {};
   private record?: ImmutableRecord;
   private lazyPositionUpdate = new Lazy();
-  private maxSecondsTimer?: NodeJS.Timeout;
   private synced = true;
 
   on(event: "updateSearchInfo", handler: UpdateSearchInfoCallback): this;
@@ -77,17 +81,19 @@ export class ResearchManager {
     const usiEngines = [settings.usi, ...(settings.secondaries?.map((s) => s.usi) || [])];
     this.engines = usiEngines.map((usi, index) => {
       const type = getSenderTypeByIndex(index);
-      return new USIPlayer(usi as USIEngine, appSettings.engineTimeoutSeconds, (info) => {
-        if (type !== undefined && this.synced) {
-          this.onUpdateSearchInfo(type, info);
-        }
-      });
+      return {
+        usi: new USIPlayer(usi as USIEngine, appSettings.engineTimeoutSeconds, (info) => {
+          if (type !== undefined && this.synced) {
+            this.onUpdateSearchInfo(type, info);
+          }
+        }),
+      };
     });
 
     // エンジンを起動する。
     try {
-      await Promise.all(this.engines.map((engine) => engine.launch()));
-      await Promise.all(this.engines.map((engine) => engine.readyNewGame()));
+      await Promise.all(this.engines.map((engine) => engine.usi.launch()));
+      await Promise.all(this.engines.map((engine) => engine.usi.readyNewGame()));
       this.ready = true;
     } catch (e) {
       this.close();
@@ -106,24 +112,19 @@ export class ResearchManager {
       }
       // 一時停止中のエンジンを除いて探索を開始する。
       this.engines.forEach((engine) => {
-        if (this.pausedEngineMap[engine.sessionID]) {
+        if (this.pausedEngineMap[engine.usi.sessionID]) {
           return;
         }
-        engine.startResearch(record.position, record.usi).catch((e) => {
+        engine.usi.startResearch(record.position, record.usi).catch((e) => {
           this.onError(e);
         });
+        // タイマーを初期化する。
+        this.setupTimer(engine);
       });
       // 同期済みフラグを立てる。
       this.synced = true;
       // 一時停止からの再開のために棋譜を覚えておく。
       this.record = record;
-      // タイマーを初期化する。
-      clearTimeout(this.maxSecondsTimer);
-      if (this.settings.enableMaxSeconds && this.settings.maxSeconds > 0) {
-        this.maxSecondsTimer = setTimeout(() => {
-          this.stopAll();
-        }, this.settings.maxSeconds * 1e3);
-      }
     }, 200);
   }
 
@@ -132,44 +133,50 @@ export class ResearchManager {
   }
 
   pause(sessionID: number) {
-    const engine = this.engines.find((engine) => engine.sessionID === sessionID);
+    const engine = this.engines.find((engine) => engine.usi.sessionID === sessionID);
     if (!engine) {
       return;
     }
     this.pausedEngineMap[sessionID] = true;
-    engine.stop().catch((e) => {
+    engine.usi.stop().catch((e) => {
       this.onError(e);
     });
   }
 
   unpause(sessionID: number) {
-    const engine = this.engines.find((engine) => engine.sessionID === sessionID);
+    const engine = this.engines.find((engine) => engine.usi.sessionID === sessionID);
     if (!engine) {
       return;
     }
     this.pausedEngineMap[sessionID] = false;
     if (this.record) {
-      engine.startResearch(this.record.position, this.record.usi).catch((e) => {
+      engine.usi.startResearch(this.record.position, this.record.usi).catch((e) => {
         this.onError(e);
       });
+      // タイマーを初期化する。
+      this.setupTimer(engine);
     }
   }
 
   isSessionExists(sessionID: number): boolean {
-    return this.engines.some((engine) => engine.sessionID === sessionID);
+    return this.engines.some((engine) => engine.usi.sessionID === sessionID);
   }
 
-  private stopAll() {
-    clearTimeout(this.maxSecondsTimer);
-    Promise.all(this.engines.map((engine) => engine.stop())).catch((e) => {
-      this.onError(e);
-    });
+  private setupTimer(engine: Engine) {
+    clearTimeout(engine.timer);
+    if (this.settings.enableMaxSeconds && this.settings.maxSeconds > 0) {
+      engine.timer = setTimeout(() => {
+        engine.usi.stop().catch((e) => {
+          this.onError(e);
+        });
+      }, this.settings.maxSeconds * 1e3);
+    }
   }
 
   close() {
     this.lazyPositionUpdate.clear();
-    clearTimeout(this.maxSecondsTimer);
-    Promise.allSettled(this.engines.map((engine) => engine.close()))
+    this.engines.forEach((engine) => clearTimeout(engine.timer));
+    Promise.allSettled(this.engines.map((engine) => engine.usi.close()))
       .then(() => {
         this.engines = [];
         this.pausedEngineMap = {};

@@ -55,6 +55,8 @@ export enum IconType {
   PAUSE = "pause",
   RESUME = "resume",
   HELP = "help",
+  EQUALIZER = "equalizer",
+  REFRESH = "refresh",
 }
 
 export const iconSourceMap = {
@@ -112,6 +114,8 @@ export const iconSourceMap = {
   [IconType.PAUSE]: "icon/pause_circle_FILL0_wght400_GRAD0_opsz24.svg",
   [IconType.RESUME]: "icon/play_circle_FILL0_wght400_GRAD0_opsz24.svg",
   [IconType.HELP]: "icon/help_FILL0_wght400_GRAD0_opsz24.svg",
+  [IconType.EQUALIZER]: "icon/instant_mix_FILL0.svg",
+  [IconType.REFRESH]: "icon/refresh_FILL0.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

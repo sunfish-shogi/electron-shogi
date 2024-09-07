@@ -158,6 +158,7 @@
           class="control-item"
           @click="onInitPosition"
         >
+          <Icon :icon="IconType.REFRESH" />
           <span :class="{ tooltip: compact }">{{ t.initializePosition }}</span>
         </button>
         <!-- 駒の増減 -->
@@ -166,6 +167,7 @@
           class="control-item"
           @click="onPieceSetChange"
         >
+          <Icon :icon="IconType.EQUALIZER" />
           <span :class="{ tooltip: compact }">{{ t.changePieceSet }}</span>
         </button>
       </div>

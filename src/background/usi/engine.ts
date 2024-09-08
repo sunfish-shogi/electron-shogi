@@ -121,6 +121,7 @@ function parseInfoCommand(args: string): USIInfoCommand {
 
 type ErrorCallback = (e: Error) => void;
 type TimeoutCallback = () => void;
+type CloseCallback = () => void;
 type USIOKCallback = () => void;
 type ReadyCallback = () => void;
 type BestmoveCallback = (position: string, move: string, ponder?: string) => void;
@@ -169,6 +170,7 @@ export enum State {
   WaitingForPonderBestMove = "waitingForPonderBestMove",
   WaitingForCheckmate = "waitingForCheckmate",
   WillQuit = "willQuit",
+  QuitCompleted = "quitCompleted",
 }
 
 const DefaultTimeout = 10 * 1e3;
@@ -197,6 +199,7 @@ export class EngineProcess {
   };
   timeoutCallback?: TimeoutCallback;
   errorCallback?: ErrorCallback;
+  closeCallback?: CloseCallback;
   usiOkCallback?: USIOKCallback;
   readyCallback?: ReadyCallback;
   bestMoveCallback?: BestmoveCallback;
@@ -257,6 +260,7 @@ export class EngineProcess {
 
   on(event: "timeout", callback: TimeoutCallback): this;
   on(event: "error", callback: ErrorCallback): this;
+  on(event: "close", callback: CloseCallback): this;
   on(event: "usiok", callback: USIOKCallback): this;
   on(event: "ready", callback: ReadyCallback): this;
   on(event: "bestmove", callback: BestmoveCallback): this;
@@ -274,6 +278,9 @@ export class EngineProcess {
         break;
       case "error":
         this.errorCallback = callback as ErrorCallback;
+        break;
+      case "close":
+        this.closeCallback = callback as CloseCallback;
         break;
       case "usiok":
         this.usiOkCallback = callback as USIOKCallback;
@@ -326,9 +333,6 @@ export class EngineProcess {
     this._state = State.WillQuit;
     this.clearLaunchTimeout();
     this.logger.info("sid=%d: quit USI engine", this.sessionID);
-    if (!this.process) {
-      return;
-    }
     this.setQuitTimeout();
     this.send("quit");
   }
@@ -525,9 +529,11 @@ export class EngineProcess {
     if (this.state !== State.WillQuit) {
       this.errorCallback?.(new Error("closed unexpectedly"));
     }
+    this._state = State.QuitCompleted;
     this.clearLaunchTimeout();
     this.clearQuitTimeout();
     this.process = null;
+    this.closeCallback?.();
     const command = newCommand(CommandType.SYSTEM, `closed: close=${code} signal=${signal}`);
     this.updateCommendHistory(command);
     this.commandCallback?.(command);

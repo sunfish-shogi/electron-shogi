@@ -568,6 +568,7 @@ export const vi: Texts = {
   invalidBoard: "Bàn cờ không hợp lệ",
   invalidHandPiece: "Quân trên tay không hợp lệ",
   invalidUSI: "USI không hợp lệ",
+  engineProcessWasClosedUnexpectedly: "エンジンプロセスが予期せず終了しました。", // TODO: translate
   backgroundImageFileNotSelected: "Chưa chọn ảnh nền.",
   pieceImageFileNotSelected: "Chưa chọn ảnh quân cờ.",
   boardImageFileNotSelected: "Chưa chọn ảnh bàn cờ.",

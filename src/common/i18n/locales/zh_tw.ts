@@ -563,6 +563,7 @@ export const zh_tw: Texts = {
   invalidBoard: "不合法的盤面",
   invalidHandPiece: "不合法的持駒",
   invalidUSI: "不合法的USI",
+  engineProcessWasClosedUnexpectedly: "エンジンプロセスが予期せず終了しました。", // TODO: translate
   backgroundImageFileNotSelected: "尚未選取背景圖片。",
   pieceImageFileNotSelected: "尚未選取棋駒圖片。",
   boardImageFileNotSelected: "尚未選取盤面圖片。",

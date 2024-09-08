@@ -554,6 +554,7 @@ export type Texts = {
   invalidBoard: string;
   invalidHandPiece: string;
   invalidUSI: string;
+  engineProcessWasClosedUnexpectedly: string;
   backgroundImageFileNotSelected: string;
   pieceImageFileNotSelected: string;
   boardImageFileNotSelected: string;

@@ -570,6 +570,7 @@ export const ja: Texts = {
   invalidBoard: "不正な盤面",
   invalidHandPiece: "不正な持ち駒",
   invalidUSI: "不正なUSI",
+  engineProcessWasClosedUnexpectedly: "エンジンプロセスが予期せず終了しました。",
   backgroundImageFileNotSelected: "背景画像のファイルが選択されていません。",
   pieceImageFileNotSelected: "駒画像のファイルが選択されていません。",
   boardImageFileNotSelected: "盤面画像のファイルが選択されていません。",

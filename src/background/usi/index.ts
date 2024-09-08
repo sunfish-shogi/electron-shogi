@@ -42,6 +42,7 @@ export function getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<
       timeout: timeoutSeconds * 1e3,
     })
       .on("error", reject)
+      .on("close", () => reject(new Error(t.engineProcessWasClosedUnexpectedly)))
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
       .on("usiok", () => {
         resolve({
@@ -73,6 +74,7 @@ export function sendSetOptionCommand(
       timeout: timeoutSeconds * 1e3,
     })
       .on("error", reject)
+      .on("close", () => reject(new Error(t.engineProcessWasClosedUnexpectedly)))
       .on("timeout", () => {
         reject(newTimeoutError(timeoutSeconds));
       })
@@ -102,6 +104,7 @@ function issueSessionID(): number {
 }
 
 const sessions = new Map<number, Session>();
+const engineRemoveDelay = 10e3;
 
 function isSessionExists(sessionID: number): boolean {
   return sessions.has(sessionID);
@@ -129,6 +132,11 @@ export function setupPlayer(engine: USIEngine, timeoutSeconds: number): Promise<
   });
   return new Promise<number>((resolve, reject) => {
     process
+      .on("close", () => {
+        setTimeout(() => {
+          sessions.delete(sessionID);
+        }, engineRemoveDelay);
+      })
       .on("error", reject)
       .on("timeout", () => reject(newTimeoutError(timeoutSeconds)))
       .on("bestmove", (usi, usiMove, ponder) => h.onUSIBestMove(sessionID, usi, usiMove, ponder))
@@ -243,16 +251,21 @@ export function quit(sessionID: number): void {
   }
   const session = getSession(sessionID);
   session.process.quit();
-  setTimeout(() => {
-    sessions.delete(sessionID);
-  }, 10e3); // remove 10 seconds later
 }
 
 export function quitAll(): void {
   sessions.forEach((session) => {
     session.process.quit();
   });
-  sessions.clear();
+}
+
+export function isActiveSessionExists(): boolean {
+  for (const session of sessions.values()) {
+    if (session.process.state !== State.QuitCompleted) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function collectSessionStates(): USISessionState[] {
@@ -268,7 +281,7 @@ export function collectSessionStates(): USISessionState[] {
       lastReceived: session.process.lastReceived,
       lastSent: session.process.lastSent,
       updatedMs: Date.now(),
-      closed: session.process.state === State.WillQuit,
+      closed: session.process.state === State.QuitCompleted,
     }))
     .sort((a, b) => b.sessionID - a.sessionID);
 }

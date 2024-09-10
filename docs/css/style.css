@@ -18,7 +18,7 @@ header {
   margin: 0px;
   padding: 10px 5% 5px 5%;
   color: white;
-  background-color: darkslategray;
+  background: linear-gradient(90deg, #2f4f4f, 70%, #537271);
 }
 
 header .link-buttons {
@@ -39,7 +39,7 @@ nav {
   margin: 0px;
   padding: 5px 0px 5px 0px;
   color: white;
-  background-color: darkslategray;
+  background: linear-gradient(90deg, #2f4f4f, 70%, #537271);
 }
 
 nav.sticky {
@@ -124,7 +124,7 @@ a:hover {
   font-size: 1em;
   line-height: 2em;
   color: lemonchiffon;
-  background-color: darkslategray;
+  background: linear-gradient(10deg, #2f4f4f, #5d7f7e);
   padding: 0.5em 1.5em 0.5em 1.5em;
   border-radius: 1.2em;
 }

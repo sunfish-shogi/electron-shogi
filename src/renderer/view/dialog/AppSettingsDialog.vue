@@ -628,9 +628,9 @@
           </div>
         </div>
         <hr />
-        <!-- 評価値と推定勝率 -->
+        <!-- 評価値・推定勝率・読み筋 -->
         <div class="section">
-          <div class="section-title">{{ t.evaluationAndEstimatedWinRate }}</div>
+          <div class="section-title">{{ t.evaluationAndEstimatedWinRateAndPV }}</div>
           <!-- 評価値の符号 -->
           <div class="form-item">
             <div class="form-item-label-wide">
@@ -762,6 +762,25 @@
               "
             />
             <div class="form-item-small-label">%</div>
+          </div>
+          <!-- PV表示手数 -->
+          <div class="form-item">
+            <div class="form-item-label-wide">{{ t.maxPVLength }}</div>
+            <input
+              :value="original.maxPVTextLength"
+              type="number"
+              max="100"
+              min="5"
+              @input="
+                (event) => {
+                  update.maxPVTextLength = readInputAsNumber(event.target as HTMLInputElement);
+                }
+              "
+            />
+            <div class="form-item-small-label">({{ t.between(5, 100) }})</div>
+            <button class="thin auxiliary" @click="whatIsMaxPVLengthSetting">
+              <Icon :icon="IconType.HELP" />
+            </button>
           </div>
         </div>
         <hr />
@@ -900,7 +919,7 @@ import { RecordFileFormat } from "@/common/file/record";
 import { IconType } from "@/renderer/assets/icons";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { VersionStatus } from "@/background/version/types";
-import { fileNameTemplateWikiPageURL } from "@/common/links/github";
+import { fileNameTemplateWikiPageURL, maxPVLengthSettingWikiPageURL } from "@/common/links/github";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
 import { BoardLayoutType } from "@/common/settings/layout";
@@ -983,6 +1002,10 @@ const onOpenAutoSaveDirectory = () => {
 
 const howToWriteFileNameTemplate = () => {
   api.openWebBrowser(fileNameTemplateWikiPageURL);
+};
+
+const whatIsMaxPVLengthSetting = () => {
+  api.openWebBrowser(maxPVLengthSettingWikiPageURL);
 };
 
 const sendTestNotification = () => {

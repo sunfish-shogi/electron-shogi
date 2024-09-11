@@ -70,7 +70,7 @@ describe("store/usi", () => {
     "USIPlayerMonitor",
     () => {
       for (const testCase of monitorUpdateTestCases) {
-        monitor.update(testCase.sfen, testCase.update, undefined);
+        monitor.update(testCase.sfen, testCase.update, 100, undefined);
       }
     },
     { time: 1000, throws: true },

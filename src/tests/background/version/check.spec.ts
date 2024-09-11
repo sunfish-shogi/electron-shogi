@@ -104,6 +104,7 @@ describe("version", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.clearAllMocks();
     vi.useRealTimers();
     fs.unlinkSync(statusFilePath);

@@ -62,6 +62,7 @@ import { useErrorStore } from "./error";
 import { useBusyState } from "./busy";
 import { Confirmation, useConfirmationStore } from "./confirm";
 import { LayoutProfile, LayoutProfileList } from "@/common/settings/layout";
+import { clearURLParams, loadRecordForWebApp, saveRecordForWebApp } from "./webapp";
 
 export type PVPreview = {
   position: ImmutablePosition;
@@ -121,7 +122,7 @@ function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] 
 }
 
 class Store {
-  private recordManager = new RecordManager();
+  private recordManager = new RecordManager(loadRecordForWebApp());
   private _appState = AppState.NORMAL;
   private _customLayout: LayoutProfile | null = null;
   private _isAppSettingsDialogVisible = false;
@@ -147,19 +148,23 @@ class Store {
     this.recordManager
       .on("changePosition", () => {
         this.onChangePositionHandlers.forEach((handler) => handler());
+        saveRecordForWebApp(this.record);
+        this.updateResearchPosition();
       })
       .on("updateTree", () => {
         this.onUpdateRecordTreeHandlers.forEach((handler) => handler());
+        saveRecordForWebApp(this.record);
+        clearURLParams();
       })
       .on("updateCustomData", () => {
         this.onUpdateCustomDataHandlers.forEach((handler) => handler());
+        saveRecordForWebApp(this.record);
       })
       .on("backup", () => {
         return {
           returnCode: useAppSettings().returnCode,
         };
       });
-    this.onChangePositionHandlers.push(this.updateResearchPosition.bind(refs));
     this.gameManager
       .on("saveRecord", this.onSaveRecord.bind(refs))
       .on("gameEnd", this.onGameEnd.bind(refs))

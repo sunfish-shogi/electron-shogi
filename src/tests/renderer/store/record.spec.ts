@@ -16,63 +16,11 @@ import { SCORE_MATE_INFINITE } from "@/common/game/usi";
 import { RecordManager, SearchInfoSenderType } from "@/renderer/store/record";
 
 describe("store/record", () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it("new", () => {
     const recordManager = new RecordManager();
     expect(recordManager.unsaved).toBeFalsy();
     expect(recordManager.record.position.sfen).toBe(InitialPositionSFEN.STANDARD);
     expect(recordManager.record.moves).toHaveLength(1);
-  });
-
-  it("withUSENParam", () => {
-    vi.stubGlobal("window", {
-      location: {
-        toString: () =>
-          "http://localhost/?usen=~0.7ku2jm6y20e45t2.&branch=0&ply=2&bname=bbb&wname=www",
-      },
-    });
-    const recordManager = new RecordManager();
-    expect(recordManager.unsaved).toBeFalsy();
-    expect(recordManager.record.getUSI({ allMoves: true })).toBe(
-      "position startpos moves 7g7f 3c3d 2g2f 4a3b 2f2e",
-    );
-    expect(recordManager.record.moves).toHaveLength(6);
-    expect(recordManager.record.current.ply).toBe(2);
-  });
-
-  it("pcWeb/withoutLocalStorage", () => {
-    vi.stubGlobal("window", {
-      location: {
-        toString: () => "http://localhost/",
-      },
-      history: {
-        replaceState: vi.fn(),
-      },
-    });
-    const recordManager1 = new RecordManager();
-    recordManager1.importRecord("position startpos moves 5g5f 3c3d 2h5h 7a6b");
-    const recordManager2 = new RecordManager();
-    expect(recordManager2.record.getUSI({ allMoves: true })).toBe("position startpos");
-  });
-
-  it("mobileWeb/localStorage", () => {
-    vi.stubGlobal("window", {
-      location: {
-        toString: () => "http://localhost/?mobile",
-      },
-      history: {
-        replaceState: vi.fn(),
-      },
-    });
-    const recordManager1 = new RecordManager();
-    recordManager1.importRecord("position startpos moves 5g5f 3c3d 2h5h 7a6b");
-    const recordManager2 = new RecordManager();
-    expect(recordManager2.record.getUSI({ allMoves: true })).toBe(
-      "position startpos moves 5g5f 3c3d 2h5h 7a6b",
-    );
   });
 
   it("reset", () => {

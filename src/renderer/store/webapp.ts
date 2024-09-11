@@ -5,9 +5,9 @@ import { isMobileWebApp, isNative } from "@/renderer/ipc/api";
 const mobileRecordStorageKey = "mobile:record";
 const mobilePlyStorageKey = "mobile:ply";
 
-export function loadRecordForWebApp(): Record | null {
+export function loadRecordForWebApp(): Record | undefined {
   if (isNative()) {
-    return null;
+    return;
   }
 
   const urlParams = new URL(window.location.toString()).searchParams;
@@ -18,7 +18,7 @@ export function loadRecordForWebApp(): Record | null {
     const record = Record.newByUSEN(usen, branch, ply);
     if (record instanceof Error) {
       useErrorStore().add(`棋譜の読み込み中にエラーが発生しました。: ${record}`);
-      return null;
+      return;
     }
     const bname = urlParams.get("bname") || "";
     const wname = urlParams.get("wname") || "";
@@ -28,16 +28,16 @@ export function loadRecordForWebApp(): Record | null {
   }
 
   if (!isMobileWebApp()) {
-    return null;
+    return;
   }
 
   const data = localStorage.getItem(mobileRecordStorageKey);
   if (data === null) {
-    return null;
+    return;
   }
   const record = importKIF(data);
   if (record instanceof Error) {
-    return null;
+    return;
   }
   const ply = Number.parseInt(localStorage.getItem(mobilePlyStorageKey) || "0");
   record.goto(ply);

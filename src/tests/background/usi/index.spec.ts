@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
+  collectSessionStates,
   getUSIEngineInfo,
   go,
   goPonder,
+  isActiveSessionExists,
   ponderHit,
   ready,
   sendSetOptionCommand,
@@ -35,7 +37,13 @@ const handlers = {
 setHandlers(handlers);
 
 describe("background/usi/index", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
   afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -158,5 +166,26 @@ describe("background/usi/index", () => {
     );
 
     onClose();
+  });
+
+  it("activeSessionCount", async () => {
+    const setupPromise = setupPlayer(usiEngines, 10);
+    const onReceive = getChildProcessHandler("receive");
+    const onClose = getChildProcessHandler("close");
+    expect(mockChildProcess.prototype.send).lastCalledWith("usi");
+    onReceive("usiok");
+    const sessionID = await setupPromise;
+    const readyPromise = ready(sessionID);
+    expect(mockChildProcess.prototype.send).lastCalledWith("isready");
+    onReceive("readyok");
+    await readyPromise;
+
+    expect(isActiveSessionExists()).toBeTruthy();
+    onClose();
+    expect(isActiveSessionExists()).toBeFalsy();
+    expect(collectSessionStates()).toHaveLength(1);
+    expect(collectSessionStates()[0].sessionID).toBe(sessionID);
+    vi.runOnlyPendingTimers();
+    expect(collectSessionStates()).toHaveLength(0);
   });
 });

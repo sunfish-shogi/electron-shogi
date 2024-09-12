@@ -571,6 +571,7 @@ export const en: Texts = {
   invalidBoard: "Invalid board",
   invalidHandPiece: "Invalid hand piece",
   invalidUSI: "Invalid USI",
+  engineProcessWasClosedUnexpectedly: "The engine process was closed unexpectedly.",
   backgroundImageFileNotSelected: "Background image file is not selected.",
   pieceImageFileNotSelected: "Piece image file is not selected.",
   boardImageFileNotSelected: "Board image file is not selected.",

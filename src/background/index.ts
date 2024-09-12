@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, BrowserWindow, session, Menu } from "electron";
+import { app, BrowserWindow, session, Menu, dialog } from "electron";
 import { loadAppSettingsOnce } from "@/background/settings";
 import {
   getAppLogger,
@@ -8,7 +8,7 @@ import {
   setLogDestinations,
   shutdownLoggers,
 } from "@/background/log";
-import { quitAll as usiQuitAll } from "@/background/usi";
+import { isActiveSessionExists, quitAll as usiQuitAll } from "@/background/usi";
 import { validateHTTPRequest } from "./window/security";
 import { getPortableExeDir, isDevelopment, isPortable, isTest } from "@/background/proc/env";
 import { setLanguage, t } from "@/common/i18n";
@@ -64,9 +64,31 @@ app.once("will-finish-launching", () => {
   });
 });
 
-app.on("will-quit", () => {
+const quitRetryInterval = 200;
+const quitMaxWaitDuration = 5000;
+let quitWaitElapsed = 0;
+app.on("will-quit", (event) => {
   getAppLogger().info("on will-quit");
-  usiQuitAll();
+
+  // エンジンプロセスが残っている場合は全て終了する。
+  if (isActiveSessionExists()) {
+    if (quitWaitElapsed < quitMaxWaitDuration) {
+      usiQuitAll();
+      // 終了イベントをキャンセルして200ms後にやりなおす。
+      event.preventDefault();
+      setTimeout(() => {
+        quitWaitElapsed += quitRetryInterval;
+        app.quit();
+      }, quitRetryInterval);
+      return;
+    }
+    dialog.showMessageBoxSync({
+      message:
+        "一定時間内にエンジンプロセスが終了しませんでした。プロセスの状態を確認してください。\n" +
+        "Some engine processes did not exit within a certain period. Please check the process status.",
+    });
+  }
+
   // プロセスを終了する前にログファイルの出力を完了する。
   shutdownLoggers();
 });

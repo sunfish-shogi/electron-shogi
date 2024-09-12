@@ -259,7 +259,7 @@ export const vi: Texts = {
   evaluation: "Đánh giá",
   eval: "Đ.giá",
   estimatedWinRate: "Tỷ lệ thắng ước tính",
-  evaluationAndEstimatedWinRate: "Đánh giá & tỷ lệ thắng ước tính",
+  evaluationAndEstimatedWinRateAndPV: "Đánh giá & tỷ lệ thắng ước tính & PV",
   swapEachTurnChange: "Đổi mỗi lượt",
   alwaysSenteIsPositive: "Tiên luôn dương",
   signOfEvaluation: "Dấu giá trị đánh giá",
@@ -424,6 +424,7 @@ export const vi: Texts = {
   dubiousThreshold: "Ngưỡng nước không tốt",
   mistakeThreshold: "Ngưỡng nước sai lầm",
   blunderThreshold: "Ngưỡng nước sai lầm ngớ ngẩn",
+  maxPVLength: "PV表示手数", // TODO: translate
   gothic: "Gothic",
   mincho: "Minh thể",
   appVersion: "Phiên bản ứng dụng",

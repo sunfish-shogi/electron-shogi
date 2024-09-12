@@ -188,6 +188,9 @@ class AppSettingsStore {
   get badMoveLevelThreshold4(): number {
     return this.merged.badMoveLevelThreshold4;
   }
+  get maxPVTextLength(): number {
+    return this.merged.maxPVTextLength;
+  }
   get showElapsedTimeInRecordView(): boolean {
     return this.merged.showElapsedTimeInRecordView;
   }

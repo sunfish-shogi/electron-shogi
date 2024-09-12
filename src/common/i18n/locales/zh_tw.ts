@@ -256,7 +256,7 @@ export const zh_tw: Texts = {
   evaluation: "評價值",
   eval: "評價値",
   estimatedWinRate: "期待勝率",
-  evaluationAndEstimatedWinRate: "評價値・期待勝率",
+  evaluationAndEstimatedWinRateAndPV: "評價値・期待勝率・預測手順",
   swapEachTurnChange: "手番側有利時為正值",
   alwaysSenteIsPositive: "先手有利時為正值",
   signOfEvaluation: "評價值符號",
@@ -421,6 +421,7 @@ export const zh_tw: Texts = {
   dubiousThreshold: "疑問手閾値",
   mistakeThreshold: "惡手閾値",
   blunderThreshold: "大惡手閾値",
+  maxPVLength: "PV表示手数", // TODO: translate
   gothic: "黑體",
   mincho: "明體",
   appVersion: "軟體版本",

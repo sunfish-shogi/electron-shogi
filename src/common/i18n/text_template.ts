@@ -254,7 +254,7 @@ export type Texts = {
   evaluation: string;
   eval: string;
   estimatedWinRate: string;
-  evaluationAndEstimatedWinRate: string;
+  evaluationAndEstimatedWinRateAndPV: string;
   swapEachTurnChange: string;
   alwaysSenteIsPositive: string;
   signOfEvaluation: string;
@@ -419,6 +419,7 @@ export type Texts = {
   dubiousThreshold: string;
   mistakeThreshold: string;
   blunderThreshold: string;
+  maxPVLength: string;
   gothic: string;
   mincho: string;
   appVersion: string;

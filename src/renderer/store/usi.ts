@@ -19,12 +19,12 @@ export type USIIteration = {
   text?: string;
 };
 
-function formatPV(position: ImmutablePosition, pv: string[]): string {
+function formatPV(position: ImmutablePosition, pv: string[], maxLength: number): string {
   const p = position.clone();
   let lastMove: Move | undefined;
   let result = "";
   let i = 0;
-  for (; i < pv.length; i++) {
+  for (; i < pv.length && i < maxLength; i++) {
     const move = p.createMoveByUSI(pv[i]);
     if (!move) {
       break;
@@ -33,8 +33,11 @@ function formatPV(position: ImmutablePosition, pv: string[]): string {
     p.doMove(move, { ignoreValidation: true });
     lastMove = move;
   }
-  for (; i < pv.length; i++) {
+  for (; i < pv.length && i < maxLength; i++) {
     result += " " + pv[i];
+  }
+  if (i < pv.length) {
+    result += " ...";
   }
   return result;
 }
@@ -73,7 +76,7 @@ export class USIPlayerMonitor {
     });
   }
 
-  update(sfen: string, update: USIInfoCommand, ponderMove?: Move): void {
+  update(sfen: string, update: USIInfoCommand, maxPVTextLength: number, ponderMove?: Move): void {
     if (this.sfen !== sfen) {
       this.sfen = sfen;
       this.nodes = undefined;
@@ -107,7 +110,7 @@ export class USIPlayerMonitor {
     }
     if (update.pv) {
       iteration.pv = update.pv;
-      iteration.text = formatPV(position, update.pv);
+      iteration.text = formatPV(position, update.pv, maxPVTextLength);
     }
     if (update.multipv !== undefined) {
       iteration.multiPV = update.multipv;
@@ -157,6 +160,7 @@ type USIUpdate = {
   sfen: string;
   name: string;
   info: USIInfoCommand;
+  maxPVLength: number;
   ponderMove?: Move;
 };
 
@@ -174,6 +178,7 @@ export class USIMonitor {
     position: ImmutablePosition,
     name: string,
     info: USIInfoCommand,
+    maxPVLength: number,
     ponderMove?: Move,
   ): void {
     this.updateQueue.push({
@@ -181,6 +186,7 @@ export class USIMonitor {
       sfen: position.sfen,
       name,
       info,
+      maxPVLength,
       ponderMove,
     });
     // 高頻度でコマンドが送られてくると描画が追いつかないので、一定時間ごとに反映する。
@@ -213,7 +219,7 @@ export class USIMonitor {
     if (!monitor) {
       monitor = this.addSession(update.sessionID, update.name);
     }
-    monitor.update(update.sfen, update.info, update.ponderMove);
+    monitor.update(update.sfen, update.info, update.maxPVLength, update.ponderMove);
   }
 
   private addSession(sessionID: number, name: string): USIPlayerMonitor {

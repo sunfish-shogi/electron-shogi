@@ -495,7 +495,14 @@ class Store {
     if (this.recordManager.record.usi !== usi) {
       return;
     }
-    this.usiMonitor.update(sessionID, this.recordManager.record.position, name, info);
+    const appSettings = useAppSettings();
+    this.usiMonitor.update(
+      sessionID,
+      this.recordManager.record.position,
+      name,
+      info,
+      appSettings.maxPVTextLength,
+    );
   }
 
   updateUSIPonderInfo(sessionID: number, usi: string, name: string, info: USIInfoCommand): void {
@@ -508,7 +515,15 @@ class Store {
     if (!(ponderMove instanceof Move)) {
       return;
     }
-    this.usiMonitor.update(sessionID, record.position, name, info, ponderMove);
+    const appSettings = useAppSettings();
+    this.usiMonitor.update(
+      sessionID,
+      record.position,
+      name,
+      info,
+      appSettings.maxPVTextLength,
+      ponderMove,
+    );
   }
 
   get blackTime(): number {

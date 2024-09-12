@@ -195,6 +195,7 @@ export type AppSettings = {
   badMoveLevelThreshold2: number;
   badMoveLevelThreshold3: number;
   badMoveLevelThreshold4: number;
+  maxPVTextLength: number;
 
   // Record View
   showElapsedTimeInRecordView: boolean;
@@ -289,6 +290,7 @@ export type AppSettingsUpdate = {
   badMoveLevelThreshold2?: number;
   badMoveLevelThreshold3?: number;
   badMoveLevelThreshold4?: number;
+  maxPVTextLength?: number;
   showElapsedTimeInRecordView?: boolean;
   showCommentInRecordView?: boolean;
   enableAppLog?: boolean;
@@ -389,6 +391,7 @@ export function defaultAppSettings(opt?: {
     badMoveLevelThreshold2: 10,
     badMoveLevelThreshold3: 20,
     badMoveLevelThreshold4: 50,
+    maxPVTextLength: 15,
     showElapsedTimeInRecordView: true,
     showCommentInRecordView: true,
     enableAppLog: false,

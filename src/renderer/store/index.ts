@@ -449,11 +449,19 @@ class Store {
         if (!iteration.pv?.length) {
           continue;
         }
-        if (iteration.score) {
-          if (iteration.score < maxScore - maxScoreDiff) {
+        const score =
+          iteration.score !== undefined
+            ? iteration.score
+            : iteration.scoreMate
+              ? iteration.scoreMate > 0
+                ? 1e8 - iteration.scoreMate
+                : -1e8 - iteration.scoreMate
+              : undefined;
+        if (score !== undefined) {
+          if (score < maxScore - maxScoreDiff) {
             continue;
-          } else if (iteration.score > maxScore) {
-            maxScore = iteration.score;
+          } else if (score > maxScore) {
+            maxScore = score;
           }
         }
         const usi = iteration.pv[0];

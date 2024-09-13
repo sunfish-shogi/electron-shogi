@@ -176,7 +176,6 @@ describe("store/index", () => {
 
   it("candidates", async () => {
     vi.useFakeTimers();
-    await useAppSettings().updateAppSettings({ maxArrowsPerEngine: 3 });
     const usi = "position startpos moves 7g7f";
     const store = createStore();
     store.pasteRecord(usi);
@@ -189,11 +188,16 @@ describe("store/index", () => {
     });
     store.updateUSIInfo(101, usi, "Engine A", {
       multipv: 2,
+      scoreCP: 0,
+      pv: ["4a3b", "2g2f"],
+    });
+    store.updateUSIInfo(101, usi, "Engine A", {
+      multipv: 3,
       scoreCP: -5,
       pv: ["3c3d", "2g2f"],
     });
     store.updateUSIInfo(101, usi, "Engine A", {
-      multipv: 3,
+      multipv: 4,
       scoreCP: -21,
       pv: ["5c5d", "2g2f"],
     });
@@ -201,11 +205,35 @@ describe("store/index", () => {
       scoreCP: -5,
       pv: ["9c9d", "9g9f"],
     });
+    store.updateUSIInfo(103, usi, "Engine C", {
+      multipv: 1,
+      scoreMate: 3,
+      pv: ["3c3d", "5g5f"],
+    });
+    store.updateUSIInfo(103, usi, "Engine C", {
+      multipv: 2,
+      scoreCP: 150,
+      pv: ["1c1d", "5g5f"],
+    });
+    store.updateUSIInfo(103, usi, "Engine C", {
+      multipv: 3,
+      scoreMate: -5,
+      pv: ["7c7d", "5g5f"],
+    });
     vi.runOnlyPendingTimers();
-    expect(store.candidates).toHaveLength(3);
+
+    await useAppSettings().updateAppSettings({ maxArrowsPerEngine: 3 });
+    expect(store.candidates).toHaveLength(4);
+    expect(store.candidates[0].usi).toBe("8c8d");
+    expect(store.candidates[1].usi).toBe("4a3b");
+    expect(store.candidates[2].usi).toBe("3c3d");
+    expect(store.candidates[3].usi).toBe("9c9d");
 
     await useAppSettings().updateAppSettings({ maxArrowsPerEngine: 1 });
-    expect(store.candidates).toHaveLength(2);
+    expect(store.candidates).toHaveLength(3);
+    expect(store.candidates[0].usi).toBe("8c8d");
+    expect(store.candidates[1].usi).toBe("9c9d");
+    expect(store.candidates[2].usi).toBe("3c3d");
 
     await useAppSettings().updateAppSettings({ maxArrowsPerEngine: 0 });
     expect(store.candidates).toHaveLength(0);

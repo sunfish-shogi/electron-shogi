@@ -69,6 +69,7 @@
           :key="square.id"
           :style="square.style"
           @click.stop.prevent="clickSquare(square.file, square.rank)"
+          @dblclick.stop.prevent="clickSquareR(square.file, square.rank)"
           @contextmenu.stop.prevent="clickSquareR(square.file, square.rank)"
         ></div>
         <div v-if="board.promotion" class="promotion-selector" :style="board.promotion.style">

@@ -335,6 +335,7 @@ export const en: Texts = {
   invoke: "Invoke",
   resetToEngineDefaultValues: "Reset to default values",
   defaultValue: "Default Value",
+  freeTextUnsafe: "Free Text (Unsafe)",
   noEngineRegistered: "No engine",
   duplicate: "Copy",
   add: "Add",

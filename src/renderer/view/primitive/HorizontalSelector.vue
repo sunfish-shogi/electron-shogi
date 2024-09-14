@@ -58,23 +58,21 @@ const buttonStyle = computed(() => {
 });
 
 const setValue = (value: string) => {
-  container.value.querySelectorAll("input").forEach((input) => {
+  for (const input of container.value.querySelectorAll("input")) {
     if (input.value === value) {
       input.checked = true;
       emit("change", value);
+      break;
     }
-  });
+  }
 };
 const getValue = () => {
-  const checked = Array.from(container.value.querySelectorAll("input")).filter((input) => {
+  const checked = Array.from(container.value.querySelectorAll("input")).find((input) => {
     if (input.checked) {
       return input.value;
     }
   });
-  if (checked.length > 0) {
-    return checked[0].value;
-  }
-  return props.value;
+  return checked ? checked.value : props.value;
 };
 defineExpose({ setValue, getValue });
 </script>

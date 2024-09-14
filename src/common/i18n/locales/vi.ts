@@ -335,6 +335,7 @@ export const vi: Texts = {
   invoke: "Thực hiện",
   resetToEngineDefaultValues: "Đặt lại về giá trị ban đầu",
   defaultValue: "Giá trị mặc định",
+  freeTextUnsafe: "自由入力(非推奨)", // TODO: translate
   noEngineRegistered: "Không có phần mềm",
   duplicate: "Sao chép",
   add: "Thêm",

@@ -332,6 +332,7 @@ export const zh_tw: Texts = {
   invoke: "執行",
   resetToEngineDefaultValues: "回復至引擎預設設定",
   defaultValue: "預設値",
+  freeTextUnsafe: "自由入力(非推奨)", // TODO: translate
   noEngineRegistered: "尚未登錄引擎。",
   duplicate: "複製",
   add: "追加",

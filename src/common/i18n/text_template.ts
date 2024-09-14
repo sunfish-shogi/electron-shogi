@@ -330,6 +330,7 @@ export type Texts = {
   invoke: string;
   resetToEngineDefaultValues: string;
   defaultValue: string;
+  freeTextUnsafe: string;
   noEngineRegistered: string;
   duplicate: string;
   add: string;

@@ -124,20 +124,19 @@
                   "
                 />
                 <!-- 選択 (combo) -->
-                <select
+                <ComboBox
                   v-if="option.type === 'combo'"
                   :ref="
-                    (el) => {
-                      inputs[option.name] = el as HTMLSelectElement;
+                    (el: unknown) => {
+                      selectors[option.name] = el as InstanceType<typeof ComboBox>;
                     }
                   "
-                  class="option-value-combo"
-                >
-                  <option value="">{{ t.defaultValue }}</option>
-                  <option v-for="v in option.vars" :key="v" :value="v">
-                    {{ v }}
-                  </option>
-                </select>
+                  :options="[
+                    { value: '', label: t.defaultValue },
+                    ...option.vars.map((v) => ({ value: v, label: v })),
+                  ]"
+                  :free-text-label="t.freeTextUnsafe"
+                />
                 <button
                   v-if="option.type === 'button'"
                   class="thin"
@@ -217,6 +216,7 @@ import { computed, onBeforeUnmount, onMounted, onUpdated, PropType, ref } from "
 import { useAppSettings } from "@/renderer/store/settings";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
+import ComboBox from "@/renderer/view/primitive/ComboBox.vue";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
 
@@ -244,7 +244,9 @@ const enableEarlyPonder = ref(false);
 const filter = ref();
 const filterWords = ref([] as string[]);
 const inputs = ref({} as { [key: string]: HTMLInputElement | HTMLSelectElement });
-const selectors = ref({} as { [key: string]: InstanceType<typeof HorizontalSelector> });
+const selectors = ref(
+  {} as { [key: string]: InstanceType<typeof HorizontalSelector> | InstanceType<typeof ComboBox> },
+);
 const engine = ref(emptyUSIEngine());
 let defaultValueLoaded = false;
 let defaultValueApplied = false;
@@ -295,7 +297,7 @@ onUpdated(() => {
     if (option.value === undefined) {
       continue;
     }
-    if (option.type === "check") {
+    if (option.type === "check" || option.type === "combo") {
       selectors.value[option.name].setValue((option.value as string) || "");
     } else if (inputs.value[option.name]) {
       inputs.value[option.name].value = option.value + "";
@@ -346,7 +348,7 @@ const reset = () => {
   Object.values(engine.value.options).forEach((option) => {
     const value =
       option.type !== "button" && option.default !== undefined ? option.default + "" : "";
-    if (option.type === "check") {
+    if (option.type === "check" || option.type === "combo") {
       selectors.value[option.name].setValue(value);
     } else if (inputs.value[option.name]) {
       inputs.value[option.name].value = value;
@@ -362,6 +364,8 @@ const ok = () => {
     }
     if (option.type === "check") {
       option.value = (selectors.value[option.name].getValue() as "true" | "false") || undefined;
+    } else if (option.type === "combo") {
+      option.value = selectors.value[option.name].getValue() || undefined;
     } else if (inputs.value[option.name]) {
       const elem = inputs.value[option.name];
       option.value = !elem.value
@@ -429,9 +433,6 @@ const cancel = () => {
 .option-value-number {
   width: 100px;
   text-align: right;
-}
-.option-value-combo {
-  text-align: left;
 }
 .option button {
   vertical-align: top;

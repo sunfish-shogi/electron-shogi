@@ -335,6 +335,7 @@ export const ja: Texts = {
   invoke: "実行",
   resetToEngineDefaultValues: "エンジンの既定値に戻す",
   defaultValue: "既定値",
+  freeTextUnsafe: "自由入力(非推奨)",
   noEngineRegistered: "エンジンが登録されていません。",
   duplicate: "複製",
   add: "追加",

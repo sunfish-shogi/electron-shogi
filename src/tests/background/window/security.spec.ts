@@ -5,7 +5,7 @@ describe("security", () => {
   it("validateIPCSender/allowed", () => {
     validateIPCSender({ url: "http://localhost:1234/foo/bar.baz" } as any);
     validateIPCSender({
-      url: "file:///home/shogi/apps/electron-shogi/assets.asr",
+      url: "file:///home/shogi/apps/shogihome/assets.asr",
     } as any);
   });
 
@@ -19,7 +19,7 @@ describe("security", () => {
   it("validateHTTPRequest/allowed", () => {
     validateHTTPRequest("GET", "http://localhost:1234/foo/bar.baz");
     validateHTTPRequest("GET", "ws://localhost:1234/foo/bar.baz");
-    validateHTTPRequest("GET", "file:///home/shogi/apps/electron-shogi/assets.asr");
+    validateHTTPRequest("GET", "file:///home/shogi/apps/shogihome/assets.asr");
     validateHTTPRequest("GET", "devtools://devtools/bundled/index.html");
     validateHTTPRequest("GET", "devtools://foo/bar/baz.qux");
   });

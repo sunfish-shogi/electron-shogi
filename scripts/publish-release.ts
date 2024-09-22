@@ -77,12 +77,12 @@ async function updateReleaseJSON(target: Target) {
   releases.stable = {
     version: stable,
     tag: `v${stable}`,
-    link: `https://github.com/sunfish-shogi/electron-shogi/releases/tag/v${stable}`,
+    link: `https://github.com/sunfish-shogi/shogihome/releases/tag/v${stable}`,
   };
   releases.latest = {
     version: latest,
     tag: `v${latest}`,
-    link: `https://github.com/sunfish-shogi/electron-shogi/releases/tag/v${latest}`,
+    link: `https://github.com/sunfish-shogi/shogihome/releases/tag/v${latest}`,
   };
   const json = JSON.stringify(releases, null, 1);
   fs.writeFileSync(releaseJSON, json);

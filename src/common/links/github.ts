@@ -5,7 +5,7 @@ import {
 } from "tsshogi";
 
 export const ghAccount = "sunfish-shogi";
-export const ghRepository = "electron-shogi";
+export const ghRepository = "shogihome";
 export const ghDomain = "github.com";
 export const ghioDomain = `${ghAccount}.github.io`;
 const howToUseTitle = "%E4%BD%BF%E3%81%84%E6%96%B9";

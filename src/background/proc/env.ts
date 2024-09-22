@@ -31,7 +31,7 @@ let tempPathForTesting: string;
 
 export function getTempPathForTesting(): string {
   if (!tempPathForTesting) {
-    tempPathForTesting = fs.mkdtempSync(path.join(os.tmpdir(), "electron-shogi-test-"));
+    tempPathForTesting = fs.mkdtempSync(path.join(os.tmpdir(), "shogihome-test-"));
   }
   return tempPathForTesting;
 }

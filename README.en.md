@@ -2,10 +2,8 @@
 
 # ShogiHome
 
-Codename: electron-shogi
-
-[![Test](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/sunfish-shogi/electron-shogi/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/sunfish-shogi/electron-shogi/branch/main/graph/badge.svg?token=TLSQXAIJFY)](https://codecov.io/gh/sunfish-shogi/electron-shogi)
+[![Test](https://github.com/sunfish-shogi/shogihome/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/sunfish-shogi/shogihome/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/sunfish-shogi/shogihome/branch/main/graph/badge.svg?token=TLSQXAIJFY)](https://codecov.io/gh/sunfish-shogi/shogihome)
 
 [日本語](./README.md)
 
@@ -33,13 +31,13 @@ We designed this app to have operability for touch devices.
 
 ## Website
 
-https://sunfish-shogi.github.io/electron-shogi/
+https://sunfish-shogi.github.io/shogihome/
 
 You can try the web version from the website.
 
 ## Wiki
 
-https://github.com/sunfish-shogi/electron-shogi/wiki
+https://github.com/sunfish-shogi/shogihome/wiki
 
 ## Screenshots
 
@@ -51,7 +49,7 @@ https://github.com/sunfish-shogi/electron-shogi/wiki
 
 ## Downloads
 
-You can download any version from [Releases](https://github.com/sunfish-shogi/electron-shogi/releases).
+You can download any version from [Releases](https://github.com/sunfish-shogi/shogihome/releases).
 
 ## Bug Reports / Suggestions
 
@@ -71,8 +69,8 @@ You can see the development progress at [Project Board](https://github.com/users
 ### Setup
 
 ```
-git clone https://github.com/sunfish-shogi/electron-shogi.git
-cd electron-shogi
+git clone https://github.com/sunfish-shogi/shogihome.git
+cd shogihome
 npm install
 ```
 
@@ -117,7 +115,7 @@ npm run lint
 
 ## CLI Tools
 
-- [usi-csa-bridge](https://github.com/sunfish-shogi/electron-shogi/tree/main/src/command/usi-csa-bridge#readme) - Communication bridge for USI and CSA protocol.
+- [usi-csa-bridge](https://github.com/sunfish-shogi/shogihome/tree/main/src/command/usi-csa-bridge#readme) - Communication bridge for USI and CSA protocol.
 
 ## Licences
 
@@ -127,11 +125,11 @@ npm run lint
 
 ### Icon Images
 
-This app uses [Material Icons](https://google.github.io/material-design-icons/) saved in [/public/icon](https://github.com/sunfish-shogi/electron-shogi/tree/main/public/icon).
+This app uses [Material Icons](https://google.github.io/material-design-icons/) saved in [/public/icon](https://github.com/sunfish-shogi/shogihome/tree/main/public/icon).
 These assets are provided under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
 ### Dependencies
 
-See [THIRD PARTY LICENSES](https://sunfish-shogi.github.io/electron-shogi/third-party-licenses.html) for libraries used from renderer process.
+See [THIRD PARTY LICENSES](https://sunfish-shogi.github.io/shogihome/third-party-licenses.html) for libraries used from renderer process.
 
 electron-builder bundles license files of Electron and Chromium into artifacts.

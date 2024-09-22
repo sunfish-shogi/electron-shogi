@@ -1,6 +1,6 @@
 # usi-csa-bridge
 
-[ShogiHome](https://github.com/sunfish-shogi/electron-shogi#readme) の機能のうち、 CSA 対局サーバーへ接続して USI のエンジンを対局に参加させる部分をコマンドラインから実行するツールです。
+[ShogiHome](https://github.com/sunfish-shogi/shogihome#readme) の機能のうち、 CSA 対局サーバーへ接続して USI のエンジンを対局に参加させる部分をコマンドラインから実行するツールです。
 
 ## セットアップ方法
 
@@ -20,11 +20,11 @@ npm install -g usi-csa-bridge
 
 ```
 # Clone
-git clone git@github.com:sunfish-shogi/electron-shogi.git --branch <インストールするバージョンのタグを指定> --depth 1
+git clone git@github.com:sunfish-shogi/shogihome.git --branch <インストールするバージョンのタグを指定> --depth 1
 # Git の履歴が必要な場合は --depth 1 を除外してください。
 
 # clone したディレクトリに移動
-cd electron-shogi
+cd shogihome
 
 # 依存モジュールのインストール
 npm install
@@ -123,7 +123,7 @@ saveRecordFile: true
 # 思考結果を指し手コメントで残すかどうか
 enableComment: true
 # 棋譜ファイル名のテンプレート
-# https://github.com/sunfish-shogi/electron-shogi/wiki/棋譜ファイル名テンプレート
+# https://github.com/sunfish-shogi/shogihome/wiki/棋譜ファイル名テンプレート
 recordFileNameTemplate: "{datetime}{_title}{_sente}{_gote}"
 # 棋譜ファイルの拡張子 (.kif|.kifu|.ki2|.ki2u|.csa|.jkf)
 recordFileFormat: .kifu

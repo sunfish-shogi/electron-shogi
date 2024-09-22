@@ -17,13 +17,13 @@ const commonPackageJson = JSON.parse(fs.readFileSync(packageJsonFileName, "utf8"
 const packageJson = {
   ...commonPackageJson,
   name,
-  description: `command line tool derived from ShogiHome(https://github.com/sunfish-shogi/electron-shogi)`,
+  description: `command line tool derived from ShogiHome(https://github.com/sunfish-shogi/shogihome)`,
   private: false,
   publishConfig: {
     access: "public",
   },
   homepage:
-    "https://github.com/sunfish-shogi/electron-shogi/blob/main/src/command/usi-csa-bridge#readme",
+    "https://github.com/sunfish-shogi/shogihome/blob/main/src/command/usi-csa-bridge#readme",
   main: "index.js",
   bin: {
     cli: "index.js",

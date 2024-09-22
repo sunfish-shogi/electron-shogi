@@ -7,15 +7,15 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sunfish-shogi/electron-shogi.git"
+    "url": "git+https://github.com/sunfish-shogi/shogihome.git"
   },
   "keywords": [
     "shogi"
   ],
   "bugs": {
-    "url": "https://github.com/sunfish-shogi/electron-shogi/issues"
+    "url": "https://github.com/sunfish-shogi/shogihome/issues"
   },
-  "homepage": "https://github.com/sunfish-shogi/electron-shogi#readme",
+  "homepage": "https://github.com/sunfish-shogi/shogihome#readme",
   "scripts": {
     "compile": "vite build",
     "serve": "vite",

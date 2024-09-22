@@ -256,7 +256,7 @@ function createMenuTemplate(window: BrowserWindow) {
         },
         // NOTE:
         //   Mac ではこれらのショートカットがメニューに無いとテキスト編集時のショートカット操作ができない。
-        //   https://github.com/sunfish-shogi/electron-shogi/issues/694
+        //   https://github.com/sunfish-shogi/shogihome/issues/694
         { type: "separator", visible: isMac },
         { role: "copy", accelerator: "CmdOrCtrl+C", visible: isMac },
         { role: "paste", accelerator: "CmdOrCtrl+V", visible: isMac },

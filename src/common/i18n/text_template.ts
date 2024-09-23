@@ -270,6 +270,7 @@ export type Texts = {
   goteOrUwate: string;
   uwate: string;
   swapSenteGote: string;
+  pieceToss: string;
   currentPosition: string;
   enableEngineTimeout: string;
   setDifferentTimeForGote: string;
@@ -485,6 +486,11 @@ export type Texts = {
   waitingForPlayerSetup: string;
   insertedComment: string;
   conversionCompleted: string;
+  human: string;
+  randomPlayer: string;
+  beginner: string;
+  staticRook: string;
+  rangingRook: string;
   tryingToConnectAndLoginToCSAServer: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;

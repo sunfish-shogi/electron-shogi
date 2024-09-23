@@ -1,6 +1,6 @@
 <template>
   <div>
-    <dialog ref="dialog" class="menu">
+    <dialog v-if="!isInitialPositionMenuVisible && !isGameMenuVisible" ref="dialog" class="menu">
       <div class="group">
         <button data-hotkey="Escape" class="close" @click="onClose">
           <Icon :icon="IconType.CLOSE" />
@@ -11,6 +11,16 @@
         <button @click="onFlip">
           <Icon :icon="IconType.FLIP" />
           <div class="label">{{ t.flipBoard }}</div>
+        </button>
+      </div>
+      <div v-if="isMobileWebApp()" class="group">
+        <button v-if="states.game" @click="onGame">
+          <Icon :icon="IconType.GAME" />
+          <div class="label">{{ t.game }}</div>
+        </button>
+        <button v-if="states.stopGame" @click="onStopGame">
+          <Icon :icon="IconType.STOP" />
+          <div class="label">{{ t.stopGame }}</div>
         </button>
       </div>
       <div class="group">
@@ -113,6 +123,7 @@
       </div>
     </dialog>
     <InitialPositionMenu v-if="isInitialPositionMenuVisible" @close="emit('close')" />
+    <MobileGameMenu v-if="isGameMenuVisible" @close="emit('close')" />
   </div>
 </template>
 
@@ -130,6 +141,7 @@ import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/dev
 import { openCopyright } from "@/renderer/helpers/copyright";
 import { RecordFileFormat } from "@/common/file/record";
 import InitialPositionMenu from "@/renderer/view/menu/InitialPositionMenu.vue";
+import MobileGameMenu from "@/renderer/view/menu/MobileGameMenu.vue";
 
 const emit = defineEmits<{
   close: [];
@@ -139,6 +151,7 @@ const store = useStore();
 const appSettings = useAppSettings();
 const dialog = ref();
 const isInitialPositionMenuVisible = ref(false);
+const isGameMenuVisible = ref(false);
 const onClose = () => {
   emit("close");
 };
@@ -151,6 +164,13 @@ onBeforeUnmount(() => {
 });
 const onFlip = () => {
   useAppSettings().flipBoard();
+  emit("close");
+};
+const onGame = () => {
+  isGameMenuVisible.value = true;
+};
+const onStopGame = () => {
+  store.stopGame();
   emit("close");
 };
 const onNewFile = () => {
@@ -235,6 +255,8 @@ const onPaste = () => {
 };
 const states = computed(() => {
   return {
+    game: store.appState === AppState.NORMAL,
+    stopGame: store.appState === AppState.GAME,
     newFile: store.appState === AppState.NORMAL,
     open: store.appState === AppState.NORMAL,
     save: store.appState === AppState.NORMAL,

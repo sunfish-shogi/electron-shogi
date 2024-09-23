@@ -9,6 +9,7 @@
             <PlayerSelector
               :player-uri="blackPlayerURI"
               :contains-human="true"
+              :contains-basic-engines="true"
               :engines="engines"
               :filter-label="USIEngineLabel.GAME"
               :display-ponder-state="true"
@@ -24,6 +25,7 @@
               v-if="whitePlayerURI"
               :player-uri="whitePlayerURI"
               :contains-human="true"
+              :contains-basic-engines="true"
               :engines="engines"
               :filter-label="USIEngineLabel.GAME"
               :display-ponder-state="true"
@@ -346,8 +348,8 @@ const buildPlayerSettings = (playerURI: string): PlayerSettings => {
     };
   }
   return {
-    name: "人",
-    uri: uri.ES_HUMAN,
+    name: uri.isBasicEngine(playerURI) ? uri.basicEngineName(playerURI) : t.human,
+    uri: playerURI,
   };
 };
 

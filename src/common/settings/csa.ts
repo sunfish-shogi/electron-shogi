@@ -58,7 +58,7 @@ export function defaultCSAServerSettings(): CSAServerSettings {
 export function defaultCSAGameSettings(): CSAGameSettings {
   return {
     player: {
-      name: "人",
+      name: t.human,
       uri: uri.ES_HUMAN,
     },
     server: defaultCSAServerSettings(),
@@ -143,7 +143,7 @@ export type CSAGameSettingsHistory = {
 export function defaultCSAGameSettingsHistory(): CSAGameSettingsHistory {
   return {
     player: {
-      name: "人",
+      name: t.human,
       uri: uri.ES_HUMAN,
     },
     serverHistory: [],
@@ -249,7 +249,7 @@ export type SecureCSAGameSettingsHistory = {
 export function defaultSecureCSAGameSettingsHistory(): SecureCSAGameSettingsHistory {
   return {
     player: {
-      name: "人",
+      name: t.human,
       uri: uri.ES_HUMAN,
     },
     serverHistory: [],

@@ -8,9 +8,16 @@
         :value="playerUri"
         @change="onPlayerChange"
       >
-        <option v-if="containsHuman" :value="uri.ES_HUMAN">人</option>
+        <option v-if="containsHuman" :value="uri.ES_HUMAN">{{ t.human }}</option>
         <option v-for="engine in filteredEngines.engineList" :key="engine.uri" :value="engine.uri">
           {{ engine.name }}
+        </option>
+        <option
+          v-for="playerURI in containsBasicEngines && uri.ES_BASIC_ENGINE_LIST"
+          :key="playerURI"
+          :value="playerURI"
+        >
+          {{ uri.basicEngineName(playerURI) }}
         </option>
       </select>
       <div v-if="displayPonderState" class="row player-info">
@@ -73,6 +80,10 @@ const props = defineProps({
     required: true,
   },
   containsHuman: {
+    type: Boolean,
+    default: false,
+  },
+  containsBasicEngines: {
     type: Boolean,
     default: false,
   },

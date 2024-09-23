@@ -275,6 +275,7 @@ export const vi: Texts = {
   goteOrUwate: "Hậu thủ (Thượng thủ)",
   uwate: "Thượng thủ",
   swapSenteGote: "Đổi Tiên/Hậu",
+  pieceToss: "振り駒", // TODO: translate
   currentPosition: "Thế cờ hiện tại",
   enableEngineTimeout: "Bật hết giờ phần mềm",
   setDifferentTimeForGote: "Đặt thời gian khác cho Hậu",
@@ -490,6 +491,11 @@ export const vi: Texts = {
   waitingForPlayerSetup: "Đang chờ người chơi chuẩn bị.",
   insertedComment: "Đã chèn bình luận.",
   conversionCompleted: "Chuyển đổi hoàn tất.",
+  human: "人", // TODO: translate
+  randomPlayer: "ランダムプレイヤー", // TODO: translate
+  beginner: "初級者", // TODO: translate
+  staticRook: "居飛車", // TODO: translate
+  rangingRook: "振り飛車", // TODO: translate
   tryingToConnectAndLoginToCSAServer: "Đang kết nối và đăng nhập vào máy chủ CSA.",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*Bản trình duyệt sẽ xuất log ra trình nhắc lệnh và bỏ qua cài đặt này.",

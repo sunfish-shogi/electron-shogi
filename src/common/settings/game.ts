@@ -1,5 +1,5 @@
 import { InitialPositionType } from "tsshogi";
-import { PlayerSettings, defaultPlayerSettings } from "./player";
+import { PlayerSettings, defaultPlayerSettings, validatePlayerSettings } from "./player";
 import { t } from "@/common/i18n";
 import * as uri from "@/common/uri";
 
@@ -78,6 +78,12 @@ export function normalizeGameSettings(settings: GameSettings): GameSettings {
 }
 
 export function validateGameSettings(gameSettings: GameSettings): Error | undefined {
+  const playerError =
+    validatePlayerSettings(gameSettings.black) || validatePlayerSettings(gameSettings.white);
+  if (playerError) {
+    return playerError;
+  }
+
   if (gameSettings.timeLimit.timeSeconds === 0 && gameSettings.timeLimit.byoyomi === 0) {
     return new Error(t.bothTimeLimitAndByoyomiAreNotSet);
   }

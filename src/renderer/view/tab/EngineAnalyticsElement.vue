@@ -41,60 +41,66 @@
       </div>
       <div class="list-area" :style="{ height: `${height - (showHeader ? 22 : 0)}px` }">
         <table class="list">
-          <tr class="list-header">
-            <td v-if="showTimeColumn" class="time">{{ t.elapsed }}</td>
-            <td v-if="showMultiPvColumn" class="multipv-index">{{ t.rank }}</td>
-            <td v-if="showDepthColumn" class="depth">{{ t.depth }}</td>
-            <td v-if="showNodesColumn" class="nodes">{{ t.nodes }}</td>
-            <td v-if="showScoreColumn" class="score">{{ t.eval }}</td>
-            <td v-if="showScoreColumn" class="score-flag"></td>
-            <td class="text">{{ t.pv }}</td>
-          </tr>
-          <tr
-            v-for="iteration in historyMode ? info.iterations : info.latestIteration"
-            :key="iteration.id"
-            v-memo="[]"
-            class="list-item"
-            :class="{ highlight: enableHighlight && iteration.multiPV === 1 }"
-          >
-            <td v-if="showTimeColumn" class="time">
-              {{ iteration.timeMs ? (iteration.timeMs / 1e3).toFixed(1) + "s" : "" }}
-            </td>
-            <td v-if="showMultiPvColumn" class="multipv-index">
-              {{ iteration.multiPV || "" }}
-            </td>
-            <td v-if="showDepthColumn" class="depth">
-              {{ iteration.depth }}{{ iteration.selectiveDepth && iteration.depth ? "/" : ""
-              }}{{ iteration.selectiveDepth }}
-            </td>
-            <td v-if="showNodesColumn" class="nodes">
-              {{ iteration.nodes }}
-            </td>
-            <td v-if="showScoreColumn" class="score">
-              {{
-                iteration.scoreMate !== undefined
-                  ? getDisplayScore(iteration.scoreMate, iteration.color, evaluationViewFrom)
-                  : iteration.score !== undefined
-                    ? getDisplayScore(iteration.score, iteration.color, evaluationViewFrom)
-                    : ""
-              }}
-            </td>
-            <td v-if="showScoreColumn" class="score-flag">
-              {{ iteration.lowerBound ? "++" : "" }}
-              {{ iteration.upperBound ? "--" : "" }}
-              {{ iteration.scoreMate ? t.mateShort : "" }}
-            </td>
-            <td class="text">
-              <button
-                v-if="showPlayButton && iteration.pv && iteration.pv.length !== 0 && iteration.text"
-                @click="showPreview(iteration)"
-              >
-                <Icon :icon="IconType.PLAY" />
-                <span>{{ t.displayPVShort }}</span>
-              </button>
-              {{ iteration.text }}
-            </td>
-          </tr>
+          <thead>
+            <tr class="list-header">
+              <td v-if="showTimeColumn" class="time">{{ t.elapsed }}</td>
+              <td v-if="showMultiPvColumn" class="multipv-index">{{ t.rank }}</td>
+              <td v-if="showDepthColumn" class="depth">{{ t.depth }}</td>
+              <td v-if="showNodesColumn" class="nodes">{{ t.nodes }}</td>
+              <td v-if="showScoreColumn" class="score">{{ t.eval }}</td>
+              <td v-if="showScoreColumn" class="score-flag"></td>
+              <td class="text">{{ t.pv }}</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="iteration in historyMode ? info.iterations : info.latestIteration"
+              :key="iteration.id"
+              v-memo="[]"
+              class="list-item"
+              :class="{ highlight: enableHighlight && iteration.multiPV === 1 }"
+            >
+              <td v-if="showTimeColumn" class="time">
+                {{ iteration.timeMs ? (iteration.timeMs / 1e3).toFixed(1) + "s" : "" }}
+              </td>
+              <td v-if="showMultiPvColumn" class="multipv-index">
+                {{ iteration.multiPV || "" }}
+              </td>
+              <td v-if="showDepthColumn" class="depth">
+                {{ iteration.depth }}{{ iteration.selectiveDepth && iteration.depth ? "/" : ""
+                }}{{ iteration.selectiveDepth }}
+              </td>
+              <td v-if="showNodesColumn" class="nodes">
+                {{ iteration.nodes }}
+              </td>
+              <td v-if="showScoreColumn" class="score">
+                {{
+                  iteration.scoreMate !== undefined
+                    ? getDisplayScore(iteration.scoreMate, iteration.color, evaluationViewFrom)
+                    : iteration.score !== undefined
+                      ? getDisplayScore(iteration.score, iteration.color, evaluationViewFrom)
+                      : ""
+                }}
+              </td>
+              <td v-if="showScoreColumn" class="score-flag">
+                {{ iteration.lowerBound ? "++" : "" }}
+                {{ iteration.upperBound ? "--" : "" }}
+                {{ iteration.scoreMate ? t.mateShort : "" }}
+              </td>
+              <td class="text">
+                <button
+                  v-if="
+                    showPlayButton && iteration.pv && iteration.pv.length !== 0 && iteration.text
+                  "
+                  @click="showPreview(iteration)"
+                >
+                  <Icon :icon="IconType.PLAY" />
+                  <span>{{ t.displayPVShort }}</span>
+                </button>
+                {{ iteration.text }}
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>

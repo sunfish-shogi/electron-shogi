@@ -60,6 +60,7 @@ export enum IconType {
   SHARE = "share",
   EQUALIZER = "equalizer",
   REFRESH = "refresh",
+  ROBOT = "robot",
 }
 
 export const iconSourceMap = {
@@ -122,6 +123,7 @@ export const iconSourceMap = {
   [IconType.SHARE]: "icon/share_FILL0.svg",
   [IconType.EQUALIZER]: "icon/instant_mix_FILL0.svg",
   [IconType.REFRESH]: "icon/refresh_FILL0.svg",
+  [IconType.ROBOT]: "icon/smart_toy_FILL0.svg",
 };
 
 Object.values(iconSourceMap).forEach((source) => {

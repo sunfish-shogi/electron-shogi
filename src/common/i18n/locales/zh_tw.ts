@@ -272,6 +272,7 @@ export const zh_tw: Texts = {
   goteOrUwate: "後手（上手）",
   uwate: "上手",
   swapSenteGote: "先後交換",
+  pieceToss: "振り駒", // TODO: translate
   currentPosition: "現在局面",
   enableEngineTimeout: "開啟引擎時間限制",
   setDifferentTimeForGote: "先後手時間不相同",
@@ -487,6 +488,11 @@ export const zh_tw: Texts = {
   waitingForPlayerSetup: "正在等待對局者準備。",
   insertedComment: "已加入備註。",
   conversionCompleted: "轉換完成。",
+  human: "人", // TODO: translate
+  randomPlayer: "ランダムプレイヤー", // TODO: translate
+  beginner: "初級者", // TODO: translate
+  staticRook: "居飛車", // TODO: translate
+  rangingRook: "振り飛車", // TODO: translate
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中紀錄會於 console 中顯示，並無視此處的設定。",

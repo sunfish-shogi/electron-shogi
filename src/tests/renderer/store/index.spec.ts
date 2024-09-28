@@ -277,9 +277,10 @@ describe("store/index", () => {
 
   it("startGame/invalidState", () => {
     const store = createStore();
+    store.showAnalysisDialog();
     store.startGame(gameSettings10m30s);
     expect(useBusyState().isBusy).toBeFalsy();
-    expect(store.appState).toBe(AppState.NORMAL);
+    expect(store.appState).toBe(AppState.ANALYSIS_DIALOG);
   });
 
   it("loginCSAGame/success", async () => {

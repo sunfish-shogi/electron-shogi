@@ -551,7 +551,10 @@ class Store {
   }
 
   startGame(settings: GameSettings): void {
-    if (this.appState !== AppState.GAME_DIALOG || useBusyState().isBusy) {
+    if (useBusyState().isBusy) {
+      return;
+    }
+    if (this.appState !== AppState.NORMAL && this.appState !== AppState.GAME_DIALOG) {
       return;
     }
     useBusyState().retain();

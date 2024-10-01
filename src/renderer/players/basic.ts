@@ -114,8 +114,12 @@ export class BasicPlayer implements Player {
       if (!position.doMove(move)) {
         continue;
       }
-      score -=
-        depth > 1 ? this.search(playerURI, position, depth - 1)[1] : this.see(position, move.to);
+      const see = -this.see(position, move.to);
+      if ((!move.capturedPieceType && score + see < 0) || score + see < -500) {
+        score += see - 500; // SEE がマイナスの手を抑制
+      } else {
+        score += depth > 1 ? -this.search(playerURI, position, depth - 1)[1] : see;
+      }
       position.undoMove(move);
       score += Math.random() * 10;
       if (score > bestScore) {
@@ -255,6 +259,10 @@ class Evaluator {
     return this.to.equals(new Square(file, rank));
   }
 
+  private isFrom(file: number, rank: number) {
+    return this.from?.equals(new Square(file, rank));
+  }
+
   private at(file: number, rank: number): Piece | null;
   private at(square: Square): Piece | null;
   private at(arg0: number | Square, arg1?: number) {
@@ -299,8 +307,11 @@ class Evaluator {
           this.to.file >= 2 &&
           this.to.file <= 8
         ) {
-          // 銀を押し上げる
+          // 7段目まで銀を押し上げる
           score += 20;
+        } else if (this.to.file === 1 || this.to.file === 9) {
+          // 端には積極的に行かない
+          score -= 50;
         }
         break;
       case PieceType.BISHOP:
@@ -322,6 +333,12 @@ class Evaluator {
         if (this.to.rank === 7) {
           // 7段目に飛車を引かない
           score -= 20;
+        }
+        break;
+      case PieceType.KING:
+        if (this.to.file === 1 || this.to.file === 9) {
+          // 玉を端に行かない
+          score -= 300;
         }
         break;
     }
@@ -439,6 +456,9 @@ class Evaluator {
           } else if (this.isTo(6, 7) && this.from && this.from.file <= 6) {
             // 厚みを作る
             score += 30;
+          } else if (this.isFrom(7, 8)) {
+            // 78 の金はできるだけ動かさない
+            score -= 100;
           }
         }
         break;
@@ -528,6 +548,8 @@ class Evaluator {
       case PieceType.GOLD:
         if (!this.drop && this.isTo(7, 8)) {
           score += 20;
+        } else if (this.isFrom(6, 1) && !this.isTo(7, 2)) {
+          score -= 100;
         }
         break;
       case PieceType.BISHOP:

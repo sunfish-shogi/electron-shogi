@@ -490,7 +490,7 @@ export const zh_tw: Texts = {
   conversionCompleted: "轉換完成。",
   human: "人", // TODO: translate
   randomPlayer: "ランダムプレイヤー", // TODO: translate
-  beginner: "初級者", // TODO: translate
+  beginner: "初心者", // TODO: translate
   staticRook: "居飛車", // TODO: translate
   rangingRook: "振り飛車", // TODO: translate
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",

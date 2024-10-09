@@ -493,7 +493,7 @@ export const vi: Texts = {
   conversionCompleted: "Chuyển đổi hoàn tất.",
   human: "人", // TODO: translate
   randomPlayer: "ランダムプレイヤー", // TODO: translate
-  beginner: "初級者", // TODO: translate
+  beginner: "初心者", // TODO: translate
   staticRook: "居飛車", // TODO: translate
   rangingRook: "振り飛車", // TODO: translate
   tryingToConnectAndLoginToCSAServer: "Đang kết nối và đăng nhập vào máy chủ CSA.",

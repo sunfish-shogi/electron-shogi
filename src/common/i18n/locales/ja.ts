@@ -493,7 +493,7 @@ export const ja: Texts = {
   conversionCompleted: "変換が完了しました。",
   human: "人",
   randomPlayer: "ランダムプレイヤー",
-  beginner: "初級者",
+  beginner: "初心者",
   staticRook: "居飛車",
   rangingRook: "振り飛車",
   tryingToConnectAndLoginToCSAServer: "CSAサーバーへの接続とログインを試みています。",

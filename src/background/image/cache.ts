@@ -1,10 +1,10 @@
 import path from "node:path";
 import { getAppPath, getPortableExeDir } from "@/background/proc/env";
-import { requireElectron } from "@/background/helpers/portability";
+import { openPath } from "@/background/helpers/electron";
 
 const userDataRoot = getPortableExeDir() || getAppPath("userData");
 export const imageCacheDir = path.join(userDataRoot, "image_cache");
 
-export function openCacheDirectory() {
-  requireElectron().shell.openPath(imageCacheDir);
+export function openCacheDirectory(): Promise<void> {
+  return openPath(imageCacheDir);
 }

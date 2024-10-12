@@ -9,7 +9,7 @@ import {
 } from "@/common/file/history";
 import { getAppLogger } from "@/background/log";
 import AsyncLock from "async-lock";
-import { requireElectron } from "@/background/helpers/portability";
+import { openPath } from "@/background/helpers/electron";
 
 const historyMaxLength = 20;
 
@@ -17,8 +17,8 @@ const userDir = getAppPath("userData");
 const historyPath = path.join(userDir, "record_file_history.json");
 const backupDir = path.join(userDir, "backup/kifu");
 
-export function openBackupDirectory(): void {
-  requireElectron().shell.openPath(backupDir);
+export function openBackupDirectory(): Promise<void> {
+  return openPath(backupDir);
 }
 
 const lock = new AsyncLock();

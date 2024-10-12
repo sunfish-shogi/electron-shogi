@@ -4,12 +4,12 @@ import * as log4js from "log4js";
 import { getDateTimeString } from "@/common/helpers/datetime";
 import { getAppPath, isTest } from "./proc/env";
 import { LogLevel, LogType } from "@/common/log";
-import { requireElectron } from "./helpers/portability";
+import { openPath } from "./helpers/electron";
 
 const rootDir = getAppPath("logs");
 
-export function openLogsDirectory(): void {
-  requireElectron().shell.openPath(rootDir);
+export function openLogsDirectory(): Promise<void> {
+  return openPath(rootDir);
 }
 
 const datetime = getDateTimeString().replaceAll(" ", "_").replaceAll("/", "").replaceAll(":", "");
@@ -108,8 +108,8 @@ export function shutdownLoggers(): void {
   });
 }
 
-export function openLogFile(logType: LogType): void {
-  requireElectron().shell.openPath(getFilePath(logType));
+export function openLogFile(logType: LogType): Promise<void> {
+  return openPath(getFilePath(logType));
 }
 
 export function getTailCommand(logType: LogType): string {

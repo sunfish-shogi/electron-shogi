@@ -92,6 +92,7 @@ import { PromptTarget } from "@/common/advanced/prompt";
 import { Command, CommandType } from "@/common/advanced/command";
 import { fetch } from "@/background/helpers/http";
 import * as uri from "@/common/uri";
+import { openPath } from "@/background/helpers/electron";
 
 const isWindows = process.platform === "win32";
 
@@ -146,9 +147,9 @@ ipcMain.on(Background.OPEN_EXPLORER, async (event, targetPath: string) => {
     const fullPath = resolveEnginePath(targetPath);
     const stats = await fs.stat(fullPath);
     if (stats.isDirectory()) {
-      shell.openPath(fullPath);
+      await openPath(fullPath);
     } else {
-      shell.openPath(path.dirname(fullPath));
+      await openPath(path.dirname(fullPath));
     }
   } catch {
     sendError(new Error(t.failedToOpenDirectory(targetPath)));

@@ -21,7 +21,7 @@ import { AppState, ResearchState } from "@/common/control/state";
 import { openHowToUse, openLatestReleasePage, openStableReleasePage, openWebsite } from "./help";
 import { t } from "@/common/i18n";
 import { InitialPositionSFEN } from "tsshogi";
-import { getAppPath } from "@/background/proc/env";
+import { chromiumLicensePath, electronLicensePath, getAppPath } from "@/background/proc/env";
 import { openBackupDirectory } from "@/background/file/history";
 import { openCacheDirectory } from "@/background/image/cache";
 import { refreshCustomPieceImages, sendTestNotification } from "./debug";
@@ -29,6 +29,7 @@ import { LogType } from "@/common/log";
 import { createLayoutManagerWindow } from "./layout";
 import { licenseURL, thirdPartyLicenseURL } from "@/common/links/github";
 import { materialIconsGuideURL } from "@/common/links/google";
+import { openPath } from "@/background/helpers/electron";
 
 const isWin = process.platform === "win32";
 const isMac = process.platform === "darwin";
@@ -96,7 +97,9 @@ function createMenuTemplate(window: BrowserWindow) {
         { type: "separator" },
         {
           label: t.openAutoSaveDirectory,
-          click: openAutoSaveDirectory,
+          click: () => {
+            openAutoSaveDirectory().catch(sendError);
+          },
         },
         { type: "separator" },
         isMac ? { role: "close", label: t.close } : { role: "quit", label: t.quit },
@@ -371,28 +374,38 @@ function createMenuTemplate(window: BrowserWindow) {
         {
           label: t.app,
           click: () => {
-            shell.openPath(path.dirname(getAppPath("exe")));
+            openPath(path.dirname(getAppPath("exe"))).catch(sendError);
           },
         },
         {
           label: t.settings,
-          click: openSettingsDirectory,
+          click: () => {
+            openSettingsDirectory().catch(sendError);
+          },
         },
         {
           label: t.log,
-          click: openLogsDirectory,
+          click: () => {
+            openLogsDirectory().catch(sendError);
+          },
         },
         {
           label: t.cache,
-          click: openCacheDirectory,
+          click: () => {
+            openCacheDirectory().catch(sendError);
+          },
         },
         {
           label: t.backup,
-          click: openBackupDirectory,
+          click: () => {
+            openBackupDirectory().catch(sendError);
+          },
         },
         {
           label: t.autoSaving,
-          click: openAutoSaveDirectory,
+          click: () => {
+            openAutoSaveDirectory().catch(sendError);
+          },
         },
       ],
     },
@@ -412,19 +425,19 @@ function createMenuTemplate(window: BrowserWindow) {
             {
               label: t.openAppLog,
               click: () => {
-                openLogFile(LogType.APP);
+                openLogFile(LogType.APP).catch(sendError);
               },
             },
             {
               label: t.openUSILog,
               click: () => {
-                openLogFile(LogType.USI);
+                openLogFile(LogType.USI).catch(sendError);
               },
             },
             {
               label: t.openCSALog,
               click: () => {
-                openLogFile(LogType.CSA);
+                openLogFile(LogType.CSA).catch(sendError);
               },
             },
             {
@@ -540,15 +553,13 @@ function createMenuTemplate(window: BrowserWindow) {
             {
               label: "Electron",
               click: () => {
-                shell.openPath(path.join(path.dirname(getAppPath("exe")), "LICENSE.electron.txt"));
+                openPath(electronLicensePath).catch(sendError);
               },
             },
             {
               label: "Chromium",
               click: () => {
-                shell.openPath(
-                  path.join(path.dirname(getAppPath("exe")), "LICENSES.chromium.html"),
-                );
+                openPath(chromiumLicensePath).catch(sendError);
               },
             },
           ],

@@ -64,3 +64,12 @@ export function getAppPath(name: "userData" | "logs" | "exe" | "documents" | "pi
 export function getPreloadPath() {
   return isProduction() ? "./preload.js" : "../../../packed/preload.js";
 }
+
+export const electronLicensePath = path.join(
+  path.dirname(getAppPath("exe")),
+  "LICENSE.electron.txt",
+);
+export const chromiumLicensePath = path.join(
+  path.dirname(getAppPath("exe")),
+  "LICENSES.chromium.html",
+);

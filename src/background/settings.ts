@@ -39,20 +39,20 @@ import {
   normalizeBatchConversionSettings as normalizeBatchConversionSettings,
 } from "@/common/settings/conversion";
 import { exists } from "./helpers/file";
-import { requireElectron } from "./helpers/portability";
 import { emptyLayoutProfileList, LayoutProfileList } from "@/common/settings/layout";
+import { openPath } from "./helpers/electron";
 
 const userDir = getAppPath("userData");
 const rootDir = getPortableExeDir() || userDir;
 const docDir = path.join(getAppPath("documents"), "ShogiHome");
 
-export function openSettingsDirectory(): void {
-  requireElectron().shell.openPath(rootDir);
+export function openSettingsDirectory(): Promise<void> {
+  return openPath(rootDir);
 }
 
 export async function openAutoSaveDirectory(): Promise<void> {
   const appSettings = await loadAppSettings();
-  requireElectron().shell.openPath(appSettings.autoSaveDirectory || docDir);
+  await openPath(appSettings.autoSaveDirectory || docDir);
 }
 
 const windowSettingsPath = path.join(userDir, "window.json");

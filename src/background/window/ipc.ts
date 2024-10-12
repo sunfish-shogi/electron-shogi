@@ -177,7 +177,7 @@ ipcMain.handle(Background.SHOW_OPEN_RECORD_DIALOG, async (event): Promise<string
   return ret;
 });
 
-ipcMain.handle(Background.OPEN_RECORD, async (event, path: string): Promise<Uint8Array> => {
+ipcMain.handle(Background.OPEN_RECORD, async (event, path: string) => {
   validateIPCSender(event.senderFrame);
   if (!isSupportedRecordFilePath(path)) {
     throw new Error(t.fileExtensionNotSupported);

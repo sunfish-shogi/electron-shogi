@@ -67,7 +67,11 @@
                 {{ iteration.multiPV || "" }}
               </td>
               <td v-if="showDepthColumn" class="depth">
-                {{ iteration.depth }}{{ iteration.selectiveDepth && iteration.depth ? "/" : ""
+                {{ iteration.depth
+                }}{{
+                  iteration.selectiveDepth !== undefined && iteration.depth !== undefined
+                    ? "/"
+                    : ""
                 }}{{ iteration.selectiveDepth }}
               </td>
               <td v-if="showNodesColumn" class="nodes">

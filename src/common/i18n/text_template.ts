@@ -335,6 +335,11 @@ export type Texts = {
   noEngineRegistered: string;
   duplicate: string;
   add: string;
+  compareAndMerge: string;
+  compareEngineSettings: string;
+  noDifference: string;
+  mergeToLeft: string;
+  mergeToRight: string;
   recommended: string;
   import: string;
   saveAndClose: string;
@@ -491,6 +496,8 @@ export type Texts = {
   beginner: string;
   staticRook: string;
   rangingRook: string;
+  pleaseSelectEngines: string;
+  thisItemCannotBeMerged: string;
   tryingToConnectAndLoginToCSAServer: string;
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting: string;
   shouldRestartToApplyLogSettings: string;

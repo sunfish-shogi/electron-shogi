@@ -340,6 +340,11 @@ export const vi: Texts = {
   noEngineRegistered: "Không có phần mềm",
   duplicate: "Sao chép",
   add: "Thêm",
+  compareAndMerge: "比較・マージ", // TODO: translate
+  compareEngineSettings: "エンジン設定の比較", // TODO: translate
+  noDifference: "差分なし", // TODO: translate
+  mergeToLeft: "左へマージ", // TODO: translate
+  mergeToRight: "右へマージ", // TODO: translate
   recommended: "Đề xuất",
   import: "Nhập",
   saveAndClose: "Lưu và đóng",
@@ -496,6 +501,8 @@ export const vi: Texts = {
   beginner: "初心者", // TODO: translate
   staticRook: "居飛車", // TODO: translate
   rangingRook: "振り飛車", // TODO: translate
+  pleaseSelectEngines: "エンジンを選択してください。", // TODO: translate
+  thisItemCannotBeMerged: "この項目はマージできません。", // TODO: translate
   tryingToConnectAndLoginToCSAServer: "Đang kết nối và đăng nhập vào máy chủ CSA.",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "*Bản trình duyệt sẽ xuất log ra trình nhắc lệnh và bỏ qua cài đặt này.",

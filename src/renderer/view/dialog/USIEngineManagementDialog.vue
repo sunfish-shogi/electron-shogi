@@ -57,7 +57,10 @@
           </div>
         </div>
       </div>
-      <button class="wide" @click="add()">{{ t.add }}</button>
+      <div class="menu row">
+        <button class="wide" @click="add()">{{ t.add }}</button>
+        <button class="wide" @click="openMerge()">{{ t.compareAndMerge }}</button>
+      </div>
       <div class="main-buttons">
         <button data-hotkey="Enter" autofocus @click="saveAndClose()">
           {{ t.saveAndClose }}
@@ -74,13 +77,25 @@
     @ok="optionOk"
     @cancel="optionCancel"
   />
+  <USIEngineMergeDialog
+    v-if="mergeDialog"
+    :engines="usiEngines"
+    @ok="mergeOk"
+    @cancel="mergeCancel"
+  />
 </template>
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
 import { filter as filterString } from "@/common/helpers/string";
 import api from "@/renderer/ipc/api";
-import { duplicateEngine, USIEngine, USIEngines, USIEngineLabel } from "@/common/settings/usi";
+import {
+  duplicateEngine,
+  USIEngine,
+  USIEngines,
+  USIEngineLabel,
+  ImmutableUSIEngines,
+} from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
 import { ref, onMounted, onBeforeUnmount, computed, onUpdated } from "vue";
 import USIEngineOptionsDialog from "@/renderer/view/dialog/USIEngineOptionsDialog.vue";
@@ -90,11 +105,13 @@ import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/dev
 import { useAppSettings } from "@/renderer/store/settings";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
+import USIEngineMergeDialog from "./USIEngineMergeDialog.vue";
 
 const store = useStore();
 const busyState = useBusyState();
 const dialog = ref();
 const optionDialog = ref(null as USIEngine | null);
+const mergeDialog = ref(false);
 const usiEngines = ref(new USIEngines());
 const filter = ref();
 const filterWords = ref([] as string[]);
@@ -184,6 +201,10 @@ const openOptions = (uri: string) => {
   optionDialog.value = usiEngines.value.getEngine(uri) as USIEngine;
 };
 
+const openMerge = () => {
+  mergeDialog.value = true;
+};
+
 const duplicate = (uri: string) => {
   const src = usiEngines.value.getEngine(uri) as USIEngine;
   const engine = duplicateEngine(src);
@@ -215,6 +236,15 @@ const optionOk = (engine: USIEngine) => {
 const optionCancel = () => {
   optionDialog.value = null;
 };
+
+const mergeOk = (engines: ImmutableUSIEngines) => {
+  usiEngines.value = engines.getClone();
+  mergeDialog.value = false;
+};
+
+const mergeCancel = () => {
+  mergeDialog.value = false;
+};
 </script>
 
 <style scoped>
@@ -229,6 +259,9 @@ const optionCancel = () => {
 }
 .filter {
   width: 100%;
+}
+.menu > *:not(:first-child) {
+  margin-left: 5px;
 }
 .engine {
   margin: 0px 5px 0px 5px;

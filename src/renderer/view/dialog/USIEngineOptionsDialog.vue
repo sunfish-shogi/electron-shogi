@@ -149,6 +149,7 @@
               <span
                 v-if="option.type !== 'button' && (option.default || option.default === 0)"
                 class="option-default-value"
+                :class="{ highlight: option.value !== option.default }"
               >
                 {{ t.defaultValue }}:
                 {{
@@ -438,10 +439,15 @@ const cancel = () => {
   vertical-align: top;
 }
 .option-default-value {
+  padding: 0.3em;
   font-size: 0.7em;
   white-space: nowrap;
   font-weight: 600;
   opacity: 0.7;
+}
+.option-default-value.highlight {
+  color: var(--text-color-danger);
+  background-color: var(--text-bg-color-danger);
 }
 .option .additional {
   margin-top: 5px;

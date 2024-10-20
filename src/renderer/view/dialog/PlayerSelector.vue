@@ -33,6 +33,7 @@
         <span class="player-info-value">{{ multiPVState || "---" }}</span>
       </div>
       <button
+        v-if="enableEditButton"
         class="player-settings"
         :disabled="!isPlayerSettingsEnabled"
         @click="openPlayerSettings"
@@ -106,6 +107,10 @@ const props = defineProps({
   displayMultiPvState: {
     type: Boolean,
     default: false,
+  },
+  enableEditButton: {
+    type: Boolean,
+    default: true,
   },
 });
 

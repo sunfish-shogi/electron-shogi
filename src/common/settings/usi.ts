@@ -197,6 +197,57 @@ function isValidOptionValue(option: USIEngineOption): boolean {
   return true;
 }
 
+export type USIEngineOptionDiff = {
+  name: string;
+  leftValue: string | number | undefined;
+  rightValue: string | number | undefined;
+  mergeable: boolean;
+};
+
+export function compareUSIEngineOptions(left: USIEngine, right: USIEngine): USIEngineOptionDiff[] {
+  const result = [] as USIEngineOptionDiff[];
+  function append(leftOption?: USIEngineOption, rightOption?: USIEngineOption) {
+    const leftHasValue = leftOption && leftOption.type !== "button";
+    const rightHasValue = rightOption && rightOption.type !== "button";
+    if (leftHasValue && rightHasValue && leftOption.value !== rightOption.value) {
+      result.push({
+        name: leftOption.name,
+        leftValue: getUSIEngineOptionCurrentValue(leftOption),
+        rightValue: getUSIEngineOptionCurrentValue(rightOption),
+        mergeable: leftOption.type === rightOption.type,
+      });
+    } else if (leftHasValue && !rightHasValue) {
+      result.push({
+        name: leftOption.name,
+        leftValue: getUSIEngineOptionCurrentValue(leftOption),
+        rightValue: undefined,
+        mergeable: false,
+      });
+    } else if (!leftHasValue && rightHasValue) {
+      result.push({
+        name: rightOption.name,
+        leftValue: undefined,
+        rightValue: getUSIEngineOptionCurrentValue(rightOption),
+        mergeable: false,
+      });
+    }
+  }
+  function compareOrder(a: USIEngineOption, b: USIEngineOption): number {
+    return a.order < b.order ? -1 : 1;
+  }
+  for (const leftOption of Object.values(left.options).sort(compareOrder)) {
+    const rightOption = right.options[leftOption.name];
+    append(leftOption, rightOption);
+  }
+  for (const rightOption of Object.values(right.options).sort(compareOrder)) {
+    const leftOption = left.options[rightOption.name];
+    if (!leftOption) {
+      append(undefined, rightOption);
+    }
+  }
+  return result;
+}
+
 export interface ImmutableUSIEngines {
   hasEngine(uri: string): boolean;
   getEngine(uri: string): USIEngine | undefined;

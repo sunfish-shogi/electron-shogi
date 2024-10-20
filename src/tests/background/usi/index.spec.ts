@@ -13,7 +13,7 @@ import {
   setupPlayer,
 } from "@/background/usi";
 import { ChildProcess } from "@/background/usi/process";
-import { usiEngines } from "@/tests/mock/usi";
+import { testUSIEngine } from "@/tests/mock/usi";
 import { MockedClass } from "vitest";
 
 vi.mock("@/background/usi/process");
@@ -91,7 +91,7 @@ describe("background/usi/index", () => {
   });
 
   it("go", async () => {
-    const setupPromise = setupPlayer(usiEngines, 10);
+    const setupPromise = setupPlayer(testUSIEngine, 10);
     const onReceive = getChildProcessHandler("receive");
     const onClose = getChildProcessHandler("close");
     expect(mockChildProcess.prototype.send).lastCalledWith("usi");
@@ -139,7 +139,7 @@ describe("background/usi/index", () => {
   it("early-ponder", async () => {
     const setupPromise = setupPlayer(
       {
-        ...usiEngines,
+        ...testUSIEngine,
         enableEarlyPonder: true,
       },
       10,
@@ -169,7 +169,7 @@ describe("background/usi/index", () => {
   });
 
   it("activeSessionCount", async () => {
-    const setupPromise = setupPlayer(usiEngines, 10);
+    const setupPromise = setupPlayer(testUSIEngine, 10);
     const onReceive = getChildProcessHandler("receive");
     const onClose = getChildProcessHandler("close");
     expect(mockChildProcess.prototype.send).lastCalledWith("usi");

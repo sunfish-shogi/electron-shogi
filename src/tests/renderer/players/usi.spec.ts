@@ -1,7 +1,7 @@
 import api, { API } from "@/renderer/ipc/api";
 import { onUSIBestMove, onUSIInfo, USIPlayer } from "@/renderer/players/usi";
 import { Move, parsePV, Record } from "tsshogi";
-import { usiEngines, usiEnginesWithPonder } from "@/tests/mock/usi";
+import { testUSIEngine, testUSIEngineWithPonder } from "@/tests/mock/usi";
 import { Mocked } from "vitest";
 
 vi.mock("@/renderer/ipc/api");
@@ -38,7 +38,7 @@ describe("usi", () => {
     const record1 = Record.newByUSI(usi1) as Record;
     const record2 = Record.newByUSI(usi2) as Record;
     const record3 = Record.newByUSI(usi3) as Record;
-    const player = new USIPlayer(usiEnginesWithPonder, 10);
+    const player = new USIPlayer(testUSIEngineWithPonder, 10);
     try {
       await player.launch();
       const searchHandler = {
@@ -101,7 +101,7 @@ describe("usi", () => {
     const usi2 = "position startpos moves 7g7f 3c3d 2g2f";
     const record1 = Record.newByUSI(usi1) as Record;
     const record2 = Record.newByUSI(usi2) as Record;
-    const player = new USIPlayer(usiEnginesWithPonder, 10);
+    const player = new USIPlayer(testUSIEngineWithPonder, 10);
     try {
       await player.launch();
       const searchHandler = {
@@ -128,7 +128,7 @@ describe("usi", () => {
     const usi = "position startpos moves 7g7f 3c3d";
     const record = Record.newByUSI(usi) as Record;
     const onSearchInfo = vi.fn();
-    const player = new USIPlayer(usiEngines, 10, onSearchInfo);
+    const player = new USIPlayer(testUSIEngine, 10, onSearchInfo);
     try {
       await player.launch();
       const searchHandler = {

@@ -337,6 +337,11 @@ export const zh_tw: Texts = {
   noEngineRegistered: "尚未登錄引擎。",
   duplicate: "複製",
   add: "追加",
+  compareAndMerge: "比較・マージ", // TODO: translate
+  compareEngineSettings: "エンジン設定の比較", // TODO: translate
+  noDifference: "差分なし", // TODO: translate
+  mergeToLeft: "左へマージ", // TODO: translate
+  mergeToRight: "右へマージ", // TODO: translate
   recommended: "推薦",
   import: "匯入",
   saveAndClose: "保存並關閉",
@@ -493,6 +498,8 @@ export const zh_tw: Texts = {
   beginner: "初心者", // TODO: translate
   staticRook: "居飛車", // TODO: translate
   rangingRook: "振り飛車", // TODO: translate
+  pleaseSelectEngines: "エンジンを選択してください。", // TODO: translate
+  thisItemCannotBeMerged: "この項目はマージできません。", // TODO: translate
   tryingToConnectAndLoginToCSAServer: "正在連接並登入CSA伺服器。",
   inBrowserLogsOutputToConsoleAndIgnoreThisSetting:
     "※在瀏覽器版本中紀錄會於 console 中顯示，並無視此處的設定。",

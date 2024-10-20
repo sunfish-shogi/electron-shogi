@@ -8,7 +8,9 @@ import {
   USIEngine,
   USIEngines,
   validateUSIEngine,
+  compareUSIEngineOptions,
 } from "@/common/settings/usi";
+import { testUSIEngine } from "@/tests/mock/usi";
 
 describe("settings/usi", () => {
   it("getUSIEngineOptionCurrentValue", () => {
@@ -354,6 +356,44 @@ describe("settings/usi", () => {
         } as unknown as USIEngine),
       ).toBeInstanceOf(Error);
     });
+  });
+
+  it("compareUSIEngineOptions", () => {
+    const lhs: USIEngine = {
+      ...testUSIEngine,
+      options: {
+        USI_Hash: { name: "USI_Hash", type: "spin", order: 0, default: 32, value: 64 },
+        USI_Ponder: { name: "USI_Ponder", type: "check", order: 1, default: "true" },
+        Refresh: { name: "Refresh", type: "button", order: 2 },
+        Log: { name: "Log", type: "button", order: 3 },
+        Book: { name: "Book", type: "filename", order: 4, default: "<empty>", value: "book.db" },
+        StringA: { name: "StringA", type: "string", order: 4, value: "foo" },
+        StringB: { name: "StringB", type: "string", order: 5, value: "bar" },
+        Depth: { name: "Depth", type: "spin", order: 6, default: 1, value: 2 }, // only lhs
+      },
+    };
+    const rhs: USIEngine = {
+      ...testUSIEngine,
+      options: {
+        USI_Hash: { name: "USI_Hash", type: "spin", order: 0, default: 32 }, // no value
+        USI_Ponder: { name: "USI_Ponder", type: "check", order: 1, default: "true" }, // equal
+        Refresh: { name: "Refresh", type: "button", order: 2 }, // skip
+        Log: { name: "Log", type: "check", order: 3, value: "true" }, // different type
+        Book: { name: "Book", type: "combo", order: 4, vars: [], value: "standard.db" }, // different type
+        StringA: { name: "StringA", type: "string", order: 4, value: "foo" }, // equal
+        StringB: { name: "StringB", type: "string", order: 5, value: "baz" }, // different value
+        ResignValue: { name: "ResignValue", type: "spin", order: 6, default: 1, value: -3000 }, // only rhs
+      },
+    };
+    const result = compareUSIEngineOptions(lhs, rhs);
+    expect(result).toStrictEqual([
+      { name: "USI_Hash", leftValue: 64, rightValue: 32, mergeable: true },
+      { name: "Log", leftValue: undefined, rightValue: "true", mergeable: false },
+      { name: "Book", leftValue: "book.db", rightValue: "standard.db", mergeable: false },
+      { name: "StringB", leftValue: "bar", rightValue: "baz", mergeable: true },
+      { name: "Depth", leftValue: 2, rightValue: undefined, mergeable: false },
+      { name: "ResignValue", leftValue: undefined, rightValue: -3000, mergeable: false },
+    ]);
   });
 
   it("USIEngines", () => {

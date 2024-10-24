@@ -298,6 +298,8 @@ type BackupOptions = {
 
 export type ChangePositionHandler = () => void;
 export type UpdateTreeHandler = () => void;
+export type UpdateCommentHandler = () => void;
+export type UpdateBookmarkHandler = () => void;
 export type UpdateCustomDataHandler = () => void;
 export type BackupHandler = () => BackupOptions | null | void;
 
@@ -307,6 +309,8 @@ export class RecordManager {
   private _sourceURL?: string;
   private changePositionHandler: ChangePositionHandler | null = null;
   private updateTreeHandler: UpdateTreeHandler | null = null;
+  private updateCommentHandler: UpdateCommentHandler | null = null;
+  private updateBookmarkHandler: UpdateBookmarkHandler | null = null;
   private updateCustomDataHandler: UpdateCustomDataHandler | null = null;
   private backupHandler: BackupHandler | null = null;
 
@@ -627,11 +631,13 @@ export class RecordManager {
   updateComment(comment: string): void {
     this._record.current.comment = comment;
     this._unsaved = true;
+    this.onUpdateComment();
   }
 
   updateBookmark(bookmark: string): void {
     this._record.current.bookmark = bookmark;
     this._unsaved = true;
+    this.onUpdateBookmark();
   }
 
   appendComment(add: string, behavior: CommentBehavior): void {
@@ -654,6 +660,7 @@ export class RecordManager {
         break;
     }
     this._unsaved = true;
+    this.onUpdateComment();
   }
 
   appendSearchComment(
@@ -788,20 +795,28 @@ export class RecordManager {
     this._unsaved = true;
   }
 
-  on(event: "changePosition", handler: ChangePositionHandler): this;
+  on(event: "changePosition", handler: () => void): this;
   on(event: "updateTree", handler: () => void): this;
-  on(event: "updateCustomData", handler: UpdateCustomDataHandler): this;
+  on(event: "updateComment", handler: () => void): this;
+  on(event: "updateCustomData", handler: () => void): this;
+  on(event: "updateBookmark", handler: () => void): this;
   on(event: "backup", handler: BackupHandler): this;
   on(event: string, handler: unknown): this {
     switch (event) {
       case "changePosition":
-        this.changePositionHandler = handler as ChangePositionHandler;
+        this.changePositionHandler = handler as () => void;
         break;
       case "updateTree":
-        this.updateTreeHandler = handler as UpdateTreeHandler;
+        this.updateTreeHandler = handler as () => void;
+        break;
+      case "updateComment":
+        this.updateCommentHandler = handler as () => void;
+        break;
+      case "updateBookmark":
+        this.updateBookmarkHandler = handler as () => void;
         break;
       case "updateCustomData":
-        this.updateCustomDataHandler = handler as UpdateCustomDataHandler;
+        this.updateCustomDataHandler = handler as () => void;
         break;
       case "backup":
         this.backupHandler = handler as BackupHandler;
@@ -819,6 +834,18 @@ export class RecordManager {
   private onUpdateTree() {
     if (this.updateTreeHandler) {
       this.updateTreeHandler();
+    }
+  }
+
+  private onUpdateComment() {
+    if (this.updateCommentHandler) {
+      this.updateCommentHandler();
+    }
+  }
+
+  private onUpdateBookmark() {
+    if (this.updateBookmarkHandler) {
+      this.updateBookmarkHandler();
     }
   }
 

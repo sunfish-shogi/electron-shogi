@@ -30,6 +30,7 @@
           }"
         />
         <ToggleButton
+          v-if="showRecordViewOnBottom"
           label="コメント編集モード"
           :height="toggleHeight"
           :value="commentEditorMode"

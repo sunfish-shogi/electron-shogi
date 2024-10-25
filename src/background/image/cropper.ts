@@ -3,7 +3,7 @@ import url from "node:url";
 import crypto from "node:crypto";
 import { promises as fs } from "node:fs";
 import { getAppLogger } from "@/background/log";
-import Jimp from "jimp";
+import { Jimp } from "jimp";
 import { imageCacheDir } from "./cache";
 import { exists } from "@/background/helpers/file";
 import { getPieceImageAssetNameByIndex } from "@/common/assets/pieces";
@@ -33,8 +33,8 @@ export async function cropPieceImage(srcURL: string, opt?: PieceImageOptions): P
     await fs.mkdir(destDir, { recursive: true });
   }
   const pic = await Jimp.read(srcPath);
-  let width: number = pic.getWidth();
-  let height: number = pic.getHeight();
+  let width: number = pic.width;
+  let height: number = pic.height;
 
   if (!width || !height) {
     throw new Error("cannot get image metadata");
@@ -61,7 +61,7 @@ export async function cropPieceImage(srcURL: string, opt?: PieceImageOptions): P
           w *= 1 - marginRatio * 2;
           h *= 1 - marginRatio * 2;
         }
-        await image.crop(x, y, w, h).writeAsync(path.join(destDir, destName));
+        await image.crop({ x, y, w, h }).write(path.join(destDir, destName) as `${string}.png`);
         getAppLogger().debug(`${destName} extracted`);
       } else {
         getAppLogger().debug(`${destName} exists`);

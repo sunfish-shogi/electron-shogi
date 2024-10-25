@@ -19,6 +19,7 @@
       />
       <RecordPane
         v-else-if="c.type === 'Record'"
+        class="full"
         :show-comment="!!c.showCommentColumn"
         :show-elapsed-time="!!c.showElapsedTimeColumn"
         :show-top-control="!!c.topControlBox"

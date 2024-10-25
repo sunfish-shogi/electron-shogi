@@ -1,5 +1,5 @@
 <template>
-  <div ref="root" class="full column record-pane">
+  <div ref="root" class="column record-pane">
     <div class="auto record">
       <RecordView
         :record="store.record"

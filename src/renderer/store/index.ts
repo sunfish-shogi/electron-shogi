@@ -156,6 +156,12 @@ class Store {
         saveRecordForWebApp(this.record);
         clearURLParams();
       })
+      .on("updateComment", () => {
+        saveRecordForWebApp(this.record);
+      })
+      .on("updateBookmark", () => {
+        saveRecordForWebApp(this.record);
+      })
       .on("updateCustomData", () => {
         this.onUpdateCustomDataHandlers.forEach((handler) => handler());
         saveRecordForWebApp(this.record);

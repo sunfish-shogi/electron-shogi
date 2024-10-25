@@ -47,7 +47,10 @@
       :pv="store.pvPreview.pv"
       @close="store.closePVPreviewDialog()"
     />
-    <button v-if="!isNative()" class="copyright" @click="openCopyright">&copy;</button>
+    <!-- PCブラウザの場合のみライセンスへの遷移が無いので、画面の隅にボタンを表示する。 -->
+    <button v-if="!isNative() && !isMobileWebApp()" class="copyright" @click="openCopyright">
+      &copy;
+    </button>
   </div>
 </template>
 

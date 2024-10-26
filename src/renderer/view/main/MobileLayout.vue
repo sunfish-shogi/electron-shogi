@@ -78,8 +78,8 @@ import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 
 const lazyUpdateDelay = 80;
 const toggleHeight = 24;
-const minRecordViewWidth = 300;
-const minRecordViewHeight = 200;
+const minRecordViewWidth = 250;
+const minRecordViewHeight = 130;
 
 const windowSize = reactive(new RectSize(window.innerWidth, window.innerHeight));
 const commentEditorMode = ref(false);
@@ -94,7 +94,7 @@ const updateSize = () => {
 
 const showRecordViewOnBottom = computed(() => windowSize.height >= windowSize.width);
 const controlPaneHeight = computed(() =>
-  Math.min(windowSize.height * 0.06, windowSize.width * 0.12),
+  Math.min(windowSize.height * 0.08, windowSize.width * 0.12),
 );
 const boardPaneMaxSize = computed(() => {
   const maxSize = new RectSize(windowSize.width, windowSize.height);
@@ -107,11 +107,11 @@ const boardPaneMaxSize = computed(() => {
 });
 const boardLayoutType = computed(() => {
   if (showRecordViewOnBottom.value) {
-    return windowSize.width < windowSize.height * 0.5
+    return windowSize.width < windowSize.height * 0.57
       ? BoardLayoutType.PORTRAIT
       : BoardLayoutType.COMPACT;
   } else {
-    return windowSize.width < windowSize.height * 1.6
+    return windowSize.width < windowSize.height * 1.77
       ? BoardLayoutType.PORTRAIT
       : BoardLayoutType.COMPACT;
   }

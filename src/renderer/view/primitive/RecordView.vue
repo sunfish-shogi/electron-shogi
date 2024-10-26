@@ -277,6 +277,7 @@ onUpdated(() => {
   margin-top: 2px;
   width: 100%;
   height: calc(26.2% - 15px);
+  min-height: 40px;
 }
 .branch-list {
   width: auto;

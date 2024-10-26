@@ -12,7 +12,8 @@
           :style="{ height: `${controlPaneHeight}px` }"
         />
         <RecordPane
-          v-if="showRecordViewOnBottom && !commentEditorMode"
+          v-if="showRecordViewOnBottom"
+          v-show="!commentEditorMode"
           :style="{
             width: `${windowSize.width}px`,
             height: `${bottomRecordViewSize.height - toggleHeight}px`,
@@ -23,7 +24,8 @@
           :show-comment="true"
         />
         <RecordComment
-          v-if="showRecordViewOnBottom && commentEditorMode"
+          v-if="showRecordViewOnBottom"
+          v-show="commentEditorMode"
           :style="{
             width: `${windowSize.width}px`,
             height: `${bottomRecordViewSize.height - toggleHeight}px`,

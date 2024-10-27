@@ -3,6 +3,7 @@
     <title>ShogiHome</title>
     <link href="css/style.css?202204272252" rel="stylesheet" />
     <link rel="icon" href="webapp/favicon.png" />
+    <link rel="canonical" href="https://sunfish-shogi.github.io/shogihome/index.zh_tw.html" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -14,267 +15,23 @@
       property="og:image"
       content="https://sunfish-shogi.github.io/electron-shogi/screenshots/screenshot001.png"
     />
+    <meta http-equiv="refresh" content="0;URL=https://sunfish-shogi.github.io/shogihome/index.zh_tw.html" />
   </head>
   <body>
     <header>
-      <div class="link-buttons">
-        <div>
-          <a href="https://github.com/sunfish-shogi/electron-shogi">
-            <img class="large-icon" src="./icons/github.png" alt="GitHub" />
-            GitHub
-          </a>
-        </div>
-        <div>
-          <a href="https://github.com/sunfish-shogi/electron-shogi/wiki">
-            <img class="large-icon" src="./icons/github.png" alt="GitHub" />
-            Wiki
-          </a>
-        </div>
-        <div>
-          <a href="./index.html">
-            <img class="large-icon" src="./icons/language_white.svg" alt="Language" />
-            日本語
-          </a>
-          <a href="./index.en.html">
-            <img class="large-icon" src="./icons/language_white.svg" alt="Language" />
-            English
-          </a>
-        </div>
-      </div>
       <div class="title">
         <img class="icon" src="icon.svg" alt="" />
         <div>ShogiHome</div>
       </div>
     </header>
-    <nav class="sticky">
-      <ul>
-        <li><a href="#whatis">ShogiHome是什麼？</a></li>
-        <li><a href="#license">授權條款</a></li>
-        <li><a href="#pcapp">電腦應用程式</a></li>
-        <li><a href="#webapp">網頁應用程式</a></li>
-        <li><a href="#howtouse">使用方法</a></li>
-        <li><a href="#milestones">開發期程</a></li>
-        <li><a href="#faq">常見問題</a></li>
-        <li><a href="#contact">聯絡方式</a></li>
-        <li><a href="#images">棋盤棋駒圖片</a></li>
-        <!-- TODO: Update section title and tag ID -->
-      </ul>
-    </nav>
     <article>
       <section id="whatis">
-        <h2>ShogiHome是什麼？</h2>
+        <div class="long-text">將跳轉到 ShogiHome 的新頁面。</div>
         <div class="long-text">
-          ShogiHome 是一款使用
-          <a href="https://www.electronjs.org/" target="_blank"
-            >Electron<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
-          /></a>
-          框架開發的開源將棋應用程式， 並可以在 Windows、macOS、Linux 作業系統上運行。
-          任何人都可以參與開發或創建自己的版本並發布。
-        </div>
-        <div class="images">
-          <a href="./screenshots/screenshot001.png"
-            ><img
-              class="wide"
-              src="./screenshots/screenshot001.png?202405051100"
-              alt="スクリーンショット001"
-          /></a>
+          如果頁面沒有自動跳轉，請點擊以下鏈接。
         </div>
         <div class="long-text">
-          為了與其他高實力的對局程式與引擎連接，本軟體使用
-          <a href="http://shogidokoro.starfree.jp/usi.html" target="_blank"
-            >USI協定<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
-          /></a>
-          進行引擎與軟體之間的溝通。 ShogiHome是一個支援 USI 協定，可以載入 AI
-          並進行將棋對局、檢討的前端軟體。
-        </div>
-        <div class="images">
-          <a href="./screenshots/screenshot002.png"
-            ><img src="./screenshots/screenshot002.png?202405051100" alt="スクリーンショット002"
-          /></a>
-          <a href="./screenshots/screenshot003.png"
-            ><img src="./screenshots/screenshot003.png?202405051100" alt="スクリーンショット003"
-          /></a>
-        </div>
-        <div class="long-text">
-          近日由於二合一的平板電腦的普及，即使是在 PC 上也可以使用觸控螢幕進行將棋對局了。
-          ShogiHome的大部分功能都使用大型按鈕來操作，構成了在各種環境下都能輕鬆使用的介面。
-          此外，由於使用 Electron
-          來開發，本軟體最小化了對作業系統的依賴，實現了在任何作業系統下都能使用相同的介面與操作性。
-        </div>
-      </section>
-      <section id="license">
-        <h2>授權條款</h2>
-        <div class="long-text">
-          關於本程式的使用，無論是商業或非商業用途都沒有限制。
-          但是，作者不承擔任何保證或義務，請自行承擔使用的風險。
-          如果您要修改或重新發佈本程式，請遵守授權條款中的義務和其他限制。
-        </div>
-        <div class="long-text">
-          ShogiHome 的本體和原始碼採用
-          <a href="https://github.com/sunfish-shogi/electron-shogi/blob/main/LICENSE"
-            >MIT License</a
-          >
-          進行授權。 不過，程式內使用的<a
-            href="https://developers.google.com/fonts/docs/material_icons"
-            >Material Icons</a
-          >是使用
-          <a href="https://www.apache.org/licenses/LICENSE-2.0.txt" target="_blank"
-            >Apache License 2.0<img class="small-icon" src="./icons/open_in_new_black_24dp.svg"
-          /></a>
-          授權的。
-        </div>
-        <div class="long-text">
-          本程式使用的 Web 函式庫的授權請參考
-          <a href="./third-party-licenses.html">THIRD PARTY LICENSES</a>。
-          <br />
-          Electron、Electron Builder 及 Chromium 的授權並不包含於上方連結，但會與本程式一同安裝。
-        </div>
-      </section>
-      <section id="pcapp">
-        <h2>電腦應用程式</h2>
-        <ul class="row">
-          <li class="link-box">
-            <a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.18.0"
-              >最新版 (Version 1.18.0)</a
-            >
-          </li>
-          <li class="link-box">
-            <a href="https://github.com/sunfish-shogi/electron-shogi/releases/tag/v1.17.1"
-              >穩定版 (Version 1.17.1)</a
-            >
-          </li>
-        </ul>
-        <ul class="row">
-          <li class="link-box">
-            <a href="https://github.com/sunfish-shogi/electron-shogi/releases">全部版本</a>
-          </li>
-        </ul>
-        <div class="long-text">
-          Windows
-          作業系統請使用<b>-win.zip</b>、MacOS請使用<b>-mac.zip</b>、Linux請使用<b>-linux.zip</b>結尾的檔案進行下載。
-          選擇版本時請參考<a
-            href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%81%AE%E9%81%B8%E3%81%B3%E6%96%B9"
-            >「バージョンの選び方」</a
-          >使用。
-        </div>
-      </section>
-      <section id="webapp">
-        <h2>網頁應用程式</h2>
-        <ul class="row">
-          <li class="link-box">
-            <a href="webapp/index.html?mobile" target="_blank">Smartphone / Tablet</a>
-          </li>
-          <li class="link-box">
-            <a href="webapp/index.html" target="_blank">PC</a>
-          </li>
-        </ul>
-        <div>
-          無法使用部分功能（如使用引擎對局與檔案讀寫等）。 <br />
-          尚未在 Chrome 以外的瀏覽器確認運行狀況。若有錯誤或異常狀況，歡迎回報。
-        </div>
-      </section>
-      <section id="howtouse">
-        <h2>使用方法</h2>
-        <ul class="row">
-          <li class="link-box">
-            <a
-              href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9"
-              >查看使用方法</a
-            >
-          </li>
-        </ul>
-      </section>
-      <section id="milestones">
-        <h2>開發期程</h2>
-        <ul class="row">
-          <li class="link-box">
-            <a href="https://github.com/sunfish-shogi/electron-shogi/milestones">Milestones</a>
-          </li>
-          <li class="link-box">
-            <a href="https://github.com/users/sunfish-shogi/projects/1/views/1">專案進度表</a>
-          </li>
-        </ul>
-      </section>
-      <section id="faq">
-        <h2>常見問題</h2>
-        <ul class="faq">
-          <li>
-            Q. 對應 USI 協定的將棋 AI 可以在哪邊下載到呢？
-            <ul>
-              <li>
-                A. 請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/Links"
-                  >其他連結</a
-                >。
-              </li>
-            </ul>
-          </li>
-          <li>
-            Q. 如果要自己調整程式的外觀，在哪裏可以取得圖片呢？
-            <ul>
-              <li>
-                A. 請參考<a href="https://github.com/sunfish-shogi/electron-shogi/wiki/Links"
-                  >其他連結</a
-                >。
-              </li>
-            </ul>
-          </li>
-          <li>
-            Q. CSA 協定是什麼呢？
-            <ul>
-              <li>
-                A. CSA協定是電腦將棋協會(CSA)所制定，用於將棋 AI
-                的通訊規格，主要在將棋引擎的開發者間使用。若要使用 CSA
-                協定對局，在Electron將棋外還需要其他的 CSA 伺服器。
-              </li>
-            </ul>
-          </li>
-          <li>
-            Q. CSA 與 USI 的通訊紀錄 (log) 在哪邊儲存呢？
-            <ul>
-              <li>
-                A. 預設設定為不輸出紀錄 (log) 。請參考<a
-                  href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E4%BD%BF%E3%81%84%E6%96%B9#%E3%83%AD%E3%82%B0%E5%87%BA%E5%8A%9B"
-                  >此處</a
-                >來設定並確認儲存檔案的位置。
-              </li>
-            </ul>
-          </li>
-          <li>
-            Q. 無法使用 shell script 或引擎無法被執行。
-            <ul>
-              <li>
-                A. 請參考<a
-                  href="https://github.com/sunfish-shogi/electron-shogi/wiki/%E3%82%B7%E3%82%A7%E3%83%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%82%84%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%97%E3%83%AA%E3%82%BF%E5%9E%8B%E8%A8%80%E8%AA%9E%E3%81%A7%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%9F%E3%81%84%E6%96%B9%E3%81%B8"
-                  >此處</a
-                >的連結。
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </section>
-      <section id="contact">
-        <h2>聯絡方式</h2>
-        <div class="row">
-          <div>
-            <h3>持有 GitHub 帳號</h3>
-            <div class="link-box">
-              <a href="https://github.com/sunfish-shogi/electron-shogi/issues">GitHub Issues</a>
-            </div>
-          </div>
-          <div>
-            <h3>未持有 GitHub 帳號</h3>
-            <div class="link-box">
-              <a href="https://form.run/@sunfish-shogi-1650819491">聯絡表單</a>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- TODO: Update following section -->
-      <section id="images">
-        <h2>棋盤棋駒圖片</h2>
-        <div>ShogiHome使用的棋駒、盤面的圖像以限制更少的授權條款公開使用。</div>
-        <div class="link-box">
-          <a href="https://sunfish-shogi.github.io/shogi-images/" target="_blank">Shogi Images</a>
+          <a href="https://sunfish-shogi.github.io/shogihome/index.zh_tw.html">https://sunfish-shogi.github.io/shogihome/index.zh_tw.html</a>
         </div>
       </section>
     </article>

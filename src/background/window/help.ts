@@ -1,11 +1,6 @@
 import { shell } from "electron";
 import { readStatus } from "@/background/version/check";
-import {
-  howToUseWikiPageURL,
-  latestReleaseURL,
-  stableReleaseURL,
-  websiteURL,
-} from "@/common/links/github";
+import { howToUseWikiPageURL, websiteURL } from "@/common/links/github";
 
 export function openWebsite(): void {
   shell.openExternal(websiteURL);
@@ -15,8 +10,12 @@ export function openHowToUse(): void {
   shell.openExternal(howToUseWikiPageURL);
 }
 
-export function openLatestReleasePage(): void {
-  shell.openExternal(latestReleaseURL);
+export async function openLatestReleasePage() {
+  const status = await readStatus();
+  if (!status.knownReleases) {
+    throw new Error("No known releases");
+  }
+  shell.openExternal(status.knownReleases.latest.link);
 }
 
 export async function openStableReleasePage() {
@@ -24,6 +23,5 @@ export async function openStableReleasePage() {
   if (!status.knownReleases) {
     throw new Error("No known releases");
   }
-  const tag = status.knownReleases.stable.tag;
-  shell.openExternal(stableReleaseURL(tag));
+  shell.openExternal(status.knownReleases.stable.link);
 }

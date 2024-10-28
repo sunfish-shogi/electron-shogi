@@ -521,7 +521,9 @@ function createMenuTemplate(window: BrowserWindow) {
         },
         {
           label: t.openLatestReleasePage,
-          click: openLatestReleasePage,
+          click: () => {
+            openLatestReleasePage().catch(sendError);
+          },
         },
         {
           label: t.openStableReleasePage,

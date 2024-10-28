@@ -20,10 +20,6 @@ export const wikiPageBaseURL = `https://${ghDomain}/${ghAccount}/${ghRepository}
 export const howToUseWikiPageURL = `${wikiPageBaseURL}${howToUseTitle}`;
 export const fileNameTemplateWikiPageURL = `${wikiPageBaseURL}${fileNameTemplateTitle}`;
 export const maxPVLengthSettingWikiPageURL = `${wikiPageBaseURL}${maxPVLengthTitle}`;
-export const latestReleaseURL = `https://${ghDomain}/${ghAccount}/${ghRepository}/releases/latest`;
-export function stableReleaseURL(tag: string) {
-  return `https://${ghDomain}/${ghAccount}/${ghRepository}/releases/tag/${tag}`;
-}
 export const licenseURL = `https://${ghDomain}/${ghAccount}/${ghRepository}/blob/main/LICENSE`;
 
 const webAppBaseURL = `https://${ghioDomain}/${ghRepository}/webapp/index.html`;

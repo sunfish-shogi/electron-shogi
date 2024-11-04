@@ -53,7 +53,6 @@
           <tr
             v-for="iteration in historyMode ? info.iterations : info.latestIteration"
             :key="iteration.id"
-            v-memo="[]"
             class="list-item"
             :class="{ highlight: enableHighlight && iteration.multiPV === 1 }"
           >

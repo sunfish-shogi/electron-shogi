@@ -7,6 +7,7 @@ describe("security", () => {
     validateIPCSender({
       url: "file:///home/shogi/apps/shogihome/assets.asr",
     } as any);
+    validateIPCSender(null);
   });
 
   it("validateIPCSender/notAllowed", () => {

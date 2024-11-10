@@ -8,7 +8,15 @@ const allowedIPCSenders = [
   { protocol: "file:", host: /^$/ },
 ];
 
-export function validateIPCSender(frame: WebFrameMain) {
+export function validateIPCSender(frame: WebFrameMain | null) {
+  if (!frame) {
+    // TODO:
+    //   electron 33.0.2 から 33.2.0 へのアップデートで frame が null になる可能性が生じるようになった。
+    //   ただし、null になるのはナビゲーション中やフレーム破棄後であるとされ、ここに null が渡されるケースは無いと思われる。
+    //   null の場合に例外を投げるようにしても良いが、十分な検証ができるまではエラーログの出力に留める。
+    getAppLogger().error("validateIPCSender: frame is null");
+    return;
+  }
   const u = new URL(frame.url);
   for (const allowed of allowedIPCSenders) {
     if (u.protocol === allowed.protocol && allowed.host.test(u.host)) {

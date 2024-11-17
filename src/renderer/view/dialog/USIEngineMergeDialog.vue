@@ -36,7 +36,7 @@
             <div class="row">
               <div class="engine-column">
                 <input
-                  v-if="option.leftValue"
+                  v-if="option.leftValue !== undefined"
                   class="option-value"
                   readonly
                   :value="option.leftValue"
@@ -44,7 +44,7 @@
               </div>
               <div class="engine-column">
                 <input
-                  v-if="option.rightValue"
+                  v-if="option.rightValue !== undefined"
                   class="option-value"
                   readonly
                   :value="option.rightValue"

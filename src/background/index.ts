@@ -52,6 +52,14 @@ contextMenu({
 
 app.enableSandbox();
 
+app.on("render-process-gone", (event, webConetnts, details) => {
+  getAppLogger().warn(
+    "on render-process-gone: ExitCode=%d reason=%s",
+    details.exitCode,
+    details.reason,
+  );
+});
+
 app.once("will-finish-launching", () => {
   getAppLogger().info("on will-finish-launching");
 
@@ -99,6 +107,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
+  getAppLogger().info("on activate");
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
@@ -107,6 +116,7 @@ app.on("activate", () => {
 });
 
 app.on("web-contents-created", (_, contents) => {
+  getAppLogger().info("web-contents-created");
   contents.on("will-navigate", (event) => {
     event.preventDefault();
   });
@@ -141,6 +151,8 @@ const dockMenu = Menu.buildFromTemplate([
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
+  getAppLogger().info("on ready");
+
   if (isDevelopment()) {
     getAppLogger().info("install Vue3 Dev Tools");
     // Install Vue DevTools
@@ -152,6 +164,7 @@ app.on("ready", () => {
 
   // Set dock menu (MacOS only)
   if (process.platform == "darwin") {
+    getAppLogger().info("set dock menu");
     app.dock.setMenu(dockMenu);
   }
 

@@ -44,6 +44,7 @@ export function createWindow() {
     settings = buildWindowSettings(settings, win);
   });
   win.on("close", (event) => {
+    getAppLogger().info("BrowserWindow close");
     if (getAppState() === AppState.CSA_GAME) {
       event.preventDefault();
       sendError(new Error(t.youCanNotCloseAppWhileCSAOnlineGame));
@@ -56,6 +57,28 @@ export function createWindow() {
     }
     settings = buildWindowSettings(settings, win);
     saveWindowSettings(settings);
+  });
+
+  win.webContents.on("did-finish-load", () => {
+    getAppLogger().info("BrowserWindow did-finish-load");
+  });
+  win.webContents.on(
+    "did-frame-finish-load",
+    (event, isMainFrame, frameProcessId, frameRoutingId) => {
+      getAppLogger().info(
+        `BrowserWindow did-frame-finish-load: ${frameProcessId} ${frameRoutingId}`,
+      );
+    },
+  );
+  win.webContents.on("did-fail-load", (event, errorCode, errorDescription, validatedURL) => {
+    getAppLogger().error(
+      `BrowserWindow did-fail-load: ${errorCode} ${errorDescription} ${validatedURL}`,
+    );
+  });
+  win.webContents.on("did-fail-provisional-load", (event, errorCode, errorDescription) => {
+    getAppLogger().error(
+      `BrowserWindow did-fail-provisional-load: ${errorCode} ${errorDescription}`,
+    );
   });
 
   setupIPC(win);
@@ -77,7 +100,7 @@ export function createWindow() {
       });
   } else if (isPreview()) {
     // Preview
-    getAppLogger().info("load app URL");
+    getAppLogger().info("load app URL (Preview)");
     win.loadFile(path.join(__dirname, "../../../index.html")).catch((e) => {
       getAppLogger().error(`failed to load app URL: ${e}`);
       throw e;
@@ -92,6 +115,8 @@ export function createWindow() {
   }
 
   win.once("ready-to-show", () => {
+    getAppLogger().info("BrowserWindow ready-to-show");
+
     // レンダラー側の準備ができたら uncaughtException はレンダラーへ送る。
     process.on("uncaughtException", (e, origin) => {
       // ホストの解決ができない場合に uncaughtException が発生する。
@@ -102,6 +127,8 @@ export function createWindow() {
       }
       sendError(new Error(`${origin} ${e}`));
     });
+
+    getAppLogger().info("BrowserWindow show");
     win.show();
 
     // macOS では起動後に Finder からファイルを開こうとすると既に存在するプロセスに対して open-file イベントが発生する。
@@ -115,6 +142,7 @@ export function createWindow() {
       openRecord(path);
     });
 
+    getAppLogger().info("check updates");
     checkUpdates().catch((e) => {
       getAppLogger().error(`${t.failedToCheckUpdates}: ${e}`);
     });

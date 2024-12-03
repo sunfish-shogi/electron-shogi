@@ -14,15 +14,14 @@ import { getPortableExeDir, isDevelopment, isPortable, isTest } from "@/backgrou
 import { setLanguage, t } from "@/common/i18n";
 import { setInitialFilePath } from "./proc/args";
 import contextMenu from "electron-context-menu";
-import { LogType } from "@/common/log";
-import { isLogEnabled } from "@/common/settings/app";
+import { LogLevel, LogType } from "@/common/log";
 import { createWindow } from "./window/main";
 import { spawn } from "child_process";
 
 const appSettings = loadAppSettingsOnce();
 for (const type of Object.values(LogType)) {
-  const destinations: LogDestination[] = isLogEnabled(type, appSettings) ? ["file"] : ["stdout"];
-  setLogDestinations(type, destinations, appSettings.logLevel);
+  const destinations: LogDestination[] = ["file"];
+  setLogDestinations(type, destinations, LogLevel.DEBUG);
 }
 
 getAppLogger().info(

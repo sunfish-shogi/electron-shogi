@@ -120,6 +120,7 @@ export interface API {
   isEncryptionAvailable(): Promise<boolean>;
   getVersionStatus(): Promise<VersionStatus>;
   sendTestNotification(): void;
+  getPathForFile(file: File): string;
 }
 
 interface ExtendedWindow extends Window {

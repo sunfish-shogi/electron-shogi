@@ -90,7 +90,7 @@ import { useErrorStore } from "./store/error";
 import { useConfirmationStore } from "./store/confirm";
 import CustomLayout from "./view/main/CustomLayout.vue";
 import MobileLayout from "./view/main/MobileLayout.vue";
-import { isMobileWebApp, isNative } from "./ipc/api";
+import api, { isMobileWebApp, isNative } from "./ipc/api";
 import { openCopyright } from "./helpers/copyright";
 
 const appSettings = useAppSettings();
@@ -115,7 +115,7 @@ onMounted(() => {
   });
   body.addEventListener("drop", (event: DragEvent) => {
     if (event.dataTransfer && event.dataTransfer.files[0]) {
-      const path = event.dataTransfer.files[0].path;
+      const path = api.getPathForFile(event.dataTransfer.files[0]);
       store.openRecord(path);
     }
     event.preventDefault();

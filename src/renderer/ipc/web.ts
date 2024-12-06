@@ -421,4 +421,7 @@ export const webAPI: Bridge = {
   sendTestNotification(): void {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
+  getPathForFile(file: File): string {
+    return file.name;
+  },
 };

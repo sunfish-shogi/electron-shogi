@@ -125,4 +125,5 @@ export interface Bridge {
   isEncryptionAvailable(): Promise<boolean>;
   getVersionStatus(): Promise<string>;
   sendTestNotification(): void;
+  getPathForFile(file: File): string;
 }

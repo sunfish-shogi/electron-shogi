@@ -1,7 +1,7 @@
 import { MenuEvent } from "@/common/control/menu";
 import { AppState, ResearchState } from "@/common/control/state";
 import { GameResult } from "@/common/game/result";
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, webUtils } from "electron";
 import { Background, Renderer } from "@/common/ipc/channel";
 import { Bridge } from "@/renderer/ipc/bridge";
 import { LogType, LogLevel } from "@/common/log";
@@ -340,6 +340,9 @@ const api: Bridge = {
   },
   sendTestNotification(): void {
     ipcRenderer.send(Background.SEND_TEST_NOTIFICATION);
+  },
+  getPathForFile(file: File): string {
+    return webUtils.getPathForFile(file);
   },
 };
 
